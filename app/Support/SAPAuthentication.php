@@ -58,16 +58,38 @@ class SAPAuthentication
 
     protected function saveAuthentication($response)
     {
-    	$this->session = SapCompanySession::firstOrCreate([
-    			'company_name' => $this->database,
-    			'username' => $this->username,
-    			['expires_at', '>=', $currentTime = Carbon::now()]
-    		], [
-    			'company_name' => $this->database,
-    			'username' => $this->username,
-    			'session_id' => $response['SessionId'],
-    			'expires_at' => $currentTime->addMinutes(25),
-    		]);
+        $data = SapCompanySession::where([
+                'company_name' => $this->database,
+                'username' => $this->username,
+                ['expires_at', '>=', $currentTime = Carbon::now()]
+            ])->first();
+
+        if(!is_null($data)){
+            $this->session = $data;
+        }else{
+            $this->session = SapCompanySession::updateOrCreate(
+                [
+                    'company_name' => $this->database,
+                    'username' => $this->username,
+                ],
+                [
+                    'company_name' => $this->database,
+                    'username' => $this->username,
+                    'session_id' => $response['SessionId'],
+                    'expires_at' => $currentTime->addMinutes(25),
+                ]);
+        }
+
+    	// $this->session = SapCompanySession::firstOrCreate([
+    	// 		'company_name' => $this->database,
+    	// 		'username' => $this->username,
+    	// 		['expires_at', '>=', $currentTime = Carbon::now()]
+    	// 	], [
+    	// 		'company_name' => $this->database,
+    	// 		'username' => $this->username,
+    	// 		'session_id' => $response['SessionId'],
+    	// 		'expires_at' => $currentTime->addMinutes(25),
+    	// 	]);
     }
 
     protected function getSession()
