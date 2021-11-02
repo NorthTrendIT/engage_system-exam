@@ -18,4 +18,4 @@ Route::get('/', function () {
 });
 
 
-Route::get('/get-users','App\Http\Controllers\SapApiController@index')->middleware('guest');
+Route::get('/get-users','App\Http\Controllers\SapApiController@index');

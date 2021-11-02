@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Support\SAPAuthentication;
 use Session;
 
 class SapApiController extends Controller
@@ -19,53 +20,24 @@ class SapApiController extends Controller
 
     public function __construct()
 	{
-		$this->middleware(function ($request, $next){
-	        //dd(session()->all());
-			
-			//dd(Session::get('B1SESSION'));
+		$this->headers = $this->cookie = array();
+		$this->cookie['B1SESSION'] = "";
+		$this->cookie['CompanyDB'] = "TEST-APBW";
+		$this->cookie['ROUTEID'] = ".node0";
 
-			$this->headers = $this->cookie = array();
-			$this->cookie['B1SESSION'] = "";
-			$this->cookie['CompanyDB'] = "TEST-APBW";
-			$this->cookie['ROUTEID'] = ".node0";
-
-			$this->last_login_time = 0;
-
-			if(Session::has('B1SESSION')){
-	           $this->cookie['B1SESSION'] = Session::get('B1SESSION');
-	        }
-
-	        if(Session::has('last_login_time')){
-	           $this->last_login_time = Session::get('last_login_time');
-	        }
-
-	        if($this->last_login_time == 0){
-	        	// Login
-	        	$this->login();
-	        }else{
-	        	$current_time = time();
-
-	        	$mins = ($current_time - $this->last_login_time) / 60;
-
-	        	if($mins >= 25 || $mins <= 0){
-	        		// Login
-	        		$this->login();
-	        	}
-
-	        }
-
-			$this->headers['Cookie'] = "B1SESSION=".$this->cookie['B1SESSION'].";";
-			$this->headers['Cookie'] .= "CompanyDB=".$this->cookie['CompanyDB'].";";
-			$this->headers['Cookie'] .= "ROUTEID=".$this->cookie['ROUTEID'].";";
-
-	        return $next($request);
-	    });
-	    
+		$this->last_login_time = 0;
 
 	}
 
     public function index(){
 
+    	// dd(session()->all());
+
+    	$authentication = new SAPAuthentication('TEST-APBW', 'manager', 'test');
+
+    	dd($authentication->getAuthenticationSession());
+
+    	$this->setSessionId();
 
     	dd($this->headers,$this->cookie,$this->last_login_time,session()->all());
 
@@ -131,5 +103,38 @@ class SapApiController extends Controller
     	} catch (\Exception $e) {
     		dd($e);
     	}
+    }
+
+    public function setSessionId()
+    {
+    	//dd(Session::get('B1SESSION'));
+
+    	// dd(session()->all());
+		if(Session::has('B1SESSION')){
+           $this->cookie['B1SESSION'] = Session::get('B1SESSION');
+        }
+
+        if(Session::has('last_login_time')){
+           $this->last_login_time = Session::get('last_login_time');
+        }
+
+        if($this->last_login_time == 0){
+        	// Login
+        	$this->login();
+        }else{
+        	$current_time = time();
+
+        	$mins = ($current_time - $this->last_login_time) / 60;
+
+        	if($mins >= 25 || $mins <= 0){
+        		// Login
+        		$this->login();
+        	}
+
+        }
+
+		$this->headers['Cookie'] = "B1SESSION=".$this->cookie['B1SESSION'].";";
+		$this->headers['Cookie'] .= "CompanyDB=".$this->cookie['CompanyDB'].";";
+		$this->headers['Cookie'] .= "ROUTEID=".$this->cookie['ROUTEID'].";";
     }
 }
