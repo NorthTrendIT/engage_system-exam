@@ -17,6 +17,8 @@ class SapApiController extends Controller
 
 	}*/
 
+	private $headers = array();
+
     public function __construct()
 	{
 		$this->middleware(function ($request, $next){
@@ -67,7 +69,7 @@ class SapApiController extends Controller
     public function index(){
 
 
-    	dd($this->headers,$this->cookie,$this->last_login_time,session()->all());
+    	// dd($this->headers,$this->cookie,$this->last_login_time,session()->all());
 
     	// dd($this->login());	
     	try {
@@ -76,9 +78,7 @@ class SapApiController extends Controller
 	            'GET',
 	            'https://sap.northtrend.com:50000/b1s/v1/Users',
 	            [
-	            	'headers' => [
-	            					'Cookie' => 'B1SESSION=bc2bb10c-3b18-11ec-8000-20677ce77e84; CompanyDB=TEST-APBW; ROUTEID=.node0'
-	            				],
+	            	'headers' => $this->headers,
 	            	'verify' => false,
 
 	            ]
