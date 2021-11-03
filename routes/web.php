@@ -16,13 +16,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect()->route('login');
     //return view('welcome');
-})->name('home');
+});
 
 
 Route::get('/login','App\Http\Controllers\LoginController@index')->name('login')->middleware('guest');
 Route::post('/login','App\Http\Controllers\LoginController@checkLogin')->name('check-login')->middleware('guest');
 
 Route::get('/get-users','App\Http\Controllers\SapApiController@index');
+
+Route::middleware('auth')->group(function(){
+	Route::get('/home','App\Http\Controllers\HomeController@index')->name('home');
+});
 
 Route::get('/logout', function () {
 	Auth::logout();
