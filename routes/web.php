@@ -18,8 +18,14 @@ Route::get('/', function () {
 });
 
 
-// following route won't work because middleware is already been used in the constructor of controller
-//Route::get('/get-users','App\Http\Controllers\SapApiController@index')->middleware('guest');
 
-// keep following route
-Route::get('/get-users','App\Http\Controllers\SapApiController@index')->name('getusers');
+Route::get('/get-users','App\Http\Controllers\SapApiController@index');
+
+Route::get('clear-cache', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+    Artisan::call('route:clear');
+    Artisan::call('config:cache');
+    Artisan::call('config:clear');
+    return "Cache is cleared";
+});
