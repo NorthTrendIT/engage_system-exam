@@ -22,7 +22,7 @@ class SapApiController extends Controller
 	    	$client = new \GuzzleHttp\Client();
 	        $response = $client->request(
 	            'GET',
-	            'https://sap.northtrend.com:50000/b1s/v1/Users',
+	            env('SAP_API_URL').'/Users',
 	            [
 	            	'headers' => $this->headers,
 	            	'verify' => false,

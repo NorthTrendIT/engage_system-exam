@@ -33,7 +33,7 @@ class SAPAuthentication
     	try {
 	    	$response = $this->httpClient->request(
 	            'POST',
-	            'https://sap.northtrend.com:50000/b1s/v1/Login',
+	            env('SAP_API_URL').'/Login',
 	            [
 	            	'verify' => false,
 	            	'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'],
@@ -52,6 +52,7 @@ class SAPAuthentication
 	        }	
 	       
     	} catch (\Exception $e) {
+            abort(500);
     		dd($e);
     	}
     }
