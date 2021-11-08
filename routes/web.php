@@ -31,7 +31,9 @@ Route::middleware('auth')->group(function(){
 		Auth::logout();
 	    return redirect()->route('login');
 	})->name('logout');
-	
+
+	Route::resource('customer','App\Http\Controllers\CustomerController');
+
 });
 
 Route::get('clear-cache', function () {
