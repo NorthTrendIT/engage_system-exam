@@ -40,6 +40,8 @@ class LoginController extends Controller
 
     			if (!is_null($user) && Auth::attempt($credentials)) {
 	                
+	                add_login_log();
+	                
 	                $response = [
 	                    'status' => true,
 	                    'message' => 'Success ! Login successful.',

@@ -26,12 +26,14 @@ Route::get('/get-users','App\Http\Controllers\SapApiController@index');
 
 Route::middleware('auth')->group(function(){
 	Route::get('/home','App\Http\Controllers\HomeController@index')->name('home');
+	
+	Route::get('/logout', function () {
+		Auth::logout();
+	    return redirect()->route('login');
+	})->name('logout');
+	
 });
 
-Route::get('/logout', function () {
-	Auth::logout();
-    return redirect()->route('login');
-});
 Route::get('clear-cache', function () {
     Artisan::call('cache:clear');
     Artisan::call('view:clear');
