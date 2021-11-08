@@ -10,13 +10,13 @@ class SapApiController extends Controller
 {
     public function __construct(){
 		$this->headers = $this->cookie = array();
+    	$this->authentication = new SAPAuthentication('TEST-APBW', 'manager', 'test');
 	}
 
     public function index(){
 
-    	$authentication = new SAPAuthentication('TEST-APBW', 'manager', 'test');
 
-    	$this->setSessionId($session = $authentication->getAuthenticationSession());
+    	$this->setSessionId($session = $this->authentication->getAuthenticationSession());
 
     	try {
 	    	$client = new \GuzzleHttp\Client();
@@ -39,6 +39,38 @@ class SapApiController extends Controller
     		dd($e->getCode());
     	}
 
+    }
+
+    public function getCustomerList(){
+    	$this->setSessionId($session = $this->authentication->getAuthenticationSession());
+
+    	try {
+	    	$client = new \GuzzleHttp\Client();
+	        $response = $client->request(
+	            'GET',
+	            env('SAP_API_URL').'/BusinessPartners',
+	            [
+	            	'headers' => $this->headers,
+	            	'verify' => false,
+	            ]
+	        );
+
+	        if(in_array($response->getStatusCode(), [200,201])){
+	        	$response = json_decode($response->getBody(),true);
+
+	        	return array(
+	        					'status' => true,
+	        					'data' => $response
+	        				);
+	        }
+    		
+    	} catch (\Exception $e) {
+    		//dd($e->getCode());
+    		return array(
+	        					'status' => false,
+	        					'data' => []
+	        				);
+    	}
     }
 
     public function setSessionId($session)
