@@ -19,7 +19,7 @@
       <!--begin::Mobile logo-->
       <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
          <a href="{{ route('home') }}" class="d-lg-none">
-            <img alt="Logo" src="{{ asset('assets') }}/assets/media/logo.svg" class="h-30px" />
+            <img alt="Logo" src="{{ asset('assets') }}/assets/media/logo-full.png" class="h-30px" />
          </a>
       </div>
       <!--end::Mobile logo-->
