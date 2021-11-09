@@ -19,10 +19,19 @@ Route::get('/', function () {
 });
 
 
-Route::get('/login','App\Http\Controllers\LoginController@index')->name('login')->middleware('guest');
-Route::post('/login','App\Http\Controllers\LoginController@checkLogin')->name('check-login')->middleware('guest');
+Route::middleware('guest')->group(function(){
+	Route::get('/login','App\Http\Controllers\LoginController@index')->name('login');
+	Route::post('/login','App\Http\Controllers\LoginController@checkLogin')->name('check-login');
 
-Route::get('/get-users','App\Http\Controllers\SapApiController@index');
+	// Forgot Password
+	Route::get('forgot-password/', 'App\Http\Controllers\ForgotPasswordController@index')->name('forgot-password.index');
+	Route::get('forgot-password/{email}/{token}', 'App\Http\Controllers\ForgotPasswordController@showResetPasswordForm')->name('forgot-password.reset');
+	Route::post('forgot-password/email', 'App\Http\Controllers\ForgotPasswordController@email')->name('forgot-password.email');
+	Route::post('forgot-password/reset-password', 'App\Http\Controllers\ForgotPasswordController@resetPassword')->name('forgot-password.reset-password');
+});
+
+
+//Route::get('/get-users','App\Http\Controllers\SapApiController@index');
 
 Route::middleware('auth')->group(function(){
 	Route::get('/home','App\Http\Controllers\HomeController@index')->name('home');

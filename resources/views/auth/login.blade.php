@@ -28,7 +28,7 @@
 		<div class="fv-row mb-10">
 			<div class="d-flex flex-stack mb-2">
 				<label class="form-label fw-bolder text-dark fs-6 mb-0">Password</label>
-				<a href="../../demo1/dist/authentication/flows/basic/password-reset.html" class="link-primary fs-6 fw-bolder">Forgot Password ?</a>
+				<a href="{{ route('forgot-password.index') }}" class="link-primary fs-6 fw-bolder">Forgot Password ?</a>
 			</div>
 			<input class="form-control form-control-lg form-control-solid" type="password" name="password" autocomplete="off" />
 		</div>
@@ -87,7 +87,7 @@
 	                        toast_success(data.message);
 	                        setTimeout(function(){
 		                        window.location.href = "{{route('home')}}"
-		                    },2000)
+		                    },500)
 	                    } else {
 	                        toast_error(data.message);
 	                    }
