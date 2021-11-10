@@ -47,6 +47,8 @@ Route::middleware('auth')->group(function(){
     Route::get('profile/change-password', 'App\Http\Controllers\ProfileController@changePasswordIndex')->name('profile.change-password.index');
     Route::post('profile/change-password', 'App\Http\Controllers\ProfileController@changePasswordStore')->name('profile.change-password.store');
 
+    Route::resource('role','App\Http\Controllers\RoleController');
+
 });
 
 Route::get('clear-cache', function () {
