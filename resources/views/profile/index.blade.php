@@ -26,8 +26,17 @@
                 <div class="row mb-5">
                   <div class="col-md-12">
                     <div class="form-group">
-                      <label>Name<span class="asterisk">*</span></label>
-                      <input type="text" class="form-control form-control-solid" placeholder="Enter name" name="name" value="{{ @Auth::user()->name ?? "" }}">
+                      <label>First Name<span class="asterisk">*</span></label>
+                      <input type="text" class="form-control form-control-solid" placeholder="Enter first name" name="first_name" value="{{ @Auth::user()->first_name ?? "" }}">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Last Name<span class="asterisk">*</span></label>
+                      <input type="text" class="form-control form-control-solid" placeholder="Enter last name" name="last_name" value="{{ @Auth::user()->last_name ?? "" }}">
                     </div>
                   </div>
                 </div>
@@ -40,6 +49,25 @@
                     </div>
                   </div>
                 </div>
+
+                <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Profile</label>
+                      <input type="file" class="form-control form-control-solid" name="profile" accept="image/*">
+                    </div>
+                  </div>
+                </div>
+
+                @if(get_login_user_profile())
+                  <div class="row mt-10 mb-10">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <img src="{{ get_login_user_profile() }}" height="100" width="100">
+                      </div>
+                    </div>
+                  </div>
+                @endif
 
                 <div class="row mb-5">
                   <div class="col-md-12">
@@ -100,7 +128,11 @@
           errorClass: "is-invalid",
           validClass: "is-valid",
           rules: {
-              name:{
+              first_name:{
+                required: true,
+                maxlength: 185,
+              },
+              last_name:{
                 required: true,
                 maxlength: 185,
               },
@@ -111,9 +143,13 @@
           },
           messages: {
               
-              name:{
-                required: "Please enter name.",
-                maxlength:'Please enter name less than 185 character',
+              first_name:{
+                required: "Please enter first name.",
+                maxlength:'Please enter first name less than 185 character',
+              },
+              last_name:{
+                required: "Please enter last name.",
+                maxlength:'Please enter last name less than 185 character',
               },
               email:{
                 required:"Please enter email.",

@@ -17,8 +17,10 @@ class CreateRoleModuleAccessTable extends Migration
             $table->id();
             $table->unsignedBigInteger('role_id')->index();
             $table->unsignedBigInteger('module_id')->index();
-            $table->boolean('read_access')->default(true);
-            $table->boolean('write_access')->default(true);
+            $table->boolean('add_access')->default(true);
+            $table->boolean('edit_access')->default(true);
+            $table->boolean('view_access')->default(true);
+            $table->boolean('delete_access')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

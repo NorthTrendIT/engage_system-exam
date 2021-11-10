@@ -20,7 +20,8 @@ class UserSeeder extends Seeder
 
         $data = array(
         			'role_id' => 1,
-			        'name' => 'Super Admin',
+                    'first_name' => 'Super',
+			        'last_name' => 'Admin',
 			        'is_active' => true,
 			        'email' => 'admin@admin.com',
 			        'password' => Hash::make('admin'),
