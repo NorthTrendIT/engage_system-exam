@@ -969,7 +969,7 @@
                                 <td>
                                    <div class="d-flex align-items-center">
                                       <div class="symbol symbol-45px me-5">
-                                         <img src="{{ asset('assets') }}/assets/media/150-4.jpg" alt="" />
+                                         <img src="{{ asset('assets') }}/assets/media/150-26.jpg" alt="" />
                                       </div>
                                       <div class="d-flex justify-content-start flex-column">
                                          <a href="#" class="text-dark fw-bolder text-hover-primary fs-6">Lebron Wayde</a>
