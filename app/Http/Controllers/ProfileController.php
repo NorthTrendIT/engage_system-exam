@@ -40,10 +40,16 @@ class ProfileController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
+
         $rules = array(
-                    'name' => 'required|string|max:185',
+                    'first_name' => 'required|string|max:185',
+                    'last_name' => 'required|string|max:185',
                     'email' => 'required|max:185|unique:users,email,'.Auth::id().',id,deleted_at,NULL|regex:/(.+)@(.+)\.(.+)/i'
                 );
+
+        if(request()->hasFile('profile')){
+            $rules['profile'] = "required|max:5000|mimes:jpeg,png,jpg,eps,bmp,tif,tiff,webp";
+        }
 
         $validator = Validator::make($input, $rules);
 
@@ -51,6 +57,20 @@ class ProfileController extends Controller
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
             $user = User::find(Auth::id());
+            
+            $old_profile = file_exists(public_path('sitebucket/users/') . "/" . $user->profile);
+            if(request()->hasFile('profile') && $user->profile && $old_profile){
+                unlink(public_path('sitebucket/users/') . "/" . $user->profile);
+                $input['profile'] = null;
+            }
+
+            /*Upload Image*/
+            if (request()->hasFile('profile')) {
+                $file = $request->file('profile');
+                $name = date("YmdHis") . $file->getClientOriginalName();
+                request()->file('profile')->move(public_path() . '/sitebucket/users/', $name);
+                $input['profile'] = $name;
+            }
 
             $user->fill($input)->save();
 

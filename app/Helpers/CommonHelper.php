@@ -9,3 +9,11 @@ function add_login_log(){
 
 	LoginLog::insert($insert);
 }
+
+function get_login_user_profile(){
+	if(@Auth::user()->profile && file_exists(public_path('sitebucket/users/') . "/" . @Auth::user()->profile)){
+		return asset('sitebucket/users/'.@Auth::user()->profile);
+	}else{
+		return false;
+	}
+}
