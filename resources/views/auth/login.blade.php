@@ -66,7 +66,12 @@
 		            },
 		        },
 		        messages: {
-		            
+		            email:{
+		            	required:"Please enter email.",
+		            },
+		            password:{
+		            	required:"Please enter password.",
+		            },
 		        },
 		    });
 		    return validator;

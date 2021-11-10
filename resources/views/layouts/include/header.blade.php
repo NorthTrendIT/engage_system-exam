@@ -66,15 +66,22 @@
                      <!--begin::Menu separator-->
                      <div class="separator my-2"></div>
                      <!--end::Menu separator-->
+
                      <!--begin::Menu item-->
                      <div class="menu-item px-5">
-                        <a href="" class="menu-link px-5">My Profile</a>
+                        <a href="{{ route('profile.index') }}" class="menu-link px-5"><i class="fa fa-user text-info mr-10"></i> <span>My Profile</span></a>
+                     </div>
+                     <!--end::Menu item-->
+
+                     <!--begin::Menu item-->
+                     <div class="menu-item px-5">
+                        <a href="{{ route('profile.change-password.index') }}" class="menu-link px-5"><i class="fa fa-lock text-primary mr-10"></i> <span>Change Password</span></a>
                      </div>
                      <!--end::Menu item-->
                      
                      <!--begin::Menu item-->
                      <div class="menu-item px-5">
-                        <a href="{{ route('logout') }}" class="menu-link px-5">Sign Out</a>
+                        <a href="{{ route('logout') }}" class="menu-link px-5"><i class="fa fa-sign-out-alt text-danger mr-10"></i> Sign Out</a>
                      </div>
                      <!--end::Menu item-->
                      

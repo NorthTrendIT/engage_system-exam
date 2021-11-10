@@ -56,7 +56,9 @@
 		            }
 		        },
 		        messages: {
-		            
+		            email:{
+		            	required:"Please enter email.",
+		            },
 		        },
 		    });
 		    return validator;

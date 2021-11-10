@@ -43,6 +43,10 @@ Route::middleware('auth')->group(function(){
 
 	Route::resource('customer','App\Http\Controllers\CustomerController');
 
+	Route::resource('profile', 'App\Http\Controllers\ProfileController')->except('show');
+    Route::get('profile/change-password', 'App\Http\Controllers\ProfileController@changePasswordIndex')->name('profile.change-password.index');
+    Route::post('profile/change-password', 'App\Http\Controllers\ProfileController@changePasswordStore')->name('profile.change-password.store');
+
 });
 
 Route::get('clear-cache', function () {

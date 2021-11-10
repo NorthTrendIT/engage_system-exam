@@ -9,4 +9,18 @@
 <link href="{{ asset('assets') }}/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 <!--end::Global Stylesheets Bundle-->
 
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.css" />
+
+<style>
+	.is-invalid, .asterisk{
+		color:red;
+	}
+
+	.mr-10{
+		margin-right: 10px;
+	}
+</style>
+
 @stack('css')
