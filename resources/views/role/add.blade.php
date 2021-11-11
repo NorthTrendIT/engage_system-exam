@@ -9,6 +9,14 @@
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Role</h1>
       </div>
+
+      <!--begin::Actions-->
+      <div class="d-flex align-items-center py-1">
+        <!--begin::Button-->
+        <a href="{{ route('role.index') }}" class="btn btn-sm btn-info">Back</a>
+        <!--end::Button-->
+      </div>
+      <!--end::Actions-->
     </div>
   </div>
   
@@ -23,11 +31,16 @@
             <div class="card-body">
               <form method="post" id="myForm">
                 @csrf
+
+                @if(isset($edit))
+                  <input type="hidden" name="id" value="{{ $edit->id }}">
+                @endif
+
                 <div class="row mb-5 d-flex justify-content-between">
                   <div class="col-md-4">
                     <div class="form-group">
                       <label>Role Name<span class="asterisk">*</span></label>
-                      <input type="text" class="form-control form-control-solid" placeholder="Enter role name" name="name" value="">
+                      <input type="text" class="form-control form-control-solid" placeholder="Enter role name" name="name" @if(isset($edit)) value="{{ $edit->name }}" @endif >
                     </div>
                   </div>
 
@@ -36,8 +49,8 @@
                       <label>Select Access<span class="asterisk">*</span></label>
                       <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" name="all_module_access">
                         <option value="">Select Access </option>
-                        <option value="1">All Menu Access</option>
-                        <option value="0">Custom Menu Access</option>
+                        <option value="1" @if(isset($edit) && $edit->all_module_access == 1) selected="" @endif>All Menu Access</option>
+                        <option value="0" @if(isset($edit) && $edit->all_module_access == 0) selected="" @endif>Custom Menu Access</option>
                       </select>
                     </div>
                   </div>
@@ -72,22 +85,22 @@
                                 </td>
                                 <td>
                                   <label class="form-check form-switch form-check-custom form-check-solid">
-                                    <input class="form-check-input w-30px h-20px" type="checkbox" value="1" name="modules[{{ $module->id }}][add]">
+                                    <input class="form-check-input w-30px h-20px" type="checkbox" value="1" name="modules[{{ $module->id }}][add]" @if(isset($role_module_access) && @$role_module_access[$module->id]['add_access'] == 1) checked="" @endif >
                                   </label>
                                 </td>
                                 <td>
                                   <label class="form-check form-switch form-check-custom form-check-solid">
-                                    <input class="form-check-input w-30px h-20px" type="checkbox" value="1" name="modules[{{ $module->id }}][edit]">
+                                    <input class="form-check-input w-30px h-20px" type="checkbox" value="1" name="modules[{{ $module->id }}][edit]" @if(isset($role_module_access) && @$role_module_access[$module->id]['edit_access'] == 1) checked="" @endif >
                                   </label>
                                 </td>
                                 <td>
                                   <label class="form-check form-switch form-check-custom form-check-solid">
-                                    <input class="form-check-input w-30px h-20px" type="checkbox" value="1" name="modules[{{ $module->id }}][delete]">
+                                    <input class="form-check-input w-30px h-20px" type="checkbox" value="1" name="modules[{{ $module->id }}][delete]" @if(isset($role_module_access) && @$role_module_access[$module->id]['delete_access'] == 1) checked="" @endif >
                                   </label>
                                 </td>
                                 <td>
                                   <label class="form-check form-switch form-check-custom form-check-solid">
-                                    <input class="form-check-input w-30px h-20px" type="checkbox" value="1" name="modules[{{ $module->id }}][view]">
+                                    <input class="form-check-input w-30px h-20px" type="checkbox" value="1" name="modules[{{ $module->id }}][view]" @if(isset($role_module_access) && @$role_module_access[$module->id]['edit_access'] == 1) checked="" @endif >
                                   </label>
                                 </td>
                               </tr>
@@ -132,12 +145,19 @@
 <script>
   $(document).ready(function() {
 
+    @if(isset($edit) && $edit->all_module_access == 1)
+    $('input[type="checkbox"]').prop('checked', true);
+    $('input[type="checkbox"]').prop('disabled', true);
+    @endif
+
     $('body').on("change", '[name="all_module_access"]', function (e) {
       
       if($(this).find('option:selected').val() == 1){
         $('input[type="checkbox"]').prop('checked', true);
+        $('input[type="checkbox"]').prop('disabled', true);
       }else{
         $('input[type="checkbox"]').prop('checked', false);
+        $('input[type="checkbox"]').prop('disabled', false);
       }
 
     });

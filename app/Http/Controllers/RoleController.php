@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\Module;
 use App\Models\RoleModuleAccess;
 use Validator;
+use DataTables;
 
 class RoleController extends Controller
 {
@@ -17,7 +18,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        //
+        return view('role.index');
     }
 
     /**
@@ -58,30 +59,64 @@ class RoleController extends Controller
 
             if(isset($input['id'])){
                 $role = Role::find($input['id']);
-                $message = "New Role created successfully.";
+                $message = "Role details updated successfully.";
             }else{
                 $role = new Role();
-                $message = "Role details updated successfully.";
+                $message = "New Role created successfully.";
             }
 
             $role->fill($input)->save();
 
             if($role->id){
-                RoleModuleAccess::where('role_id',$role->id)->delete();
+                if(isset($input['modules'])){
+                    $modules = $input['modules'];
 
-                $modules = $input['modules'];
+                    $module_ids = [];
+                    foreach ($modules as $key => $value) {
+                        $module_ids[] = $key;
+                        $insert = array(
+                                    'role_id' => $role->id,
+                                    'module_id' => $key,
+                                    'add_access' => isset($value['add']) && $value['add'] == 1 ? true : false,
+                                    'edit_access' => isset($value['edit']) && $value['edit'] == 1 ? true : false,
+                                    'view_access' => isset($value['view']) && $value['view'] == 1 ? true : false,
+                                    'delete_access' => isset($value['delete']) && $value['delete'] == 1 ? true : false,
+                                );
 
-                foreach ($modules as $key => $value) {
-                    $insert = array(
-                                'role_id' => $role->id,
-                                'module_id' => $key,
-                                'add_access' => isset($value['add']) && $value['add'] == 1 ? true : false,
-                                'edit_access' => isset($value['edit']) && $value['edit'] == 1 ? true : false,
-                                'view_access' => isset($value['view']) && $value['view'] == 1 ? true : false,
-                                'delete_access' => isset($value['delete']) && $value['delete'] == 1 ? true : false,
-                            );
-                    $obj = new RoleModuleAccess();
-                    $obj->fill($insert)->save();
+                        $obj = RoleModuleAccess::updateOrCreate(
+                                            [
+                                                'role_id' => $role->id,
+                                                'module_id' => $key
+                                            ],
+                                            $insert
+                                        );
+                    }
+
+                    RoleModuleAccess::where('role_id',$role->id)->whereNotIn('module_id',$module_ids)->delete();
+
+                }elseif ($role->all_module_access == 1) {
+                    
+                    $modules = Module::all();
+
+                    foreach ($modules as $key => $value) {
+                        $insert = array(
+                                    'role_id' => $role->id,
+                                    'module_id' => $value->id,
+                                    'add_access' => true,
+                                    'edit_access' => true,
+                                    'view_access' => true,
+                                    'delete_access' => true,
+                                );
+
+                        $obj = RoleModuleAccess::updateOrCreate(
+                                            [
+                                                'role_id' => $role->id,
+                                                'module_id' => $value->id
+                                            ],
+                                            $insert
+                                        );
+                    }
+
                 }
             }
 
@@ -110,7 +145,19 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-        //
+        $edit = Role::where('id','!=',1)->where('id',$id)->firstOrFail();
+        $modules = Module::all();
+
+        $role_module_access = array();
+        if($edit->role_module_access){
+            $role_module_access = $edit->role_module_access->toArray();
+            $key = array_column($role_module_access, 'module_id');
+
+            $role_module_access = array_combine($key, $role_module_access);
+
+            // dd($role_module_access);
+        }
+        return view('role.add',compact('modules','edit','role_module_access'));
     }
 
     /**
@@ -134,5 +181,33 @@ class RoleController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function getAll(Request $request){
+
+        $data = Role::where('id','!=',1)->orderBy('id','desc')->get();
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('action', function($row) {
+                                $btn = '<a href="' . route('role.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-success">
+                                    <i class="fa fa-edit"></i>
+                                  </a>';
+                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('role.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-danger delete">
+                                    <i class="fa fa-trash"></i>
+                                  </a>';
+                                
+                                return $btn;
+                            })
+                            ->addColumn('access', function($row) {
+                                
+                                if($row->all_module_access == 1){
+                                    return "All Module Access";
+                                }else{
+                                    return "Custom Module Access";
+                                }
+                            })
+                            ->rawColumns(['action', 'access'])
+                            ->make(true);
     }
 }

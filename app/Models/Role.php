@@ -13,4 +13,9 @@ class Role extends Model
 		'name',
 		'all_module_access',
 	];
+
+	public function role_module_access()
+    {
+        return $this->hasMany(RoleModuleAccess::class,'role_id');
+    }
 }

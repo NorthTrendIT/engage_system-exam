@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function(){
     Route::post('profile/change-password', 'App\Http\Controllers\ProfileController@changePasswordStore')->name('profile.change-password.store');
 
     Route::resource('role','App\Http\Controllers\RoleController');
+    Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all');
 
 });
 
