@@ -36,6 +36,10 @@ class LoginController extends Controller
     				return $response = array('status'=>false,'message'=>"Your account has been deactivated by administrator. Please contact system admin.");
     			}
 
+                if(is_null($user->role)){
+                    return $response = array('status'=>false,'message'=>"Your role has been deleted by administrator. Please contact system admin.");
+                }
+
     			$credentials = $request->only(['email', 'password']);
 
     			if (!is_null($user) && Auth::attempt($credentials)) {

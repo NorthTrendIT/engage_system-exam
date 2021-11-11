@@ -47,6 +47,9 @@ Route::middleware('auth')->group(function(){
     Route::get('profile/change-password', 'App\Http\Controllers\ProfileController@changePasswordIndex')->name('profile.change-password.index');
     Route::post('profile/change-password', 'App\Http\Controllers\ProfileController@changePasswordStore')->name('profile.change-password.store');
 
+    Route::resource('role','App\Http\Controllers\RoleController')->middleware('super-admin');
+    Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all')->middleware('super-admin');
+
 });
 
 Route::get('clear-cache', function () {

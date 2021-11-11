@@ -8,14 +8,26 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class RoleModuleAccess extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $table = 'role_module_access';
 
     protected $fillable = [
         'role_id',
         'module_id',
-        'read_access',
-        'write_access',
+        'add_access',
+        'edit_access',
+        'view_access',
+        'delete_access',
     ];
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function module()
+    {
+        return $this->belongsTo(Module::class);
+    }
 }
