@@ -10,6 +10,28 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js" ></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-loading-overlay/2.1.7/loadingoverlay.min.js"></script>
+
 <script src="{{ asset('assets') }}/assets/js/common/common_function.js"></script>
 
+<script>
+	
+	function show_loader() {
+		$.LoadingOverlay("show",{
+		    // image       : "{{ asset('assets/logo_icon.png') }}",
+		    // imageAnimation : "1500ms rotate_right" 
+		});
+	}
+	function hide_loader() {
+		$.LoadingOverlay("hide",true);
+	}
+	$(document).ajaxStart(function() {
+	    show_loader();
+	});
+	
+	$(document).ajaxStop(function() {
+	  	hide_loader();
+	});
+		
+</script>
 @stack('js')
