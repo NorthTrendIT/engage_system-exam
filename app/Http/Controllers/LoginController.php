@@ -37,7 +37,7 @@ class LoginController extends Controller
     			}
 
                 if(is_null($user->role)){
-                    return $response = array('status'=>false,'message'=>"Your role has been deleted by administrator. Please contact system admin.");
+                    return $response = array('status'=>false,'message'=>"Your role has not available. Please contact system admin.");
                 }
 
     			$credentials = $request->only(['email', 'password']);
