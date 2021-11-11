@@ -64,6 +64,7 @@
                </a>
             </div>
 
+            @if(Auth::user()->role_id == 1)
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['role.index','role.create','role.edit'])) ? 'active' : '' }}" href="{{ route('role.index') }}">
                   <span class="menu-icon">
@@ -81,6 +82,7 @@
                   <span class="menu-title">Role</span>
                </a>
             </div>
+            @endif
             
          </div>
          <!--end::Menu-->

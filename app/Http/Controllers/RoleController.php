@@ -8,6 +8,7 @@ use App\Models\Module;
 use App\Models\RoleModuleAccess;
 use Validator;
 use DataTables;
+use Auth;
 
 class RoleController extends Controller
 {
@@ -28,7 +29,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $modules = Module::all();
+        $modules = Module::where('slug','!=','role')->get();
         return view('role.add',compact('modules'));
     }
 
@@ -96,7 +97,7 @@ class RoleController extends Controller
 
                 }elseif ($role->all_module_access == 1) {
                     
-                    $modules = Module::all();
+                    $modules = Module::where('slug','!=','role')->get();
 
                     foreach ($modules as $key => $value) {
                         $insert = array(
@@ -146,7 +147,7 @@ class RoleController extends Controller
     public function edit($id)
     {
         $edit = Role::where('id','!=',1)->where('id',$id)->firstOrFail();
-        $modules = Module::all();
+        $modules = Module::where('slug','!=','role')->get();
 
         $role_module_access = array();
         if($edit->role_module_access){
@@ -180,7 +181,14 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data = Role::find($id);
+        if(!is_null($data)){
+            $data->delete();
+            $response = ['status'=>true,'message'=>'Record deleted successfully !'];
+        }else{
+            $response = ['status'=>false,'message'=>'Record not found !'];
+        }
+        return $response;
     }
 
     public function getAll(Request $request){
