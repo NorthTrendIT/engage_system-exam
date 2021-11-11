@@ -80,6 +80,7 @@
       e.preventDefault();
       var validator = validate_form();
       if (validator.form() != false) {
+        $('[type="submit"]').prop('disabled', true);
         $.ajax({
           url: "{{route('profile.change-password.store')}}",
           type: "POST",
@@ -95,10 +96,12 @@
               },1500)
             } else {
               toast_error(data.message);
+              $('[type="submit"]').prop('disabled', false);
             }
           },
           error: function () {
             toast_error("Something went to wrong !");
+            $('[type="submit"]').prop('disabled', false);
           },
         });
       }
