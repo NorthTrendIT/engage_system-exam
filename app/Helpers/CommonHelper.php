@@ -17,3 +17,12 @@ function get_login_user_profile(){
 		return false;
 	}
 }
+
+function get_valid_file_url($path,$name)
+{
+	if(file_exists(public_path('/') . $path."/" . $name)){
+		return asset($path."/" . $name);
+	}else{
+		return false;
+	}
+}

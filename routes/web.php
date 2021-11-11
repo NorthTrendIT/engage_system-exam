@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function(){
 
     Route::resource('user','App\Http\Controllers\UserController');
     Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
+    Route::post('user/status/{id}', 'App\Http\Controllers\UserController@updateStatus')->name('user.status');
 
 });
 
