@@ -50,6 +50,9 @@ Route::middleware('auth')->group(function(){
     Route::resource('role','App\Http\Controllers\RoleController')->middleware('super-admin');
     Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all')->middleware('super-admin');
 
+    Route::resource('user','App\Http\Controllers\UserController');
+    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
+
 });
 
 Route::get('clear-cache', function () {

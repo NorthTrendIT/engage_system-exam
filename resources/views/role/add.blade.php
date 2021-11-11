@@ -25,8 +25,8 @@
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
-            <div class="card-header border-0 pt-5">
-              <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
+            <div class="card-header border-bottom pt-5">
+              <h1 class="text-dark fw-bolder fs-3 my-1">{{ isset($edit) ? "Update" : "Add" }} Details</h1>
             </div>
             <div class="card-body">
               <form method="post" id="myForm">
@@ -100,7 +100,7 @@
                                 </td>
                                 <td>
                                   <label class="form-check form-switch form-check-custom form-check-solid">
-                                    <input class="form-check-input w-30px h-20px" type="checkbox" value="1" name="modules[{{ $module->id }}][view]" @if(isset($role_module_access) && @$role_module_access[$module->id]['edit_access'] == 1) checked="" @endif >
+                                    <input class="form-check-input w-30px h-20px" type="checkbox" value="1" name="modules[{{ $module->id }}][view]" @if(isset($role_module_access) && @$role_module_access[$module->id]['view_access'] == 1) checked="" @endif >
                                   </label>
                                 </td>
                               </tr>

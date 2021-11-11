@@ -17,8 +17,8 @@
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-6 col-md-6 col-lg-6 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
-            <div class="card-header border-0 pt-5">
-              <h5>Update Details</h5>
+            <div class="card-header pt-5 border-bottom">
+              <h1 class="text-dark fw-bolder fs-3 my-1">Update Details</h1>
             </div>
             <div class="card-body">
               <form method="post" id="myForm">
