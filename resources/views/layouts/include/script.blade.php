@@ -16,6 +16,10 @@
 
 <script>
 	
+	@if(Session::has('role_access_error_message'))
+    toast_error("{{Session::get('role_access_error_message')}}")
+    @endif
+    
 	function show_loader() {
 		$.LoadingOverlay("show",{
 		    // image       : "{{ asset('assets/logo_icon.png') }}",

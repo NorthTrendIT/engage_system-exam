@@ -1,3 +1,7 @@
+@php
+   $access = get_user_role_module_access(Auth::user()->role_id);
+@endphp
+
 <!--begin::Aside-->
 <div id="kt_aside" class="aside aside-dark aside-hoverable" data-kt-drawer="true" data-kt-drawer-name="aside" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'200px', '300px': '250px'}" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle">
    <!--begin::Brand-->
@@ -84,6 +88,7 @@
             </div>
             @endif
 
+            @if(Auth::user()->role_id == 1 || (isset($access['user']) && $access['user']['view_access'] == 1))
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['user.index','user.create','user.edit'])) ? 'active' : '' }}" href="{{ route('user.index') }}">
                   <span class="menu-icon">
@@ -101,6 +106,7 @@
                   <span class="menu-title">User</span>
                </a>
             </div>
+            @endif
             
          </div>
          <!--end::Menu-->
