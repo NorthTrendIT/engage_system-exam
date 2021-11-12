@@ -9,6 +9,8 @@ use Validator;
 use DataTables;
 use Auth;
 use Hash;
+use Mail;
+
 class UserController extends Controller
 {
     /**
@@ -18,7 +20,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        return view('user.index');
+        $roles = Role::where('id','!=',1)->get();
+        return view('user.index',compact('roles'));
     }
 
     /**
@@ -91,6 +94,19 @@ class UserController extends Controller
             }
 
             $user->fill($input)->save();
+
+            if(!isset($input['id'])){
+                $mail_data = array(
+                                'name' => $input['first_name'] . " ". $input['last_name'],
+                                'email' => $input['email'],
+                                'password' => $request->password,
+                            );
+
+                Mail::send('emails.user_welcome', $mail_data, function($message) use($mail_data) {
+                    $message->to($mail_data['email'], $mail_data['name'])
+                            ->subject('Welcome to B2B CRM');
+                });
+            }
 
             $response = ['status'=>true,'message'=>$message];
         }
@@ -168,7 +184,27 @@ class UserController extends Controller
 
     public function getAll(Request $request){
 
-        $data = User::where('id','!=',1)->orderBy('id','desc')->get();
+        $data = User::where('users.id','!=',1);
+
+        if($request->filter_role != ""){
+            $data->where('role_id',$request->filter_role);
+        }
+
+        if($request->filter_status != ""){
+            $data->where('is_active',$request->filter_status);
+        }
+
+        if($request->filter_search != ""){
+            $data->where(function($q) use ($request) {
+                $q->orwhere('first_name','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('last_name','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('email','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('id', 'desc');
+        });
 
         return DataTables::of($data)
                             ->addIndexColumn()
@@ -200,6 +236,26 @@ class UserController extends Controller
                                 }
 
                                 return $btn;
+                            })
+                            ->orderColumn('role', function ($query, $order) {
+                                $query->join('roles', 'users.role_id', '=', 'roles.id')
+                                    ->orderBy('roles.name', $order);
+
+                                // $query->whereHas('role',function($q) use ($order) {
+                                //     $q->orderBy('name', $order);
+                                // });
+                            })
+                            ->orderColumn('first_name', function ($query, $order) {
+                                $query->orderBy('first_name', $order);
+                            })
+                            ->orderColumn('last_name', function ($query, $order) {
+                                $query->orderBy('last_name', $order);
+                            })
+                            ->orderColumn('email', function ($query, $order) {
+                                $query->orderBy('email', $order);
+                            })
+                            ->orderColumn('status', function ($query, $order) {
+                                $query->orderBy('is_active', $order);
                             })
                             ->rawColumns(['action', 'role','status'])
                             ->make(true);

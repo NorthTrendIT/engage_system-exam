@@ -31,16 +31,33 @@
             </div> --}}
             <div class="card-body">
               <div class="row mt-5">
-                <div class="col-md-4">
+                <div class="col-md-3">
                   <div class="input-icon">
-                    <input type="text" class="form-control" placeholder="Search here..." id="kt_datatable_search_query">
+                    <input type="text" class="form-control" placeholder="Search here..." name = "filter_search">
                     <span>
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
                   </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
+                  <select class="form-control" name="filter_role">
+                    <option value="">Select role</option>
+                    @foreach($roles as $role)
+                    <option value="{{ $role->id }}">{{ $role->name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3">
+                  <select class="form-control" name="filter_status">
+                    <option value="">Select status</option>
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                  </select>
+                </div>
+
+                <div class="col-md-3">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -78,26 +95,6 @@
 
                   </div>
 
-                  {{-- <!--begin: Datatable-->
-                    <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
-                      <div class="row">
-                         <div class="col-sm-12">
-                            <table class="table table-bordered table-checkable dataTable no-footer" id="myTable">
-                               <thead>
-                                  <tr role="row">
-                                    <th>No.</th>
-                                    <th>Name</th>
-                                    <th>Access</th>
-                                    <th>Action</th>
-                                  </tr>
-                               </thead>
-                               <tbody>
-                               </tbody>
-                            </table>
-                         </div>
-                      </div>
-                    </div>
-                   <!--end: Datatable--> --}}
                 </div>
               </div>
 
@@ -126,22 +123,29 @@
       var table = $("#myTable");
       table.DataTable().destroy();
 
+      $filter_search = $('[name="filter_search"]').val();
+      $filter_role = $('[name="filter_role"]').find('option:selected').val();
+      $filter_status = $('[name="filter_status"]').find('option:selected').val();
+
       table.DataTable({
           processing: true,
           serverSide: true,
           scrollX: true,
-          filter: true,
+          order: [],
           ajax: {
               'url': "{{ route('user.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
-              // data:{
-              // }
+              data:{
+                filter_search : $filter_search,
+                filter_role : $filter_role,
+                filter_status : $filter_status,
+              }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
               {data: 'role', name: 'role'},
               {data: 'first_name', name: 'first_name'},
               {data: 'last_name', name: 'last_name'},
@@ -160,14 +164,14 @@
         });
     }
 
-    $('.search').on('click', function(){
+    $(document).on('click', '.search', function(event) {
       render_table();
-      $('#myTable').DataTable().search($('#kt_datatable_search_query').val()).draw();
-    })
+    });
 
-    $('.clear-search').on('click', function(){
-      $('#myTable').dataTable().fnFilter('');
-      $('#kt_datatable_search_query').val('');
+    $(document).on('click', '.clear-search', function(event) {
+      $('[name="filter_search"]').val('');
+      $('[name="filter_status"] option:eq(0)').prop('selected', true);
+      $('[name="filter_role"] option:eq(0)').prop('selected', true);
       render_table();
     })
 
