@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Support\SAPCustomer;
 
 class CustomerController extends Controller
 {
     public function __construct(){
-        $this->sap = new \App\Http\Controllers\SapApiController();
+        // $this->sap = new \App\Http\Controllers\SapApiController();
+
+        $this->sap_customer = new SAPCustomer('TEST-APBW', 'manager', 'test');
     }
     /**
      * Display a listing of the resource.
@@ -16,12 +19,13 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $obj = $this->sap->getCustomerList();
+        dd($this->sap_customer->getCustomerData());
+        // $obj = $this->sap->getCustomerList();
 
-        if(isset($obj['status']) && $obj['status']){
-            $data = $obj['data']['value'];
-            return view('customer.index',compact('data'));
-        }
+        // if(isset($obj['status']) && $obj['status']){
+        //     $data = $obj['data']['value'];
+        //     return view('customer.index',compact('data'));
+        // }
     }
 
     /**
