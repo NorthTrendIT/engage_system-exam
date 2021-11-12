@@ -1,5 +1,6 @@
 <?php
 use App\Models\LoginLog;
+use App\Models\RoleModuleAccess;
 use App\Models\ActivityLog;
 use App\Models\ActivityMaster;
 
@@ -18,6 +19,30 @@ function get_login_user_profile(){
 	}else{
 		return false;
 	}
+}
+
+function get_valid_file_url($path,$name)
+{
+	if(file_exists(public_path('/') . $path."/" . $name)){
+		return asset($path."/" . $name);
+	}else{
+		return false;
+	}
+}
+
+function get_user_role_module_access($role_id){
+
+    $access = array();
+
+    $role_module_access = RoleModuleAccess::where('role_id',$role_id)->get();
+    foreach ($role_module_access as $value) {
+
+        if($value->module->slug){
+            $access[$value->module->slug] = $value->toArray();
+        }
+    }
+
+    return $access;
 }
 
 function add_log($user_id, $activity_id, $data = NULL, $ip_address = NULL){
