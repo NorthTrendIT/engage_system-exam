@@ -1,5 +1,7 @@
 <?php
 use App\Models\LoginLog;
+use App\Models\ActivityLog;
+use App\Models\ActivityMaster;
 
 function add_login_log(){
 	$insert = array(
@@ -16,4 +18,13 @@ function get_login_user_profile(){
 	}else{
 		return false;
 	}
+}
+
+function add_log($user_id, $activity_id, $data = NULL, $ip_address = NULL){
+    $log = new ActivityLog;
+    $log->ip_address = $ip_address;
+    $log->activity_id = $activity_id;
+    $log->user_id = $user_id;
+    $log->data = $data;
+    $log->save();
 }
