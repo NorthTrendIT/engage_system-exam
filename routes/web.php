@@ -33,7 +33,7 @@ Route::middleware('guest')->group(function(){
 
 //Route::get('/get-users','App\Http\Controllers\SapApiController@index');
 
-Route::middleware('auth')->group(function(){
+Route::middleware(['auth'])->group(function(){
 	Route::get('/home','App\Http\Controllers\HomeController@index')->name('home');
 	
 	Route::get('/logout', function () {
@@ -41,17 +41,24 @@ Route::middleware('auth')->group(function(){
 	    return redirect()->route('login');
 	})->name('logout');
 
-	Route::resource('customer','App\Http\Controllers\CustomerController');
 
 	Route::resource('profile', 'App\Http\Controllers\ProfileController')->except('show');
     Route::get('profile/change-password', 'App\Http\Controllers\ProfileController@changePasswordIndex')->name('profile.change-password.index');
     Route::post('profile/change-password', 'App\Http\Controllers\ProfileController@changePasswordStore')->name('profile.change-password.store');
 
-    Route::resource('role','App\Http\Controllers\RoleController')->middleware('super-admin');
-    Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all')->middleware('super-admin');
+    
+    Route::middleware('check-access')->group(function(){
+	    
+		Route::resource('customer','App\Http\Controllers\CustomerController');
 
-    Route::resource('user','App\Http\Controllers\UserController');
-    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
+	    Route::resource('role','App\Http\Controllers\RoleController')->middleware('super-admin');
+	    Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all')->middleware('super-admin');
+
+	    Route::resource('user','App\Http\Controllers\UserController');
+	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
+	    Route::post('user/status/{id}', 'App\Http\Controllers\UserController@updateStatus')->name('user.status');
+
+    });
 
 });
 
