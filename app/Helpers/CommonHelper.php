@@ -1,6 +1,8 @@
 <?php
 use App\Models\LoginLog;
 use App\Models\RoleModuleAccess;
+use App\Models\ActivityLog;
+use App\Models\ActivityMaster;
 
 function add_login_log(){
 	$insert = array(
@@ -31,7 +33,7 @@ function get_valid_file_url($path,$name)
 function get_user_role_module_access($role_id){
 
     $access = array();
-    
+
     $role_module_access = RoleModuleAccess::where('role_id',$role_id)->get();
     foreach ($role_module_access as $value) {
 
@@ -41,4 +43,13 @@ function get_user_role_module_access($role_id){
     }
 
     return $access;
+}
+
+function add_log($user_id, $activity_id, $data = NULL, $ip_address = NULL){
+    $log = new ActivityLog;
+    $log->ip_address = $ip_address;
+    $log->activity_id = $activity_id;
+    $log->user_id = $user_id;
+    $log->data = $data;
+    $log->save();
 }
