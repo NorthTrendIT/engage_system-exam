@@ -29,6 +29,11 @@ class ModuleSeeder extends Seeder
         				'slug' => 'user',
         				'model_name' => 'App\Models\User',
         			),
+                    array(
+                        'title' => 'Customer',
+                        'slug' => 'customer',
+                        'model_name' => 'App\Models\Customer',
+                    ),
         		);
         Module::insert($data);
     }
