@@ -18,12 +18,12 @@ class CreateSalesPersonsTable extends Migration
             $table->string('sales_employee_code');
             $table->string('sales_employee_name');
             $table->string('remark')->nullable();
-            $table->decimal('commission_for_sales_employee')->default(0.0);
-            $table->unsignedBigInteger('commission_group')->default(0);
+            $table->string('commission_for_sales_employee')->nullable();
+            $table->string('commission_group')->nullable();
             $table->char('locked', 10)->default('tNo');
-            $table->unsignedBigInteger('employee_id')->nullable();
+            $table->string('employee_id')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->unsignedBigInteger('u_manager')->nullable();
+            $table->string('u_manager')->nullable();
             $table->string('u_position')->nullable();
             $table->string('u_initials')->nullable();
             $table->string('u_warehouse')->nullable();

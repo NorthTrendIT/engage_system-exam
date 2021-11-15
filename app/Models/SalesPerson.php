@@ -10,6 +10,8 @@ class SalesPerson extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'sales_persons';
+
     protected $fillable = [
     	'sales_employee_code',
         'sales_employee_name',

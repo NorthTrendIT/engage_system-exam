@@ -5,7 +5,7 @@ namespace App\Support;
 use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
-use App\Models\Customer;
+use App\Models\SalesPerson;
 
 class SAPSalesPersons
 {
@@ -29,7 +29,7 @@ class SAPSalesPersons
     }
 
     // Get Sales Persons data
-    public function getSalesPersonData($url = '/b1s/v1/SalesPersons')
+    public function getSalesPersonsData($url = '/b1s/v1/SalesPersons')
     {
     	try {
             $response = $this->httpClient->request(
@@ -75,24 +75,24 @@ class SAPSalesPersons
                 foreach ($data['value'] as $value) {
 
                     $insert = array(
-                                    'sales_employee_code' => @value['SalesEmployeeCode'],
-                                    'sales_employee_name' => @value['SalesEmployeeName'],
-                                    'remark' => @value['Remarks'],
-                                    'commission_for_sales_employee' => @value['CommissionForSalesEmployee'],
-                                    'commission_group' => @value['CommissionGroup'],
-                                    'locked' => @value['Locked'],
-                                    'employee_id' => @value['EmployeeID'],
-                                    'is_active' => @$value['Active'] == "tYES" ? true : false,
-                                    'u_manager' => @value['U_MANAGER'],
-                                    'u_position' => @value['U_POSITION'],
-                                    'u_initials' => @value['U_INITIALS'],
-                                    'u_warehouse' => @value['U_WAREHOUSE'],
-                                    'u_password' => @value['U_Password'],
-                                    'u_area' => @value['U_AREA'],
+                                    'sales_employee_code' => $value['SalesEmployeeCode'],
+                                    'sales_employee_name' => $value['SalesEmployeeName'],
+                                    'remark' => $value['Remarks'],
+                                    'commission_for_sales_employee' => $value['CommissionForSalesEmployee'],
+                                    'commission_group' => $value['CommissionGroup'],
+                                    'locked' => $value['Locked'],
+                                    'employee_id' => $value['EmployeeID'],
+                                    'is_active' => $value['Active'] == "tYES" ? true : false,
+                                    'u_manager' => $value['U_MANAGER'],
+                                    'u_position' => $value['U_POSITION'],
+                                    'u_initials' => $value['U_INITIALS'],
+                                    'u_warehouse' => $value['U_WAREHOUSE'],
+                                    'u_password' => $value['U_Password'],
+                                    'u_area' => $value['U_AREA'],
                                     //'response' => json_encode($value),
                                 );
 
-                    $obj = Customer::updateOrCreate(
+                    $obj = SalesPerson::updateOrCreate(
                                             [
                                                 'sales_employee_code' => @$value['SalesEmployeeCode'],
                                             ],
