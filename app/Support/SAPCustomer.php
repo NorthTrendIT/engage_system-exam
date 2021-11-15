@@ -5,6 +5,7 @@ namespace App\Support;
 use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
+use App\Models\Customer;
 
 class SAPCustomer
 {
@@ -27,6 +28,7 @@ class SAPCustomer
         $this->httpClient = new Client();
     }
 
+    // Get customer data
     public function getCustomerData($url = '/b1s/v1/BusinessPartners')
     {
     	try {
@@ -56,5 +58,47 @@ class SAPCustomer
         }
     }
 
-    
+    // Store All Customer Records In DB
+    public function addCustomerDataInDatabase($url = false)
+    {
+        if($url){
+            $response = $this->getCustomerData($url);
+        }else{
+            $response = $this->getCustomerData();
+        }
+
+        if($response['status']){
+            $data = $response['data'];
+
+            if($data['value']){
+
+                foreach ($data['value'] as $value) {
+                    
+                    $insert = array(
+                                    'card_code' => @$value['CardCode'],
+                                    'card_type' => @$value['CardType'],
+                                    'card_name' => @$value['CardName'],
+                                    'group_code' => @$value['GroupCode'],
+                                    'contact_person' => @$value['ContactPerson'],
+                                    'email' => @$value['EmailAddress'],
+                                    'city' => @$value['City'],
+                                    'created_date' => @$value['CreateDate'],
+                                    'is_active' => @$value['Valid'] == "tYES" ? true : false,
+                                    //'response' => json_encode($value),
+                                );
+
+                    $obj = Customer::updateOrCreate(
+                                            [
+                                                'card_code' => @$value['CardCode'],
+                                            ],
+                                            $insert
+                                        );
+                }
+
+                if($data['odata.nextLink']){
+                    $this->addCustomerDataInDatabase($data['odata.nextLink']);
+                }
+            }
+        }
+    }
 }

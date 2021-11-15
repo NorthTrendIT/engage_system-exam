@@ -50,6 +50,8 @@ Route::middleware(['auth'])->group(function(){
     Route::middleware('check-access')->group(function(){
 	    
 		Route::resource('customer','App\Http\Controllers\CustomerController');
+	    Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');
+	    Route::post('customer/sync-customers', 'App\Http\Controllers\CustomerController@syncCustomers')->name('customer.sync-customers');
 
 	    Route::resource('role','App\Http\Controllers\RoleController')->middleware('super-admin');
 	    Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all')->middleware('super-admin');
