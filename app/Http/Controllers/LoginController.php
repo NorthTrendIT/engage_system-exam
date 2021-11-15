@@ -16,7 +16,7 @@ class LoginController extends Controller
     public function checkLogin(Request $request)
     {
     	$input = $request->all();
-    	
+
     	$rules = array(
     				'email' => 'required|exists:users,email',
     				'password' => 'required'
@@ -43,9 +43,10 @@ class LoginController extends Controller
     			$credentials = $request->only(['email', 'password']);
 
     			if (!is_null($user) && Auth::attempt($credentials)) {
-	                
+
 	                add_login_log();
-	                
+                    add_log($user->id, 1, null, request()->ip());
+
 	                $response = [
 	                    'status' => true,
 	                    'message' => 'Success ! Login successful.',
