@@ -10,7 +10,7 @@ use DataTables;
 class CustomerController extends Controller
 {
     public function __construct(){
-        $this->sap_customer = new SAPCustomer('TEST-APBW', 'manager', 'test');
+        
     }
     /**
      * Display a listing of the resource.
@@ -90,6 +90,8 @@ class CustomerController extends Controller
 
     public function syncCustomers(){
         try {
+
+            $this->sap_customer = new SAPCustomer('TEST-APBW', 'manager', 'test');
             
             // Save Data of customer in database
             $this->sap_customer->addCustomerDataInDatabase();
