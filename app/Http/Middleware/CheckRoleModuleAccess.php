@@ -104,6 +104,32 @@ class CheckRoleModuleAccess
                     }
                 }
 
+                // Customer Module
+                if(!isset($access['customer'])){
+
+                    $status = false;
+                    $message = "Oops ! you have not access for customer module.";
+
+                }else{
+
+                    if(in_array($request->route()->getName(), ['customer.index','customer.get-all'])){
+                       
+                        if($access['customer']['view_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for customer module.";
+
+                        }
+                    }elseif(in_array($request->route()->getName(), ['customer.sync-customers'])){
+                        if($access['customer']['add_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for sync customers.";
+
+                        }
+                    }
+                }
+
                 if(!$status){
                     if($request->ajax()){
                         $response = array('status' => $status, "message" => $message);
