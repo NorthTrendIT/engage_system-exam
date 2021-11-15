@@ -43,7 +43,7 @@
                      @if(get_login_user_profile())
                      <img src="{{ get_login_user_profile() }}" alt="user" />
                      @else
-                     <img src="{{ asset('assets') }}/assets/media/150-26.jpg" alt="user" />
+                     <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" />
                      @endif
                   </div>
                   <!--begin::Menu-->
@@ -56,7 +56,7 @@
                               @if(get_login_user_profile())
                               <img src="{{ get_login_user_profile() }}" alt="user" />
                               @else
-                              <img src="{{ asset('assets') }}/assets/media/150-26.jpg" alt="user" />
+                              <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" />
                               @endif
                            </div>
                            <!--end::Avatar-->

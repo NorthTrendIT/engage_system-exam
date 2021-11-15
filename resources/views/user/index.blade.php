@@ -13,7 +13,7 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('user.create') }}" class="btn btn-sm btn-info">Create</a>
+        <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary">Create</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -33,7 +33,7 @@
               <div class="row mt-5">
                 <div class="col-md-3">
                   <div class="input-icon">
-                    <input type="text" class="form-control" placeholder="Search here..." name = "filter_search">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="col-md-3">
-                  <select class="form-control" name="filter_role">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_role" data-control="select2" data-hide-search="true">
                     <option value="">Select role</option>
                     @foreach($roles as $role)
                     <option value="{{ $role->id }}">{{ $role->name }}</option>
@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="col-md-3">
-                  <select class="form-control" name="filter_status">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
                     <option value="">Select status</option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
@@ -170,8 +170,8 @@
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
-      $('[name="filter_status"] option:eq(0)').prop('selected', true);
-      $('[name="filter_role"] option:eq(0)').prop('selected', true);
+      $('[name="filter_status"]').val('').trigger('change');
+      $('[name="filter_role"]').val('').trigger('change');
       render_table();
     })
 

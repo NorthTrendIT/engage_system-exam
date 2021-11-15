@@ -33,7 +33,7 @@ class SAPAuthentication
     	try {
 	    	$response = $this->httpClient->request(
 	            'POST',
-	            env('SAP_API_URL').'/Login',
+	            env('SAP_API_URL').'/b1s/v1/Login',
 	            [
 	            	'verify' => false,
 	            	'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'],
@@ -115,5 +115,17 @@ class SAPAuthentication
     	$this->login();
 
 		return $this->getSession();
+    }
+
+    public function getSessionCookie()
+    {   
+        $cookie = "";
+        if ($session = $this->getAuthenticationSession()) {
+            $cookie = "B1SESSION=".$session->session_id.";";
+            $cookie .= "CompanyDB=".$session->company_name.";";
+        }
+
+        $cookie .= "ROUTEID=.node0;";
+        return $cookie;
     }
 }
