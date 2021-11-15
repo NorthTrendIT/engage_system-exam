@@ -50,6 +50,7 @@
                </a>
             </div>
 
+            @if(Auth::user()->role_id == 1 || (isset($access['customer']) && $access['customer']['view_access'] == 1))
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer.index'])) ? 'active' : '' }}" href="{{ route('customer.index') }}">
                   <span class="menu-icon">
@@ -67,6 +68,7 @@
                   <span class="menu-title">Customer</span>
                </a>
             </div>
+            @endif
 
             @if(Auth::user()->role_id == 1)
             <div class="menu-item">
