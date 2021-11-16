@@ -13,7 +13,7 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('role.create') }}" class="btn btn-sm btn-info">Create</a>
+        <a href="{{ route('role.create') }}" class="btn btn-sm btn-primary">Create</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->

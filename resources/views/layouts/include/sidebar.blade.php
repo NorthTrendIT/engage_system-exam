@@ -70,6 +70,7 @@
             </div>
             @endif
 
+            @if(Auth::user()->role_id == 1 || (isset($access['sales-person']) && $access['sales-person']['view_access'] == 1))
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['sales-persons.index'])) ? 'active' : '' }}" href="{{ route('sales-persons.index') }}">
                   <span class="menu-icon">
@@ -87,6 +88,7 @@
                   <span class="menu-title">Sales Persons</span>
                </a>
             </div>
+            @endif
 
             @if(Auth::user()->role_id == 1)
             <div class="menu-item">
