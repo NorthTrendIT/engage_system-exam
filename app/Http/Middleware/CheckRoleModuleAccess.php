@@ -42,7 +42,7 @@ class CheckRoleModuleAccess
             if(!empty($access)){
 
                 // User Module
-                if(!isset($access['user'])){
+                if(!isset($access['user']) && in_array($request->route()->getName(), ['user.index','user.get-all','user.create','user.store','user.edit','user.status','user.destroy']) ){
 
                     $status = false;
                     $message = "Oops ! you have not access for user module.";
@@ -105,7 +105,7 @@ class CheckRoleModuleAccess
                 }
 
                 // Customer Module
-                if(!isset($access['customer'])){
+                if(!isset($access['customer']) && in_array($request->route()->getName(), ['customer.index','customer.get-all','customer.sync-customers']) ){
 
                     $status = false;
                     $message = "Oops ! you have not access for customer module.";
@@ -130,7 +130,7 @@ class CheckRoleModuleAccess
                 }
 
                 // Sales Person Module
-                if(!isset($access['sales-person'])){
+                if(!isset($access['sales-person']) && in_array($request->route()->getName(), ['sales-persons.index','sales-persons.get-all','sales-persons.sync-sales-persons'])){
 
                     $status = false;
                     $message = "Oops ! you have not access for sales person module.";
