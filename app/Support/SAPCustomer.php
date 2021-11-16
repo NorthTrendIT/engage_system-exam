@@ -95,7 +95,7 @@ class SAPCustomer
                                         );
                 }
 
-                if($data['odata.nextLink']){
+                if(isset($data['odata.nextLink'])){
                     //sleep(5);
                     $this->addCustomerDataInDatabase($data['odata.nextLink']);
                 }
