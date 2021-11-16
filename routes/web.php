@@ -35,7 +35,7 @@ Route::middleware('guest')->group(function(){
 
 Route::middleware(['auth'])->group(function(){
 	Route::get('/home','App\Http\Controllers\HomeController@index')->name('home');
-	
+
 	Route::get('/logout', function () {
 		Auth::logout();
 	    return redirect()->route('login');
@@ -46,9 +46,9 @@ Route::middleware(['auth'])->group(function(){
     Route::get('profile/change-password', 'App\Http\Controllers\ProfileController@changePasswordIndex')->name('profile.change-password.index');
     Route::post('profile/change-password', 'App\Http\Controllers\ProfileController@changePasswordStore')->name('profile.change-password.store');
 
-    
+
     Route::middleware('check-access')->group(function(){
-	    
+
 		Route::resource('customer','App\Http\Controllers\CustomerController');
 	    Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');
 	    Route::post('customer/sync-customers', 'App\Http\Controllers\CustomerController@syncCustomers')->name('customer.sync-customers');
@@ -60,6 +60,7 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
 	    Route::post('user/status/{id}', 'App\Http\Controllers\UserController@updateStatus')->name('user.status');
 
+
 		Route::resource('productfeatures','App\Http\Controllers\ProductFeaturesController')->middleware('super-admin');
 	    Route::post('productfeatures/get-all', 'App\Http\Controllers\ProductFeaturesController@getAll')->name('productfeatures.get-all')->middleware('super-admin');
 
@@ -68,6 +69,11 @@ Route::middleware(['auth'])->group(function(){
 
 		Route::resource('productsellsheets','App\Http\Controllers\ProductSellSheetsController')->middleware('super-admin');
 	    Route::post('productsellsheets/get-all', 'App\Http\Controllers\ProductSellSheetsController@getAll')->name('productsellsheets.get-all')->middleware('super-admin');
+
+
+        Route::resource('sales-persons','App\Http\Controllers\SalesPersonsController');
+	    Route::post('sales-persons/get-all', 'App\Http\Controllers\SalesPersonsController@getAll')->name('sales-persons.get-all');
+	    Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
 
     });
 
