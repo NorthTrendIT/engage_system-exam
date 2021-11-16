@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Support\SAPCustomer;
+use App\Jobs\SyncCustomers;
 use App\Models\Customer;
 use DataTables;
 
@@ -91,10 +92,8 @@ class CustomerController extends Controller
     public function syncCustomers(){
         try {
 
-            $this->sap_customer = new SAPCustomer('TEST-APBW', 'manager', 'test');
-            
             // Save Data of customer in database
-            $this->sap_customer->addCustomerDataInDatabase();
+            SyncCustomers::dispatch('TEST-APBW', 'manager', 'test');
 
             $response = ['status' => true, 'message' => 'Sync Customer successfully !'];
         } catch (\Exception $e) {
