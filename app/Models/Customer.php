@@ -21,5 +21,26 @@ class Customer extends Model
     	'created_date',
     	'is_active',
         'response',
+
+        'address',
+        'zip_code',
+        'phone1',
+        'notes',
+        'credit_limit',
+        'max_commitment',
+        'federal_tax_id',
+        'current_account_balance',
+        'vat_group',
+        'u_regowner',
+        'u_mp',
+        'u_msec',
+        'u_tsec',
+        'u_class',
+        'u_rgn',
     ];
+
+    public function bp_addresses()
+    {
+        return $this->hasMany(CustomerBpAddress::class,'customer_id');
+    }
 }
