@@ -60,6 +60,17 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
 	    Route::post('user/status/{id}', 'App\Http\Controllers\UserController@updateStatus')->name('user.status');
 
+
+		Route::resource('productfeatures','App\Http\Controllers\ProductFeaturesController')->middleware('super-admin');
+	    Route::post('productfeatures/get-all', 'App\Http\Controllers\ProductFeaturesController@getAll')->name('productfeatures.get-all')->middleware('super-admin');
+
+		Route::resource('productbenefits','App\Http\Controllers\ProductBenefitsController')->middleware('super-admin');
+	    Route::post('productbenefits/get-all', 'App\Http\Controllers\ProductBenefitsController@getAll')->name('productbenefits.get-all')->middleware('super-admin');
+
+		Route::resource('productsellsheets','App\Http\Controllers\ProductSellSheetsController')->middleware('super-admin');
+	    Route::post('productsellsheets/get-all', 'App\Http\Controllers\ProductSellSheetsController@getAll')->name('productsellsheets.get-all')->middleware('super-admin');
+
+
         Route::resource('sales-persons','App\Http\Controllers\SalesPersonsController');
 	    Route::post('sales-persons/get-all', 'App\Http\Controllers\SalesPersonsController@getAll')->name('sales-persons.get-all');
 	    Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');

@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title','Role')
+@section('title','Features')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Role</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Features</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('role.create') }}" class="btn btn-sm btn-primary">Create</a>
+        <a href="{{ route('productfeatures.create') }}" class="btn btn-sm btn-info">Create</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -26,9 +26,7 @@
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
-           {{--  <div class="card-header border-0 pt-5">
-              <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
-            </div> --}}
+           
             <div class="card-body">
               <div class="row mt-5">
                 <div class="col-md-4">
@@ -56,9 +54,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>No.</th>
-                              <th>Name</th>
-                              <th>Access</th>
+                              <th width="90%">Title</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -74,27 +70,6 @@
                     <!--end::Table container-->
 
                   </div>
-
-                  {{-- <!--begin: Datatable-->
-                    <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
-                      <div class="row">
-                         <div class="col-sm-12">
-                            <table class="table table-bordered table-checkable dataTable no-footer" id="myTable">
-                               <thead>
-                                  <tr role="row">
-                                    <th>No.</th>
-                                    <th>Name</th>
-                                    <th>Access</th>
-                                    <th>Action</th>
-                                  </tr>
-                               </thead>
-                               <tbody>
-                               </tbody>
-                            </table>
-                         </div>
-                      </div>
-                    </div>
-                   <!--end: Datatable--> --}}
                 </div>
               </div>
 
@@ -129,7 +104,7 @@
           scrollX: true,
           filter: true,
           ajax: {
-              'url': "{{ route('role.get-all') }}",
+              'url': "{{ route('productfeatures.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -138,9 +113,7 @@
               // }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex'},
               {data: 'name', name: 'name'},
-              {data: 'access', name: 'access'},
               {data: 'action', name: 'action', orderable: false, searchable: false},
           ],
           drawCallback:function(){
