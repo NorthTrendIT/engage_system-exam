@@ -3,15 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Support\SAPCustomer;
-use App\Jobs\SyncCustomers;
-use App\Models\Customer;
+use App\Support\SAPSalesPersons;
+use App\Models\SalesPerson;
 use DataTables;
 
-class CustomerController extends Controller
+class SalesPersonsController extends Controller
 {
     public function __construct(){
-        
+
     }
     /**
      * Display a listing of the resource.
@@ -20,7 +19,7 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        return view('customer.index');
+        return view('sales-persons.index');
     }
 
     /**
@@ -89,13 +88,12 @@ class CustomerController extends Controller
         //
     }
 
-    public function syncCustomers(){
+    public function syncSalesPersons(){
         try {
-
+            $this->sap_sales_persons = new SAPSalesPersons('TEST-APBW', 'manager', 'test');
             // Save Data of customer in database
-            SyncCustomers::dispatch('TEST-APBW', 'manager', 'test');
-
-            $response = ['status' => true, 'message' => 'Sync Customer successfully !'];
+            $this->sap_sales_persons->addSalesPersonsDataInDatabase();
+            $response = ['status' => true, 'message' => 'Sync Sales Persons successfully !'];
         } catch (\Exception $e) {
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
@@ -104,7 +102,7 @@ class CustomerController extends Controller
 
     public function getAll(Request $request){
 
-        $data = Customer::query();
+        $data = SalesPerson::query();
 
         if($request->filter_status != ""){
             $data->where('is_active',$request->filter_status);
@@ -112,9 +110,8 @@ class CustomerController extends Controller
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
-                $q->orwhere('card_code','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('email','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('sales_employee_code','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('sales_employee_name','LIKE',"%".$request->filter_search."%");
             });
         }
 
@@ -124,33 +121,6 @@ class CustomerController extends Controller
 
         return DataTables::of($data)
                             ->addIndexColumn()
-                            ->addColumn('name', function($row) {
-                                $html = "";
-                                
-                                $html .= '<div class="d-flex align-items-center">
-                                            <div class="symbol symbol-45px me-5">
-                                                <img src="'.asset('assets/assets/media/default_user.png').'" alt="">
-                                            </div>
-                                            <div class="d-flex justify-content-start flex-column">
-                                                <a href="javascript:" class="text-dark fw-bolder text-hover-primary fs-6">';
-
-                                $html .= @$row->card_name ?? " ";
-
-                                $html .= '</a>
-                                                <span class="text-muted fw-bold text-muted d-block fs-7">Code: ';
-
-                                $html .= @$row->card_code ?? " ";
-
-                                if($row->email != null){
-                                    $html .= " | Email: ".$row->email;
-                                }
-
-                                $html .= '</span>
-                                            </div>
-                                        </div>';
-
-                                return $html;
-                            })
                             ->addColumn('status', function($row) {
                                 $btn = "";
                                 if($row->is_active){
@@ -161,26 +131,28 @@ class CustomerController extends Controller
 
                                 return $btn;
                             })
-                            ->addColumn('class', function($row) {
-                                $html = "";
-                                return $html;
+                            ->addColumn('name', function($row) {
+                                return $row->sales_employee_name;
                             })
-                            ->addColumn('created_date', function($row) {
-                                return date('M d, Y',strtotime($row->created_date));
+                            ->addColumn('code', function($row) {
+                                return $row->sales_employee_code;
+                            })
+                            ->addColumn('position', function($row) {
+                                return $row->u_position;
                             })
                             ->orderColumn('name', function ($query, $order) {
-                                $query->orderBy('card_name', $order);
+                                $query->orderBy('sales_employee_name', $order);
                             })
-                            ->orderColumn('created_date', function ($query, $order) {
-                                $query->orderBy('created_date', $order);
+                            ->orderColumn('code', function ($query, $order) {
+                                $query->orderBy('sales_employee_code', $order);
                             })
-                            ->orderColumn('city', function ($query, $order) {
-                                $query->orderBy('city', $order);
+                            ->orderColumn('position', function ($query, $order) {
+                                $query->orderBy('u_position', $order);
                             })
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('is_active', $order);
                             })
-                            ->rawColumns(['name', 'role','status'])
+                            ->rawColumns(['status'])
                             ->make(true);
     }
 }

@@ -42,7 +42,7 @@ class CheckRoleModuleAccess
             if(!empty($access)){
 
                 // User Module
-                if(!isset($access['user'])){
+                if(!isset($access['user']) && in_array($request->route()->getName(), ['user.index','user.get-all','user.create','user.store','user.edit','user.status','user.destroy']) ){
 
                     $status = false;
                     $message = "Oops ! you have not access for user module.";
@@ -99,6 +99,56 @@ class CheckRoleModuleAccess
                             
                             $status = false;
                             $message = "Oops ! you have not access for delete user.";
+
+                        }
+                    }
+                }
+
+                // Customer Module
+                if(!isset($access['customer']) && in_array($request->route()->getName(), ['customer.index','customer.get-all','customer.sync-customers']) ){
+
+                    $status = false;
+                    $message = "Oops ! you have not access for customer module.";
+                }else{
+
+                    if(in_array($request->route()->getName(), ['customer.index','customer.get-all'])){
+                       
+                        if($access['customer']['view_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for customer module.";
+
+                        }
+                    }elseif(in_array($request->route()->getName(), ['customer.sync-customers'])){
+                        if($access['customer']['add_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for sync customers.";
+
+                        }
+                    }
+                }
+
+                // Sales Person Module
+                if(!isset($access['sales-person']) && in_array($request->route()->getName(), ['sales-persons.index','sales-persons.get-all','sales-persons.sync-sales-persons'])){
+
+                    $status = false;
+                    $message = "Oops ! you have not access for sales person module.";
+                }else{
+
+                    if(in_array($request->route()->getName(), ['sales-persons.index','sales-persons.get-all'])){
+                       
+                        if($access['sales-person']['view_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for sales person module.";
+
+                        }
+                    }elseif(in_array($request->route()->getName(), ['sales-persons.sync-sales-persons'])){
+                        if($access['sales-person']['add_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for sync sales persons.";
 
                         }
                     }

@@ -7,20 +7,20 @@
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Customer</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Sales Persons</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="javascript:" class="btn btn-sm btn-primary sync-customers">Sync Customers</a>
+        <a href="javascript:" class="btn btn-sm btn-primary sync-sales-persons">Sync Sales Persons</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-      
+
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -67,16 +67,15 @@
                             <tr>
                               <th>No.</th>
                               <th>Name</th>
-                              <th>City</th>
-                              <th>Date</th>
-                              <th>Class</th>
+                              <th>Code</th>
+                              <th>Position</th>
                               <th>Status</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
                           <!--begin::Table body-->
                           <tbody>
-                            
+
                           </tbody>
                           <!--end::Table body-->
                        </table>
@@ -123,7 +122,7 @@
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('customer.get-all') }}",
+              'url': "{{ route('sales-persons.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -136,9 +135,8 @@
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
               {data: 'name', name: 'name'},
-              {data: 'city', name: 'city'},
-              {data: 'created_date', name: 'created_date'},
-              {data: 'class', name: 'class'},
+              {data: 'code', name: 'code'},
+              {data: 'position', name: 'position'},
               {data: 'status', name: 'status'},
           ],
           drawCallback:function(){
@@ -162,12 +160,12 @@
       render_table();
     })
 
-    $(document).on('click', '.sync-customers', function(event) {
+    $(document).on('click', '.sync-sales-persons', function(event) {
       event.preventDefault();
 
       Swal.fire({
-        title: 'Are you sure you want to Sync Customers?',
-        text: "Syncing process will run in background and it may take some time to sync all Customers Data.",
+        title: 'Are you sure want to sync sales persons?',
+        text: "It will take some time to sync persons.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -176,10 +174,10 @@
       }).then((result) => {
         if (result.isConfirmed) {
           $.ajax({
-            url: '{{ route('customer.sync-customers') }}',
+            url: '{{ route('sales-persons.sync-sales-persons') }}',
             method: "POST",
             data: {
-                    _token:'{{ csrf_token() }}' 
+                    _token:'{{ csrf_token() }}'
                   }
           })
           .done(function(result) {
