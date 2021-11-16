@@ -166,8 +166,8 @@
       event.preventDefault();
 
       Swal.fire({
-        title: 'Are you sure want to sync customers?',
-        text: "It will take some time to sync customers.",
+        title: 'Are you sure you want to Sync Customers?',
+        text: "Syncing process will run in background and it may take some time to sync all Customers Data.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
