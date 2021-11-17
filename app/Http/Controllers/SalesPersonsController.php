@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Support\SAPSalesPersons;
+use App\Jobs\SyncSalesPersons;
 use App\Models\SalesPerson;
 use DataTables;
 
@@ -90,9 +91,10 @@ class SalesPersonsController extends Controller
 
     public function syncSalesPersons(){
         try {
-            $this->sap_sales_persons = new SAPSalesPersons('TEST-APBW', 'manager', 'test');
-            // Save Data of customer in database
-            $this->sap_sales_persons->addSalesPersonsDataInDatabase();
+
+            // Save Data of sales persons in database
+            SyncSalesPersons::dispatch('TEST-APBW', 'manager', 'test');
+
             $response = ['status' => true, 'message' => 'Sync Sales Persons successfully !'];
         } catch (\Exception $e) {
             $response = ['status' => false, 'message' => 'Something went wrong !'];

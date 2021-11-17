@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Support\SAPOrders;
+use App\Jobs\SyncOrders;
 use App\Models\Order;
 use App\Models\OrderItem;
 use DataTables;
@@ -91,9 +92,10 @@ class OrdersController extends Controller
 
     public function syncOrders(){
         try {
-            $this->sap_orders = new SAPOrders('TEST-APBW', 'manager', 'test');
-            // Save Data of customer in database
-            $this->sap_orders->addOrdersDataInDatabase();
+
+            // Save Data of orders in database
+            SyncOrders::dispatch('TEST-APBW', 'manager', 'test');
+
             $response = ['status' => true, 'message' => 'Sync Orders successfully !'];
         } catch (\Exception $e) {
             $response = ['status' => false, 'message' => 'Something went wrong !', 'err' => $e];
