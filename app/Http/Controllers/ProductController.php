@@ -3,16 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Support\SAPSalesPersons;
-use App\Jobs\SyncSalesPersons;
-use App\Models\SalesPerson;
+use App\Jobs\SyncProducts;
+use App\Models\Product;
 use DataTables;
 
-class SalesPersonsController extends Controller
+class ProductController extends Controller
 {
-    public function __construct(){
-
-    }
     /**
      * Display a listing of the resource.
      *
@@ -20,7 +16,7 @@ class SalesPersonsController extends Controller
      */
     public function index()
     {
-        return view('sales-persons.index');
+        return view('product.index');
     }
 
     /**
@@ -89,13 +85,13 @@ class SalesPersonsController extends Controller
         //
     }
 
-    public function syncSalesPersons(){
+    public function syncProducts(){
         try {
 
-            // Save Data of sales persons in database
-            SyncSalesPersons::dispatch('TEST-APBW', 'manager', 'test');
+            // Save Data of Product in database
+            SyncProducts::dispatch('TEST-APBW', 'manager', 'test');
 
-            $response = ['status' => true, 'message' => 'Sync Sales Persons successfully !'];
+            $response = ['status' => true, 'message' => 'Sync Product successfully !'];
         } catch (\Exception $e) {
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
@@ -104,7 +100,7 @@ class SalesPersonsController extends Controller
 
     public function getAll(Request $request){
 
-        $data = SalesPerson::query();
+        $data = Product::query();
 
         if($request->filter_status != ""){
             $data->where('is_active',$request->filter_status);
@@ -112,8 +108,8 @@ class SalesPersonsController extends Controller
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
-                $q->orwhere('sales_employee_code','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('sales_employee_name','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('item_code','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
             });
         }
 
@@ -123,6 +119,12 @@ class SalesPersonsController extends Controller
 
         return DataTables::of($data)
                             ->addIndexColumn()
+                            ->addColumn('item_name', function($row) {
+                                return @$row->item_name ?? "";
+                            })
+                            ->addColumn('item_code', function($row) {
+                                return @$row->item_code ?? "";
+                            })
                             ->addColumn('status', function($row) {
                                 $btn = "";
                                 if($row->is_active){
@@ -133,23 +135,21 @@ class SalesPersonsController extends Controller
 
                                 return $btn;
                             })
-                            ->addColumn('name', function($row) {
-                                return $row->sales_employee_name;
+                            ->addColumn('class', function($row) {
+                                $html = "";
+                                return $html;
                             })
-                            ->addColumn('code', function($row) {
-                                return $row->sales_employee_code;
+                            ->addColumn('created_date', function($row) {
+                                return date('M d, Y',strtotime($row->created_date));
                             })
-                            ->addColumn('position', function($row) {
-                                return $row->u_position;
+                            ->orderColumn('item_name', function ($query, $order) {
+                                $query->orderBy('item_name', $order);
                             })
-                            ->orderColumn('name', function ($query, $order) {
-                                $query->orderBy('sales_employee_name', $order);
+                            ->orderColumn('item_code', function ($query, $order) {
+                                $query->orderBy('item_code', $order);
                             })
-                            ->orderColumn('code', function ($query, $order) {
-                                $query->orderBy('sales_employee_code', $order);
-                            })
-                            ->orderColumn('position', function ($query, $order) {
-                                $query->orderBy('u_position', $order);
+                            ->orderColumn('created_date', function ($query, $order) {
+                                $query->orderBy('created_date', $order);
                             })
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('is_active', $order);
