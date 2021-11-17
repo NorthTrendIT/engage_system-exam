@@ -70,14 +70,22 @@ Route::middleware(['auth'])->group(function(){
 		Route::resource('productsellsheets','App\Http\Controllers\ProductSellSheetsController')->middleware('super-admin');
 	    Route::post('productsellsheets/get-all', 'App\Http\Controllers\ProductSellSheetsController@getAll')->name('productsellsheets.get-all')->middleware('super-admin');
 
+        Route::resource('sales-persons','App\Http\Controllers\SalesPersonsController');
+	    Route::post('sales-persons/get-all', 'App\Http\Controllers\SalesPersonsController@getAll')->name('sales-persons.get-all');
+	    Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
 
         Route::resource('sales-persons','App\Http\Controllers\SalesPersonsController');
 	    Route::post('sales-persons/get-all', 'App\Http\Controllers\SalesPersonsController@getAll')->name('sales-persons.get-all');
 	    Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
 
+	    Route::resource('product','App\Http\Controllers\ProductController');
+	    Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
+	    Route::post('product/sync-products', 'App\Http\Controllers\ProductController@syncProducts')->name('product.sync-products');
+
         Route::resource('orders','App\Http\Controllers\OrdersController');
 	    Route::post('orders/get-all', 'App\Http\Controllers\OrdersController@getAll')->name('orders.get-all');
 	    Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
+
     });
 
 });

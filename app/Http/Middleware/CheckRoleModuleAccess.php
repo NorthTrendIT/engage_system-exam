@@ -154,6 +154,32 @@ class CheckRoleModuleAccess
                     }
                 }
 
+
+                // Product Module
+                if(!isset($access['product']) && in_array($request->route()->getName(), ['product.index','product.get-all','product.sync-products']) ){
+
+                    $status = false;
+                    $message = "Oops ! you have not access for product module.";
+                }else{
+
+                    if(in_array($request->route()->getName(), ['product.index','product.get-all'])){
+                       
+                        if($access['product']['view_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for product module.";
+
+                        }
+                    }elseif(in_array($request->route()->getName(), ['product.sync-products'])){
+                        if($access['product']['add_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for sync products.";
+
+                        }
+                    }
+                }
+
                 if(!$status){
                     if($request->ajax()){
                         $response = array('status' => $status, "message" => $message);
