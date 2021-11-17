@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Support\SAPSalesPersons;
-use App\Jobs\SyncSalesPersons;
-use App\Models\SalesPerson;
+use App\Support\SAPOrders;
+use App\Jobs\SyncOrders;
+use App\Models\Order;
+use App\Models\OrderItem;
 use DataTables;
 
-class SalesPersonsController extends Controller
+class OrdersController extends Controller
 {
     public function __construct(){
 
@@ -20,7 +21,7 @@ class SalesPersonsController extends Controller
      */
     public function index()
     {
-        return view('sales-persons.index');
+        return view('orders.index');
     }
 
     /**
@@ -89,31 +90,27 @@ class SalesPersonsController extends Controller
         //
     }
 
-    public function syncSalesPersons(){
+    public function syncOrders(){
         try {
 
-            // Save Data of sales persons in database
-            SyncSalesPersons::dispatch('TEST-APBW', 'manager', 'test');
+            // Save Data of orders in database
+            SyncOrders::dispatch('TEST-APBW', 'manager', 'test');
 
-            $response = ['status' => true, 'message' => 'Sync Sales Persons successfully !'];
+            $response = ['status' => true, 'message' => 'Sync Orders successfully !'];
         } catch (\Exception $e) {
-            $response = ['status' => false, 'message' => 'Something went wrong !'];
+            $response = ['status' => false, 'message' => 'Something went wrong !', 'err' => $e];
         }
         return $response;
     }
 
     public function getAll(Request $request){
 
-        $data = SalesPerson::query();
-
-        if($request->filter_status != ""){
-            $data->where('is_active',$request->filter_status);
-        }
+        $data = Order::query();
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
-                $q->orwhere('sales_employee_code','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('sales_employee_name','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('doc_type','LIKE',"%".$request->filter_search."%");
             });
         }
 
@@ -123,38 +120,36 @@ class SalesPersonsController extends Controller
 
         return DataTables::of($data)
                             ->addIndexColumn()
-                            ->addColumn('status', function($row) {
-                                $btn = "";
-                                if($row->is_active){
-                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
-                                }else{
-                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
-                                }
-
-                                return $btn;
+                            ->addColumn('type', function($row) {
+                                return $row->doc_type;
                             })
                             ->addColumn('name', function($row) {
-                                return $row->sales_employee_name;
+                                return $row->card_name;
                             })
-                            ->addColumn('code', function($row) {
-                                return $row->sales_employee_code;
+                            ->addColumn('total', function($row) {
+                                return $row->doc_total;
                             })
-                            ->addColumn('position', function($row) {
-                                return $row->u_position;
+                            ->addColumn('date', function($row) {
+                                return date('M d, Y',strtotime($row->doc_date));
+                            })
+                            ->addColumn('due_date', function($row) {
+                                return date('M d, Y',strtotime($row->doc_due_date));
+                            })
+                            ->orderColumn('type', function ($query, $order) {
+                                $query->orderBy('doc_type', $order);
                             })
                             ->orderColumn('name', function ($query, $order) {
-                                $query->orderBy('sales_employee_name', $order);
+                                $query->orderBy('card_name', $order);
                             })
-                            ->orderColumn('code', function ($query, $order) {
-                                $query->orderBy('sales_employee_code', $order);
+                            ->orderColumn('total', function ($query, $order) {
+                                $query->orderBy('doc_total', $order);
                             })
-                            ->orderColumn('position', function ($query, $order) {
-                                $query->orderBy('u_position', $order);
+                            ->orderColumn('date', function ($query, $order) {
+                                $query->orderBy('doc_date', $order);
                             })
-                            ->orderColumn('status', function ($query, $order) {
-                                $query->orderBy('is_active', $order);
+                            ->orderColumn('due_date', function ($query, $order) {
+                                $query->orderBy('doc_due_date', $order);
                             })
-                            ->rawColumns(['status'])
                             ->make(true);
     }
 }
