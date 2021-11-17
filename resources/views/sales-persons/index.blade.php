@@ -165,7 +165,7 @@
 
       Swal.fire({
         title: 'Are you sure want to sync sales persons?',
-        text: "It will take some time to sync persons.",
+        text: "Syncing process will run in background and it may take some time to sync all Sales Persons Data.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',

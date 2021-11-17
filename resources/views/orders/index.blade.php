@@ -167,7 +167,7 @@
 
       Swal.fire({
         title: 'Are you sure want to sync orders?',
-        text: "It will take some time to sync orders.",
+        text: "Syncing process will run in background and it may take some time to sync all Orders Data.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
