@@ -6,6 +6,8 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\Product;
+use App\Jobs\StoreProducts;
+use App\Jobs\SyncNextProducts;
 
 class SAPProduct
 {
@@ -21,6 +23,10 @@ class SAPProduct
 
     public function __construct($database, $username, $password)
     {
+        $this->database = $database;
+        $this->username = $username;
+        $this->password = $password;
+
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
         $this->headers['Cookie'] = $this->authentication->getSessionCookie();
@@ -72,7 +78,7 @@ class SAPProduct
 
             if($data['value']){
 
-                foreach ($data['value'] as $value) {
+                /*foreach ($data['value'] as $value) {
                     
                     $insert = array(
 
@@ -94,12 +100,15 @@ class SAPProduct
                                             ],
                                             $insert
                                         );
+                }*/
 
-
-                }
+                // Store Data of Product in database
+                StoreProducts::dispatch($data['value']);
 
                 if(isset($data['odata.nextLink'])){
-                    $this->addProductDataInDatabase($data['odata.nextLink']);
+                    //$this->addProductDataInDatabase($data['odata.nextLink']);
+                    
+                    SyncNextProducts::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink']);
                 }
             }
         }

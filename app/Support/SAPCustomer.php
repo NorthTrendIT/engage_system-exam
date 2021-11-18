@@ -7,6 +7,8 @@ use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\Customer;
 use App\Models\CustomerBpAddress;
+use App\Jobs\StoreCustomers;
+use App\Jobs\SyncNextCustomers;
 
 class SAPCustomer
 {
@@ -22,6 +24,10 @@ class SAPCustomer
 
     public function __construct($database, $username, $password)
     {
+        $this->database = $database;
+        $this->username = $username;
+        $this->password = $password;
+        
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
         $this->headers['Cookie'] = $this->authentication->getSessionCookie();
@@ -73,7 +79,7 @@ class SAPCustomer
 
             if($data['value']){
 
-                foreach ($data['value'] as $value) {
+                /*foreach ($data['value'] as $value) {
                     
                     $insert = array(
                                     'card_code' => @$value['CardCode'],
@@ -153,12 +159,16 @@ class SAPCustomer
                         }
 
                     }
+                }*/
 
 
-                }
+                // Store Data of Customer in database
+                StoreCustomers::dispatch($data['value']);
 
                 if(isset($data['odata.nextLink'])){
-                    $this->addCustomerDataInDatabase($data['odata.nextLink']);
+
+                    SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink']);
+                    //$this->addCustomerDataInDatabase($data['odata.nextLink']);
                 }
             }
         }
