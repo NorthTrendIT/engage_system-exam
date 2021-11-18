@@ -23,6 +23,10 @@ class SAPProduct
 
     public function __construct($database, $username, $password)
     {
+        $this->database = $database;
+        $this->username = $username;
+        $this->password = $password;
+
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
         $this->headers['Cookie'] = $this->authentication->getSessionCookie();
@@ -104,7 +108,7 @@ class SAPProduct
                 if(isset($data['odata.nextLink'])){
                     //$this->addProductDataInDatabase($data['odata.nextLink']);
                     
-                    SyncNextProducts::dispatch($data['odata.nextLink']);
+                    SyncNextProducts::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink']);
                 }
             }
         }
