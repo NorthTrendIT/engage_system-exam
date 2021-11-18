@@ -98,7 +98,7 @@ class OrdersController extends Controller
 
             $response = ['status' => true, 'message' => 'Sync Orders successfully !'];
         } catch (\Exception $e) {
-            $response = ['status' => false, 'message' => 'Something went wrong !', 'err' => $e];
+            $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
         return $response;
     }
