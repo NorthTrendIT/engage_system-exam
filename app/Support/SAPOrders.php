@@ -88,10 +88,10 @@ class SAPOrders
                                 'doc_currency' => $order['DocCurrency'],
                                 'journal_memo' => $order['JournalMemo'],
                                 'payment_group_code' => $order['PaymentGroupCode'],
-                                'sales_person_code' => $order['SalesPersonCode'],
+                                'sales_person_code' => (int)$order['SalesPersonCode'],
                                 'u_brand' => $order['U_BRAND'],
-                                'u_branch' =>$order['U_BRANCH'],
-                                'u_commitment' => $order['U_COMMITMENT'],
+                                'u_branch' => $order['U_BRANCH'],
+                                'u_commitment' => @$order['U_COMMITMENT'],
                                 'u_time' => $order['U_TIME'],
                                 'u_posono' => $order['U_POSONO'],
                                 'u_posodate' => $order['U_POSODATE'],
@@ -102,48 +102,49 @@ class SAPOrders
                             );
 
                     $obj = Order::updateOrCreate([
-                                                'doc_entry' => @$value['DocEntry'],
+                                                'doc_entry' => $order['DocEntry'],
                                             ],
                                             $insert
                                         );
 
-                    if($order['DocumentLines']){
-                        $order_items = $order['DocumentLines'];
+                    // if(!empty($order['DocumentLines'])){
 
-                        foreach($order_items as $value){
-                            $item = array(
-                                'order_id' => $obj->id,
-                                'line_num' => @$value['LineNum'],
-                                'item_code' => @$value['ItemCode'],
-                                'item_description' => @$value['ItemDescription'],
-                                'quantity' => @$value['Quantity'],
-                                'ship_date' => @$value['ShipDate'],
-                                'price' => @$value['Price'],
-                                'price_after_vat' => @$value['PriceAfterVAT'],
-                                'currency' => @$value['Currency'],
-                                'rate' => @$value['Rate'],
-                                'discount_percent' => @$value['DiscountPercent'],
-                                'werehouse_code' => @$value['WerehouseCode'],
-                                'sales_person_code' => @$value['SalesPersonCode'],
-                                'gross_price' => @$value['GrossPrice'],
-                                'gross_total' => @$value['GrossTotal'],
-                                'gross_total_fc' => @$value['GrossTotalFC'],
-                                'gross_total_sc' => @$value['GRossTotalSC'] != null ? @$value['GRossTotalSC'] : 0.0,
-                                'ncm_code' => @$value['NCMCode'],
-                                'ship_to_code' => @$value['ShipToCode'],
-                                'ship_to_description' => @$value['ShipToDescription'],
-                                //'response' => json_encode($order),
-                            );
+                    //     $order_items = @$order['DocumentLines'];
 
-                            $item_obj = OrderItem::updateOrCreate([
-                                            'order_id' => $obj->id,
-                                            'item_code' => @$value['ItemCode'],
-                                        ],
-                                        $item
-                                    );
-                        }
+                    //     foreach($order_items as $value){
+                    //         $item = array(
+                    //             'order_id' => $obj->id,
+                    //             'line_num' => $value['LineNum'],
+                    //             'item_code' => $value['ItemCode'],
+                    //             'item_description' => $value['ItemDescription'],
+                    //             'quantity' => $value['Quantity'],
+                    //             'ship_date' => $value['ShipDate'],
+                    //             'price' => $value['Price'],
+                    //             'price_after_vat' => $value['PriceAfterVAT'],
+                    //             'currency' => $value['Currency'],
+                    //             'rate' => $value['Rate'],
+                    //             'discount_percent' => $value['DiscountPercent'],
+                    //             'werehouse_code' => $value['WerehouseCode'],
+                    //             'sales_person_code' => $value['SalesPersonCode'],
+                    //             'gross_price' => $value['GrossPrice'],
+                    //             'gross_total' => $value['GrossTotal'],
+                    //             'gross_total_fc' => $value['GrossTotalFC'],
+                    //             'gross_total_sc' => $value['GRossTotalSC'] != null ? $value['GRossTotalSC'] : 0.0,
+                    //             'ncm_code' => $value['NCMCode'],
+                    //             'ship_to_code' => $value['ShipToCode'],
+                    //             'ship_to_description' => $value['ShipToDescription'],
+                    //             //'response' => json_encode($order),
+                    //         );
 
-                    }
+                    //         $item_obj = OrderItem::updateOrCreate([
+                    //                         'order_id' => $obj->id,
+                    //                         'item_code' => $value['ItemCode'],
+                    //                     ],
+                    //                     $item
+                    //                 );
+                    //     }
+
+                    // }
                 }
 
                 if($data['odata.nextLink']){
