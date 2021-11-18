@@ -107,44 +107,44 @@ class SAPOrders
                                             $insert
                                         );
 
-                    // if(!empty($order['DocumentLines'])){
+                    if(!empty($order['DocumentLines'])){
 
-                    //     $order_items = @$order['DocumentLines'];
+                        $order_items = @$order['DocumentLines'];
 
-                    //     foreach($order_items as $value){
-                    //         $item = array(
-                    //             'order_id' => $obj->id,
-                    //             'line_num' => $value['LineNum'],
-                    //             'item_code' => $value['ItemCode'],
-                    //             'item_description' => $value['ItemDescription'],
-                    //             'quantity' => $value['Quantity'],
-                    //             'ship_date' => $value['ShipDate'],
-                    //             'price' => $value['Price'],
-                    //             'price_after_vat' => $value['PriceAfterVAT'],
-                    //             'currency' => $value['Currency'],
-                    //             'rate' => $value['Rate'],
-                    //             'discount_percent' => $value['DiscountPercent'],
-                    //             'werehouse_code' => $value['WerehouseCode'],
-                    //             'sales_person_code' => $value['SalesPersonCode'],
-                    //             'gross_price' => $value['GrossPrice'],
-                    //             'gross_total' => $value['GrossTotal'],
-                    //             'gross_total_fc' => $value['GrossTotalFC'],
-                    //             'gross_total_sc' => $value['GRossTotalSC'] != null ? $value['GRossTotalSC'] : 0.0,
-                    //             'ncm_code' => $value['NCMCode'],
-                    //             'ship_to_code' => $value['ShipToCode'],
-                    //             'ship_to_description' => $value['ShipToDescription'],
-                    //             //'response' => json_encode($order),
-                    //         );
+                        foreach($order_items as $value){
+                            $item = array(
+                                'order_id' => $obj->id,
+                                'line_num' => @$value['LineNum'],
+                                'item_code' => @$value['ItemCode'],
+                                'item_description' => @$value['ItemDescription'],
+                                'quantity' => @$value['Quantity'],
+                                'ship_date' => @$value['ShipDate'],
+                                'price' => @$value['Price'],
+                                'price_after_vat' => @$value['PriceAfterVAT'],
+                                'currency' => @$value['Currency'],
+                                'rate' => @$value['Rate'],
+                                'discount_percent' => @$value['DiscountPercent'] != null ? @$value['DiscountPercent'] : 0.0,
+                                'werehouse_code' => @$value['WarehouseCode'],
+                                'sales_person_code' => @$value['SalesPersonCode'],
+                                'gross_price' => @$value['GrossPrice'],
+                                'gross_total' => @$value['GrossTotal'],
+                                'gross_total_fc' => @$value['GrossTotalFC'],
+                                'gross_total_sc' => @$value['GRossTotalSC'] != null ? @$value['GRossTotalSC'] : 0.0,
+                                'ncm_code' => @$value['NCMCode'],
+                                'ship_to_code' => @$value['ShipToCode'],
+                                'ship_to_description' => @$value['ShipToDescription'],
+                                //'response' => json_encode($order),
+                            );
 
-                    //         $item_obj = OrderItem::updateOrCreate([
-                    //                         'order_id' => $obj->id,
-                    //                         'item_code' => $value['ItemCode'],
-                    //                     ],
-                    //                     $item
-                    //                 );
-                    //     }
+                            $item_obj = OrderItem::updateOrCreate([
+                                            'order_id' => $obj->id,
+                                            'item_code' => $value['ItemCode'],
+                                        ],
+                                        $item
+                                    );
+                        }
 
-                    // }
+                    }
                 }
 
                 if($data['odata.nextLink']){
