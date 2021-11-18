@@ -7,6 +7,7 @@ use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\Customer;
 use App\Models\CustomerBpAddress;
+use App\Jobs\StoreCustomers;
 
 class SAPCustomer
 {
@@ -73,7 +74,7 @@ class SAPCustomer
 
             if($data['value']){
 
-                foreach ($data['value'] as $value) {
+                /*foreach ($data['value'] as $value) {
                     
                     $insert = array(
                                     'card_code' => @$value['CardCode'],
@@ -153,9 +154,11 @@ class SAPCustomer
                         }
 
                     }
+                }*/
 
 
-                }
+                // Store Data of Customer in database
+                StoreCustomers::dispatch($data['value']);
 
                 if(isset($data['odata.nextLink'])){
                     $this->addCustomerDataInDatabase($data['odata.nextLink']);

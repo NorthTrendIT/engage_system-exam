@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\Product;
+use App\Jobs\StoreProducts;
 
 class SAPProduct
 {
@@ -72,7 +73,7 @@ class SAPProduct
 
             if($data['value']){
 
-                foreach ($data['value'] as $value) {
+                /*foreach ($data['value'] as $value) {
                     
                     $insert = array(
 
@@ -94,10 +95,11 @@ class SAPProduct
                                             ],
                                             $insert
                                         );
+                }*/
 
-
-                }
-
+                // Store Data of Product in database
+                StoreProducts::dispatch($data['value']);
+                
                 if(isset($data['odata.nextLink'])){
                     $this->addProductDataInDatabase($data['odata.nextLink']);
                 }
