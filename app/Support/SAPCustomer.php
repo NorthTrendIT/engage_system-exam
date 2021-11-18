@@ -8,6 +8,7 @@ use App\Support\SAPAuthentication;
 use App\Models\Customer;
 use App\Models\CustomerBpAddress;
 use App\Jobs\StoreCustomers;
+use App\Jobs\SyncNextCustomers;
 
 class SAPCustomer
 {
@@ -161,7 +162,9 @@ class SAPCustomer
                 StoreCustomers::dispatch($data['value']);
 
                 if(isset($data['odata.nextLink'])){
-                    $this->addCustomerDataInDatabase($data['odata.nextLink']);
+                    
+                    SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink']);
+                    //$this->addCustomerDataInDatabase($data['odata.nextLink']);
                 }
             }
         }
