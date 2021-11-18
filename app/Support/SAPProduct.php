@@ -7,6 +7,7 @@ use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\Product;
 use App\Jobs\StoreProducts;
+use App\Jobs\SyncNextProducts;
 
 class SAPProduct
 {
@@ -99,9 +100,11 @@ class SAPProduct
 
                 // Store Data of Product in database
                 StoreProducts::dispatch($data['value']);
-                
+
                 if(isset($data['odata.nextLink'])){
-                    $this->addProductDataInDatabase($data['odata.nextLink']);
+                    //$this->addProductDataInDatabase($data['odata.nextLink']);
+                    
+                    SyncNextProducts::dispatch($data['odata.nextLink']);
                 }
             }
         }
