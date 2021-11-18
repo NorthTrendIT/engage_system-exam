@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Promotions;
+use App\Models\PromotionTypes;
 use Validator;
 use DataTables;
 use Auth;
@@ -27,7 +28,8 @@ class PromotionsController extends Controller
      */
     public function create()
     {
-        return view('promotions.add');
+        $promotion_type = PromotionTypes::get();
+        return view('promotions.add', compact('promotion_type'));
     }
 
     /**
@@ -78,7 +80,16 @@ class PromotionsController extends Controller
                 $input['promo_image'] = $name;
             }
 
-            $promotion->fill($input)->save();
+            $promotion->promotion_type_id = $input['promotion_type_id'];
+            $promotion->title = $input['title'];
+            $promotion->description = $input['description'];
+            $promotion->discount_percentage = $input['discount_percentage'];
+            $promotion->promotion_for = $input['promotion_for'];
+            $promotion->promotion_scope = $input['promotion_scope'];
+            $promotion->promo_image = !empty($input['promo_image']) && $input['promo_image'] ? $input['promo_image'] : null;
+            $promotion->promotion_start_date = date('Y-m-d',strtotime($input['promotion_start_date']));
+            $promotion->promotion_end_date = date('Y-m-d',strtotime($input['promotion_end_date']));
+            $promotion->save();
 
             $response = ['status'=>true,'message'=>$message];
         }
@@ -106,8 +117,9 @@ class PromotionsController extends Controller
     public function edit($id)
     {
         $edit = Promotions::where('id',$id)->firstOrFail();
+        $promotion_type = PromotionTypes::get();
 
-        return view('promotions.add',compact('edit'));
+        return view('promotions.add',compact('edit', 'promotion_type'));
     }
 
     /**
@@ -140,25 +152,37 @@ class PromotionsController extends Controller
         return $response;
     }
 
+    public function updateStatus($id)
+    {
+        $data = Promotions::find($id);
+        if(!is_null($data)){
+            $data->is_active = !$data->is_active;
+            $data->save();
+            $response = ['status'=>true,'message'=>'Status update successfully !'];
+        }else{
+            $response = ['status'=>false,'message'=>'Record not found !'];
+        }
+        return $response;
+    }
+
     public function getAll(Request $request){
 
-        $data = Promotions::where("1");
-
-        /*if($request->filter_role != ""){
-            $data->where('role_id',$request->filter_role);
-        }
+        $data = Promotions::query();
 
         if($request->filter_status != ""){
             $data->where('is_active',$request->filter_status);
         }
 
+        if($request->filter_scope != ""){
+          $data->where('promotion_scope',$request->filter_scope);
+        }
+
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
-                $q->orwhere('first_name','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('last_name','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('email','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('title','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('description','LIKE',"%".$request->filter_search."%");
             });
-        }*/
+        }
 
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
@@ -166,17 +190,56 @@ class PromotionsController extends Controller
 
         return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('action', function($row) {
-                    $btn = '<a href="' . route('promotions.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
-                                <i class="fa fa-pencil"></i>
-                            </a>';
-                    $btn .= ' <a href="javascript:void(0)" data-url="' . route('promotions.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
-                                <i class="fa fa-trash"></i>
-                              </a>';
-                    
+                ->addColumn('title', function($row) {
+                    return $row->title;
+                })
+                ->addColumn('promotion_for', function($row) {
+                    return $row->promotion_for;
+                })
+                ->addColumn('scope', function($row) {
+                  $scope;
+                  switch ($row->promotion_scope) {
+                    case "C":
+                      $scope = "Customer";
+                      break;
+                    case "CL":
+                      $scope = "Class";
+                      break;
+                    case "L":
+                      $scope = "Location";
+                      break;
+                    case "P":
+                      $scope = "Products";
+                      break;
+                  }
+                    return $scope;
+                })
+                ->addColumn('start_date', function($row) {
+                    return date('M d, Y',strtotime($row->promotion_start_date));
+                })
+                ->addColumn('end_date', function($row) {
+                  return date('M d, Y',strtotime($row->promotion_end_date));
+                })
+                ->addColumn('status', function($row) {
+                    $btn = "";
+                    if($row->is_active){
+                        $btn .= '<a href="javascript:"  data-url="' . route('promotion.status',$row->id) . '" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
+                    }else{
+                        $btn .= '<a href="javascript:"  data-url="' . route('promotion.status',$row->id) . '" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
+                    }
                     return $btn;
                 })
-                ->rawColumns(['action'])
+                ->addColumn('action', function($row) {
+                    $btn = '<a href="' . route('promotion.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                <i class="fa fa-pencil"></i>
+                            </a>';
+                    $btn .= ' <a href="javascript:void(0)" data-url="' . route('promotion.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
+                                <i class="fa fa-trash"></i>
+                              </a>';
+
+                    return $btn;
+                })
+                ->rawColumns(['status', 'action'])
                 ->make(true);
     }
 }
