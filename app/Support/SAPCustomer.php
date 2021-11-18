@@ -24,6 +24,10 @@ class SAPCustomer
 
     public function __construct($database, $username, $password)
     {
+        $this->database = $database;
+        $this->username = $username;
+        $this->password = $password;
+        
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
         $this->headers['Cookie'] = $this->authentication->getSessionCookie();
@@ -162,7 +166,7 @@ class SAPCustomer
                 StoreCustomers::dispatch($data['value']);
 
                 if(isset($data['odata.nextLink'])){
-                    
+
                     SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink']);
                     //$this->addCustomerDataInDatabase($data['odata.nextLink']);
                 }
