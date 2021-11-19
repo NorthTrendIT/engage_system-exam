@@ -22,10 +22,9 @@ class Product extends Model
     	'is_active',
     	'response',
         'technical_specifications',
-        'product_features_id',
-        'product_benefits_id',
-        'product_sell_sheets_id',
-        'image',
+        'product_features',
+        'product_benefits',
+        'product_sell_sheets',
     ];
 
     public function product_images()
@@ -33,18 +32,4 @@ class Product extends Model
         return $this->hasMany(ProductImage::class,'product_id');
     }
 
-    public function product_features()
-    {
-        return $this->belongsTo(ProductFeatures::class);
-    }
-
-    public function product_benefits()
-    {
-        return $this->belongsTo(ProductBenefits::class);
-    }
-
-    public function product_sell_sheets()
-    {
-        return $this->belongsTo(ProductSellSheets::class);
-    }
 }

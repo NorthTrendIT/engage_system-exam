@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Jobs\SyncProducts;
 use App\Models\Product;
-use App\Models\ProductFeatures;
-use App\Models\ProductSellSheets;
-use App\Models\ProductBenefits;
 use App\Models\ProductImage;
 use DataTables;
 use Validator;
@@ -46,9 +43,9 @@ class ProductController extends Controller
 
         $rules = array(
                     'id' => 'required|exists:products,id',
-                    'product_features_id' => 'nullable|exists:product_features,id',
-                    'product_benefits_id' => 'nullable|exists:product_benefits,id',
-                    'product_sell_sheets_id' => 'nullable|exists:product_sell_sheets,id',
+                    'product_features' => 'nullable',
+                    'product_benefits' => 'nullable',
+                    'product_sell_sheets' => 'nullable',
                 );
 
 
@@ -136,12 +133,7 @@ class ProductController extends Controller
     public function edit($id)
     {
       $edit = Product::findOrFail($id);
-      $product_features = ProductFeatures::all();
-      $product_benefits = ProductBenefits::all();
-      $product_sell_sheets = ProductSellSheets::all();
-
-      return view('product.add',compact('edit','product_features','product_benefits','product_sell_sheets'));
-
+      return view('product.add',compact('edit'));
     }
 
     /**
@@ -217,11 +209,11 @@ class ProductController extends Controller
                                 return $btn;
                             })
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('product.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-success mr-10">
-                                    <i class="fa fa-edit"></i>
+                                $btn = '<a href="' . route('product.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
+                                    <i class="fa fa-pencil"></i>
                                   </a>';
 
-                                $btn .= '<a href="' . route('product.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-warning">
+                                $btn .= '<a href="' . route('product.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
                                     <i class="fa fa-file"></i>
                                   </a>';
                                 
