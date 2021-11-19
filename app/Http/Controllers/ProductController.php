@@ -91,7 +91,10 @@ class ProductController extends Controller
                   }
 
                   $product_image_obj->fill($value)->save();
-                  array_push($product_images_ids, $value['id']);
+
+                  if(@$product_image_obj->id){
+                    array_push($product_images_ids, $product_image_obj->id);
+                  }
                 }
               }
             }
