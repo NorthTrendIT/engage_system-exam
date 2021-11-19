@@ -61,27 +61,21 @@
 
                 <div class="row mb-5">
                   
-                  <div class="col-md-6">
+                  <div class="col-md-12">
                     <div class="form-group">
                       <label>Features</label>
-                      <select class="form-control form-control-solid" name="product_features_id">
-                        <option value=""></option>
-                        @foreach($product_features as $pf)
-                          <option value="{{ $pf->id }}" @if(isset($edit) && $edit->product_features_id == $pf->id) selected="" @endif>{{ $pf->name }}</option>
-                        @endforeach
-                      </select>
+                      <textarea class="form-control form-control-solid" placeholder="Enter features" name="product_features" rows="5">@if(isset($edit)){{ $edit->product_features }}@endif</textarea>
                     </div>
                   </div>
 
-                  <div class="col-md-6">
+                </div>
+
+                <div class="row mb-5">
+
+                  <div class="col-md-12">
                     <div class="form-group">
                       <label>Advantages & Benefits</label>
-                      <select class="form-control form-control-solid" name="product_benefits_id">
-                        <option value=""></option>
-                        @foreach($product_benefits as $pb)
-                          <option value="{{ $pb->id }}" @if(isset($edit) && $edit->product_benefits_id == $pb->id) selected="" @endif>{{ $pb->name }}</option>
-                        @endforeach
-                      </select>
+                      <textarea class="form-control form-control-solid" placeholder="Enter advantages & benefits" name="product_benefits" rows="5">@if(isset($edit)){{ $edit->product_benefits }}@endif</textarea>
                     </div>
                   </div>
 
@@ -90,15 +84,10 @@
 
                 <div class="row mb-5">
 
-                  <div class="col-md-6">
+                  <div class="col-md-12">
                     <div class="form-group">
                       <label>Sell Sheets</label>
-                      <select class="form-control form-control-solid" name="product_sell_sheets_id">
-                        <option value=""></option>
-                        @foreach($product_sell_sheets as $ps)
-                          <option value="{{ $ps->id }}" @if(isset($edit) && $edit->product_sell_sheets_id == $ps->id) selected="" @endif>{{ $ps->name }}</option>
-                        @endforeach
-                      </select>
+                      <textarea class="form-control form-control-solid" placeholder="Enter sell sheets" name="product_sell_sheets" rows="5">@if(isset($edit)){{ $edit->product_sell_sheets }}@endif</textarea>
                     </div>
                   </div>
 
@@ -122,7 +111,7 @@
                         <div class="col-md-6">
                           <div class="form-group">
                             <input type="hidden" name="image" value="{{$image->image}}">
-                            <input type="file" class="form-control form-control-solid product_images_image" name="image" accept="image/*">
+                            <input type="file" class="dropify form-control form-control-solid product_images_image" name="image" accept="image/*" data-allowed-file-extensions="jpeg jpg png eps bmp tif tiff webp" data-max-file-size-preview="10M">
                           </div>
                         </div>
 
@@ -147,7 +136,7 @@
                     <div class="row mb-5" data-repeater-item>
                       <div class="col-md-6">
                         <div class="form-group">
-                          <input type="file" class="form-control form-control-solid product_images_image" name="image" accept="image/*">
+                          <input type="file" class="dropify form-control form-control-solid product_images_image" name="image" accept="image/*" data-allowed-file-extensions="jpeg jpg png eps bmp tif tiff webp" data-max-file-size-preview="10M">
                         </div>
                       </div>
 
@@ -191,30 +180,25 @@
 
 
 @push('js')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css" />
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.repeater/1.2.1/jquery.repeater.min.js"></script>
 
+<script src="https://cdn.ckeditor.com/4.17.1/standard/ckeditor.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js" ></script>
+
 <script>
   $(document).ready(function() {
 
-    $('[name="product_features_id"]').select2({
-      placeholder: "Select a product features",
-      allowClear: true
-    });
+    CKEDITOR.replace( 'product_features' );
+    CKEDITOR.replace( 'product_benefits' );
+    CKEDITOR.replace( 'product_sell_sheets' );
 
-    $('[name="product_benefits_id"]').select2({
-      placeholder: "Select a advantages & benefits",
-      allowClear: true
-    });
-
-    $('[name="product_sell_sheets_id"]').select2({
-      placeholder: "Select a sell sheets",
-      allowClear: true
-    });
-
+    // $('.edit_dropify').dropify();
 
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
@@ -275,6 +259,7 @@
     $('#myForm').repeater({
       initEmpty: false,
       show: function () {
+        // $(this).find('input[type="file"]').dropify();
         $(this).find('.image_preview').remove();
         $(this).slideDown();
       },

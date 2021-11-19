@@ -59,19 +59,19 @@
 
                             <tr>
                               <th> <b>Technical specifications:</b> </th>
-                              <td>{{ @$data->technical_specifications ?? "" }}</td>
+                              <td>{!! @$data->technical_specifications ?? "" !!}</td>
                             </tr>
                             <tr>
                               <th> <b>Features:</b> </th>
-                              <td>{{ @$data->product_features->name ?? "" }}</td>
+                              <td>{!! @$data->product_features ?? "" !!}</td>
                             </tr>
                             <tr>
                               <th> <b>Advantages & Benefits:</b> </th>
-                              <td>{{ @$data->product_benefits->name ?? "" }}</td>
+                              <td>{!! @$data->product_benefits ?? "" !!}</td>
                             </tr>
                             <tr>
                               <th> <b>Sell Sheets:</b> </th>
-                              <td>{{ @$data->product_sell_sheets->name ?? "" }}</td>
+                              <td>{!! @$data->product_sell_sheets ?? "" !!}</td>
                             </tr>
 
                             <tr>
