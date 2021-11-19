@@ -194,10 +194,19 @@
 <script>
   $(document).ready(function() {
 
-    CKEDITOR.replace( 'technical_specifications' );
-    CKEDITOR.replace( 'product_features' );
-    CKEDITOR.replace( 'product_benefits' );
-    CKEDITOR.replace( 'product_sell_sheets' );
+    CKEDITOR.replace( 'technical_specifications',{
+      removePlugins: ['image', 'uploadimage']
+    });
+    CKEDITOR.replace( 'product_features' ,{
+      removePlugins: ['image', 'uploadimage']
+    });
+    CKEDITOR.replace( 'product_benefits' ,{
+      removePlugins: ['image', 'uploadimage']
+    });
+    CKEDITOR.replace( 'product_sell_sheets' ,{
+      removePlugins: ['image', 'uploadimage']
+    });
+
 
     // $('.edit_dropify').dropify();
 
