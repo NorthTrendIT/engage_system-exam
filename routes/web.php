@@ -79,15 +79,21 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
 	    Route::post('product/sync-products', 'App\Http\Controllers\ProductController@syncProducts')->name('product.sync-products');
 
-      // Orders
-      Route::resource('orders','App\Http\Controllers\OrdersController');
+        // Orders
+        Route::resource('orders','App\Http\Controllers\OrdersController');
 	    Route::post('orders/get-all', 'App\Http\Controllers\OrdersController@getAll')->name('orders.get-all');
 	    Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
 
-      // Pramotions
-      Route::resource('promotion','App\Http\Controllers\PromotionsController');
+        // Invoices
+        Route::resource('invoices','App\Http\Controllers\InvoicesController');
+	    Route::post('invoices/get-all', 'App\Http\Controllers\InvoicesController@getAll')->name('invoices.get-all');
+	    Route::post('invoices/sync-orders', 'App\Http\Controllers\InvoicesController@syncInvoices')->name('invoices.sync-invoices');
+
+        // Pramotions
+        Route::resource('promotion','App\Http\Controllers\PromotionsController');
 	    Route::post('promotion/get-all', 'App\Http\Controllers\PromotionsController@getAll')->name('promotion.get-all');
-      Route::post('promotion/status/{id}', 'App\Http\Controllers\PromotionsController@updateStatus')->name('promotion.status');
+        Route::post('promotion/status/{id}', 'App\Http\Controllers\PromotionsController@updateStatus')->name('promotion.status');
+
 
     });
 
