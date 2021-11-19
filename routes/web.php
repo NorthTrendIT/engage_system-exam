@@ -70,10 +70,7 @@ Route::middleware(['auth'])->group(function(){
 		Route::resource('productsellsheets','App\Http\Controllers\ProductSellSheetsController')->middleware('super-admin');
 	    Route::post('productsellsheets/get-all', 'App\Http\Controllers\ProductSellSheetsController@getAll')->name('productsellsheets.get-all')->middleware('super-admin');
 
-        Route::resource('sales-persons','App\Http\Controllers\SalesPersonsController');
-	    Route::post('sales-persons/get-all', 'App\Http\Controllers\SalesPersonsController@getAll')->name('sales-persons.get-all');
-	    Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
-
+        // Sales Persons
         Route::resource('sales-persons','App\Http\Controllers\SalesPersonsController');
 	    Route::post('sales-persons/get-all', 'App\Http\Controllers\SalesPersonsController@getAll')->name('sales-persons.get-all');
 	    Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
@@ -82,13 +79,21 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
 	    Route::post('product/sync-products', 'App\Http\Controllers\ProductController@syncProducts')->name('product.sync-products');
 
+        // Orders
         Route::resource('orders','App\Http\Controllers\OrdersController');
 	    Route::post('orders/get-all', 'App\Http\Controllers\OrdersController@getAll')->name('orders.get-all');
 	    Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
 
+        // Invoices
         Route::resource('invoices','App\Http\Controllers\InvoicesController');
 	    Route::post('invoices/get-all', 'App\Http\Controllers\InvoicesController@getAll')->name('invoices.get-all');
 	    Route::post('invoices/sync-orders', 'App\Http\Controllers\InvoicesController@syncInvoices')->name('invoices.sync-invoices');
+
+        // Pramotions
+        Route::resource('promotion','App\Http\Controllers\PromotionsController');
+	    Route::post('promotion/get-all', 'App\Http\Controllers\PromotionsController@getAll')->name('promotion.get-all');
+        Route::post('promotion/status/{id}', 'App\Http\Controllers\PromotionsController@updateStatus')->name('promotion.status');
+
 
     });
 
