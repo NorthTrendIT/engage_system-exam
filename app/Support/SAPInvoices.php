@@ -5,10 +5,10 @@ namespace App\Support;
 use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
-use App\Models\Order;
-use App\Models\OrderItem;
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
 
-class SAPOrders
+class SAPInvoices
 {
 	/** @var Client */
 	protected $httpClient;
@@ -30,7 +30,7 @@ class SAPOrders
     }
 
     // Get Sales Persons data
-    public function getOrderData($url = '/b1s/v1/Orders')
+    public function getInvoiceData($url = '/b1s/v1/Orders')
     {
     	try {
             $response = $this->httpClient->request(
@@ -60,12 +60,12 @@ class SAPOrders
     }
 
     // Store All Customer Records In DB
-    public function addOrdersDataInDatabase($url = false)
+    public function addInvoicesDataInDatabase($url = false)
     {
         if($url){
-            $response = $this->getOrderData($url);
+            $response = $this->getInvoiceData($url);
         }else{
-            $response = $this->getOrderData();
+            $response = $this->getInvoiceData();
         }
 
         if($response['status']){
@@ -73,47 +73,47 @@ class SAPOrders
 
             if($data['value']){
 
-                foreach ($data['value'] as $order) {
+                foreach ($data['value'] as $invoice) {
 
                     $insert = array(
-                                'doc_entry' => $order['DocEntry'],
-                                'doc_num' => $order['DocNum'],
-                                'doc_type' => $order['DocType'],
-                                'doc_date' => $order['DocDate'],
-                                'doc_due_date' => $order['DocDueDate'],
-                                'card_code' => $order['CardCode'],
-                                'card_name' => $order['CardName'],
-                                'address' => $order['Address'],
-                                'doc_total' => $order['DocTotal'],
-                                'doc_currency' => $order['DocCurrency'],
-                                'journal_memo' => $order['JournalMemo'],
-                                'payment_group_code' => $order['PaymentGroupCode'],
-                                'sales_person_code' => (int)$order['SalesPersonCode'],
-                                'u_brand' => $order['U_BRAND'],
-                                'u_branch' => $order['U_BRANCH'],
-                                'u_commitment' => @$order['U_COMMITMENT'],
-                                'u_time' => $order['U_TIME'],
-                                'u_posono' => $order['U_POSONO'],
-                                'u_posodate' => $order['U_POSODATE'],
-                                'u_posotime' => $order['U_POSOTIME'],
-                                'created_at' => $order['CreationDate'],
-                                'updated_at' => $order['UpdateDate'],
-                                //'response' => json_encode($order),
+                                'doc_entry' => $invoice['DocEntry'],
+                                'doc_num' => $invoice['DocNum'],
+                                'doc_type' => $invoice['DocType'],
+                                'doc_date' => $invoice['DocDate'],
+                                'doc_due_date' => $invoice['DocDueDate'],
+                                'card_code' => $invoice['CardCode'],
+                                'card_name' => $invoice['CardName'],
+                                'address' => $invoice['Address'],
+                                'doc_total' => $invoice['DocTotal'],
+                                'doc_currency' => $invoice['DocCurrency'],
+                                'journal_memo' => $invoice['JournalMemo'],
+                                'payment_group_code' => $invoice['PaymentGroupCode'],
+                                'sales_person_code' => (int)$invoice['SalesPersonCode'],
+                                'u_brand' => $invoice['U_BRAND'],
+                                'u_branch' => $invoice['U_BRANCH'],
+                                'u_commitment' => @$invoice['U_COMMITMENT'],
+                                'u_time' => $invoice['U_TIME'],
+                                'u_posono' => $invoice['U_POSONO'],
+                                'u_posodate' => $invoice['U_POSODATE'],
+                                'u_posotime' => $invoice['U_POSOTIME'],
+                                'created_at' => $invoice['CreationDate'],
+                                'updated_at' => $invoice['UpdateDate'],
+                                //'response' => json_encode($invoice),
                             );
 
-                    $obj = Order::updateOrCreate([
-                                                'doc_entry' => $order['DocEntry'],
+                    $obj = Invoice::updateOrCreate([
+                                                'doc_entry' => @$invoice['DocEntry'],
                                             ],
                                             $insert
                                         );
 
-                    if(!empty($order['DocumentLines'])){
+                    if(!empty($invoice['DocumentLines'])){
 
-                        $order_items = @$order['DocumentLines'];
+                        $invoice_items = @$invoice['DocumentLines'];
 
-                        foreach($order_items as $value){
+                        foreach($invoice_items as $value){
                             $item = array(
-                                'order_id' => $obj->id,
+                                'invoice_id' => $obj->id,
                                 'line_num' => @$value['LineNum'],
                                 'item_code' => @$value['ItemCode'],
                                 'item_description' => @$value['ItemDescription'],
@@ -136,9 +136,9 @@ class SAPOrders
                                 //'response' => json_encode($value),
                             );
 
-                            $item_obj = OrderItem::updateOrCreate([
-                                            'order_id' => $obj->id,
-                                            'item_code' => $value['ItemCode'],
+                            $item_obj = InvoiceItem::updateOrCreate([
+                                            'invoice_id' => $obj->id,
+                                            'item_code' => @$value['ItemCode'],
                                         ],
                                         $item
                                     );
@@ -148,7 +148,7 @@ class SAPOrders
                 }
 
                 if($data['odata.nextLink']){
-                    $this->addOrdersDataInDatabase($data['odata.nextLink']);
+                    $this->addInvoicesDataInDatabase($data['odata.nextLink']);
                 }
             }
         }

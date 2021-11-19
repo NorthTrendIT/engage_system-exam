@@ -86,6 +86,10 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('orders/get-all', 'App\Http\Controllers\OrdersController@getAll')->name('orders.get-all');
 	    Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
 
+        Route::resource('invoices','App\Http\Controllers\InvoicesController');
+	    Route::post('invoices/get-all', 'App\Http\Controllers\InvoicesController@getAll')->name('invoices.get-all');
+	    Route::post('invoices/sync-orders', 'App\Http\Controllers\InvoicesController@syncInvoices')->name('invoices.sync-invoices');
+
     });
 
 });
