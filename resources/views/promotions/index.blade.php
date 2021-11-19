@@ -1,22 +1,18 @@
 @extends('layouts.master')
 
-@section('title','Sales Persons')
+@section('title','Promotions')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Sales Persons</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Promotions</h1>
       </div>
 
-      <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
-        <!--begin::Button-->
-        <a href="javascript:" class="btn btn-sm btn-primary sync-sales-persons">Sync Sales Persons</a>
-        <!--end::Button-->
+        <a href="{{ route('promotion.create') }}" class="btn btn-sm btn-primary">Create</a>
       </div>
-      <!--end::Actions-->
 
     </div>
   </div>
@@ -26,9 +22,7 @@
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
-           {{--  <div class="card-header border-0 pt-5">
-              <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
-            </div> --}}
+
             <div class="card-body">
               <div class="row mt-5">
                 <div class="col-md-3">
@@ -50,6 +44,16 @@
                 </div>
 
                 <div class="col-md-3">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_scope" data-control="select2" data-hide-search="true">
+                    <option value="">Select Promotion Scope</option>
+                    <option value="C">Customers</option>
+                    <option value="CL">Class</option>
+                    <option value="L">Location</option>
+                    <option value="P">Product</option>
+                  </select>
+                </div>
+
+                <div class="col-md-3">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -66,10 +70,13 @@
                           <thead>
                             <tr>
                               <th>No.</th>
-                              <th>Name</th>
-                              <th>Code</th>
-                              <th>Position</th>
+                              <th>Title</th>
+                              <th>Promotion For</th>
+                              <th>Scop</th>
+                              <th>Start Date</th>
+                              <th>End Date</th>
                               <th>Status</th>
+                              <th>Action</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -115,6 +122,7 @@
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_scope = $('[name="filter_scope"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -122,7 +130,7 @@
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('sales-persons.get-all') }}",
+              'url': "{{ route('promotion.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -130,14 +138,18 @@
               data:{
                 filter_search : $filter_search,
                 filter_status : $filter_status,
+                filter_scope : $filter_scope,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-              {data: 'name', name: 'name'},
-              {data: 'code', name: 'code'},
-              {data: 'position', name: 'position'},
-              {data: 'status', name: 'status'},
+              {data: 'title', name: 'title'},
+              {data: 'promotion_for', name: 'promotion_for'},
+              {data: 'scope', name: 'scope'},
+              {data: 'start_date', name: 'start_date'},
+              {data: 'end_date', name: 'end_date'},
+              {data: 'status', name: 'status', searchable: false},
+              {data: 'action', name: 'action', orderable: false, searchable: false},
           ],
           drawCallback:function(){
               $(function () {
@@ -160,12 +172,12 @@
       render_table();
     })
 
-    $(document).on('click', '.sync-sales-persons', function(event) {
+    $(document).on('click', '.sync-orders', function(event) {
       event.preventDefault();
 
       Swal.fire({
-        title: 'Are you sure want to sync sales persons?',
-        text: "Syncing process will run in background and it may take some time to sync all Sales Persons Data.",
+        title: 'Are you sure want to sync orders?',
+        text: "Syncing process will run in background and it may take some time to sync all Orders Data.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -174,7 +186,7 @@
       }).then((result) => {
         if (result.isConfirmed) {
           $.ajax({
-            url: '{{ route('sales-persons.sync-sales-persons') }}',
+            url: '{{ route('orders.sync-orders') }}',
             method: "POST",
             data: {
                     _token:'{{ csrf_token() }}'
@@ -194,6 +206,78 @@
         }
       })
     });
+
+    $(document).on('click', '.delete', function(event) {
+      event.preventDefault();
+      $url = $(this).attr('data-url');
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: $url,
+            method: "DELETE",
+            data: {
+                    _token:'{{ csrf_token() }}'
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              render_table();
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
+    $(document).on('click', '.status', function(event) {
+      event.preventDefault();
+      $url = $(this).attr('data-url');
+
+      Swal.fire({
+        title: 'Are you sure want to change status?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, change it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: $url,
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}'
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              render_table();
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
   })
 </script>
 @endpush
