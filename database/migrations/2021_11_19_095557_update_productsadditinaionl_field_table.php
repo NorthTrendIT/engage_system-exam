@@ -17,7 +17,7 @@ class UpdateProductsadditinaionlFieldTable extends Migration
             $table->dropColumn('product_features_id');
             $table->dropColumn('product_benefits_id');
             $table->dropColumn('product_sell_sheets_id');
-            $table->dropColumn('image');
+            //$table->dropColumn('image');
 
             $table->longText('product_features')->nullable();
             $table->longText('product_benefits')->nullable();
