@@ -5,7 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Jobs\SyncProducts;
 use App\Models\Product;
+use App\Models\ProductFeatures;
+use App\Models\ProductSellSheets;
+use App\Models\ProductBenefits;
+use App\Models\ProductImage;
 use DataTables;
+use Validator;
 
 class ProductController extends Controller
 {
@@ -37,7 +42,74 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+
+        $rules = array(
+                    'id' => 'required|exists:products,id',
+                    'product_features_id' => 'nullable|exists:product_features,id',
+                    'product_benefits_id' => 'nullable|exists:product_benefits,id',
+                    'product_sell_sheets_id' => 'nullable|exists:product_sell_sheets,id',
+                );
+
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+            $product = Product::findOrFail($input['id']);
+            $message = "Product details updated successfully.";
+
+            $product->fill($input)->save();
+
+            // Start Product Images
+            $product_images_ids = array();
+            if(isset($input['product_images'])){
+              foreach ($input['product_images'] as $key => $value) {
+                $value['product_id'] = $product->id;
+
+                if(isset($value['image']) && is_object($value['image'])){
+                  $file = $value['image'];
+
+                  if(!in_array($file->extension(),['jpeg','jpg','png','eps','bmp','tif','tiff','webp'])){
+                    continue;
+                  }
+
+                  if($file->getSize() <= 10 * 1024 * 1024){ //10MB
+                    $name = date("YmdHis") . $file->getClientOriginalName() ;
+                    $file->move(public_path() . '/sitebucket/products/', $name);
+                    $value['image'] = $name;
+                  }
+                }
+
+                if($value['image']){
+                  if(isset($value['id'])){
+                    $product_image_obj = ProductImage::find($value['id']);
+                  }else{
+                    $product_image_obj = New ProductImage();
+                  }
+
+                  $product_image_obj->fill($value)->save();
+                  array_push($product_images_ids, $value['id']);
+                }
+              }
+            }
+
+            if(!isset($input['product_images'])){
+              $removeProductImage = ProductImage::where('product_id',$product->id);
+              $removeProductImage->delete();
+            }elseif(!empty($product_images_ids)){
+              $removeProductImage = ProductImage::where('product_id',$product->id);
+              $removeProductImage->whereNotIn('id',$product_images_ids);
+              $removeProductImage->delete();
+            }
+            // End Product Images
+
+            $response = ['status'=>true,'message'=>$message];
+        }
+
+        return $response;
     }
 
     /**
@@ -48,7 +120,8 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        //
+      $data = Product::findOrFail($id);
+      return view('product.view',compact('data'));
     }
 
     /**
@@ -59,7 +132,13 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        //
+      $edit = Product::findOrFail($id);
+      $product_features = ProductFeatures::all();
+      $product_benefits = ProductBenefits::all();
+      $product_sell_sheets = ProductSellSheets::all();
+
+      return view('product.add',compact('edit','product_features','product_benefits','product_sell_sheets'));
+
     }
 
     /**
@@ -86,16 +165,15 @@ class ProductController extends Controller
     }
 
     public function syncProducts(){
-        try {
+      try {
+        // Save Data of Product in database
+        SyncProducts::dispatch('TEST-APBW', 'manager', 'test');
 
-            // Save Data of Product in database
-            SyncProducts::dispatch('TEST-APBW', 'manager', 'test');
-
-            $response = ['status' => true, 'message' => 'Sync Product successfully !'];
-        } catch (\Exception $e) {
-            $response = ['status' => false, 'message' => 'Something went wrong !'];
-        }
-        return $response;
+        $response = ['status' => true, 'message' => 'Sync Product successfully !'];
+      } catch (\Exception $e) {
+        $response = ['status' => false, 'message' => 'Something went wrong !'];
+      }
+      return $response;
     }
 
     public function getAll(Request $request){
@@ -135,6 +213,17 @@ class ProductController extends Controller
 
                                 return $btn;
                             })
+                            ->addColumn('action', function($row) {
+                                $btn = '<a href="' . route('product.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-success mr-10">
+                                    <i class="fa fa-edit"></i>
+                                  </a>';
+
+                                $btn .= '<a href="' . route('product.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-warning">
+                                    <i class="fa fa-file"></i>
+                                  </a>';
+                                
+                                return $btn;
+                            })
                             ->addColumn('class', function($row) {
                                 $html = "";
                                 return $html;
@@ -154,7 +243,7 @@ class ProductController extends Controller
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('is_active', $order);
                             })
-                            ->rawColumns(['status'])
+                            ->rawColumns(['status','action'])
                             ->make(true);
     }
 }

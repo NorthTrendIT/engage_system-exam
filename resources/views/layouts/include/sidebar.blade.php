@@ -150,7 +150,7 @@
 
             @if(Auth::user()->role_id == 1 || (isset($access['product']) && $access['product']['view_access'] == 1))
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['product.index'])) ? 'active' : '' }}" href="{{ route('product.index') }}">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['product.index','product.edit','product.show'])) ? 'active' : '' }}" href="{{ route('product.index') }}">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">

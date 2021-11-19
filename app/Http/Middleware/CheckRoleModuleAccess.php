@@ -156,13 +156,13 @@ class CheckRoleModuleAccess
 
 
                 // Product Module
-                if(!isset($access['product']) && in_array($request->route()->getName(), ['product.index','product.get-all','product.sync-products']) ){
+                if(!isset($access['product']) && in_array($request->route()->getName(), ['product.index','product.get-all','product.sync-products','product.store','product.edit','product.show']) ){
 
                     $status = false;
                     $message = "Oops ! you have not access for product module.";
                 }else{
 
-                    if(in_array($request->route()->getName(), ['product.index','product.get-all'])){
+                    if(in_array($request->route()->getName(), ['product.index','product.get-all','product.show'])){
                        
                         if($access['product']['view_access'] != 1){
                             
@@ -177,7 +177,35 @@ class CheckRoleModuleAccess
                             $message = "Oops ! you have not access for sync products.";
 
                         }
+                    }elseif(in_array($request->route()->getName(), ['product.store'])){
+                       
+                        if(isset($request->id)){
+                            if($access['product']['edit_access'] != 1){
+                                
+                                $status = false;
+                                $message = "Oops ! you have not access for edit product.";
+
+                            }
+                        }else{
+                            if($access['product']['add_access'] != 1){
+                                
+                                $status = false;
+                                $message = "Oops ! you have not access for create product.";
+
+                            }
+                        }
+
+                    }elseif(in_array($request->route()->getName(), ['product.edit'])){
+
+                        if($access['product']['edit_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for edit product.";
+
+                        }
+                       
                     }
+                    
                 }
 
                 if(!$status){

@@ -70,6 +70,7 @@
                               <th>Code</th>
                               <th>Date</th>
                               <th>Status</th>
+                              <th>Action</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -138,6 +139,7 @@
               {data: 'item_code', name: 'item_code'},
               {data: 'created_date', name: 'created_date'},
               {data: 'status', name: 'status'},
+              {data: 'action', name: 'action'},
           ],
           drawCallback:function(){
               $(function () {
