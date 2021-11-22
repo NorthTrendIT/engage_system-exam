@@ -1,0 +1,129 @@
+/* Datepicker CSS */
+  .datepicker {
+    width: 265px;
+    padding: 10px;
+    border-radius: 0.42rem;
+  }
+  .datepicker.datepicker-orient-top {
+    margin-top: 8px;
+  }
+  .datepicker table {
+    width: 100%;
+  }
+  .datepicker td,
+  .datepicker th {
+    font-size: 1rem;
+    font-weight: regular;
+    width: 33px;
+    height: 33px;
+    border-radius: 0.42rem;
+  }
+  .datepicker thead th {
+    color: #3F4254;
+  }
+  .datepicker thead th.prev, .datepicker thead th.datepicker-switch, .datepicker thead th.next {
+    font-weight: 500;
+    color: #3F4254;
+  }
+  .datepicker thead th.prev i, .datepicker thead th.datepicker-switch i, .datepicker thead th.next i {
+    font-size: 1.2rem;
+    color: #7E8299;
+  }
+  .datepicker thead th.prev i:before, .datepicker thead th.datepicker-switch i:before, .datepicker thead th.next i:before {
+    line-height: 0;
+    vertical-align: middle;
+  }
+  .datepicker thead th.prev:hover, .datepicker thead th.datepicker-switch:hover, .datepicker thead th.next:hover {
+    background: #F3F6F9 !important;
+  }
+  .datepicker thead th.dow {
+    color: #3F4254;
+    font-weight: 600;
+  }
+  .datepicker tbody tr > td {
+    width: 35px;
+    height: 35px;
+  }
+  .datepicker tbody tr > td.day {
+    color: #7E8299;
+    font-weight: 400;
+    text-align: center;
+  }
+  .datepicker tbody tr > td.day:hover {
+    background: #F3F6F9;
+    color: #3F4254;
+  }
+  .datepicker tbody tr > td.day.old {
+    color: #7E8299;
+  }
+  .datepicker tbody tr > td.day.new {
+    color: #3F4254;
+  }
+  .datepicker tbody tr > td.day.selected, .datepicker tbody tr > td.day.selected:hover, .datepicker tbody tr > td.day.active, .datepicker tbody tr > td.day.active:hover {
+    background: #3699FF;
+    color: #ffffff;
+  }
+  .datepicker tbody tr > td.day.today {
+    position: relative;
+    background: #E1F0FF !important;
+    color: #3699FF !important;
+  }
+  .datepicker tbody tr > td.day.today:before {
+    content: "";
+    display: inline-block;
+    border: solid transparent;
+    border-width: 0 0 7px 7px;
+    border-bottom-color: #3699FF;
+    border-top-color: #3699FF;
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+  }
+  .datepicker tbody tr > td.day.range {
+    background: #F3F6F9;
+  }
+  .datepicker tbody tr > td span.year,
+  .datepicker tbody tr > td span.hour,
+  .datepicker tbody tr > td span.minute,
+  .datepicker tbody tr > td span.month {
+    color: #7E8299;
+  }
+  .datepicker tbody tr > td span.year:hover,
+  .datepicker tbody tr > td span.hour:hover,
+  .datepicker tbody tr > td span.minute:hover,
+  .datepicker tbody tr > td span.month:hover {
+    background: #F3F6F9;
+  }
+  .datepicker tbody tr > td span.year.focused, .datepicker tbody tr > td span.year.focused:hover, .datepicker tbody tr > td span.year.active:hover, .datepicker tbody tr > td span.year.active.focused:hover, .datepicker tbody tr > td span.year.active,
+  .datepicker tbody tr > td span.hour.focused,
+  .datepicker tbody tr > td span.hour.focused:hover,
+  .datepicker tbody tr > td span.hour.active:hover,
+  .datepicker tbody tr > td span.hour.active.focused:hover,
+  .datepicker tbody tr > td span.hour.active,
+  .datepicker tbody tr > td span.minute.focused,
+  .datepicker tbody tr > td span.minute.focused:hover,
+  .datepicker tbody tr > td span.minute.active:hover,
+  .datepicker tbody tr > td span.minute.active.focused:hover,
+  .datepicker tbody tr > td span.minute.active,
+  .datepicker tbody tr > td span.month.focused,
+  .datepicker tbody tr > td span.month.focused:hover,
+  .datepicker tbody tr > td span.month.active:hover,
+  .datepicker tbody tr > td span.month.active.focused:hover,
+  .datepicker tbody tr > td span.month.active {
+    background: #3699FF;
+    color: #ffffff;
+  }
+  .datepicker tfoot tr > th {
+    width: 35px;
+    height: 35px;
+  }
+  .datepicker tfoot tr > th.today, .datepicker tfoot tr > th.clear {
+    border-radius: 0.42rem;
+    font-weight: 500;
+  }
+  .datepicker tfoot tr > th.today:hover, .datepicker tfoot tr > th.clear:hover {
+    background: #EBEDF3;
+  }
+  .datepicker.datepicker-inline {
+    border: 1px solid #EBEDF3;
+  }

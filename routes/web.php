@@ -93,7 +93,9 @@ Route::middleware(['auth'])->group(function(){
         Route::resource('promotion','App\Http\Controllers\PromotionsController');
 	    Route::post('promotion/get-all', 'App\Http\Controllers\PromotionsController@getAll')->name('promotion.get-all');
         Route::post('promotion/status/{id}', 'App\Http\Controllers\PromotionsController@updateStatus')->name('promotion.status');
-
+        Route::post('promotion/get-customers/','App\Http\Controllers\PromotionsController@getCustomers')->name('promotion.getCustomers');
+        Route::post('promotion/get-products/','App\Http\Controllers\PromotionsController@getProducts')->name('promotion.getProducts');
+        Route::post('promotion/get-promotion-data', 'App\Http\Controllers\PromotionsController@getPromotionData')->name('promotion.get-promotion-data');
 
     });
 
