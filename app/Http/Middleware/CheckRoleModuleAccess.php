@@ -20,8 +20,8 @@ class CheckRoleModuleAccess
     {
 
         if(Auth::user()->role_id != 1){ //Not Super Admin
-            $status = true;
-            $message = "";
+            $status = false;
+            $message = "Oops ! you have not access for the module.";;
             
             $role = Auth::user()->role;
 
@@ -40,7 +40,8 @@ class CheckRoleModuleAccess
             }
 
             if(!empty($access)){
-
+                $status = true;
+                
                 // User Module
                 if(!isset($access['user']) && in_array($request->route()->getName(), ['user.index','user.get-all','user.create','user.store','user.edit','user.status','user.destroy']) ){
 
@@ -204,25 +205,73 @@ class CheckRoleModuleAccess
 
                         }
                        
-                    }
-                    
+                    }    
                 }
 
-                if(!$status){
-                    if($request->ajax()){
-                        $response = array('status' => $status, "message" => $message);
-                        return response()->json($response);
-                    }else{
-                        \Session::flash('role_access_error_message', $message);
+                // Invoice Module
+                if(!isset($access['invoice']) && in_array($request->route()->getName(), ['invoices.index','invoices.get-all','invoices.sync-invoices'])){
 
-                        if(url()->previous() == url()->current()){
-                            return redirect()->route('home');
-                        }else{
-                            return redirect()->back();
+                    $status = false;
+                    $message = "Oops ! you have not access for invoice module.";
+                }else{
+
+                    if(in_array($request->route()->getName(), ['invoices.index','invoices.get-all'])){
+                       
+                        if($access['invoice']['view_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for invoice module.";
+
+                        }
+                    }elseif(in_array($request->route()->getName(), ['invoices.sync-invoices'])){
+                        if($access['invoice']['add_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for sync invoices.";
+
                         }
                     }
                 }
 
+                // Order Module
+                if(!isset($access['order']) && in_array($request->route()->getName(), ['orders.index','orders.get-all','orders.sync-orders'])){
+
+                    $status = false;
+                    $message = "Oops ! you have not access for order module.";
+                }else{
+
+                    if(in_array($request->route()->getName(), ['orders.index','orders.get-all'])){
+                       
+                        if($access['order']['view_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for order module.";
+
+                        }
+                    }elseif(in_array($request->route()->getName(), ['orders.sync-orders'])){
+                        if($access['order']['add_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for sync orders.";
+
+                        }
+                    }
+                }
+            }
+
+            if(!$status){
+                if($request->ajax()){
+                    $response = array('status' => $status, "message" => $message);
+                    return response()->json($response);
+                }else{
+                    \Session::flash('role_access_error_message', $message);
+
+                    if(url()->previous() == url()->current()){
+                        return redirect()->route('home');
+                    }else{
+                        return redirect()->back();
+                    }
+                }
             }
 
         }

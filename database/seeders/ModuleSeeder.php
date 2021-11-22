@@ -44,6 +44,16 @@ class ModuleSeeder extends Seeder
                         'slug' => 'product',
                         'model_name' => 'App\Models\Product',
                     ),
+                    array(
+                        'title' => 'Invoice',
+                        'slug' => 'invoice',
+                        'model_name' => 'App\Models\Invoice',
+                    ),
+                    array(
+                        'title' => 'Order',
+                        'slug' => 'order',
+                        'model_name' => 'App\Models\Order',
+                    ),
         		);
         Module::insert($data);
     }

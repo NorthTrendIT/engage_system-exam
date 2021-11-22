@@ -90,6 +90,7 @@
             </div>
             @endif
 
+            @if(Auth::user()->role_id == 1 || (isset($access['order']) && $access['order']['view_access'] == 1))
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['orders.index'])) ? 'active' : '' }}" href="{{ route('orders.index') }}">
                   <span class="menu-icon">
@@ -107,7 +108,9 @@
                   <span class="menu-title">Orders</span>
                </a>
             </div>
+            @endif
 
+            @if(Auth::user()->role_id == 1 || (isset($access['invoice']) && $access['invoice']['view_access'] == 1))
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['invoices.index'])) ? 'active' : '' }}" href="{{ route('invoices.index') }}">
                   <span class="menu-icon">
@@ -125,6 +128,7 @@
                   <span class="menu-title">Invoices</span>
                </a>
             </div>
+            @endif
 
             @if(Auth::user()->role_id == 1)
             <div class="menu-item">
