@@ -66,7 +66,7 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Role<span class="asterisk">*</span></label>
-                      <select class="form-control" name="role_id">
+                      <select class="form-control form-control-solid" name="role_id">
                         <option value=""></option>
                         @foreach($roles as $role)
                           <option value="{{ $role->id }}" @if(isset($edit) && $edit->role_id == $role->id) selected="" @endif>{{ $role->name }}</option>
@@ -82,7 +82,7 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Province</label>
-                      <select class="form-control" name="province_id">
+                      <select class="form-control form-control-solid" name="province_id">
                         <option value=""></option>
                         @foreach($provinces as $province)
                           <option value="{{ $province->id }}" @if(isset($edit) && $edit->province_id == $province->id) selected="" @endif>{{ $province->name }}</option>
@@ -94,7 +94,7 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>City</label>
-                      <select class="form-control" name="city_id">
+                      <select class="form-control form-control-solid" name="city_id">
                         <option value=""></option>
                         @if(isset($edit))
                           @foreach($cities as $city)
