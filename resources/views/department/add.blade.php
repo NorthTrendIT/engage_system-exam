@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title','Location')
+@section('title','Department')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Location</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Department</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('location.index') }}" class="btn btn-sm btn-primary">Back</a>
+        <a href="{{ route('department.index') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -36,28 +36,59 @@
                   <input type="hidden" name="id" value="{{ $edit->id }}">
                 @endif
 
-                <div class="row mb-5">
-                  
+                <div class="row mb-5 d-flex justify-content-between">
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Name<span class="asterisk">*</span></label>
-                      <input type="text" class="form-control form-control-solid" placeholder="Enter name" name="name" @if(isset($edit)) value="{{ $edit->name }}" @endif>
-                    </div>
-                  </div>
-                  
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label>Parent</label>
-                      <select class="form-control form-control-solid" name="parent_id">
-                        <option value=""></option>
-                        @foreach($parents as $parent)
-                          <option value="{{ $parent->id }}" @if(isset($edit) && $edit->parent_id == $parent->id) selected="" @endif>{{ $parent->name }}</option>
-                        @endforeach
-                      </select>
+                      <label>Department Name<span class="asterisk">*</span></label>
+                      <input type="text" class="form-control form-control-solid" placeholder="Enter department name" name="name" @if(isset($edit)) value="{{ $edit->name }}" @endif >
                     </div>
                   </div>
 
                 </div>
+
+                <div class="row mb-5 mt-10">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      
+                      <!--begin::Table container-->
+                      <div class="table-responsive">
+                         <!--begin::Table-->
+                         <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+                            <!--begin::Table head-->
+                            <thead>
+                              <tr class="fw-bolder text-muted d-flex justify-content-between">
+                                <th class="min-w-150px">Roles</th>
+                                <th class="min-w-120px">Add to Department ?</th>
+                              </tr>
+                            </thead>
+                            <!--end::Table head-->
+                            <!--begin::Table body-->
+                            <tbody>
+
+                              @foreach($roles as $role)
+                              <tr class="d-flex justify-content-between">
+                                <td>
+                                  <span class="text-muted me-2 fs-7 fw-bold">{{ $role->name }}</span>
+                                </td>
+                                <td>
+                                  <label class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input w-30px h-20px" type="checkbox" value="1" name="roles[{{ $role->id }}]" @if(isset($department_roles) && in_array($role->id, $department_roles)) checked="" @endif >
+                                  </label>
+                                </td>
+                              </tr>
+                              @endforeach
+
+                            </tbody>
+                            <!--end::Table body-->
+                         </table>
+                         <!--end::Table-->
+                      </div>
+                      <!--end::Table container-->
+
+                    </div>
+                  </div>
+                </div>
+
 
                 <div class="row mb-5">
                   <div class="col-md-12">
@@ -85,12 +116,7 @@
 
 <script>
   $(document).ready(function() {
-
-    $('[name="parent_id"]').select2({
-      placeholder: "Select a parent",
-      allowClear: true
-    });
-
+    
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
       var validator = validate_form();
@@ -98,7 +124,7 @@
       if (validator.form() != false) {
         $('[type="submit"]').prop('disabled', true);
         $.ajax({
-          url: "{{route('location.store')}}",
+          url: "{{route('department.store')}}",
           type: "POST",
           data: new FormData($("#myForm")[0]),
           async: false,
@@ -108,7 +134,7 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.href = '{{ route('location.index') }}';
+                window.location.href = '{{ route('department.index') }}';
               },1500)
             } else {
               toast_error(data.message);
@@ -135,8 +161,8 @@
           },
           messages: {
             name:{
-              required: "Please enter name.",
-              maxlength:'Please enter name less than 185 character',
+              required: "Please enter department name.",
+              maxlength:'Please enter department name less than 185 character',
             }
           },
       });

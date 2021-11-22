@@ -130,7 +130,7 @@
             </div>
             @endif
 
-            @if(Auth::user()->role_id == 1)
+            {{-- @if(Auth::user()->role_id == 1)
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['role.index','role.create','role.edit'])) ? 'active' : '' }}" href="{{ route('role.index') }}">
                   <span class="menu-icon">
@@ -189,6 +189,91 @@
                </a>
             </div>
             @endif
+
+            @if(Auth::user()->role_id == 1 || (isset($access['department']) && $access['department']['view_access'] == 1))
+            <div class="menu-item">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['department.index','department.create','department.edit'])) ? 'active' : '' }}" href="{{ route('department.index') }}">
+                  <span class="menu-icon">
+                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
+                     <span class="svg-icon svg-icon-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
+                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
+                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
+                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
+                        </svg>
+                     </span>
+                     <!--end::Svg Icon-->
+                  </span>
+                  <span class="menu-title">Department</span>
+               </a>
+            </div>
+            @endif --}}
+
+            @if(Auth::user()->role_id == 1 || ( (isset($access['location']) && $access['location']['view_access'] == 1) || (isset($access['department']) && $access['department']['view_access'] == 1) || (isset($access['user']) && $access['user']['view_access'] == 1)))
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['location.index','location.create','location.edit','role.index','role.create','role.edit','department.index','department.create','department.edit','user.index','user.create','user.edit'])) ? 'hover show' : '' }}">
+               <span class="menu-link">
+                  <span class="menu-icon">
+                     <!--begin::Svg Icon | path: icons/duotune/layouts/lay010.svg-->
+                     <span class="svg-icon svg-icon-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                           <path opacity="0.3" d="M20 21H3C2.4 21 2 20.6 2 20V10C2 9.4 2.4 9 3 9H20C20.6 9 21 9.4 21 10V20C21 20.6 20.6 21 20 21Z" fill="black"></path>
+                           <path d="M20 7H3C2.4 7 2 6.6 2 6V3C2 2.4 2.4 2 3 2H20C20.6 2 21 2.4 21 3V6C21 6.6 20.6 7 20 7Z" fill="black"></path>
+                        </svg>
+                     </span>
+                     <!--end::Svg Icon-->
+                  </span>
+                  <span class="menu-title">User Management</span>
+                  <span class="menu-arrow"></span>
+               </span>
+               <div class="menu-sub menu-sub-accordion">
+                  @if(Auth::user()->role_id == 1 || (isset($access['location']) && $access['location']['view_access'] == 1))
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['location.index','location.create','location.edit'])) ? 'active' : '' }}" href="{{ route('location.index') }}" >
+                        <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Locations</span>
+                     </a>
+                  </div>
+                  @endif
+
+                  @if(Auth::user()->role_id == 1)
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['role.index','role.create','role.edit'])) ? 'active' : '' }}" href="{{ route('role.index') }}">
+                        <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Roles</span>
+                     </a>
+                  </div>
+                  @endif
+
+                  @if(Auth::user()->role_id == 1 || (isset($access['department']) && $access['department']['view_access'] == 1))
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['department.index','department.create','department.edit'])) ? 'active' : '' }}" href="{{ route('department.index') }}" >
+                        <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Departments</span>
+                     </a>
+                  </div>
+                  @endif
+
+                  @if(Auth::user()->role_id == 1 || (isset($access['user']) && $access['user']['view_access'] == 1))
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['user.index','user.create','user.edit'])) ? 'active' : '' }}" href="{{ route('user.index') }}">
+                        <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Users</span>
+                     </a>
+                  </div>
+                  @endif
+               </div>
+            </div>
+            @endif
+
 
             @if(Auth::user()->role_id == 1 || (isset($access['product']) && $access['product']['view_access'] == 1))
             <div class="menu-item">

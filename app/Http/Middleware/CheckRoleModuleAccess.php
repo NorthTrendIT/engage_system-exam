@@ -320,6 +320,70 @@ class CheckRoleModuleAccess
                         }
                     }
                 }
+
+                // Department Module
+                if(!isset($access['department']) && in_array($request->route()->getName(), ['department.index','department.get-all','department.create','department.store','department.edit','department.status','department.destroy']) ){
+
+                    $status = false;
+                    $message = "Oops ! you have not access for department module.";
+
+                }else{
+
+                    if(in_array($request->route()->getName(), ['department.index','department.get-all'])){
+                       
+                        if($access['department']['view_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for department module.";
+
+                        }
+
+                    }elseif(in_array($request->route()->getName(), ['department.create'])){
+
+                        if($access['department']['add_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for create department.";
+
+                        }
+                       
+                    }elseif(in_array($request->route()->getName(), ['department.store'])){
+                       
+                        if(isset($request->id)){
+                            if($access['department']['edit_access'] != 1){
+                                
+                                $status = false;
+                                $message = "Oops ! you have not access for edit department.";
+
+                            }
+                        }else{
+                            if($access['department']['add_access'] != 1){
+                                
+                                $status = false;
+                                $message = "Oops ! you have not access for create department.";
+
+                            }
+                        }
+
+                    }elseif(in_array($request->route()->getName(), ['department.edit','department.status'])){
+
+                        if($access['department']['edit_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for edit department.";
+
+                        }
+                       
+                    }elseif(in_array($request->route()->getName(), ['department.destroy'])){
+                        if($access['department']['delete_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for delete department.";
+
+                        }
+                    }
+                }
+
             }
 
             if(!$status){

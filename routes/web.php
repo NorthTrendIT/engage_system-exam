@@ -99,6 +99,10 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');
 	    Route::post('location/status/{id}', 'App\Http\Controllers\LocationController@updateStatus')->name('location.status');
 
+	    Route::resource('department','App\Http\Controllers\DepartmentController');
+	    Route::post('department/get-all', 'App\Http\Controllers\DepartmentController@getAll')->name('department.get-all');
+	    Route::post('department/status/{id}', 'App\Http\Controllers\DepartmentController@updateStatus')->name('department.status');
+
     });
 
 });
