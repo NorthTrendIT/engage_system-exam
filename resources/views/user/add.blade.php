@@ -77,6 +77,37 @@
 
                 </div>
 
+                <div class="row mb-5">
+                  
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Province</label>
+                      <select class="form-control" name="province_id">
+                        <option value=""></option>
+                        @foreach($provinces as $province)
+                          <option value="{{ $province->id }}" @if(isset($edit) && $edit->province_id == $province->id) selected="" @endif>{{ $province->name }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>City</label>
+                      <select class="form-control" name="city_id">
+                        <option value=""></option>
+                        @if(isset($edit))
+                          @foreach($cities as $city)
+                            <option value="{{ $city->id }}" @if(isset($edit) && $edit->city_id == $city->id) selected="" @endif>{{ $city->name }}</option>
+                          @endforeach
+                        @endif
+                      </select>
+                    </div>
+                  </div>
+
+                </div>
+
+
                 @if(!isset($edit))
                 <div class="row mb-5">
                   <div class="col-md-6">
@@ -141,6 +172,16 @@
       allowClear: true
     });
 
+    $('[name="province_id"]').select2({
+      placeholder: "Select a province",
+      allowClear: true
+    });
+
+    $('[name="city_id"]').select2({
+      placeholder: "Select a city",
+      allowClear: true
+    });
+
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
       var validator = validate_form();
@@ -172,6 +213,36 @@
         });
       }
     });
+
+    $(document).on('change', '[name="province_id"]', function(event) {
+      event.preventDefault();
+      getCity();
+    });
+
+    function getCity() {
+      $id = $('[name="province_id"]').find('option:selected').val();
+
+      $.ajax({
+        url: '{{ route('user.get-city') }}',
+        method: "POST",
+        data: {
+                id:$id, 
+                _token:'{{ csrf_token() }}' 
+              }
+      })
+      .done(function(result) {
+        var option = "<option value=''></option>";
+        $.each(result, function(index, val) {
+          option += '<option value='+val.id+'>'+val.name+'</option>';
+        });
+
+        $('[name="city_id"]').html(option);
+        // $('[name="city_id"]').select2();
+      })
+      .fail(function() {
+        toast_error("error");
+      });
+    }
 
     function validate_form(){
       var validator = $("#myForm").validate({

@@ -59,6 +59,7 @@ Route::middleware(['auth'])->group(function(){
 	    Route::resource('user','App\Http\Controllers\UserController');
 	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
 	    Route::post('user/status/{id}', 'App\Http\Controllers\UserController@updateStatus')->name('user.status');
+	    Route::post('user/get-city', 'App\Http\Controllers\UserController@getCity')->name('user.get-city');
 
 
 		Route::resource('productfeatures','App\Http\Controllers\ProductFeaturesController')->middleware('super-admin');
@@ -94,6 +95,9 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('promotion/get-all', 'App\Http\Controllers\PromotionsController@getAll')->name('promotion.get-all');
         Route::post('promotion/status/{id}', 'App\Http\Controllers\PromotionsController@updateStatus')->name('promotion.status');
 
+        Route::resource('location','App\Http\Controllers\LocationController');
+	    Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');
+	    Route::post('location/status/{id}', 'App\Http\Controllers\LocationController@updateStatus')->name('location.status');
 
     });
 
