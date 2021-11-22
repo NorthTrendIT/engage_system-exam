@@ -21,5 +21,15 @@ class Product extends Model
     	'created_date',
     	'is_active',
     	'response',
+        'technical_specifications',
+        'product_features',
+        'product_benefits',
+        'product_sell_sheets',
     ];
+
+    public function product_images()
+    {
+        return $this->hasMany(ProductImage::class,'product_id');
+    }
+
 }

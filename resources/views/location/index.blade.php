@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title','Role')
+@section('title','Location')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Role</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Location</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('role.create') }}" class="btn btn-sm btn-primary">Create</a>
+        <a href="{{ route('location.create') }}" class="btn btn-sm btn-primary">Create</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -31,9 +31,9 @@
             </div> --}}
             <div class="card-body">
               <div class="row mt-5">
-                <div class="col-md-4">
+                <div class="col-md-3">
                   <div class="input-icon">
-                    <input type="text" class="form-control form-control-solid" placeholder="Search here..." id="kt_datatable_search_query">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
@@ -49,7 +49,15 @@
                   </select>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
+                    <option value="">Select status</option>
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                  </select>
+                </div>
+
+                <div class="col-md-3">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -68,7 +76,7 @@
                               <th>No.</th>
                               <th>Name</th>
                               <th>Parent</th>
-                              <th>Access</th>
+                              <th>Status</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -113,28 +121,32 @@
       var table = $("#myTable");
       table.DataTable().destroy();
 
+      $filter_search = $('[name="filter_search"]').val();
       $filter_parent = $('[name="filter_parent"]').find('option:selected').val();
+      $filter_status = $('[name="filter_status"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
           serverSide: true,
           scrollX: true,
-          filter: true,
+          order: [],
           ajax: {
-              'url': "{{ route('role.get-all') }}",
+              'url': "{{ route('location.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
               data:{
+                filter_search : $filter_search,
                 filter_parent : $filter_parent,
+                filter_status : $filter_status,
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
               {data: 'name', name: 'name'},
               {data: 'parent', name: 'parent'},
-              {data: 'access', name: 'access'},
+              {data: 'status', name: 'status'},
               {data: 'action', name: 'action', orderable: false, searchable: false},
           ],
           drawCallback:function(){
@@ -148,14 +160,13 @@
         });
     }
 
-    $('.search').on('click', function(){
+    $(document).on('click', '.search', function(event) {
       render_table();
-      $('#myTable').DataTable().search($('#kt_datatable_search_query').val()).draw();
-    })
+    });
 
-    $('.clear-search').on('click', function(){
-      $('#myTable').dataTable().fnFilter('');
-      $('#kt_datatable_search_query').val('');
+    $(document).on('click', '.clear-search', function(event) {
+      $('[name="filter_search"]').val('');
+      $('[name="filter_status"]').val('').trigger('change');
       $('[name="filter_parent"]').val('').trigger('change');
       render_table();
     })
@@ -194,7 +205,43 @@
           });
         }
       })
-  });
+    });
+
+    $(document).on('click', '.status', function(event) {
+      event.preventDefault();
+      $url = $(this).attr('data-url');
+
+      Swal.fire({
+        title: 'Are you sure want to change status?',
+        //text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, change it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: $url,
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}' 
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              render_table();
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
   })
 </script>
 @endpush

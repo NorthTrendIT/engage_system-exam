@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Role;
+use App\Models\Location;
 use App\Models\User;
 use Validator;
 use DataTables;
@@ -32,7 +33,8 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::where('id','!=',1)->get();
-        return view('user.add',compact('roles'));
+        $provinces = Location::whereNull('parent_id')->where('is_active',true)->get();
+        return view('user.add',compact('roles','provinces'));
     }
 
     /**
@@ -50,6 +52,8 @@ class UserController extends Controller
                     'last_name' => 'required|string|max:185',
                     'email' => 'required|max:185|unique:users,email,NULL,id,deleted_at,NULL|regex:/(.+)@(.+)\.(.+)/i',
                     'role_id' => 'required|exists:roles,id',
+                    'city_id' => 'nullable|exists:locations,id',
+                    'province_id' => 'nullable|exists:locations,id',
                     'password' => 'required|string|min:8',
                     'confirm_password' => 'required|string|min:8|same:password',
                 );
@@ -135,8 +139,14 @@ class UserController extends Controller
     {
         $edit = User::where('id','!=',1)->where('id',$id)->firstOrFail();
         $roles = Role::where('id','!=',1)->get();
+        $provinces = Location::whereNull('parent_id')->where('is_active',true)->get();
 
-        return view('user.add',compact('roles','edit'));
+        $cities = collect();
+        if($edit->province_id){
+            $cities = Location::where('parent_id',$edit->province_id)->where('is_active',true)->get();
+        }
+
+        return view('user.add',compact('roles','edit','provinces','cities'));
     }
 
     /**
@@ -182,6 +192,17 @@ class UserController extends Controller
         return $response;
     }
 
+    public function getCity(Request $request)
+    {
+        $id = $request->id;
+        $cities = collect();
+        if($id != null){
+            $cities = Location::where('parent_id',$id)->where('is_active',true)->get();
+        }
+
+        return $cities;
+    }
+
     public function getAll(Request $request){
 
         $data = User::where('users.id','!=',1);
@@ -209,10 +230,10 @@ class UserController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('user.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-success">
-                                    <i class="fa fa-edit"></i>
+                                $btn = '<a href="' . route('user.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                    <i class="fa fa-pencil"></i>
                                   </a>';
-                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('user.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-danger delete">
+                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('user.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
                                     <i class="fa fa-trash"></i>
                                   </a>';
                                 

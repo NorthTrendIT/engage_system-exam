@@ -46,6 +46,18 @@
 
                   <div class="col-md-4">
                     <div class="form-group">
+                      <label>Parent</label>
+                      <select class="form-control form-control-solid" name="parent_id">
+                        <option value=""></option>
+                        @foreach($parents as $parent)
+                          <option value="{{ $parent->id }}" @if(isset($edit) && $edit->parent_id == $parent->id) selected="" @endif>{{ $parent->name }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="form-group">
                       <label>Select Access<span class="asterisk">*</span></label>
                       <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" name="all_module_access">
                         <option value="">Select Access </option>
@@ -144,6 +156,11 @@
 
 <script>
   $(document).ready(function() {
+    
+    $('[name="parent_id"]').select2({
+      placeholder: "Select a parent",
+      allowClear: true
+    });
 
     @if(isset($edit) && $edit->all_module_access == 1)
     $('input[type="checkbox"]').prop('checked', true);

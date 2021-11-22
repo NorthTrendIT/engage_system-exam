@@ -21,6 +21,10 @@
 	.mr-10{
 		margin-right: 10px;
 	}
+
+	.dropify-message .span .p::before{
+    	font-size: 20px !important;
+	}
 </style>
 
 @stack('css')

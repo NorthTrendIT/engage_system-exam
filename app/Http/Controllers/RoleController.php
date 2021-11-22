@@ -19,7 +19,8 @@ class RoleController extends Controller
      */
     public function index()
     {
-        return view('role.index');
+      $parents = Role::where('id','!=',1)->whereNull('parent_id')->get();
+      return view('role.index',compact('parents'));
     }
 
     /**
@@ -29,8 +30,9 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $modules = Module::where('slug','!=','role')->get();
-        return view('role.add',compact('modules'));
+      $modules = Module::where('slug','!=','role')->get();
+      $parents = Role::whereNull('parent_id')->get();
+      return view('role.add',compact('modules','parents'));
     }
 
     /**
@@ -45,7 +47,8 @@ class RoleController extends Controller
 
         $rules = array(
                     'all_module_access' => 'required',
-                    'name' => 'required|max:185|unique:roles,name,NULL,id,deleted_at,NULL'
+                    'name' => 'required|max:185|unique:roles,name,NULL,id,deleted_at,NULL',
+                    'parent_id' => 'nullable|exists:roles,id',
                 );
 
         if(isset($input['id'])){
@@ -148,17 +151,16 @@ class RoleController extends Controller
     {
         $edit = Role::where('id','!=',1)->where('id',$id)->firstOrFail();
         $modules = Module::where('slug','!=','role')->get();
+        $parents = Role::whereNull('parent_id')->where('id','!=',$id)->where('id','!=',1)->get();
 
         $role_module_access = array();
         if($edit->role_module_access){
-            $role_module_access = $edit->role_module_access->toArray();
-            $key = array_column($role_module_access, 'module_id');
+          $role_module_access = $edit->role_module_access->toArray();
+          $key = array_column($role_module_access, 'module_id');
 
-            $role_module_access = array_combine($key, $role_module_access);
-
-            // dd($role_module_access);
+          $role_module_access = array_combine($key, $role_module_access);
         }
-        return view('role.add',compact('modules','edit','role_module_access'));
+        return view('role.add',compact('modules','edit','role_module_access','parents'));
     }
 
     /**
@@ -193,15 +195,19 @@ class RoleController extends Controller
 
     public function getAll(Request $request){
 
-        $data = Role::where('id','!=',1)->orderBy('id','desc')->get();
+        $data = Role::where('id','!=',1)->orderBy('id','desc');
 
-        return DataTables::of($data)
+        if($request->filter_parent != ""){
+            $data->where('parent_id',$request->filter_parent);
+        }
+        
+        return DataTables::of($data->get())
                             ->addIndexColumn()
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('role.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-success">
-                                    <i class="fa fa-edit"></i>
+                                $btn = '<a href="' . route('role.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm ">
+                                    <i class="fa fa-pencil"></i>
                                   </a>';
-                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('role.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-danger delete">
+                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('role.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
                                     <i class="fa fa-trash"></i>
                                   </a>';
                                 
@@ -213,6 +219,14 @@ class RoleController extends Controller
                                     return "All Module Access";
                                 }else{
                                     return "Custom Module Access";
+                                }
+                            })
+                            ->addColumn('parent', function($row) {
+                                
+                                if(@$row->parent){
+                                    return @$row->parent->name;
+                                }else{
+                                    return "-";
                                 }
                             })
                             ->rawColumns(['action', 'access'])
