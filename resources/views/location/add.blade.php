@@ -48,7 +48,7 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Parent</label>
-                      <select class="form-control" name="parent_id">
+                      <select class="form-control form-control-solid" name="parent_id">
                         <option value=""></option>
                         @foreach($parents as $parent)
                           <option value="{{ $parent->id }}" @if(isset($edit) && $edit->parent_id == $parent->id) selected="" @endif>{{ $parent->name }}</option>

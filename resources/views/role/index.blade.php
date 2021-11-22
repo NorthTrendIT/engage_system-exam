@@ -33,11 +33,20 @@
               <div class="row mt-5">
                 <div class="col-md-4">
                   <div class="input-icon">
-                    <input type="text" class="form-control" placeholder="Search here..." id="kt_datatable_search_query">
+                    <input type="text" class="form-control form-control-solid" placeholder="Search here..." id="kt_datatable_search_query">
                     <span>
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
                   </div>
+                </div>
+
+                <div class="col-md-3">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_parent" data-control="select2" >
+                    <option value="">Select parent</option>
+                    @foreach($parents as $parent)
+                    <option value="{{ $parent->id }}">{{ $parent->name }}</option>
+                    @endforeach
+                  </select>
                 </div>
 
                 <div class="col-md-4">
@@ -58,6 +67,7 @@
                             <tr>
                               <th>No.</th>
                               <th>Name</th>
+                              <th>Parent</th>
                               <th>Access</th>
                               <th>Action</th>
                             </tr>
@@ -75,26 +85,6 @@
 
                   </div>
 
-                  {{-- <!--begin: Datatable-->
-                    <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
-                      <div class="row">
-                         <div class="col-sm-12">
-                            <table class="table table-bordered table-checkable dataTable no-footer" id="myTable">
-                               <thead>
-                                  <tr role="row">
-                                    <th>No.</th>
-                                    <th>Name</th>
-                                    <th>Access</th>
-                                    <th>Action</th>
-                                  </tr>
-                               </thead>
-                               <tbody>
-                               </tbody>
-                            </table>
-                         </div>
-                      </div>
-                    </div>
-                   <!--end: Datatable--> --}}
                 </div>
               </div>
 
@@ -123,6 +113,8 @@
       var table = $("#myTable");
       table.DataTable().destroy();
 
+      $filter_parent = $('[name="filter_parent"]').find('option:selected').val();
+
       table.DataTable({
           processing: true,
           serverSide: true,
@@ -134,12 +126,14 @@
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
-              // data:{
-              // }
+              data:{
+                filter_parent : $filter_parent,
+              }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex'},
               {data: 'name', name: 'name'},
+              {data: 'parent', name: 'parent'},
               {data: 'access', name: 'access'},
               {data: 'action', name: 'action', orderable: false, searchable: false},
           ],
@@ -162,6 +156,7 @@
     $('.clear-search').on('click', function(){
       $('#myTable').dataTable().fnFilter('');
       $('#kt_datatable_search_query').val('');
+      $('[name="filter_parent"]').val('').trigger('change');
       render_table();
     })
 
