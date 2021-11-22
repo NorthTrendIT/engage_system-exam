@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Promotions;
 use App\Models\PromotionTypes;
+use App\Models\Customer;
+use App\Models\Product;
+use App\Models\PromotionFor;
 use Validator;
 use DataTables;
 use Auth;
@@ -46,6 +49,8 @@ class PromotionsController extends Controller
                     'promotion_type_id' => 'required',
                     'title' => 'required|string|max:185',
                     'discount_percentage' => 'required',
+                    'customer_ids'=> 'required_if:promotion_scope,==,C',
+                    'product_ids'=> 'required_if:promotion_scope,==,P',
                 );
 
         if(request()->hasFile('promo_image')){
@@ -57,7 +62,7 @@ class PromotionsController extends Controller
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
-
+            // dd($input);
             if(isset($input['id'])){
                 $promotion = Promotions::find($input['id']);
                 $message = "Promotion updated successfully.";
@@ -91,6 +96,30 @@ class PromotionsController extends Controller
             $promotion->promotion_end_date = date('Y-m-d',strtotime($input['promotion_end_date']));
             $promotion->save();
 
+            if($input['promotion_scope'] == 'C' && isset($input['customer_ids']) ){
+                $c_ids = $input['customer_ids'];
+                PromotionFor::where('promotion_id', $promotion->id)->delete();
+                foreach($c_ids as $value){
+                    $promotionFor = PromotionFor::updateOrCreate([
+                                'promotion_id' => $promotion->id,
+                                'customer_id' => $value,
+                            ]
+                        );
+                }
+            }
+
+            if($input['promotion_scope'] == 'P' && isset($input['product_ids']) ){
+                $c_ids = $input['product_ids'];
+                PromotionFor::where('promotion_id', $promotion->id)->delete();
+                foreach($c_ids as $value){
+                    $promotionFor = PromotionFor::updateOrCreate([
+                                'promotion_id' => $promotion->id,
+                                'product_id' => $value,
+                            ]
+                        );
+                }
+            }
+
             $response = ['status'=>true,'message'=>$message];
         }
 
@@ -105,7 +134,19 @@ class PromotionsController extends Controller
      */
     public function show($id)
     {
-        //
+        $temp = Promotions::where('id',$id)->firstOrFail();
+
+        if($temp->promotion_scope == 'C'){
+            $data = Promotions::where('id',$id)->with(['promotion_data', 'promotion_data.customer'])->firstOrFail();
+        }
+        if($temp->promotion_scope == 'P'){
+            $data = Promotions::where('id',$id)->with(['promotion_data', 'promotion_data.product'])->firstOrFail();
+        }
+
+        // dd($edit->toArray());
+        $promotion_type = PromotionTypes::get();
+
+        return view('promotions.view',compact('data', 'promotion_type'));
     }
 
     /**
@@ -116,7 +157,16 @@ class PromotionsController extends Controller
      */
     public function edit($id)
     {
-        $edit = Promotions::where('id',$id)->firstOrFail();
+        $data = Promotions::where('id',$id)->firstOrFail();
+
+        if($data->promotion_scope == 'C'){
+            $edit = Promotions::where('id',$id)->with(['promotion_data', 'promotion_data.customer'])->firstOrFail();
+        }
+        if($data->promotion_scope == 'P'){
+            $edit = Promotions::where('id',$id)->with(['promotion_data', 'promotion_data.product'])->firstOrFail();
+        }
+
+        // dd($edit->toArray());
         $promotion_type = PromotionTypes::get();
 
         return view('promotions.add',compact('edit', 'promotion_type'));
@@ -230,16 +280,96 @@ class PromotionsController extends Controller
                     return $btn;
                 })
                 ->addColumn('action', function($row) {
-                    $btn = '<a href="' . route('promotion.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                    $btn = '<a href="' . route('promotion.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary">
+                              <i class="fa fa-eye"></i>
+                          </a>';
+                    $btn .= '<a href="' . route('promotion.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-success">
                                 <i class="fa fa-pencil"></i>
                             </a>';
-                    $btn .= ' <a href="javascript:void(0)" data-url="' . route('promotion.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
+                    $btn .= ' <a href="javascript:void(0)" data-url="' . route('promotion.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-danger delete">
                                 <i class="fa fa-trash"></i>
                               </a>';
 
                     return $btn;
                 })
-                ->rawColumns(['status', 'action'])
+                ->addColumn('view', function($row) {
+                    $btn = '<a href="' . route('promotion.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                <i class="fa fa-eye"></i>
+                            </a>';
+
+                    return $btn;
+                })
+                ->rawColumns(['view', 'status', 'action'])
+                ->make(true);
+    }
+
+    function getCustomers(Request $request){
+        $search = $request->search;
+
+        if($search == ''){
+            $data = Customer::orderby('card_name','asc')->select('id','card_name')->limit(50)->get();
+        }else{
+            $data = Customer::orderby('card_name','asc')->select('id','card_name')->where('card_name', 'like', '%' .$search . '%')->limit(50)->get();
+        }
+
+        $response = array();
+        foreach($data as $value){
+            $response[] = array(
+                "id"=>$value->id,
+                "text"=>$value->card_name
+            );
+        }
+
+        return response()->json($response);
+    }
+
+    function getProducts(Request $request){
+        $search = $request->search;
+
+        if($search == ''){
+            $data = Product::orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
+        }else{
+            $data = Product::orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
+        }
+
+        $response = array();
+        foreach($data as $value){
+            $response[] = array(
+                "id"=>$value->id,
+                "text"=>$value->item_name
+            );
+        }
+
+        return response()->json($response);
+    }
+
+    public function getPromotionData(Request $request){
+        $scope = $request->scope;
+        // $data = PromotionFor::where('id', $request->id);
+
+        if($scope == 'C'){
+            $data = PromotionFor::where('promotion_id', $request->id)->with('customer');
+        }
+
+        if($scope == 'P'){
+            $data = PromotionFor::where('promotion_id', $request->id)->with('product');
+        }
+
+        // dd($data->get()->toArray());
+        return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('name', function($row) use ($scope) {
+                    if($scope == 'C'){
+                        return $row->customer->card_name;
+                    }
+
+                    if($scope == 'P'){
+                        return $row->product->item_name;
+                    }
+                })
+                ->addColumn('is_interested', function($row) {
+                    return "-";
+                })
                 ->make(true);
     }
 }

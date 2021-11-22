@@ -21,4 +21,9 @@ class Promotions extends Model
       'promotion_end_date',
       'is_active',
     ];
+
+    public function promotion_data()
+    {
+        return $this->hasMany(PromotionFor::class, 'promotion_id');
+    }
 }
