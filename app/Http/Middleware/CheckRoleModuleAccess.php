@@ -257,6 +257,69 @@ class CheckRoleModuleAccess
                         }
                     }
                 }
+
+                // Location Module
+                if(!isset($access['location']) && in_array($request->route()->getName(), ['location.index','location.get-all','location.create','location.store','location.edit','location.status','location.destroy']) ){
+
+                    $status = false;
+                    $message = "Oops ! you have not access for location module.";
+
+                }else{
+
+                    if(in_array($request->route()->getName(), ['location.index','location.get-all'])){
+                       
+                        if($access['location']['view_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for location module.";
+
+                        }
+
+                    }elseif(in_array($request->route()->getName(), ['location.create'])){
+
+                        if($access['location']['add_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for create location.";
+
+                        }
+                       
+                    }elseif(in_array($request->route()->getName(), ['location.store'])){
+                       
+                        if(isset($request->id)){
+                            if($access['location']['edit_access'] != 1){
+                                
+                                $status = false;
+                                $message = "Oops ! you have not access for edit location.";
+
+                            }
+                        }else{
+                            if($access['location']['add_access'] != 1){
+                                
+                                $status = false;
+                                $message = "Oops ! you have not access for create location.";
+
+                            }
+                        }
+
+                    }elseif(in_array($request->route()->getName(), ['location.edit','location.status'])){
+
+                        if($access['location']['edit_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for edit location.";
+
+                        }
+                       
+                    }elseif(in_array($request->route()->getName(), ['location.destroy'])){
+                        if($access['location']['delete_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for delete location.";
+
+                        }
+                    }
+                }
             }
 
             if(!$status){

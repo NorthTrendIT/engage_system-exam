@@ -54,6 +54,11 @@ class ModuleSeeder extends Seeder
                         'slug' => 'order',
                         'model_name' => 'App\Models\Order',
                     ),
+                    array(
+                        'title' => 'Location',
+                        'slug' => 'location',
+                        'model_name' => 'App\Models\Location',
+                    ),
         		);
         Module::insert($data);
     }
