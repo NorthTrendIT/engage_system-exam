@@ -31,7 +31,7 @@ class RoleController extends Controller
     public function create()
     {
       $modules = Module::where('slug','!=','role')->get();
-      $parents = Role::whereNull('parent_id')->get();
+      $parents = Role::where('id','!=',1)->get();
       return view('role.add',compact('modules','parents'));
     }
 
@@ -151,7 +151,7 @@ class RoleController extends Controller
     {
         $edit = Role::where('id','!=',1)->where('id',$id)->firstOrFail();
         $modules = Module::where('slug','!=','role')->get();
-        $parents = Role::whereNull('parent_id')->where('id','!=',$id)->where('id','!=',1)->get();
+        $parents = Role::where('id','!=',$id)->where('id','!=',1)->get();
 
         $role_module_access = array();
         if($edit->role_module_access){

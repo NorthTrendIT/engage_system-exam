@@ -19,11 +19,11 @@ class ModuleSeeder extends Seeder
         \Schema::enableForeignKeyConstraints();
 
         $data = array(
-        			array(
+        			/*array(
         				'title' => 'Role',
         				'slug' => 'role',
         				'model_name' => 'App\Models\Role',
-        			),
+        			),*/
         			array(
         				'title' => 'User',
         				'slug' => 'user',
@@ -58,6 +58,11 @@ class ModuleSeeder extends Seeder
                         'title' => 'Location',
                         'slug' => 'location',
                         'model_name' => 'App\Models\Location',
+                    ),
+                    array(
+                        'title' => 'Department',
+                        'slug' => 'department',
+                        'model_name' => 'App\Models\Department',
                     ),
         		);
         Module::insert($data);

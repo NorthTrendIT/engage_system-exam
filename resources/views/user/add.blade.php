@@ -65,12 +65,36 @@
                   
                   <div class="col-md-6">
                     <div class="form-group">
+                      <label>Department<span class="asterisk">*</span></label>
+                      <select class="form-control form-control-solid" name="department_id">
+                        <option value=""></option>
+                        @foreach($departments as $department)
+                          <option value="{{ $department->id }}" @if(isset($edit) && $edit->department_id == $department->id) selected="" @endif>{{ $department->name }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="row mb-5">
+                  
+                  <div class="col-md-6">
+                    <div class="form-group">
                       <label>Role<span class="asterisk">*</span></label>
                       <select class="form-control form-control-solid" name="role_id">
                         <option value=""></option>
-                        @foreach($roles as $role)
-                          <option value="{{ $role->id }}" @if(isset($edit) && $edit->role_id == $role->id) selected="" @endif>{{ $role->name }}</option>
-                        @endforeach
+                        
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Parent User</label>
+                      <select class="form-control form-control-solid" name="parent_id">
+                        <option value=""></option>
+                        
                       </select>
                     </div>
                   </div>
@@ -143,7 +167,7 @@
                 <div class="row mb-5">
                   <div class="col-md-12">
                     <div class="form-group">
-                      <input type="submit" value="{{ isset($edit) ? "Update" : "Add" }}" class="btn btn-primary">
+                      <input type="submit" value="{{ isset($edit) ? "Update" : "Save" }}" class="btn btn-primary">
                     </div>
                   </div>
                 </div>
@@ -166,6 +190,15 @@
 
 <script>
   $(document).ready(function() {
+    $('[name="department_id"]').select2({
+      placeholder: "Select a department",
+      allowClear: true
+    });
+
+    $('[name="parent_id"]').select2({
+      placeholder: "Select a parent",
+      allowClear: true
+    });
 
     $('[name="role_id"]').select2({
       placeholder: "Select a role",
@@ -219,6 +252,21 @@
       getCity();
     });
 
+    $(document).on('change', '[name="department_id"]', function(event) {
+      event.preventDefault();
+      getRoles();
+    });
+
+    $(document).on('change', '[name="role_id"]', function(event) {
+      event.preventDefault();
+      getParents();
+    });
+
+    @if(isset($edit))
+      getRoles('{{ $edit->role_id }}');
+      setTimeout(function(){ getParents('{{ $edit->parent_id }}'); }, 1000);
+    @endif
+
     function getCity() {
       $id = $('[name="province_id"]').find('option:selected').val();
 
@@ -244,6 +292,70 @@
       });
     }
 
+    function getRoles($selected_id = false) {
+      $department_id = $('[name="department_id"]').find('option:selected').val();
+
+      $.ajax({
+        url: '{{ route('user.get-roles') }}',
+        method: "POST",
+        data: {
+                department_id:$department_id, 
+                _token:'{{ csrf_token() }}' 
+              }
+      })
+      .done(function(result) {
+        var option = "<option value=''></option>";
+        $.each(result, function(index, val) {
+          var selected = "";
+
+          if($selected_id == val.role.id){
+            selected = "selected";
+          }
+
+          option += '<option value='+val.role.id+' '+ selected + '>'+val.role.name+'</option>';
+        });
+
+        $('[name="role_id"]').html(option);
+      })
+      .fail(function() {
+        toast_error("error");
+      });
+    }
+
+    function getParents($selected_id = false) {
+      $role_id = $('[name="role_id"]').find('option:selected').val();
+
+      $.ajax({
+        url: '{{ route('user.get-parents') }}',
+        method: "POST",
+        data: {
+                @if(isset($edit))
+                id:'{{ $edit->id }}', 
+                @endif
+                role_id:$role_id, 
+                _token:'{{ csrf_token() }}' 
+              }
+      })
+      .done(function(result) {
+        var option = "<option value=''></option>";
+        $.each(result, function(index, val) {
+
+          var selected = "";
+
+          if($selected_id == val.id){
+            selected = "selected";
+          }
+
+          option += '<option value='+val.id+' '+ selected + '>'+val.first_name+' '+val.last_name+'</option>';
+        });
+
+        $('[name="parent_id"]').html(option);
+      })
+      .fail(function() {
+        toast_error("error");
+      });
+    }
+
     function validate_form(){
       var validator = $("#myForm").validate({
           errorClass: "is-invalid",
@@ -262,6 +374,9 @@
               maxlength: 185,
             },
             role_id:{
+              required:true,
+            },
+            department_id:{
               required:true,
             },
             @if(!isset($edit))

@@ -60,6 +60,8 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
 	    Route::post('user/status/{id}', 'App\Http\Controllers\UserController@updateStatus')->name('user.status');
 	    Route::post('user/get-city', 'App\Http\Controllers\UserController@getCity')->name('user.get-city');
+	    Route::post('user/get-roles', 'App\Http\Controllers\UserController@getRoles')->name('user.get-roles');
+	    Route::post('user/get-parents', 'App\Http\Controllers\UserController@getParents')->name('user.get-parents');
 
 
 		Route::resource('productfeatures','App\Http\Controllers\ProductFeaturesController')->middleware('super-admin');
@@ -102,6 +104,9 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');
 	    Route::post('location/status/{id}', 'App\Http\Controllers\LocationController@updateStatus')->name('location.status');
 
+	    Route::resource('department','App\Http\Controllers\DepartmentController');
+	    Route::post('department/get-all', 'App\Http\Controllers\DepartmentController@getAll')->name('department.get-all');
+	    Route::post('department/status/{id}', 'App\Http\Controllers\DepartmentController@updateStatus')->name('department.status');
 
     });
 
