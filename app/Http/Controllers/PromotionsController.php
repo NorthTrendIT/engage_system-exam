@@ -71,11 +71,11 @@ class PromotionsController extends Controller
                 $message = "Promotion created successfully.";
             }
 
-            $old_promo_image = file_exists(public_path('sitebucket/promotion/') . "/" . $promotion->promo_image);
-            if(request()->hasFile('promo_image') && $promotion->promo_image && $old_promo_image){
-                unlink(public_path('sitebucket/promotion/') . "/" . $promotion->promo_image);
-                $input['promo_image'] = null;
-            }
+            // $old_promo_image = file_exists(public_path('sitebucket/promotion/') . "/" . $promotion->promo_image);
+            // if(request()->hasFile('promo_image') && $promotion->promo_image && $old_promo_image){
+            //     unlink(public_path('sitebucket/promotion/') . "/" . $promotion->promo_image);
+            //     $input['promo_image'] = null;
+            // }
 
             /*Upload Image*/
             if (request()->hasFile('promo_image')) {

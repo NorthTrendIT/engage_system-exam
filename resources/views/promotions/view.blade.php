@@ -78,7 +78,7 @@
                                 <!-- Promotion For -->
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Promotion For></label>
+                                        <label>Promotion For</label>
                                         <input type="text" class="form-control form-control-solid" value="{{ $data->promotion_for }}" disabled="disabled">
                                     </div>
                                 </div>
@@ -88,7 +88,7 @@
                                 <!-- Promotion Scope -->
                                 <div class="col-md-6" id="scope_block">
                                     <div class="form-group">
-                                        <label>Select Promotion Scope<span class="asterisk">*</span></label>
+                                        <label>Promotion Scope<span class="asterisk">*</span></label>
                                         @if($data->promotion_scope == 'C')
                                             <input type="text" class="form-control form-control-solid" value="Customers" disabled="disabled">
                                         @endif()
