@@ -42,7 +42,7 @@
 
                 <div class="col-md-3">
                   <select class="form-control form-control-lg form-control-solid" name="filter_parent" data-control="select2" >
-                    <option value="">Select parent</option>
+                    <option value="">Select province</option>
                     @foreach($parents as $parent)
                     <option value="{{ $parent->id }}">{{ $parent->name }}</option>
                     @endforeach
@@ -75,7 +75,7 @@
                             <tr>
                               <th>No.</th>
                               <th>Name</th>
-                              <th>Parent</th>
+                              <th>Province</th>
                               <th>Status</th>
                               <th>Action</th>
                             </tr>
