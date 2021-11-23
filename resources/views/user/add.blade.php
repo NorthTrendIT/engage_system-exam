@@ -91,7 +91,7 @@
 
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Parent User</label>
+                      <label class="parent_id_label">Parent User</label>
                       <select class="form-control form-control-solid" name="parent_id">
                         <option value=""></option>
                         
@@ -338,7 +338,7 @@
       })
       .done(function(result) {
         var option = "<option value=''></option>";
-        $.each(result, function(index, val) {
+        $.each(result.users, function(index, val) {
 
           var selected = "";
 
@@ -347,9 +347,22 @@
           }
 
           option += '<option value='+val.id+' '+ selected + '>'+val.first_name+' '+val.last_name+'</option>';
+
         });
 
         $('[name="parent_id"]').html(option);
+
+        var parent_name = "Parent User";
+        if(result.parent_name){
+          parent_name = result.parent_name;
+        }
+        
+        $('[name="parent_id"]').select2({
+          placeholder: "Select " + parent_name,
+          allowClear: true
+        });
+        $('.parent_id_label').text(parent_name);
+
       })
       .fail(function() {
         toast_error("error");

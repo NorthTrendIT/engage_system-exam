@@ -214,7 +214,7 @@ class ProductController extends Controller
                                   </a>';
 
                                 $btn .= '<a href="' . route('product.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
-                                    <i class="fa fa-file"></i>
+                                    <i class="fa fa-eye"></i>
                                   </a>';
                                 
                                 return $btn;

@@ -229,12 +229,15 @@ class UserController extends Controller
     {
         $role_id = $request->role_id;
         $users = collect();
+        $parent_name = "";
         if($role_id != null){
             $role = Role::where('id',$role_id)->first();
 
             if(!is_null($role)){
 
                 if(!is_null($role->parent_id)){
+
+                    $parent_name = @$role->parent->name;
                     $users = User::where('role_id',$role->parent_id)->where('is_active',true);
 
                     if(isset($request->id)){
@@ -245,7 +248,8 @@ class UserController extends Controller
             }
         }
 
-        return $users;
+
+        return ['users' => $users, 'parent_name' => $parent_name];
     }
 
     public function getAll(Request $request){
@@ -283,7 +287,7 @@ class UserController extends Controller
                                   </a>';
 
                                 $btn .= ' <a href="' . route('user.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
-                                    <i class="fa fa-file"></i>
+                                    <i class="fa fa-eye"></i>
                                   </a>';
                                 
                                 return $btn;

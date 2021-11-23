@@ -19,7 +19,12 @@ class RoleController extends Controller
      */
     public function index()
     {
-      $parents = Role::where('id','!=',1)->whereNull('parent_id')->get();
+      $ids = array();
+      $roles = Role::where('id','!=',1)->whereNotNull('parent_id')->get();
+      if(count($roles)){
+        $ids = array_column($roles->toArray(), 'parent_id');
+      }
+      $parents = Role::where('id','!=',1)->whereNull('parent_id')->orwhereIn('id',$ids)->get();
       return view('role.index',compact('parents'));
     }
 
