@@ -130,88 +130,8 @@
             </div>
             @endif
 
-            {{-- @if(Auth::user()->role_id == 1)
-            <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['role.index','role.create','role.edit'])) ? 'active' : '' }}" href="{{ route('role.index') }}">
-                  <span class="menu-icon">
-                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
-                     <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
-                     </span>
-                     <!--end::Svg Icon-->
-                  </span>
-                  <span class="menu-title">Role</span>
-               </a>
-            </div>
-            @endif
-
-            @if(Auth::user()->role_id == 1 || (isset($access['user']) && $access['user']['view_access'] == 1))
-            <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['user.index','user.create','user.edit'])) ? 'active' : '' }}" href="{{ route('user.index') }}">
-                  <span class="menu-icon">
-                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
-                     <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
-                     </span>
-                     <!--end::Svg Icon-->
-                  </span>
-                  <span class="menu-title">User</span>
-               </a>
-            </div>
-            @endif
-
-            @if(Auth::user()->role_id == 1 || (isset($access['location']) && $access['location']['view_access'] == 1))
-            <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['location.index','location.create','location.edit'])) ? 'active' : '' }}" href="{{ route('location.index') }}">
-                  <span class="menu-icon">
-                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
-                     <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
-                     </span>
-                     <!--end::Svg Icon-->
-                  </span>
-                  <span class="menu-title">Location</span>
-               </a>
-            </div>
-            @endif
-
-            @if(Auth::user()->role_id == 1 || (isset($access['department']) && $access['department']['view_access'] == 1))
-            <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['department.index','department.create','department.edit'])) ? 'active' : '' }}" href="{{ route('department.index') }}">
-                  <span class="menu-icon">
-                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
-                     <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
-                     </span>
-                     <!--end::Svg Icon-->
-                  </span>
-                  <span class="menu-title">Department</span>
-               </a>
-            </div>
-            @endif --}}
-
             @if(Auth::user()->role_id == 1 || ( (isset($access['location']) && $access['location']['view_access'] == 1) || (isset($access['department']) && $access['department']['view_access'] == 1) || (isset($access['user']) && $access['user']['view_access'] == 1)))
-            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['location.index','location.create','location.edit','role.index','role.create','role.edit','department.index','department.create','department.edit','user.index','user.create','user.edit'])) ? 'hover show' : '' }}">
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['location.index','location.create','location.edit','role.index','role.create','role.edit','department.index','department.create','department.edit','user.index','user.create','user.edit','user.show'])) ? 'hover show' : '' }}">
                <span class="menu-link">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/layouts/lay010.svg-->
@@ -262,7 +182,7 @@
 
                   @if(Auth::user()->role_id == 1 || (isset($access['user']) && $access['user']['view_access'] == 1))
                   <div class="menu-item">
-                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['user.index','user.create','user.edit'])) ? 'active' : '' }}" href="{{ route('user.index') }}">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['user.index','user.create','user.edit','user.show'])) ? 'active' : '' }}" href="{{ route('user.index') }}">
                         <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                         </span>

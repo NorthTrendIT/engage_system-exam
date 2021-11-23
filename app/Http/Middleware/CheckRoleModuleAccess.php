@@ -43,14 +43,14 @@ class CheckRoleModuleAccess
                 $status = true;
                 
                 // User Module
-                if(!isset($access['user']) && in_array($request->route()->getName(), ['user.index','user.get-all','user.create','user.store','user.edit','user.status','user.destroy']) ){
+                if(!isset($access['user']) && in_array($request->route()->getName(), ['user.index','user.get-all','user.create','user.store','user.edit','user.status','user.destroy','user.show']) ){
 
                     $status = false;
                     $message = "Oops ! you have not access for user module.";
 
                 }else{
 
-                    if(in_array($request->route()->getName(), ['user.index','user.get-all'])){
+                    if(in_array($request->route()->getName(), ['user.index','user.get-all','user.show'])){
                        
                         if($access['user']['view_access'] != 1){
                             

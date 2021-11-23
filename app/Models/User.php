@@ -28,6 +28,8 @@ class User extends Authenticatable
         'profile',
         'city_id',
         'province_id',
+        'department_id',
+        'parent_id',
     ];
 
     /**
@@ -52,5 +54,25 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(User::class,'parent_id');
+    }
+
+    public function province()
+    {
+        return $this->belongsTo(Location::class,'province_id');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(Location::class,'city_id');
     }
 }

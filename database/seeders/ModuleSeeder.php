@@ -19,8 +19,8 @@ class ModuleSeeder extends Seeder
         \Schema::enableForeignKeyConstraints();
 
         $data = array(
-        			array(
-        			/*	'title' => 'Role',
+        			/*array(
+        				'title' => 'Role',
         				'slug' => 'role',
         				'model_name' => 'App\Models\Role',
         			),*/

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Role;
 use App\Models\Location;
+use App\Models\Department;
 use App\Models\User;
 use Validator;
 use DataTables;
@@ -34,7 +35,8 @@ class UserController extends Controller
     {
         $roles = Role::where('id','!=',1)->get();
         $provinces = Location::whereNull('parent_id')->where('is_active',true)->get();
-        return view('user.add',compact('roles','provinces'));
+        $departments = Department::where('is_active',true)->get();
+        return view('user.add',compact('roles','provinces','departments'));
     }
 
     /**
@@ -51,6 +53,8 @@ class UserController extends Controller
                     'first_name' => 'required|string|max:185',
                     'last_name' => 'required|string|max:185',
                     'email' => 'required|max:185|unique:users,email,NULL,id,deleted_at,NULL|regex:/(.+)@(.+)\.(.+)/i',
+                    'department_id' => 'required|exists:departments,id',
+                    'parent_id' => 'nullable|exists:users,id',
                     'role_id' => 'required|exists:roles,id',
                     'city_id' => 'nullable|exists:locations,id',
                     'province_id' => 'nullable|exists:locations,id',
@@ -126,7 +130,9 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = User::where('id','!=',1)->where('id',$id)->firstOrFail();
+
+        return view('user.view',compact('data'));
     }
 
     /**
@@ -138,15 +144,16 @@ class UserController extends Controller
     public function edit($id)
     {
         $edit = User::where('id','!=',1)->where('id',$id)->firstOrFail();
-        $roles = Role::where('id','!=',1)->get();
         $provinces = Location::whereNull('parent_id')->where('is_active',true)->get();
+        $departments = Department::where('is_active',true)->get();
+        $parents = User::where('id','!=',1)->where('parent_id',$edit->parent_id)->get();
 
         $cities = collect();
         if($edit->province_id){
             $cities = Location::where('parent_id',$edit->province_id)->where('is_active',true)->get();
         }
 
-        return view('user.add',compact('roles','edit','provinces','cities'));
+        return view('user.add',compact('edit','provinces','cities','departments'));
     }
 
     /**
@@ -203,6 +210,44 @@ class UserController extends Controller
         return $cities;
     }
 
+    public function getRoles(Request $request)
+    {
+        $id = $request->department_id;
+        $roles = collect();
+        if($id != null){
+            $department = Department::where('id',$id)->where('is_active',true)->first();
+
+            if(@$department->roles){
+                $roles = $department->roles()->with('role')->get();
+            }
+        }
+
+        return $roles;
+    }
+
+    public function getParents(Request $request)
+    {
+        $role_id = $request->role_id;
+        $users = collect();
+        if($role_id != null){
+            $role = Role::where('id',$role_id)->first();
+
+            if(!is_null($role)){
+
+                if(!is_null($role->parent_id)){
+                    $users = User::where('role_id',$role->parent_id)->where('is_active',true);
+
+                    if(isset($request->id)){
+                        $users->where('id','!=',$request->id);
+                    }
+                    $users = $users->get();
+                }
+            }
+        }
+
+        return $users;
+    }
+
     public function getAll(Request $request){
 
         $data = User::where('users.id','!=',1);
@@ -235,6 +280,10 @@ class UserController extends Controller
                                   </a>';
                                 $btn .= ' <a href="javascript:void(0)" data-url="' . route('user.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
                                     <i class="fa fa-trash"></i>
+                                  </a>';
+
+                                $btn .= ' <a href="' . route('user.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-file"></i>
                                   </a>';
                                 
                                 return $btn;
