@@ -132,7 +132,9 @@ class UserController extends Controller
     {
         $data = User::where('id','!=',1)->where('id',$id)->firstOrFail();
 
-        return view('user.view',compact('data'));
+        $tree = json_encode($this->getUserTreeData($id));
+
+        return view('user.view',compact('data','tree'));
     }
 
     /**
@@ -333,5 +335,53 @@ class UserController extends Controller
                             })
                             ->rawColumns(['action', 'role','status'])
                             ->make(true);
+    }
+
+    public function getUserTreeData($user_id){
+        
+        $result = array();
+        $user = User::find($user_id);
+        if($user){
+            $temp = array(
+                            'name' => @$user->first_name." ".@$user->last_name,
+                            'title' => @$user->role->name,
+                        );
+
+            $result = array_merge($result,$temp);
+
+            $child = $this->getUserChildData($user_id);
+
+            if(count($child)){
+                $result['children'] = $child;
+            }
+        }
+
+        return $result;
+    }
+
+    public function getUserChildData($user_id)
+    {
+        $result = array();
+        $users = User::where('parent_id',$user_id)->get();
+
+        if(count($users)){
+            foreach ($users as $key => $value) {
+                
+                $temp = array(
+                            'name' => @$value->first_name." ".@$value->last_name,
+                            'title' => @$value->role->name,
+                        );
+
+                $child = $this->getUserChildData($value->id);
+
+                if(count($child)){
+                    $temp['children'] = $child;
+                }
+
+                $result[$key] = $temp;
+            }
+        }
+
+        return $result;
     }
 }

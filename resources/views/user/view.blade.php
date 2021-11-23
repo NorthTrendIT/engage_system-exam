@@ -86,7 +86,7 @@
                             </tr>
 
                             <tr>
-                              <th> <b>Profile Images:</b> </th>
+                              <th> <b>Profile Image:</b> </th>
                               <td>
                                 
                               </td>
@@ -98,6 +98,18 @@
                                 @if($data->profile && get_valid_file_url('sitebucket/users',$data->profile))
                                   <img src="{{ get_valid_file_url('sitebucket/users',$data->profile) }}" height="100" width="100" class="mr-10">
                                 @endif
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <td colspan="2" class="text-center">
+                                <h2>Hierarchy View</h2>
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <td colspan="2">
+                                <div id="chart-container"></div>
                               </td>
                             </tr>
 
@@ -128,9 +140,24 @@
 @endsection
 
 @push('css')
-
+<link href="https://cdnjs.cloudflare.com/ajax/libs/orgchart/2.1.3/css/jquery.orgchart.min.css" rel="stylesheet" />
+<style>
+  .orgchart {
+    width: 100% !important;
+  }
+</style>
 @endpush
 
 @push('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/orgchart/2.1.3/js/jquery.orgchart.min.js"></script>
 
+<script>
+  var orgchart = $('#chart-container').orgchart({
+    'data': {!! $tree !!},
+    'nodeContent': 'title',
+    'direction': 't2b'
+  });
+
+  $('#chart-container').append(orgchart);
+</script>
 @endpush
