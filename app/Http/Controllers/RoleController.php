@@ -131,10 +131,10 @@ class RoleController extends Controller
 
             if($message == "New Role created successfully."){
                 // Add Role Created log.
-                add_log(Auth::id(), 6, array('role_id' => $role->id), null);
+                add_log(Auth::id(), 6, array('role_id' => $role->id), \Request::ip());
             } else if($message == "Role details updated successfully."){
                 // Add Role Updatede log.
-                add_log(Auth::id(), 7, array('role_id' => $role->id), null);
+                add_log(Auth::id(), 7, array('role_id' => $role->id), \Request::ip());
             }
             $response = ['status'=>true,'message'=>$message];
         }
@@ -200,7 +200,7 @@ class RoleController extends Controller
             $data->delete();
 
             // Add Role Deleted log.
-            add_log(Auth::id(), 8, array('role_data' => $data), null);
+            add_log(Auth::id(), 8, array('role_data' => $data), \Request::ip());
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{

@@ -91,10 +91,10 @@ class DepartmentController extends Controller
 
             if($message == "New Department created successfully."){
                 // Add Department Created log
-                add_log(Auth::id(), 9, array('department_id' => $obj->id), null);
+                add_log(Auth::id(), 9, array('department_id' => $obj->id), \Request::ip());
             } else if($message == "Department details updated successfully."){
                 // Add Department Updated log
-                add_log(Auth::id(), 10, array('department_id' => $obj->id), null);
+                add_log(Auth::id(), 10, array('department_id' => $obj->id), \Request::ip());
             }
 
             $response = ['status'=>true,'message'=>$message];
@@ -159,7 +159,7 @@ class DepartmentController extends Controller
             $data->delete();
 
             // Add Department Deleted log.
-            add_log(Auth::id(), 11, array('department_data' => $data), null);
+            add_log(Auth::id(), 11, array('department_data' => $data), \Request::ip());
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{

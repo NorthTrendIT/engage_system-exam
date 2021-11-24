@@ -93,7 +93,7 @@ class CustomerController extends Controller
         try {
 
             // Add Sync Customer data log.
-            add_log(\Auth::id(), 15, null, null);
+            add_log(\Auth::id(), 15, null, \Request::ip());
 
             // Save Data of customer in database
             SyncCustomers::dispatch('TEST-APBW', 'manager', 'test');

@@ -118,10 +118,10 @@ class UserController extends Controller
 
             if($message == 'New User created successfully.'){
                 // Add User Created log
-                add_log(Auth::id(), 3, array('user_id' => $user->id), null);
+                add_log(Auth::id(), 3, array('user_id' => $user->id), \Request::ip());
             } else if($message == 'User details updated successfully.'){
                 // Add User Updated log
-                add_log(Auth::id(), 4, array('user_id' => $user->id), null);
+                add_log(Auth::id(), 4, array('user_id' => $user->id), \Request::ip());
             }
 
             $response = ['status'=>true,'message'=>$message];
@@ -191,7 +191,7 @@ class UserController extends Controller
             $data->delete();
 
             // Add user delete log
-            add_log(Auth::id(), 5, array('user_data' => $data), null);
+            add_log(Auth::id(), 5, array('user_data' => $data), \Request::ip());
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
@@ -350,7 +350,7 @@ class UserController extends Controller
     }
 
     public function getUserTreeData($user_id){
-        
+
         $result = array();
         $user = User::find($user_id);
         if($user){
@@ -378,7 +378,7 @@ class UserController extends Controller
 
         if(count($users)){
             foreach ($users as $key => $value) {
-                
+
                 $temp = array(
                             'name' => @$value->first_name." ".@$value->last_name,
                             'title' => @$value->role->name,
