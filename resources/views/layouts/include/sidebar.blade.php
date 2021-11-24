@@ -197,7 +197,7 @@
                         <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                         </span>
-                        <span class="menu-title">Organisation Chart</span>
+                        <span class="menu-title">Organization Chart</span>
                      </a>
                   </div>
                   @endif
