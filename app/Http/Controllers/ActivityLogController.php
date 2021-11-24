@@ -117,6 +117,9 @@ class ActivityLogController extends Controller
                 ->addColumn('ip_address', function($row) {
                     return $row->ip_address;
                 })
+                ->addColumn('date_time', function($row){
+                    return date("M d, Y H:m A", strtotime($row->created_at));
+                })
                 ->make(true);
     }
 }

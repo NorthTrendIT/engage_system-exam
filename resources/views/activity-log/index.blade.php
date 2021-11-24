@@ -57,6 +57,7 @@
                                 <th>Activity</th>
                                 <th>User Name</th>
                                 <th>IP Address</th>
+                                <th>Date & Time</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -124,6 +125,7 @@
               {data: 'activity', name: 'activity'},
               {data: 'user_name', name: 'user_name'},
               {data: 'ip_address', name: 'ip_address'},
+              {data: 'date_time', name: 'date_time'},
           ],
           drawCallback:function(){
               $(function () {
