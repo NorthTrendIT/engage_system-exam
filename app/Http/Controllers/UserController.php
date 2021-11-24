@@ -116,6 +116,14 @@ class UserController extends Controller
                 });
             }
 
+            if($message == 'New User created successfully.'){
+                // Add User Created log
+                add_log(Auth::id(), 3, array('user_id' => $user->id), \Request::ip());
+            } else if($message == 'User details updated successfully.'){
+                // Add User Updated log
+                add_log(Auth::id(), 4, array('user_id' => $user->id), \Request::ip());
+            }
+
             $response = ['status'=>true,'message'=>$message];
         }
 
@@ -181,6 +189,10 @@ class UserController extends Controller
         $data = User::find($id);
         if(!is_null($data)){
             $data->delete();
+
+            // Add user delete log
+            add_log(Auth::id(), 5, array('user_data' => $data), \Request::ip());
+
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
             $response = ['status'=>false,'message'=>'Record not found !'];
@@ -291,11 +303,11 @@ class UserController extends Controller
                                 $btn .= ' <a href="' . route('user.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
                                     <i class="fa fa-eye"></i>
                                   </a>';
-                                
+
                                 return $btn;
                             })
                             ->addColumn('role', function($row) {
-                                
+
                                 if(@$row->role){
                                     return @$row->role->name;
                                 }else{
@@ -303,7 +315,7 @@ class UserController extends Controller
                                 }
                             })
                             ->addColumn('status', function($row) {
-                                
+
                                 $btn = "";
                                 if($row->is_active){
                                     $btn .= '<a href="javascript:"  data-url="' . route('user.status',$row->id) . '" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
@@ -338,7 +350,7 @@ class UserController extends Controller
     }
 
     public function getUserTreeData($user_id){
-        
+
         $result = array();
         $user = User::find($user_id);
         if($user){
@@ -366,7 +378,7 @@ class UserController extends Controller
 
         if(count($users)){
             foreach ($users as $key => $value) {
-                
+
                 $temp = array(
                             'name' => @$value->first_name." ".@$value->last_name,
                             'title' => @$value->role->name,

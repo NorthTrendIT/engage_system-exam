@@ -89,6 +89,14 @@ class DepartmentController extends Controller
                 }
             }
 
+            if($message == "New Department created successfully."){
+                // Add Department Created log
+                add_log(Auth::id(), 9, array('department_id' => $obj->id), \Request::ip());
+            } else if($message == "Department details updated successfully."){
+                // Add Department Updated log
+                add_log(Auth::id(), 10, array('department_id' => $obj->id), \Request::ip());
+            }
+
             $response = ['status'=>true,'message'=>$message];
         }
 
@@ -153,6 +161,10 @@ class DepartmentController extends Controller
         $data = Department::find($id);
         if(!is_null($data)){
             $data->delete();
+
+            // Add Department Deleted log.
+            add_log(Auth::id(), 11, array('department_data' => $data), \Request::ip());
+
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
             $response = ['status'=>false,'message'=>'Record not found !'];
@@ -200,14 +212,15 @@ class DepartmentController extends Controller
                                 $btn .= ' <a href="javascript:void(0)" data-url="' . route('department.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete" style="margin-right: 5px;">
                                     <i class="fa fa-trash"></i>
                                   </a>';
+
                                 $btn .= '<a href="' . route('department.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
                                     <i class="fa fa-eye"></i>
                                   </a>';
-                                
+
                                 return $btn;
                             })
                             ->addColumn('status', function($row) {
-                                
+
                                 $btn = "";
                                 if($row->is_active){
                                     $btn .= '<a href="javascript:"  data-url="' . route('department.status',$row->id) . '" class="btn btn-sm btn-light-success btn-inline status">Active</a>';

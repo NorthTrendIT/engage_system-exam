@@ -161,6 +161,10 @@ class ProductController extends Controller
 
     public function syncProducts(){
       try {
+
+        // Add sync Product data log.
+        add_log(Auth::id(), 18, null, \Request::ip());
+
         // Save Data of Product in database
         SyncProducts::dispatch('TEST-APBW', 'manager', 'test');
 
@@ -216,7 +220,7 @@ class ProductController extends Controller
                                 $btn .= '<a href="' . route('product.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
                                     <i class="fa fa-eye"></i>
                                   </a>';
-                                
+
                                 return $btn;
                             })
                             ->addColumn('class', function($row) {

@@ -50,6 +50,6 @@ function add_log($user_id, $activity_id, $data = NULL, $ip_address = NULL){
     $log->ip_address = $ip_address;
     $log->activity_id = $activity_id;
     $log->user_id = $user_id;
-    $log->data = $data;
+    $log->data = json_encode($data);
     $log->save();
 }
