@@ -253,7 +253,7 @@ class DepartmentController extends Controller
                       );
           $result = array_merge($result,$temp);
 
-          $parent_departments = DepartmentRole::where('id','!=',1)->get();
+          $parent_departments = DepartmentRole::where('department_id',$id)->get();
           if(count($parent_departments)){
               foreach ($parent_departments as $key => $value) {
                   $temp = array(
