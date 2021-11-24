@@ -53,8 +53,9 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');
 	    Route::post('customer/sync-customers', 'App\Http\Controllers\CustomerController@syncCustomers')->name('customer.sync-customers');
 
-	    Route::resource('role','App\Http\Controllers\RoleController')->middleware('super-admin');
+	    Route::resource('role','App\Http\Controllers\RoleController')->except(['show'])->middleware('super-admin');
 	    Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all')->middleware('super-admin');
+	    Route::get('role/chart', 'App\Http\Controllers\RoleController@getRoleChart')->name('role.chart')->middleware('super-admin');
 
 	    Route::resource('user','App\Http\Controllers\UserController');
 	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
@@ -107,6 +108,8 @@ Route::middleware(['auth'])->group(function(){
 	    Route::resource('department','App\Http\Controllers\DepartmentController');
 	    Route::post('department/get-all', 'App\Http\Controllers\DepartmentController@getAll')->name('department.get-all');
 	    Route::post('department/status/{id}', 'App\Http\Controllers\DepartmentController@updateStatus')->name('department.status');
+
+	    Route::resource('organisation','App\Http\Controllers\OrganisationController');
 
     });
 
