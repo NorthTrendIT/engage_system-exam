@@ -94,7 +94,7 @@ class InvoicesController extends Controller
         try {
 
             // Add Sync Invoice data log.
-            add_log(\Auth::id(), 17, null, null);
+            add_log(\Auth::id(), 17, null, \Request::ip());
 
             // Save Data of invoice in database
             SyncInvoices::dispatch('TEST-APBW', 'manager', 'test');
