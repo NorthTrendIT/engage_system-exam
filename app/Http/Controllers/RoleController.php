@@ -256,8 +256,7 @@ class RoleController extends Controller
 
       if($role){
         $temp = array(
-                        'name' => "",
-                        'title' => @$role->name,
+                        'name' => @$role->name,
                     );
         $result = array_merge($result,$temp);
 
@@ -266,8 +265,7 @@ class RoleController extends Controller
 
             foreach ($parent_roles as $key => $value) {
                 $temp = array(
-                            'name' => "",
-                            'title' => @$value->name,
+                            'name' => @$value->name,
                         );
 
                 $child = $this->getRoleChildData($value->id);
@@ -298,8 +296,7 @@ class RoleController extends Controller
           foreach ($roles as $key => $value) {
               
               $temp = array(
-                          'name' => "",
-                          'title' => @$value->name,
+                          'name' => @$value->name,
                       );
 
               $child = $this->getRoleChildData($value->id);
