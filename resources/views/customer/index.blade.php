@@ -67,6 +67,7 @@
                             <tr>
                               <th>No.</th>
                               <th>Name</th>
+                              <th>Credit Limit</th>
                               <th>City</th>
                               <th>Date</th>
                               <th>Class</th>
@@ -137,6 +138,7 @@
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
               {data: 'name', name: 'name'},
+              {data: 'credit_limit', name: 'credit_limit'},
               {data: 'city', name: 'city'},
               {data: 'created_date', name: 'created_date'},
               {data: 'class', name: 'class'},

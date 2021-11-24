@@ -120,6 +120,7 @@ class CustomerController extends Controller
                 $q->orwhere('card_code','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('email','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('credit_limit','LIKE',"%".$request->filter_search."%");
             });
         }
 
@@ -177,6 +178,9 @@ class CustomerController extends Controller
                                 $html = "";
                                 return $html;
                             })
+                            ->addColumn('credit_limit', function($row) {
+                                return @$row->credit_limit ?? "-";
+                            })
                             ->addColumn('created_date', function($row) {
                                 return date('M d, Y',strtotime($row->created_date));
                             })
@@ -192,7 +196,10 @@ class CustomerController extends Controller
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('is_active', $order);
                             })
-                            ->rawColumns(['name', 'role','status','action'])
+                            ->orderColumn('credit_limit', function ($query, $order) {
+                                $query->orderBy('credit_limit', $order);
+                            })
+                            ->rawColumns(['name', 'role','status','action','credit_limit'])
                             ->make(true);
     }
 }
