@@ -11,7 +11,7 @@ use DataTables;
 class CustomerController extends Controller
 {
     public function __construct(){
-        
+
     }
     /**
      * Display a listing of the resource.
@@ -92,6 +92,9 @@ class CustomerController extends Controller
     public function syncCustomers(){
         try {
 
+            // Add Sync Customer data log.
+            add_log(\Auth::id(), 15, null, null);
+
             // Save Data of customer in database
             SyncCustomers::dispatch('TEST-APBW', 'manager', 'test');
 
@@ -126,7 +129,7 @@ class CustomerController extends Controller
                             ->addIndexColumn()
                             ->addColumn('name', function($row) {
                                 $html = "";
-                                
+
                                 $html .= '<div class="d-flex align-items-center">
                                             <div class="symbol symbol-45px me-5">
                                                 <img src="'.asset('assets/assets/media/default_user.png').'" alt="">

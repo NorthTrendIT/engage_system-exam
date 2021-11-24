@@ -120,6 +120,15 @@ class PromotionsController extends Controller
                 }
             }
 
+            if($message == "Promotion created successfully."){
+                // Add Promotion Created log.
+                add_log(\Auth::id(), 19, array('promotion_id' => $promotion->id), null);
+            } else if($message == "Promotion updated successfully."){
+                // Add Promotion Updated log.
+                add_log(\Auth::id(), 20, array('promotion_id' => $promotion->id), null);
+
+            }
+
             $response = ['status'=>true,'message'=>$message];
         }
 
@@ -195,6 +204,10 @@ class PromotionsController extends Controller
         $data = Promotions::find($id);
         if(!is_null($data)){
             $data->delete();
+
+            // Add Promotion Deleted log.
+            add_log(\Auth::id(), 21, array('promotion_id' => $data), null);
+
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
             $response = ['status'=>false,'message'=>'Record not found !'];

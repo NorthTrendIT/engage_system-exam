@@ -37,6 +37,8 @@ Route::middleware(['auth'])->group(function(){
 	Route::get('/home','App\Http\Controllers\HomeController@index')->name('home');
 
 	Route::get('/logout', function () {
+        // Add Logout log
+        add_log(Auth::id(), 2, null, null);
 		Auth::logout();
 	    return redirect()->route('login');
 	})->name('logout');
@@ -108,6 +110,9 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('department/get-all', 'App\Http\Controllers\DepartmentController@getAll')->name('department.get-all');
 	    Route::post('department/status/{id}', 'App\Http\Controllers\DepartmentController@updateStatus')->name('department.status');
 
+        // Activity Log
+        Route::resource('activitylog','App\Http\Controllers\ActivityLogController');
+	    Route::post('activitylog/get-all', 'App\Http\Controllers\ActivityLogController@getAll')->name('activitylog.get-all');
     });
 
 });
