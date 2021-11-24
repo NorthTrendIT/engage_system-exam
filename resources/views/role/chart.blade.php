@@ -66,7 +66,7 @@
 <script>
   var orgchart = $('#chart-container').orgchart({
     'data': {!! $tree !!},
-    'nodeContent': 'title',
+    // 'nodeContent': 'title',
     'direction': 't2b'
   });
 

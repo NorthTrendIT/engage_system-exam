@@ -20,8 +20,8 @@ class OrganisationController extends Controller
 
         if($user){
             $temp = array(
-                            'name' => @$user->first_name." ".@$user->last_name,
-                            'title' => @$user->role->name,
+                            'title' => @$user->first_name." ".@$user->last_name,
+                            'name' => @$user->role->name,
                         );
             $result = array_merge($result,$temp);
 
@@ -30,8 +30,8 @@ class OrganisationController extends Controller
 
                 foreach ($parent_users as $key => $value) {
                     $temp = array(
-                                'name' => @$value->first_name." ".@$value->last_name,
-                                'title' => @$value->role->name,
+                                'title' => @$value->first_name." ".@$value->last_name,
+                                'name' => @$value->role->name,
                             );
 
 

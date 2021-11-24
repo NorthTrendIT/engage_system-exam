@@ -25,6 +25,10 @@
 	.dropify-message .span .p::before{
     	font-size: 20px !important;
 	}
+
+	.orgchart .node {
+	    width: 160px !important;
+	}
 </style>
 
 @stack('css')
