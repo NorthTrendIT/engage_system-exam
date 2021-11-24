@@ -111,7 +111,11 @@ class DepartmentController extends Controller
      */
     public function show($id)
     {
-        //
+      $data = Department::where('id',$id)->firstOrFail();
+
+      $tree = json_encode($this->getDepartmentTreeData($id));
+
+      return view('department.view',compact('data','tree'));
     }
 
     /**
@@ -205,8 +209,12 @@ class DepartmentController extends Controller
                                 $btn = '<a href="' . route('department.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
-                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('department.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
+                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('department.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete" style="margin-right: 5px;">
                                     <i class="fa fa-trash"></i>
+                                  </a>';
+
+                                $btn .= '<a href="' . route('department.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
                                   </a>';
 
                                 return $btn;
@@ -230,5 +238,37 @@ class DepartmentController extends Controller
                             })
                             ->rawColumns(['action', 'role','status'])
                             ->make(true);
+    }
+
+    public function getDepartmentTreeData($id){
+        
+      $result = $children = array();
+      $result['children'] = array();
+      $department = Department::find($id);
+
+      if($department){
+          $temp = array(
+                          'name' => "Department",
+                          'title' => @$department->name,
+                      );
+          $result = array_merge($result,$temp);
+
+          $parent_departments = DepartmentRole::where('id','!=',1)->get();
+          if(count($parent_departments)){
+              foreach ($parent_departments as $key => $value) {
+                  $temp = array(
+                              'name' => "Role",
+                              'title' => @$value->role->name,
+                          );
+
+                  $children[$key] = $temp;
+              }
+
+          }
+          
+          $result['children'] = array_merge($result['children'],$children);
+      }
+
+      return $result;
     }
 }

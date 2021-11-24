@@ -248,4 +248,70 @@ class RoleController extends Controller
                             ->rawColumns(['action', 'access'])
                             ->make(true);
     }
+
+    public function getRoleChart(){
+      $result = $children = array();
+      $result['children'] = array();
+      $role = Role::find(1);
+
+      if($role){
+        $temp = array(
+                        'name' => "",
+                        'title' => @$role->name,
+                    );
+        $result = array_merge($result,$temp);
+
+        $parent_roles = Role::where('id','!=',1)->whereNull('parent_id')->get();
+        if(count($parent_roles)){
+
+            foreach ($parent_roles as $key => $value) {
+                $temp = array(
+                            'name' => "",
+                            'title' => @$value->name,
+                        );
+
+                $child = $this->getRoleChildData($value->id);
+
+                if(count($child)){
+                  $temp['children'] = $child;
+                }
+
+                $children[$key] = $temp;
+            }
+
+        }
+        
+        $result['children'] = array_merge($result['children'],$children);
+      }
+
+      $tree = json_encode($result);
+
+      return view('role.chart',compact('tree'));
+    }
+    
+    public function getRoleChildData($role_id)
+    {
+      $result = array();
+      $roles = Role::where('parent_id',$role_id)->get();
+
+      if(count($roles)){
+          foreach ($roles as $key => $value) {
+              
+              $temp = array(
+                          'name' => "",
+                          'title' => @$value->name,
+                      );
+
+              $child = $this->getRoleChildData($value->id);
+
+              if(count($child)){
+                  $temp['children'] = $child;
+              }
+
+              $result[$key] = $temp;
+          }
+      }
+
+      return $result;
+    }
 }
