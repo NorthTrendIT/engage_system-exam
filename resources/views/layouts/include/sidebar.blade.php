@@ -52,7 +52,7 @@
 
             @if(Auth::user()->role_id == 1 || (isset($access['customer']) && $access['customer']['view_access'] == 1))
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer.index'])) ? 'active' : '' }}" href="{{ route('customer.index') }}">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer.index','customer.show'])) ? 'active' : '' }}" href="{{ route('customer.index') }}">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">

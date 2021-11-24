@@ -52,7 +52,9 @@ class CustomerController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = Customer::where('id',$id)->firstOrFail();
+
+        return view('customer.view',compact('data'));
     }
 
     /**
@@ -127,6 +129,13 @@ class CustomerController extends Controller
 
         return DataTables::of($data)
                             ->addIndexColumn()
+                            ->addColumn('action', function($row) {
+                                $btn = ' <a href="' . route('customer.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
+                                  </a>';
+
+                                return $btn;
+                            })
                             ->addColumn('name', function($row) {
                                 $html = "";
 
@@ -183,7 +192,7 @@ class CustomerController extends Controller
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('is_active', $order);
                             })
-                            ->rawColumns(['name', 'role','status'])
+                            ->rawColumns(['name', 'role','status','action'])
                             ->make(true);
     }
 }

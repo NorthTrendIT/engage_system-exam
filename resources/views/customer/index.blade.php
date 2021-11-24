@@ -71,6 +71,7 @@
                               <th>Date</th>
                               <th>Class</th>
                               <th>Status</th>
+                              <th>Action</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -140,6 +141,7 @@
               {data: 'created_date', name: 'created_date'},
               {data: 'class', name: 'class'},
               {data: 'status', name: 'status'},
+              {data: 'action', name: 'action'},
           ],
           drawCallback:function(){
               $(function () {
