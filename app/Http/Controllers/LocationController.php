@@ -66,6 +66,14 @@ class LocationController extends Controller
 
             $obj->fill($input)->save();
 
+            if($message == "New Location created successfully."){
+                // Add Location Created log.
+                add_log(\Auth::id(), 12, array('location_id' => $obj->id), null);
+            } else if($message == "Location details updated successfully."){
+                // Add Location updated log.
+                add_log(\Auth::id(), 13, array('location_id' => $obj->id), null);
+            }
+
             $response = ['status'=>true,'message'=>$message];
         }
 
@@ -120,6 +128,10 @@ class LocationController extends Controller
         $data = Location::find($id);
         if(!is_null($data)){
             $data->delete();
+
+            // Add Location updated log.
+            add_log(\Auth::id(), 14, array('location_id' => $data->id, 'location_name' => $data->name,), null);
+
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
             $response = ['status'=>false,'message'=>'Record not found !'];
@@ -171,11 +183,11 @@ class LocationController extends Controller
                                 $btn .= ' <a href="javascript:void(0)" data-url="' . route('location.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
                                     <i class="fa fa-trash"></i>
                                   </a>';
-                                
+
                                 return $btn;
                             })
                             ->addColumn('parent', function($row) {
-                                
+
                                 if(@$row->parent){
                                     return @$row->parent->name;
                                 }else{
@@ -183,7 +195,7 @@ class LocationController extends Controller
                                 }
                             })
                             ->addColumn('status', function($row) {
-                                
+
                                 $btn = "";
                                 if($row->is_active){
                                     $btn .= '<a href="javascript:"  data-url="' . route('location.status',$row->id) . '" class="btn btn-sm btn-light-success btn-inline status">Active</a>';

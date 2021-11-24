@@ -93,6 +93,9 @@ class OrdersController extends Controller
     public function syncOrders(){
         try {
 
+            // Add Sync Order data log.
+            add_log(\Auth::id(), 16, null, null);
+
             // Save Data of orders in database
             SyncOrders::dispatch('TEST-APBW', 'manager', 'test');
 

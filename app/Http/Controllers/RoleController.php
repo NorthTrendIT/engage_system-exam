@@ -104,7 +104,7 @@ class RoleController extends Controller
                     RoleModuleAccess::where('role_id',$role->id)->whereNotIn('module_id',$module_ids)->delete();
 
                 }elseif ($role->all_module_access == 1) {
-                    
+
                     $modules = Module::where('slug','!=','role')->get();
 
                     foreach ($modules as $key => $value) {
@@ -129,6 +129,13 @@ class RoleController extends Controller
                 }
             }
 
+            if($message == "New Role created successfully."){
+                // Add Role Created log.
+                add_log(Auth::id(), 6, array('role_id' => $role->id), null);
+            } else if($message == "Role details updated successfully."){
+                // Add Role Updatede log.
+                add_log(Auth::id(), 7, array('role_id' => $role->id), null);
+            }
             $response = ['status'=>true,'message'=>$message];
         }
 
@@ -191,6 +198,10 @@ class RoleController extends Controller
         $data = Role::find($id);
         if(!is_null($data)){
             $data->delete();
+
+            // Add Role Deleted log.
+            add_log(Auth::id(), 8, array('role_data' => $data), null);
+
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
             $response = ['status'=>false,'message'=>'Record not found !'];
@@ -205,7 +216,7 @@ class RoleController extends Controller
         if($request->filter_parent != ""){
             $data->where('parent_id',$request->filter_parent);
         }
-        
+
         return DataTables::of($data->get())
                             ->addIndexColumn()
                             ->addColumn('action', function($row) {
@@ -215,11 +226,11 @@ class RoleController extends Controller
                                 $btn .= ' <a href="javascript:void(0)" data-url="' . route('role.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
                                     <i class="fa fa-trash"></i>
                                   </a>';
-                                
+
                                 return $btn;
                             })
                             ->addColumn('access', function($row) {
-                                
+
                                 if($row->all_module_access == 1){
                                     return "All Module Access";
                                 }else{
@@ -227,7 +238,7 @@ class RoleController extends Controller
                                 }
                             })
                             ->addColumn('parent', function($row) {
-                                
+
                                 if(@$row->parent){
                                     return @$row->parent->name;
                                 }else{

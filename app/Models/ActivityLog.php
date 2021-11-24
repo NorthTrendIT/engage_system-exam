@@ -15,4 +15,12 @@ class ActivityLog extends Model
     	'ip_address',
         'data',
     ];
+
+    public function activity(){
+        return $this->hasOne(ActivityMaster::class, 'id', 'activity_id');
+    }
+
+    public function user(){
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }
