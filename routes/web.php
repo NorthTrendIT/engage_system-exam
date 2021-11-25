@@ -120,6 +120,10 @@ Route::middleware(['auth'])->group(function(){
 	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index');
 	    Route::get('product-list/{id}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show');
 	    Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all');
+
+	    Route::resource('customer-group','App\Http\Controllers\CustomerGroupController');
+	    Route::post('customer-group/get-all', 'App\Http\Controllers\CustomerGroupController@getAll')->name('customer-group.get-all');
+	    Route::post('customer-group/sync-customer-groups', 'App\Http\Controllers\CustomerGroupController@syncCustomerGroups')->name('customer-group.sync-customer-groups');
     });
 
 });
