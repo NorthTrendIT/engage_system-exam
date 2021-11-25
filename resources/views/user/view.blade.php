@@ -21,7 +21,7 @@
     </div>
   </div>
   
-  <div class="post d-flex flex-column-fluid" id="kt_post">
+  <div class="post d-flex flex-column-fluid detail-view-table" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
@@ -87,13 +87,7 @@
 
                             <tr>
                               <th> <b>Profile Image:</b> </th>
-                              <td>
-                                
-                              </td>
-                            </tr>
-
-                            <tr>
-                              <th></th>
+                              
                               <td>
                                 @if($data->profile && get_valid_file_url('sitebucket/users',$data->profile))
                                   <img src="{{ get_valid_file_url('sitebucket/users',$data->profile) }}" height="100" width="100" class="mr-10">
