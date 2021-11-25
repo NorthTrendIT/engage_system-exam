@@ -116,6 +116,10 @@ Route::middleware(['auth'])->group(function(){
         // Activity Log
         Route::resource('activitylog','App\Http\Controllers\ActivityLogController');
 	    Route::post('activitylog/get-all', 'App\Http\Controllers\ActivityLogController@getAll')->name('activitylog.get-all');
+
+	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index');
+	    Route::get('product-list/{id}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show');
+	    Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all');
     });
 
 });

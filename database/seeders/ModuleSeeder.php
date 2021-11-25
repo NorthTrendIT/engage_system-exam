@@ -64,6 +64,11 @@ class ModuleSeeder extends Seeder
                         'slug' => 'department',
                         'model_name' => 'App\Models\Department',
                     ),
+                    array(
+                        'title' => 'Product List',
+                        'slug' => 'product-list',
+                        'model_name' => 'App\Models\ProductList',
+                    ),
         		);
         Module::insert($data);
     }

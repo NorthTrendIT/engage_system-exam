@@ -384,6 +384,24 @@ class CheckRoleModuleAccess
                     }
                 }
 
+                // Product List Module
+                if(!isset($access['product-list']) && in_array($request->route()->getName(), ['product-list.index','product-list.show'])){
+
+                    $status = false;
+                    $message = "Oops ! you have not access for product list module.";
+                }else{
+
+                    if(in_array($request->route()->getName(), ['product-list.index','product-list.show'])){
+                       
+                        if($access['product-list']['view_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for product list module.";
+
+                        }
+                    }
+                }
+
             }
 
             if(!$status){
