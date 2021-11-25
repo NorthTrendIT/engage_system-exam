@@ -43,4 +43,9 @@ class Customer extends Model
     {
         return $this->hasMany(CustomerBpAddress::class,'customer_id');
     }
+
+    public function group()
+    {
+        return $this->belongsTo(CustomerGroup::class,'group_code','code');
+    }
 }

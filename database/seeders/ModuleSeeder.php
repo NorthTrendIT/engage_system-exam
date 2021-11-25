@@ -69,6 +69,11 @@ class ModuleSeeder extends Seeder
                         'slug' => 'product-list',
                         'model_name' => 'App\Models\ProductList',
                     ),
+                    array(
+                        'title' => 'Customer Group',
+                        'slug' => 'customer-group',
+                        'model_name' => 'App\Models\CustomerGroup',
+                    ),
         		);
         Module::insert($data);
     }

@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title','Customer')
+@section('title','Customer Group')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Customer</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Customer Group</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="javascript:" class="btn btn-sm btn-primary sync-customers">Sync Customers</a>
+        <a href="javascript:" class="btn btn-sm btn-primary sync-customer-groups">Sync Customer Groups</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -41,23 +41,6 @@
                 </div>
 
                 <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_customer_group" data-control="select2" data-hide-search="false">
-                    <option value="">Select customer group</option>
-                    @foreach($customer_groups as $customer_group)
-                    <option value="{{ $customer_group->code }}">{{ $customer_group->name }}</option>
-                    @endforeach
-                  </select>
-                </div>
-
-                <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
-                    <option value="">Select status</option>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
-                  </select>
-                </div>
-
-                <div class="col-md-3">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -74,16 +57,8 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>Code</th>
                               <th>Name</th>
-                              @if(userrole() == 1)
-                              <th>Credit Limit</th>
-                              @endif
-                              <th>Group</th>
-                              <th>City</th>
-                              <th>Date</th>
-                              <th>Class</th>
-                              <th>Status</th>
-                              <th>Action</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -128,8 +103,6 @@
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_search"]').val();
-      $filter_status = $('[name="filter_status"]').find('option:selected').val();
-      $filter_customer_group = $('[name="filter_customer_group"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -137,29 +110,19 @@
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('customer.get-all') }}",
+              'url': "{{ route('customer-group.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
               data:{
                 filter_search : $filter_search,
-                filter_status : $filter_status,
-                filter_customer_group : $filter_customer_group,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+              {data: 'code', name: 'code'},
               {data: 'name', name: 'name'},
-              @if(userrole() == 1)
-              {data: 'credit_limit', name: 'credit_limit'},
-              @endif
-              {data: 'group', name: 'group'},
-              {data: 'city', name: 'city'},
-              {data: 'created_date', name: 'created_date'},
-              {data: 'class', name: 'class'},
-              {data: 'status', name: 'status'},
-              {data: 'action', name: 'action'},
           ],
           drawCallback:function(){
               $(function () {
@@ -178,17 +141,15 @@
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
-      $('[name="filter_status"]').val('').trigger('change');
-      $('[name="filter_customer_group"]').val('').trigger('change');
       render_table();
     })
 
-    $(document).on('click', '.sync-customers', function(event) {
+    $(document).on('click', '.sync-customer-groups', function(event) {
       event.preventDefault();
 
       Swal.fire({
-        title: 'Are you sure you want to Sync Customers?',
-        text: "Syncing process will run in background and it may take some time to sync all Customers Data.",
+        title: 'Are you sure you want to Sync Customer Groups?',
+        text: "Syncing process will run in background and it may take some time to sync all Customer Groups Data.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -197,7 +158,7 @@
       }).then((result) => {
         if (result.isConfirmed) {
           $.ajax({
-            url: '{{ route('customer.sync-customers') }}',
+            url: '{{ route('customer-group.sync-customer-groups') }}',
             method: "POST",
             data: {
                     _token:'{{ csrf_token() }}' 

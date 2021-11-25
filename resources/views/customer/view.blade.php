@@ -50,6 +50,11 @@
                             </tr>
 
                             <tr>
+                              <th> <b>Group Name:</b> </th>
+                              <td>{{ @$data->group->name ?? "" }}</td>
+                            </tr>
+
+                            <tr>
                               <th> <b>Email:</b> </th>
                               <td>{{ @$data->email ?? "" }}</td>
                             </tr>
@@ -63,11 +68,13 @@
                               <td>{{ @$data->address ?? "" }}</td>
                             </tr>
                             
+                            @if(userrole() == 1)
                             <tr>
                               <th> <b>Credit Limit:</b> </th>
                               <td>{{ @$data->credit_limit ?? "" }}</td>
                             </tr>
-
+                            @endif
+                            
                             <tr>
                               <th> <b>Max Commitment:</b> </th>
                               <td>{{ @$data->max_commitment ?? "" }}</td>
