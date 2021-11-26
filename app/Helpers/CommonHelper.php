@@ -45,11 +45,11 @@ function get_user_role_module_access($role_id){
     return $access;
 }
 
-function add_log($user_id, $activity_id, $data = NULL, $ip_address = NULL){
+function add_log($activity_id, $data = NULL){
     $log = new ActivityLog;
-    $log->ip_address = $ip_address;
+    $log->ip_address = \Request::ip();
     $log->activity_id = $activity_id;
-    $log->user_id = $user_id;
+    $log->user_id = \Auth::id();
     $log->data = json_encode($data);
     $log->save();
 }
