@@ -117,9 +117,9 @@ Route::middleware(['auth'])->group(function(){
         Route::resource('activitylog','App\Http\Controllers\ActivityLogController');
 	    Route::post('activitylog/get-all', 'App\Http\Controllers\ActivityLogController@getAll')->name('activitylog.get-all');
 
-	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index');
-	    Route::get('product-list/{id}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show');
-	    Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all');
+	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index')->middleware('not-super-admin');
+	    Route::get('product-list/{id}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show')->middleware('not-super-admin');
+	    Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all')->middleware('not-super-admin');
 
         // Territories
         Route::resource('territory','App\Http\Controllers\TerritoriesController');
