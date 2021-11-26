@@ -116,6 +116,20 @@ Route::middleware(['auth'])->group(function(){
         // Activity Log
         Route::resource('activitylog','App\Http\Controllers\ActivityLogController');
 	    Route::post('activitylog/get-all', 'App\Http\Controllers\ActivityLogController@getAll')->name('activitylog.get-all');
+
+	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index');
+	    Route::get('product-list/{id}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show');
+	    Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all');
+
+        // Territories
+        Route::resource('territory','App\Http\Controllers\TerritoriesController');
+	    Route::post('territory/get-all', 'App\Http\Controllers\TerritoriesController@getAll')->name('territory.get-all');
+	    Route::post('territory/sync-territory', 'App\Http\Controllers\TerritoriesController@syncTerritories')->name('territory.sync-territory');
+
+	    Route::resource('customer-group','App\Http\Controllers\CustomerGroupController');
+	    Route::post('customer-group/get-all', 'App\Http\Controllers\CustomerGroupController@getAll')->name('customer-group.get-all');
+	    Route::post('customer-group/sync-customer-groups', 'App\Http\Controllers\CustomerGroupController@syncCustomerGroups')->name('customer-group.sync-customer-groups');
+
     });
 
 });

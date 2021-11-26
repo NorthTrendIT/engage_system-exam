@@ -3,6 +3,7 @@ use App\Models\LoginLog;
 use App\Models\RoleModuleAccess;
 use App\Models\ActivityLog;
 use App\Models\ActivityMaster;
+use Auth as Auth;
 
 function add_login_log(){
 	$insert = array(
@@ -52,4 +53,8 @@ function add_log($activity_id, $data = NULL){
     $log->user_id = \Auth::id();
     $log->data = json_encode($data);
     $log->save();
+}
+
+function userrole(){
+	return @Auth::user()->role_id;
 }

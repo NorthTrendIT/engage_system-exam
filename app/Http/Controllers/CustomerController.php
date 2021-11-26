@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Support\SAPCustomer;
 use App\Jobs\SyncCustomers;
 use App\Models\Customer;
+use App\Models\CustomerGroup;
 use DataTables;
 
 class CustomerController extends Controller
@@ -20,7 +21,8 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        return view('customer.index');
+        $customer_groups = CustomerGroup::all();
+        return view('customer.index',compact('customer_groups'));
     }
 
     /**
@@ -52,7 +54,8 @@ class CustomerController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = Customer::where('id',$id)->firstOrFail();
+        return view('customer.view',compact('data'));
     }
 
     /**
@@ -113,11 +116,19 @@ class CustomerController extends Controller
             $data->where('is_active',$request->filter_status);
         }
 
+        if($request->filter_customer_group != ""){
+            $data->where('group_code',$request->filter_customer_group);
+        }
+
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
                 $q->orwhere('card_code','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('email','LIKE',"%".$request->filter_search."%");
+
+                if(userrole() == 1){
+                    $q->orwhere('credit_limit','LIKE',"%".$request->filter_search."%");
+                }
             });
         }
 
@@ -127,6 +138,13 @@ class CustomerController extends Controller
 
         return DataTables::of($data)
                             ->addIndexColumn()
+                            ->addColumn('action', function($row) {
+                                $btn = ' <a href="' . route('customer.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
+                                  </a>';
+
+                                return $btn;
+                            })
                             ->addColumn('name', function($row) {
                                 $html = "";
 
@@ -168,6 +186,16 @@ class CustomerController extends Controller
                                 $html = "";
                                 return $html;
                             })
+                            ->addColumn('credit_limit', function($row) {
+                                if(userrole() == 1){
+                                    return @$row->credit_limit ?? "-";
+                                }else{
+                                    return "-";
+                                }
+                            })
+                            ->addColumn('group', function($row) {
+                                return @$row->group->name ?? "-";
+                            })
                             ->addColumn('created_date', function($row) {
                                 return date('M d, Y',strtotime($row->created_date));
                             })
@@ -183,7 +211,14 @@ class CustomerController extends Controller
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('is_active', $order);
                             })
-                            ->rawColumns(['name', 'role','status'])
+                            ->orderColumn('credit_limit', function ($query, $order) {
+                                $query->orderBy('credit_limit', $order);
+                            })
+                            ->orderColumn('group', function ($query, $order) {
+                                $query->join('customer_groups', 'customers.group_code', '=', 'customer_groups.code')
+                                    ->orderBy('customer_groups.name', $order);
+                            })
+                            ->rawColumns(['name', 'role','status','action','credit_limit','group'])
                             ->make(true);
     }
 }

@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title','Product')
+@section('title','Customer')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Product</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Customer</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('product.index') }}" class="btn btn-sm btn-primary sync-products">Back</a>
+        <a href="{{ route('customer.index') }}" class="btn btn-sm btn-primary sync-products">Back</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -41,13 +41,55 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th> <b>Product Name:</b> </th>
-                              <td>{{ @$data->item_name ?? "" }}</td>
+                              <th> <b>Card Code:</b> </th>
+                              <td>{{ @$data->card_code ?? "" }}</td>
                             </tr>
                             <tr>
-                              <th> <b>Product Code:</b> </th>
-                              <td>{{ @$data->item_code ?? "" }}</td>
+                              <th> <b>Card Name:</b> </th>
+                              <td>{{ @$data->card_name ?? "" }}</td>
                             </tr>
+
+                            <tr>
+                              <th> <b>Group Name:</b> </th>
+                              <td>{{ @$data->group->name ?? "" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Email:</b> </th>
+                              <td>{{ @$data->email ?? "" }}</td>
+                            </tr>
+                            <tr>
+                              <th> <b>Contact Person Name:</b> </th>
+                              <td>{{ @$data->contact_person ?? "" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Address:</b> </th>
+                              <td>{{ @$data->address ?? "" }}</td>
+                            </tr>
+                            
+                            @if(userrole() == 1)
+                            <tr>
+                              <th> <b>Credit Limit:</b> </th>
+                              <td>{{ @$data->credit_limit ?? "" }}</td>
+                            </tr>
+                            @endif
+                            
+                            <tr>
+                              <th> <b>Max Commitment:</b> </th>
+                              <td>{{ @$data->max_commitment ?? "" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Federal Tax ID:</b> </th>
+                              <td>{{ @$data->federal_tax_id ?? "" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Current Account Balance:</b> </th>
+                              <td>{{ @$data->current_account_balance ?? "" }}</td>
+                            </tr>
+
                             <tr>
                               <th> <b>Created Date:</b> </th>
                               <td>{{ date('M d, Y',strtotime(@$data->created_date)) }}</td>
@@ -55,38 +97,6 @@
                             <tr>
                               <th> <b>Status:</b> </th>
                               <td><b class="{{ @$data->is_active ? "text-success" : "text-danger" }}">{{ @$data->is_active == true ? "Active" : "Inactive" }}</b></td>
-                            </tr>
-
-                            <tr>
-                              <th> <b>Technical specifications:</b> </th>
-                              <td>{!! @$data->technical_specifications ?? "" !!}</td>
-                            </tr>
-                            <tr>
-                              <th> <b>Features:</b> </th>
-                              <td>{!! @$data->product_features ?? "" !!}</td>
-                            </tr>
-                            <tr>
-                              <th> <b>Advantages & Benefits:</b> </th>
-                              <td>{!! @$data->product_benefits ?? "" !!}</td>
-                            </tr>
-                            <tr>
-                              <th> <b>Sell Sheets:</b> </th>
-                              <td>{!! @$data->product_sell_sheets ?? "" !!}</td>
-                            </tr>
-
-                            <tr>
-                              <th> <b>Product Images:</b> </th>
-                              <td>
-                                @if(isset($data->product_images) && count($data->product_images) > 0)
-                                  @foreach($data->product_images as $key => $image)
-
-                                    @if($image->image && get_valid_file_url('sitebucket/products',$image->image))
-                                      <img src="{{ get_valid_file_url('sitebucket/products',$image->image) }}" height="100" width="100" class="mr-10">
-                                    @endif
-
-                                  @endforeach
-                                @endif
-                              </td>
                             </tr>
 
                           </thead>

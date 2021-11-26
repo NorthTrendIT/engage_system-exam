@@ -384,6 +384,50 @@ class CheckRoleModuleAccess
                     }
                 }
 
+                // Product List Module
+                if(!isset($access['product-list']) && in_array($request->route()->getName(), ['product-list.index','product-list.show'])){
+
+                    $status = false;
+                    $message = "Oops ! you have not access for product list module.";
+                }else{
+
+                    if(in_array($request->route()->getName(), ['product-list.index','product-list.show'])){
+                       
+                        if($access['product-list']['view_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for product list module.";
+
+                        }
+                    }
+                }
+
+
+                // Customer Module
+                if(!isset($access['customer-group']) && in_array($request->route()->getName(), ['customer-group.index','customer-group.get-all','customer-group.sync-customer-groups']) ){
+
+                    $status = false;
+                    $message = "Oops ! you have not access for customer group module.";
+                }else{
+
+                    if(in_array($request->route()->getName(), ['customer-group.index','customer-group.get-all'])){
+                       
+                        if($access['customer-group']['view_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for customer group module.";
+
+                        }
+                    }elseif(in_array($request->route()->getName(), ['customer-group.sync-customer-groups'])){
+                        if($access['customer-group']['add_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for sync customer groups.";
+
+                        }
+                    }
+                }
+
             }
 
             if(!$status){
