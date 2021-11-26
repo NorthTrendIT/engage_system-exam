@@ -40,16 +40,25 @@
                   </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                   <select class="form-control form-control-lg form-control-solid" name="filter_customer_group" data-control="select2" data-hide-search="false">
-                    <option value="">Select customer group</option>
+                    <option value="">Select group</option>
                     @foreach($customer_groups as $customer_group)
                     <option value="{{ $customer_group->code }}">{{ $customer_group->name }}</option>
                     @endforeach
                   </select>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_class" data-control="select2" data-hide-search="false">
+                    <option value="">Select class</option>
+                    @foreach($classes as $class)
+                    <option value="{{ $class->name }}">{{ $class->name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-2">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
                     <option value="">Select status</option>
                     <option value="1">Active</option>
@@ -128,6 +137,7 @@
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_class = $('[name="filter_class"]').find('option:selected').val();
       $filter_customer_group = $('[name="filter_customer_group"]').find('option:selected').val();
 
       table.DataTable({
@@ -144,6 +154,7 @@
               data:{
                 filter_search : $filter_search,
                 filter_status : $filter_status,
+                filter_class : $filter_class,
                 filter_customer_group : $filter_customer_group,
               }
           },
@@ -177,6 +188,7 @@
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
+      $('[name="filter_class"]').val('').trigger('change');
       $('[name="filter_customer_group"]').val('').trigger('change');
       render_table();
     })

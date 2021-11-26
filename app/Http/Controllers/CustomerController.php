@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Support\SAPCustomer;
 use App\Jobs\SyncCustomers;
 use App\Models\Customer;
+use App\Models\Classes;
 use App\Models\CustomerGroup;
 use DataTables;
 
@@ -22,7 +23,8 @@ class CustomerController extends Controller
     public function index()
     {
         $customer_groups = CustomerGroup::all();
-        return view('customer.index',compact('customer_groups'));
+        $classes = Classes::all();
+        return view('customer.index',compact('customer_groups','classes'));
     }
 
     /**
@@ -118,6 +120,10 @@ class CustomerController extends Controller
 
         if($request->filter_customer_group != ""){
             $data->where('group_code',$request->filter_customer_group);
+        }
+
+        if($request->filter_class != ""){
+            $data->where('u_class',$request->filter_class);
         }
 
         if($request->filter_search != ""){
