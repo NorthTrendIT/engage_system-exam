@@ -158,12 +158,10 @@ class CustomerController extends Controller
                                 $html .= @$row->card_name ?? " ";
 
                                 $html .= '</a>
-                                                <span class="text-muted fw-bold text-muted d-block fs-7">Code: ';
-
-                                $html .= @$row->card_code ?? " ";
+                                                <span class="text-muted fw-bold text-muted d-block fs-7">';
 
                                 if($row->email != null){
-                                    $html .= " | Email: ".$row->email;
+                                    $html .= "Email: ".$row->email;
                                 }
 
                                 $html .= '</span>
