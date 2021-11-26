@@ -91,10 +91,10 @@ class DepartmentController extends Controller
 
             if($message == "New Department created successfully."){
                 // Add Department Created log
-                add_log(Auth::id(), 9, array('department_id' => $obj->id), \Request::ip());
+                add_log(9, array('department_id' => $obj->id));
             } else if($message == "Department details updated successfully."){
                 // Add Department Updated log
-                add_log(Auth::id(), 10, array('department_id' => $obj->id), \Request::ip());
+                add_log(10, array('department_id' => $obj->id));
             }
 
             $response = ['status'=>true,'message'=>$message];
@@ -163,7 +163,7 @@ class DepartmentController extends Controller
             $data->delete();
 
             // Add Department Deleted log.
-            add_log(Auth::id(), 11, array('department_data' => $data), \Request::ip());
+            add_log(11, array('department_data' => $data));
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
@@ -241,7 +241,7 @@ class DepartmentController extends Controller
     }
 
     public function getDepartmentTreeData($id){
-        
+
       $result = $children = array();
       $result['children'] = array();
       $department = Department::find($id);
@@ -265,7 +265,7 @@ class DepartmentController extends Controller
               }
 
           }
-          
+
           $result['children'] = array_merge($result['children'],$children);
       }
 

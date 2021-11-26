@@ -118,10 +118,10 @@ class UserController extends Controller
 
             if($message == 'New User created successfully.'){
                 // Add User Created log
-                add_log(Auth::id(), 3, array('user_id' => $user->id), \Request::ip());
+                add_log(3, array('user_id' => $user->id));
             } else if($message == 'User details updated successfully.'){
                 // Add User Updated log
-                add_log(Auth::id(), 4, array('user_id' => $user->id), \Request::ip());
+                add_log(4, array('user_id' => $user->id));
             }
 
             $response = ['status'=>true,'message'=>$message];
@@ -191,7 +191,7 @@ class UserController extends Controller
             $data->delete();
 
             // Add user delete log
-            add_log(Auth::id(), 5, array('user_data' => $data), \Request::ip());
+            add_log(5, array('user_data' => $data));
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{

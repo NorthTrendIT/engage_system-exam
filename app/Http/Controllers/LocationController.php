@@ -68,10 +68,10 @@ class LocationController extends Controller
 
             if($message == "New Location created successfully."){
                 // Add Location Created log.
-                add_log(\Auth::id(), 12, array('location_id' => $obj->id), \Request::ip());
+                add_log(12, array('location_id' => $obj->id));
             } else if($message == "Location details updated successfully."){
                 // Add Location updated log.
-                add_log(\Auth::id(), 13, array('location_id' => $obj->id), \Request::ip());
+                add_log(13, array('location_id' => $obj->id));
             }
 
             $response = ['status'=>true,'message'=>$message];
@@ -130,7 +130,7 @@ class LocationController extends Controller
             $data->delete();
 
             // Add Location updated log.
-            add_log(\Auth::id(), 14, array('location_id' => $data->id, 'location_name' => $data->name,), \Request::ip());
+            add_log(14, array('location_id' => $data->id, 'location_name' => $data->name));
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{

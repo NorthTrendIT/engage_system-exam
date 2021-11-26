@@ -164,7 +164,7 @@ class ProductController extends Controller
     try {
 
       // Add sync Product data log.
-      add_log(Auth::id(), 18, null, \Request::ip());
+      add_log(18, null);
 
       // Save Data of Product in database
       SyncProducts::dispatch('TEST-APBW', 'manager', 'test');

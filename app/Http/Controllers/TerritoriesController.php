@@ -92,7 +92,7 @@ class TerritoriesController extends Controller
     public function syncTerritories(){
         try {
             // Add Sync Territories data log.
-            add_log(\Auth::id(), 22, null, \Request::ip());
+            add_log(22, null);
 
             // Save Data of Territories in database
             SyncTerritories::dispatch('TEST-APBW', 'manager', 'test');

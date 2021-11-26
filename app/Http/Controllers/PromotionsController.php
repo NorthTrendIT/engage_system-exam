@@ -122,10 +122,10 @@ class PromotionsController extends Controller
 
             if($message == "Promotion created successfully."){
                 // Add Promotion Created log.
-                add_log(\Auth::id(), 19, array('promotion_id' => $promotion->id), \Request::ip());
+                add_log(19, array('promotion_id' => $promotion->id));
             } else if($message == "Promotion updated successfully."){
                 // Add Promotion Updated log.
-                add_log(\Auth::id(), 20, array('promotion_id' => $promotion->id), \Request::ip());
+                add_log(20, array('promotion_id' => $promotion->id));
 
             }
 
@@ -206,7 +206,7 @@ class PromotionsController extends Controller
             $data->delete();
 
             // Add Promotion Deleted log.
-            add_log(\Auth::id(), 21, array('promotion_id' => $data), \Request::ip());
+            add_log(21, array('promotion_id' => $data));
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
