@@ -73,7 +73,6 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>No.</th>
                               <th>Role</th>
                               <th>First Name</th>
                               <th>Last Name</th>
@@ -145,7 +144,6 @@
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
               {data: 'role', name: 'role'},
               {data: 'first_name', name: 'first_name'},
               {data: 'last_name', name: 'last_name'},

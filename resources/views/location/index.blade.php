@@ -73,7 +73,6 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>No.</th>
                               <th>Name</th>
                               <th>Province</th>
                               <th>Status</th>
@@ -143,7 +142,6 @@
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
               {data: 'name', name: 'name'},
               {data: 'parent', name: 'parent'},
               {data: 'status', name: 'status'},

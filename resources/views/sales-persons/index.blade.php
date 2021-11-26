@@ -65,7 +65,6 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>No.</th>
                               <th>Name</th>
                               <th>Code</th>
                               <th>Position</th>
@@ -133,7 +132,6 @@
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
               {data: 'name', name: 'name'},
               {data: 'code', name: 'code'},
               {data: 'position', name: 'position'},
