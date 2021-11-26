@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use DataTables;
 use Validator;
+use Auth;
 
 class ProductController extends Controller
 {

@@ -49,6 +49,7 @@ class StoreProducts implements ShouldQueue
                                 'purchase_vat_group' => @$value['PurchaseVATGroup'],
                                 'created_date' => @$value['CreateDate']." ".@$value['CreateTime'],
                                 'is_active' => @$value['Valid'] == "tYES" ? true : false,
+                                'item_prices' => json_encode(@$value['ItemPrices']),
                                 //'response' => json_encode($value),
                             );
 
