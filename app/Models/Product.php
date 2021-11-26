@@ -12,7 +12,7 @@ class Product extends Model
 
     protected $fillable = [
     	'item_code',
-    	'item_name',
+        'item_name',
     	'foreign_name',
     	'items_group_code',
     	'customs_group_code',
@@ -25,6 +25,7 @@ class Product extends Model
         'product_features',
         'product_benefits',
         'product_sell_sheets',
+    	'item_prices',
     ];
 
     public function product_images()
