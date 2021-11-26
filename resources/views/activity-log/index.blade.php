@@ -53,7 +53,6 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                                <th>No.</th>
                                 <th>Activity</th>
                                 <th>User Name</th>
                                 <th>IP Address</th>
@@ -121,7 +120,6 @@
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
               {data: 'activity', name: 'activity'},
               {data: 'user_name', name: 'user_name'},
               {data: 'ip_address', name: 'ip_address'},

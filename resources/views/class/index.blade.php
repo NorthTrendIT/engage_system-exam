@@ -48,7 +48,6 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>No.</th>
                               <th>Name</th>
                             </tr>
                           </thead>
@@ -110,7 +109,6 @@
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
               {data: 'name', name: 'name'},
           ],
           drawCallback:function(){

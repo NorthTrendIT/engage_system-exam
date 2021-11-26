@@ -73,7 +73,6 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>No.</th>
                               <th>Name</th>
                               @if(userrole() == 1)
                               <th>Credit Limit</th>
@@ -149,7 +148,6 @@
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
               {data: 'name', name: 'name'},
               @if(userrole() == 1)
               {data: 'credit_limit', name: 'credit_limit'},
