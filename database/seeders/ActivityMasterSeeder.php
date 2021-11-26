@@ -103,6 +103,10 @@ class ActivityMasterSeeder extends Seeder
                         'id' => 21,
                         'name' => 'Promotion Deleted'
                     ),
+                    array(
+                        'id' => 22,
+                        'name' => 'Sync Territories Data'
+                    ),
         		);
         ActivityMaster::insert($data);
     }
