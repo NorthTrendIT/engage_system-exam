@@ -156,7 +156,7 @@
               @endif
               {data: 'group', name: 'group'},
               {data: 'city', name: 'city'},
-              {data: 'created_date', name: 'created_date'},
+              {data: 'created_at', name: 'created_at'},
               {data: 'class', name: 'class'},
               {data: 'status', name: 'status'},
               {data: 'action', name: 'action'},

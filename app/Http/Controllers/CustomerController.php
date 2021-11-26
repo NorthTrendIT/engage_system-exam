@@ -183,8 +183,7 @@ class CustomerController extends Controller
                                 return $btn;
                             })
                             ->addColumn('class', function($row) {
-                                $html = "";
-                                return $html;
+                                return @$row->u_class ?? "-";
                             })
                             ->addColumn('credit_limit', function($row) {
                                 if(userrole() == 1){
@@ -196,14 +195,14 @@ class CustomerController extends Controller
                             ->addColumn('group', function($row) {
                                 return @$row->group->name ?? "-";
                             })
-                            ->addColumn('created_date', function($row) {
-                                return date('M d, Y',strtotime($row->created_date));
+                            ->addColumn('created_at', function($row) {
+                                return date('M d, Y',strtotime($row->created_at));
                             })
                             ->orderColumn('name', function ($query, $order) {
                                 $query->orderBy('card_name', $order);
                             })
-                            ->orderColumn('created_date', function ($query, $order) {
-                                $query->orderBy('created_date', $order);
+                            ->orderColumn('created_at', function ($query, $order) {
+                                $query->orderBy('created_at', $order);
                             })
                             ->orderColumn('city', function ($query, $order) {
                                 $query->orderBy('city', $order);
@@ -214,11 +213,14 @@ class CustomerController extends Controller
                             ->orderColumn('credit_limit', function ($query, $order) {
                                 $query->orderBy('credit_limit', $order);
                             })
+                            ->orderColumn('class', function ($query, $order) {
+                                $query->orderBy('u_class', $order);
+                            })
                             ->orderColumn('group', function ($query, $order) {
                                 $query->join('customer_groups', 'customers.group_code', '=', 'customer_groups.code')
                                     ->orderBy('customer_groups.name', $order);
                             })
-                            ->rawColumns(['name', 'role','status','action','credit_limit','group'])
+                            ->rawColumns(['name', 'role','status','action','credit_limit','group','class'])
                             ->make(true);
     }
 }

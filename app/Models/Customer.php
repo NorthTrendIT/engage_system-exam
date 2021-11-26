@@ -37,6 +37,8 @@ class Customer extends Model
         'u_tsec',
         'u_class',
         'u_rgn',
+        'class_id',
+        'price_list_num',
     ];
 
     public function bp_addresses()
