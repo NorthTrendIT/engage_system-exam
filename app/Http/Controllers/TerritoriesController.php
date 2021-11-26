@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Support\SAPTerritory;
 use App\Jobs\SyncTerritories;
-use App\Models\Territor;
+use App\Models\Territory;
 use DataTables;
 
 class TerritoriesController extends Controller
@@ -20,7 +20,7 @@ class TerritoriesController extends Controller
      */
     public function index()
     {
-        return view('territor.index');
+        return view('territory.index');
     }
 
     /**
@@ -91,15 +91,15 @@ class TerritoriesController extends Controller
 
     public function syncTerritories(){
         try {
-
             // Add Sync Territories data log.
-            add_log(\Auth::id(), 15, null, \Request::ip());
+            add_log(\Auth::id(), 22, null, \Request::ip());
 
             // Save Data of Territories in database
             SyncTerritories::dispatch('TEST-APBW', 'manager', 'test');
 
             $response = ['status' => true, 'message' => 'Sync Territories successfully !'];
         } catch (\Exception $e) {
+            dd($e);
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
         return $response;
@@ -115,10 +115,7 @@ class TerritoriesController extends Controller
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
-                $q->orwhere('card_code','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('email','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('credit_limit','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('description','LIKE',"%".$request->filter_search."%");
             });
         }
 
@@ -128,76 +125,24 @@ class TerritoriesController extends Controller
 
         return DataTables::of($data)
                             ->addIndexColumn()
-                            ->addColumn('action', function($row) {
-                                $btn = ' <a href="' . route('customer.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
-                                    <i class="fa fa-eye"></i>
-                                  </a>';
-
-                                return $btn;
-                            })
                             ->addColumn('name', function($row) {
-                                $html = "";
-
-                                $html .= '<div class="d-flex align-items-center">
-                                            <div class="symbol symbol-45px me-5">
-                                                <img src="'.asset('assets/assets/media/default_user.png').'" alt="">
-                                            </div>
-                                            <div class="d-flex justify-content-start flex-column">
-                                                <a href="javascript:" class="text-dark fw-bolder text-hover-primary fs-6">';
-
-                                $html .= @$row->card_name ?? " ";
-
-                                $html .= '</a>
-                                                <span class="text-muted fw-bold text-muted d-block fs-7">Code: ';
-
-                                $html .= @$row->card_code ?? " ";
-
-                                if($row->email != null){
-                                    $html .= " | Email: ".$row->email;
-                                }
-
-                                $html .= '</span>
-                                            </div>
-                                        </div>';
-
-                                return $html;
-                            })
-                            ->addColumn('status', function($row) {
-                                $btn = "";
-                                if($row->is_active){
-                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
-                                }else{
-                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
-                                }
-
-                                return $btn;
-                            })
-                            ->addColumn('class', function($row) {
-                                $html = "";
-                                return $html;
-                            })
-                            ->addColumn('credit_limit', function($row) {
-                                return @$row->credit_limit ?? "-";
-                            })
-                            ->addColumn('created_date', function($row) {
-                                return date('M d, Y',strtotime($row->created_date));
+                                return @$row->description;
                             })
                             ->orderColumn('name', function ($query, $order) {
-                                $query->orderBy('card_name', $order);
+                                $query->orderBy('description', $order);
                             })
-                            ->orderColumn('created_date', function ($query, $order) {
-                                $query->orderBy('created_date', $order);
+                            ->addColumn('status', function($row) {
+
+                                $btn = "";
+                                if($row->is_active){
+                                    $btn .= '<a href="javascript:"  data-url="" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
+                                }else{
+                                    $btn .= '<a href="javascript:"  data-url="" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
+                                }
+
+                                return $btn;
                             })
-                            ->orderColumn('city', function ($query, $order) {
-                                $query->orderBy('city', $order);
-                            })
-                            ->orderColumn('status', function ($query, $order) {
-                                $query->orderBy('is_active', $order);
-                            })
-                            ->orderColumn('credit_limit', function ($query, $order) {
-                                $query->orderBy('credit_limit', $order);
-                            })
-                            ->rawColumns(['name', 'role','status','action','credit_limit'])
+                            ->rawColumns(['status'])
                             ->make(true);
     }
 }

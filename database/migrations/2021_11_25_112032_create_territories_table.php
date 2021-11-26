@@ -20,6 +20,7 @@ class CreateTerritoriesTable extends Migration
             $table->string('description');
             $table->bigInteger('location_index')->default(0);
             $table->boolean('is_active')->default(true);
+            $table->longText('response')->nullable();
             $table->timestamps();
         });
     }

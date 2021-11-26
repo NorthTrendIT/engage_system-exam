@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title','Orders')
+@section('title','Territories')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Orders</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Territories</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="javascript:" class="btn btn-sm btn-primary sync-orders">Sync Orders</a>
+        <a href="javascript:" class="btn btn-sm btn-primary sync-territory">Sync Territories</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -41,13 +41,13 @@
                 </div>
 
 
-                <!-- <div class="col-md-3">
+                <div class="col-md-3">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
                     <option value="">Select status</option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
                   </select>
-                </div> -->
+                </div>
 
                 <div class="col-md-3">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
@@ -66,11 +66,8 @@
                           <thead>
                             <tr>
                               <th>No.</th>
-                              <th>Type</th>
                               <th>Name</th>
-                              <th>Total</th>
-                              <th>Date</th>
-                              <th>Due Date</th>
+                              <th>Status</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -123,7 +120,7 @@
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('orders.get-all') }}",
+              'url': "{{ route('territory.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -135,11 +132,8 @@
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-              {data: 'type', name: 'type'},
               {data: 'name', name: 'name'},
-              {data: 'total', name: 'total'},
-              {data: 'date', name: 'date'},
-              {data: 'due_date', name: 'due_date'},
+              {data: 'status', name: 'status'},
           ],
           drawCallback:function(){
               $(function () {
@@ -162,12 +156,12 @@
       render_table();
     })
 
-    $(document).on('click', '.sync-orders', function(event) {
+    $(document).on('click', '.sync-territory', function(event) {
       event.preventDefault();
 
       Swal.fire({
-        title: 'Are you sure want to sync orders?',
-        text: "Syncing process will run in background and it may take some time to sync all Orders Data.",
+        title: 'Are you sure want to sync Territories?',
+        text: "Syncing process will run in background and it may take some time to sync all Territories Data.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -176,7 +170,7 @@
       }).then((result) => {
         if (result.isConfirmed) {
           $.ajax({
-            url: '{{ route('orders.sync-orders') }}',
+            url: '{{ route('territory.sync-territory') }}',
             method: "POST",
             data: {
                     _token:'{{ csrf_token() }}'

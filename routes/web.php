@@ -120,6 +120,11 @@ Route::middleware(['auth'])->group(function(){
 	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index');
 	    Route::get('product-list/{id}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show');
 	    Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all');
+
+        // Territories
+        Route::resource('territory','App\Http\Controllers\TerritoriesController');
+	    Route::post('territory/get-all', 'App\Http\Controllers\TerritoriesController@getAll')->name('territory.get-all');
+	    Route::post('territory/sync-territory', 'App\Http\Controllers\TerritoriesController@syncTerritories')->name('territory.sync-territory');
     });
 
 });
