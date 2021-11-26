@@ -74,6 +74,11 @@ class ModuleSeeder extends Seeder
                         'slug' => 'customer-group',
                         'model_name' => 'App\Models\CustomerGroup',
                     ),
+                    array(
+                        'title' => 'Class',
+                        'slug' => 'class',
+                        'model_name' => 'App\Models\Class',
+                    ),
         		);
         Module::insert($data);
     }

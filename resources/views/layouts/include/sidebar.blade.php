@@ -51,8 +51,8 @@
             </div>
 
 
-            @if(Auth::user()->role_id == 1 || ( (isset($access['customer-group']) && $access['customer-group']['view_access'] == 1) || (isset($access['customer']) && $access['customer']['view_access'] == 1) ) )
-            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['customer.index','customer.show','customer-group.index'])) ? 'hover show' : '' }}">
+            @if(Auth::user()->role_id == 1 || ( (isset($access['customer-group']) && $access['customer-group']['view_access'] == 1) || (isset($access['customer']) && $access['customer']['view_access'] == 1) || (isset($access['class']) && $access['class']['view_access'] == 1) ) )
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['customer.index','customer.show','customer-group.index','class.index','class.show'])) ? 'hover show' : '' }}">
                <span class="menu-link">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/layouts/lay010.svg-->
@@ -68,6 +68,17 @@
                   <span class="menu-arrow"></span>
                </span>
                <div class="menu-sub menu-sub-accordion">
+
+                  @if(Auth::user()->role_id == 1 || (isset($access['class']) && $access['class']['view_access'] == 1))
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['class.index','class.show'])) ? 'active' : '' }}" href="{{ route('class.index') }}" >
+                        <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Class</span>
+                     </a>
+                  </div>
+                  @endif
 
                   @if(Auth::user()->role_id == 1 || (isset($access['customer']) && $access['customer']['view_access'] == 1))
                   <div class="menu-item">

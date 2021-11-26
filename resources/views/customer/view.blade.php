@@ -40,10 +40,10 @@
                        <table class="table table-bordered" id="myTable">
                           <!--begin::Table head-->
                           <thead>
-                            <tr>
+                            {{-- <tr>
                               <th> <b>Card Code:</b> </th>
                               <td>{{ @$data->card_code ?? "" }}</td>
-                            </tr>
+                            </tr> --}}
                             <tr>
                               <th> <b>Card Name:</b> </th>
                               <td>{{ @$data->card_name ?? "" }}</td>
@@ -64,6 +64,11 @@
                             </tr>
 
                             <tr>
+                              <th> <b>Class:</b> </th>
+                              <td>{{ @$data->u_class ?? "" }}</td>
+                            </tr>
+
+                            <tr>
                               <th> <b>Address:</b> </th>
                               <td>{{ @$data->address ?? "" }}</td>
                             </tr>
@@ -75,10 +80,10 @@
                             </tr>
                             @endif
                             
-                            <tr>
+                            {{-- <tr>
                               <th> <b>Max Commitment:</b> </th>
                               <td>{{ @$data->max_commitment ?? "" }}</td>
-                            </tr>
+                            </tr> --}}
 
                             <tr>
                               <th> <b>Federal Tax ID:</b> </th>
@@ -92,7 +97,7 @@
 
                             <tr>
                               <th> <b>Created Date:</b> </th>
-                              <td>{{ date('M d, Y',strtotime(@$data->created_date)) }}</td>
+                              <td>{{ date('M d, Y',strtotime(@$data->created_at)) }}</td>
                             </tr>
                             <tr>
                               <th> <b>Status:</b> </th>

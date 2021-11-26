@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Customer;
+use App\Models\Classes;
 use App\Models\CustomerBpAddress;
 
 class StoreCustomers implements ShouldQueue
@@ -37,7 +38,20 @@ class StoreCustomers implements ShouldQueue
         if(!empty($this->data)){
 
             foreach ($this->data as $value) {
-                    
+
+                if(!is_null(@$value['U_CLASS'])){
+                    $obj_class = Classes::updateOrCreate(
+                                            [
+                                                'name' => @$value['U_CLASS'],
+                                                'module' => 'C',
+                                            ],
+                                            [
+                                                'name' => @$value['U_CLASS'],
+                                                'module' => 'C',
+                                            ]
+                                        );
+                }
+
                 $insert = array(
                                 'card_code' => @$value['CardCode'],
                                 'card_type' => @$value['CardType'],
@@ -46,7 +60,7 @@ class StoreCustomers implements ShouldQueue
                                 'contact_person' => @$value['ContactPerson'],
                                 'email' => @$value['EmailAddress'],
                                 'city' => @$value['City'],
-                                'created_date' => @$value['CreateDate']." ".@$value['CreateTime'],
+                                //'created_date' => @$value['CreateDate']." ".@$value['CreateTime'],
                                 'is_active' => @$value['Valid'] == "tYES" ? true : false,
                                 //'response' => json_encode($value),
 
@@ -55,16 +69,19 @@ class StoreCustomers implements ShouldQueue
                                 'phone1' => @$value['Phone1'],
                                 'notes' => @$value['Notes'],
                                 'credit_limit' => @$value['CreditLimit'],
-                                'max_commitment' => @$value['MaxCommitment'],
+                                //'max_commitment' => @$value['MaxCommitment'],
                                 'federal_tax_id' => @$value['FederalTaxID'],
                                 'current_account_balance' => @$value['CurrentAccountBalance'],
-                                'vat_group' => @$value['VatGroup'],
+                                //'vat_group' => @$value['VatGroup'],
                                 'u_regowner' => @$value['U_REGOWNER'],
-                                'u_mp' => @$value['U_MP'],
+                                //'u_mp' => @$value['U_MP'],
                                 'u_msec' => @$value['U_MSEC'],
                                 'u_tsec' => @$value['U_TSEC'],
                                 'u_class' => @$value['U_CLASS'],
                                 'u_rgn' => @$value['U_RGN'],
+                                'price_list_num' => @$value['PriceListNum'],
+                                
+                                'class_id' => !is_null(@$value['U_CLASS']) ? @$obj_class->id : NULL,
                             );
 
                 $obj = Customer::updateOrCreate(

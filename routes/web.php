@@ -130,6 +130,9 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('customer-group/get-all', 'App\Http\Controllers\CustomerGroupController@getAll')->name('customer-group.get-all');
 	    Route::post('customer-group/sync-customer-groups', 'App\Http\Controllers\CustomerGroupController@syncCustomerGroups')->name('customer-group.sync-customer-groups');
 
+	    Route::resource('class','App\Http\Controllers\ClassController');
+	    Route::post('class/get-all', 'App\Http\Controllers\ClassController@getAll')->name('class.get-all');
+
     });
 
 });
