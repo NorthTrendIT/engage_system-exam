@@ -13,14 +13,15 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary">Create</a>
+        <a href="javascript:" class="btn btn-sm btn-primary sync-sales-persons" style="display:none">Sync Sales Persons</a>
+        <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary create-btn">Create</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-      
+
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -41,7 +42,7 @@
                 </div>
 
                 <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_role" data-control="select2" data-hide-search="true">
+                  <select class="form-control form-control-lg form-control-solid filter_role" name="filter_role" data-control="select2" data-hide-search="true">
                     <option value="">Select role</option>
                     @foreach($roles as $role)
                     <option value="{{ $role->id }}">{{ $role->name }}</option>
@@ -84,7 +85,7 @@
                           <!--end::Table head-->
                           <!--begin::Table body-->
                           <tbody>
-                            
+
                           </tbody>
                           <!--end::Table body-->
                        </table>
@@ -173,6 +174,17 @@
       render_table();
     })
 
+    $(document).on('change', '.filter_role', function(){
+        $role = $('[name="filter_role"]').find('option:selected').val();
+        if($role == 2){
+            $('.sync-sales-persons').show();
+            $('.create-btn').hide();
+        } else {
+            $('.sync-sales-persons').hide();
+            $('.create-btn').show();
+        }
+    });
+
     $(document).on('click', '.delete', function(event) {
       event.preventDefault();
       $url = $(this).attr('data-url');
@@ -191,7 +203,7 @@
             url: $url,
             method: "DELETE",
             data: {
-                    _token:'{{ csrf_token() }}' 
+                    _token:'{{ csrf_token() }}'
                   }
           })
           .done(function(result) {
@@ -227,7 +239,7 @@
             url: $url,
             method: "POST",
             data: {
-                    _token:'{{ csrf_token() }}' 
+                    _token:'{{ csrf_token() }}'
                   }
           })
           .done(function(result) {
@@ -245,5 +257,40 @@
       })
     });
   })
+
+  $(document).on('click', '.sync-sales-persons', function(event) {
+      event.preventDefault();
+
+      Swal.fire({
+        title: 'Are you sure want to sync sales persons?',
+        text: "Syncing process will run in background and it may take some time to sync all Sales Persons Data.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('sales-persons.sync-sales-persons') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}'
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              render_table();
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
 </script>
 @endpush

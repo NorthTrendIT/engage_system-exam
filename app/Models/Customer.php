@@ -50,4 +50,8 @@ class Customer extends Model
     {
         return $this->belongsTo(CustomerGroup::class,'group_code','code');
     }
+
+    public function sales_specialist(){
+        return $this->hasMany(CustomersSalesSpecialist::class, 'customer_id');
+    }
 }

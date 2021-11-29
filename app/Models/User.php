@@ -30,6 +30,7 @@ class User extends Authenticatable
         'province_id',
         'department_id',
         'parent_id',
+        'sales_specialist_name',
     ];
 
     /**
@@ -74,5 +75,10 @@ class User extends Authenticatable
     public function city()
     {
         return $this->belongsTo(Location::class,'city_id');
+    }
+
+    public function sales_person()
+    {
+        return $this->belongsToMany(CustomersSalesSpecialist::class, 'id', 'ss_id');
     }
 }
