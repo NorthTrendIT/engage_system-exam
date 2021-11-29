@@ -428,6 +428,25 @@ class CheckRoleModuleAccess
                     }
                 }
 
+
+                // Class Module
+                if(!isset($access['class']) && in_array($request->route()->getName(), ['class.index','class.get-all']) ){
+
+                    $status = false;
+                    $message = "Oops ! you have not access for class module.";
+                }else{
+
+                    if(in_array($request->route()->getName(), ['class.index','class.get-all'])){
+                       
+                        if($access['class']['view_access'] != 1){
+                            
+                            $status = false;
+                            $message = "Oops ! you have not access for class module.";
+
+                        }
+                    }
+                }
+
             }
 
             if(!$status){

@@ -117,9 +117,9 @@ Route::middleware(['auth'])->group(function(){
         Route::resource('activitylog','App\Http\Controllers\ActivityLogController');
 	    Route::post('activitylog/get-all', 'App\Http\Controllers\ActivityLogController@getAll')->name('activitylog.get-all');
 
-	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index');
-	    Route::get('product-list/{id}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show');
-	    Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all');
+	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index')->middleware('not-super-admin');
+	    Route::get('product-list/{id}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show')->middleware('not-super-admin');
+	    Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all')->middleware('not-super-admin');
 
         // Territories
         Route::resource('territory','App\Http\Controllers\TerritoriesController');
@@ -136,6 +136,9 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('customers-sales-specialist/status/{id}', 'App\Http\Controllers\CustomersSalesSpecialistsController@updateStatus')->name('customers-sales-specialist.status');
         Route::post('customers-sales-specialist/get-customers/','App\Http\Controllers\CustomersSalesSpecialistsController@getCustomers')->name('customers-sales-specialist.getCustomers');
         Route::post('customers-sales-specialist/get-salse-specialist/','App\Http\Controllers\CustomersSalesSpecialistsController@getSalseSpecialist')->name('customers-sales-specialist.getSalseSpecialist');
+
+	    Route::resource('class','App\Http\Controllers\ClassController');
+	    Route::post('class/get-all', 'App\Http\Controllers\ClassController@getAll')->name('class.get-all');
     });
 
 });

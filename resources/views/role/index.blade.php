@@ -67,7 +67,6 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>No.</th>
                               <th>Name</th>
                               <th>Parent</th>
                               <th>Access</th>
@@ -133,7 +132,6 @@
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex'},
               {data: 'name', name: 'name'},
               {data: 'parent', name: 'parent'},
               {data: 'access', name: 'access'},

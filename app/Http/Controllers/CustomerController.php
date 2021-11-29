@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Support\SAPCustomer;
 use App\Jobs\SyncCustomers;
 use App\Models\Customer;
+use App\Models\Classes;
 use App\Models\CustomerGroup;
 use DataTables;
 
@@ -22,7 +23,8 @@ class CustomerController extends Controller
     public function index()
     {
         $customer_groups = CustomerGroup::all();
-        return view('customer.index',compact('customer_groups'));
+        $classes = Classes::all();
+        return view('customer.index',compact('customer_groups','classes'));
     }
 
     /**
@@ -120,6 +122,10 @@ class CustomerController extends Controller
             $data->where('group_code',$request->filter_customer_group);
         }
 
+        if($request->filter_class != ""){
+            $data->where('u_class',$request->filter_class);
+        }
+
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
                 $q->orwhere('card_code','LIKE',"%".$request->filter_search."%");
@@ -158,12 +164,10 @@ class CustomerController extends Controller
                                 $html .= @$row->card_name ?? " ";
 
                                 $html .= '</a>
-                                                <span class="text-muted fw-bold text-muted d-block fs-7">Code: ';
-
-                                $html .= @$row->card_code ?? " ";
+                                                <span class="text-muted fw-bold text-muted d-block fs-7">';
 
                                 if($row->email != null){
-                                    $html .= " | Email: ".$row->email;
+                                    $html .= "Email: ".$row->email;
                                 }
 
                                 $html .= '</span>
@@ -183,8 +187,7 @@ class CustomerController extends Controller
                                 return $btn;
                             })
                             ->addColumn('class', function($row) {
-                                $html = "";
-                                return $html;
+                                return @$row->u_class ?? "-";
                             })
                             ->addColumn('credit_limit', function($row) {
                                 if(userrole() == 1){
@@ -196,14 +199,14 @@ class CustomerController extends Controller
                             ->addColumn('group', function($row) {
                                 return @$row->group->name ?? "-";
                             })
-                            ->addColumn('created_date', function($row) {
-                                return date('M d, Y',strtotime($row->created_date));
+                            ->addColumn('created_at', function($row) {
+                                return date('M d, Y',strtotime($row->created_at));
                             })
                             ->orderColumn('name', function ($query, $order) {
                                 $query->orderBy('card_name', $order);
                             })
-                            ->orderColumn('created_date', function ($query, $order) {
-                                $query->orderBy('created_date', $order);
+                            ->orderColumn('created_at', function ($query, $order) {
+                                $query->orderBy('created_at', $order);
                             })
                             ->orderColumn('city', function ($query, $order) {
                                 $query->orderBy('city', $order);
@@ -214,11 +217,14 @@ class CustomerController extends Controller
                             ->orderColumn('credit_limit', function ($query, $order) {
                                 $query->orderBy('credit_limit', $order);
                             })
+                            ->orderColumn('class', function ($query, $order) {
+                                $query->orderBy('u_class', $order);
+                            })
                             ->orderColumn('group', function ($query, $order) {
                                 $query->join('customer_groups', 'customers.group_code', '=', 'customer_groups.code')
                                     ->orderBy('customer_groups.name', $order);
                             })
-                            ->rawColumns(['name', 'role','status','action','credit_limit','group'])
+                            ->rawColumns(['name', 'role','status','action','credit_limit','group','class'])
                             ->make(true);
     }
 }
