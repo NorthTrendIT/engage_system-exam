@@ -5,7 +5,8 @@ namespace App\Support;
 use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
-use App\Models\SalesPerson;
+use App\Models\User;
+use Hash;
 
 class SAPSalesPersons
 {
@@ -73,34 +74,29 @@ class SAPSalesPersons
             if($data['value']){
 
                 foreach ($data['value'] as $value) {
+                    $email = $value['U_Password'];
+                    $name = explode(" ", $value['SalesEmployeeName'], 2);
 
                     $insert = array(
-                                    'sales_employee_code' => $value['SalesEmployeeCode'],
-                                    'sales_employee_name' => $value['SalesEmployeeName'],
-                                    'remark' => $value['Remarks'],
-                                    'commission_for_sales_employee' => $value['CommissionForSalesEmployee'],
-                                    'commission_group' => $value['CommissionGroup'],
-                                    'locked' => $value['Locked'],
-                                    'employee_id' => $value['EmployeeID'],
+                                    'role_id' => 2,
+                                    'sales_specialist_name' => $value['SalesEmployeeName'],
+                                    'first_name' => !empty($name[0]) ? $name[0] : null,
+                                    'last_name' => !empty($name[1]) ? $name[1] : null,
                                     'is_active' => $value['Active'] == "tYES" ? true : false,
-                                    'u_manager' => $value['U_MANAGER'],
-                                    'u_position' => $value['U_POSITION'],
-                                    'u_initials' => $value['U_INITIALS'],
-                                    'u_warehouse' => $value['U_WAREHOUSE'],
-                                    'u_password' => $value['U_Password'],
-                                    'u_area' => $value['U_AREA'],
+                                    'password' => Hash::make($value['U_Password']),
+                                    'email' => $email.'@mailinator.com',
                                     //'response' => json_encode($value),
                                 );
 
-                    $obj = SalesPerson::updateOrCreate(
+                    $obj = User::updateOrCreate(
                                             [
-                                                'sales_employee_code' => @$value['SalesEmployeeCode'],
+                                                'sales_specialist_name' => @$value['SalesEmployeeName'],
                                             ],
                                             $insert
                                         );
                 }
 
-                if($data['odata.nextLink']){
+                if(!empty($data['odata.nextLink'])){
                     $this->addSalesPersonsDataInDatabase($data['odata.nextLink']);
                 }
             }

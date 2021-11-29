@@ -97,6 +97,7 @@ class SalesPersonsController extends Controller
 
             $response = ['status' => true, 'message' => 'Sync Sales Persons successfully !'];
         } catch (\Exception $e) {
+            dd($e);
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
         return $response;
