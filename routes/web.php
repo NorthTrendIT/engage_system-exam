@@ -130,6 +130,12 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('customer-group/get-all', 'App\Http\Controllers\CustomerGroupController@getAll')->name('customer-group.get-all');
 	    Route::post('customer-group/sync-customer-groups', 'App\Http\Controllers\CustomerGroupController@syncCustomerGroups')->name('customer-group.sync-customer-groups');
 
+        // Sales Specialist Assignment
+        Route::resource('customers-sales-specialist','App\Http\Controllers\CustomersSalesSpecialistsController');
+	    Route::post('customers-sales-specialist/get-all', 'App\Http\Controllers\CustomersSalesSpecialistsController@getAll')->name('customers-sales-specialist.get-all');
+	    Route::post('customers-sales-specialist/status/{id}', 'App\Http\Controllers\CustomersSalesSpecialistsController@updateStatus')->name('customers-sales-specialist.status');
+        Route::post('customers-sales-specialist/get-customers/','App\Http\Controllers\CustomersSalesSpecialistsController@getCustomers')->name('customers-sales-specialist.getCustomers');
+        Route::post('customers-sales-specialist/get-salse-specialist/','App\Http\Controllers\CustomersSalesSpecialistsController@getSalseSpecialist')->name('customers-sales-specialist.getSalseSpecialist');
     });
 
 });

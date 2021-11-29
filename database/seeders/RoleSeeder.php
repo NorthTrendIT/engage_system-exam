@@ -19,7 +19,12 @@ class RoleSeeder extends Seeder
 
         $data = array(
         			array(
+                        'id' => 1,
         				'name' => 'Super Admin'
+                    ),
+                    array(
+                        'id' => 2,
+        				'name' => 'Sales Specialist'
         			)
         		);
         Role::insert($data);
