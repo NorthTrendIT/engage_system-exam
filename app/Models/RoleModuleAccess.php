@@ -15,10 +15,7 @@ class RoleModuleAccess extends Model
     protected $fillable = [
         'role_id',
         'module_id',
-        'add_access',
-        'edit_access',
-        'view_access',
-        'delete_access',
+        'access',
     ];
 
     public function role()
