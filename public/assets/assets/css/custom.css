@@ -388,3 +388,10 @@ body {overflow-x: hidden; background-color: #f5f8fa;}
 
 
 /*****************globals*************/
+
+.hummingbird-treeview * {
+    font-size: 15px !important;
+}
+.hummingbird-treeview .fa {
+    color: black;
+}

@@ -139,6 +139,13 @@ Route::middleware(['auth'])->group(function(){
 
 	    Route::resource('class','App\Http\Controllers\ClassController');
 	    Route::post('class/get-all', 'App\Http\Controllers\ClassController@getAll')->name('class.get-all');
+
+	    // Territory Sales Specialist
+        Route::resource('territory-sales-specialist','App\Http\Controllers\TerritorySalesSpecialistController');
+	    Route::post('territory-sales-specialist/get-all', 'App\Http\Controllers\TerritorySalesSpecialistController@getAll')->name('territory-sales-specialist.get-all');
+        Route::post('territory-sales-specialist/get-territory/','App\Http\Controllers\TerritorySalesSpecialistController@getTerritory')->name('territory-sales-specialist.get-territory');
+        Route::post('territory-sales-specialist/get-sales-specialist/','App\Http\Controllers\TerritorySalesSpecialistController@getSalesSpecialist')->name('territory-sales-specialist.get-sales-specialist');
+        
     });
 
 });

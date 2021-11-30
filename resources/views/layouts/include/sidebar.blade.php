@@ -177,7 +177,7 @@
             @endif
 
             @if(Auth::user()->role_id == 1 || ( (isset($access['location']) && $access['location']['view_access'] == 1) || (isset($access['department']) && $access['department']['view_access'] == 1) || (isset($access['user']) && $access['user']['view_access'] == 1)))
-            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['location.index','location.create','location.edit','role.index','role.create','role.edit','department.index','department.create','department.edit','user.index','user.create','user.edit','user.show','organisation.index','role.chart','department.show', 'territory.index'])) ? 'hover show' : '' }}">
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['location.index','location.create','location.edit','role.index','role.create','role.edit','department.index','department.create','department.edit','user.index','user.create','user.edit','user.show','organisation.index','role.chart','department.show', 'territory.index','territory-sales-specialist.index','territory-sales-specialist.create','territory-sales-specialist.edit'])) ? 'hover show' : '' }}">
 
                <span class="menu-link">
                   <span class="menu-icon">
@@ -256,6 +256,17 @@
                         <span class="bullet bullet-dot"></span>
                         </span>
                         <span class="menu-title">Territories</span>
+                     </a>
+                  </div>
+                  @endif
+
+                  @if(Auth::user()->role_id == 1)
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['territory-sales-specialist.index','territory-sales-specialist.create','territory-sales-specialist.edit'])) ? 'active' : '' }}" href="{{ route('territory-sales-specialist.index') }}">
+                        <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Territory Sales Specialist</span>
                      </a>
                   </div>
                   @endif
