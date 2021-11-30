@@ -90,13 +90,13 @@ class ModuleSeeder extends Seeder
                             )
                         );
 
-        $promotion = Module::create(
-                            array(
-                                'title' => 'Promotion',
-                                'slug' => 'promotion',
-                                'parent_id' => null,
-                            )
-                        );
+        // $promotion = Module::create(
+        //                     array(
+        //                         'title' => 'Promotion',
+        //                         'slug' => 'promotion',
+        //                         'parent_id' => null,
+        //                     )
+        //                 );
 
         $data = array(
         			array(
@@ -229,26 +229,26 @@ class ModuleSeeder extends Seeder
                         'parent_id' => $product->id,
                     ),
 
-                    array(
-                        'title' => 'Add',
-                        'slug' => 'add-promotion',
-                        'parent_id' => $promotion->id,
-                    ),
-                    array(
-                        'title' => 'edit',
-                        'slug' => 'edit-promotion',
-                        'parent_id' => $promotion->id,
-                    ),
-                    array(
-                        'title' => 'view',
-                        'slug' => 'view-promotion',
-                        'parent_id' => $promotion->id,
-                    ),
-                    array(
-                        'title' => 'delete',
-                        'slug' => 'delete-promotion',
-                        'parent_id' => $promotion->id,
-                    ),
+                    // array(
+                    //     'title' => 'Add',
+                    //     'slug' => 'add-promotion',
+                    //     'parent_id' => $promotion->id,
+                    // ),
+                    // array(
+                    //     'title' => 'edit',
+                    //     'slug' => 'edit-promotion',
+                    //     'parent_id' => $promotion->id,
+                    // ),
+                    // array(
+                    //     'title' => 'view',
+                    //     'slug' => 'view-promotion',
+                    //     'parent_id' => $promotion->id,
+                    // ),
+                    // array(
+                    //     'title' => 'delete',
+                    //     'slug' => 'delete-promotion',
+                    //     'parent_id' => $promotion->id,
+                    // ),
         		);
         Module::insert($data);
     }
