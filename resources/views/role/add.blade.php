@@ -40,7 +40,7 @@
                   <div class="col-md-4">
                     <div class="form-group">
                       <label>Role Name<span class="asterisk">*</span></label>
-                      <input type="text" class="form-control form-control-solid" placeholder="Enter role name" name="name" @if(isset($edit)) value="{{ $edit->name }}" @endif >
+                      <input type="text" class="form-control form-control-solid" placeholder="Enter role name" name="name" @if(isset($edit)) value="{{ $edit->name }}" @if(in_array($edit->id, [2])) readonly="" @endif @endif >
                     </div>
                   </div>
 
