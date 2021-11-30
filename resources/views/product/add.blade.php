@@ -154,7 +154,7 @@
                   
                   <div class="col-md-6">
                     <div class="form-group">
-                      <a href="javascript:" class="btn btn-success btn-sm" data-repeater-create >Add New</a>
+                      <a href="javascript:" class="btn btn-success btn-sm" data-repeater-create >Add more</a>
                     </div>
                   </div>
 
