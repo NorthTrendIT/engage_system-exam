@@ -74,7 +74,7 @@ class SAPSalesPersons
             if($data['value']){
 
                 foreach ($data['value'] as $value) {
-                    $email = $value['U_Password'];
+                    $email = ''.$value['U_Password'];
                     $name = explode(" ", $value['SalesEmployeeName'], 2);
 
                     $insert = array(
