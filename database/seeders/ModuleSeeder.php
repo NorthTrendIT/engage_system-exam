@@ -18,66 +18,236 @@ class ModuleSeeder extends Seeder
         Module::truncate();
         \Schema::enableForeignKeyConstraints();
 
+        $user = Module::create(
+                            array(
+                                'title' => 'User',
+                                'slug' => 'user',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $location = Module::create(
+                            array(
+                                'title' => 'Location',
+                                'slug' => 'location',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $department = Module::create(
+                            array(
+                                'title' => 'Department',
+                                'slug' => 'department',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $customer = Module::create(
+                            array(
+                                'title' => 'Customer',
+                                'slug' => 'customer',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $class = Module::create(
+                            array(
+                                'title' => 'Class',
+                                'slug' => 'class',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $customer_group = Module::create(
+                            array(
+                                'title' => 'Customer Group',
+                                'slug' => 'customer-group',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $order = Module::create(
+                            array(
+                                'title' => 'Order',
+                                'slug' => 'order',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $invoice = Module::create(
+                            array(
+                                'title' => 'Invoice',
+                                'slug' => 'invoice',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $product = Module::create(
+                            array(
+                                'title' => 'Product',
+                                'slug' => 'product',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $promotion = Module::create(
+                            array(
+                                'title' => 'Promotion',
+                                'slug' => 'promotion',
+                                'parent_id' => null,
+                            )
+                        );
+
         $data = array(
-        			/*array(
-        				'title' => 'Role',
-        				'slug' => 'role',
-        				'model_name' => 'App\Models\Role',
-        			),*/
         			array(
-        				'title' => 'User',
-        				'slug' => 'user',
-        				'model_name' => 'App\Models\User',
-        			),
-                    array(
-                        'title' => 'Customer',
-                        'slug' => 'customer',
-                        'model_name' => 'App\Models\Customer',
-                    ),
-                    /*array(
-                        'title' => 'Sales Person',
-                        'slug' => 'sales-person',
-                        'model_name' => 'App\Models\SalesPerson',
-                    ),*/
-                    array(
-                        'title' => 'Product',
-                        'slug' => 'product',
-                        'model_name' => 'App\Models\Product',
+                        'title' => 'Add',
+                        'slug' => 'add-user',
+                        'parent_id' => $user->id,
                     ),
                     array(
-                        'title' => 'Invoice',
-                        'slug' => 'invoice',
-                        'model_name' => 'App\Models\Invoice',
+                        'title' => 'Edit',
+                        'slug' => 'edit-user',
+                        'parent_id' => $user->id,
                     ),
                     array(
-                        'title' => 'Order',
-                        'slug' => 'order',
-                        'model_name' => 'App\Models\Order',
+                        'title' => 'view',
+                        'slug' => 'view-user',
+                        'parent_id' => $user->id,
                     ),
                     array(
-                        'title' => 'Location',
-                        'slug' => 'location',
-                        'model_name' => 'App\Models\Location',
+                        'title' => 'delete',
+                        'slug' => 'delete-user',
+                        'parent_id' => $user->id,
+                    ),
+
+
+                    array(
+                        'title' => 'Add',
+                        'slug' => 'add-department',
+                        'parent_id' => $department->id,
                     ),
                     array(
-                        'title' => 'Department',
-                        'slug' => 'department',
-                        'model_name' => 'App\Models\Department',
+                        'title' => 'edit',
+                        'slug' => 'edit-department',
+                        'parent_id' => $department->id,
                     ),
                     array(
-                        'title' => 'Product List',
-                        'slug' => 'product-list',
-                        'model_name' => 'App\Models\ProductList',
+                        'title' => 'view',
+                        'slug' => 'view-department',
+                        'parent_id' => $department->id,
                     ),
                     array(
-                        'title' => 'Customer Group',
-                        'slug' => 'customer-group',
-                        'model_name' => 'App\Models\CustomerGroup',
+                        'title' => 'delete',
+                        'slug' => 'delete-department',
+                        'parent_id' => $department->id,
+                    ),
+
+                    array(
+                        'title' => 'Add',
+                        'slug' => 'add-location',
+                        'parent_id' => $location->id,
                     ),
                     array(
-                        'title' => 'Class',
-                        'slug' => 'class',
-                        'model_name' => 'App\Models\Class',
+                        'title' => 'edit',
+                        'slug' => 'edit-location',
+                        'parent_id' => $location->id,
+                    ),
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-location',
+                        'parent_id' => $location->id,
+                    ),
+                    array(
+                        'title' => 'delete',
+                        'slug' => 'delete-location',
+                        'parent_id' => $location->id,
+                    ),
+
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-class',
+                        'parent_id' => $class->id,
+                    ),
+
+                    array(
+                        'title' => 'Add/Sync',
+                        'slug' => 'add-customer',
+                        'parent_id' => $customer->id,
+                    ),
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-customer',
+                        'parent_id' => $customer->id,
+                    ),
+
+                    array(
+                        'title' => 'Add/Sync',
+                        'slug' => 'add-customer-group',
+                        'parent_id' => $customer_group->id,
+                    ),
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-customer-group',
+                        'parent_id' => $customer_group->id,
+                    ),
+
+                    array(
+                        'title' => 'Add/Sync',
+                        'slug' => 'add-order',
+                        'parent_id' => $order->id,
+                    ),
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-order',
+                        'parent_id' => $order->id,
+                    ),
+
+                    array(
+                        'title' => 'Add/Sync',
+                        'slug' => 'add-invoice',
+                        'parent_id' => $invoice->id,
+                    ),
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-invoice',
+                        'parent_id' => $invoice->id,
+                    ),
+
+                    array(
+                        'title' => 'Add/Sync',
+                        'slug' => 'add-product',
+                        'parent_id' => $product->id,
+                    ),
+                    array(
+                        'title' => 'edit',
+                        'slug' => 'edit-product',
+                        'parent_id' => $product->id,
+                    ),
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-product',
+                        'parent_id' => $product->id,
+                    ),
+
+                    array(
+                        'title' => 'Add',
+                        'slug' => 'add-promotion',
+                        'parent_id' => $promotion->id,
+                    ),
+                    array(
+                        'title' => 'edit',
+                        'slug' => 'edit-promotion',
+                        'parent_id' => $promotion->id,
+                    ),
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-promotion',
+                        'parent_id' => $promotion->id,
+                    ),
+                    array(
+                        'title' => 'delete',
+                        'slug' => 'delete-promotion',
+                        'parent_id' => $promotion->id,
                     ),
         		);
         Module::insert($data);
