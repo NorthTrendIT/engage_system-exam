@@ -40,8 +40,8 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Territory<span class="asterisk">*</span></label>
-                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="territory_id">
+                            <label>Sales Specialist<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="sales_specialist_id">
                                 <option value=""></option>
                             </select>
                         </div>
@@ -49,9 +49,8 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Sales Specialist<span class="asterisk">*</span></label>
-                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="sales_specialist_id">
-                                <option value=""></option>
+                            <label>Territory<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="territory_id[]" multiple="">
                             </select>
                         </div>
                     </div>
@@ -142,7 +141,22 @@ $(document).ready(function() {
       return validator;
     }
 
-    $('[name="territory_id"]').select2({
+    $initialTerritory = [];
+
+    @if(isset($edit))
+        @foreach ($edit->territories as $t)
+          @if (@$t->territory->id)
+            var initialOption = {
+                id: {{ $t->territory->id }},
+                text: '{{ $t->territory->description }}',
+                selected: true
+            }
+            $initialTerritory.push(initialOption);
+          @endif
+        @endforeach
+    @endif
+
+    $('[name="territory_id[]"]').select2({
       ajax: {
           url: "{{route('territory-sales-specialist.get-territory')}}",
           type: "post",
@@ -168,13 +182,9 @@ $(document).ready(function() {
       },
       placeholder: 'Select territory',
       allowClear: true,
-      multiple: false,
+      multiple: true,
       @if(isset($edit))
-      data:[{
-            id: {{ $territory->id }},
-            text: '{{ $territory->description }}',
-            selected: true
-          }],
+      data:$initialTerritory,
       @endif
     });
 

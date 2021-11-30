@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Territory;
 use App\Models\User;
+use App\Models\TerritorySalesSpecialist;
 use Validator;
 use DataTables;
 
@@ -18,6 +19,7 @@ class TerritorySalesSpecialistController extends Controller
      */
     public function index()
     {
+        // dd(TerritorySalesSpecialist::select('user_id','territory_id')->groupBy('user_id')->get());
         return view('territory-sales-specialist.index');
     }
 
@@ -42,17 +44,13 @@ class TerritorySalesSpecialistController extends Controller
         $input = $request->all();
 
         $rules = array(
-                    'territory_id' => 'required|exists:territories,id|unique:users,territory_id,NULL,id,deleted_at,NULL',
-                    'sales_specialist_id' => 'required|exists:users,id,territory_id,NULL',
+                    'territory_id' => 'required|array',
+                    'territory_id.*' => 'required|exists:territories,id',
+                    'sales_specialist_id' => 'required|exists:users,id',
                 );
 
-        if(isset($input['id'])){
-            $rules['territory_id'] = 'required|exists:territories,id|unique:users,territory_id,'.$input['id'].',id,deleted_at,NULL';
-            $rules['sales_specialist_id'] = 'required|exists:users,id,id,'.$input['id'];
-        }
-
         $message = array(
-                        'territory_id.unique' => 'The selected territory is already used.',
+                        'territory_id.required' => 'Please select territory.',
                         'sales_specialist_id.exists' => 'The selected sales specialist is already used.'
                     );
 
@@ -62,12 +60,39 @@ class TerritorySalesSpecialistController extends Controller
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
 
+            if(!isset($input['id'])){
+                $count = TerritorySalesSpecialist::where('user_id', $input['sales_specialist_id'])->count();
+
+                if($count > 0){
+                    return $response = ['status' => false,'message' => "The selected sales specialist is already used."];
+                }
+            }
+
             $user = User::where('id', $input['sales_specialist_id'])->where('role_id', 2)->first();
 
             if($user){
-                $user->update(
-                                ['territory_id' => $input['territory_id']]
-                            );
+                
+                $territory_ids = [];
+                if(isset($input['territory_id'])){
+                    foreach ($input['territory_id'] as $key => $value) {
+                        $territory_ids[] = $value;
+
+                        TerritorySalesSpecialist::updateOrCreate(
+                                                    array(
+                                                        'territory_id' => $value,
+                                                        'user_id' => $user->id,
+                                                    ),
+                                                    array(
+                                                        'territory_id' => $value,
+                                                        'user_id' => $user->id,
+                                                    )
+                                                );
+                        
+                    }
+                    TerritorySalesSpecialist::where('user_id', $user->id)->whereNotIn('territory_id',$territory_ids)->delete();
+                }else{
+                    TerritorySalesSpecialist::where('user_id', $user->id)->delete();
+                }
             }
             
             if(isset($input['id'])){
@@ -101,10 +126,9 @@ class TerritorySalesSpecialistController extends Controller
      */
     public function edit($id)
     {
-        $edit = User::where('id', $id)->where('role_id', 2)->whereNotNull('territory_id')->firstOrFail();
-        $territory = Territory::find($edit->territory_id);
+        $edit = User::where('id', $id)->where('role_id', 2)->firstOrFail();
 
-        return view('territory-sales-specialist.add',compact('edit','territory'));
+        return view('territory-sales-specialist.add',compact('edit'));
     }
 
     /**
@@ -127,11 +151,9 @@ class TerritorySalesSpecialistController extends Controller
      */
     public function destroy($id)
     {
-        $data = User::where('id', $id)->where('role_id', 2)->firstOrFail();
-        if(!is_null($data)){
-            $data->update(
-                            ['territory_id' => NULL]
-                        );
+        $user = User::where('id', $id)->where('role_id', 2)->firstOrFail();
+        if(!is_null($user)){
+            TerritorySalesSpecialist::where('user_id', $user->id)->delete();
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
