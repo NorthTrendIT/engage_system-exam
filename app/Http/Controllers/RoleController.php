@@ -85,7 +85,7 @@ class RoleController extends Controller
             $role->fill($input)->save();
 
             if($role->id){
-                if(isset($input['modules'])){
+                if($role->all_module_access == 0 && isset($input['modules'])){
                     $modules = $input['modules'];
 
                     $module_ids = [];
@@ -109,7 +109,7 @@ class RoleController extends Controller
 
                 }elseif ($role->all_module_access == 1) {
 
-                    $modules = Module::whereNotNull('parent_id')->get();
+                    $modules = Module::all();
 
                     foreach ($modules as $key => $value) {
                         $insert = array(
