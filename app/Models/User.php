@@ -31,6 +31,7 @@ class User extends Authenticatable
         'department_id',
         'parent_id',
         'sales_specialist_name',
+        'territory_id',
     ];
 
     /**
@@ -80,5 +81,10 @@ class User extends Authenticatable
     public function sales_person()
     {
         return $this->belongsToMany(CustomersSalesSpecialist::class, 'id', 'ss_id');
+    }
+
+    public function territory()
+    {
+        return $this->belongsTo(Territory::class,'territory_id');
     }
 }
