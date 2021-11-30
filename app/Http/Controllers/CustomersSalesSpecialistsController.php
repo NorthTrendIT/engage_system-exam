@@ -129,12 +129,9 @@ class CustomersSalesSpecialistsController extends Controller
      */
     public function destroy($id)
     {
-        $data = CustomersSalesSpecialist::find($id);
+        $data = CustomersSalesSpecialist::where('customer_id', $id)->get();
         if(!is_null($data)){
-            $data->delete();
-
-            // Add user delete log
-            add_log(5, array('user_data' => $data));
+            CustomersSalesSpecialist::where('customer_id', $id)->delete();
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
