@@ -78,6 +78,7 @@
                               <th>First Name</th>
                               <th>Last Name</th>
                               <th>Email</th>
+                              <th>Territory</th>
                               <th>Status</th>
                               <th>Action</th>
                             </tr>
@@ -149,6 +150,7 @@
               {data: 'first_name', name: 'first_name'},
               {data: 'last_name', name: 'last_name'},
               {data: 'email', name: 'email'},
+              {data: 'territory', name: 'territory'},
               {data: 'status', name: 'status'},
               {data: 'action', name: 'action', orderable: false, searchable: false},
           ],
@@ -156,6 +158,15 @@
               $(function () {
                 $('[data-toggle="tooltip"]').tooltip()
                 $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+                
+                $role = $('[name="filter_role"]').find('option:selected').val();
+                if($role == 2){
+                  $("#myTable").DataTable().column(4).visible(true);
+                  $("#myTable").DataTable().column(0).visible(false);
+                } else {
+                  $("#myTable").DataTable().column(0).visible(true);
+                  $("#myTable").DataTable().column(4).visible(false);
+                }
               })
           },
           initComplete: function () {
@@ -177,11 +188,15 @@
     $(document).on('change', '.filter_role', function(){
         $role = $('[name="filter_role"]').find('option:selected').val();
         if($role == 2){
-            $('.sync-sales-persons').show();
-            $('.create-btn').hide();
+          $('.sync-sales-persons').show();
+          $('.create-btn').hide();
+          $("#myTable").DataTable().column(4).visible(true);
+          $("#myTable").DataTable().column(0).visible(false);
         } else {
-            $('.sync-sales-persons').hide();
-            $('.create-btn').show();
+          $('.sync-sales-persons').hide();
+          $('.create-btn').show();
+          $("#myTable").DataTable().column(0).visible(true);
+          $("#myTable").DataTable().column(4).visible(false);
         }
     });
 
