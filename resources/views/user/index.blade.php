@@ -256,9 +256,8 @@
         }
       })
     });
-  })
 
-  $(document).on('click', '.sync-sales-persons', function(event) {
+    $(document).on('click', '.sync-sales-persons', function(event) {
       event.preventDefault();
 
       Swal.fire({
@@ -292,5 +291,9 @@
         }
       })
     });
+
+  })
+
+
 </script>
 @endpush
