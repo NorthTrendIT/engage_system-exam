@@ -160,7 +160,7 @@ $(document).ready(function() {
     @if(isset($edit) && !empty($edit))
         @foreach ($edit as $data)
             var initialOption = {
-                id: {{ $data->customer_id }},
+                id: {{ $data->ss_id }},
                 text: '{{ $data->sales_person->sales_specialist_name }}',
                 selected: true
             }

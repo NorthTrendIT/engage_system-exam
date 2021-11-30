@@ -150,6 +150,42 @@
       render_table();
     })
 
+    $(document).on('click', '.delete', function(event) {
+      event.preventDefault();
+      $url = $(this).attr('data-url');
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: $url,
+            method: "DELETE",
+            data: {
+                    _token:'{{ csrf_token() }}'
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              render_table();
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
   })
 </script>
 @endpush
