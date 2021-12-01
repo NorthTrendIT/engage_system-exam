@@ -39,7 +39,7 @@ function get_user_role_module_access($role_id){
     $role_module_access = RoleModuleAccess::where('role_id',$role_id)->get();
     foreach ($role_module_access as $value) {
 
-        if($value->module->slug){
+        if(@$value->module->slug){
             $access[$value->module->slug] = $value->toArray();
         }
     }
