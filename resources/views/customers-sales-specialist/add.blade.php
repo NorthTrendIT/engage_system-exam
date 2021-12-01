@@ -149,7 +149,7 @@ $(document).ready(function() {
     @if(isset($customer) && !empty($customer))
         var initialOption = {
             id: {{ $customer->id }},
-            text: '{{ $customer->card_name }}',
+            text: '{!! $customer->card_name !!}',
             selected: true
         }
         $initialCustomer.push(initialOption);
@@ -159,7 +159,7 @@ $(document).ready(function() {
         @foreach ($edit as $data)
             var initialOption = {
                 id: {{ $data->ss_id }},
-                text: '{{ $data->sales_person->sales_specialist_name }}',
+                text: '{!! $data->sales_person->sales_specialist_name !!}',
                 selected: true
             }
             $initialSalesPerson.push(initialOption);
