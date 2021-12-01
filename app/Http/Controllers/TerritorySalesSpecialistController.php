@@ -19,7 +19,6 @@ class TerritorySalesSpecialistController extends Controller
      */
     public function index()
     {
-        // dd(TerritorySalesSpecialist::select('user_id','territory_id')->groupBy('user_id')->get());
         return view('territory-sales-specialist.index');
     }
 
@@ -60,12 +59,25 @@ class TerritorySalesSpecialistController extends Controller
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
 
+            // Create Time
             if(!isset($input['id'])){
                 $count = TerritorySalesSpecialist::where('user_id', $input['sales_specialist_id'])->count();
 
                 if($count > 0){
                     return $response = ['status' => false,'message' => "The selected sales specialist is already used."];
                 }
+            }
+
+            // In edit time select another 
+            if(isset($input['id']) && $input['id'] != $input['sales_specialist_id']){
+
+                $count = TerritorySalesSpecialist::where('user_id', $input['sales_specialist_id'])->count();
+
+                if($count > 0){
+                    return $response = ['status' => false,'message' => "The selected sales specialist is already used."];
+                }
+
+                TerritorySalesSpecialist::where('user_id', $input['id'])->delete();
             }
 
             $user = User::where('id', $input['sales_specialist_id'])->where('role_id', 2)->first();
@@ -164,47 +176,36 @@ class TerritorySalesSpecialistController extends Controller
 
     public function getAll(Request $request){
 
-        $data = User::where('users.role_id', 2)->whereNotNull('users.territory_id');
+        $data = TerritorySalesSpecialist::with(['user','territory'])
+                                            ->has('user')
+                                            ->has('territory')
+                                            ->select('user_id','territory_id')
+                                            ->orderBy('id', 'desc')
+                                            ->get()
+                                            ->groupBy('user_id');
 
-        if($request->filter_search != ""){
-            $data->where(function($q) use ($request) {
-                $q->orwhere('sales_specialist_name','LIKE',"%".$request->filter_search."%");
-                
-                $q->orWhereHas('territory',function($q1) use ($request) {
-                    $q1->where('description','LIKE',"%".$request->filter_search."%");
-                });
-
-            });
-        }
-
-        $data->when(!isset($request->order), function ($q) {
-            $q->orderBy('users.id', 'desc');
-        });
 
         return DataTables::of($data)
                             ->addColumn('territory', function($row) {
-                                return $row->territory->description;
+
+                                $descriptions = array_map( function ( $t ) {
+                                               return $t['description'];
+                                            }, array_column( $row->toArray(), 'territory' ) );
+
+                                return implode(" | ", $descriptions);
                             })
                             ->addColumn('sales_specialist', function($row) {
-                                return $row->sales_specialist_name ?? "-";
+                                return @$row->first()->user->sales_specialist_name ?? "-";
                             })
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('territory-sales-specialist.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                $btn = '<a href="' . route('territory-sales-specialist.edit',$row->first()->user_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
-                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('territory-sales-specialist.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
+                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('territory-sales-specialist.destroy',$row->first()->user_id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
                                     <i class="fa fa-trash"></i>
                                   </a>';
 
                                 return $btn;
-                            })
-                            ->orderColumn('territory', function ($query, $order) {
-                                $query->select('users.*')->join('territories', 'users.territory_id', '=', 'territories.id')
-                                    ->orderBy('territories.description', $order);
-                                
-                            })
-                            ->orderColumn('sales_specialist', function ($query, $order) {
-                                $query->orderBy('sales_specialist_name', $order);
                             })
                             ->rawColumns(['action'])
                             ->make(true);
