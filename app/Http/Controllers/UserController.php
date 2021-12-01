@@ -306,6 +306,9 @@ class UserController extends Controller
 
                                 return $btn;
                             })
+                            ->addColumn('territory', function($row) {
+                                return @$row->territory->description ?? "-";
+                            })
                             ->addColumn('role', function($row) {
 
                                 if(@$row->role){
@@ -345,7 +348,12 @@ class UserController extends Controller
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('is_active', $order);
                             })
-                            ->rawColumns(['action', 'role','status'])
+                            ->orderColumn('territory', function ($query, $order) {
+                                $query->select('users.*')->join('territories', 'users.territory_id', '=', 'territories.id')
+                                    ->orderBy('territories.description', $order);
+                                
+                            })
+                            ->rawColumns(['action', 'role','status','territory'])
                             ->make(true);
     }
 
