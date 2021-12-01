@@ -14,7 +14,7 @@ class AddSalesSpecialistNameFieldInUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('sales_specialist_name')->nullable();
+            $table->string('sales_specialist_name')->comment('Include firstname and lastname for other roles users')->nullable();
         });
     }
 
