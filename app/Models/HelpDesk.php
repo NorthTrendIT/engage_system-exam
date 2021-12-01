@@ -30,12 +30,12 @@ class HelpDesk extends Model
 
     public function urgency()
     {
-        return $this->belongsTo(HelpDeskUrgencies::class);
+        return $this->belongsTo(HelpDeskUrgencies::class, 'help_desk_urgency_id');
     }
     
     public function status()
     {
-        return $this->belongsTo(HelpDeskStatuses::class);
+        return $this->belongsTo(HelpDeskStatuses::class, 'help_desk_status_id');
     }
 
     public function department()
