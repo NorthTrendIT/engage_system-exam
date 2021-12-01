@@ -56,8 +56,8 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>Territory</th>
                               <th>Sales Specialist</th>
+                              <th>Territory</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -102,7 +102,7 @@
       var table = $("#myTable");
       table.DataTable().destroy();
 
-      $filter_search = $('[name="filter_search"]').val();
+      // $filter_search = $('[name="filter_search"]').val();
 
       table.DataTable({
           processing: true,
@@ -116,12 +116,12 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
               data:{
-                filter_search : $filter_search
+                // filter_search : $filter_search
               }
           },
           columns: [
-              {data: 'territory', name: 'territory'},
               {data: 'sales_specialist', name: 'sales_specialist'},
+              {data: 'territory', name: 'territory'},
               {data: 'action', name: 'action', orderable:false},
           ],
           drawCallback:function(){
@@ -137,9 +137,11 @@
 
     $(document).on('click', '.search', function(event) {
       render_table();
+      $('#myTable').DataTable().search($('[name="filter_search"]').val()).draw();
     });
 
     $(document).on('click', '.clear-search', function(event) {
+      $('#myTable').dataTable().fnFilter('');
       $('[name="filter_search"]').val('');
       render_table();
     })
