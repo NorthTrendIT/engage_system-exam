@@ -42,30 +42,59 @@ class CustomersSalesSpecialistsController extends Controller
         $input = $request->all();
 
         $rules = array(
-                    'customer_id' => 'required',
+                    'customer_ids' => 'required',
+                    'customer_ids.*' => 'required|exists:customers,id',
                     'ss_ids' => 'required',
+                    'ss_ids.*' => 'required|exists:users,id',
                 );
 
-        $validator = Validator::make($input, $rules);
+        $message = array(
+                        'customer_ids.required' => 'Please select customers.',
+                        'ss_ids.required' => 'Please select sales specialists.',
+                    );
+
+        $validator = Validator::make($input, $rules, $message);
 
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
-            // dd($input);
             if(isset($input['id'])){
                 $message = "Details updated successfully.";
             }else{
                 $message = "Created successfully.";
             }
 
-            if(isset($input['ss_ids']) ){
+            if(isset($input['ss_ids']) && isset($input['customer_ids'])){
                 $s_ids = $input['ss_ids'];
-                CustomersSalesSpecialist::where('customer_id', $input['customer_id'])->delete();
-                foreach($s_ids as $value){
-                    $ss = new CustomersSalesSpecialist();
-                    $ss->customer_id = $input['customer_id'];
-                    $ss->ss_id = $value;
-                    $ss->save();
+                // CustomersSalesSpecialist::where('customer_id', $input['customer_id'])->delete();
+                // foreach($s_ids as $value){
+                //     $ss = new CustomersSalesSpecialist();
+                //     $ss->customer_id = $input['customer_id'];
+                //     $ss->ss_id = $value;
+                //     $ss->save();
+                // }
+
+                $sids = [];
+
+                foreach ($input['customer_ids'] as $c_key => $c_value) {
+                    foreach ($input['ss_ids'] as $s_key => $s_value) {
+                        
+                        $sids[] = $s_value;
+                        CustomersSalesSpecialist::updateOrCreate(
+                                                    array(
+                                                        'customer_id' => $c_value,
+                                                        'ss_id' => $s_value,
+                                                    ),
+                                                    array(
+                                                        'customer_id' => $c_value,
+                                                        'ss_id' => $s_value,
+                                                    )
+                                                );
+                    }
+                }
+
+                if(!empty($sids) && isset($input['id'])){
+                    CustomersSalesSpecialist::where('customer_id', $input['id'])->whereNotIn('ss_id',$sids)->delete();
                 }
             }
 
@@ -94,8 +123,8 @@ class CustomersSalesSpecialistsController extends Controller
      */
     public function edit($id)
     {
-        $edit = CustomersSalesSpecialist::where('customer_id', $id)->with( 'sales_person')->get();
-        $customer = Customer::find($id);
+        $customer = Customer::findOrFail($id);
+        $edit = CustomersSalesSpecialist::where('customer_id', $id)->with('sales_person')->get();
 
         return view('customers-sales-specialist.add',compact('edit','customer'));
     }
@@ -120,8 +149,8 @@ class CustomersSalesSpecialistsController extends Controller
      */
     public function destroy($id)
     {
-        $data = CustomersSalesSpecialist::where('customer_id', $id)->get();
-        if(!is_null($data)){
+        $data = CustomersSalesSpecialist::where('customer_id', $id)->count();
+        if($data > 0){
             CustomersSalesSpecialist::where('customer_id', $id)->delete();
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
@@ -131,7 +160,7 @@ class CustomersSalesSpecialistsController extends Controller
         return $response;
     }
 
-    public function getAll(Request $request){
+    public function getAll1(Request $request){
 
         $data = Customer::whereHas('sales_specialist');
 
@@ -180,6 +209,45 @@ class CustomersSalesSpecialistsController extends Controller
                             ->rawColumns(['action'])
                             ->make(true);
     }
+
+
+    public function getAll(Request $request){
+
+        $data = CustomersSalesSpecialist::with(['customer','sales_person'])
+                                            ->has('customer')
+                                            ->has('sales_person')
+                                            ->select('ss_id','customer_id')
+                                            ->orderBy('id', 'desc')
+                                            ->get()
+                                            ->groupBy('customer_id');
+
+
+        return DataTables::of($data)
+                            ->addColumn('sales_specialist', function($row) {
+
+                                $descriptions = array_map( function ( $t ) {
+                                               return $t['sales_specialist_name'];
+                                            }, array_column( $row->toArray(), 'sales_person' ) );
+
+                                return implode(" | ", $descriptions);
+                            })
+                            ->addColumn('customer', function($row) {
+                                return @$row->first()->customer->card_name ?? "-";
+                            })
+                            ->addColumn('action', function($row) {
+                                $btn = '<a href="' . route('customers-sales-specialist.edit',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                    <i class="fa fa-pencil"></i>
+                                  </a>';
+                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('customers-sales-specialist.destroy',$row->first()->customer_id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
+                                    <i class="fa fa-trash"></i>
+                                  </a>';
+
+                                return $btn;
+                            })
+                            ->rawColumns(['action'])
+                            ->make(true);
+    }
+
 
     public function getSalseSpecialist(Request $request){
         $search = $request->search;
