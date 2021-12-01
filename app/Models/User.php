@@ -83,8 +83,8 @@ class User extends Authenticatable
         return $this->belongsToMany(CustomersSalesSpecialist::class, 'id', 'ss_id');
     }
 
-    public function territory()
+    public function territories()
     {
-        return $this->belongsTo(Territory::class,'territory_id');
+        return $this->hasMany(TerritorySalesSpecialist::class,'user_id','id');
     }
 }
