@@ -102,9 +102,7 @@
       var table = $("#myTable");
       table.DataTable().destroy();
 
-      $filter_search = $('[name="filter_search"]').val();
-      $filter_parent = $('[name="filter_parent"]').find('option:selected').val();
-      $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      // $filter_search = $('[name="filter_search"]').val();
 
       table.DataTable({
           processing: true,
@@ -117,11 +115,9 @@
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
-              data:{
-                filter_search : $filter_search,
-                filter_parent : $filter_parent,
-                filter_status : $filter_status,
-              }
+              // data:{
+              //   filter_search : $filter_search,
+              // }
           },
           columns: [
               {data: 'customer', name: 'customer'},
@@ -141,12 +137,12 @@
 
     $(document).on('click', '.search', function(event) {
       render_table();
+      $('#myTable').DataTable().search($('[name="filter_search"]').val()).draw();
     });
 
     $(document).on('click', '.clear-search', function(event) {
+      $('#myTable').dataTable().fnFilter('');
       $('[name="filter_search"]').val('');
-      $('[name="filter_status"]').val('').trigger('change');
-      $('[name="filter_parent"]').val('').trigger('change');
       render_table();
     })
 
