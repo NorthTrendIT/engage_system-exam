@@ -13,7 +13,7 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('customers-sales-specialist.index') }}" class="btn btn-sm btn-primary">Back</a>
+        <a href="{{ route('territory-sales-specialist.index') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -33,23 +33,24 @@
                 @csrf
 
                 @if(isset($edit))
-                  <input type="hidden" name="id" value="{{ $customer->id }}">
+                  <input type="hidden" name="id" value="{{ $edit->id }}">
                 @endif
 
                 <div class="row mb-5">
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Select Customer<span class="asterisk">*</span></label>
-                            <select class="form-select form-select-solid" id='selectCustomer' data-control="select2" data-hide-search="false" name="customer_ids[]">
+                            <label>Sales Specialist<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="sales_specialist_id">
+                                <option value=""></option>
                             </select>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Select Sales Specialist<span class="asterisk">*</span></label>
-                            <select class="form-select form-select-solid" id='selectSalseSpecialist' multiple="multiple" data-control="select2" data-hide-search="false" name="ss_ids[]">
+                            <label>Territory<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="territory_id[]" multiple="">
                             </select>
                         </div>
                     </div>
@@ -83,11 +84,6 @@
 <script>
 $(document).ready(function() {
 
-    $('[name="parent_id"]').select2({
-      placeholder: "Select a province",
-      allowClear: true
-    });
-
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
       var validator = validate_form();
@@ -95,7 +91,7 @@ $(document).ready(function() {
       if (validator.form() != false) {
         $('[type="submit"]').prop('disabled', true);
         $.ajax({
-          url: "{{route('customers-sales-specialist.store')}}",
+          url: "{{route('territory-sales-specialist.store')}}",
           type: "POST",
           data: new FormData($("#myForm")[0]),
           async: false,
@@ -105,7 +101,7 @@ $(document).ready(function() {
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.href = '{{ route('customers-sales-specialist.index') }}';
+                window.location.href = '{{ route('territory-sales-specialist.index') }}';
               },1500)
             } else {
               toast_error(data.message);
@@ -125,17 +121,19 @@ $(document).ready(function() {
           errorClass: "is-invalid",
           validClass: "is-valid",
           rules: {
-            customer_id:{
+            territory_id:{
               required: true
             },
-            ss_ids:{
+            sales_specialist_id:{
               required: true
             }
           },
           messages: {
-            name:{
-              required: "Please enter name.",
-              maxlength:'Please enter name less than 185 character',
+            territory_id:{
+              required: "Please select territory.",
+            },
+            sales_specialist_id:{
+              required: "Please select sales specialist.",
             }
           },
       });
@@ -143,81 +141,87 @@ $(document).ready(function() {
       return validator;
     }
 
-    $initialCustomer = [];
-    $initialSalesPerson= [];
+    $initialTerritory = [];
 
-    @if(isset($customer) && !empty($customer))
-        var initialOption = {
-            id: {{ $customer->id }},
-            text: '{!! $customer->card_name !!}',
-            selected: true
-        }
-        $initialCustomer.push(initialOption);
-    @endif
-
-    @if(isset($edit) && !empty($edit))
-        @foreach ($edit as $data)
+    @if(isset($edit))
+        @foreach ($edit->territories as $t)
+          @if (@$t->territory->id)
             var initialOption = {
-                id: {{ $data->ss_id }},
-                text: '{!! $data->sales_person->sales_specialist_name !!}',
+                id: {{ $t->territory->id }},
+                text: '{{ $t->territory->description }}',
                 selected: true
             }
-            $initialSalesPerson.push(initialOption);
+            $initialTerritory.push(initialOption);
+          @endif
         @endforeach
     @endif
 
-    $("#selectCustomer").select2({
-        @if(!isset($edit))
-        ajax: {
-            url: "{{route('customers-sales-specialist.getCustomers')}}",
-            type: "post",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    _token: "{{ csrf_token() }}",
-                    search: params.term
-                };
-            },
-            processResults: function (response) {
-                return {
-                    results: response
-                };
-            },
-            cache: true
-        },
-        @endif
-        placeholder: 'Select Customer',
-        multiple: true,
-        @if(isset($edit))
-        data: $initialCustomer,
-        @endif
+    $('[name="territory_id[]"]').select2({
+      ajax: {
+          url: "{{route('territory-sales-specialist.get-territory')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term
+              };
+          },
+          processResults: function (response) {
+            return {
+              results:  $.map(response, function (item) {
+                            return {
+                              text: item.description,
+                              id: item.id
+                            }
+                        })
+            };
+          },
+          cache: true
+      },
+      placeholder: 'Select territory',
+      allowClear: true,
+      multiple: true,
+      @if(isset($edit))
+      data:$initialTerritory,
+      @endif
     });
 
-    $("#selectSalseSpecialist").select2({
-        ajax: {
-            url: "{{route('customers-sales-specialist.getSalseSpecialist')}}",
-            type: "post",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    _token: "{{ csrf_token() }}",
-                    search: params.term
-                };
-            },
-            processResults: function (response) {
-                return {
-                    results: response
-                };
-            },
-            cache: true
-        },
-        placeholder: 'Select Sales Specialist',
-        multiple: true,
-        @if(isset($edit))
-        data: $initialSalesPerson,
-        @endif
+    $('[name="sales_specialist_id"]').select2({
+      ajax: {
+          url: "{{route('territory-sales-specialist.get-sales-specialist')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term
+              };
+          },
+          processResults: function (response) {
+            return {
+              results:  $.map(response, function (item) {
+                            return {
+                              text: item.sales_specialist_name,
+                              id: item.id
+                            }
+                        })
+            };
+          },
+          cache: true
+      },
+      placeholder: 'Select Sales Specialist',
+      allowClear: true,
+      multiple: false,
+      @if(isset($edit))
+      data:[{
+            id: {{ $edit->id }},
+            text: '{{ $edit->sales_specialist_name }}',
+            selected: true
+          }],
+      @endif
     });
 
 });

@@ -3,6 +3,7 @@ use App\Models\LoginLog;
 use App\Models\RoleModuleAccess;
 use App\Models\ActivityLog;
 use App\Models\ActivityMaster;
+use App\Models\Module;
 use Auth as Auth;
 
 function add_login_log(){
@@ -57,4 +58,19 @@ function add_log($activity_id, $data = NULL){
 
 function userrole(){
 	return @Auth::user()->role_id;
+}
+
+function get_modules(){
+
+    $result = array();
+
+    $module = Module::all();
+    foreach ($module as $value) {
+
+        if($value->slug){
+            $result[$value->slug] = $value->toArray();
+        }
+    }
+
+    return $result;
 }

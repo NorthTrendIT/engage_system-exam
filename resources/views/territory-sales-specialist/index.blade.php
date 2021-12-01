@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title','Assign sales Specialist')
+@section('title','Territory Sales Specialist')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Customers Sales Specialist</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Territory Sales Specialist</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('customers-sales-specialist.create') }}" class="btn btn-sm btn-primary">New Assignment</a>
+        <a href="{{ route('territory-sales-specialist.create') }}" class="btn btn-sm btn-primary">New Assignment</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -31,7 +31,7 @@
             </div> --}}
             <div class="card-body">
               <div class="row mt-5">
-                <div class="col-md-3">
+                <div class="col-md-4">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -40,7 +40,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-6">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -56,8 +56,8 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>Custumer</th>
                               <th>Sales Specialist</th>
+                              <th>Territory</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -110,19 +110,19 @@
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('customers-sales-specialist.get-all') }}",
+              'url': "{{ route('territory-sales-specialist.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
-              // data:{
-              //   filter_search : $filter_search,
-              // }
+              data:{
+                // filter_search : $filter_search
+              }
           },
           columns: [
-              {data: 'customer', name: 'customer'},
               {data: 'sales_specialist', name: 'sales_specialist'},
-              {data: 'action', name: 'action'},
+              {data: 'territory', name: 'territory'},
+              {data: 'action', name: 'action', orderable:false},
           ],
           drawCallback:function(){
               $(function () {

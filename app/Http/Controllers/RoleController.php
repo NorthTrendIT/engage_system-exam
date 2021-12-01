@@ -35,7 +35,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-      $modules = Module::where('slug','!=','role')->get();
+      $modules = get_modules();
       $parents = Role::where('id','!=',1)->get();
       return view('role.add',compact('modules','parents'));
     }
@@ -49,6 +49,8 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
+
+        // dd($input);
 
         $rules = array(
                     'all_module_access' => 'required',
@@ -67,17 +69,23 @@ class RoleController extends Controller
         }else{
 
             if(isset($input['id'])){
-                $role = Role::find($input['id']);
-                $message = "Role details updated successfully.";
+              $role = Role::find($input['id']);
+              $message = "Role details updated successfully.";
+
+              // Add Role Updatede log.
+              add_log(7, array('role_id' => $role->id));
             }else{
-                $role = new Role();
-                $message = "New Role created successfully.";
+              $role = new Role();
+              $message = "New Role created successfully.";
+              
+              // Add Role Created log.
+              add_log(6, array('role_id' => $role->id));
             }
 
             $role->fill($input)->save();
 
             if($role->id){
-                if(isset($input['modules'])){
+                if($role->all_module_access == 0 && isset($input['modules'])){
                     $modules = $input['modules'];
 
                     $module_ids = [];
@@ -86,16 +94,12 @@ class RoleController extends Controller
                         $insert = array(
                                     'role_id' => $role->id,
                                     'module_id' => $key,
-                                    'add_access' => isset($value['add']) && $value['add'] == 1 ? true : false,
-                                    'edit_access' => isset($value['edit']) && $value['edit'] == 1 ? true : false,
-                                    'view_access' => isset($value['view']) && $value['view'] == 1 ? true : false,
-                                    'delete_access' => isset($value['delete']) && $value['delete'] == 1 ? true : false,
+                                    'access' => true,
                                 );
-
                         $obj = RoleModuleAccess::updateOrCreate(
                                             [
-                                                'role_id' => $role->id,
-                                                'module_id' => $key
+                                              'role_id' => $role->id,
+                                              'module_id' => $key
                                             ],
                                             $insert
                                         );
@@ -105,37 +109,28 @@ class RoleController extends Controller
 
                 }elseif ($role->all_module_access == 1) {
 
-                    $modules = Module::where('slug','!=','role')->get();
+                    $modules = Module::all();
 
                     foreach ($modules as $key => $value) {
                         $insert = array(
                                     'role_id' => $role->id,
                                     'module_id' => $value->id,
-                                    'add_access' => true,
-                                    'edit_access' => true,
-                                    'view_access' => true,
-                                    'delete_access' => true,
+                                    'access' => true,
                                 );
 
                         $obj = RoleModuleAccess::updateOrCreate(
                                             [
-                                                'role_id' => $role->id,
-                                                'module_id' => $value->id
+                                              'role_id' => $role->id,
+                                              'module_id' => $value->id
                                             ],
                                             $insert
                                         );
                     }
-
+                }elseif ($role->all_module_access == 0 && !isset($input['modules'])) {
+                  RoleModuleAccess::where('role_id',$role->id)->delete();
                 }
             }
 
-            if($message == "New Role created successfully."){
-                // Add Role Created log.
-                add_log(6, array('role_id' => $role->id));
-            } else if($message == "Role details updated successfully."){
-                // Add Role Updatede log.
-                add_log(7, array('role_id' => $role->id));
-            }
             $response = ['status'=>true,'message'=>$message];
         }
 
@@ -162,7 +157,7 @@ class RoleController extends Controller
     public function edit($id)
     {
         $edit = Role::where('id','!=',1)->where('id',$id)->firstOrFail();
-        $modules = Module::where('slug','!=','role')->get();
+        $modules = get_modules();;
         $parents = Role::where('id','!=',$id)->where('id','!=',1)->get();
 
         $role_module_access = array();
@@ -223,9 +218,12 @@ class RoleController extends Controller
                                 $btn = '<a href="' . route('role.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm ">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
-                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('role.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
-                                    <i class="fa fa-trash"></i>
-                                  </a>';
+
+                                if(!in_array($row->id, [2])){
+                                  $btn .= ' <a href="javascript:void(0)" data-url="' . route('role.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
+                                      <i class="fa fa-trash"></i>
+                                    </a>';
+                                }
 
                                 return $btn;
                             })

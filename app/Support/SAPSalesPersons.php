@@ -74,8 +74,8 @@ class SAPSalesPersons
             if($data['value']){
 
                 foreach ($data['value'] as $value) {
-                    $email = $value['U_Password'];
                     $name = explode(" ", $value['SalesEmployeeName'], 2);
+                    $email = strtolower($name[0]);
 
                     $insert = array(
                                     'role_id' => 2,
@@ -83,7 +83,7 @@ class SAPSalesPersons
                                     'first_name' => !empty($name[0]) ? $name[0] : null,
                                     'last_name' => !empty($name[1]) ? $name[1] : null,
                                     'is_active' => $value['Active'] == "tYES" ? true : false,
-                                    'password' => Hash::make($value['U_Password']),
+                                    'password' => !empty($value['U_Password'])? Hash::make($value['U_Password']) : Hash::make('12345678'),
                                     'email' => $email.'@mailinator.com',
                                     //'response' => json_encode($value),
                                 );
