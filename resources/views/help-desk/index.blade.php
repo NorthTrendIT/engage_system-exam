@@ -1,23 +1,25 @@
 @extends('layouts.master')
 
-@section('title','Product')
+@section('title','Help Desk')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Product</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Help Desk</h1>
       </div>
 
+      @if(!(userrole() == 1 || userdepartment() == 1))
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="javascript:" class="btn btn-sm btn-primary sync-products">Sync Products</a>
+        <a href="{{ route('help-desk.create') }}" class="btn btn-sm btn-primary">Create</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-      
+      @endif
+
     </div>
   </div>
   
@@ -42,10 +44,20 @@
 
 
                 <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
-                    <option value="">Select status</option>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
+                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select a status" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($status as $s)
+                    <option value="{{ $s->id }}">{{ $s->name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_urgency" data-control="select2" data-hide-search="true" data-placeholder="Select a urgency" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($urgencies as $u)
+                    <option value="{{ $u->id }}">{{ $u->name }}</option>
+                    @endforeach
                   </select>
                 </div>
 
@@ -65,10 +77,11 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>Name</th>
-                              <th>Code</th>
+                              <th>Ticket No.</th>
+                              <th>Subject</th>
                               <th>Date</th>
                               <th>Status</th>
+                              <th>Urgency</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -115,6 +128,7 @@
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_urgency = $('[name="filter_urgency"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -122,7 +136,7 @@
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('product.get-all') }}",
+              'url': "{{ route('help-desk.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -130,13 +144,15 @@
               data:{
                 filter_search : $filter_search,
                 filter_status : $filter_status,
+                filter_urgency : $filter_urgency,
               }
           },
           columns: [
-              {data: 'item_name', name: 'item_name'},
-              {data: 'item_code', name: 'item_code'},
-              {data: 'created_date', name: 'created_date'},
+              {data: 'ticket_number', name: 'ticket_number'},
+              {data: 'subject', name: 'subject'},
+              {data: 'created_at', name: 'created_at'},
               {data: 'status', name: 'status'},
+              {data: 'urgency', name: 'urgency'},
               {data: 'action', name: 'action'},
           ],
           drawCallback:function(){
@@ -157,43 +173,10 @@
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
+      $('[name="filter_urgency"]').val('').trigger('change');
       render_table();
     })
 
-    $(document).on('click', '.sync-products', function(event) {
-      event.preventDefault();
-
-      Swal.fire({
-        title: 'Are you sure you want to Sync Products?',
-        text: "Syncing process will run in background and it may take some time to sync all products Data.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: '{{ route('product.sync-products') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}' 
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              render_table();
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
-    });
   })
 </script>
 @endpush

@@ -9,6 +9,7 @@ use App\Models\HelpDeskComments;
 use App\Models\HelpDeskFiles;
 use App\Models\HelpDeskStatuses;
 use App\Models\HelpDeskUrgencies;
+use App\Models\HelpDeskDepartment;
 use App\Models\Department;
 use DataTables;
 use Validator;
@@ -23,7 +24,9 @@ class HelpDeskController extends Controller
      */
     public function index()
     {
-        return view('help-desk.index');
+        $urgencies = HelpDeskUrgencies::all();
+        $status = HelpDeskStatuses::all();
+        return view('help-desk.index',compact('status','urgencies'));
     }
 
     /**
@@ -33,6 +36,10 @@ class HelpDeskController extends Controller
      */
     public function create()
     {
+        if(userrole() == 1 || userdepartment() == 1){
+            return abort(404);
+        }
+
         $departments = Department::where('is_active',true)->get();
         $urgencies = HelpDeskUrgencies::all();
         return view('help-desk.add',compact('departments','urgencies'));
@@ -51,7 +58,7 @@ class HelpDeskController extends Controller
         $rules = array(
                         'subject' => 'required|string|max:185',
                         'message' => 'required',
-                        'department_id' => 'required|exists:departments,id',
+                        //'department_id' => 'required|exists:departments,id',
                         'help_desk_urgency_id' => 'nullable|exists:help_desk_urgencies,id',
                   );
 
@@ -73,6 +80,14 @@ class HelpDeskController extends Controller
 
             $ticket->ticket_number = '#OMS'.$ticket->id;
             $ticket->save();
+
+            // Assign Support Department
+            HelpDeskDepartment::create(
+                                    [
+                                        'help_desk_id' => $ticket->id,
+                                        'department_id' => 1,
+                                    ]
+                                );
 
             // Start  Images
             $help_images_ids = array();
@@ -118,7 +133,15 @@ class HelpDeskController extends Controller
     public function show($id)
     {
         $data = HelpDesk::findOrFail($id);
-        return view('help-desk.view',compact('data'));
+
+        // Access only for admin and support department and created by 
+        if(userrole() == 1 || userdepartment() == 1 || $data->user_id == Auth::id()){
+            $status = HelpDeskStatuses::all();
+            return view('help-desk.view',compact('data','status'));
+        }
+
+        return abort(404);
+
     }
 
     /**
@@ -154,5 +177,188 @@ class HelpDeskController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function getAll(Request $request)
+    {
+        $data = HelpDesk::query();
+
+        if(!(userrole() == 1 || userdepartment() == 1)){
+            $data->where('user_id',Auth::id());
+        }
+
+        if($request->filter_status != ""){
+            $data->where('help_desk_status_id',$request->filter_status);
+        }
+
+        if($request->filter_urgency != ""){
+            $data->where('help_desk_urgency_id',$request->filter_urgency);
+        }
+
+        if($request->filter_search != ""){
+            $data->where(function($q) use ($request) {
+                $q->orwhere('subject','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('ticket_number','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('id', 'desc');
+        });
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('ticket_number', function($row) {
+                                return @$row->ticket_number ?? "";
+                            })
+                            ->addColumn('subject', function($row) {
+                                return @$row->subject ?? "";
+                            })
+                            ->addColumn('status', function($row) {
+                                $btn = "";
+                                if(@$row->status){
+                                    $btn .= '<b style="color: '.@$row->status->color_code.'" class="badge badge-light-dark">'.@$row->status->name ??  "-".'</b>';
+                                }
+
+                                return $btn;
+                            })
+                            ->addColumn('urgency', function($row) {
+                                $btn = "";
+                                if(@$row->urgency){
+                                    $btn .= '<b style="color: '.@$row->urgency->color_code.'" class="badge badge-light-dark">'.@$row->urgency->name ??  "-".'</b>';
+                                }
+
+                                return $btn;
+                            })
+                            ->addColumn('action', function($row) {
+                                $btn = '';
+
+                                $btn .= '<a href="' . route('help-desk.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                  <i class="fa fa-eye"></i>
+                                </a>';
+
+                                return $btn;
+                            })
+                            ->addColumn('created_at', function($row) {
+                                return date('M d, Y',strtotime($row->created_at));
+                            })
+                            ->orderColumn('ticket_number', function ($query, $order) {
+                                $query->orderBy('ticket_number', $order);
+                            })
+                            ->orderColumn('subject', function ($query, $order) {
+                                $query->orderBy('subject', $order);
+                            })
+                            ->orderColumn('created_at', function ($query, $order) {
+                                $query->orderBy('created_at', $order);
+                            })
+                            ->orderColumn('status', function ($query, $order) {
+                                //$query->orderBy('help_desk_status_id', $order);
+                                $query->join('help_desk_statuses', 'help_desks.help_desk_status_id', '=', 'help_desk_statuses.id')->orderBy('help_desk_statuses.name', $order);
+                            })
+                            ->orderColumn('urgency', function ($query, $order) {
+                                //$query->orderBy('help_desk_urgency_id', $order);
+                                $query->join('help_desk_urgencies', 'help_desks.help_desk_urgency_id', '=', 'help_desk_urgencies.id')->orderBy('help_desk_urgencies.name', $order);
+
+                            })
+                            ->rawColumns(['status','action','urgency'])
+                            ->make(true);
+    }
+
+    public function updateStatus(Request $request)
+    {   
+        // Access only for admin and support department
+        if(userrole() == 1 || userdepartment() == 1){
+            
+            $obj = HelpDesk::find($request->id);
+
+            if(!is_null($obj) && $request->status != ""){
+                $obj->help_desk_status_id = $request->status;
+                $obj->save();
+                $response = ['status'=>true,'message'=>'Status update successfully !'];
+            }else{
+                $response = ['status'=>false,'message'=>'Record not found !'];
+            }
+
+            return $response;
+        }else{
+            return $response = ['status'=>false,'message'=>'Access Denied !'];
+        }
+    }
+
+    public function storeComment(Request $request)
+    {   
+        $input = $request->all();
+
+        $rules = array(
+                        'comment' => 'required',
+                        'help_desk_id' => 'nullable|exists:help_desks,id',
+                  );
+
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+            $obj = HelpDesk::find($input['help_desk_id']);
+
+            // Access only for admin and support department and created by 
+            if(userrole() == 1 || userdepartment() == 1 || $obj->user_id == Auth::id()){
+
+                $input['user_id'] = Auth::id();
+
+                $comment = new HelpDeskComments();
+                $message = "Comment created successfully.";
+
+                $comment->fill($input)->save();
+
+                $response = ['status'=>true,'message'=>$message];
+
+            }else{
+                return $response = ['status'=>false,'message'=>'Access Denied !'];
+            }
+        }
+
+        return $response;
+    }
+
+    public function getAllComment(Request $request)
+    {
+        if ($request->ajax()) {
+            
+            $where = array('help_desk_id' => $request->help_desk_id);
+
+            if ($request->id > 0) {
+                $comments = HelpDeskComments::where('id', '<', $request->id)->where($where)->orderBy('id', 'DESC')->limit(10)->get();
+            } else {
+                $comments = HelpDeskComments::where($where)->orderBy('id', 'DESC')->limit(10)->get();
+            }
+
+            $output = "";
+            $button = "";
+            $last_id = "";
+
+            $last = HelpDeskComments::where($where)->select('id')->first();
+
+            if (!$comments->isEmpty()) {
+
+                foreach ($comments as $comment) {
+                    $output .= view('help-desk.ajax.comment',compact('comment'))->render();
+                }
+
+                $last_id = $comments->last()->id;
+
+                if ($last_id != $last->id) {
+                    $button = '<a href="javascript:" class="btn btn-primary" data-id="' . $last_id . '" id="view_more_btn">View More Comments</a>';
+                }
+
+            } else {
+
+                $button = '';
+
+            }
+
+            return response()->json(['output' => $output, 'button' => $button]);
+        }
     }
 }

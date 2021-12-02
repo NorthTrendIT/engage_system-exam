@@ -14,6 +14,7 @@ class RemoveFieldsHelpDesksTable extends Migration
     public function up()
     {
         Schema::table('help_desks', function (Blueprint $table) {
+            $table->dropColumn("department_id");
             $table->dropColumn("user_type");
             $table->dropColumn("name");
             $table->dropColumn("email");

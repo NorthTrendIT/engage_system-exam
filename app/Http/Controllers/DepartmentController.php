@@ -126,7 +126,7 @@ class DepartmentController extends Controller
      */
     public function edit($id)
     {
-        $edit = Department::where('id',$id)->firstOrFail();
+        $edit = Department::where('id',$id)->whereNotIn('id',[1])->firstOrFail();
         $roles = Role::where('id','!=',1)->get();
 
         $department_roles = array();
@@ -206,6 +206,7 @@ class DepartmentController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('action', function($row) {
+
                                 $btn = '<a href="' . route('department.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
@@ -217,7 +218,11 @@ class DepartmentController extends Controller
                                     <i class="fa fa-eye"></i>
                                   </a>';
 
-                                return $btn;
+                                if(!in_array($row->id, [1])){
+                                  return $btn;
+                                }else{
+                                  return "-";
+                                }
                             })
                             ->addColumn('status', function($row) {
 
@@ -226,6 +231,11 @@ class DepartmentController extends Controller
                                     $btn .= '<a href="javascript:"  data-url="' . route('department.status',$row->id) . '" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
                                 }else{
                                     $btn .= '<a href="javascript:"  data-url="' . route('department.status',$row->id) . '" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
+                                }
+
+                                if(in_array($row->id, [1])){
+                                  $btn = '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline">Active</a>';
+                                  return $btn;
                                 }
 
                                 return $btn;

@@ -60,6 +60,10 @@ function userrole(){
 	return @Auth::user()->role_id;
 }
 
+function userdepartment(){
+    return @Auth::user()->department_id;
+}
+
 function get_modules(){
 
     $result = array();

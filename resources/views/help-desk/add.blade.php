@@ -57,7 +57,7 @@
 
                 <div class="row mb-5">
                   
-                  <div class="col-md-6">
+                  {{-- <div class="col-md-6">
                     <div class="form-group">
                       <label>Department<span class="asterisk">*</span></label>
                       <select class="form-control form-control-lg form-control-solid" name="department_id" data-control="select2" data-hide-search="false" data-placeholder="Select a department" data-allow-clear="true">
@@ -67,7 +67,7 @@
                         @endforeach
                       </select>
                     </div>
-                  </div>
+                  </div> --}}
 
                   <div class="col-md-6">
                     <div class="form-group">

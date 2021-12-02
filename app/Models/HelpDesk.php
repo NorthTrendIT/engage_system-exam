@@ -50,11 +50,16 @@ class HelpDesk extends Model
 
     public function files()
     {
-        return $this->belongsToMany(HelpDeskFiles::class, 'id', 'help_desk_id');
+        return $this->hasMany(HelpDeskFiles::class, 'help_desk_id', 'id');
     }
 
     public function comments()
     {
         return $this->belongsToMany(HelpDeskComments::class, 'id', 'help_desk_id');
+    }
+
+    public function departments()
+    {
+        return $this->hasMany(HelpDeskDepartment::class, 'help_desk_id', 'id');
     }
 }
