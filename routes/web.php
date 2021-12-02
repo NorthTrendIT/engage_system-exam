@@ -148,8 +148,16 @@ Route::middleware(['auth'])->group(function(){
 
         // Cart
         Route::resource('cart','App\Http\Controllers\CartController');
+
+        Route::post('territory-sales-specialist/get-sales-specialist/','App\Http\Controllers\TerritorySalesSpecialistController@getSalesSpecialist')->name('territory-sales-specialist.get-sales-specialist');
     });
 
+
+	Route::resource('help-desk','App\Http\Controllers\HelpDeskController');
+    Route::post('help-desk/get-all', 'App\Http\Controllers\HelpDeskController@getAll')->name('help-desk.get-all');
+    Route::post('help-desk/status', 'App\Http\Controllers\HelpDeskController@updateStatus')->name('help-desk.status');
+    Route::post('help-desk/comment/store', 'App\Http\Controllers\HelpDeskController@storeComment')->name('help-desk.comment.store');
+    Route::post('help-desk/comment/get-all', 'App\Http\Controllers\HelpDeskController@getAllComment')->name('help-desk.comment.get-all');
 });
 
 Route::get('clear-cache', function () {

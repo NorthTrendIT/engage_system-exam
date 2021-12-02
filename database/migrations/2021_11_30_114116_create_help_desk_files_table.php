@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddSalesSpecialistNameFieldInUsersTable extends Migration
+class CreateHelpDeskFilesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,12 @@ class AddSalesSpecialistNameFieldInUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('sales_specialist_name')->comment('Include firstname and lastname for other roles users')->nullable();
+        Schema::create('help_desk_files', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('help_desk_id')->index();
+            $table->string("filename");
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -25,8 +29,6 @@ class AddSalesSpecialistNameFieldInUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('help_desk_files');
     }
 }

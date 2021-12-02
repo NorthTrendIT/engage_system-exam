@@ -101,6 +101,8 @@ class UserController extends Controller
                 $input['profile'] = $name;
             }
 
+            $input['sales_specialist_name'] = $input['first_name']." ".$input['last_name'];
+
             $user->fill($input)->save();
 
             if(!isset($input['id'])){
@@ -283,6 +285,7 @@ class UserController extends Controller
                 $q->orwhere('first_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('last_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('email','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('sales_specialist_name','LIKE',"%".$request->filter_search."%");
             });
         }
 

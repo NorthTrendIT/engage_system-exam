@@ -41,8 +41,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Select Customer<span class="asterisk">*</span></label>
-                            <select class="form-select form-select-solid" id='selectCustomer' data-control="select2" data-hide-search="false" name="customer_id">
-                                <option value=""></option>
+                            <select class="form-select form-select-solid" id='selectCustomer' data-control="select2" data-hide-search="false" name="customer_ids[]">
                             </select>
                         </div>
                     </div>
@@ -51,7 +50,6 @@
                         <div class="form-group">
                             <label>Select Sales Specialist<span class="asterisk">*</span></label>
                             <select class="form-select form-select-solid" id='selectSalseSpecialist' multiple="multiple" data-control="select2" data-hide-search="false" name="ss_ids[]">
-                                <option value=""></option>
                             </select>
                         </div>
                     </div>
@@ -151,7 +149,7 @@ $(document).ready(function() {
     @if(isset($customer) && !empty($customer))
         var initialOption = {
             id: {{ $customer->id }},
-            text: '{{ $customer->card_name }}',
+            text: '{!! $customer->card_name !!}',
             selected: true
         }
         $initialCustomer.push(initialOption);
@@ -161,7 +159,7 @@ $(document).ready(function() {
         @foreach ($edit as $data)
             var initialOption = {
                 id: {{ $data->ss_id }},
-                text: '{{ $data->sales_person->sales_specialist_name }}',
+                text: '{!! $data->sales_person->sales_specialist_name !!}',
                 selected: true
             }
             $initialSalesPerson.push(initialOption);
@@ -169,6 +167,7 @@ $(document).ready(function() {
     @endif
 
     $("#selectCustomer").select2({
+        @if(!isset($edit))
         ajax: {
             url: "{{route('customers-sales-specialist.getCustomers')}}",
             type: "post",
@@ -187,8 +186,9 @@ $(document).ready(function() {
             },
             cache: true
         },
+        @endif
         placeholder: 'Select Customer',
-        multiple: false,
+        multiple: true,
         @if(isset($edit))
         data: $initialCustomer,
         @endif

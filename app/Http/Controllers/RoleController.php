@@ -156,7 +156,7 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-        $edit = Role::where('id','!=',1)->where('id',$id)->firstOrFail();
+        $edit = Role::whereNotIn('id',[3,1])->where('id',$id)->firstOrFail();
         $modules = get_modules();;
         $parents = Role::where('id','!=',$id)->where('id','!=',1)->get();
 
@@ -223,6 +223,10 @@ class RoleController extends Controller
                                   $btn .= ' <a href="javascript:void(0)" data-url="' . route('role.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
                                       <i class="fa fa-trash"></i>
                                     </a>';
+                                }
+
+                                if(in_array($row->id, [3])){
+                                  return "-";
                                 }
 
                                 return $btn;
