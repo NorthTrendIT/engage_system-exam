@@ -15,7 +15,7 @@
             <div class="row gy-5 g-xl-8 mt-5">
                 <!--begin::Col-->
                 <div class="col-xl-8">
-                <div class="card card-xl-stretch mb-5 mb-xl-8">
+                    <div class="card card-xl-stretch mb-5 mb-xl-8">
                         <!--begin::Header-->
                         <div class="card-header border-0 pt-5">
                             <h3 class="card-title align-items-start flex-column">
