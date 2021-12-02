@@ -30,6 +30,10 @@ class RoleSeeder extends Seeder
                     array(
                         'id' => 3,
                         'name' => 'Support'
+                    ),
+                    array(
+                        'id' => 4,
+                        'name' => 'Customer'
                     )
         		);
         Role::insert($data);
