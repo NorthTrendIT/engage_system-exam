@@ -41,7 +41,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th> <b>Ticket Number:</b> </th>
+                              <th> <b>Ticket number:</b> </th>
                               <td>{{ @$data->ticket_number ?? "" }}</td>
                             </tr>
 
@@ -56,8 +56,13 @@
                             </tr>
 
                             <tr>
-                              <th> <b>Created Date:</b> </th>
+                              <th> <b>Created date:</b> </th>
                               <td>{{ date('M d, Y h:i A',strtotime(@$data->created_at)) }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b> Last updated at:</b> </th>
+                              <td>{{ date('M d, Y h:i A',strtotime(@$data->updated_at)) }}</td>
                             </tr>
 
                             {{-- <tr>
