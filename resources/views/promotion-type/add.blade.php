@@ -42,7 +42,7 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Promotion Type Title<span class="asterisk">*</span></label>
-                      <input type="text" class="form-control form-control-solid" name="title" placeholder="Enter promotion type title">
+                      <input type="text" class="form-control form-control-solid" name="title" placeholder="Enter promotion type title" @if(isset($edit)) value="{{ $edit->title }}" @endif>
                     </div>
                   </div>
 
@@ -51,9 +51,9 @@
                       <label>Criteria<span class="asterisk">*</span></label>
                       <select class="form-control form-control-lg form-control-solid" name="scope" data-control="select2" data-hide-search="true" data-placeholder="Select a criteria" data-allow-clear="true">
                         <option value=""></option>
-                        <option value="P">Discount in Percentage</option>
-                        <option value="R">Discount Percentage Range</option>
-                        <option value="U">Percentage discount + Up to amount limit</option>
+                        <option value="P" @if(isset($edit) && $edit->scope == "P") selected="" @endif >Discount in Percentage</option>
+                        <option value="R" @if(isset($edit) && $edit->scope == "R") selected="" @endif >Discount Percentage Range</option>
+                        <option value="U" @if(isset($edit) && $edit->scope == "U") selected="" @endif >Percentage discount + Up to amount limit</option>
                       </select>
 
                     </div>
@@ -66,14 +66,14 @@
                   <div class="col-md-6 scope_p_div" style="display: none;">
                     <div class="form-group">
                       <label>Discount Percentage<span class="asterisk">*</span></label>
-                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter discount percentage" name="percentage">
+                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter discount percentage" name="percentage" @if(isset($edit)) value="{{ $edit->percentage }}" @endif>
                     </div>
                   </div>
 
                   <div class="col-md-6 scope_u_div" style="display: none;">
                     <div class="form-group">
-                      <label>Fixed price<span class="asterisk">*</span></label>
-                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter fixed price" name="fixed_price">
+                      <label>Fixed Price<span class="asterisk">*</span></label>
+                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter fixed price" name="fixed_price" @if(isset($edit)) value="{{ $edit->fixed_price }}" @endif>
                     </div>
                   </div>
 
@@ -85,14 +85,14 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Minimum Percentage<span class="asterisk">*</span></label>
-                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter minimum percentage" name="min_percentage">
+                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter minimum percentage" name="min_percentage" @if(isset($edit)) value="{{ $edit->min_percentage }}" @endif>
                     </div>
                   </div>
 
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Maximum Percentage<span class="asterisk">*</span></label>
-                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter maximum percentage" name="max_percentage">
+                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter maximum percentage" name="max_percentage" @if(isset($edit)) value="{{ $edit->max_percentage }}" @endif>
                     </div>
                   </div>
 
@@ -103,14 +103,14 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Fixed Quantity<span class="asterisk">*</span></label>
-                      <input type="number" class="form-control form-control-solid" placeholder="Enter fixed quantity" name="fixed_quantity">
+                      <input type="number" class="form-control form-control-solid" placeholder="Enter fixed quantity" name="fixed_quantity" @if(isset($edit)) value="{{ $edit->fixed_quantity }}" @endif>
                     </div>
                   </div>
 
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Number Of Delivery<span class="asterisk">*</span></label>
-                      <input type="number" class="form-control form-control-solid" placeholder="Enter number of delivery" name="number_of_delivery">
+                      <input type="number" class="form-control form-control-solid" placeholder="Enter number of delivery" name="number_of_delivery" @if(isset($edit)) value="{{ $edit->number_of_delivery }}" @endif>
                     </div>
                   </div>
 
@@ -137,29 +137,67 @@
                 <div class="mt-15 multi_product_div" style="display: none;">
 
                   <div data-repeater-list="product_list">
-                    <div class="row mb-5" data-repeater-item>
-                      <div class="col-md-5">
-                        <div class="form-group">
-                          <label>Product<span class="asterisk">*</span></label>
-                          <select class="form-control form-control-lg form-control-solid product_id" name="product_id">
-                            <option value=""></option>
-                          </select>
-                        </div>
-                      </div>
 
-                      <div class="col-md-5">
-                        <div class="form-group">
-                          <label>Discount Percentage<span class="asterisk">*</span></label>
-                          <input type="number" step=".01" class="form-control form-control-solid discount_percentage" placeholder="Enter discount percentage" name="discount_percentage">
-                        </div>
-                      </div>
+                    @if(isset($edit) && count($edit->products) > 0 && $edit->scope == "R")
 
-                      <div class="col-md-2">
-                        <div class="form-group">
-                          <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-md btn-color-danger mt-6" data-repeater-delete><i class="fa fa-trash"></i></a>
+                      @foreach($edit->products as $key => $p)
+
+                        <div class="row mb-5" data-repeater-item>
+                          <div class="col-md-5">
+                            <div class="form-group">
+                              <label>Product<span class="asterisk">*</span></label>
+                              <select class="form-control form-control-lg form-control-solid product_id" name="product_id">
+                                <option value=""></option>
+                                <option value="{{ @$p->product->id }}" selected="">{{ @$p->product->item_name }}</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="col-md-5">
+                            <div class="form-group">
+                              <label>Discount Percentage<span class="asterisk">*</span></label>
+                              <input type="number" step=".01" class="form-control form-control-solid discount_percentage" placeholder="Enter discount percentage" name="discount_percentage" value="{{ $p->discount_percentage }}">
+                            </div>
+                          </div>
+
+                          @if($key != 0)
+                            <div class="col-md-2">
+                              <div class="form-group">
+                                <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-md btn-color-danger mt-6" data-repeater-delete><i class="fa fa-trash"></i></a>
+                              </div>
+                            </div>
+                          @endif
+
+                        </div>
+
+                      @endforeach
+
+                    @else
+                      <div class="row mb-5" data-repeater-item>
+                        <div class="col-md-5">
+                          <div class="form-group">
+                            <label>Product<span class="asterisk">*</span></label>
+                            <select class="form-control form-control-lg form-control-solid product_id" name="product_id">
+                              <option value=""></option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="col-md-5">
+                          <div class="form-group">
+                            <label>Discount Percentage<span class="asterisk">*</span></label>
+                            <input type="number" step=".01" class="form-control form-control-solid discount_percentage" placeholder="Enter discount percentage" name="discount_percentage">
+                          </div>
+                        </div>
+
+                        <div class="col-md-2">
+                          <div class="form-group">
+                            <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-md btn-color-danger mt-6" data-repeater-delete><i class="fa fa-trash"></i></a>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    @endif
+
                   </div>
                   
                   <div class="row mb-5">
@@ -206,6 +244,24 @@
 <script>
   $(document).ready(function() {
 
+    @if(isset($edit) && $edit->scope == "P")
+      $('.scope_p_div').show();
+      $('.only_products_div').show();
+    @endif
+
+    @if(isset($edit) && $edit->scope == "R")
+      $('.scope_r_div').show();
+      $('.multi_product_div').show();
+    @endif
+
+    @if(isset($edit) && $edit->scope == "U")
+      $('.scope_p_div').show();
+      $('.scope_u_div').show();
+      $('.only_products_div').show();
+    @endif
+
+
+
     $(document).on('change', '[name="scope"]', function(){
       $value = $('[name="scope"]').find('option:selected').val();
       $('.scope_r_div').hide();
@@ -227,6 +283,21 @@
       }
 
     });
+
+    $initialProducts = [];
+
+    @if(isset($edit) && $edit->scope != "R")
+        @foreach ($edit->products as $p)
+          @if (@$p->product->id)
+            var initialOption = {
+                id: {{ $p->product->id }},
+                text: '{!! $p->product->item_name !!}',
+                selected: true
+            }
+            $initialProducts.push(initialOption);
+          @endif
+        @endforeach
+    @endif
 
     $('#products').select2({
       ajax: {
@@ -255,6 +326,9 @@
       placeholder: 'Select products',
       allowClear: true,
       multiple: true,
+      @if(isset($edit))
+      data:$initialProducts,
+      @endif
     });
 
     $('.product_id').select2({

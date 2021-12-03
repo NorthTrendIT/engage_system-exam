@@ -147,12 +147,13 @@ Route::middleware(['auth'])->group(function(){
         Route::post('territory-sales-specialist/get-sales-specialist/','App\Http\Controllers\TerritorySalesSpecialistController@getSalesSpecialist')->name('territory-sales-specialist.get-sales-specialist');
 
 
-        // Pramotion Type
-        Route::resource('promotion-type','App\Http\Controllers\PromotionTypeController');
-	    Route::post('promotion-type/get-all', 'App\Http\Controllers\PromotionTypeController@getAll')->name('promotion-type.get-all');
-        Route::post('promotion-type/status/{id}', 'App\Http\Controllers\PromotionTypeController@updateStatus')->name('promotion-type.status');  
-        Route::post('promotion-type/get-products/','App\Http\Controllers\PromotionTypeController@getProducts')->name('promotion-type.get-products');
     });
+    
+    // Pramotion Type
+    Route::resource('promotion-type','App\Http\Controllers\PromotionTypeController')->middleware('super-admin');
+    Route::post('promotion-type/get-all', 'App\Http\Controllers\PromotionTypeController@getAll')->name('promotion-type.get-all')->middleware('super-admin');
+    Route::post('promotion-type/status/{id}', 'App\Http\Controllers\PromotionTypeController@updateStatus')->name('promotion-type.status')->middleware('super-admin');  
+    Route::post('promotion-type/get-products/','App\Http\Controllers\PromotionTypeController@getProducts')->name('promotion-type.get-products')->middleware('super-admin');
 
 	
 	Route::resource('help-desk','App\Http\Controllers\HelpDeskController');

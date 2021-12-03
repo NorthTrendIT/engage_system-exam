@@ -151,7 +151,9 @@ class PromotionTypeController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = PromotionTypes::findOrFail($id);
+
+        return view('promotion-type.view',compact('data'));
     }
 
     /**
@@ -255,9 +257,9 @@ class PromotionTypeController extends Controller
                                     <i class="fa fa-trash"></i>
                                   </a>';
 
-                                // $btn .= ' <a href="' . route('user.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
-                                //     <i class="fa fa-eye"></i>
-                                //   </a>';
+                                $btn .= ' <a href="' . route('promotion-type.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
+                                  </a>';
 
                                 return $btn;
                             })
