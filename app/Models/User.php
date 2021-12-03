@@ -32,6 +32,8 @@ class User extends Authenticatable
         'parent_id',
         'sales_specialist_name',
         'territory_id',
+        'customer_id',
+        'first_login',
     ];
 
     /**
