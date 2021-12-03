@@ -139,13 +139,13 @@ class StoreCustomers implements ShouldQueue
 
 
                     // Store Customer Records in users table
-                    $check_customer = User::where('customer_id',$obj->id)->first();
+                    /*$check_customer = User::where('customer_id',$obj->id)->first();
                     if(is_null($check_customer)){
 
                         $name = explode(" ", $obj->card_name, 2);
 
                         $insert_user =  array(
-                                            'role_id' => 3,
+                                            'role_id' => 4,
                                             'customer_id' => $obj->id,
                                             'sales_specialist_name' => @$obj->card_name,
                                             'first_name' => !empty($name[0]) ? $name[0] : null,
@@ -158,7 +158,7 @@ class StoreCustomers implements ShouldQueue
 
                         User::create($insert_user);
 
-                    }
+                    }*/
                 }
             }
 
