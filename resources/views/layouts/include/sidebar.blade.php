@@ -317,7 +317,7 @@
             @endif
 
             @if(Auth::user()->role_id == 1)
-            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['promotion-type.index','promotion-type.create','promotion-type.edit','promotion-type.show','promotion.index','promotion.create','promotion.edit'])) ? 'hover show' : '' }}">
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['promotion-type.index','promotion-type.create','promotion-type.edit','promotion-type.show','promotion.index','promotion.create','promotion.edit','promotion.show'])) ? 'hover show' : '' }}">
 
                <span class="menu-link">
                   <span class="menu-icon">
@@ -344,7 +344,7 @@
                   </div>
 
                   <div class="menu-item">
-                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['promotion.index','promotion.create','promotion.edit'])) ? 'active' : '' }}" href="{{ route('promotion.index') }}">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['promotion.index','promotion.create','promotion.edit','promotion.show'])) ? 'active' : '' }}" href="{{ route('promotion.index') }}">
                         <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                         </span>
