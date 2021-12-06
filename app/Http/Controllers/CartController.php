@@ -81,4 +81,14 @@ class CartController extends Controller
     {
         //
     }
+
+    public function addToCart(Request $request){
+        $data = $request->all();
+
+
+    }
+
+    public function order(){
+        return view('cart.order');
+    }
 }
