@@ -85,14 +85,14 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Minimum Percentage<span class="asterisk">*</span></label>
-                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter minimum percentage" name="min_percentage" @if(isset($edit)) value="{{ $edit->min_percentage }}" @endif>
+                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter minimum percentage" name="min_percentage" @if(isset($edit)) value="{{ $edit->min_percentage }}" @endif id="min_percentage">
                     </div>
                   </div>
 
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Maximum Percentage<span class="asterisk">*</span></label>
-                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter maximum percentage" name="max_percentage" @if(isset($edit)) value="{{ $edit->max_percentage }}" @endif>
+                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter maximum percentage" name="max_percentage" @if(isset($edit)) value="{{ $edit->max_percentage }}" @endif id="max_percentage">
                     </div>
                   </div>
 
@@ -440,7 +440,7 @@
                     },
             },
             max_percentage:{
-              min:$('[name="max_percentage"]').val(),
+              min:$('#min_percentage').val(),
               max:100,
               number: true,
               required: function () {
@@ -484,8 +484,8 @@
       $('.discount_percentage').each(function() {
         $(this).rules('add', {
           required:true,
-          min:$('[name="min_percentage"]').val(),
-          max:$('[name="max_percentage"]').val(),
+          min:$('#min_percentage').val(),
+          max:$('#max_percentage').val(),
           number: true
         });
       });

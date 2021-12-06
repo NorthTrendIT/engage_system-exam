@@ -48,8 +48,7 @@
                     <option value="">Select Promotion Scope</option>
                     <option value="C">Customers</option>
                     <option value="CL">Class</option>
-                    <option value="L">Location</option>
-                    <option value="P">Product</option>
+                    <option value="T">Territories</option>
                   </select>
                 </div>
 
@@ -71,7 +70,7 @@
                             <tr>
                               <th>Title</th>
                               <th>Promotion For</th>
-                              <th>Scop</th>
+                              <th>Scope</th>
                               <th>Start Date</th>
                               <th>End Date</th>
                               <th>Status</th>
@@ -167,6 +166,7 @@
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
+      $('[name="filter_scope"]').val('').trigger('change');
       render_table();
     })
 

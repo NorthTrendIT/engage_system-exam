@@ -50,7 +50,7 @@
                                         @if(!empty($promotion_type))
                                             @foreach($promotion_type as $type)
                                                 @if(isset($data) && $data->promotion_type_id == $type['id'])
-                                                    <input type="text" class="form-control form-control-solid"  value="{{ $type['name'] }}" disabled="disabled">
+                                                    <input type="text" class="form-control form-control-solid"  value="{{ $type['title'] }}" disabled="disabled">
                                                 @endif
                                             @endforeach
                                         @endif
@@ -67,18 +67,11 @@
                             </div>
 
                             <div class="row mb-5">
-                                <!-- Discount Percentage -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Discount Percentage</label>
-                                        <input type="text" class="form-control form-control-solid" value="{{ $data->discount_percentage }}" disabled="disabled">
-                                    </div>
-                                </div>
-
+                                
                                 <!-- Promotion For -->
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Promotion For></label>
+                                        <label>Promotion For</label>
                                         <input type="text" class="form-control form-control-solid" value="{{ $data->promotion_for }}" disabled="disabled">
                                     </div>
                                 </div>
@@ -97,8 +90,8 @@
                                             <input type="text" class="form-control form-control-solid" value="Class" disabled="disabled">
                                         @endif
 
-                                        @if($data->promotion_scope == 'L')
-                                            <input type="text" class="form-control form-control-solid" value="Location" disabled="disabled">
+                                        @if($data->promotion_scope == 'T')
+                                            <input type="text" class="form-control form-control-solid" value="Territories" disabled="disabled">
                                         @endif
 
                                         @if($data->promotion_scope == 'P')
@@ -130,27 +123,27 @@
                             <div class="row mb-5 mt-5">
                                 <div class="card card-xl-stretch mb-5 mb-xl-8">
                                     <div class="card-header pt-5">
-                                        <h1 class="text-dark fs-3 my-1">
-                                        @if($data->promotion_scope == 'C')
-                                            Customers
-                                        @endif()
-
-                                        @if($data->promotion_scope == 'CL')
-                                            Class
-                                        @endif
-
-                                        @if($data->promotion_scope == 'L')
-                                            Location
-                                        @endif
-
-                                        @if($data->promotion_scope == 'P')
-                                            Products
-                                        @endif
-                                        </h1>
                                     </div>
 
                                     <div class="card-body">
                                         <div class="col-md-12">
+                                            <h1 class="text-dark fs-3 my-1">
+                                            @if($data->promotion_scope == 'C')
+                                                Customers
+                                            @endif
+
+                                            @if($data->promotion_scope == 'CL')
+                                                Class
+                                            @endif
+
+                                            @if($data->promotion_scope == 'T')
+                                                Territories
+                                            @endif
+
+                                            @if($data->promotion_scope == 'P')
+                                                Products
+                                            @endif
+                                            </h1>
                                             <div class="form-group">
                                                 <!--begin::Table container-->
                                                 <div class="table-responsive">
@@ -201,10 +194,6 @@ $(document).ready(function() {
     function render_table(){
       var table = $("#myTable");
       table.DataTable().destroy();
-
-      $filter_search = $('[name="filter_search"]').val();
-      $filter_status = $('[name="filter_status"]').find('option:selected').val();
-      $filter_scope = $('[name="filter_scope"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
