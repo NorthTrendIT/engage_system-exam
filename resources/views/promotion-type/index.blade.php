@@ -1,28 +1,34 @@
 @extends('layouts.master')
 
-@section('title','Promotions')
+@section('title','Promotion Type')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Promotions</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Promotion Type</h1>
       </div>
 
+      <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
-        <a href="{{ route('promotion.create') }}" class="btn btn-sm btn-primary">Create</a>
+        <!--begin::Button-->
+        <a href="{{ route('promotion-type.create') }}" class="btn btn-sm btn-primary">Create</a>
+        <!--end::Button-->
       </div>
+      <!--end::Actions-->
 
     </div>
   </div>
-
+  
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
-
+           {{--  <div class="card-header border-0 pt-5">
+              <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
+            </div> --}}
             <div class="card-body">
               <div class="row mt-5">
                 <div class="col-md-3">
@@ -36,19 +42,10 @@
 
 
                 <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
-                    <option value="">Select status</option>
+                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select a status" data-allow-clear="true">
+                    <option value=""></option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
-                  </select>
-                </div>
-
-                <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_scope" data-control="select2" data-hide-search="true">
-                    <option value="">Select Promotion Scope</option>
-                    <option value="C">Customers</option>
-                    <option value="CL">Class</option>
-                    <option value="T">Territories</option>
                   </select>
                 </div>
 
@@ -69,10 +66,6 @@
                           <thead>
                             <tr>
                               <th>Title</th>
-                              <th>Promotion For</th>
-                              <th>Scope</th>
-                              <th>Start Date</th>
-                              <th>End Date</th>
                               <th>Status</th>
                               <th>Action</th>
                             </tr>
@@ -80,7 +73,7 @@
                           <!--end::Table head-->
                           <!--begin::Table body-->
                           <tbody>
-
+                            
                           </tbody>
                           <!--end::Table body-->
                        </table>
@@ -120,7 +113,6 @@
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
-      $filter_scope = $('[name="filter_scope"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -128,7 +120,7 @@
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('promotion.get-all') }}",
+              'url': "{{ route('promotion-type.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -136,17 +128,12 @@
               data:{
                 filter_search : $filter_search,
                 filter_status : $filter_status,
-                filter_scope : $filter_scope,
               }
           },
           columns: [
               {data: 'title', name: 'title'},
-              {data: 'promotion_for', name: 'promotion_for'},
-              {data: 'scope', name: 'scope'},
-              {data: 'start_date', name: 'start_date'},
-              {data: 'end_date', name: 'end_date'},
-              {data: 'status', name: 'status', searchable: false},
-              {data: 'action', name: 'action', orderable: false, searchable: false},
+              {data: 'status', name: 'status'},
+              {data: 'action', name: 'action'},
           ],
           drawCallback:function(){
               $(function () {
@@ -166,44 +153,8 @@
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
-      $('[name="filter_scope"]').val('').trigger('change');
       render_table();
     })
-
-    $(document).on('click', '.sync-orders', function(event) {
-      event.preventDefault();
-
-      Swal.fire({
-        title: 'Are you sure want to sync orders?',
-        text: "Syncing process will run in background and it may take some time to sync all Orders Data.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: '{{ route('orders.sync-orders') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}'
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              render_table();
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
-    });
 
     $(document).on('click', '.delete', function(event) {
       event.preventDefault();
@@ -247,6 +198,7 @@
 
       Swal.fire({
         title: 'Are you sure want to change status?',
+        //text: "Once deleted, you will not be able to recover this record!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',

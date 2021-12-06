@@ -317,7 +317,8 @@
             @endif
 
             @if(Auth::user()->role_id == 1)
-            {{-- <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['productfeatures.index','productfeatures.create','productfeatures.edit','productbenefits.index','productbenefits.create','productbenefits.edit','productsellsheets.index','productsellsheets.create','productsellsheets.edit'])) ? 'hover show' : '' }}">
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['promotion-type.index','promotion-type.create','promotion-type.edit','promotion-type.show','promotion.index','promotion.create','promotion.edit','promotion.show'])) ? 'hover show' : '' }}">
+
                <span class="menu-link">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/layouts/lay010.svg-->
@@ -329,55 +330,29 @@
                      </span>
                      <!--end::Svg Icon-->
                   </span>
-                  <span class="menu-title">Product Additional Info</span>
+                  <span class="menu-title">Promotion Management</span>
                   <span class="menu-arrow"></span>
                </span>
                <div class="menu-sub menu-sub-accordion">
                   <div class="menu-item">
-                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['productfeatures.index','productfeatures.create','productfeatures.edit'])) ? 'active' : '' }}" href="{{ route('productfeatures.index') }}">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['promotion-type.index','promotion-type.create','promotion-type.edit','promotion-type.show'])) ? 'active' : '' }}" href="{{ route('promotion-type.index') }}" >
                         <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                         </span>
-                        <span class="menu-title">Features</span>
+                        <span class="menu-title">Promotion Types</span>
                      </a>
                   </div>
-                  <div class="menu-item">
-                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['productbenefits.index','productbenefits.create','productbenefits.edit'])) ? 'active' : '' }}" href="{{ route('productbenefits.index') }}">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Advantages &amp; Benefits</span>
-                     </a>
-                  </div>
-                  <div class="menu-item">
-                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['productsellsheets.index','productsellsheets.create','productsellsheets.edit'])) ? 'active' : '' }}" href="{{ route('productsellsheets.index') }}">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Sell Sheets</span>
-                     </a>
-                  </div>
-               </div>
-            </div> --}}
-            @endif
 
-            @if(Auth::user()->role_id == 1)
-            <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['promotion.index'])) ? 'active' : '' }}" href="{{ route('promotion.index') }}">
-                  <span class="menu-icon">
-                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
-                     <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
-                     </span>
-                     <!--end::Svg Icon-->
-                  </span>
-                  <span class="menu-title">Promotions</span>
-               </a>
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['promotion.index','promotion.create','promotion.edit','promotion.show'])) ? 'active' : '' }}" href="{{ route('promotion.index') }}">
+                        <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Promotions</span>
+                     </a>
+                  </div>
+
+               </div>
             </div>
             @endif
 
