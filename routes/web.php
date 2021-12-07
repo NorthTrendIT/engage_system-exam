@@ -149,6 +149,8 @@ Route::middleware(['auth'])->group(function(){
         Route::post('territory-sales-specialist/get-sales-specialist/','App\Http\Controllers\TerritorySalesSpecialistController@getSalesSpecialist')->name('territory-sales-specialist.get-sales-specialist');
 
 
+        Route::get('customer-promotion/', 'App\Http\Controllers\CustomerPromotionController@index')->name('customer-promotion.index')/*->middleware('not-super-admin')*/;
+
     });
     
     // Pramotion Type

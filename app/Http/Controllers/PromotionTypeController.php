@@ -47,7 +47,7 @@ class PromotionTypeController extends Controller
                         'title' => 'required|max:185|unique:promotion_types,title,NULL,id,deleted_at,NULL',
                         'scope' => 'required',
                         'fixed_quantity' => 'nullable|integer',
-                        'number_of_delivery' => 'required|integer',
+                        'number_of_delivery' => 'nullable|integer',
                         'max_percentage' => 'required_if:scope,R',
                         'min_percentage' => 'required_if:scope,R',
                         'percentage' => 'required_if:scope,P,U',
