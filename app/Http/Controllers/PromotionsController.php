@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\PromotionFor;
 use App\Models\Territory;
 use App\Models\Classes;
+use App\Models\User;
 use Validator;
 use DataTables;
 use Auth;
@@ -54,6 +55,7 @@ class PromotionsController extends Controller
                     'customer_ids'=> 'required_if:promotion_scope,==,C',
                     'territories_ids'=> 'required_if:promotion_scope,==,T',
                     'class_ids'=> 'required_if:promotion_scope,==,CL',
+                    'sales_specialist_ids'=> 'required_if:promotion_scope,==,SS',
                 );
 
         if(request()->hasFile('promo_image')){
@@ -152,6 +154,18 @@ class PromotionsController extends Controller
                     $promotionFor = PromotionFor::updateOrCreate([
                                 'promotion_id' => $promotion->id,
                                 'class_id' => $value,
+                            ]
+                        );
+                }
+            }
+
+            if($input['promotion_scope'] == 'SS' && isset($input['sales_specialist_ids']) ){
+                $c_ids = $input['sales_specialist_ids'];
+                PromotionFor::where('promotion_id', $promotion->id)->delete();
+                foreach($c_ids as $value){
+                    $promotionFor = PromotionFor::updateOrCreate([
+                                'promotion_id' => $promotion->id,
+                                'sales_specialist_id' => $value,
                             ]
                         );
                 }
@@ -294,6 +308,9 @@ class PromotionsController extends Controller
                     case "P":
                       $scope = "Products";
                       break;
+                    case "SS":
+                      $scope = "Sales Specialists";
+                      break;
                   }
                     return $scope;
                 })
@@ -413,6 +430,8 @@ class PromotionsController extends Controller
                         return $row->territory->description;
                     }else if($scope == 'CL'){
                         return $row->class->name;
+                    }else if($scope == 'SS'){
+                        return $row->sales_specialist->sales_specialist_name;
                     }
                 })
                 ->addColumn('is_interested', function($row) {
@@ -455,6 +474,27 @@ class PromotionsController extends Controller
             $response[] = array(
                 "id"=>$value->id,
                 "text"=>$value->name
+            );
+        }
+
+        return response()->json($response);
+    }
+
+    public function getSalesSpecialist(Request $request){
+        $search = $request->search;
+
+        $data = User::orderby('sales_specialist_name','asc')->where('role_id',2)->select('id','sales_specialist_name')->limit(50);
+        if($search != ''){
+            $data->where('sales_specialist_name', 'like', '%' .$search . '%');
+        }
+
+        $data = $data->get();
+
+        $response = array();
+        foreach($data as $value){
+            $response[] = array(
+                "id"=>$value->id,
+                "text"=>$value->sales_specialist_name
             );
         }
 

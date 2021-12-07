@@ -97,6 +97,7 @@
                                                 <option value="C" @if(isset($edit) && $edit->promotion_scope == "C") selected="" @endif>Customers</option>
                                                 <option value="CL" @if(isset($edit) && $edit->promotion_scope == "CL") selected="" @endif>Class</option>
                                                 <option value="T" @if(isset($edit) && $edit->promotion_scope == "T") selected="" @endif>Territories</option>
+                                                <option value="SS" @if(isset($edit) && $edit->promotion_scope == "SS") selected="" @endif>Sales Specialists</option>
                                                 {{-- <option value="P" @if(isset($edit) && $edit->promotion_scope == "P") selected="" @endif>Products</option> --}}
                                             </select>
                                         </div>
@@ -138,6 +139,16 @@
                                             <label>Select Classes<span class="asterisk">*</span></label>
                                             <select class="form-select form-select-solid" id='selectClasses' multiple="multiple" data-control="select2" data-hide-search="false" name="class_ids[]">
                                                 <option value=''>Select Classes</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- sales_specialists-->
+                                    <div class="col-md-6" id="sales_specialist_block" style="display: {{ isset($edit) ? ($edit->promotion_scope == 'SS' ? '' : 'none') : 'none'}}">
+                                        <div class="form-group">
+                                            <label>Select Sales Specialists<span class="asterisk">*</span></label>
+                                            <select class="form-select form-select-solid" id='selectSalesSpecialist' multiple="multiple" data-control="select2" data-hide-search="false" name="sales_specialist_ids[]">
+                                                <option value=''>Select Sales Specialists</option>
                                             </select>
                                         </div>
                                     </div>
@@ -315,6 +326,15 @@
                         }
                     },
             },
+            'sales_specialist_ids[]':{
+                required: function () {
+                        if($('[name="promotion_scope"]').find('option:selected').val() == 'SS'){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    },
+            },
           },
           messages: {
             title:{
@@ -366,6 +386,7 @@
         $('#product_block').hide();
         $('#territories_block').hide();
         $('#class_block').hide();
+        $('#sales_specialist_block').hide();
 
 
         if($promo_scope == "C"){
@@ -376,6 +397,8 @@
             $('#territories_block').show();
         } else if($promo_scope == "CL"){
             $('#class_block').show();
+        } else if($promo_scope == "SS"){
+            $('#sales_specialist_block').show();
         }
     });
 
@@ -419,6 +442,17 @@
             var initialOption = {
                 id: {{ $data->class_id }},
                 text: '{{ $data->class->name }}',
+                selected: true
+            }
+            $initialOptions.push(initialOption);
+        @endforeach
+    @endif
+
+    @if(isset($edit) && $edit->promotion_scope == 'SS')
+        @foreach ($edit->promotion_data as $data)
+            var initialOption = {
+                id: {{ $data->sales_specialist_id }},
+                text: '{{ $data->sales_specialist->sales_specialist_name }}',
                 selected: true
             }
             $initialOptions.push(initialOption);
@@ -529,6 +563,33 @@
         // minimumInputLength: 1,
         multiple: true,
         @if(isset($edit) && $edit->promotion_scope == 'CL')
+        data: $initialOptions
+        @endif
+    });
+
+    $("#selectSalesSpecialist").select2({
+        ajax: {
+            url: "{{route('promotion.getSalesSpecialist')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Sales Specialists.',
+        // minimumInputLength: 1,
+        multiple: true,
+        @if(isset($edit) && $edit->promotion_scope == 'SS')
         data: $initialOptions
         @endif
     });

@@ -97,6 +97,12 @@
                                         @if($data->promotion_scope == 'P')
                                             <input type="text" class="form-control form-control-solid" value="Products" disabled="disabled">
                                         @endif
+
+                                        @if($data->promotion_scope == 'SS')
+                                            <input type="text" class="form-control form-control-solid" value="Sales Specialists" disabled="disabled">
+                                        @endif
+
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -143,6 +149,11 @@
                                             @if($data->promotion_scope == 'P')
                                                 Products
                                             @endif
+
+                                            @if($data->promotion_scope == 'SS')
+                                                Sales Specialists
+                                            @endif
+
                                             </h1>
                                             <div class="form-group">
                                                 <!--begin::Table container-->

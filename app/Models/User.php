@@ -89,4 +89,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(TerritorySalesSpecialist::class,'user_id','id');
     }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class,'customer_id');
+    }
 }
