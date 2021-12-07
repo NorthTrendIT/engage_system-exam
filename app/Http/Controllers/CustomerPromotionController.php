@@ -80,7 +80,7 @@ class CustomerPromotionController extends Controller
 
                             }elseif($promotion->promotion_scope == "T"){ //Territory 
 
-                                $check = $promotion->promotion_data->firstWhere('territory_id',@Auth::user()->customer->territory_id);
+                                $check = $promotion->promotion_data->firstWhere('territory_id',@Auth::user()->customer->territories->id);
 
                                 if(is_null($check)){
                                     $is_continue = true;
