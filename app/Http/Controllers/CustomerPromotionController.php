@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Models\Promotions;
 use App\Models\PromotionTypes;
+use App\Models\PromotionTypeProduct;
+use App\Models\Product;
 use Validator;
 use DataTables;
 use Auth;
@@ -24,7 +26,7 @@ class CustomerPromotionController extends Controller
             $where = array('is_active' => true);
 
             $now = date("Y-m-d");
-            // $now = "2021-12-24";
+            $now = "2021-12-24";
 
             $promotions = Promotions::where($where)
             						->orderBy('id', 'DESC')
@@ -42,7 +44,11 @@ class CustomerPromotionController extends Controller
             $button = "";
             $last_id = "";
 
-            $last = Promotions::where($where)->where('promotion_start_date','<=',$now)->where('promotion_end_date','>=',$now)->select('id')->first();
+            $last = Promotions::where($where)
+                                ->where('promotion_start_date','<=',$now)
+                                ->where('promotion_end_date','>=',$now)
+                                ->select('id')
+                                ->first();
 
             if (!$promotions->isEmpty()) {
 
@@ -115,4 +121,57 @@ class CustomerPromotionController extends Controller
             return response()->json(['output' => $output, 'button' => $button]);
         }
   	}
+
+    public function show($id)
+    {
+        $data = Promotions::where('is_active',true)->where('id',$id)->firstOrFail();
+
+        return view('customer-promotion.view',compact('data'));
+    }
+
+    public function getAllProductList(Request $request){
+        if ($request->ajax()) {
+            
+            $where = array('promotion_type_id' => $request->promotion_type_id);
+
+            $products = PromotionTypeProduct::where($where)->orderBy('id', 'DESC')->limit(12);
+            
+            if ($request->id > 0) {
+                $products->where('id', '<', $request->id);
+            }
+            
+            $products = $products->get();
+
+            $output = "";
+            $button = "";
+            $last_id = "";
+
+            $last = PromotionTypeProduct::where($where)->select('id')->first();
+
+            if (!$products->isEmpty()) {
+
+                foreach ($products as $value) {
+                    $product = $value->product;
+                    $promotion_type_product = $value;
+
+                    if(!is_null($product)){
+                        $output .= view('product-list.ajax.product',compact('product','promotion_type_product'))->render();
+                    }
+                }
+
+                $last_id = $products->last()->id;
+
+                if ($last_id != $last->id) {
+                    $button = '<a href="javascript:" class="btn btn-primary" data-id="' . $last_id . '" id="view_more_btn">View More Products</a>';
+                }
+
+            } else {
+
+                $button = '';
+
+            }
+
+            return response()->json(['output' => $output, 'button' => $button]);
+        }
+    }
 }

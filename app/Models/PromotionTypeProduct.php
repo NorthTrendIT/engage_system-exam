@@ -19,4 +19,9 @@ class PromotionTypeProduct extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function promotion_type()
+    {
+        return $this->belongsTo(PromotionTypes::class);
+    }
 }
