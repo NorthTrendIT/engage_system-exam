@@ -1,25 +1,29 @@
-<!--begin::Col-->
-<div class="col-md-12 mb-5">
-	<!--begin::Feature post-->
-	<div class="h-100 d-flex flex-column justify-content-between pe-lg-6 mb-lg-0 mb-10" style="border: 1px solid #c7c4c4;padding: 12px;border-radius: 10px;">
-		<!--begin::Body-->
-		<div class="mb-0">
-			<!--begin::Text-->
-			<div class="fw-bold fs-5 text-gray-600 text-dark mt-4">
-				<h2>
-					{!! @$promotion->title !!}
-				</h2>
+<div class="col-md-4 col-xl-4 col-sm-6 product-grid-outer">
+  <div class="product-grid">
+  	<div class="p-2">
+  		<a href="" class="btn btn-light-success">Interested</a>
+  		<a href="" class="btn btn-light-danger">Not Interested</a>
+  	</div>
 
-				<p class="mt-4">Type : <b> {!! @$promotion->promotion_type->title !!}</b> <br></p>
+    <div class="product-image">
+      	<a href="{{ route('customer-promotion.show',@$promotion->id) }}" class="image">
 
-				<p class="mt-4">{!! @$promotion->description !!}</p>
+          @if($promotion->promo_image && get_valid_file_url('sitebucket/promotion',$promotion->promo_image))
+            <img class="pic-1" src="{{ get_valid_file_url('sitebucket/promotion',$promotion->promo_image) }}">
+          @else
+           <img class="pic-1" src="{{ asset('assets') }}/assets/media/img-1.jpg">
+          @endif
+      	</a>
+    </div>
+           
+    <div class="product-content">
+                  
+      	<h3 class="title">
+        	<a href="{{ route('customer-promotion.show',@$promotion->id) }}">{{ @$promotion->title ?? "-" }}</a>
+      	</h3>
 
-				<span class="text-muted">Duration: {{ date('M d, Y',strtotime(@$promotion->promotion_start_date)) }} to {{ date('M d, Y',strtotime(@$promotion->promotion_end_date)) }}</span>
-			</div>
-			<!--end::Text-->
-		</div>
-		<!--end::Body-->
-	</div>
-	<!--end::Feature post-->
+      	<a href="{{ route('customer-promotion.show',@$promotion->id) }}" class="btn btn-success">Learn more</a>
+    </div>
+
+  </div>
 </div>
-<!--end::Col-->
