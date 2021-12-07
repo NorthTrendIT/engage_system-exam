@@ -102,14 +102,14 @@
                   
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Fixed Quantity<span class="asterisk">*</span></label>
+                      <label>Fixed Quantity</label>
                       <input type="number" class="form-control form-control-solid" placeholder="Enter fixed quantity" name="fixed_quantity" @if(isset($edit)) value="{{ $edit->fixed_quantity }}" @endif>
                     </div>
                   </div>
 
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Number Of Delivery<span class="asterisk">*</span></label>
+                      <label>Number Of Delivery</label>
                       <input type="number" class="form-control form-control-solid" placeholder="Enter number of delivery" name="number_of_delivery" @if(isset($edit)) value="{{ $edit->number_of_delivery }}" @endif>
                     </div>
                   </div>
@@ -465,9 +465,8 @@
               digits: true
             },
             number_of_delivery:{
-              min:0,
+              min:1,
               digits: true,
-              required:true,
             },
           },
           messages: {
