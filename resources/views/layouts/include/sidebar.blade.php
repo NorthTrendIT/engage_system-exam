@@ -376,8 +376,9 @@
             </div>
             @endif
 
-            {{-- <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer-promotion.index','customer-promotion.edit','customer-promotion.show'])) ? 'active' : '' }}" href="{{ route('customer-promotion.index') }}">
+            @if((isset($access['view-my-promotions-list']) && $access['view-my-promotions-list'] == 1))
+            <div class="menu-item">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer-promotion.index','customer-promotion.show'])) ? 'active' : '' }}" href="{{ route('customer-promotion.index') }}">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
@@ -390,9 +391,10 @@
                      </span>
                      <!--end::Svg Icon-->
                   </span>
-                  <span class="menu-title">My Promotion </span>
+                  <span class="menu-title">My Promotions </span>
                </a>
-            </div> --}}
+            </div>
+            @endif
 
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['help-desk.index','help-desk.edit','help-desk.show'])) ? 'active' : '' }}" href="{{ route('help-desk.index') }}">

@@ -456,6 +456,23 @@
                         </li>
                         @endif
 
+                        {{-- my-promotions --}}
+                        @if(@$modules['my-promotions']['id'])
+                        <li>
+                          <i class="fa fa-plus"></i>
+                          <label>
+                            <input data-id="{{ @$modules['my-promotions']['id'] }}" type="checkbox"  name="modules[{{ @$modules['my-promotions']['id'] }}]"  /> {{ @$modules['my-promotions']['title'] }}
+                          </label>
+                          <ul>
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['view-my-promotions']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['my-promotions']['id'] }}]" /> {{ @$modules['view-my-promotions']['title'] }}
+                              </label>
+                            </li>
+                          </ul>
+                        </li>
+                        @endif
+
                       </ul>
                     </div>
 
