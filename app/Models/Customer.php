@@ -39,6 +39,7 @@ class Customer extends Model
         'u_rgn',
         'class_id',
         'price_list_num',
+        'territory',
     ];
 
     public function bp_addresses()
@@ -53,5 +54,10 @@ class Customer extends Model
 
     public function sales_specialist(){
         return $this->hasMany(CustomersSalesSpecialist::class, 'customer_id');
+    }
+
+    public function territories()
+    {
+        return $this->belongsTo(Territory::class,'territory','territory_id');
     }
 }
