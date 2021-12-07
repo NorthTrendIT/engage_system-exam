@@ -24,6 +24,11 @@ class Promotions extends Model
 
     public function promotion_data()
     {
-        return $this->hasMany(PromotionFor::class, 'promotion_id');
+      return $this->hasMany(PromotionFor::class, 'promotion_id');
+    }
+
+    public function promotion_type()
+    {
+        return $this->belongsTo(PromotionTypes::class,'promotion_type_id');
     }
 }

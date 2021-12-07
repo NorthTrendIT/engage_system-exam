@@ -49,6 +49,7 @@
                     <option value="C">Customers</option>
                     <option value="CL">Class</option>
                     <option value="T">Territories</option>
+                    <option value="SS">Sales Specialists</option>
                   </select>
                 </div>
 
