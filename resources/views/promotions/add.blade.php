@@ -374,6 +374,9 @@
             $('#scope_block').hide();
             $('#customer_block').hide();
             $('#product_block').hide();
+            $('#territories_block').hide();
+            $('#class_block').hide();
+            $('#sales_specialist_block').hide();
         } else {
             $('body #scope_block').show();
         }
