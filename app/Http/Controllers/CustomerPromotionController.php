@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Promotions;
 use App\Models\PromotionTypes;
 use App\Models\PromotionTypeProduct;
+use App\Models\PromotionInterest;
 use App\Models\Product;
 use Validator;
 use DataTables;
@@ -26,7 +27,7 @@ class CustomerPromotionController extends Controller
             $where = array('is_active' => true);
 
             $now = date("Y-m-d");
-            $now = "2021-12-24";
+            // $now = "2021-12-24";
 
             $promotions = Promotions::where($where)
             						->orderBy('id', 'DESC')
@@ -99,6 +100,13 @@ class CustomerPromotionController extends Controller
             			}
                 	}
 
+                    // Check into promotion interests
+                    $interest = @$promotion->promotion_interests->firstWhere('user_id' , Auth::id());
+
+                    if(isset($interest->is_interested) && $interest->is_interested == 0){
+                        $is_continue = true;
+                    }
+
                 	if($is_continue){
                 		continue;
                 	}
@@ -155,7 +163,7 @@ class CustomerPromotionController extends Controller
                     $promotion_type_product = $value;
 
                     if(!is_null($product)){
-                        $output .= view('product-list.ajax.product',compact('product','promotion_type_product'))->render();
+                        $output .= view('customer-promotion.ajax.product',compact('product','promotion_type_product'))->render();
                     }
                 }
 
@@ -173,5 +181,40 @@ class CustomerPromotionController extends Controller
 
             return response()->json(['output' => $output, 'button' => $button]);
         }
+    }
+
+    public function storeInterest(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'promotion_id' => 'required|nullable|exists:promotions,id',
+                    'is_interested' => 'nullable|required',
+                );
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+            $input['user_id'] = Auth::id();
+
+            $obj = PromotionInterest::firstOrNew([
+                                        'promotion_id' => $input['promotion_id'],
+                                        'user_id' => $input['user_id'],
+                                    ]);
+
+            if($input['is_interested'] == true){
+                $message = "Promotion interest added successfully.";
+            }else{
+                $message = "Promotion interest removed successfully.";
+            }
+
+            $obj->fill($input)->save();
+
+            $response = ['status'=>true,'message'=>$message];
+        }
+
+        return $response;
     }
 }

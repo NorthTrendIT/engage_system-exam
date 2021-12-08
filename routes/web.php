@@ -105,6 +105,7 @@ Route::middleware(['auth'])->group(function(){
         Route::post('promotion/get-territories/','App\Http\Controllers\PromotionsController@getTerritories')->name('promotion.getTerritories');
         Route::post('promotion/get-classes/','App\Http\Controllers\PromotionsController@getClasses')->name('promotion.getClasses');
         Route::post('promotion/get-sales-specialist/','App\Http\Controllers\PromotionsController@getSalesSpecialist')->name('promotion.getSalesSpecialist');
+        Route::post('promotion/get-promotion-interest-data/','App\Http\Controllers\PromotionsController@getPromotionInterestData')->name('promotion.get-promotion-interest-data');
 
         Route::resource('location','App\Http\Controllers\LocationController');
 	    Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');
@@ -153,7 +154,8 @@ Route::middleware(['auth'])->group(function(){
         Route::get('customer-promotion/', 'App\Http\Controllers\CustomerPromotionController@index')->name('customer-promotion.index')/*->middleware('not-super-admin')*/;
         Route::post('customer-promotion/get-all', 'App\Http\Controllers\CustomerPromotionController@getAll')->name('customer-promotion.get-all');
         Route::get('customer-promotion/show/{id}', 'App\Http\Controllers\CustomerPromotionController@show')->name('customer-promotion.show');
-         Route::post('customer-promotion/get-all-product-list', 'App\Http\Controllers\CustomerPromotionController@getAllProductList')->name('customer-promotion.get-all-product-list');
+        Route::post('customer-promotion/get-all-product-list', 'App\Http\Controllers\CustomerPromotionController@getAllProductList')->name('customer-promotion.get-all-product-list');
+        Route::post('customer-promotion/store-interest', 'App\Http\Controllers\CustomerPromotionController@storeInterest')->name('customer-promotion.store-interest');
 
 
     });

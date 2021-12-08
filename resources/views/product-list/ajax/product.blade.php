@@ -20,16 +20,6 @@
 
         @endif
 
-        @if(isset($promotion_type_product))
-          <span class="product-discount-label">-
-            @if(@$promotion_type_product->promotion_type->scope == "P")
-            {{ @$promotion_type_product->promotion_type->percentage }}
-            @elseif(@$promotion_type_product->promotion_type->scope == "R")
-            {{ @$promotion_type_product->discount_percentage }}
-            @endif%
-          </span>
-        @endif
-
       </a>
       <ul class="product-links">
         <li>

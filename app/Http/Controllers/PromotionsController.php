@@ -8,6 +8,7 @@ use App\Models\PromotionTypes;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\PromotionFor;
+use App\Models\PromotionInterest;
 use App\Models\Territory;
 use App\Models\Classes;
 use App\Models\User;
@@ -499,5 +500,20 @@ class PromotionsController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    public function getPromotionInterestData(Request $request){
+
+        $data = PromotionInterest::where('promotion_id', $request->id)->latest()->get();
+
+        return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('customer', function($row) {
+                    return @$row->customer->sales_specialist_name ?? "-";
+                })
+                ->addColumn('is_interested', function($row) {
+                    return $row->is_interested ? "Yes" : "No";
+                })
+                ->make(true);
     }
 }

@@ -126,6 +126,7 @@
                             </div>
 
 
+                            @if($data->promotion_for != "All")
                             <div class="row mb-5 mt-5">
                                 <div class="card card-xl-stretch mb-5 mb-xl-8">
                                     <div class="card-header pt-5">
@@ -165,7 +166,6 @@
                                                             <tr>
                                                                 <th>No.</th>
                                                                 <th>Name</th>
-                                                                <th>Is Interested</th>
                                                             </tr>
                                                         </thead>
                                                         <!--end::Table head-->
@@ -182,11 +182,57 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
 
                         </div>
                     </div>
                 </div>
             </div>
+
+
+            <div class="row gy-5 g-xl-8">
+                <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+                    <div class="card card-xl-stretch mb-5 mb-xl-8">
+                        <div class="card-header border-0  pt-5">
+                            <h1 class="text-dark fw-bolder fs-3 my-1">Customer's Interest</h1>
+                        </div>
+
+                        <div class="card-body">
+                          
+                          <div class="row mb-5">
+                            <div class="col-md-12">
+                              <div class="form-group">
+                                <!--begin::Table container-->
+                                <div class="table-responsive">
+                                   <!--begin::Table-->
+                                   <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTableInterested">
+                                      <!--begin::Table head-->
+                                      <thead>
+                                        <tr>
+                                          <th>Customer</th>
+                                          <th>Is Interested ?</th>
+                                        </tr>
+                                      </thead>
+                                      <!--end::Table head-->
+                                      <!--begin::Table body-->
+                                      <tbody>
+
+                                      </tbody>
+                                      <!--end::Table body-->
+                                   </table>
+                                   <!--end::Table-->
+                                </div>
+                                <!--end::Table container-->
+
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -200,10 +246,52 @@
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script>
 $(document).ready(function() {
-    render_table();
+    @if($data->promotion_for != "All")
+    
+        render_table();
 
-    function render_table(){
-      var table = $("#myTable");
+        function render_table(){
+          var table = $("#myTable");
+          table.DataTable().destroy();
+
+          table.DataTable({
+              processing: true,
+              serverSide: true,
+              scrollX: true,
+              order: [],
+              ajax: {
+                  'url': "{{ route('promotion.get-promotion-data') }}",
+                  'type': 'POST',
+                  headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                  },
+                  data:{
+                    id : {{ $data->id }},
+                    scope : "{{ $data->promotion_scope }}",
+                  }
+              },
+              columns: [
+                  {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+                  {data: 'name', name: 'name', orderable: false, searchable: false},
+              ],
+              drawCallback:function(){
+                  $(function () {
+                    $('[data-toggle="tooltip"]').tooltip()
+                    $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+                  })
+              },
+              initComplete: function () {
+              }
+            });
+        }
+
+    @endif
+
+
+    render_interested_table();
+
+    function render_interested_table(){
+      var table = $("#myTableInterested");
       table.DataTable().destroy();
 
       table.DataTable({
@@ -212,20 +300,18 @@ $(document).ready(function() {
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('promotion.get-promotion-data') }}",
+              'url': "{{ route('promotion.get-promotion-interest-data') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
               data:{
                 id : {{ $data->id }},
-                scope : "{{ $data->promotion_scope }}",
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-              {data: 'name', name: 'name'},
-              {data: 'is_interested', name: 'is_interested'},
+              {data: 'customer', name: 'customer', orderable: false, searchable: false},
+              {data: 'is_interested', name: 'is_interested', orderable: false, searchable: false},
           ],
           drawCallback:function(){
               $(function () {

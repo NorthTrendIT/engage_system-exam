@@ -31,4 +31,9 @@ class Promotions extends Model
     {
         return $this->belongsTo(PromotionTypes::class,'promotion_type_id');
     }
+
+    public function promotion_interests()
+    {
+      return $this->hasMany(PromotionInterest::class, 'promotion_id');
+    }
 }
