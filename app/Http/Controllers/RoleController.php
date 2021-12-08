@@ -219,7 +219,7 @@ class RoleController extends Controller
                                     <i class="fa fa-pencil"></i>
                                   </a>';
 
-                                if(!in_array($row->id, [2])){
+                                if(!in_array($row->id, [2,4])){
                                   $btn .= ' <a href="javascript:void(0)" data-url="' . route('role.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
                                       <i class="fa fa-trash"></i>
                                     </a>';
