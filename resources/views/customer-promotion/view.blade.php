@@ -96,7 +96,7 @@
         </div>
       </div>
 
-      <div class="row gy-5 g-xl-8">
+      <div class="row gy-5 g-xl-8 customer-product-list">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
