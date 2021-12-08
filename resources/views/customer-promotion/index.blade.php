@@ -91,6 +91,52 @@
       $id = $(this).attr('data-id');
       getCommentList($id);
     });
+
+    $(document).on('click', '.btn_interest', function(event) {
+      event.preventDefault();
+      $id = $(this).attr('data-id');
+      $value = $(this).attr('data-value');
+      $this = $(this);
+
+      Swal.fire({
+        title: 'Are you sure want to do this ?',
+        //text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('customer-promotion.store-interest') }}',
+            method: "POST",
+            data: {
+                    promotion_id:$id,
+                    is_interested:$value,
+                    _token:'{{ csrf_token() }}'
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+
+              if($value == 1){
+                $($this).remove();
+              }else{
+                $($this).closest('.product-grid-outer').remove();
+              }
+
+              toast_success(result.message);
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
   
   });
 

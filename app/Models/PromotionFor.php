@@ -23,7 +23,7 @@ class PromotionFor extends Model
       ];
 
     public function promotion(){
-        return $this->belongsTo(Promotion::class);
+        return $this->belongsTo(Promotions::class);
     }
 
     public function customer(){

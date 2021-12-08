@@ -1,8 +1,20 @@
 <div class="col-md-4 col-xl-4 col-sm-6 product-grid-outer">
   <div class="product-grid">
   	<div class="p-2">
-  		<a href="" class="btn btn-light-success">Interested</a>
-  		<a href="" class="btn btn-light-danger">Not Interested</a>
+
+      @php
+        
+        $interest = @$promotion->promotion_interests->firstWhere('user_id' , Auth::id());
+
+      @endphp
+
+      @if(@$interest->is_interested == 1)
+  		  <a href="javascript:" data-value="0" data-id="{{ @$promotion->id }}" class="btn btn-light-danger btn_interest">Not Interested</a>
+      @else
+  		  <a href="javascript:" data-value="1" data-id="{{ @$promotion->id }}" class="btn btn-light-success btn_interest">Interested</a>
+        <a href="javascript:" data-value="0" data-id="{{ @$promotion->id }}" class="btn btn-light-danger btn_interest">Not Interested</a>
+      @endif
+
   	</div>
 
     <div class="product-image">
