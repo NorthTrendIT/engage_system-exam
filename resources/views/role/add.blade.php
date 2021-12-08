@@ -466,7 +466,7 @@
                           <ul>
                             <li>
                               <label>
-                                <input data-id="{{ @$modules['view-my-promotions']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['my-promotions']['id'] }}]" /> {{ @$modules['view-my-promotions']['title'] }}
+                                <input data-id="{{ @$modules['view-my-promotions']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-my-promotions']['id'] }}]" /> {{ @$modules['view-my-promotions']['title'] }}
                               </label>
                             </li>
                           </ul>
