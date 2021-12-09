@@ -1,7 +1,7 @@
 <div class="col-md-4 col-xl-4 col-sm-6 product-grid-outer">
   <div class="product-grid">
     <div class="product-image">
-      <a href="" class="image">
+      <a href="{{ route('customer-promotion.product-detail',['id' => @$promotion_type_product->id, 'promotion_id' => $promotion_id]) }}" target="_blank" class="image">
         @if(@$product->product_images && count(@$product->product_images))
           
           @php
@@ -56,7 +56,7 @@
       </ul>
                   
       <h3 class="title">
-        <a href="">{{ @$product->item_name ?? "-" }}</a>
+        <a href="{{ route('customer-promotion.product-detail',['id' => @$promotion_type_product->id, 'promotion_id' => $promotion_id]) }}" target="_blank">{{ @$product->item_name ?? "-" }}</a>
       </h3>
       
       @if(@$discount_percentage)
@@ -71,7 +71,7 @@
         <div class="price">₱ {{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num) }}</div>
       @endif
 
-      <a class="add-to-cart" href="">Claim Now</a>
+      <a class="add-to-cart" href="{{ route('customer-promotion.product-detail',['id' => @$promotion_type_product->id, 'promotion_id' => $promotion_id]) }}" target="_blank">View more</a>
     </div>
   </div>
 </div>
