@@ -150,28 +150,37 @@ Route::middleware(['auth'])->group(function(){
         Route::post('territory-sales-specialist/get-territory/','App\Http\Controllers\TerritorySalesSpecialistController@getTerritory')->name('territory-sales-specialist.get-territory');
         Route::post('territory-sales-specialist/get-sales-specialist/','App\Http\Controllers\TerritorySalesSpecialistController@getSalesSpecialist')->name('territory-sales-specialist.get-sales-specialist');
 
+        // Local Orders
+        Route::resource('sales-specialist-orders','App\Http\Controllers\LocalOrderController', [
+            'names' => [
+                'index' => 'sales-specialist-orders.index',
+                'create' => 'sales-specialist-orders.create',
+                'store' => 'sales-specialist-orders.store',
+                'edit' => 'sales-specialist-orders.edit',
+            ]
+        ]);
+        Route::post('sales-specialist-orders/get-all', 'App\Http\Controllers\LocalOrderController@getAll')->name('sales-specialist-orders.get-all');
+        Route::post('sales-specialist-orders/get-customers/','App\Http\Controllers\LocalOrderController@getCustomers')->name('sales-specialist-orders.getCustomers');
+        Route::post('sales-specialist-orders/get-products/','App\Http\Controllers\LocalOrderController@getProducts')->name('sales-specialist-orders.getProducts');
+        Route::post('sales-specialist-orders/get-address/','App\Http\Controllers\LocalOrderController@getAddress')->name('sales-specialist-orders.getAddress');
 
         Route::get('customer-promotion/', 'App\Http\Controllers\CustomerPromotionController@index')->name('customer-promotion.index')/*->middleware('not-super-admin')*/;
         Route::post('customer-promotion/get-all', 'App\Http\Controllers\CustomerPromotionController@getAll')->name('customer-promotion.get-all');
         Route::get('customer-promotion/show/{id}', 'App\Http\Controllers\CustomerPromotionController@show')->name('customer-promotion.show');
         Route::post('customer-promotion/get-all-product-list', 'App\Http\Controllers\CustomerPromotionController@getAllProductList')->name('customer-promotion.get-all-product-list');
         Route::post('customer-promotion/store-interest', 'App\Http\Controllers\CustomerPromotionController@storeInterest')->name('customer-promotion.store-interest');
-
         Route::get('customer-promotion/product-detail/{id}/{promotion_id}', 'App\Http\Controllers\CustomerPromotionController@productDetail')->name('customer-promotion.product-detail');
-
-
         Route::get('customer-promotion/order/{id}', 'App\Http\Controllers\CustomerPromotionController@orderIndex')->name('customer-promotion.order.index');
 
-
     });
-    
+
     // Pramotion Type
     Route::resource('promotion-type','App\Http\Controllers\PromotionTypeController')->middleware('super-admin');
     Route::post('promotion-type/get-all', 'App\Http\Controllers\PromotionTypeController@getAll')->name('promotion-type.get-all')->middleware('super-admin');
-    Route::post('promotion-type/status/{id}', 'App\Http\Controllers\PromotionTypeController@updateStatus')->name('promotion-type.status')->middleware('super-admin');  
+    Route::post('promotion-type/status/{id}', 'App\Http\Controllers\PromotionTypeController@updateStatus')->name('promotion-type.status')->middleware('super-admin');
     Route::post('promotion-type/get-products/','App\Http\Controllers\PromotionTypeController@getProducts')->name('promotion-type.get-products')->middleware('super-admin');
 
-	
+
 	Route::resource('help-desk','App\Http\Controllers\HelpDeskController');
     Route::post('help-desk/get-all', 'App\Http\Controllers\HelpDeskController@getAll')->name('help-desk.get-all');
     Route::post('help-desk/status', 'App\Http\Controllers\HelpDeskController@updateStatus')->name('help-desk.status');
