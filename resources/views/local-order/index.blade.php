@@ -55,11 +55,8 @@
               <div class="row mb-5 mt-5">
                 <div class="col-md-12">
                   <div class="form-group">
-                    <!--begin::Table container-->
                     <div class="table-responsive">
-                       <!--begin::Table-->
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
-                          <!--begin::Table head-->
                           <thead>
                             <tr>
                               <th>Customer Name</th>
@@ -67,17 +64,11 @@
                               <th>Due Date</th>
                             </tr>
                           </thead>
-                          <!--end::Table head-->
-                          <!--begin::Table body-->
+
                           <tbody>
-
                           </tbody>
-                          <!--end::Table body-->
                        </table>
-                       <!--end::Table-->
                     </div>
-                    <!--end::Table container-->
-
                   </div>
 
                 </div>
