@@ -145,7 +145,21 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('territory-sales-specialist/get-all', 'App\Http\Controllers\TerritorySalesSpecialistController@getAll')->name('territory-sales-specialist.get-all');
         Route::post('territory-sales-specialist/get-territory/','App\Http\Controllers\TerritorySalesSpecialistController@getTerritory')->name('territory-sales-specialist.get-territory');
         Route::post('territory-sales-specialist/get-sales-specialist/','App\Http\Controllers\TerritorySalesSpecialistController@getSalesSpecialist')->name('territory-sales-specialist.get-sales-specialist');
-        
+
+        // Local Orders
+        Route::resource('sales-specialist-orders','App\Http\Controllers\LocalOrderController', [
+            'names' => [
+                'index' => 'sales-specialist-orders.index',
+                'create' => 'sales-specialist-orders.create',
+                'store' => 'sales-specialist-orders.store',
+                'edit' => 'sales-specialist-orders.edit',
+            ]
+        ]);
+        Route::post('sales-specialist-orders/get-all', 'App\Http\Controllers\LocalOrderController@getAll')->name('sales-specialist-orders.get-all');
+        Route::post('sales-specialist-orders/get-customers/','App\Http\Controllers\LocalOrderController@getCustomers')->name('sales-specialist-orders.getCustomers');
+        Route::post('sales-specialist-orders/get-products/','App\Http\Controllers\LocalOrderController@getProducts')->name('sales-specialist-orders.getProducts');
+        Route::post('sales-specialist-orders/get-address/','App\Http\Controllers\LocalOrderController@getAddress')->name('sales-specialist-orders.getAddress');
+
     });
 
 });
