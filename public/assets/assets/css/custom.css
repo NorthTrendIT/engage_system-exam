@@ -395,3 +395,15 @@ body {overflow-x: hidden; background-color: #f5f8fa;}
 .hummingbird-treeview .fa {
     color: black;
 }
+
+
+.customer-product-list .product-grid .add-to-cart {
+    position: unset;
+    display: inline-block;
+    transform: unset;
+    opacity: unset;
+} 
+
+.customer-product-list .product-grid .price {
+    opacity: unset;
+} 

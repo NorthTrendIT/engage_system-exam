@@ -11,6 +11,8 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\Customer;
 use App\Models\Classes;
 use App\Models\CustomerBpAddress;
+use App\Models\User;
+use Hash;
 
 class StoreCustomers implements ShouldQueue
 {
@@ -80,6 +82,7 @@ class StoreCustomers implements ShouldQueue
                                 'u_class' => @$value['U_CLASS'],
                                 'u_rgn' => @$value['U_RGN'],
                                 'price_list_num' => @$value['PriceListNum'],
+                                'territory' => @$value['Territory'],
                                 
                                 'class_id' => !is_null(@$value['U_CLASS']) ? @$obj_class->id : NULL,
                             );
@@ -92,46 +95,71 @@ class StoreCustomers implements ShouldQueue
                                     );
 
                 // Store BPAddresses details
-                $bp_orders = []; 
-                if(isset($value['BPAddresses']) && @$obj->id){
+                if(@$obj->id){
 
-                    foreach ($value['BPAddresses'] as $bp) {
-                        $insert = array(
-                                'bp_code' => @$bp['BPCode'],
-                                'order' => @$bp['RowNum'],
-                                'customer_id' => $obj->id,
-                                'address' => @$bp['AddressName'],
-                                'street' => @$bp['Street'],
-                                'zip_code' => @$bp['ZipCode'],
-                                'city' => @$bp['City'],
-                                'country' => @$bp['Country'],
-                                'state' => @$bp['State'],
-                                'federal_tax_id' => @$bp['FederalTaxID'],
-                                'tax_code' => @$bp['TaxCode'],
-                                'address_type' => @$bp['AddressType'],
-                                'created_date' => @$bp['CreateDate']." ".@$bp['CreateTime'],
-                            );
+                    $bp_orders = []; 
+                    if(isset($value['BPAddresses'])){
 
-                        array_push($bp_orders, @$bp['RowNum']);
+                        foreach ($value['BPAddresses'] as $bp) {
+                            $insert = array(
+                                    'bp_code' => @$bp['BPCode'],
+                                    'order' => @$bp['RowNum'],
+                                    'customer_id' => $obj->id,
+                                    'address' => @$bp['AddressName'],
+                                    'street' => @$bp['Street'],
+                                    'zip_code' => @$bp['ZipCode'],
+                                    'city' => @$bp['City'],
+                                    'country' => @$bp['Country'],
+                                    'state' => @$bp['State'],
+                                    'federal_tax_id' => @$bp['FederalTaxID'],
+                                    'tax_code' => @$bp['TaxCode'],
+                                    'address_type' => @$bp['AddressType'],
+                                    'created_date' => @$bp['CreateDate']." ".@$bp['CreateTime'],
+                                );
 
-                        $bp_obj = CustomerBpAddress::updateOrCreate(
-                                            [
-                                                'order' => @$bp['RowNum'],
-                                                'customer_id' => $obj->id,
-                                            ],
-                                            $insert
+                            array_push($bp_orders, @$bp['RowNum']);
+
+                            $bp_obj = CustomerBpAddress::updateOrCreate(
+                                                [
+                                                    'order' => @$bp['RowNum'],
+                                                    'customer_id' => $obj->id,
+                                                ],
+                                                $insert
+                                            );
+                        }
+
+                        if(empty($value['BPAddresses'])){
+                            $removeBpAddress = CustomerBpAddress::where('customer_id',$obj->id);
+                            $removeBpAddress->delete();
+                        }elseif(!empty($bp_orders)){
+                            $removeBpAddress = CustomerBpAddress::where('customer_id',$obj->id);
+                            $removeBpAddress->whereNotIn('order',$bp_orders);
+                            $removeBpAddress->delete();
+                        }
+                    }
+
+
+                    // Store Customer Records in users table
+                    $check_customer = User::where('customer_id',$obj->id)->first();
+                    if(is_null($check_customer)){
+
+                        $name = explode(" ", $obj->card_name, 2);
+
+                        $insert_user =  array(
+                                            'role_id' => 4,
+                                            'customer_id' => $obj->id,
+                                            'sales_specialist_name' => @$obj->card_name,
+                                            'first_name' => !empty($name[0]) ? $name[0] : null,
+                                            'last_name' => !empty($name[1]) ? $name[1] : null,
+                                            'is_active' => $obj->is_active,
+                                            'password' => Hash::make(@$obj->card_code),
+                                            'email' => strtolower(@$obj->card_code).'@mailinator.com',
+                                            'first_login' => true,
                                         );
-                    }
 
-                    if(empty($value['BPAddresses'])){
-                        $removeBpAddress = CustomerBpAddress::where('customer_id',$obj->id);
-                        $removeBpAddress->delete();
-                    }elseif(!empty($bp_orders)){
-                        $removeBpAddress = CustomerBpAddress::where('customer_id',$obj->id);
-                        $removeBpAddress->whereNotIn('order',$bp_orders);
-                        $removeBpAddress->delete();
-                    }
+                        User::create($insert_user);
 
+                    }
                 }
             }
 

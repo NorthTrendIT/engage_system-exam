@@ -50,7 +50,7 @@ class TerritorySalesSpecialistController extends Controller
 
         $message = array(
                         'territory_id.required' => 'Please select territory.',
-                        'sales_specialist_id.exists' => 'The selected sales specialist is already used.'
+                        'sales_specialist_id.exists' => 'The selected sales specialist is not a valid.'
                     );
 
         $validator = Validator::make($input, $rules, $message);

@@ -40,7 +40,7 @@ function get_user_role_module_access($role_id){
     foreach ($role_module_access as $value) {
 
         if($value->module->slug){
-            $access[$value->module->slug] = $value->toArray();
+            $access[$value->module->slug] = $value->access;
         }
     }
 
@@ -60,6 +60,10 @@ function userrole(){
 	return @Auth::user()->role_id;
 }
 
+function userdepartment(){
+    return @Auth::user()->department_id;
+}
+
 function get_modules(){
 
     $result = array();
@@ -73,4 +77,32 @@ function get_modules(){
     }
 
     return $result;
+}
+
+function get_product_customer_price($item_prices,$number, $discount = false)
+{
+    if(is_null($number)){
+        $number = 1;
+    }
+    
+    $item_prices = json_decode($item_prices,true);
+    if(count($item_prices) > 0){
+
+        $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+
+        $price = $prices[$number]['Price'] ?? 0;
+
+        if($discount){
+
+            $price = number_format($price - ( ( $price * $discount ) / 100 ),2);
+
+            if($price < 0){
+                $price = 0;
+            }
+        }
+
+        return $price;
+    }
+
+    return 0;
 }

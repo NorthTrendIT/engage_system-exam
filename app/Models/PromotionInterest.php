@@ -11,7 +11,7 @@ class PromotionInterest extends Model
 
     protected $fillable = [
         'promotion_id',
-        'customer_id',
+        'user_id',
         'is_interested',
       ];
 }

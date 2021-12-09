@@ -19,6 +19,7 @@
           <img class="pic-1" src="{{ asset('assets') }}/assets/media/img-1.jpg">
 
         @endif
+
       </a>
       <ul class="product-links">
         <li>

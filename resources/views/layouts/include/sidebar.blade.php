@@ -176,7 +176,7 @@
             </div>
             @endif
 
-            @if(Auth::user()->role_id == 1 || ( (isset($access['location']) && $access['location']['view_access'] == 1) || (isset($access['department']) && $access['department']['view_access'] == 1) || (isset($access['user']) && $access['user']['view_access'] == 1)))
+            @if(Auth::user()->role_id == 1 || ( (isset($access['location']) && $access['location']['view_access'] == 1) || (isset($access['department']) && $access['department'][            @if(Auth::user()->role_id == 1 || ( (isset($access['view-location']) && $access['view-location'] == 1) || (isset($access['view-department']) && $access['view-department'] == 1) || (isset($access['view-user']) && $access['view-user'] == 1)))
             <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['location.index','location.create','location.edit','role.index','role.create','role.edit','department.index','department.create','department.edit','user.index','user.create','user.edit','user.show','organisation.index','role.chart','department.show', 'territory.index','territory-sales-specialist.index','territory-sales-specialist.create','territory-sales-specialist.edit'])) ? 'hover show' : '' }}">
 
                <span class="menu-link">
@@ -317,7 +317,8 @@
             @endif
 
             @if(Auth::user()->role_id == 1)
-            {{-- <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['productfeatures.index','productfeatures.create','productfeatures.edit','productbenefits.index','productbenefits.create','productbenefits.edit','productsellsheets.index','productsellsheets.create','productsellsheets.edit'])) ? 'hover show' : '' }}">
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['promotion-type.index','promotion-type.create','promotion-type.edit','promotion-type.show','promotion.index','promotion.create','promotion.edit','promotion.show'])) ? 'hover show' : '' }}">
+
                <span class="menu-link">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/layouts/lay010.svg-->
@@ -329,41 +330,35 @@
                      </span>
                      <!--end::Svg Icon-->
                   </span>
-                  <span class="menu-title">Product Additional Info</span>
+                  <span class="menu-title">Promotion Management</span>
                   <span class="menu-arrow"></span>
                </span>
                <div class="menu-sub menu-sub-accordion">
                   <div class="menu-item">
-                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['productfeatures.index','productfeatures.create','productfeatures.edit'])) ? 'active' : '' }}" href="{{ route('productfeatures.index') }}">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['promotion-type.index','promotion-type.create','promotion-type.edit','promotion-type.show'])) ? 'active' : '' }}" href="{{ route('promotion-type.index') }}" >
                         <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                         </span>
-                        <span class="menu-title">Features</span>
+                        <span class="menu-title">Promotion Types</span>
                      </a>
                   </div>
+
                   <div class="menu-item">
-                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['productbenefits.index','productbenefits.create','productbenefits.edit'])) ? 'active' : '' }}" href="{{ route('productbenefits.index') }}">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['promotion.index','promotion.create','promotion.edit','promotion.show'])) ? 'active' : '' }}" href="{{ route('promotion.index') }}">
                         <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                         </span>
-                        <span class="menu-title">Advantages &amp; Benefits</span>
+                        <span class="menu-title">Promotions</span>
                      </a>
                   </div>
-                  <div class="menu-item">
-                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['productsellsheets.index','productsellsheets.create','productsellsheets.edit'])) ? 'active' : '' }}" href="{{ route('productsellsheets.index') }}">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Sell Sheets</span>
-                     </a>
-                  </div>
+
                </div>
-            </div> --}}
+            </div>
             @endif
 
             @if(Auth::user()->role_id == 1)
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['promotion.index'])) ? 'active' : '' }}" href="{{ route('promotion.index') }}">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['activitylog.index'])) ? 'active' : '' }}" href="{{ route('activitylog.index') }}">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
@@ -376,7 +371,27 @@
                      </span>
                      <!--end::Svg Icon-->
                   </span>
-                  <span class="menu-title">Promotions</span>
+                  <span class="menu-title">Activity Log</span>
+               </a>
+            </div>
+            @endif
+
+            @if((isset($access['view-my-promotions']) && $access['view-my-promotions'] == 1))
+            <div class="menu-item">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer-promotion.index','customer-promotion.show'])) ? 'active' : '' }}" href="{{ route('customer-promotion.index') }}">
+                  <span class="menu-icon">
+                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
+                     <span class="svg-icon svg-icon-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
+                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
+                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
+                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
+                        </svg>
+                     </span>
+                     <!--end::Svg Icon-->
+                  </span>
+                  <span class="menu-title">My Promotions </span>
                </a>
             </div>
             @endif
@@ -401,9 +416,8 @@
             </div>
             @endif
 
-            @if(Auth::user()->role_id == 1)
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['activitylog.index'])) ? 'active' : '' }}" href="{{ route('activitylog.index') }}">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['help-desk.index','help-desk.edit','help-desk.show'])) ? 'active' : '' }}" href="{{ route('help-desk.index') }}">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
@@ -416,15 +430,7 @@
                      </span>
                      <!--end::Svg Icon-->
                   </span>
-                  <span class="menu-title">Activity Log</span>
+                  <span class="menu-title">Help Desk</span>
                </a>
             </div>
-            @endif
-         </div>
-         <!--end::Menu-->
-      </div>
-      <!--end::Aside Menu-->
-   </div>
-   <!--end::Aside menu-->
-</div>
-<!--end::Aside-->
+
