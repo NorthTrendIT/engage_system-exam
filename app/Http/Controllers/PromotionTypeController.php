@@ -46,14 +46,14 @@ class PromotionTypeController extends Controller
         $rules = array(
                         'title' => 'required|max:185|unique:promotion_types,title,NULL,id,deleted_at,NULL',
                         'scope' => 'required',
-                        'fixed_quantity' => 'nullable|integer',
-                        'number_of_delivery' => 'nullable|integer',
+                        //'fixed_quantity' => 'nullable|integer',
+                        'is_fixed_quantity' => 'required',
+                        'number_of_delivery' => 'required|nullable|integer',
                         'max_percentage' => 'required_if:scope,R',
                         'min_percentage' => 'required_if:scope,R',
                         'percentage' => 'required_if:scope,P,U',
                         'fixed_price' => 'required_if:scope,U',
-                        'products' => 'required_if:scope,P,U|array',
-                        'products.*' => 'required_if:scope,P,U|exists:products,id',
+                        'product_list' => 'required|array',
                   );
 
         if(isset($input['id'])){
@@ -81,56 +81,66 @@ class PromotionTypeController extends Controller
 
                 $product_ids = [];
 
-                if(in_array($input['scope'], ['P','U'])){
+                // if(in_array($input['scope'], ['P','U'])){
 
-                    if(@$input['products']){
+                //     if(@$input['products']){
 
-                        foreach ($input['products'] as $key => $value) {
-                            $product_ids[] = $value;
+                //         foreach ($input['products'] as $key => $value) {
+                //             $product_ids[] = $value;
 
-                            PromotionTypeProduct::updateOrCreate(
-                                        [
-                                            'promotion_type_id' => $obj->id,
-                                            'product_id' => $value,
-                                        ],
-                                        [
-                                            'promotion_type_id' => $obj->id,
-                                            'product_id' => $value,
-                                            'discount_percentage' => NULL,
-                                        ],
-                                    );
+                //             PromotionTypeProduct::updateOrCreate(
+                //                         [
+                //                             'promotion_type_id' => $obj->id,
+                //                             'product_id' => $value,
+                //                         ],
+                //                         [
+                //                             'promotion_type_id' => $obj->id,
+                //                             'product_id' => $value,
+                //                             'discount_percentage' => NULL,
+                //                         ],
+                //                     );
+                //         }
+
+                //         $removeProduct = PromotionTypeProduct::where('promotion_type_id',$obj->id);
+                //         $removeProduct->whereNotIn('product_id',$product_ids);
+                //         $removeProduct->delete();
+
+                //     }
+                // }elseif(in_array($input['scope'], ['R'])){
+                // }
+                if(@$input['product_list']){
+
+                    foreach ($input['product_list'] as $key => $value) {
+                        $product_ids[] = $value['product_id'];
+
+                        $insert = [
+                                        'promotion_type_id' => $obj->id,
+                                        'product_id' => $value['product_id'],
+                                        'fixed_quantity' => $value['fixed_quantity'],
+                                        'discount_percentage' => $value['discount_percentage'],
+                                    ];
+
+                        if(in_array($input['scope'], ['P','U'])){
+                           $insert['discount_percentage'] = NULL;
                         }
 
-                        $removeProduct = PromotionTypeProduct::where('promotion_type_id',$obj->id);
-                        $removeProduct->whereNotIn('product_id',$product_ids);
-                        $removeProduct->delete();
-
-                    }
-                }elseif(in_array($input['scope'], ['R'])){
-
-                    if(@$input['product_list']){
-
-                        foreach ($input['product_list'] as $key => $value) {
-                            $product_ids[] = $value['product_id'];
-
-                            PromotionTypeProduct::updateOrCreate(
-                                        [
-                                            'promotion_type_id' => $obj->id,
-                                            'product_id' => $value['product_id'],
-                                        ],
-                                        [
-                                            'promotion_type_id' => $obj->id,
-                                            'product_id' => $value['product_id'],
-                                            'discount_percentage' => $value['discount_percentage'],
-                                        ],
-                                    );
+                        if($input['is_fixed_quantity'] == "0"){
+                           $insert['fixed_quantity'] = NULL;
                         }
 
-                        $removeProduct = PromotionTypeProduct::where('promotion_type_id',$obj->id);
-                        $removeProduct->whereNotIn('product_id',$product_ids);
-                        $removeProduct->delete();
-
+                        PromotionTypeProduct::updateOrCreate(
+                                    [
+                                        'promotion_type_id' => $obj->id,
+                                        'product_id' => $value['product_id'],
+                                    ],
+                                    $insert,
+                                );
                     }
+
+                    $removeProduct = PromotionTypeProduct::where('promotion_type_id',$obj->id);
+                    $removeProduct->whereNotIn('product_id',$product_ids);
+                    $removeProduct->delete();
+
                 }else{
                     $removeProduct = PromotionTypeProduct::where('promotion_type_id',$obj->id);
                     $removeProduct->delete();

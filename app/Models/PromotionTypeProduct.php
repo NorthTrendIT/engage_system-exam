@@ -12,6 +12,7 @@ class PromotionTypeProduct extends Model
     protected $fillable = [
 		'promotion_type_id',
 		'product_id',
+        'fixed_quantity',
 		'discount_percentage',
 	];
 
