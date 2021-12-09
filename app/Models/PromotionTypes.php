@@ -20,6 +20,7 @@ class PromotionTypes extends Model
 		'fixed_quantity',
 		'number_of_delivery',
 		'is_active',
+		'is_fixed_quantity',
 	];
 
 	public function products()

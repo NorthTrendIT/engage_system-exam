@@ -100,50 +100,58 @@
 
                 <div class="row mb-5">
                   
-                  <div class="col-md-6">
+                  {{-- <div class="col-md-6">
                     <div class="form-group">
                       <label>Fixed Quantity</label>
                       <input type="number" class="form-control form-control-solid" placeholder="Enter fixed quantity" name="fixed_quantity" @if(isset($edit)) value="{{ $edit->fixed_quantity }}" @endif>
+                    </div>
+                  </div> --}}
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Number Of Delivery<span class="asterisk">*</span></label>
+                      <input type="number" class="form-control form-control-solid" placeholder="Enter number of delivery" name="number_of_delivery" @if(isset($edit)) value="{{ $edit->number_of_delivery }}" @endif>
                     </div>
                   </div>
 
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Number Of Delivery</label>
-                      <input type="number" class="form-control form-control-solid" placeholder="Enter number of delivery" name="number_of_delivery" @if(isset($edit)) value="{{ $edit->number_of_delivery }}" @endif>
+                      <label>Is Fixed Quantity ?<span class="asterisk">*</span></label>
+                      <select class="form-control form-control-lg form-control-solid" name="is_fixed_quantity" data-control="select2" data-hide-search="true" data-placeholder="Select a this" data-allow-clear="false">
+                        <option value="1" @if(isset($edit) && $edit->is_fixed_quantity == "1") selected="" @endif >Yes</option>
+                        <option value="0" @if(isset($edit) && $edit->is_fixed_quantity == "0") selected="" @endif >No</option>
+                      </select>
+
                     </div>
                   </div>
 
                 </div>
 
 
-                <div class="row mb-5 only_products_div" style="display: none;">
+                {{-- <div class="row mb-5 only_products_div" style="display: none;">
                   
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Products<span class="asterisk">*</span></label>
                       <select class="form-control form-control-lg form-control-solid" id="products" name="products[]" multiple="">
                         <option value=""></option>
-                        {{-- @foreach(@$products as $product)
-                          <option value="{{ $product->id }}">{{ $product->item_name }}</option>
-                        @endforeach --}}
                       </select>
                     </div>
                   </div>
 
-                </div>
+                </div> --}}
 
 
-                <div class="mt-15 multi_product_div" style="display: none;">
+                <div class="mt-15 multi_product_div" >
 
                   <div data-repeater-list="product_list">
 
-                    @if(isset($edit) && count($edit->products) > 0 && $edit->scope == "R")
+                    @if(isset($edit) && count($edit->products) > 0 )
 
                       @foreach($edit->products as $key => $p)
 
                         <div class="row mb-5" data-repeater-item>
-                          <div class="col-md-5">
+                          <div class="col-md-3">
                             <div class="form-group">
                               <label>Product<span class="asterisk">*</span></label>
                               <select class="form-control form-control-lg form-control-solid product_id" name="product_id">
@@ -153,7 +161,14 @@
                             </div>
                           </div>
 
-                          <div class="col-md-5">
+                          <div class="col-md-3 product_fixed_quantity_div">
+                            <div class="form-group">
+                              <label>Fixed Quantity<span class="asterisk">*</span></label>
+                              <input type="number" class="form-control form-control-solid fixed_quantity" placeholder="Enter fixed quantity" name="fixed_quantity" value="{{ $p->fixed_quantity }}">
+                            </div>
+                          </div>
+
+                          <div class="col-md-3 product_discount_div" style="display: none;">
                             <div class="form-group">
                               <label>Discount Percentage<span class="asterisk">*</span></label>
                               <input type="number" step=".01" class="form-control form-control-solid discount_percentage" placeholder="Enter discount percentage" name="discount_percentage" value="{{ $p->discount_percentage }}">
@@ -161,7 +176,7 @@
                           </div>
 
                           @if($key != 0)
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                               <div class="form-group">
                                 <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-md btn-color-danger mt-6" data-repeater-delete><i class="fa fa-trash"></i></a>
                               </div>
@@ -174,7 +189,7 @@
 
                     @else
                       <div class="row mb-5" data-repeater-item>
-                        <div class="col-md-5">
+                        <div class="col-md-3">
                           <div class="form-group">
                             <label>Product<span class="asterisk">*</span></label>
                             <select class="form-control form-control-lg form-control-solid product_id" name="product_id">
@@ -183,14 +198,21 @@
                           </div>
                         </div>
 
-                        <div class="col-md-5">
+                        <div class="col-md-3 product_fixed_quantity_div">
+                          <div class="form-group">
+                            <label>Fixed Quantity<span class="asterisk">*</span></label>
+                            <input type="number" class="form-control form-control-solid fixed_quantity" placeholder="Enter fixed quantity" name="fixed_quantity">
+                          </div>
+                        </div>
+
+                        <div class="col-md-3 product_discount_div" style="display: none;">
                           <div class="form-group">
                             <label>Discount Percentage<span class="asterisk">*</span></label>
                             <input type="number" step=".01" class="form-control form-control-solid discount_percentage" placeholder="Enter discount percentage" name="discount_percentage">
                           </div>
                         </div>
 
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                           <div class="form-group">
                             <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-md btn-color-danger mt-6" data-repeater-delete><i class="fa fa-trash"></i></a>
                           </div>
@@ -246,18 +268,25 @@
 
     @if(isset($edit) && $edit->scope == "P")
       $('.scope_p_div').show();
-      $('.only_products_div').show();
+      //$('.only_products_div').show();
+      $('.product_discount_div').hide();
     @endif
 
     @if(isset($edit) && $edit->scope == "R")
       $('.scope_r_div').show();
-      $('.multi_product_div').show();
+      //$('.multi_product_div').show();
+      $('.product_discount_div').show();
     @endif
 
     @if(isset($edit) && $edit->scope == "U")
       $('.scope_p_div').show();
       $('.scope_u_div').show();
-      $('.only_products_div').show();
+      //$('.only_products_div').show();
+      $('.product_discount_div').hide();
+    @endif
+
+    @if(isset($edit) && $edit->is_fixed_quantity == "0")
+      $('.product_fixed_quantity_div').hide();
     @endif
 
 
@@ -267,24 +296,37 @@
       $('.scope_r_div').hide();
       $('.scope_p_div').hide();
       $('.scope_u_div').hide();
-      $('.only_products_div').hide();
-      $('.multi_product_div').hide();
+      //$('.only_products_div').hide();
+      // $('.multi_product_div').hide();
+      $('.product_discount_div').hide();
 
       if($value == "P"){
         $('.scope_p_div').show();
-        $('.only_products_div').show();
+        //$('.only_products_div').show();
       }else if($value == "R"){
         $('.scope_r_div').show();
-        $('.multi_product_div').show();
+        //$('.multi_product_div').show();
+        $('.product_discount_div').show();
       }else if($value == "U"){
         $('.scope_p_div').show();
         $('.scope_u_div').show();
-        $('.only_products_div').show();
+        //$('.only_products_div').show();
+      }
+    });
+
+    $(document).on('change', '[name="is_fixed_quantity"]', function(){
+      $value = $(this).find('option:selected').val();
+      $('.product_fixed_quantity_div').hide();
+
+      if($value == "0"){
+        $('.product_fixed_quantity_div').hide();
+      }else{
+        $('.product_fixed_quantity_div').show();
       }
 
     });
 
-    $initialProducts = [];
+    {{-- $initialProducts = [];
 
     @if(isset($edit) && $edit->scope != "R")
         @foreach ($edit->products as $p)
@@ -329,7 +371,7 @@
       @if(isset($edit))
       data:$initialProducts,
       @endif
-    });
+    });--}}
 
     $('.product_id').select2({
       ajax: {
@@ -460,14 +502,18 @@
                         }
                     },
             },
-            fixed_quantity:{
-              min:0,
-              digits: true
-            },
+            // fixed_quantity:{
+            //   min:0,
+            //   digits: true
+            // },
             number_of_delivery:{
               min:1,
               digits: true,
+              required: true,
             },
+            is_fixed_quantity:{
+              required:true
+            }
           },
           messages: {
             
@@ -489,6 +535,14 @@
         });
       });
 
+      $('.fixed_quantity').each(function() {
+        $(this).rules('add', {
+          min:1,
+          required:true,
+          digits: true,
+        });
+      });
+
       return validator;
     }
 
@@ -497,6 +551,16 @@
       show: function () {
         
         $(this).slideDown();
+        $(this).find('.product_discount_div').hide();
+
+        if($('[name="scope"]').find('option:selected').val() == "R"){
+          $(this).find('.product_discount_div').show();
+        }
+
+        if($('[name="is_fixed_quantity"]').find('option:selected').val() == "0"){
+          $('.product_fixed_quantity_div').hide();
+        }
+
 
         $('.multi_product_div').find('.select2-container').remove();
 
