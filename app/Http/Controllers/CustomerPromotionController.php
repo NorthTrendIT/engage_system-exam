@@ -154,6 +154,8 @@ class CustomerPromotionController extends Controller
             $button = "";
             $last_id = "";
 
+            $promotion_id = $request->promotion_id;
+
             $last = PromotionTypeProduct::where($where)->select('id')->first();
 
             if (!$products->isEmpty()) {
@@ -163,7 +165,7 @@ class CustomerPromotionController extends Controller
                     $promotion_type_product = $value;
 
                     if(!is_null($product)){
-                        $output .= view('customer-promotion.ajax.product',compact('product','promotion_type_product'))->render();
+                        $output .= view('customer-promotion.ajax.product',compact('product','promotion_type_product','promotion_id'))->render();
                     }
                 }
 
@@ -216,5 +218,22 @@ class CustomerPromotionController extends Controller
         }
 
         return $response;
+    }
+
+    public function productDetail($id,$promotion_id){
+        $data = PromotionTypeProduct::where('id',$id)->firstOrFail();
+        
+        $product = $data->product;
+
+        $promotion = Promotions::findOrFail($promotion_id);
+
+        return view('customer-promotion.product-view',compact('product','data','promotion'));
+    }
+
+    public function orderIndex($id){
+
+        $promotion = Promotions::findOrFail($id);
+
+        return view('customer-promotion.order',compact('promotion'));
     }
 }
