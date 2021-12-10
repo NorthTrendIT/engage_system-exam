@@ -66,7 +66,7 @@
 
                             @if(isset($data) && $data->scope == "U")
                             <tr>
-                              <th> <b>Fixed Price:</b> </th>
+                              <th> <b>Discount Upto Amount:</b> </th>
                               <td>{{ @$data->fixed_price ?? "" }}</td>
                             </tr>
                             @endif
@@ -90,8 +90,8 @@
 
                             @if(isset($data) && $data->is_fixed_quantity == true)
                             <tr>
-                              <th> <b>Is Total Fixed Quantity? :</b> </th>
-                              <td>{{ @$data->is_total_fixed_quantity == true ? "Yes" : "No" }}</td>
+                              <th> <b>Fixed Quantity Option:</b> </th>
+                              <td>{{ $data->is_total_fixed_quantity ? "Total Fixed Quantity" : "Fixed Quantity Per Product" }}</td>
                             </tr>
                             @endif
 

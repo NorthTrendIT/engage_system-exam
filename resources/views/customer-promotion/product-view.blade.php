@@ -134,11 +134,14 @@
                                 <tr>
                                   <th class="pl-0 w-25" scope="row"><strong>Quantity</strong></th>
                                   <td>
-                                    @if(@$promotion->promotion_type)
-                                      @if(is_null($promotion->promotion_type->fixed_quantity))
+                                    @if($promotion->promotion_type->is_fixed_quantity == false)
                                       No Limit
                                       @else
-                                      Fixed ({{ $promotion->promotion_type->fixed_quantity }})
+
+                                      @if($promotion->promotion_type->is_total_fixed_quantity)
+                                        {{ $promotion->promotion_type->total_fixed_quantity }}
+                                      @else
+                                        {{ $data->fixed_quantity }}
                                       @endif
                                     @endif
                                   </td>

@@ -46,6 +46,17 @@
                   </div>
                 </div>
 
+                @if(@$promotion->promotion_type->is_total_fixed_quantity)
+                <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Total Fixed Quantity</label>
+                      <input type="text" class="form-control form-control-solid total_fixed_quantity" value="{{ @$promotion->promotion_type->total_fixed_quantity }}" readonly="" disabled="">
+                    </div>
+                  </div>
+                </div>
+                @endif
+
                 <div class="row mb-5 mt-10">
                   <div class="col-md-12">
                     <div class="form-group">
@@ -61,8 +72,10 @@
 
                   @foreach($promotion->promotion_type->products as $p)
 
+                  <div class="product_list">
                     @php
                       $discount_percentage = 0;
+                      $quantity = false;
 
                       if(@$promotion->promotion_type->scope == "P"){
                         $discount_percentage = @$promotion->promotion_type->percentage;
@@ -70,6 +83,23 @@
                         $discount_percentage = @$p->discount_percentage;
                       }
 
+                      if(@$promotion->promotion_type->is_fixed_quantity){
+
+                        if(!@$promotion->promotion_type->is_total_fixed_quantity){
+                          $quantity = @$p->fixed_quantity;
+                        }
+                      }
+
+                      $amount = get_product_customer_price(@$p->product->item_prices,@Auth::user()->customer->price_list_num);
+                      $total_amount = $discount_amount = get_product_customer_price(@$p->product->item_prices,@Auth::user()->customer->price_list_num,$discount_percentage);
+
+                      $discount_amount = $amount - $discount_amount;
+
+                      if($quantity){
+                        if($total_amount > 0){
+                          $total_amount = floatval($total_amount) * floatval($quantity);
+                        }
+                      }
                     @endphp
 
 
@@ -93,59 +123,112 @@
                       <div class="col-md-3">
                         <div class="form-group">
                           <label>Quantity</label>
-                          <input type="number" class="form-control form-control-solid" placeholder="Enter quantity" name="fixed_quantity" >
+                          <input type="number" class="form-control form-control-solid quantity" placeholder="Enter quantity" name="quantity" @if($quantity) readonly="" value="{{ $quantity }}" @else value="1" @endif min="1">
                         </div>
                       </div>
 
                       <div class="col-md-3">
                         <div class="form-group">
                           <label>Unit Price</label>
-                          <input type="text" class="form-control form-control-solid" readonly="" disabled="" value="{{ get_product_customer_price(@$p->product->item_prices,@Auth::user()->customer->price_list_num) }}" >
+                          <input type="text" class="form-control form-control-solid unit_price" readonly="" disabled="" value="{{ $amount}}" name="unit_price" >
                         </div>
                       </div>
 
                       <div class="col-md-3">
                         <div class="form-group">
                           <label>Discount</label>
-                          <input type="text" class="form-control form-control-solid" readonly="" disabled="" value="{{ $discount_percentage }}%" >
+                          <input type="text" class="form-control form-control-solid discount_amount" readonly="" disabled="" value="{{ $discount_amount }}" data-value="{{ $discount_percentage }}" name="discount_amount">
                         </div>
                       </div>
 
                       <div class="col-md-3">
                         <div class="form-group">
                           <label>Amount</label>
-                          <input type="text" class="form-control form-control-solid" readonly="" disabled="" value="{{ get_product_customer_price(@$p->product->item_prices,@Auth::user()->customer->price_list_num,$discount_percentage) }}" >
+                          <input type="text" class="form-control form-control-solid amount" readonly="" disabled="" value="{{ $total_amount }}" name="amount">
                         </div>
                       </div>
 
                     </div>
 
-                    {{-- @if(@$promotion->promotion_type->number_of_delivery > 0)
+                    <div class="row mt-8">
+                      <div class="col-md-12">
+                      </div>
+                    </div>
+
+                    @if(@$promotion->promotion_type->number_of_delivery > 0)
                       @for($i=1;$i<=$promotion->promotion_type->number_of_delivery;$i++)
                       <div class="row">
-                        <div class="col-md-6 mt-5">
+                        <div class="col-md-3 mt-5">
                           <div class="form-group">
-                            <label>Quantity</label>
-                            <input type="number" class="form-control form-control-solid" placeholder="Enter quantity" name="fixed_quantity" >
+                            <label>{{ ordinal($i) }} Delivery Date</label>
+                            <input type="text" class="form-control form-control-solid delivery_date" placeholder="Select {{ ordinal($i) }} Delivery Date" name="products[{{ @$p->product->id }}]['delivery_date'][{{ $i }}]" readonly="">
                           </div>
                         </div>
+
+                        @if(@$promotion->promotion_type->number_of_delivery > 1)
+                        <div class="col-md-3 mt-5">
+                          <div class="form-group">
+                            <label>{{ ordinal($i) }} Delivery Quantity</label>
+                            <input type="number" class="form-control form-control-solid delivery_quantity" placeholder="Enter {{ ordinal($i) }} Delivery Quantity" name="products[{{ @$p->product->id }}]['delivery_quantity'][{{ $i }}]" min="1">
+                          </div>
+                        </div>
+                        @endif
+
                       </div>
                       @endfor
-                    @endif --}}
+                    @endif
 
-                    <div class="row mb-5">
+                    <div class="row mb-5 mt-5">
                       <div class="col-md-12">
+                        <span class="is-invalid quantity_error_span" style="display: none;">Oops! the total of delivery quantity is not the same as the quantity.</span>
                         <hr>
                       </div>
                     </div>
+                  </div>
                   @endforeach
-
                 @endif
+
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Total Quantity</label>
+                      <input type="number" class="form-control form-control-solid total_quantity" readonly="" disabled="">
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Total Discount</label>
+                      <input type="number" class="form-control form-control-solid total_discount" readonly="" disabled="">
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Total Amount</label>
+                      <input type="number" class="form-control form-control-solid total_amount" readonly="" disabled="">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-5 mt-5 total_quantity_error_div" style="display: none;">
+                  <div class="col-md-12">
+                    <span class="is-invalid" >Oops! the total quantity is not the same as the total fix quantity.</span>
+                    <hr>
+                  </div>
+                </div>
+
+                <div class="row mb-5 mt-5 total_delivery_quantity_error_div" style="display: none;">
+                  <div class="col-md-12">
+                    <span class="is-invalid" >Oops! the total of quantity is not the same as the total of delivery quantity.</span>
+                    <hr>
+                  </div>
+                </div>
 
                 <div class="row mb-5 mt-10">
                   <div class="col-md-12">
                     <div class="form-group">
-                      {{-- <input type="submit" value="{{ isset($edit) ? "Update" : "Save" }}" class="btn btn-primary"> --}}
+                      <input type="submit" value="{{ isset($edit) ? "Update" : "Save" }}" class="btn btn-primary">
                     </div>
                   </div>
                 </div>
@@ -160,20 +243,144 @@
 </div>
 @endsection
 
+@push('css')
+  <link rel="stylesheet" href="{{ asset('assets') }}/assets/css/datepicker.css" class="href">
+@endpush
 
 @push('js')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" ></script>
 
 <script>
   $(document).ready(function() {
+
+    $('.delivery_date').datepicker({
+        format: 'dd/mm/yyyy',
+        todayHighlight: true,
+        orientation: "bottom left",
+        startDate:'{{ date('d/m/Y',strtotime($promotion->promotion_end_date)) }}',
+        autoclose: true,
+    });
+
+    $(document).on('change', '.delivery_quantity', function(event) {
+      event.preventDefault();
+
+      var sum = 0;
+      $(this).closest('.product_list').find('.delivery_quantity').each(function(){
+        if(this.value != ""){
+          sum += parseFloat(this.value);
+        }
+      });
+
+      var quantity = $(this).closest('.product_list').find('.quantity').val();
+      
+      if(sum != quantity){
+        $(this).closest('.product_list').find('.quantity_error_span').show();
+        $('[type="submit"]').prop('disabled', true);
+      }else{
+        $(this).closest('.product_list').find('.quantity_error_span').hide();
+        $('[type="submit"]').prop('disabled', false);
+      }
+
+      var quantity = 0;
+      $('.quantity').each(function(){
+        if(this.value != ""){
+          quantity += parseFloat(this.value);
+        }
+      }); 
+
+      var delivery_quantity = 0;
+      $('.delivery_quantity').each(function(){
+        if(this.value != ""){
+          delivery_quantity += parseFloat(this.value);
+        }
+      });
+
+      if(quantity != delivery_quantity){
+        $('.total_delivery_quantity_error_div').show();
+        $('[type="submit"]').prop('disabled', true);
+      }else{
+        $('.total_delivery_quantity_error_div').hide();
+        $('[type="submit"]').prop('disabled', false);
+      }
+
+    });
+    
+    $(document).on('change', '.quantity', function(event) {
+      event.preventDefault();
+
+      var quantity = $(this).val();
+      var unit_price = $(this).closest('.product_list').find('.unit_price').val();
+      var discount_percentage = $(this).closest('.product_list').find('.discount_amount').attr('data-value');
+
+      amount = (unit_price * quantity);
+
+      discount_amount = (amount * discount_percentage) / 100;
+
+      amount = ( amount - discount_amount );
+
+      $(this).closest('.product_list').find('.discount_amount').val(discount_amount);
+
+      $(this).closest('.product_list').find('.amount').val(amount);
+
+      total_details_update();
+    });
+
+    total_details_update();
+    function total_details_update() {
+      var sum = 0;
+      $('.quantity').each(function(){
+        if(this.value != ""){
+          sum += parseFloat(this.value);
+        }
+      });
+      $('.total_quantity').val(sum);
+
+      var sum = 0;
+      $('.discount_amount').each(function(){
+        if(this.value != ""){
+          sum += parseFloat(this.value);
+        }
+      });
+      $('.total_discount').val(sum);
+
+      var sum = 0;
+      $('.amount').each(function(){
+        if(this.value != ""){
+          sum += parseFloat(this.value);
+        }
+      });
+      $('.total_amount').val(sum);
+
+
+      @if(@$promotion->promotion_type->is_total_fixed_quantity)
+        
+        var total_fixed_quantity = parseInt($('.total_fixed_quantity').val());
+        var total_quantity = parseInt($('.total_quantity').val());
+
+        if(total_quantity > total_fixed_quantity){
+          $('.total_quantity_error_div').show();
+          $('[type="submit"]').prop('disabled', true);
+        }else{
+          $('.total_quantity_error_div').hide();
+          $('[type="submit"]').prop('disabled', false);
+        }
+      @endif
+
+    }
 
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
       var validator = validate_form();
       
       if (validator.form() != false) {
+        
+        return true;
+
+
+
         $('[type="submit"]').prop('disabled', true);
         $.ajax({
           url: "{{route('promotion-type.store')}}",
@@ -206,95 +413,26 @@
           errorClass: "is-invalid",
           validClass: "is-valid",
           rules: {
-            title:{
-              required:true,
-              maxlength:185,
-            },
-            scope:{
-              required:true,
-            },
-            percentage:{
-              min:0,
-              max:100,
-              number: true,
-              required: function () {
-                        if($('[name="scope"]').find('option:selected').val() == 'P' || $('[name="scope"]').find('option:selected').val() == "U"){
-                            return true;
-                        }else{
-                            return false;
-                        }
-                    },
-            },
-            fixed_price:{
-              min:0,
-              number: true,
-              required: function () {
-                        if($('[name="scope"]').find('option:selected').val() == "U"){
-                            return true;
-                        }else{
-                            return false;
-                        }
-                    },
-            },
-            min_percentage:{
-              min:0,
-              max:100,
-              number: true,
-              required: function () {
-                        if($('[name="scope"]').find('option:selected').val() == "R"){
-                            return true;
-                        }else{
-                            return false;
-                        }
-                    },
-            },
-            max_percentage:{
-              min:$('#min_percentage').val(),
-              max:100,
-              number: true,
-              required: function () {
-                        if($('[name="scope"]').find('option:selected').val() == "R"){
-                            return true;
-                        }else{
-                            return false;
-                        }
-                    },
-            },
-            'products[]':{
-              required: function () {
-                        if($('[name="scope"]').find('option:selected').val() == 'P' || $('[name="scope"]').find('option:selected').val() == "U"){
-                            return true;
-                        }else{
-                            return false;
-                        }
-                    },
-            },
-            fixed_quantity:{
-              min:0,
-              digits: true
-            },
-            number_of_delivery:{
-              min:1,
-              digits: true,
-            },
+            
           },
           messages: {
             
           },
       });
 
-      $('.product_id').each(function() {
+
+      $('.delivery_quantity').each(function() {
         $(this).rules('add', {
           required:true,
+          min:1,
+          // max:$(this).closest('.product_list').find('.quantity').val(),
+          digits: true
         });
       });
 
-      $('.discount_percentage').each(function() {
+      $('.delivery_date').each(function() {
         $(this).rules('add', {
           required:true,
-          min:$('#min_percentage').val(),
-          max:$('#max_percentage').val(),
-          number: true
         });
       });
 

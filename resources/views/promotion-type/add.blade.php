@@ -72,8 +72,8 @@
 
                   <div class="col-md-6 scope_u_div" style="display: none;">
                     <div class="form-group">
-                      <label>Fixed Price<span class="asterisk">*</span></label>
-                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter fixed price" name="fixed_price" @if(isset($edit)) value="{{ $edit->fixed_price }}" @endif>
+                      <label>Discount Upto Amount<span class="asterisk">*</span></label>
+                      <input type="number" step=".01" class="form-control form-control-solid" placeholder="Enter discount upto amount" name="fixed_price" @if(isset($edit)) value="{{ $edit->fixed_price }}" @endif>
                     </div>
                   </div>
 
@@ -131,7 +131,7 @@
                   
                   <div class="col-md-6 is_total_fixed_quantity_div">
                     <div class="form-group">
-                      <label>Is Total Fixed Quantity ?<span class="asterisk">*</span></label>
+                      <label>Select Fixed Quantity Option<span class="asterisk">*</span></label>
                       <select class="form-control form-control-lg form-control-solid" name="is_total_fixed_quantity" data-control="select2" data-hide-search="true" data-placeholder="Select Fixed Quantity Option" data-allow-clear="false">
                         <option value="0" @if(isset($edit) && $edit->is_total_fixed_quantity == "0") selected="" @endif >Fixed Quantity Per Product</option>
                         <option value="1" @if(isset($edit) && $edit->is_total_fixed_quantity == "1") selected="" @endif >Total Fixed Quantity</option>

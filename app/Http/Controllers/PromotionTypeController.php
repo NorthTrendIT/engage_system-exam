@@ -77,6 +77,11 @@ class PromotionTypeController extends Controller
                 $input['total_fixed_quantity'] = NULL;
             }
 
+            if($input['is_fixed_quantity'] == false){
+                $input['is_total_fixed_quantity'] = false;
+                $input['total_fixed_quantity'] = NULL;
+            }
+
             if(isset($input['id'])){
                 $obj = PromotionTypes::find($input['id']);
                 $message = "Promotion Type details updated successfully.";

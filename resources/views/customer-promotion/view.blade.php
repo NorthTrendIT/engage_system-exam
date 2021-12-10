@@ -82,10 +82,10 @@
                               <th> <b>Quantity:</b> </th>
                               <td>
                                 @if(@$data->promotion_type)
-                                  @if(is_null($data->promotion_type->fixed_quantity))
+                                  @if($data->promotion_type->is_fixed_quantity == false)
                                   No Limit
                                   @else
-                                  Fixed ({{ $data->promotion_type->fixed_quantity }})
+                                  Fixed ({{ $data->promotion_type->is_total_fixed_quantity ? "Total Fixed Quantity" : "Fixed Quantity Per Product" }})
                                   @endif
                                 @endif
 
