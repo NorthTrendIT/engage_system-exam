@@ -116,12 +116,33 @@
 
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Is Fixed Quantity ?<span class="asterisk">*</span></label>
+                      <label>Has Fixed Quantity ?<span class="asterisk">*</span></label>
                       <select class="form-control form-control-lg form-control-solid" name="is_fixed_quantity" data-control="select2" data-hide-search="true" data-placeholder="Select a this" data-allow-clear="false">
                         <option value="1" @if(isset($edit) && $edit->is_fixed_quantity == "1") selected="" @endif >Yes</option>
                         <option value="0" @if(isset($edit) && $edit->is_fixed_quantity == "0") selected="" @endif >No</option>
                       </select>
+                    </div>
+                  </div>
 
+                </div>
+
+
+                <div class="row mb-5">
+                  
+                  <div class="col-md-6 is_total_fixed_quantity_div">
+                    <div class="form-group">
+                      <label>Is Total Fixed Quantity ?<span class="asterisk">*</span></label>
+                      <select class="form-control form-control-lg form-control-solid" name="is_total_fixed_quantity" data-control="select2" data-hide-search="true" data-placeholder="Select Fixed Quantity Option" data-allow-clear="false">
+                        <option value="0" @if(isset($edit) && $edit->is_total_fixed_quantity == "0") selected="" @endif >Fixed Quantity Per Product</option>
+                        <option value="1" @if(isset($edit) && $edit->is_total_fixed_quantity == "1") selected="" @endif >Total Fixed Quantity</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 total_fixed_quantity_div" style="display: none;">
+                    <div class="form-group">
+                      <label>Total Fixed Quantity<span class="asterisk">*</span></label>
+                      <input type="number" class="form-control form-control-solid" placeholder="Enter total fixed quantity" name="total_fixed_quantity" @if(isset($edit)) value="{{ $edit->total_fixed_quantity }}" @endif>
                     </div>
                   </div>
 
@@ -175,13 +196,11 @@
                             </div>
                           </div>
 
-                          @if($key != 0)
-                            <div class="col-md-3">
-                              <div class="form-group">
-                                <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-md btn-color-danger mt-6" data-repeater-delete><i class="fa fa-trash"></i></a>
-                              </div>
+                          <div class="col-md-3 delete_btn_div" @if($key == 0) style="display: none;" @endif>
+                            <div class="form-group">
+                              <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-md btn-color-danger mt-6 " data-repeater-delete ><i class="fa fa-trash"></i></a>
                             </div>
-                          @endif
+                          </div>
 
                         </div>
 
@@ -285,9 +304,22 @@
       $('.product_discount_div').hide();
     @endif
 
+    @if(isset($edit) && $edit->is_total_fixed_quantity == "1")
+      $('.product_fixed_quantity_div').hide();
+      $('.total_fixed_quantity_div').show();
+    @endif
+
+    @if(isset($edit) && $edit->is_total_fixed_quantity == "0" && $edit->is_fixed_quantity == "1")
+      $('.product_fixed_quantity_div').show();
+      $('.total_fixed_quantity_div').hide();
+    @endif
+    
     @if(isset($edit) && $edit->is_fixed_quantity == "0")
       $('.product_fixed_quantity_div').hide();
+      $('.is_total_fixed_quantity_div').hide();
+      $('.total_fixed_quantity_div').hide();
     @endif
+
 
 
 
@@ -316,12 +348,32 @@
 
     $(document).on('change', '[name="is_fixed_quantity"]', function(){
       $value = $(this).find('option:selected').val();
+      $('.is_total_fixed_quantity_div').hide();
+      $('.total_fixed_quantity_div').hide();
       $('.product_fixed_quantity_div').hide();
 
       if($value == "0"){
-        $('.product_fixed_quantity_div').hide();
+        $('.is_total_fixed_quantity_div').hide();
+        // $('[name="is_total_fixed_quantity"]').val(1).trigger('change');
+        // $('.product_fixed_quantity_div').hide();
       }else{
+        $('.is_total_fixed_quantity_div').show();
+        // $('.product_fixed_quantity_div').show();
+        $('[name="is_total_fixed_quantity"]').val(0).trigger('change');
+      }
+    });
+
+    $(document).on('change', '[name="is_total_fixed_quantity"]', function(){
+      $value = $(this).find('option:selected').val();
+      $('.total_fixed_quantity_div').hide();
+      $('.product_fixed_quantity_div').hide();
+
+      if($value == "0"){
+        $('.total_fixed_quantity_div').hide();
         $('.product_fixed_quantity_div').show();
+      }else{
+        $('.total_fixed_quantity_div').show();
+        $('.product_fixed_quantity_div').hide();
       }
 
     });
@@ -419,7 +471,8 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.href = '{{ route('promotion-type.index') }}';
+                window.location.reload();
+                //window.location.href = '{{ route('promotion-type.index') }}';
               },500)
             } else {
               toast_error(data.message);
@@ -506,6 +559,17 @@
             //   min:0,
             //   digits: true
             // },
+            total_fixed_quantity:{
+              min:0,
+              digits: true,
+              required: function () {
+                        if($('[name="is_total_fixed_quantity"]').find('option:selected').val() == "1"){
+                          return true;
+                        }else{
+                          return false;
+                        }
+                    },
+            },
             number_of_delivery:{
               min:1,
               digits: true,
@@ -552,13 +616,16 @@
         
         $(this).slideDown();
         $(this).find('.product_discount_div').hide();
+        $(this).find('.delete_btn_div').show();
 
         if($('[name="scope"]').find('option:selected').val() == "R"){
           $(this).find('.product_discount_div').show();
         }
 
-        if($('[name="is_fixed_quantity"]').find('option:selected').val() == "0"){
+        if($('[name="is_fixed_quantity"]').find('option:selected').val() == "0" || $('[name="is_total_fixed_quantity"]').find('option:selected').val() == "1"){
           $('.product_fixed_quantity_div').hide();
+        }else{
+          $('.product_fixed_quantity_div').show();
         }
 
 
