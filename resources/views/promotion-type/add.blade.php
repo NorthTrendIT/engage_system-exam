@@ -471,8 +471,8 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.reload();
-                //window.location.href = '{{ route('promotion-type.index') }}';
+                // window.location.reload();
+                window.location.href = '{{ route('promotion-type.index') }}';
               },500)
             } else {
               toast_error(data.message);
