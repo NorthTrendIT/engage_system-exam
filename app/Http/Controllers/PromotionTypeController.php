@@ -42,7 +42,6 @@ class PromotionTypeController extends Controller
     {
         $input = $request->all();
 
-
         $rules = array(
                         'title' => 'required|max:185|unique:promotion_types,title,NULL,id,deleted_at,NULL',
                         'scope' => 'required',
@@ -54,6 +53,9 @@ class PromotionTypeController extends Controller
                         'percentage' => 'required_if:scope,P,U',
                         'fixed_price' => 'required_if:scope,U',
                         'product_list' => 'required|array',
+
+                        'is_total_fixed_quantity' => 'required_if:is_fixed_quantity,1',
+                        'total_fixed_quantity' => 'required_if:is_total_fixed_quantity,1',
                   );
 
         if(isset($input['id'])){
@@ -66,6 +68,14 @@ class PromotionTypeController extends Controller
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
+
+            if(!in_array($input['scope'],['R'])){
+                $input['min_percentage'] = $input['max_percentage'] = NULL;
+            }
+
+            if($input['is_total_fixed_quantity'] == false){
+                $input['total_fixed_quantity'] = NULL;
+            }
 
             if(isset($input['id'])){
                 $obj = PromotionTypes::find($input['id']);
@@ -124,7 +134,7 @@ class PromotionTypeController extends Controller
                            $insert['discount_percentage'] = NULL;
                         }
 
-                        if($input['is_fixed_quantity'] == "0"){
+                        if($input['is_fixed_quantity'] == "0" || $input['is_total_fixed_quantity'] == "1"){
                            $insert['fixed_quantity'] = NULL;
                         }
 
