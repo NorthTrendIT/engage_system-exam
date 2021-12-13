@@ -9,6 +9,9 @@ use App\Models\PromotionTypes;
 use App\Models\PromotionTypeProduct;
 use App\Models\PromotionInterest;
 use App\Models\Product;
+use App\Models\CustomerPromotion;
+use App\Models\CustomerPromotionProduct;
+use App\Models\CustomerPromotionProductDelivery;
 use Validator;
 use DataTables;
 use Auth;
@@ -134,6 +137,12 @@ class CustomerPromotionController extends Controller
     {
         $data = Promotions::where('is_active',true)->where('id',$id)->firstOrFail();
 
+        $now = date("Y-m-d");
+        // $now = "2021-12-12";
+        if( ($now > $data->promotion_start_date) && ($now < $data->promotion_end_date) ){
+            return abort(404);
+        }
+
         return view('customer-promotion.view',compact('data'));
     }
 
@@ -227,13 +236,235 @@ class CustomerPromotionController extends Controller
 
         $promotion = Promotions::findOrFail($promotion_id);
 
+        $now = date("Y-m-d");
+        // $now = "2021-12-12";
+        if( ($now > $promotion->promotion_start_date) && ($now < $promotion->promotion_end_date) ){
+            return abort(404);
+        }
+
         return view('customer-promotion.product-view',compact('product','data','promotion'));
     }
 
-    public function orderIndex($id){
+    public function orderCreate($id){
 
         $promotion = Promotions::findOrFail($id);
 
-        return view('customer-promotion.order',compact('promotion'));
+        $now = date("Y-m-d");
+        // $now = "2021-12-12";
+        if( ($now > $promotion->promotion_start_date) && ($now < $promotion->promotion_end_date) ){
+            return abort(404);
+        }
+
+        return view('customer-promotion.order_add',compact('promotion'));
+    }
+
+    public function orderStore(Request $request){
+
+        $input = $request->all();
+
+        $rules = array(
+                    'promotion_id' => 'required|exists:promotions,id',
+                    'products' => 'required|array',
+                );
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+            $promotion = Promotions::findOrFail($input['promotion_id']);
+
+            $now = date("Y-m-d");
+            if( ($now > $promotion->promotion_start_date) && ($now < $promotion->promotion_end_date) ){
+                $response = ['status'=>false,'message'=> "The promotion has been expired."];
+            }else{
+
+                // If Promotion Qty fixed and its not match to with buying qty
+                if(@$promotion->promotion_type->is_total_fixed_quantity){
+                    $total_fixed_quantity = @$promotion->promotion_type->total_fixed_quantity;
+                    $total_quantity = array_sum(array_column(@$input['products'], 'quantity'));
+
+                    if($total_quantity != $total_fixed_quantity){
+                        return $response = ['status'=>false,'message'=> "Oops! the total quantity is not the same as the total fix quantity."];
+                    }
+                }
+
+                $total_quantity = $total_price = $total_discount = $total_amount = 0;
+
+                $customer_promotion = new CustomerPromotion(); 
+                $customer_promotion->promotion_id = $input['promotion_id'];
+                $customer_promotion->user_id = Auth::id();
+                $customer_promotion->status = 'pending';
+                $customer_promotion->save();
+
+                if(@$customer_promotion->id){
+
+                    if(isset($input['products']) && !empty($input['products'])){
+
+                        foreach ($input['products'] as $key => $value) {
+
+                            $quantity = 0;
+
+                            $product = Product::find($key);
+
+                            if(!is_null($product)){
+
+                                $where = array(
+                                                'promotion_type_id' => $promotion->promotion_type_id,
+                                                'product_id' => $product->id,
+                                            );
+
+                                $p_product = PromotionTypeProduct::where($where)->first();
+
+                                $customer_promotion_product = new CustomerPromotionProduct(); 
+                                $customer_promotion_product->customer_promotion_id = @$customer_promotion->id;
+                                $customer_promotion_product->product_id = $key;
+                                $customer_promotion_product->save();
+                                
+                                if(@$customer_promotion_product->id){
+
+                                    foreach ($value['delivery_date'] as $d_key => $d_value) {
+
+                                        if($d_value && $value['delivery_quantity'][$d_key]){
+
+                                            $quantity += $value['delivery_quantity'][$d_key];
+
+                                            $c_p_p_d = new CustomerPromotionProductDelivery(); 
+                                            $c_p_p_d->customer_promotion_product_id = @$customer_promotion_product->id;
+                                            $c_p_p_d->delivery_quantity = $value['delivery_quantity'][$d_key];
+                                            $c_p_p_d->delivery_date = date("Y-m-d",strtotime(str_replace("/", "-", $d_value)));
+                                            $c_p_p_d->save();
+
+                                        }
+                                    }
+
+
+                                    $discount_percentage = 0;
+
+                                    if(@$promotion->promotion_type->scope == "P"){
+                                        $discount_percentage = @$promotion->promotion_type->percentage;
+                                    }elseif(@$promotion->promotion_type->scope == "R"){
+                                        $discount_percentage = @$p_product->discount_percentage;
+                                    }
+
+
+                                    $price = get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num);
+                                    $amount = $discount = get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num,$discount_percentage);
+
+                                    $discount = $price - $discount;
+
+                                    if($amount > 0){
+                                        $amount = floatval($amount) * floatval($quantity);
+                                    }
+
+                                    $customer_promotion_product->quantity = $quantity;
+                                    $customer_promotion_product->price = $price;
+                                    $customer_promotion_product->discount = $discount;
+                                    $customer_promotion_product->amount = $amount;
+                                    $customer_promotion_product->save();
+
+
+                                    $total_quantity += $quantity;
+                                    $total_price += ($price * $quantity);
+                                    $total_discount += ($discount * $quantity);
+                                    $total_amount += $amount;
+                                }
+                            }
+                        }
+                    }
+
+                    $customer_promotion->total_quantity = $total_quantity;
+                    $customer_promotion->total_price = $total_price;
+                    $customer_promotion->total_discount = $total_discount;
+                    $customer_promotion->total_amount = $total_amount;
+                    $customer_promotion->save();
+
+                    $response = ['status'=>true,'message'=> "Promotion claim successfully !"];
+
+                }else{
+                    $response = ['status'=>false,'message'=> "Something went wrong."];
+                }
+            }
+        }
+
+        return $response;
+    }
+
+    public function orderIndex(){
+        return view('customer-promotion.order_index');
+    }
+
+    public function orderGetAll(Request $request){
+
+        $data = CustomerPromotion::query();
+
+        if(Auth::id() != 1){
+            $data->where('customer_promotions.user_id',Auth::id());
+        }
+
+        if($request->filter_status != ""){
+            $data->where('customer_promotions.status',$request->filter_status);
+        }
+
+        if($request->filter_search != ""){
+            $data->where(function($query) use ($request) {
+
+                $query->whereHas('promotion',function($q) use ($request) {
+                    $q->where('title','LIKE',"%".$request->filter_search."%");
+                });
+
+            });
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('customer_promotions.id', 'desc');
+        });
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('promotion', function($row) {
+                                return @$row->promotion->title ?? "-";
+                            })
+                            ->addColumn('action', function($row) {
+
+                                /*$btn = '<a href="' . route('department.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                    <i class="fa fa-pencil"></i>
+                                  </a>';
+
+                                $btn .= '<a href="' . route('department.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
+                                  </a>';*/
+
+                                return "-";
+                            })
+                            ->addColumn('created_at', function($row) {
+                                return date('M d, Y',strtotime($row->created_at));
+                            })
+                            ->addColumn('status', function($row) {
+
+                                $btn = "";
+                                if($row->status == "approved"){
+                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline ">Approved</a>';
+                                }else if($row->status == "pending"){
+                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-info btn-inline ">Pending</a>';
+                                }else if($row->status == "canceled"){
+                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline ">Canceled</a>';
+                                }
+
+                                return $btn;
+                            })
+                            ->orderColumn('promotion', function ($query, $order) {
+                                $query->select('customer_promotions.*')->join('promotions', 'customer_promotions.promotion_id', '=', 'promotions.id')
+                                    ->orderBy('promotions.title', $order);
+                            })
+                            ->orderColumn('status', function ($query, $order) {
+                                $query->orderBy('status', $order);
+                            })
+                            ->orderColumn('created_at', function ($query, $order) {
+                                $query->orderBy('created_at', $order);
+                            })
+                            ->rawColumns(['action','status','created_at'])
+                            ->make(true);
     }
 }

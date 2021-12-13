@@ -36,6 +36,7 @@
                   <input type="hidden" name="id" value="{{ $edit->id }}">
                 @endif
 
+                <input type="hidden" name="promotion_id" value="{{ $promotion->id }}">
 
                 <div class="row mb-5">
                   <div class="col-md-12">
@@ -123,7 +124,7 @@
                       <div class="col-md-3">
                         <div class="form-group">
                           <label>Quantity</label>
-                          <input type="number" class="form-control form-control-solid quantity" placeholder="Enter quantity" name="quantity" @if($quantity) readonly="" value="{{ $quantity }}" @else value="1" @endif min="1">
+                          <input type="number" class="form-control form-control-solid quantity" placeholder="Enter quantity" name="products[{{ @$p->product->id }}][quantity]" @if($quantity) readonly="" value="{{ $quantity }}" @else value="1" @endif min="1">
                         </div>
                       </div>
 
@@ -161,7 +162,7 @@
                         <div class="col-md-3 mt-5">
                           <div class="form-group">
                             <label>{{ ordinal($i) }} Delivery Date</label>
-                            <input type="text" class="form-control form-control-solid delivery_date" placeholder="Select {{ ordinal($i) }} Delivery Date" name="products[{{ @$p->product->id }}]['delivery_date'][{{ $i }}]" readonly="">
+                            <input type="text" class="form-control form-control-solid delivery_date" placeholder="Select {{ ordinal($i) }} Delivery Date" name="products[{{ @$p->product->id }}][delivery_date][{{ $i }}]" readonly="">
                           </div>
                         </div>
 
@@ -169,7 +170,7 @@
                         <div class="col-md-3 mt-5">
                           <div class="form-group">
                             <label>{{ ordinal($i) }} Delivery Quantity</label>
-                            <input type="number" class="form-control form-control-solid delivery_quantity" placeholder="Enter {{ ordinal($i) }} Delivery Quantity" name="products[{{ @$p->product->id }}]['delivery_quantity'][{{ $i }}]" min="1">
+                            <input type="number" class="form-control form-control-solid delivery_quantity {{ ($promotion->promotion_type->number_of_delivery - 1 == $i) ? "2nd_last_delivery_quantity" : "" }}" placeholder="Enter {{ ordinal($i) }} Delivery Quantity" name="products[{{ @$p->product->id }}][delivery_quantity][{{ $i }}]" min="1">
                           </div>
                         </div>
                         @endif
@@ -267,6 +268,11 @@
     $(document).on('change', '.delivery_quantity', function(event) {
       event.preventDefault();
 
+      // set zero last quantiy value
+      if($(this).hasClass('2nd_last_delivery_quantity')){
+        $(this).closest('.product_list').find('.delivery_quantity:eq(-1)').val(0);
+      }
+
       var sum = 0;
       $(this).closest('.product_list').find('.delivery_quantity').each(function(){
         if(this.value != ""){
@@ -275,34 +281,24 @@
       });
 
       var quantity = $(this).closest('.product_list').find('.quantity').val();
-      
+
+      // Auto complete last quantiy value
+      if($(this).hasClass('2nd_last_delivery_quantity')){
+        var remain = parseInt(quantity) - parseInt(sum);
+        if(remain < 0){
+          remain = 0;
+        }
+        $(this).closest('.product_list').find('.delivery_quantity:eq(-1)').val(remain);
+
+        sum += remain;
+      }
+        
+      // Show error message
       if(sum != quantity){
         $(this).closest('.product_list').find('.quantity_error_span').show();
         $('[type="submit"]').prop('disabled', true);
       }else{
         $(this).closest('.product_list').find('.quantity_error_span').hide();
-        $('[type="submit"]').prop('disabled', false);
-      }
-
-      var quantity = 0;
-      $('.quantity').each(function(){
-        if(this.value != ""){
-          quantity += parseFloat(this.value);
-        }
-      }); 
-
-      var delivery_quantity = 0;
-      $('.delivery_quantity').each(function(){
-        if(this.value != ""){
-          delivery_quantity += parseFloat(this.value);
-        }
-      });
-
-      if(quantity != delivery_quantity){
-        $('.total_delivery_quantity_error_div').show();
-        $('[type="submit"]').prop('disabled', true);
-      }else{
-        $('.total_delivery_quantity_error_div').hide();
         $('[type="submit"]').prop('disabled', false);
       }
 
@@ -326,6 +322,9 @@
       $(this).closest('.product_list').find('.amount').val(amount);
 
       total_details_update();
+
+      $(this).closest('.product_list').find('.delivery_quantity').val(0);
+
     });
 
     total_details_update();
@@ -355,12 +354,13 @@
       $('.total_amount').val(sum);
 
 
+      // Show error message
       @if(@$promotion->promotion_type->is_total_fixed_quantity)
         
         var total_fixed_quantity = parseInt($('.total_fixed_quantity').val());
         var total_quantity = parseInt($('.total_quantity').val());
 
-        if(total_quantity > total_fixed_quantity){
+        if(total_quantity != total_fixed_quantity){
           $('.total_quantity_error_div').show();
           $('[type="submit"]').prop('disabled', true);
         }else{
@@ -368,22 +368,50 @@
           $('[type="submit"]').prop('disabled', false);
         }
       @endif
+    }
 
+    // check quantity and delivery quantity
+    function check_quantity_and_delivery_quantity() {
+      var quantity = 0;
+      $('.quantity').each(function(){
+        if(this.value != ""){
+          quantity += parseFloat(this.value);
+        }
+      }); 
+
+      var delivery_quantity = 0;
+      $('.delivery_quantity').each(function(){
+        if(this.value != ""){
+          delivery_quantity += parseFloat(this.value);
+        }
+      });
+
+      // show error message
+      if(quantity != delivery_quantity){
+        //$('.total_delivery_quantity_error_div').show();
+        //$('[type="submit"]').prop('disabled', true);
+        return false;
+      }else{
+        //$('.total_delivery_quantity_error_div').hide();
+        //$('[type="submit"]').prop('disabled', false);
+        return true;
+      }
     }
 
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
       var validator = validate_form();
       
+      if(!check_quantity_and_delivery_quantity()){
+        toast_error("Oops! the total of quantity is not the same as the total of delivery quantity.");
+        return false;
+      }
+
       if (validator.form() != false) {
-        
-        return true;
-
-
 
         $('[type="submit"]').prop('disabled', true);
         $.ajax({
-          url: "{{route('promotion-type.store')}}",
+          url: "{{route('customer-promotion.order.store')}}",
           type: "POST",
           data: new FormData($("#myForm")[0]),
           async: false,
@@ -393,7 +421,7 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.href = '{{ route('promotion-type.index') }}';
+                window.location.href = '{{ route('customer-promotion.order.index') }}';
               },500)
             } else {
               toast_error(data.message);

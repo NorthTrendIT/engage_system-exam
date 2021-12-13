@@ -59,6 +59,10 @@ class PromotionsController extends Controller
                     'sales_specialist_ids'=> 'required_if:promotion_scope,==,SS',
                 );
 
+        if($input['promotion_for'] == "All"){
+            $input['promotion_scope'] = null;
+        }
+
         if(request()->hasFile('promo_image')){
             $rules['promo_image'] = "required|max:5000|mimes:jpeg,png,jpg,eps,bmp,tif,tiff,webp";
         }
@@ -69,14 +73,19 @@ class PromotionsController extends Controller
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
 
-            $check = Promotions::where('promotion_type_id', $input['promotion_type_id'])->get();
+            // Start - Check Same Type Promotion User on Dates
+            $check = Promotions::where('promotion_type_id', $input['promotion_type_id']);
+            if(isset($input['id'])){
+                $check->where('id','!=',$input['id']);
+            }
+            $check = $check->get();
             
             if(count($check) > 0){
                 $s = date('Y-m-d',strtotime($input['promotion_start_date']));
                 $e = date('Y-m-d',strtotime($input['promotion_end_date']));
 
                 foreach ($check as $value) {
-                    if($s > $value->promotion_start_date && $e < $value->promotion_end_date){
+                    /*if($s > $value->promotion_start_date && $e < $value->promotion_end_date){
 
                         return $response = ['status'=>false,'message'=>'This promotion type can not be assigned to another promotion unless the end date of that promotion is over.'];
 
@@ -87,9 +96,19 @@ class PromotionsController extends Controller
                     }elseif($s < $value->promotion_end_date && ($e > $value->promotion_end_date)){
 
                         return $response = ['status'=>false,'message'=>'This promotion type can not be assigned to another promotion unless the end date of that promotion is over.'];
+                    }*/
+
+
+                    if( ($s > $value->promotion_start_date) && ($s < $value->promotion_end_date) ){
+
+                        return $response = ['status'=>false,'message'=>'This promotion type can not be assigned to another promotion unless the end date of that promotion is over.'];
+                    }else if( ($e > $value->promotion_start_date) && ($e < $value->promotion_end_date) ){
+                        return $response = ['status'=>false,'message'=>'This promotion type can not be assigned to another promotion unless the end date of that promotion is over.'];
                     }
                 }
             }
+            // End - Check Same Type Promotion User on Dates
+            
 
             if(isset($input['id'])){
                 $promotion = Promotions::find($input['id']);

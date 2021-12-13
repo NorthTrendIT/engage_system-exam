@@ -170,7 +170,12 @@ Route::middleware(['auth'])->group(function(){
         Route::post('customer-promotion/get-all-product-list', 'App\Http\Controllers\CustomerPromotionController@getAllProductList')->name('customer-promotion.get-all-product-list');
         Route::post('customer-promotion/store-interest', 'App\Http\Controllers\CustomerPromotionController@storeInterest')->name('customer-promotion.store-interest');
         Route::get('customer-promotion/product-detail/{id}/{promotion_id}', 'App\Http\Controllers\CustomerPromotionController@productDetail')->name('customer-promotion.product-detail');
-        Route::get('customer-promotion/order/{id}', 'App\Http\Controllers\CustomerPromotionController@orderIndex')->name('customer-promotion.order.index');
+
+
+        Route::get('customer-promotion/order/', 'App\Http\Controllers\CustomerPromotionController@orderIndex')->name('customer-promotion.order.index');
+        Route::get('customer-promotion/order/{id}', 'App\Http\Controllers\CustomerPromotionController@orderCreate')->name('customer-promotion.order.create');
+        Route::post('customer-promotion/order/store', 'App\Http\Controllers\CustomerPromotionController@orderStore')->name('customer-promotion.order.store');
+        Route::post('customer-promotion/order/get-all', 'App\Http\Controllers\CustomerPromotionController@orderGetAll')->name('customer-promotion.order.get-all');
 
     });
 

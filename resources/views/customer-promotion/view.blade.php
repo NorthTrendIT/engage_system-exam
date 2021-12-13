@@ -29,7 +29,7 @@
             <div class="card-header border-0 pt-5 min-0">
               <h5>View Details</h5>
 
-              <a href="{{ route('customer-promotion.order.index',$data->id) }}" class="btn btn-success">Claim Now</a>
+              <a href="{{ route('customer-promotion.order.create',$data->id) }}" class="btn btn-success">Claim Now</a>
             </div>
             <div class="card-body">
               
@@ -143,7 +143,7 @@
               
               <div class="row mt-5">
                 <div class="col-md-12 d-flex justify-content-center">
-                  <a href="{{ route('customer-promotion.order.index',$data->id) }}" class="btn btn-success">Claim Now</a>
+                  <a href="{{ route('customer-promotion.order.create',$data->id) }}" class="btn btn-success">Claim Now</a>
                 </div>
               </div>
 

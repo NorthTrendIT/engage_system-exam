@@ -535,7 +535,7 @@
                     },
             },
             max_percentage:{
-              min:$('#min_percentage').val(),
+              min:parseFloat($('#min_percentage').val()),
               max:100,
               number: true,
               required: function () {
@@ -593,8 +593,8 @@
       $('.discount_percentage').each(function() {
         $(this).rules('add', {
           required:true,
-          min:$('#min_percentage').val(),
-          max:$('#max_percentage').val(),
+          min:parseFloat($('#min_percentage').val()),
+          max:parseFloat($('#max_percentage').val()),
           number: true
         });
       });
