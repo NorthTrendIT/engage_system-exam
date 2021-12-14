@@ -407,3 +407,11 @@ body {overflow-x: hidden; background-color: #f5f8fa;}
 .customer-product-list .product-grid .price {
     opacity: unset;
 } 
+
+td.disabled.day {
+    text-decoration: line-through !important;
+}
+
+.datepicker thead th.prev, .datepicker thead th.datepicker-switch, .datepicker thead th.next {
+    text-align: center !important;
+}

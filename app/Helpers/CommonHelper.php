@@ -79,7 +79,7 @@ function get_modules(){
     return $result;
 }
 
-function get_product_customer_price($item_prices,$number, $discount = false)
+function get_product_customer_price($item_prices,$number, $discount = false, $discount_fix_amount = false)
 {
     if(is_null($number)){
         $number = 1;
@@ -94,7 +94,17 @@ function get_product_customer_price($item_prices,$number, $discount = false)
 
         if($discount){
 
-            $price = number_format($price - ( ( $price * $discount ) / 100 ),2);
+            $discount_amount = ( ( $price * $discount ) / 100 );
+
+            if($discount_fix_amount){
+
+                if($discount_amount > $discount_fix_amount){
+                    $discount_amount = $discount_fix_amount;
+                }
+
+            }
+
+            $price = $price - $discount_amount;
 
             if($price < 0){
                 $price = 0;
@@ -105,4 +115,12 @@ function get_product_customer_price($item_prices,$number, $discount = false)
     }
 
     return 0;
+}
+
+function ordinal($number) {
+    $ends = array('th','st','nd','rd','th','th','th','th','th','th');
+    if ((($number % 100) >= 11) && (($number%100) <= 13))
+        return $number. 'th';
+    else
+        return $number. $ends[$number % 10];
 }

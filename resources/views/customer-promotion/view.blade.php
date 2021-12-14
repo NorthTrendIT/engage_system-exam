@@ -29,7 +29,7 @@
             <div class="card-header border-0 pt-5 min-0">
               <h5>View Details</h5>
 
-              <a href="{{ route('customer-promotion.order.index',$data->id) }}" class="btn btn-success">Claim Now</a>
+              <a href="{{ route('customer-promotion.order.create',$data->id) }}" class="btn btn-success">Claim Now</a>
             </div>
             <div class="card-body">
               
@@ -82,10 +82,10 @@
                               <th> <b>Quantity:</b> </th>
                               <td>
                                 @if(@$data->promotion_type)
-                                  @if(is_null($data->promotion_type->fixed_quantity))
+                                  @if($data->promotion_type->is_fixed_quantity == false)
                                   No Limit
                                   @else
-                                  Fixed ({{ $data->promotion_type->fixed_quantity }})
+                                  Fixed ({{ $data->promotion_type->is_total_fixed_quantity ? "Total Fixed Quantity" : "Fixed Quantity Per Product" }})
                                   @endif
                                 @endif
 
@@ -143,7 +143,7 @@
               
               <div class="row mt-5">
                 <div class="col-md-12 d-flex justify-content-center">
-                  <a href="{{ route('customer-promotion.order.index',$data->id) }}" class="btn btn-success">Claim Now</a>
+                  <a href="{{ route('customer-promotion.order.create',$data->id) }}" class="btn btn-success">Claim Now</a>
                 </div>
               </div>
 

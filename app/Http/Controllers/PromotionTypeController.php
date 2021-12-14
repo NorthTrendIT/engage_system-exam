@@ -77,6 +77,11 @@ class PromotionTypeController extends Controller
                 $input['total_fixed_quantity'] = NULL;
             }
 
+            if($input['is_fixed_quantity'] == false){
+                $input['is_total_fixed_quantity'] = false;
+                $input['total_fixed_quantity'] = NULL;
+            }
+
             if(isset($input['id'])){
                 $obj = PromotionTypes::find($input['id']);
                 $message = "Promotion Type details updated successfully.";
@@ -157,6 +162,14 @@ class PromotionTypeController extends Controller
                 }
             }
 
+            if(isset($input['id'])){
+                // Add Updated log.
+                add_log(24, array('id' => $obj->id));
+            } else {
+                // Add Created log.
+                add_log(23, array('id' => $obj->id));
+            }
+
             $response = ['status'=>true,'message'=>$message];
         }
 
@@ -211,6 +224,10 @@ class PromotionTypeController extends Controller
     {
         $data = PromotionTypes::find($id);
         if(!is_null($data)){
+
+            // Add Log
+            add_log(25, array('id' => $data));
+
             $data->delete();
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
