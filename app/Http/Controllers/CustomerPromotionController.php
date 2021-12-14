@@ -144,6 +144,9 @@ class CustomerPromotionController extends Controller
             return abort(404);
         }
 
+        // Add Log.
+        add_log(26, array('id' => $data->id));
+        
         return view('customer-promotion.view',compact('data'));
     }
 
@@ -223,6 +226,9 @@ class CustomerPromotionController extends Controller
             }
 
             $obj->fill($input)->save();
+
+            // Add Log.
+            add_log(29, $input);
 
             $response = ['status'=>true,'message'=>$message];
         }
@@ -391,6 +397,9 @@ class CustomerPromotionController extends Controller
                 }else{
                     $response = ['status'=>false,'message'=> "Something went wrong."];
                 }
+
+                // Add Log.
+                add_log(27, array('id' => $data->id));
             }
         }
 
@@ -515,6 +524,9 @@ class CustomerPromotionController extends Controller
             $message = "Status updated successfully.";
 
             $response = ['status'=>true,'message'=>$message];
+
+            // Add Log.
+            add_log(28, $input);
         }
 
         return $response;
