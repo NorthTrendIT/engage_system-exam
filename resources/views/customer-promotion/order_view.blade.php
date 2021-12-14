@@ -75,7 +75,17 @@
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
                               <!--end::Label-->
                               <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ ucfirst(@$data->status) }}</div>
+                              <div class="fw-bolder fs-6 text-gray-800">
+
+                                @if($data->status == "approved")
+                                  <a href="javascript:" class="btn btn-sm btn-success btn-inline ">Approved</a>
+                                @elseif($data->status == "pending")
+                                  <a href="javascript:" class="btn btn-sm btn-info btn-inline ">Pending</a>
+                                @elseif($data->status == "canceled")
+                                  <a href="javascript:" class="btn btn-sm btn-danger btn-inline ">Canceled</a>
+                                @endif
+
+                              </div>
                               <!--end::Text-->
                             </div>
                             <!--end::Col-->
@@ -233,10 +243,74 @@
                 </div>
               </div>
 
+
+              @if($data->status == "canceled")
+              <div class="row mb-5 mt-5">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <hr>
+                    <h5>Canceled Reason:</h5>
+                    <p>{{ $data->cancel_reason ?? ""}}</p>
+                  </div>
+                </div>
+              </div>
+              @endif
+
             </div>
           </div>
         </div>
       </div>
+
+
+      <!-- Access only for admin -->
+      @if(userrole() == 1 && $data->status != "canceled")
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5 min-0">
+              <h5>Update Status</h5>
+            </div>
+            <div class="card-body">
+              
+              <form id="myForm" method="post">
+                @csrf
+
+                <input type="hidden" name="id" value="{{ $data->id }}">
+
+                <div class="row">
+                  <div class="col-md-4 mb-5">
+                    <div class="form-group">
+                      <select class="form-control form-control-lg form-control-solid" name="status" data-control="select2" data-hide-search="false" data-placeholder="Select a status" data-allow-clear="false">
+                        <option value=""></option>
+                        <option value="pending" @if($data->status == "pending") selected="" @endif>Pending</option>
+                        <option value="approved" @if($data->status == "approved") selected="" @endif>Approved</option>
+                        <option value="canceled" @if($data->status == "canceled") selected="" @endif>Canceled</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-8 mb-5 cancel_reason_div" style="display: none;">
+                    <div class="form-group">
+                      <textarea class="form-control form-control-solid" placeholder="Enter cancel reasons" rows="4" name="cancel_reason"></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-5 mt-5">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <input type="submit" class="btn btn-success" value="Update">
+                    </div>
+                  </div>
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      @endif
+
     </div>
   </div>
 </div>
@@ -248,4 +322,84 @@
 
 @push('js')
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
+
+
+<script>
+  
+  $(document).ready(function() {
+
+    $(document).on('change', '[name="status"]', function(event) {
+      event.preventDefault();
+      
+      if($(this).find('option:selected').val() == 'canceled'){
+        $('.cancel_reason_div').show();
+      }else{
+        $('.cancel_reason_div').hide();
+      }
+
+    });
+
+    $('body').on("submit", "#myForm", function (e) {
+      e.preventDefault();
+      var validator = validate_form();
+      
+      if (validator.form() != false) {
+
+        $('[type="submit"]').prop('disabled', true);
+        $.ajax({
+          url: "{{route('customer-promotion.order.status')}}",
+          type: "POST",
+          data: new FormData($("#myForm")[0]),
+          async: false,
+          processData: false,
+          contentType: false,
+          success: function (data) {
+            if (data.status) {
+              toast_success(data.message)
+              setTimeout(function(){
+                window.location.reload();
+              },500)
+            } else {
+              toast_error(data.message);
+              $('[type="submit"]').prop('disabled', false);
+            }
+          },
+          error: function () {
+            toast_error("Something went to wrong !");
+            $('[type="submit"]').prop('disabled', false);
+          },
+        });
+      }
+    });
+
+
+    function validate_form(){
+      var validator = $("#myForm").validate({
+          errorClass: "is-invalid",
+          validClass: "is-valid",
+          rules: {
+            status:{
+              required:true,
+            },
+            cancel_reason:{
+              required: function () {
+                        if($('[name="status"]').find('option:selected').val() == 'canceled'){
+                          return true;
+                        }else{
+                          return false;
+                        }
+                    },
+            }
+          },
+          messages: {
+            
+          },
+      });
+      return validator;
+    }
+  });
+
+</script>
 @endpush

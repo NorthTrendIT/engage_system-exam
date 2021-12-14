@@ -178,6 +178,7 @@ Route::middleware(['auth'])->group(function(){
         Route::post('customer-promotion/order/get-all', 'App\Http\Controllers\CustomerPromotionController@orderGetAll')->name('customer-promotion.order.get-all');
         Route::get('customer-promotion/order/show/{id}', 'App\Http\Controllers\CustomerPromotionController@orderShow')->name('customer-promotion.order.show');
         Route::post('customer-promotion/order/get-customer-address', 'App\Http\Controllers\CustomerPromotionController@getCustomerAddress')->name('customer-promotion.order.get-customer-address');
+        Route::post('customer-promotion/order/status', 'App\Http\Controllers\CustomerPromotionController@orderStatus')->name('customer-promotion.order.status');
 
     });
 

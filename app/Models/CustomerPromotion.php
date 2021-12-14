@@ -9,6 +9,11 @@ class CustomerPromotion extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'id',
+        'status',
+        'cancel_reason',
+    ];
 
     public function promotion()
     {

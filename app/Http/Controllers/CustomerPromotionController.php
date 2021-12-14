@@ -488,6 +488,39 @@ class CustomerPromotionController extends Controller
         return view('customer-promotion.order_view',compact('data'));
     }
 
+
+    public function orderStatus(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'id' => 'required|exists:customer_promotions,id',
+                    'status' => 'required',
+                    'cancel_reason'=> 'required_if:status,==,canceled',
+                );
+
+        if($input['status'] != "canceled"){
+            $input['cancel_reason'] = null;
+        }
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+            $obj = CustomerPromotion::find($input['id']);
+
+            $obj->fill($input)->save();
+            
+            $message = "Status updated successfully.";
+
+            $response = ['status'=>true,'message'=>$message];
+        }
+
+        return $response;
+    }
+
+
     public function getCustomerAddress(Request $request){
         $search = $request->search;
 
