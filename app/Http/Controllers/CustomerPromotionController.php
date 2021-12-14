@@ -12,6 +12,7 @@ use App\Models\Product;
 use App\Models\CustomerPromotion;
 use App\Models\CustomerPromotionProduct;
 use App\Models\CustomerPromotionProductDelivery;
+use App\Models\CustomerBpAddress;
 use Validator;
 use DataTables;
 use Auth;
@@ -264,6 +265,7 @@ class CustomerPromotionController extends Controller
 
         $rules = array(
                     'promotion_id' => 'required|exists:promotions,id',
+                    'customer_bp_address_id' => 'required|exists:customer_bp_addresses,id',
                     'products' => 'required|array',
                 );
 
@@ -432,15 +434,16 @@ class CustomerPromotionController extends Controller
                             })
                             ->addColumn('action', function($row) {
 
-                                /*$btn = '<a href="' . route('department.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
-                                    <i class="fa fa-pencil"></i>
+                                $btn = "";
+                                // $btn = '<a href="' . route('department.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                //     <i class="fa fa-pencil"></i>
+                                //   </a>';
+
+                                $btn .= '<a href="' . route('customer-promotion.order.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
                                   </a>';
 
-                                $btn .= '<a href="' . route('department.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
-                                    <i class="fa fa-eye"></i>
-                                  </a>';*/
-
-                                return "-";
+                                return $btn;
                             })
                             ->addColumn('created_at', function($row) {
                                 return date('M d, Y',strtotime($row->created_at));
@@ -470,5 +473,32 @@ class CustomerPromotionController extends Controller
                             })
                             ->rawColumns(['action','status','created_at'])
                             ->make(true);
+    }
+
+    public function orderShow($id){
+
+        $data = CustomerPromotion::where('id',$id);
+
+        if(Auth::id() != 1){
+            $data->where('user_id',Auth::id());
+        }
+
+        $data = $data->firstOrFail();
+        
+        return view('customer-promotion.order_view',compact('data'));
+    }
+
+    public function getCustomerAddress(Request $request){
+        $search = $request->search;
+
+        $data = CustomerBpAddress::where('customer_id',@Auth::user()->customer->id)->orderBy('order','asc');
+
+        if($search != ''){
+            $data->where('address', 'like', '%' .$search . '%');
+        }
+
+        $data = $data->limit(50)->get();
+
+        return response()->json($data);
     }
 }

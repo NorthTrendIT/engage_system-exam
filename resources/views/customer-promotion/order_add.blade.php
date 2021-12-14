@@ -230,6 +230,18 @@
                   </div>
                 </div>
 
+
+                <div class="row mb-5 mt-5">
+                  <div class="col-md-6 is_total_fixed_quantity_div">
+                    <div class="form-group">
+                      <label>Address<span class="asterisk">*</span></label>
+                      <select class="form-control form-control-lg form-control-solid" name="customer_bp_address_id" data-control="select2" data-hide-search="false" data-placeholder="Select Address" data-allow-clear="true">
+                        <option value=""></option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="row mb-5 mt-10">
                   <div class="col-md-12">
                     <div class="form-group">
@@ -406,12 +418,12 @@
       e.preventDefault();
       var validator = validate_form();
       
-      if(!check_quantity_and_delivery_quantity()){
-        toast_error("Oops! the total of quantity is not the same as the total of delivery quantity.");
-        return false;
-      }
-
       if (validator.form() != false) {
+        
+        if(!check_quantity_and_delivery_quantity()){
+          toast_error("Oops! the total of quantity is not the same as the total of delivery quantity.");
+          return false;
+        }
 
         $('[type="submit"]').prop('disabled', true);
         $.ajax({
@@ -445,7 +457,9 @@
           errorClass: "is-invalid",
           validClass: "is-valid",
           rules: {
-            
+            customer_bp_address_id:{
+              required:true,
+            }
           },
           messages: {
             
@@ -470,6 +484,32 @@
 
       return validator;
     }
+
+    $('[name="customer_bp_address_id"]').select2({
+      ajax: {
+          url: "{{route('customer-promotion.order.get-customer-address')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term
+              };
+          },
+          processResults: function (response) {
+            return {
+              results:  $.map(response, function (item) {
+                            return {
+                              text: item.address,
+                              id: item.id
+                            }
+                        })
+            };
+          },
+          cache: true
+      },
+    });
   
   });
 </script>
