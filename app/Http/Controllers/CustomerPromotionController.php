@@ -399,7 +399,7 @@ class CustomerPromotionController extends Controller
                 }
 
                 // Add Log.
-                add_log(27, array('id' => $data->id));
+                add_log(27, array('id' => $customer_promotion->id));
             }
         }
 
