@@ -77,9 +77,13 @@
                     @php
                       $discount_percentage = 0;
                       $quantity = false;
+                      $discount_fix_amount = false;
 
                       if(@$promotion->promotion_type->scope == "P"){
                         $discount_percentage = @$promotion->promotion_type->percentage;
+                      }else if(@$promotion->promotion_type->scope == "U"){
+                        $discount_percentage = @$promotion->promotion_type->percentage;
+                        $discount_fix_amount = @$promotion->promotion_type->fixed_price;
                       }elseif(@$promotion->promotion_type->scope == "R"){
                         $discount_percentage = @$p->discount_percentage;
                       }
@@ -92,7 +96,7 @@
                       }
 
                       $amount = get_product_customer_price(@$p->product->item_prices,@Auth::user()->customer->price_list_num);
-                      $total_amount = $discount_amount = get_product_customer_price(@$p->product->item_prices,@Auth::user()->customer->price_list_num,$discount_percentage);
+                      $total_amount = $discount_amount = get_product_customer_price(@$p->product->item_prices,@Auth::user()->customer->price_list_num,$discount_percentage,@$discount_fix_amount);
 
                       $discount_amount = $amount - $discount_amount;
 
@@ -166,14 +170,14 @@
                           </div>
                         </div>
 
-                        @if(@$promotion->promotion_type->number_of_delivery > 1)
+                        {{-- @if(@$promotion->promotion_type->number_of_delivery > 1) --}}
                         <div class="col-md-3 mt-5">
                           <div class="form-group">
                             <label>{{ ordinal($i) }} Delivery Quantity</label>
                             <input type="number" class="form-control form-control-solid delivery_quantity {{ ($promotion->promotion_type->number_of_delivery - 1 == $i) ? "2nd_last_delivery_quantity" : "" }}" placeholder="Enter {{ ordinal($i) }} Delivery Quantity" name="products[{{ @$p->product->id }}][delivery_quantity][{{ $i }}]" min="1">
                           </div>
                         </div>
-                        @endif
+                        {{-- @endif --}}
 
                       </div>
                       @endfor

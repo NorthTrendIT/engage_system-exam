@@ -6,6 +6,7 @@
           
           @php
             $image = @$product->product_images->first();
+            $discount_fix_amount = false;
           @endphp
 
           @if($image->image && get_valid_file_url('sitebucket/products',$image->image))
@@ -27,6 +28,14 @@
 
               @php
                 $discount_percentage = @$promotion_type_product->promotion_type->percentage;
+              @endphp
+
+            @elseif(@$promotion_type_product->promotion_type->scope == "U")
+              {{ @$promotion_type_product->promotion_type->percentage }}
+
+              @php
+                $discount_percentage = @$promotion_type_product->promotion_type->percentage;
+                $discount_fix_amount = @$promotion_type_product->promotion_type->fixed_price;
               @endphp
 
             @elseif(@$promotion_type_product->promotion_type->scope == "R")
@@ -65,7 +74,7 @@
             <span>{{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num) }}</span> 
           @endif
 
-          {{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num,@$discount_percentage) }}
+          {{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num,@$discount_percentage,@$discount_fix_amount) }}
         </div>
       @else
         <div class="price">₱ {{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num) }}</div>

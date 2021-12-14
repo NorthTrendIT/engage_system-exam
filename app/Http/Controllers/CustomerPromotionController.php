@@ -341,16 +341,20 @@ class CustomerPromotionController extends Controller
 
 
                                     $discount_percentage = 0;
+                                    $discount_fix_amount = false;
 
                                     if(@$promotion->promotion_type->scope == "P"){
                                         $discount_percentage = @$promotion->promotion_type->percentage;
+                                    }else if(@$promotion->promotion_type->scope == "U"){
+                                        $discount_percentage = @$promotion->promotion_type->percentage;
+                                        $discount_fix_amount = @$promotion->promotion_type->fixed_price;
                                     }elseif(@$promotion->promotion_type->scope == "R"){
                                         $discount_percentage = @$p_product->discount_percentage;
                                     }
 
 
                                     $price = get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num);
-                                    $amount = $discount = get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num,$discount_percentage);
+                                    $amount = $discount = get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num,$discount_percentage,@$discount_fix_amount);
 
                                     $discount = $price - $discount;
 

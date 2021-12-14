@@ -84,21 +84,25 @@
                             </li>
                          </ul>
 
-                         @if(isset($promotion))
-                            @if(@$promotion->promotion_type->scope == "P")
+                        @php
+                          if(isset($promotion)){
+                            $discount_fix_amount = false;
 
-                              @php
-                                $discount_percentage = @$promotion->promotion_type->percentage;
-                              @endphp
+                            if(@$promotion->promotion_type->scope == "P"){
 
-                            @elseif(@$promotion->promotion_type->scope == "R")
+                              $discount_percentage = @$promotion->promotion_type->percentage;
 
-                              @php
-                                $discount_percentage = @$data->discount_percentage;
-                              @endphp
+                            }else if(@$promotion->promotion_type->scope == "U"){
 
-                            @endif
-                        @endif
+                              $discount_percentage = @$promotion->promotion_type->percentage;
+                              $discount_fix_amount = @$promotion->promotion_type->fixed_price;
+
+                            }else if(@$promotion->promotion_type->scope == "R"){
+
+                              $discount_percentage = @$data->discount_percentage;
+                            }
+                          }
+                        @endphp
 
                           <p>
                             @if(@$discount_percentage)
@@ -106,7 +110,7 @@
                                   <span class="mr-3 text-muted">(₱ <strike> <b>{{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num) }}</strike></b>)</span>
                                 @endif
 
-                                <span class="mr-1 price"><strong>₱ {{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num,@$discount_percentage) }}</strong></span>
+                                <span class="mr-1 price"><strong>₱ {{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num,@$discount_percentage,@$discount_fix_amount) }}</strong></span>
                             @else
                               <span class="mr-1 price"><strong>₱ {{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num) }}</strong></span>
                             @endif
