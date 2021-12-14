@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title','Customers Orders')
+@section('title','Draft Orders')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Orders for Customers</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Draft Orders</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('sales-specialist-orders.create') }}" class="btn btn-sm btn-primary">Create Order</a>
+        <!-- <a href="{{ route('sales-specialist-orders.create') }}" class="btn btn-sm btn-primary">Create Order</a> -->
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -59,7 +59,7 @@
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <thead>
                             <tr>
-                              <th>Customer Name</th>
+                              <th>Sales Specialist Name</th>
                               <th>Confirmation Status</th>
                               <th>Due Date</th>
                               <th>Action</th>
@@ -109,7 +109,7 @@ $(document).ready(function() {
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('sales-specialist-orders.get-all') }}",
+              'url': "{{ route('draft-order.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -120,7 +120,7 @@ $(document).ready(function() {
               }
           },
           columns: [
-              {data: 'customer_name', name: 'customer_name'},
+              {data: 'sales_specialist_name', name: 'sales_specialist_name'},
               {data: 'confirmation_status', name: 'total'},
               {data: 'due_date', name: 'due_date'},
               {data: 'action', name: 'action'},

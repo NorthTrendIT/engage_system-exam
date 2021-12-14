@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title','Customers Orders')
+@section('title','Quotation')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Orders for Customers</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Quotation</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('sales-specialist-orders.create') }}" class="btn btn-sm btn-primary">Create Order</a>
+        <a href="javascript:" class="btn btn-sm btn-primary sync-quotation">Sync Quotation</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -26,6 +26,9 @@
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
+           {{--  <div class="card-header border-0 pt-5">
+              <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
+            </div> --}}
             <div class="card-body">
               <div class="row mt-5">
                 <div class="col-md-3">
@@ -36,7 +39,6 @@
                     </span>
                   </div>
                 </div>
-
 
                 <!-- <div class="col-md-3">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
@@ -55,21 +57,31 @@
               <div class="row mb-5 mt-5">
                 <div class="col-md-12">
                   <div class="form-group">
+                    <!--begin::Table container-->
                     <div class="table-responsive">
+                       <!--begin::Table-->
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                          <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>Customer Name</th>
-                              <th>Confirmation Status</th>
+                              <th>Type</th>
+                              <th>Name</th>
+                              <th>Total</th>
+                              <th>Date</th>
                               <th>Due Date</th>
-                              <th>Action</th>
                             </tr>
                           </thead>
-
+                          <!--end::Table head-->
+                          <!--begin::Table body-->
                           <tbody>
+
                           </tbody>
+                          <!--end::Table body-->
                        </table>
+                       <!--end::Table-->
                     </div>
+                    <!--end::Table container-->
+
                   </div>
 
                 </div>
@@ -92,7 +104,7 @@
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script>
-$(document).ready(function() {
+  $(document).ready(function() {
 
     render_table();
 
@@ -109,7 +121,7 @@ $(document).ready(function() {
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('sales-specialist-orders.get-all') }}",
+              'url': "{{ route('quotation.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -120,10 +132,11 @@ $(document).ready(function() {
               }
           },
           columns: [
-              {data: 'customer_name', name: 'customer_name'},
-              {data: 'confirmation_status', name: 'total'},
+              {data: 'type', name: 'type'},
+              {data: 'name', name: 'name'},
+              {data: 'total', name: 'total'},
+              {data: 'date', name: 'date'},
               {data: 'due_date', name: 'due_date'},
-              {data: 'action', name: 'action'},
           ],
           drawCallback:function(){
               $(function () {
@@ -146,6 +159,40 @@ $(document).ready(function() {
       render_table();
     })
 
-});
+    $(document).on('click', '.sync-quotation', function(event) {
+      event.preventDefault();
+
+      Swal.fire({
+        title: 'Are you sure want to sync Quotation?',
+        text: "Syncing process will run in background and it may take some time to sync all Quotation Data.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('quotation.sync-quotation') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}'
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              render_table();
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+  })
 </script>
 @endpush

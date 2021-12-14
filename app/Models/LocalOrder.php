@@ -33,7 +33,7 @@ class LocalOrder extends Model
     }
 
     public function items(){
-        return $this->hasMany(LocalOrderItem::class, 'id', 'local_order_id');
+        return $this->hasMany(LocalOrderItem::class, 'local_order_id');
     }
 
 }

@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title','Place Order for Customer')
+@section('title','Draft Orders')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
@@ -11,7 +11,7 @@
                 <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">@if(isset($edit)) Update @else Create @endif Order for Customer</h1>
             </div>
             <div class="d-flex align-items-center py-1">
-                <a href="{{ route('sales-specialist-orders.index') }}" class="btn btn-sm btn-primary">Back</a>
+                <a href="{{ route('draft-order.index') }}" class="btn btn-sm btn-primary">Back</a>
             </div>
         </div>
     </div>
@@ -31,7 +31,7 @@
                             <div class="card-body py-3">
                                 <div class="top-items-wrapper mb-5">
                                     <div class="row">
-                                        <div class="col-xl-4 col-lg-4 col-md-4 col-12">
+                                        <!-- <div class="col-xl-4 col-lg-4 col-md-4 col-12">
                                             <div class="form-group">
                                                 <label class="col-form-label text-right">Select Customers<span class="asterisk">*</span></label>
                                                 <select class="form-select form-select-solid" id='selectCustomers' data-control="select2" data-hide-search="false" name="customer_id">
@@ -42,11 +42,11 @@
                                                     @endif
                                                 </select>
                                             </div>
-                                        </div>
-                                        <div class="col-xl-4 col-lg-4 col-md-4 col-12">
+                                        </div> -->
+                                        <div class="col-xl-6 col-lg-6 col-md-6 col-12">
                                             <div class="form-group">
                                                 <label class="col-form-label text-right">Select Address<span class="asterisk">*</span></label>
-                                                <select class="form-select form-select-solid" id='selectAddress' data-control="select2" data-hide-search="false" name="address_id" disabled="disabled">
+                                                <select class="form-select form-select-solid" id='selectAddress' data-control="select2" data-hide-search="false" name="address_id">
                                                     @if(isset($edit))
                                                         <option value="{{ $edit->address->id }}" selected>{{$edit->address->address}}</option>
                                                     @else
@@ -55,7 +55,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-xl-4 col-lg-4 col-md-4 col-12">
+                                        <div class="col-xl-6 col-lg-6 col-md-6 col-12">
                                             <label class="col-form-label text-right">Due Date<span class="asterisk">*</span></label>
                                             <input type="text" class="form-control" placeholder="Invoice Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('m/d/Y',strtotime($edit->due_date))}}" @endif>
                                         </div>
@@ -204,8 +204,8 @@
                     <div class="row gy-5 g-xl-8">
                         <div class="col-xl-12">
                             <div class="d-flex flex-wrap pt-2 text-center justify-content-center">
-                                <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Save to Draft">
-                                <input type="button" class="btn btn-lg btn-primary placeOrder" value="Place Order">
+                                <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Update">
+                                <input type="button" class="btn btn-lg btn-primary placeOrder" value="Update & Place Order">
                             </div>
                         </div>
                     </div>
@@ -234,7 +234,7 @@
         var form = $('#myForm');
         form.find('select').select2({
             ajax: {
-                url: "{{route('sales-specialist-orders.getProducts')}}",
+                url: "{{route('draft-order.getProducts')}}",
                 type: "post",
                 dataType: 'json',
                 delay: 250,
@@ -264,7 +264,7 @@
                 form.find('select').next('.select2-container').remove();
                 form.find('select').select2({
                     ajax: {
-                        url: "{{route('sales-specialist-orders.getProducts')}}",
+                        url: "{{route('draft-order.getProducts')}}",
                         type: "post",
                         dataType: 'json',
                         delay: 250,
@@ -293,31 +293,6 @@
             isFirstItemUndeletable: true
         });
 
-        $("#selectCustomers").select2({
-            ajax: {
-                url: "{{route('sales-specialist-orders.getCustomers')}}",
-                type: "post",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        _token: "{{ csrf_token() }}",
-                        search: params.term
-                    };
-                },
-                processResults: function (response) {
-                    return {
-                        results: response
-                    };
-                },
-                cache: true
-            },
-            placeholder: 'Select Customers',
-            // minimumInputLength: 1,
-            multiple: false,
-            // data: $initialOptions
-        });
-
         $('body').on('change' ,'#selectCustomers', function(){
             $customer = $('[name="customer_id"]').val();
             $('#selectAddress').val(null).trigger('change');
@@ -331,7 +306,7 @@
 
         $("#selectAddress").select2({
             ajax: {
-                url: "{{route('sales-specialist-orders.getAddress')}}",
+                url: "{{route('draft-order.getAddress')}}",
                 type: "post",
                 dataType: 'json',
                 delay: 250,
@@ -339,7 +314,7 @@
                     return {
                         _token: "{{ csrf_token() }}",
                         search: params.term,
-                        customer_id: $('[name="customer_id"]').val(),
+                        customer_id: "{{ Auth::user()->customer_id }}",
                     };
                 },
                 processResults: function (response) {
@@ -361,9 +336,9 @@
 
             if (validator.form() != false) {
                 $('[type="submit"]').prop('disabled', true);
-                $('[name="address_id"]').removeAttr('disabled');
+                // $('[name="address_id"]').removeAttr('disabled');
                 $.ajax({
-                    url: "{{route('sales-specialist-orders.store')}}",
+                    url: "{{route('draft-order.store')}}",
                     type: "POST",
                     data: new FormData($("#myForm")[0]),
                     async: false,
@@ -373,7 +348,7 @@
                         if (data.status) {
                             toast_success(data.message)
                             setTimeout(function(){
-                                window.location.href = '{{ route('sales-specialist-orders.index') }}';
+                                window.location.href = '{{ route('draft-order.index') }}';
                             },1500)
                         } else {
                             toast_error(data.message);
@@ -396,7 +371,7 @@
                 $('[type="submit"]').prop('disabled', true);
                 $('[name="address_id"]').removeAttr('disabled');
                 $.ajax({
-                    url: "{{route('sales-specialist-orders.placeOrder')}}",
+                    url: "{{route('draft-order.placeOrder')}}",
                     type: "POST",
                     data: new FormData($("#myForm")[0]),
                     async: false,
@@ -406,7 +381,7 @@
                         if (data.status) {
                             toast_success(data.message)
                             setTimeout(function(){
-                                window.location.href = '{{ route('sales-specialist-orders.index') }}';
+                                window.location.href = '{{ route('draft-order.index') }}';
                             },1500)
                         } else {
                             toast_error(data.message);
@@ -426,9 +401,6 @@
                 errorClass: "is-invalid",
                 validClass: "is-valid",
                 rules: {
-                    customer_id:{
-                        required: true,
-                    },
                     address_id:{
                         required: true,
                     },
@@ -444,9 +416,6 @@
                     }
                 },
                 messages: {
-                    customer_id:{
-                        required: "Please select customer.",
-                    },
                     address_id:{
                         required: "Please select address.",
                     },

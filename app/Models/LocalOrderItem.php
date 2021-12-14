@@ -15,4 +15,8 @@ class LocalOrderItem extends Model
         'item_code',
         'quantity',
     ];
+
+    public function product(){
+        return $this->hasOne(Product::class, 'id', 'product_id');
+    }
 }
