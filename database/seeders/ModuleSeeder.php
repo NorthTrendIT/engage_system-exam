@@ -98,6 +98,14 @@ class ModuleSeeder extends Seeder
                             )
                         );
 
+        $quotation = Module::create(
+                            array(
+                                'title' => 'Quotation',
+                                'slug' => 'quotation',
+                                'parent_id' => null,
+                            )
+                        );
+
         // $promotion = Module::create(
         //                     array(
         //                         'title' => 'Promotion',
@@ -237,11 +245,21 @@ class ModuleSeeder extends Seeder
                         'parent_id' => $product->id,
                     ),
 
-
                     array(
                         'title' => 'view',
                         'slug' => 'view-my-promotions',
                         'parent_id' => $my_promotions->id,
+                    ),
+
+                    array(
+                        'title' => 'Add/Sync',
+                        'slug' => 'add-quotation',
+                        'parent_id' => $quotation->id,
+                    ),
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-quotation',
+                        'parent_id' => $quotation->id,
                     ),
 
                     // array(

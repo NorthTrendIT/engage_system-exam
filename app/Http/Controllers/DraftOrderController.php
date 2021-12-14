@@ -13,7 +13,7 @@ use Validator;
 use Auth;
 use DataTables;
 
-class LocalOrderController extends Controller
+class DraftOrderController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,7 +22,7 @@ class LocalOrderController extends Controller
      */
     public function index()
     {
-        return view('local-order.index');
+        return view('draft-order.index');
     }
 
     /**
@@ -32,7 +32,7 @@ class LocalOrderController extends Controller
      */
     public function create()
     {
-        return view('local-order.add');
+        return view('draft-order.add');
     }
 
     /**
@@ -44,9 +44,8 @@ class LocalOrderController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-        // dd($input);
+        $customer_id = Auth::user()->customer_id;
         $rules = array(
-                'customer_id' => 'required',
                 'address_id' => 'required|string|max:185',
                 'due_date' => 'required|date',
             );
@@ -65,14 +64,14 @@ class LocalOrderController extends Controller
                 $message = "Order created successfully.";
             }
 
-            $customer = Customer::find($input['customer_id']);
+            $customer = Customer::find($customer_id);
             $address = CustomerBpAddress::find($input['address_id']);
 
             if(!empty($customer) && !empty($address)){
-                $order->customer_id = $input['customer_id'];
+                $order->customer_id = $customer_id;
                 $order->address_id = $input['address_id'];
                 $order->due_date = date('Y-m-d',strtotime($input['due_date']));
-                $order->sales_specialist_id = Auth::id();
+                // $order->sales_specialist_id = Auth::id();
                 $order->placed_by = "S";
                 $order->confirmation_status = "P";
                 $order->save();
@@ -81,11 +80,11 @@ class LocalOrderController extends Controller
                     $products = $input['products'];
                     LocalOrderItem::where('local_order_id', $order->id)->delete();
                     foreach($products as $value){
-                        // dd($value);
+                        // dd($value['product_id']);
                         $item = new LocalOrderItem();
                         $item->local_order_id = $order->id;
-                        $item->product_id = @$value['product_id'];
-                        $item->quantity = @$value['quantity'];
+                        $item->product_id = $value['product_id'];
+                        $item->quantity = $value['quantity'];
                         $item->save();
                     }
                 }
@@ -105,7 +104,9 @@ class LocalOrderController extends Controller
      */
     public function show($id)
     {
-        //
+        $edit = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id',$id)->firstOrFail();
+
+        return view('draft-order.view',compact('edit'));
     }
 
     /**
@@ -116,9 +117,7 @@ class LocalOrderController extends Controller
      */
     public function edit($id)
     {
-        $edit = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id',$id)->firstOrFail();
-        // dd($edit);
-        return view('local-order.add',compact('edit'));
+        //
     }
 
     /**
@@ -145,9 +144,9 @@ class LocalOrderController extends Controller
     }
 
     public function getAll(Request $request){
-
-        $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items']);
-        // dd($data);
+        $customer_id = Auth::user()->customer_id;
+        $data = LocalOrder::with('sales_specialist')->where('customer_id', $customer_id);
+        // dd($data->get());
 
         // if($request->filter_search != ""){
         //     $data->where(function($q) use ($request) {
@@ -161,8 +160,8 @@ class LocalOrderController extends Controller
         });
 
         return DataTables::of($data)
-                            ->addColumn('customer_name', function($row) {
-                                return $row->customer->card_name;
+                            ->addColumn('sales_specialist_name', function($row) {
+                                return $row->sales_specialist->sales_specialist_name;
                             })
                             ->addColumn('confirmation_status', function($row) {
                                 if($row->confirmation_status == 'P'){
@@ -176,11 +175,11 @@ class LocalOrderController extends Controller
                                 return date('M d, Y',strtotime($row->due_date));
                             })
                             ->orderColumn('due_date', function ($query, $order) {
-                                $query->orderBy('doc_due_date', $order);
+                                $query->orderBy('due_date', $order);
                             })
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('sales-specialist-orders.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
-                                    <i class="fa fa-pencil"></i>
+                                $btn = ' <a href="' . route('draft-order.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
                                   </a>';
 
                                 return $btn;
@@ -237,12 +236,14 @@ class LocalOrderController extends Controller
         }
 
         $response = array();
-        foreach($data as $value){
-            $response[] = array(
-                "id"=>$value->id,
-                "text"=>$value->address
-            );
-        }
+        // if(!empty($data)){
+            foreach($data as $value){
+                $response[] = array(
+                    "id"=>$value->id,
+                    "text"=>$value->address
+                );
+            }
+        // }
 
         return response()->json($response);
     }

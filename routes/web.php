@@ -163,6 +163,7 @@ Route::middleware(['auth'])->group(function(){
         Route::post('sales-specialist-orders/get-customers/','App\Http\Controllers\LocalOrderController@getCustomers')->name('sales-specialist-orders.getCustomers');
         Route::post('sales-specialist-orders/get-products/','App\Http\Controllers\LocalOrderController@getProducts')->name('sales-specialist-orders.getProducts');
         Route::post('sales-specialist-orders/get-address/','App\Http\Controllers\LocalOrderController@getAddress')->name('sales-specialist-orders.getAddress');
+        Route::post('sales-specialist-orders/place-order/','App\Http\Controllers\LocalOrderController@placeOrder')->name('sales-specialist-orders.placeOrder');
 
         Route::get('customer-promotion/', 'App\Http\Controllers\CustomerPromotionController@index')->name('customer-promotion.index')/*->middleware('not-super-admin')*/;
         Route::post('customer-promotion/get-all', 'App\Http\Controllers\CustomerPromotionController@getAll')->name('customer-promotion.get-all');
@@ -172,7 +173,23 @@ Route::middleware(['auth'])->group(function(){
         Route::get('customer-promotion/product-detail/{id}/{promotion_id}', 'App\Http\Controllers\CustomerPromotionController@productDetail')->name('customer-promotion.product-detail');
         Route::get('customer-promotion/order/{id}', 'App\Http\Controllers\CustomerPromotionController@orderIndex')->name('customer-promotion.order.index');
 
+        // Quotations
+        Route::resource('quotation','App\Http\Controllers\QuotationController');
+	    Route::post('quotation/get-all', 'App\Http\Controllers\QuotationController@getAll')->name('quotation.get-all');
+	    Route::post('quotation/sync-quotation', 'App\Http\Controllers\QuotationController@syncQuotations')->name('quotation.sync-quotation');
+
     });
+
+    // Customer Orders
+    Route::resource('customer-order','App\Http\Controllers\CustomerOrderController');
+    Route::post('customer-order/get-all', 'App\Http\Controllers\CustomerOrderController@getAll')->name('customer-order.get-all');
+
+    // DraftOrder
+    Route::resource('draft-order','App\Http\Controllers\DraftOrderController');
+    Route::post('draft-order/get-all', 'App\Http\Controllers\DraftOrderController@getAll')->name('draft-order.get-all');
+    Route::post('draft-order/get-products/','App\Http\Controllers\DraftOrderController@getProducts')->name('draft-order.getProducts');
+    Route::post('draft-order/get-address/','App\Http\Controllers\DraftOrderController@getAddress')->name('draft-order.getAddress');
+    Route::post('draft-order/place-order/','App\Http\Controllers\DraftOrderController@placeOrder')->name('draft-order.placeOrder');
 
     // Pramotion Type
     Route::resource('promotion-type','App\Http\Controllers\PromotionTypeController')->middleware('super-admin');
