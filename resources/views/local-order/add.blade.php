@@ -205,7 +205,9 @@
                         <div class="col-xl-12">
                             <div class="d-flex flex-wrap pt-2 text-center justify-content-center">
                                 <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Save to Draft">
-                                <input type="button" class="btn btn-lg btn-primary placeOrder" value="Place Order">
+                                @if(isset($edit))
+                                    <input type="button" class="btn btn-lg btn-primary placeOrder" value="Place Order">
+                                @endif
                             </div>
                         </div>
                     </div>
