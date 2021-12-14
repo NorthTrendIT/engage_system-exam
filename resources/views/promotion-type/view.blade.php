@@ -84,9 +84,23 @@
                             @endif
 
                             <tr>
-                              <th> <b>Fixed Quantity:</b> </th>
-                              <td>{{ @$data->fixed_quantity ?? "" }}</td>
+                              <th> <b>Has Fixed Quantity? :</b> </th>
+                              <td>{{ @$data->is_fixed_quantity == true ? "Yes" : "No" }}</td>
                             </tr>
+
+                            @if(isset($data) && $data->is_fixed_quantity == true)
+                            <tr>
+                              <th> <b>Is Total Fixed Quantity? :</b> </th>
+                              <td>{{ @$data->is_total_fixed_quantity == true ? "Yes" : "No" }}</td>
+                            </tr>
+                            @endif
+
+                            @if(isset($data) && $data->is_fixed_quantity == true && $data->is_total_fixed_quantity == true)
+                            <tr>
+                              <th> <b>Total Fixed Quantity:</b> </th>
+                              <td>{{ @$data->total_fixed_quantity }}</td>
+                            </tr>
+                            @endif
 
                             <tr>
                               <th> <b>Number Of Delivery:</b> </th>
@@ -105,12 +119,14 @@
 
                             @if(isset($data) && count($data->products) > 0)
                               <tr class="text-center">
-                                <th colspan="2"> <h4>List Of Product</h4> </th>
+                                <th colspan="3"> <h4>List Of Product</h4> </th>
                               </tr>
 
                               <tr>
-                                @if($data->scope == "R")
-                                <th> <b>Product</b> </th>
+                                <th @if($data->is_fixed_quantity != "1" && $data->is_total_fixed_quantity == "0" && $data->scope !="R") colspan="3" @endif > <b>Product</b> </th>
+
+                                @if($data->is_fixed_quantity == "1" && $data->is_total_fixed_quantity == "0")
+                                <th> <b>Fixed Quantity </b> </th>
                                 @endif
 
                                 @if($data->scope == "R")
@@ -121,7 +137,11 @@
 
                               @foreach($data->products as $p)
                                 <tr>
-                                  <td @if($data->scope != "R") colspan="2" @endif >{{ @$p->product->item_name }}</td>
+                                  <td @if($data->is_fixed_quantity != "1" && $data->is_total_fixed_quantity == "0" && $data->scope !="R") colspan="3" @endif >{{ @$p->product->item_name }}</td>
+
+                                  @if($data->is_fixed_quantity == "1" && $data->is_total_fixed_quantity == "0")
+                                  <td>{{ @$p->fixed_quantity }}</td>
+                                  @endif
 
                                   @if($data->scope == "R")
                                   <td>{{ @$p->discount_percentage }} %</td>

@@ -28,6 +28,8 @@
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
               <h5>View Details</h5>
+
+              <a href="{{ route('customer-promotion.order.index',$data->id) }}" class="btn btn-success">Claim Now</a>
             </div>
             <div class="card-body">
               
@@ -61,6 +63,31 @@
                                   @endif
                                   
                                 </b>
+
+                              </td>
+                            </tr>
+                            <tr>
+                              <th> <b>Delivery:</b> </th>
+                              <td>
+                                @if(@$data->promotion_type)
+                                  @if(is_null($data->promotion_type->number_of_delivery))
+                                  No Limit
+                                  @else
+                                  Fixed ({{ $data->promotion_type->number_of_delivery }})
+                                  @endif
+                                @endif
+                              </td>
+                            </tr>
+                            <tr>
+                              <th> <b>Quantity:</b> </th>
+                              <td>
+                                @if(@$data->promotion_type)
+                                  @if(is_null($data->promotion_type->fixed_quantity))
+                                  No Limit
+                                  @else
+                                  Fixed ({{ $data->promotion_type->fixed_quantity }})
+                                  @endif
+                                @endif
 
                               </td>
                             </tr>
@@ -113,6 +140,12 @@
 
                 </div>
               </div>
+              
+              <div class="row mt-5">
+                <div class="col-md-12 d-flex justify-content-center">
+                  <a href="{{ route('customer-promotion.order.index',$data->id) }}" class="btn btn-success">Claim Now</a>
+                </div>
+              </div>
 
             </div>
           </div>
@@ -139,7 +172,8 @@ $(document).ready(function() {
       type: 'POST',
       dataType:'json',
       data: {
-              promotion_type_id: '{{ @$data->promotion_type_id}}',
+              promotion_type_id: '{{ @$data->promotion_type_id }}',
+              promotion_id: '{{ @$data->id }}',
               id: $id,
               _token:'{{ csrf_token() }}',
             },
