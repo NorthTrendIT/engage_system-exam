@@ -302,6 +302,7 @@ class CustomerPromotionController extends Controller
 
                 $customer_promotion = new CustomerPromotion(); 
                 $customer_promotion->promotion_id = $input['promotion_id'];
+                $customer_promotion->customer_bp_address_id = $input['customer_bp_address_id'];
                 $customer_promotion->user_id = Auth::id();
                 $customer_promotion->status = 'pending';
                 $customer_promotion->save();
