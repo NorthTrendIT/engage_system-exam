@@ -90,6 +90,14 @@ class ModuleSeeder extends Seeder
                             )
                         );
 
+        $product_list = Module::create(
+                            array(
+                                'title' => 'Product List',
+                                'slug' => 'product-list',
+                                'parent_id' => null,
+                            )
+                        );
+
         $my_promotions = Module::create(
                             array(
                                 'title' => 'My Promotions',
@@ -243,6 +251,12 @@ class ModuleSeeder extends Seeder
                         'title' => 'view',
                         'slug' => 'view-product',
                         'parent_id' => $product->id,
+                    ),
+
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-product-list',
+                        'parent_id' => $product_list->id,
                     ),
 
                     array(

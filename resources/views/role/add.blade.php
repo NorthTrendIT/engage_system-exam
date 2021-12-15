@@ -473,6 +473,23 @@
                         </li>
                         @endif
 
+                        {{-- product-list --}}
+                        @if(@$modules['product-list']['id'])
+                        <li>
+                          <i class="fa fa-plus"></i>
+                          <label>
+                            <input data-id="{{ @$modules['product-list']['id'] }}" type="checkbox"  name="modules[{{ @$modules['product-list']['id'] }}]"  /> {{ @$modules['product-list']['title'] }}
+                          </label>
+                          <ul>
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['view-product-list']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-product-list']['id'] }}]" /> {{ @$modules['view-product-list']['title'] }}
+                              </label>
+                            </li>
+                          </ul>
+                        </li>
+                        @endif
+
                       </ul>
                     </div>
 
