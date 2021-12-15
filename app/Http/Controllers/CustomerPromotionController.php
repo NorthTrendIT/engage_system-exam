@@ -281,11 +281,21 @@ class CustomerPromotionController extends Controller
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
 
+            // Edit time check its canceled or not 
+            if(isset($input['id'])){
+                $check = CustomerPromotion::where('id',$input['id'])->where('status','canceled')->first();
+
+                if(!is_null($check)){
+                    return $response = ['status'=>false,'message'=> "Opps ! This promotion claim has been canceled already."];
+                }
+
+            }
+
             $promotion = Promotions::findOrFail($input['promotion_id']);
 
             $now = date("Y-m-d");
             if( !($now > $promotion->promotion_start_date && $now < $promotion->promotion_end_date) ){
-                $response = ['status'=>false,'message'=> "The promotion has been expired."];
+                $response = ['status'=>false,'message'=> "Opps ! This promotion has been expired."];
             }else{
 
                 // If Promotion Qty fixed and its not match to with buying qty
@@ -300,7 +310,7 @@ class CustomerPromotionController extends Controller
 
                 $total_quantity = $total_price = $total_discount = $total_amount = 0;
 
-                $customer_promotion = new CustomerPromotion(); 
+                $customer_promotion = CustomerPromotion::firstOrNew(['id'=>@$input['id']]);
                 $customer_promotion->promotion_id = $input['promotion_id'];
                 $customer_promotion->customer_bp_address_id = $input['customer_bp_address_id'];
                 $customer_promotion->user_id = Auth::id();
@@ -326,7 +336,7 @@ class CustomerPromotionController extends Controller
 
                                 $p_product = PromotionTypeProduct::where($where)->first();
 
-                                $customer_promotion_product = new CustomerPromotionProduct(); 
+                                $customer_promotion_product = CustomerPromotionProduct::firstOrNew(['id'=>@$value['id']]); 
                                 $customer_promotion_product->customer_promotion_id = @$customer_promotion->id;
                                 $customer_promotion_product->product_id = $key;
                                 $customer_promotion_product->save();
@@ -339,7 +349,7 @@ class CustomerPromotionController extends Controller
 
                                             $quantity += $value['delivery_quantity'][$d_key];
 
-                                            $c_p_p_d = new CustomerPromotionProductDelivery(); 
+                                            $c_p_p_d = CustomerPromotionProductDelivery::firstOrNew(['id'=>@$value['delivery_id'][$d_key]]);  
                                             $c_p_p_d->customer_promotion_product_id = @$customer_promotion_product->id;
                                             $c_p_p_d->delivery_quantity = $value['delivery_quantity'][$d_key];
                                             $c_p_p_d->delivery_date = date("Y-m-d",strtotime(str_replace("/", "-", $d_value)));
@@ -393,14 +403,23 @@ class CustomerPromotionController extends Controller
                     $customer_promotion->total_amount = $total_amount;
                     $customer_promotion->save();
 
-                    $response = ['status'=>true,'message'=> "Promotion claim successfully !"];
+
+                    if(isset($input['id'])){
+                        $response = ['status'=>true,'message'=> "Promotion claim details updated successfully !"];
+                        
+                        // Add Log.
+                        add_log(30, $input);
+                    }else{
+                        $response = ['status'=>true,'message'=> "Promotion claim successfully !"];
+                        
+                        // Add Log.
+                        add_log(27, $input);
+                    }
 
                 }else{
                     $response = ['status'=>false,'message'=> "Something went wrong."];
                 }
 
-                // Add Log.
-                add_log(27, array('id' => $customer_promotion->id));
             }
         }
 
@@ -442,12 +461,18 @@ class CustomerPromotionController extends Controller
                             ->addColumn('promotion', function($row) {
                                 return @$row->promotion->title ?? "-";
                             })
+                            ->addColumn('user', function($row) {
+                                return @$row->user->sales_specialist_name ?? "-";
+                            })
                             ->addColumn('action', function($row) {
 
                                 $btn = "";
-                                // $btn = '<a href="' . route('department.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
-                                //     <i class="fa fa-pencil"></i>
-                                //   </a>';
+                                
+                                if($row->status != 'canceled' && Auth::id() == $row->user_id){
+                                    $btn .= '<a href="' . route('customer-promotion.order.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
+                                        <i class="fa fa-pencil"></i>
+                                      </a>';
+                                }
 
                                 $btn .= '<a href="' . route('customer-promotion.order.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
                                     <i class="fa fa-eye"></i>
@@ -475,13 +500,17 @@ class CustomerPromotionController extends Controller
                                 $query->select('customer_promotions.*')->join('promotions', 'customer_promotions.promotion_id', '=', 'promotions.id')
                                     ->orderBy('promotions.title', $order);
                             })
+                            ->orderColumn('user', function ($query, $order) {
+                                $query->select('customer_promotions.*')->join('users', 'customer_promotions.user_id', '=', 'users.id')
+                                    ->orderBy('users.sales_specialist_name', $order);
+                            })
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('status', $order);
                             })
                             ->orderColumn('created_at', function ($query, $order) {
                                 $query->orderBy('created_at', $order);
                             })
-                            ->rawColumns(['action','status','created_at'])
+                            ->rawColumns(['action','status','created_at','user'])
                             ->make(true);
     }
 
@@ -546,5 +575,28 @@ class CustomerPromotionController extends Controller
         $data = $data->limit(50)->get();
 
         return response()->json($data);
+    }
+
+
+    public function orderEdit($id){
+        $edit = CustomerPromotion::where('id',$id)->where('user_id',Auth::id())->where('status','!=','canceled')->firstOrFail();
+
+        $promotion = Promotions::findOrFail($edit->promotion_id);
+
+        $edit_products = $edit_deliveries = array();
+
+        if(isset($edit->products) && count($edit->products)){
+            // $edit_products = $edit->products->toArray();
+
+            // $edit_products = array_combine(array_column($edit_products, 'product_id'), array_values($edit_products));
+
+            foreach($edit->products as $p){
+                $edit_products[$p->product_id] = $p->toArray();
+                $edit_deliveries[$p->product_id] = $p->deliveries->toArray();
+            }
+
+        }
+
+        return view('customer-promotion.order_add',compact('promotion','edit','edit_products','edit_deliveries'));
     }
 }

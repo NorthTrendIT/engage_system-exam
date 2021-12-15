@@ -72,124 +72,171 @@
                 @if(!is_null(@$promotion->promotion_type->products))
 
                   @foreach($promotion->promotion_type->products as $p)
+                    <div class="product_list">
+                      @php
+                        $discount_percentage = 0;
+                        $quantity = false;
+                        $discount_fix_amount = false;
 
-                  <div class="product_list">
-                    @php
-                      $discount_percentage = 0;
-                      $quantity = false;
-                      $discount_fix_amount = false;
-
-                      if(@$promotion->promotion_type->scope == "P"){
-                        $discount_percentage = @$promotion->promotion_type->percentage;
-                      }else if(@$promotion->promotion_type->scope == "U"){
-                        $discount_percentage = @$promotion->promotion_type->percentage;
-                        $discount_fix_amount = @$promotion->promotion_type->fixed_price;
-                      }elseif(@$promotion->promotion_type->scope == "R"){
-                        $discount_percentage = @$p->discount_percentage;
-                      }
-
-                      if(@$promotion->promotion_type->is_fixed_quantity){
-
-                        if(!@$promotion->promotion_type->is_total_fixed_quantity){
-                          $quantity = @$p->fixed_quantity;
+                        if(@$promotion->promotion_type->scope == "P"){
+                          $discount_percentage = @$promotion->promotion_type->percentage;
+                        }else if(@$promotion->promotion_type->scope == "U"){
+                          $discount_percentage = @$promotion->promotion_type->percentage;
+                          $discount_fix_amount = @$promotion->promotion_type->fixed_price;
+                        }elseif(@$promotion->promotion_type->scope == "R"){
+                          $discount_percentage = @$p->discount_percentage;
                         }
-                      }
 
-                      $amount = get_product_customer_price(@$p->product->item_prices,@Auth::user()->customer->price_list_num);
-                      $total_amount = $discount_amount = get_product_customer_price(@$p->product->item_prices,@Auth::user()->customer->price_list_num,$discount_percentage,@$discount_fix_amount);
+                        if(@$promotion->promotion_type->is_fixed_quantity){
 
-                      $discount_amount = $amount - $discount_amount;
-
-                      if($quantity){
-                        if($total_amount > 0){
-                          $total_amount = floatval($total_amount) * floatval($quantity);
+                          if(!@$promotion->promotion_type->is_total_fixed_quantity){
+                            $quantity = @$p->fixed_quantity;
+                          }
                         }
-                      }
-                    @endphp
+
+                        $amount = get_product_customer_price(@$p->product->item_prices,@Auth::user()->customer->price_list_num);
+                        $total_amount = $discount_amount = get_product_customer_price(@$p->product->item_prices,@Auth::user()->customer->price_list_num,$discount_percentage,@$discount_fix_amount);
+
+                        $discount_amount = $amount - $discount_amount;
+
+                        if($quantity){
+                          if($total_amount > 0){
+                            $total_amount = floatval($total_amount) * floatval($quantity);
+                          }
+                        }
+                      @endphp
 
 
-                    <div class="row mb-5">
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label>Product</label>
-                          <input type="text" class="form-control form-control-solid" readonly="" disabled="" value="{{ @$p->product->item_name }}" >
+                      <div class="row mb-5">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label>Product</label>
+                            <input type="text" class="form-control form-control-solid" readonly="" disabled="" value="{{ @$p->product->item_name }}" >
+                          </div>
+                        </div>
+
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label>Brand</label>
+                          </div>
                         </div>
                       </div>
 
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label>Brand</label>
-                        </div>
-                      </div>
-                    </div>
 
+                      @if(isset($edit))
+                        <input type="hidden" name="products[{{ @$p->product->id }}][id]" value="{{ $edit_products[@$p->product->id]['id'] }}">
+                      @endif
 
-                    <div class="row">
-                      <div class="col-md-3">
-                        <div class="form-group">
-                          <label>Quantity</label>
-                          <input type="number" class="form-control form-control-solid quantity" placeholder="Enter quantity" name="products[{{ @$p->product->id }}][quantity]" @if($quantity) readonly="" value="{{ $quantity }}" @else value="1" @endif min="1">
-                        </div>
-                      </div>
-
-                      <div class="col-md-3">
-                        <div class="form-group">
-                          <label>Unit Price</label>
-                          <input type="text" class="form-control form-control-solid unit_price" readonly="" disabled="" value="{{ $amount}}" name="unit_price" >
-                        </div>
-                      </div>
-
-                      <div class="col-md-3">
-                        <div class="form-group">
-                          <label>Discount</label>
-                          <input type="text" class="form-control form-control-solid discount_amount" readonly="" disabled="" value="{{ $discount_amount }}" data-value="{{ $discount_percentage }}" name="discount_amount">
-                        </div>
-                      </div>
-
-                      <div class="col-md-3">
-                        <div class="form-group">
-                          <label>Amount</label>
-                          <input type="text" class="form-control form-control-solid amount" readonly="" disabled="" value="{{ $total_amount }}" name="amount">
-                        </div>
-                      </div>
-
-                    </div>
-
-                    <div class="row mt-8">
-                      <div class="col-md-12">
-                      </div>
-                    </div>
-
-                    @if(@$promotion->promotion_type->number_of_delivery > 0)
-                      @for($i=1;$i<=$promotion->promotion_type->number_of_delivery;$i++)
                       <div class="row">
-                        <div class="col-md-3 mt-5">
+                        <div class="col-md-3">
                           <div class="form-group">
-                            <label>{{ ordinal($i) }} Delivery Date</label>
-                            <input type="text" class="form-control form-control-solid delivery_date" placeholder="Select {{ ordinal($i) }} Delivery Date" name="products[{{ @$p->product->id }}][delivery_date][{{ $i }}]" readonly="">
+                            <label>Quantity</label>
+                            <input type="number" class="form-control form-control-solid quantity" placeholder="Enter quantity" name="products[{{ @$p->product->id }}][quantity]" @if($quantity) readonly="" value="{{ $quantity }}" @elseif(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ $edit_products[@$p->product->id]['quantity'] }}" @else value="1" @endif min="1">
                           </div>
                         </div>
 
-                        {{-- @if(@$promotion->promotion_type->number_of_delivery > 1) --}}
-                        <div class="col-md-3 mt-5">
+                        <div class="col-md-3">
                           <div class="form-group">
-                            <label>{{ ordinal($i) }} Delivery Quantity</label>
-                            <input type="number" class="form-control form-control-solid delivery_quantity {{ ($promotion->promotion_type->number_of_delivery - 1 == $i) ? "2nd_last_delivery_quantity" : "" }}" placeholder="Enter {{ ordinal($i) }} Delivery Quantity" name="products[{{ @$p->product->id }}][delivery_quantity][{{ $i }}]" min="1">
+                            <label>Unit Price</label>
+                            <input type="text" class="form-control form-control-solid unit_price" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ $edit_products[@$p->product->id]['price'] }}" @else value="{{ $amount }}" @endif name="unit_price" >
                           </div>
                         </div>
-                        {{-- @endif --}}
+
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label>Discount</label>
+                            <input type="text" class="form-control form-control-solid discount_amount" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ $edit_products[@$p->product->id]['discount'] * $edit_products[@$p->product->id]['quantity'] }}" @else value="{{ $discount_amount }}" @endif data-value="{{ $discount_percentage }}" name="discount_amount">
+                          </div>
+                        </div>
+
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label>Amount</label>
+                            <input type="text" class="form-control form-control-solid amount" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ $edit_products[@$p->product->id]['amount'] }}" @else value="{{ $total_amount }}" @endif name="amount">
+                          </div>
+                        </div>
 
                       </div>
-                      @endfor
-                    @endif
 
-                    <div class="row mb-5 mt-5">
-                      <div class="col-md-12">
-                        <span class="is-invalid quantity_error_span" style="display: none;">Oops! the total of delivery quantity is not the same as the quantity.</span>
-                        <hr>
+                      <div class="row mt-8">
+                        <div class="col-md-12">
+                        </div>
+                      </div>
+
+                      @if(@$promotion->promotion_type->number_of_delivery > 0)
+
+                        @for($i=1;$i<=$promotion->promotion_type->number_of_delivery;$i++)
+
+                          @php
+                            $is_readonly = false;
+
+                            if(isset($edit) && isset($edit_deliveries[@$p->product->id][$i-1]['delivery_date'])){
+                              if( date('Y-m-d') > date('Y-m-d',(strtotime ( '-7 day' , strtotime ( $edit_deliveries[@$p->product->id][$i-1]['delivery_date'] ) ) ) ) ){
+                                $is_readonly = true; 
+                              }
+                            }
+                          @endphp
+
+                          @if(isset($edit))
+                            <input type="hidden" name="products[{{ @$p->product->id }}][delivery_id][{{ $i }}]" value="{{ @$edit_deliveries[@$p->product->id][$i-1]['id'] }}">
+                          @endif
+
+                          <div class="row">
+                            <div class="col-md-3 mt-5">
+                              <div class="form-group">
+                                <label>{{ ordinal($i) }} Delivery Date</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control form-control-solid {{ (!$is_readonly) ? "delivery_date" : "" }}" 
+                                  placeholder="Select {{ ordinal($i) }} Delivery Date" 
+                                  name="products[{{ @$p->product->id }}][delivery_date][{{ $i }}]" 
+                                  readonly="" 
+                                  
+                                  @if(isset($edit) && isset($edit_deliveries[@$p->product->id][$i-1]['delivery_date']))
+                                  value="{{ date('d/m/Y',strtotime($edit_deliveries[@$p->product->id][$i-1]['delivery_date'])) }}" 
+                                  @endif
+
+
+                                  >
+
+                              </div>
+                            </div>
+
+                            {{-- @if(@$promotion->promotion_type->number_of_delivery > 1) --}}
+                            <div class="col-md-3 mt-5">
+                              <div class="form-group">
+                                <label>{{ ordinal($i) }} Delivery Quantity</label>
+                                <input 
+                                  type="number" 
+                                  class="form-control form-control-solid delivery_quantity {{ ($promotion->promotion_type->number_of_delivery - 1 == $i) ? "2nd_last_delivery_quantity" : "" }}" 
+                                  placeholder="Enter {{ ordinal($i) }} Delivery Quantity" name="products[{{ @$p->product->id }}][delivery_quantity][{{ $i }}]" 
+                                  min="1" 
+                                  
+                                  @if(isset($edit) && isset($edit_deliveries[@$p->product->id][$i-1]['delivery_quantity']))
+                                  value="{{ $edit_deliveries[@$p->product->id][$i-1]['delivery_quantity'] }}" 
+                                  @endif
+
+
+                                  @if($is_readonly)
+                                    readonly 
+                                  @endif
+
+                                >
+                              </div>
+                            </div>
+                            {{-- @endif --}}
+
+                          </div>
+                        @endfor
+                      @endif
+
+                      <div class="row mb-5 mt-5">
+                        <div class="col-md-12">
+                          <span class="is-invalid quantity_error_span" style="display: none;">Oops! the total of delivery quantity is not the same as the quantity.</span>
+                          <hr>
+                        </div>
                       </div>
                     </div>
-                  </div>
                   @endforeach
                 @endif
 
@@ -507,9 +554,22 @@
                         })
             };
           },
-          cache: true
+          cache: true,
       },
+      @if(isset($edit) && isset($edit->customer_bp_address))
+      data:[{
+            id: {{ $edit->customer_bp_address->id }},
+            text: '{{ $edit->customer_bp_address->address }}',
+            selected: true
+          }],
+      @endif
     });
+
+
+    @if(isset($edit) && isset($edit->products))
+
+
+    @endif
   
   });
 </script>
