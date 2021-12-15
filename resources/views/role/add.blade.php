@@ -356,7 +356,7 @@
                         @endif
 
                         {{-- Product List --}}
-                        @if(@$modules['product-list']['id'])
+                        {{-- @if(@$modules['product-list']['id'])
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
@@ -377,7 +377,7 @@
                             
                           </ul>
                         </li>
-                        @endif
+                        @endif --}}
 
                         {{-- Promotions --}}
                         @if(@$modules['promotion']['id'])
