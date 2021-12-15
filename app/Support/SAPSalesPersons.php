@@ -46,16 +46,16 @@ class SAPSalesPersons
                 $response = json_decode($response->getBody(),true);
 
                 return array(
-                                'status' => true,
-                                'data' => $response
-                            );
+                            'status' => true,
+                            'data' => $response
+                        );
             }
 
         } catch (\Exception $e) {
             return array(
-                                'status' => false,
-                                'data' => []
-                            );
+                        'status' => false,
+                        'data' => []
+                    );
         }
     }
 
@@ -83,7 +83,7 @@ class SAPSalesPersons
                                     'first_name' => !empty($name[0]) ? $name[0] : null,
                                     'last_name' => !empty($name[1]) ? $name[1] : null,
                                     'is_active' => $value['Active'] == "tYES" ? true : false,
-                                    'password' => !empty($value['U_Password'])? Hash::make($value['U_Password']) : Hash::make('12345678'),
+                                    'password' => Hash::make('12345678'),
                                     'email' => $email.'@mailinator.com',
                                     //'response' => json_encode($value),
                                 );

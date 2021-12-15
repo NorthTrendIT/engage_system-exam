@@ -32,6 +32,8 @@ class User extends Authenticatable
         'parent_id',
         'sales_specialist_name',
         'territory_id',
+        'customer_id',
+        'first_login',
     ];
 
     /**
@@ -86,5 +88,10 @@ class User extends Authenticatable
     public function territories()
     {
         return $this->hasMany(TerritorySalesSpecialist::class,'user_id','id');
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class,'customer_id');
     }
 }

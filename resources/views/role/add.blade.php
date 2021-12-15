@@ -93,7 +93,7 @@
                             <li>
                               <i class="fa fa-plus"></i>
                               <label>
-                                <input data-id="{{ @$modules['user']['id'] }}" type="checkbox"  name="modules[{{ @$modules['user']['id'] }}]"   /> {{ @$modules['user']['title'] }}
+                                <input data-id="{{ @$modules['user']['id'] }}" type="checkbox" /> {{ @$modules['user']['title'] }}
                               </label>
                               <ul>
                                 <li>
@@ -128,7 +128,7 @@
                             <li>
                               <i class="fa fa-plus"></i>
                               <label>
-                                <input data-id="{{ @$modules['location']['id'] }}" type="checkbox"  name="modules[{{ @$modules['location']['id'] }}]"   /> {{ @$modules['location']['title'] }}
+                                <input data-id="{{ @$modules['location']['id'] }}" type="checkbox" /> {{ @$modules['location']['title'] }}
                               </label>
                               <ul>
                                 <li>
@@ -163,7 +163,7 @@
                             <li>
                               <i class="fa fa-plus"></i>
                               <label>
-                                <input data-id="{{ @$modules['department']['id'] }}" type="checkbox"  name="modules[{{ @$modules['department']['id'] }}]"  /> {{ @$modules['department']['title'] }}
+                                <input data-id="{{ @$modules['department']['id'] }}" type="checkbox"  /> {{ @$modules['department']['title'] }}
                               </label>
                               <ul>
                                 <li>
@@ -214,7 +214,7 @@
                             <li>
                               <i class="fa fa-plus"></i>
                               <label>
-                                <input data-id="{{ @$modules['class']['id'] }}" type="checkbox"  name="modules[{{ @$modules['class']['id'] }}]" /> {{ @$modules['class']['title'] }}
+                                <input data-id="{{ @$modules['class']['id'] }}" type="checkbox" /> {{ @$modules['class']['title'] }}
                               </label>
                               <ul>
 
@@ -233,7 +233,7 @@
                             <li>
                               <i class="fa fa-plus"></i>
                               <label>
-                                <input data-id="{{ @$modules['customer']['id'] }}" type="checkbox"  name="modules[{{ @$modules['customer']['id'] }}]" /> {{ @$modules['customer']['title'] }}
+                                <input data-id="{{ @$modules['customer']['id'] }}" type="checkbox"  /> {{ @$modules['customer']['title'] }}
                               </label>
                               <ul>
                                 <li>
@@ -257,7 +257,7 @@
                             <li>
                               <i class="fa fa-plus"></i>
                               <label>
-                                <input data-id="{{ @$modules['customer-group']['id'] }}" type="checkbox"  name="modules[{{ @$modules['customer-group']['id'] }}]"  /> {{ @$modules['customer-group']['title'] }}
+                                <input data-id="{{ @$modules['customer-group']['id'] }}" type="checkbox"  /> {{ @$modules['customer-group']['title'] }}
                               </label>
                               <ul>
                                 <li>
@@ -285,7 +285,7 @@
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
-                            <input data-id="{{ @$modules['order']['id'] }}" type="checkbox"  name="modules[{{ @$modules['order']['id'] }}]"/> {{ @$modules['order']['title'] }}
+                            <input data-id="{{ @$modules['order']['id'] }}" type="checkbox" /> {{ @$modules['order']['title'] }}
                           </label>
                           <ul>
                             <li>
@@ -308,7 +308,7 @@
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
-                            <input data-id="{{ @$modules['invoice']['id'] }}" type="checkbox"  name="modules[{{ @$modules['invoice']['id'] }}]" /> {{ @$modules['invoice']['title'] }}
+                            <input data-id="{{ @$modules['invoice']['id'] }}" type="checkbox" /> {{ @$modules['invoice']['title'] }}
                           </label>
                           <ul>
                             <li>
@@ -331,7 +331,7 @@
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
-                            <input data-id="{{ @$modules['product']['id'] }}" type="checkbox"  name="modules[{{ @$modules['product']['id'] }}]" /> {{ @$modules['product']['title'] }}
+                            <input data-id="{{ @$modules['product']['id'] }}" type="checkbox" /> {{ @$modules['product']['title'] }}
                           </label>
                           <ul>
                             <li>
@@ -356,7 +356,7 @@
                         @endif
 
                         {{-- Product List --}}
-                        @if(@$modules['product-list']['id'])
+                        {{-- @if(@$modules['product-list']['id'])
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
@@ -377,14 +377,14 @@
                             
                           </ul>
                         </li>
-                        @endif
+                        @endif --}}
 
                         {{-- Promotions --}}
                         @if(@$modules['promotion']['id'])
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
-                            <input data-id="{{ @$modules['promotion']['id'] }}" type="checkbox"  name="modules[{{ @$modules['promotion']['id'] }}]"  /> {{ @$modules['promotion']['title'] }}
+                            <input data-id="{{ @$modules['promotion']['id'] }}" type="checkbox" /> {{ @$modules['promotion']['title'] }}
                           </label>
                           <ul>
                             <li>
@@ -420,7 +420,7 @@
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
-                            <input data-id="{{ @$modules['territories']['id'] }}" type="checkbox"  name="modules[{{ @$modules['territories']['id'] }}]"  /> {{ @$modules['territories']['title'] }}
+                            <input data-id="{{ @$modules['territories']['id'] }}" type="checkbox" /> {{ @$modules['territories']['title'] }}
                           </label>
                           <ul>
                             <li>
@@ -444,12 +444,46 @@
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
-                            <input data-id="{{ @$modules['activity-log']['id'] }}" type="checkbox"  name="modules[{{ @$modules['activity-log']['id'] }}]"  /> {{ @$modules['activity-log']['title'] }}
+                            <input data-id="{{ @$modules['activity-log']['id'] }}" type="checkbox" /> {{ @$modules['activity-log']['title'] }}
                           </label>
                           <ul>
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['view-activity-log']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['activity-log']['id'] }}]" /> {{ @$modules['view-activity-log']['title'] }}
+                              </label>
+                            </li>
+                          </ul>
+                        </li>
+                        @endif
+
+                        {{-- my-promotions --}}
+                        @if(@$modules['my-promotions']['id'])
+                        <li>
+                          <i class="fa fa-plus"></i>
+                          <label>
+                            <input data-id="{{ @$modules['my-promotions']['id'] }}" type="checkbox" /> {{ @$modules['my-promotions']['title'] }}
+                          </label>
+                          <ul>
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['view-my-promotions']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-my-promotions']['id'] }}]" /> {{ @$modules['view-my-promotions']['title'] }}
+                              </label>
+                            </li>
+                          </ul>
+                        </li>
+                        @endif
+
+                        {{-- product-list --}}
+                        @if(@$modules['product-list']['id'])
+                        <li>
+                          <i class="fa fa-plus"></i>
+                          <label>
+                            <input data-id="{{ @$modules['product-list']['id'] }}" type="checkbox" /> {{ @$modules['product-list']['title'] }}
+                          </label>
+                          <ul>
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['view-product-list']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-product-list']['id'] }}]" /> {{ @$modules['view-product-list']['title'] }}
                               </label>
                             </li>
                           </ul>
@@ -545,6 +579,7 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
+                // window.location.reload();
                 window.location.href = '{{ route('role.index') }}';
               },1500)
             } else {

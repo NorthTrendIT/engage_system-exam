@@ -18,7 +18,7 @@ class CheckRoleModuleAccess
      */
     public function handle(Request $request, Closure $next)
     {
-
+        // return $next($request);
         if(Auth::user()->role_id != 1){ //Not Super Admin
             $status = false;
             $message = "Oops ! you have not access for the module.";;
@@ -363,6 +363,17 @@ class CheckRoleModuleAccess
                         
                         $status = false;
                         $message = "Oops ! you have not access for product list module.";
+
+                    }
+                }
+
+                // My Promotions Module
+                if(in_array($request->route()->getName(), ['customer-promotion.index','customer-promotion.get-all','customer-promotion.show','customer-promotion.get-all-product-list','customer-promotion.store-interest','customer-promotion.product-detail','customer-promotion.order.index','customer-promotion.order.create','customer-promotion.order.show','customer-promotion.order.store','customer-promotion.order.get-all'])){
+                       
+                    if($access['view-my-promotions'] != 1){
+                        
+                        $status = false;
+                        $message = "Oops ! you have not access for my promotions module.";
 
                     }
                 }

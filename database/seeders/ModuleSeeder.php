@@ -90,6 +90,30 @@ class ModuleSeeder extends Seeder
                             )
                         );
 
+        $product_list = Module::create(
+                            array(
+                                'title' => 'Product List',
+                                'slug' => 'product-list',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $my_promotions = Module::create(
+                            array(
+                                'title' => 'My Promotions',
+                                'slug' => 'my-promotions',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $quotation = Module::create(
+                            array(
+                                'title' => 'Quotation',
+                                'slug' => 'quotation',
+                                'parent_id' => null,
+                            )
+                        );
+
         // $promotion = Module::create(
         //                     array(
         //                         'title' => 'Promotion',
@@ -227,6 +251,29 @@ class ModuleSeeder extends Seeder
                         'title' => 'view',
                         'slug' => 'view-product',
                         'parent_id' => $product->id,
+                    ),
+
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-product-list',
+                        'parent_id' => $product_list->id,
+                    ),
+
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-my-promotions',
+                        'parent_id' => $my_promotions->id,
+                    ),
+
+                    array(
+                        'title' => 'Add/Sync',
+                        'slug' => 'add-quotation',
+                        'parent_id' => $quotation->id,
+                    ),
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-quotation',
+                        'parent_id' => $quotation->id,
                     ),
 
                     // array(

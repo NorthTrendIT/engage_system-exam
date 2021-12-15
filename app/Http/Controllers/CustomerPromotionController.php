@@ -1,0 +1,550 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Models\Promotions;
+use App\Models\PromotionTypes;
+use App\Models\PromotionTypeProduct;
+use App\Models\PromotionInterest;
+use App\Models\Product;
+use App\Models\CustomerPromotion;
+use App\Models\CustomerPromotionProduct;
+use App\Models\CustomerPromotionProductDelivery;
+use App\Models\CustomerBpAddress;
+use Validator;
+use DataTables;
+use Auth;
+
+class CustomerPromotionController extends Controller
+{
+    public function index()
+    {
+      	return view('customer-promotion.index');
+    }
+
+
+    public function getAll(Request $request){
+  		if ($request->ajax()) {
+            
+            $where = array('is_active' => true);
+
+            $now = date("Y-m-d");
+            // $now = "2021-12-24";
+
+            $promotions = Promotions::where($where)
+            						->orderBy('id', 'DESC')
+            						->where('promotion_start_date','<=',$now)
+            						->where('promotion_end_date','>=',$now)
+            						->limit(12);
+
+            if ($request->id > 0) {
+                $promotions->where('id', '<', $request->id);
+            }
+            
+            $promotions = $promotions->get();
+
+            $output = "";
+            $button = "";
+            $last_id = "";
+
+            $last = Promotions::where($where)
+                                ->where('promotion_start_date','<=',$now)
+                                ->where('promotion_end_date','>=',$now)
+                                ->select('id')
+                                ->first();
+
+            if (!$promotions->isEmpty()) {
+
+                foreach ($promotions as $promotion) {
+
+                	$is_continue = false;
+
+                	if($promotion->promotion_for == "Limited"){
+
+            			if(!is_null($promotion->promotion_data)){
+	                		
+	                		if($promotion->promotion_scope == "C"){ //Customer 
+
+	                			$check = $promotion->promotion_data->firstWhere('customer_id',@Auth::user()->customer_id);
+
+	                			if(is_null($check)){
+	                				$is_continue = true;
+	                			}
+
+	                		}elseif($promotion->promotion_scope == "CL"){ //Class 
+
+	                			$check = $promotion->promotion_data->firstWhere('class_id',@Auth::user()->customer->class_id);
+
+	                			if(is_null($check)){
+	                				$is_continue = true;
+	                			}
+
+	                		}elseif($promotion->promotion_scope == "SS"){ //Sales Specialists 
+
+                                $check = $promotion->promotion_data->firstWhere('sales_specialist',@Auth::id());
+
+                                if(is_null($check)){
+                                    $is_continue = true;
+                                }
+
+                            }elseif($promotion->promotion_scope == "T"){ //Territory 
+
+                                $check = $promotion->promotion_data->firstWhere('territory_id',@Auth::user()->customer->territories->id);
+
+                                if(is_null($check)){
+                                    $is_continue = true;
+                                }
+                            }
+
+            				
+            			}else{
+            				$is_continue = true;
+            			}
+                	}
+
+                    // Check into promotion interests
+                    $interest = @$promotion->promotion_interests->firstWhere('user_id' , Auth::id());
+
+                    if(isset($interest->is_interested) && $interest->is_interested == 0){
+                        $is_continue = true;
+                    }
+
+                	if($is_continue){
+                		continue;
+                	}
+
+                    $output .= view('customer-promotion.ajax.promotion',compact('promotion'))->render();
+                }
+
+                $last_id = $promotions->last()->id;
+
+                if ($last_id != $last->id) {
+                    $button = '<a href="javascript:" class="btn btn-primary" data-id="' . $last_id . '" id="view_more_btn">View More Promotions</a>';
+                }
+
+            } else {
+
+                $button = '';
+
+            }
+
+            return response()->json(['output' => $output, 'button' => $button]);
+        }
+  	}
+
+    public function show($id)
+    {
+        $data = Promotions::where('is_active',true)->where('id',$id)->firstOrFail();
+
+        $now = date("Y-m-d");
+        // $now = "2021-12-12";
+        if( ($now > $data->promotion_start_date) && ($now < $data->promotion_end_date) ){
+            return abort(404);
+        }
+
+        // Add Log.
+        add_log(26, array('id' => $data->id));
+        
+        return view('customer-promotion.view',compact('data'));
+    }
+
+    public function getAllProductList(Request $request){
+        if ($request->ajax()) {
+            
+            $where = array('promotion_type_id' => $request->promotion_type_id);
+
+            $products = PromotionTypeProduct::where($where)->orderBy('id', 'DESC')->limit(12);
+            
+            if ($request->id > 0) {
+                $products->where('id', '<', $request->id);
+            }
+            
+            $products = $products->get();
+
+            $output = "";
+            $button = "";
+            $last_id = "";
+
+            $promotion_id = $request->promotion_id;
+
+            $last = PromotionTypeProduct::where($where)->select('id')->first();
+
+            if (!$products->isEmpty()) {
+
+                foreach ($products as $value) {
+                    $product = $value->product;
+                    $promotion_type_product = $value;
+
+                    if(!is_null($product)){
+                        $output .= view('customer-promotion.ajax.product',compact('product','promotion_type_product','promotion_id'))->render();
+                    }
+                }
+
+                $last_id = $products->last()->id;
+
+                if ($last_id != $last->id) {
+                    $button = '<a href="javascript:" class="btn btn-primary" data-id="' . $last_id . '" id="view_more_btn">View More Products</a>';
+                }
+
+            } else {
+
+                $button = '';
+
+            }
+
+            return response()->json(['output' => $output, 'button' => $button]);
+        }
+    }
+
+    public function storeInterest(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'promotion_id' => 'required|nullable|exists:promotions,id',
+                    'is_interested' => 'nullable|required',
+                );
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+            $input['user_id'] = Auth::id();
+
+            $obj = PromotionInterest::firstOrNew([
+                                        'promotion_id' => $input['promotion_id'],
+                                        'user_id' => $input['user_id'],
+                                    ]);
+
+            if($input['is_interested'] == true){
+                $message = "Promotion interest added successfully.";
+            }else{
+                $message = "Promotion interest removed successfully.";
+            }
+
+            $obj->fill($input)->save();
+
+            // Add Log.
+            add_log(29, $input);
+
+            $response = ['status'=>true,'message'=>$message];
+        }
+
+        return $response;
+    }
+
+    public function productDetail($id,$promotion_id){
+        $data = PromotionTypeProduct::where('id',$id)->firstOrFail();
+        
+        $product = $data->product;
+
+        $promotion = Promotions::findOrFail($promotion_id);
+
+        $now = date("Y-m-d");
+        // $now = "2021-12-12";
+        if( ($now > $promotion->promotion_start_date) && ($now < $promotion->promotion_end_date) ){
+            return abort(404);
+        }
+
+        return view('customer-promotion.product-view',compact('product','data','promotion'));
+    }
+
+    public function orderCreate($id){
+
+        $promotion = Promotions::findOrFail($id);
+
+        $now = date("Y-m-d");
+        // $now = "2021-12-12";
+        if( ($now > $promotion->promotion_start_date) && ($now < $promotion->promotion_end_date) ){
+            return abort(404);
+        }
+
+        return view('customer-promotion.order_add',compact('promotion'));
+    }
+
+    public function orderStore(Request $request){
+
+        $input = $request->all();
+
+        $rules = array(
+                    'promotion_id' => 'required|exists:promotions,id',
+                    'customer_bp_address_id' => 'required|exists:customer_bp_addresses,id',
+                    'products' => 'required|array',
+                );
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+            $promotion = Promotions::findOrFail($input['promotion_id']);
+
+            $now = date("Y-m-d");
+            if( ($now > $promotion->promotion_start_date) && ($now < $promotion->promotion_end_date) ){
+                $response = ['status'=>false,'message'=> "The promotion has been expired."];
+            }else{
+
+                // If Promotion Qty fixed and its not match to with buying qty
+                if(@$promotion->promotion_type->is_total_fixed_quantity){
+                    $total_fixed_quantity = @$promotion->promotion_type->total_fixed_quantity;
+                    $total_quantity = array_sum(array_column(@$input['products'], 'quantity'));
+
+                    if($total_quantity != $total_fixed_quantity){
+                        return $response = ['status'=>false,'message'=> "Oops! the total quantity is not the same as the total fix quantity."];
+                    }
+                }
+
+                $total_quantity = $total_price = $total_discount = $total_amount = 0;
+
+                $customer_promotion = new CustomerPromotion(); 
+                $customer_promotion->promotion_id = $input['promotion_id'];
+                $customer_promotion->customer_bp_address_id = $input['customer_bp_address_id'];
+                $customer_promotion->user_id = Auth::id();
+                $customer_promotion->status = 'pending';
+                $customer_promotion->save();
+
+                if(@$customer_promotion->id){
+
+                    if(isset($input['products']) && !empty($input['products'])){
+
+                        foreach ($input['products'] as $key => $value) {
+
+                            $quantity = 0;
+
+                            $product = Product::find($key);
+
+                            if(!is_null($product)){
+
+                                $where = array(
+                                                'promotion_type_id' => $promotion->promotion_type_id,
+                                                'product_id' => $product->id,
+                                            );
+
+                                $p_product = PromotionTypeProduct::where($where)->first();
+
+                                $customer_promotion_product = new CustomerPromotionProduct(); 
+                                $customer_promotion_product->customer_promotion_id = @$customer_promotion->id;
+                                $customer_promotion_product->product_id = $key;
+                                $customer_promotion_product->save();
+                                
+                                if(@$customer_promotion_product->id){
+
+                                    foreach ($value['delivery_date'] as $d_key => $d_value) {
+
+                                        if($d_value && $value['delivery_quantity'][$d_key]){
+
+                                            $quantity += $value['delivery_quantity'][$d_key];
+
+                                            $c_p_p_d = new CustomerPromotionProductDelivery(); 
+                                            $c_p_p_d->customer_promotion_product_id = @$customer_promotion_product->id;
+                                            $c_p_p_d->delivery_quantity = $value['delivery_quantity'][$d_key];
+                                            $c_p_p_d->delivery_date = date("Y-m-d",strtotime(str_replace("/", "-", $d_value)));
+                                            $c_p_p_d->save();
+
+                                        }
+                                    }
+
+
+                                    $discount_percentage = 0;
+                                    $discount_fix_amount = false;
+
+                                    if(@$promotion->promotion_type->scope == "P"){
+                                        $discount_percentage = @$promotion->promotion_type->percentage;
+                                    }else if(@$promotion->promotion_type->scope == "U"){
+                                        $discount_percentage = @$promotion->promotion_type->percentage;
+                                        $discount_fix_amount = @$promotion->promotion_type->fixed_price;
+                                    }elseif(@$promotion->promotion_type->scope == "R"){
+                                        $discount_percentage = @$p_product->discount_percentage;
+                                    }
+
+
+                                    $price = get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num);
+                                    $amount = $discount = get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num,$discount_percentage,@$discount_fix_amount);
+
+                                    $discount = $price - $discount;
+
+                                    if($amount > 0){
+                                        $amount = floatval($amount) * floatval($quantity);
+                                    }
+
+                                    $customer_promotion_product->quantity = $quantity;
+                                    $customer_promotion_product->price = $price;
+                                    $customer_promotion_product->discount = $discount;
+                                    $customer_promotion_product->amount = $amount;
+                                    $customer_promotion_product->save();
+
+
+                                    $total_quantity += $quantity;
+                                    $total_price += ($price * $quantity);
+                                    $total_discount += ($discount * $quantity);
+                                    $total_amount += $amount;
+                                }
+                            }
+                        }
+                    }
+
+                    $customer_promotion->total_quantity = $total_quantity;
+                    $customer_promotion->total_price = $total_price;
+                    $customer_promotion->total_discount = $total_discount;
+                    $customer_promotion->total_amount = $total_amount;
+                    $customer_promotion->save();
+
+                    $response = ['status'=>true,'message'=> "Promotion claim successfully !"];
+
+                }else{
+                    $response = ['status'=>false,'message'=> "Something went wrong."];
+                }
+
+                // Add Log.
+                add_log(27, array('id' => $customer_promotion->id));
+            }
+        }
+
+        return $response;
+    }
+
+    public function orderIndex(){
+        return view('customer-promotion.order_index');
+    }
+
+    public function orderGetAll(Request $request){
+
+        $data = CustomerPromotion::query();
+
+        if(Auth::id() != 1){
+            $data->where('customer_promotions.user_id',Auth::id());
+        }
+
+        if($request->filter_status != ""){
+            $data->where('customer_promotions.status',$request->filter_status);
+        }
+
+        if($request->filter_search != ""){
+            $data->where(function($query) use ($request) {
+
+                $query->whereHas('promotion',function($q) use ($request) {
+                    $q->where('title','LIKE',"%".$request->filter_search."%");
+                });
+
+            });
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('customer_promotions.id', 'desc');
+        });
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('promotion', function($row) {
+                                return @$row->promotion->title ?? "-";
+                            })
+                            ->addColumn('action', function($row) {
+
+                                $btn = "";
+                                // $btn = '<a href="' . route('department.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                //     <i class="fa fa-pencil"></i>
+                                //   </a>';
+
+                                $btn .= '<a href="' . route('customer-promotion.order.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
+                                  </a>';
+
+                                return $btn;
+                            })
+                            ->addColumn('created_at', function($row) {
+                                return date('M d, Y',strtotime($row->created_at));
+                            })
+                            ->addColumn('status', function($row) {
+
+                                $btn = "";
+                                if($row->status == "approved"){
+                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline ">Approved</a>';
+                                }else if($row->status == "pending"){
+                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-info btn-inline ">Pending</a>';
+                                }else if($row->status == "canceled"){
+                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline ">Canceled</a>';
+                                }
+
+                                return $btn;
+                            })
+                            ->orderColumn('promotion', function ($query, $order) {
+                                $query->select('customer_promotions.*')->join('promotions', 'customer_promotions.promotion_id', '=', 'promotions.id')
+                                    ->orderBy('promotions.title', $order);
+                            })
+                            ->orderColumn('status', function ($query, $order) {
+                                $query->orderBy('status', $order);
+                            })
+                            ->orderColumn('created_at', function ($query, $order) {
+                                $query->orderBy('created_at', $order);
+                            })
+                            ->rawColumns(['action','status','created_at'])
+                            ->make(true);
+    }
+
+    public function orderShow($id){
+
+        $data = CustomerPromotion::where('id',$id);
+
+        if(Auth::id() != 1){
+            $data->where('user_id',Auth::id());
+        }
+
+        $data = $data->firstOrFail();
+        
+        return view('customer-promotion.order_view',compact('data'));
+    }
+
+
+    public function orderStatus(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'id' => 'required|exists:customer_promotions,id',
+                    'status' => 'required',
+                    'cancel_reason'=> 'required_if:status,==,canceled',
+                );
+
+        if($input['status'] != "canceled"){
+            $input['cancel_reason'] = null;
+        }
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+            $obj = CustomerPromotion::find($input['id']);
+
+            $obj->fill($input)->save();
+            
+            $message = "Status updated successfully.";
+
+            $response = ['status'=>true,'message'=>$message];
+
+            // Add Log.
+            add_log(28, $input);
+        }
+
+        return $response;
+    }
+
+
+    public function getCustomerAddress(Request $request){
+        $search = $request->search;
+
+        $data = CustomerBpAddress::where('customer_id',@Auth::user()->customer->id)->orderBy('order','asc');
+
+        if($search != ''){
+            $data->where('address', 'like', '%' .$search . '%');
+        }
+
+        $data = $data->limit(50)->get();
+
+        return response()->json($data);
+    }
+}

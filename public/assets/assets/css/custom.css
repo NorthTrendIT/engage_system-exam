@@ -8,7 +8,7 @@
 .detail-view-table .card .card-body tr th, .detail-view-table .card .card-body tr td{border-bottom: 1px solid #f1f1f1;padding: 20px 0;vertical-align: middle;font-size: 14px;}
 .detail-view-table .card .card-body tr td p{margin-bottom: 0;}
 
-/ media /
+/* media */
 @media(max-width:767px)
 {
     .detail-view-table .card .card-header h5{font-size: 15px;}
@@ -394,4 +394,23 @@ body {overflow-x: hidden; background-color: #f5f8fa;}
 }
 .hummingbird-treeview .fa {
     color: black;
+}
+
+.customer-product-list .product-grid .add-to-cart {
+    position: unset;
+    display: inline-block;
+    transform: unset;
+    opacity: unset;
+}
+
+.customer-product-list .product-grid .price {
+    opacity: unset;
+}
+
+td.disabled.day {
+    text-decoration: line-through !important;
+}
+
+.datepicker thead th.prev, .datepicker thead th.datepicker-switch, .datepicker thead th.next {
+    text-align: center !important;
 }

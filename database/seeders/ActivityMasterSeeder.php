@@ -107,6 +107,35 @@ class ActivityMasterSeeder extends Seeder
                         'id' => 22,
                         'name' => 'Sync Territories Data'
                     ),
+                    array(
+                        'id' => 23,
+                        'name' => 'Promotion Type Created'
+                    ),
+                    array(
+                        'id' => 24,
+                        'name' => 'Promotion Type Updated'
+                    ),
+                    array(
+                        'id' => 25,
+                        'name' => 'Promotion Type Deleted'
+                    ),
+                    array(
+                        'id' => 26,
+                        'name' => 'My Promotion View'
+                    ),
+                    array(
+                        'id' => 27,
+                        'name' => 'My Promotion Claimed'
+                    ),
+                    array(
+                        'id' => 28,
+                        'name' => 'My Promotion Status Update'
+                    ),
+                    array(
+                        'id' => 29,
+                        'name' => 'My Promotion Interest'
+                    ),
+
         		);
         ActivityMaster::insert($data);
     }
