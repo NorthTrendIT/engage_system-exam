@@ -66,6 +66,9 @@
                           <thead>
                             <tr>
                               <th>Promotion</th>
+                              @if(Auth::id() == 1)
+                              <th>Customer</th>
+                              @endif
                               <th>Date Time</th>
                               <th>Status</th>
                               <th>Action</th>
@@ -133,6 +136,9 @@
           },
           columns: [
               {data: 'promotion', name: 'promotion'},
+              @if(Auth::id() == 1)
+              {data: 'user', name: 'user'},
+              @endif
               {data: 'created_at', name: 'created_at'},
               {data: 'status', name: 'status'},
               {data: 'action', name: 'action', orderable: false, searchable: false},

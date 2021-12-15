@@ -135,6 +135,10 @@ class ActivityMasterSeeder extends Seeder
                         'id' => 29,
                         'name' => 'My Promotion Interest'
                     ),
+                    array(
+                        'id' => 30,
+                        'name' => 'My Promotion Claimed Details Update'
+                    ),
 
         		);
         ActivityMaster::insert($data);

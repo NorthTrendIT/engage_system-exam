@@ -45,6 +45,24 @@
                           <!--begin::Label-->
                           <div class="fw-bolder fs-3 text-gray-800 mb-8">Invoice</div>
                           <!--end::Label-->
+
+                          @if(Auth::id() == 1)
+                          <!--begin::Row-->
+                          <div class="row g-5 mb-11">
+                            <!--end::Col-->
+                            <div class="col-sm-12">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Customer:</div>
+                              <!--end::Label-->
+                              <!--end::Col-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->user->sales_specialist_name ?? "" }}</div>
+                              <!--end::Col-->
+                            </div>
+                            <!--end::Col-->
+                          </div>
+                          <!--end::Row-->
+                          @endif
+
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
@@ -89,7 +107,6 @@
                               <!--end::Text-->
                             </div>
                             <!--end::Col-->
-
                           </div>
                           <!--end::Row-->
                           <!--begin::Content-->
