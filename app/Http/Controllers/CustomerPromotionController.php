@@ -140,7 +140,7 @@ class CustomerPromotionController extends Controller
 
         $now = date("Y-m-d");
         // $now = "2021-12-12";
-        if( ($now > $data->promotion_start_date) && ($now < $data->promotion_end_date) ){
+        if( !($now > $data->promotion_start_date && $now < $data->promotion_end_date) ){
             return abort(404);
         }
 
@@ -245,7 +245,7 @@ class CustomerPromotionController extends Controller
 
         $now = date("Y-m-d");
         // $now = "2021-12-12";
-        if( ($now > $promotion->promotion_start_date) && ($now < $promotion->promotion_end_date) ){
+        if( !($now > $promotion->promotion_start_date && $now < $promotion->promotion_end_date) ){
             return abort(404);
         }
 
@@ -258,7 +258,7 @@ class CustomerPromotionController extends Controller
 
         $now = date("Y-m-d");
         // $now = "2021-12-12";
-        if( ($now > $promotion->promotion_start_date) && ($now < $promotion->promotion_end_date) ){
+        if( !($now > $promotion->promotion_start_date && $now < $promotion->promotion_end_date) ){
             return abort(404);
         }
 
@@ -284,7 +284,7 @@ class CustomerPromotionController extends Controller
             $promotion = Promotions::findOrFail($input['promotion_id']);
 
             $now = date("Y-m-d");
-            if( ($now > $promotion->promotion_start_date) && ($now < $promotion->promotion_end_date) ){
+            if( !($now > $promotion->promotion_start_date && $now < $promotion->promotion_end_date) ){
                 $response = ['status'=>false,'message'=> "The promotion has been expired."];
             }else{
 
