@@ -152,6 +152,10 @@ Route::middleware(['auth'])->group(function(){
 
         // Cart
         Route::resource('cart','App\Http\Controllers\CartController');
+        Route::post('cart/add/{id}','App\Http\Controllers\CartController@addToCart')->name('cart.add');
+        Route::post('cart/remove/{id}','App\Http\Controllers\CartController@removeFromCart')->name('cart.remove');
+        Route::post('cart/update-qty/{id}','App\Http\Controllers\CartController@updateQty')->name('cart.update-qty');
+        Route::post('cart/placeOrder','App\Http\Controllers\CartController@placeOrder')->name('cart.placeOrder');
 
         // Local Orders
         Route::resource('sales-specialist-orders','App\Http\Controllers\LocalOrderController', [
@@ -207,8 +211,6 @@ Route::middleware(['auth'])->group(function(){
     Route::post('promotion-type/get-all', 'App\Http\Controllers\PromotionTypeController@getAll')->name('promotion-type.get-all')->middleware('super-admin');
     Route::post('promotion-type/status/{id}', 'App\Http\Controllers\PromotionTypeController@updateStatus')->name('promotion-type.status')->middleware('super-admin');
     Route::post('promotion-type/get-products/','App\Http\Controllers\PromotionTypeController@getProducts')->name('promotion-type.get-products')->middleware('super-admin');
-
->>>>>>> 2266a281991df47378d95a73586f3316db745587
 
 	Route::resource('help-desk','App\Http\Controllers\HelpDeskController');
     Route::post('help-desk/get-all', 'App\Http\Controllers\HelpDeskController@getAll')->name('help-desk.get-all');

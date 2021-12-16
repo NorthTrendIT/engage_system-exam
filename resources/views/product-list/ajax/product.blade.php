@@ -3,7 +3,7 @@
     <div class="product-image">
       <a href="{{ route('product-list.show',@$product->id) }}" class="image">
         @if(@$product->product_images && count(@$product->product_images))
-          
+
           @php
             $image = @$product->product_images->first();
           @endphp
@@ -34,7 +34,7 @@
         </li>
       </ul>
     </div>
-           
+
     <div class="product-content">
       <ul class="rating">
         <li class="fas fa-star"></li>
@@ -43,13 +43,13 @@
         <li class="far fa-star"></li>
         <li class="far fa-star"></li>
       </ul>
-                  
+
       <h3 class="title">
         <a href="{{ route('product-list.show',@$product->id) }}">{{ @$product->item_name ?? "-" }}</a>
       </h3>
-                  
+
       <div class="price">$66.00</div>
-      <a class="add-to-cart" href="{{ route('product-list.show',@$product->id) }}">add to cart</a>
+      <a class="add-to-cart" data-url="{{ route('cart.add',@$product->id) }}">add to cart</a>
     </div>
   </div>
 </div>

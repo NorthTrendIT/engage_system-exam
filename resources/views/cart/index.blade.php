@@ -12,247 +12,185 @@
     </div>
     <div class="post d-flex flex-column-fluid" id="kt_post">
         <div id="kt_content_container" class="container-xxl">
-            <div class="row gy-5 g-xl-8 mt-5">
-                <!--begin::Col-->
-                <div class="col-xl-8">
-                    <div class="card card-xl-stretch mb-5 mb-xl-8">
-                        <!--begin::Header-->
-                        <div class="card-header border-0 pt-5">
-                            <h3 class="card-title align-items-start flex-column">
-                                <span class="card-label fw-bolder text-dark">Products (4)</span>
-                            </h3>
-                        </div>
-                        <!--end::Header-->
-                        <!--begin::Body-->
-                        <div class="card-body pt-5">
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">ISZU DMAX 2011 LT TITATNIUM SILV</span>
-                                        <span class="text-muted fw-bold d-block fs-7">CODE: UQZ551</span>
+            @if(isset($data) && !empty($data))
+            <form method="post" id="myForm">
+                @csrf
+                <div class="row gy-5 g-xl-8 mt-5">
+                    <!--begin::Col-->
+                    <div class="col-xl-8">
+                        <div class="card card-xl-stretch mb-5 mb-xl-8">
+                            <!--begin::Header-->
+                            <div class="card-header border-0 pt-5">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder text-dark">Products ({{ count($data) }})</span>
+                                </h3>
+                            </div>
+                            @foreach($data as $value)
+                            <div class="card-body pt-5">
+                                <div class="d-flex align-items-sm-center mb-7">
+                                    <!--begin::Section-->
+                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                        <div class="flex-grow-1 me-2">
+                                            <span class="text-gray-800 fs-6 fw-bolder">{{ $value->product->item_name}}</span>
+                                            <span class="text-muted fw-bold d-block fs-7">CODE: {{ $value->product->item_code }}</span>
+                                        </div>
+                                        <span class="fw-bolder my-2">0</span>
                                     </div>
-                                    <span class="badge badge-light fw-bolder my-2">$ 100</span>
+                                    <!--end::Section-->
                                 </div>
-                                <!--end::Section-->
-                            </div>
-                            <div class="button-wrap">
-                                <div class="counter">
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-minus"></i>
-                                    </a>
-                                    <span>1</span>
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-plus"></i>
-                                    </a>
-                                </div>
-                                <div class="remove"><a href="#">Remove</a></div>
-                            </div>
-                        </div>
-                        <!--end::Body-->
-                        <div class="separator separator-solid"></div>
-                        <!--begin::Body-->
-                        <div class="card-body pt-5">
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">DRAWER - FPD2000 FIXED PEDESTAL DRAWER 400X500X400MM</span>
-                                        <span class="text-muted fw-bold d-block fs-7">CODE: FF05-129</span>
+                                <div class="button-wrap">
+                                    <div class="counter">
+                                        <!-- <a href="javascript:;" class="btn btn-xs btn-icon mr-2">
+                                            <i class="fas fa-minus"></i>
+                                        </a> -->
+                                        <input class="form-control qty" data-url="{{ route('cart.update-qty', $value->id)}}" type="number" min="1" value="{{ $value->qty }}" />
+                                        <!-- <a href="javascript:;" class="btn btn-xs btn-icon mr-2">
+                                            <i class="fas fa-plus"></i>
+                                        </a> -->
                                     </div>
-                                    <span class="badge badge-light fw-bolder my-2">$ 100</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-                            <div class="button-wrap">
-                                <div class="counter">
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-minus"></i>
-                                    </a>
-                                    <span>1</span>
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-plus"></i>
-                                    </a>
-                                </div>
-                                <div class="remove"><a href="#">Remove</a></div>
-                            </div>
-                        </div>
-                        <!--end::Body-->
-                        <div class="separator separator-solid"></div>
-                        <!--begin::Body-->
-                        <div class="card-body pt-5">
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">UPS - APC BACK UPBX6250CI-MS 625 VA 230V W/ AVR BLACK</span>
-                                        <span class="text-muted fw-bold d-block fs-7">CODE: DP00-014</span>
+                                    <div class="remove">
+                                        <a href="javascript:;" class="remove-from-cart" data-url="{{ route('cart.remove',$value->id) }}">Remove</a>
                                     </div>
-                                    <span class="badge badge-light fw-bolder my-2">$ 100</span>
                                 </div>
-                                <!--end::Section-->
                             </div>
-                            <div class="button-wrap">
-                                <div class="counter">
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-minus"></i>
-                                    </a>
-                                    <span>1</span>
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-plus"></i>
-                                    </a>
-                                </div>
-                                <div class="remove"><a href="#">Remove</a></div>
+                            <div class="separator separator-solid"></div>
+                            @endforeach
+
+                            <div class="place-button">
+                                <a href="javascript:;" class="placeOrder">PLACE ORDER</a>
                             </div>
                         </div>
-                        <!--end::Body-->
-                        <div class="separator separator-solid"></div>
-                        <!--begin::Body-->
-                        <div class="card-body pt-5">
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">MAXXIS TUBE 6.50-14 TR13</span>
-                                        <span class="text-muted fw-bold d-block fs-7">CODE: MXT0009</span>
+                    </div>
+                    <!--end::Col-->
+
+                    <!--begin::Col-->
+                    <div class="col-xl-4">
+                        <!--begin::List Widget 4-->
+                        <div class="card mb-5 mb-xl-8">
+                            <!--begin::Header-->
+                            <div class="card-header border-0 pt-5">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder text-dark">Price Details</span>
+                                </h3>
+                            </div>
+                            <!--end::Header-->
+                            <!--begin::Body-->
+                            <div class="card-body pt-5">
+                                <!--begin::Item-->
+                                <div class="d-flex align-items-sm-center mb-7">
+                                    <!--begin::Section-->
+                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                        <div class="flex-grow-1 me-2">
+                                            <span class="text-gray-800 fs-6 fw-bolder">Price</span>
+                                        </div>
+                                        <span class="fw-bolder my-2">0</span>
                                     </div>
-                                    <span class="badge badge-light fw-bolder my-2">$ 100</span>
+                                    <!--end::Section-->
                                 </div>
-                                <!--end::Section-->
-                            </div>
-                            <div class="button-wrap">
-                                <div class="counter">
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-minus"></i>
-                                    </a>
-                                    <span>1</span>
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-plus"></i>
-                                    </a>
+
+                                <!--end::Item-->
+                                <!--begin::Item-->
+                                <div class="d-flex align-items-sm-center mb-7">
+                                    <!--begin::Section-->
+                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                        <div class="flex-grow-1 me-2">
+                                            <span class="text-gray-800 fs-6 fw-bolder">Discount</span>
+                                        </div>
+                                        <span class="fw-bolder my-2">0</span>
+                                    </div>
+                                    <!--end::Section-->
                                 </div>
-                                <div class="remove"><a href="#">Remove</a></div>
+                                <!--end::Item-->
+                                <!--begin::Item-->
+                                <div class="d-flex align-items-sm-center mb-7">
+                                    <!--begin::Section-->
+                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                        <div class="flex-grow-1 me-2">
+                                            <span class="text-gray-800 fs-6 fw-bolder">Delivery Charrges</span>
+                                        </div>
+                                        <span class="fw-bolder my-2">FREE</span>
+                                    </div>
+                                    <!--end::Section-->
+                                </div>
+                                <!--end::Item-->
+
+                                <!--begin::Item-->
+                                <div class="d-flex align-items-sm-center mb-7">
+                                    <!--begin::Section-->
+                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                        <div class="flex-grow-1 me-2">
+                                            <h3 class="text-gray-800 fs-6 fw-bolder">Total Amount</h3>
+                                        </div>
+                                        <span class="fw-bolder my-2">0</span>
+                                    </div>
+                                    <!--end::Section-->
+                                </div>
+                                <!--end::Item-->
                             </div>
+                            <!--end::Body-->
                         </div>
-                        <div class="separator separator-solid"></div>
-                        <div class="place-button">
-                            <a href="#">PLACE ORDER</a>
+                        <div class="card shipping-card mb-5 mb-xl-8">
+                            <!--begin::Header-->
+                            <div class="card-header border-0 pt-5">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder text-dark">SHIPPING INFORMATION</span>
+                                </h3>
+                            </div>
+                            <!--end::Header-->
+                            <!--begin::Body-->
+                            <div class="card-body pt-5">
+                                <!--begin::Item-->
+                                <div class="d-flex align-items-sm-center mb-7">
+                                    <!--begin::Section-->
+                                    <div class="">
+                                        <div class="flex-grow-1 me-2">
+                                            <span class="fs-4 fw-bolder">Delivery Date :</span>
+                                        </div>
+                                        <input type="text" class="form-control" placeholder="Delivery Date" id="kt_datepicker_1" name="due_date" autocomplete="off">
+                                    </div>
+                                    <!--end::Section-->
+                                </div>
+
+                                <!--end::Item-->
+                                <!--begin::Item-->
+                                <div class="d-flex align-items-sm-center mb-7">
+                                    <!--begin::Section-->
+                                    <div class="">
+                                        <div class="flex-grow-1 me-2">
+                                            <span class="fs-4 fw-bolder">Delivery Location :
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <select class="form-select form-select-solid" id='selectAddress' data-control="select2" data-hide-search="false" name="address_id"  >
+                                                @if(isset($data) && !empty($address))
+                                                    <option value="">Select Address</option>
+                                                    @foreach($address as $item)
+                                                    <option value="{{ $item->id }}">{{$item->address}}</option>
+                                                    @endforeach
+                                                @else
+                                                    <option value="">No record found</option>
+                                                @endif
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!--end::Section-->
+                                </div>
+                                <!--end::Item-->
+                            </div>
+                            <!--end::Body-->
                         </div>
-                        <!--end::Body-->
+                        <!--end::List Widget 4-->
+                    </div>
+                    <!--end::Col-->
+                </div>
+            </form>
+            @else
+                <div class="row gy-5 g-xl-8 mt-5">
+                    <div class="col-xl-12 text-align-center">
+                        <span>Cart is empty.</span>
                     </div>
                 </div>
-                <!--end::Col-->
-
-                <!--begin::Col-->
-                <div class="col-xl-4">
-                    <!--begin::List Widget 4-->
-                    <div class="card mb-5 mb-xl-8">
-                        <!--begin::Header-->
-                        <div class="card-header border-0 pt-5">
-                            <h3 class="card-title align-items-start flex-column">
-                                <span class="card-label fw-bolder text-dark">Price Details</span>
-                            </h3>
-                        </div>
-                        <!--end::Header-->
-                        <!--begin::Body-->
-                        <div class="card-body pt-5">
-                            <!--begin::Item-->
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">Price</span>
-                                    </div>
-                                    <span class="fw-bolder my-2">$ 820</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-
-                            <!--end::Item-->
-                            <!--begin::Item-->
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">Discount</span>
-                                    </div>
-                                    <span class="fw-bolder my-2">$ -20</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-                            <!--end::Item-->
-                            <!--begin::Item-->
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">Delivery Charrges</span>
-                                    </div>
-                                    <span class="fw-bolder my-2">FREE</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-                            <!--end::Item-->
-
-                            <!--begin::Item-->
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <h3 class="text-gray-800 fs-6 fw-bolder">Total Amount</h3>
-                                    </div>
-                                    <span class="fw-bolder my-2">$ 800</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-                            <!--end::Item-->
-                        </div>
-                        <!--end::Body-->
-                    </div>
-                     <div class="card shipping-card mb-5 mb-xl-8">
-                        <!--begin::Header-->
-                        <div class="card-header border-0 pt-5">
-                            <h3 class="card-title align-items-start flex-column">
-                                <span class="card-label fw-bolder text-dark">SHIPPING INFORMATION</span>
-                            </h3>
-                        </div>
-                        <!--end::Header-->
-                        <!--begin::Body-->
-                        <div class="card-body pt-5">
-                            <!--begin::Item-->
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="fs-4 fw-bolder">Delivery Date :</span>
-                                    </div>
-                                    <span class="fw-bolder my-2 detail">10 Sep 2021</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-
-                            <!--end::Item-->
-                            <!--begin::Item-->
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="fs-4 fw-bolder">Delivery Location :
-                                        </span>
-                                    </div>
-                                    <span class="fw-bolder my-2 detail">10, Pricess St.<br>
-                                        EH 2 2AN  Edinburge<br>
-                                        United kingdom</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-                            <!--end::Item-->
-                        </div>
-                        <!--end::Body-->
-                    </div>
-                    <!--end::List Widget 4-->
-                </div>
-                <!--end::Col-->
-            </div>
+            @endif
         </div>
     </div>
     <!--begin::Profile Personal Information-->
@@ -262,6 +200,7 @@
 
 @push('css')
 <!-- Place you css here -->
+<link rel="stylesheet" href="{{ asset('assets') }}/assets/css/datepicker.css" class="href">
 <style>
     .button-wrap {
         display: flex;
@@ -319,334 +258,184 @@
 </style>
 @endpush
 
-@push('script')
+@push('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" ></script>
 <script>
+$(document).ready(function() {
+    $today = new Date();
+    $newDate = $today.getDate() + 7;
+    $('[name="due_date"]').datepicker({
+        todayHighlight: true,
+        orientation: "bottom left",
+        startDate:'today',
+        autoclose: true,
+        setStartDate: $newDate,
+    });
 
-</script>
-@endpush
-@extends('layouts.master')
+    $(document).on('click', '.remove-from-cart', function(event) {
+        event.preventDefault();
+        $url = $(this).attr('data-url');
 
-@section('title','My Cart')
+        Swal.fire({
+            title: 'Are you sure want to Remove this product?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Remove!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: $url,
+                    method: "POST",
+                    data: {
+                            _token:'{{ csrf_token() }}'
+                        }
+                })
+                .done(function(result) {
+                    if(result.status == false){
+                        toast_error(result.message);
+                        setTimeout(function(){
+                            window.location.reload();
+                        },1500)
+                    }else{
+                        toast_success(result.message);
+                    }
+                })
+                .fail(function() {
+                    toast_error("error");
+                });
+            }
+        })
+    });
 
-@section('content')
-    <div class="toolbar" id="kt_toolbar">
-        <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
-        <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-            <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">My Cart</h1>
-        </div>
-        </div>
-    </div>
-    <div class="post d-flex flex-column-fluid" id="kt_post">
-        <div id="kt_content_container" class="container-xxl">
-            <div class="row gy-5 g-xl-8 mt-5">
-                <!--begin::Col-->
-                <div class="col-xl-8">
-                    <div class="card card-xl-stretch mb-5 mb-xl-8">
-                        <!--begin::Header-->
-                        <div class="card-header border-0 pt-5">
-                            <h3 class="card-title align-items-start flex-column">
-                                <span class="card-label fw-bolder text-dark">Products (4)</span>
-                            </h3>
-                        </div>
-                        <!--end::Header-->
-                        <!--begin::Body-->
-                        <div class="card-body pt-5">
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">ISZU DMAX 2011 LT TITATNIUM SILV</span>
-                                        <span class="text-muted fw-bold d-block fs-7">CODE: UQZ551</span>
-                                    </div>
-                                    <span class="badge badge-light fw-bolder my-2">$ 100</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-                            <div class="button-wrap">
-                                <div class="counter">
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-minus"></i>
-                                    </a>
-                                    <span>1</span>
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-plus"></i>
-                                    </a>
-                                </div>
-                                <div class="remove"><a href="#">Remove</a></div>
-                            </div>
-                        </div>
-                        <!--end::Body-->
-                        <div class="separator separator-solid"></div>
-                        <!--begin::Body-->
-                        <div class="card-body pt-5">
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">DRAWER - FPD2000 FIXED PEDESTAL DRAWER 400X500X400MM</span>
-                                        <span class="text-muted fw-bold d-block fs-7">CODE: FF05-129</span>
-                                    </div>
-                                    <span class="badge badge-light fw-bolder my-2">$ 100</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-                            <div class="button-wrap">
-                                <div class="counter">
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-minus"></i>
-                                    </a>
-                                    <span>1</span>
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-plus"></i>
-                                    </a>
-                                </div>
-                                <div class="remove"><a href="#">Remove</a></div>
-                            </div>
-                        </div>
-                        <!--end::Body-->
-                        <div class="separator separator-solid"></div>
-                        <!--begin::Body-->
-                        <div class="card-body pt-5">
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">UPS - APC BACK UPBX6250CI-MS 625 VA 230V W/ AVR BLACK</span>
-                                        <span class="text-muted fw-bold d-block fs-7">CODE: DP00-014</span>
-                                    </div>
-                                    <span class="badge badge-light fw-bolder my-2">$ 100</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-                            <div class="button-wrap">
-                                <div class="counter">
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-minus"></i>
-                                    </a>
-                                    <span>1</span>
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-plus"></i>
-                                    </a>
-                                </div>
-                                <div class="remove"><a href="#">Remove</a></div>
-                            </div>
-                        </div>
-                        <!--end::Body-->
-                        <div class="separator separator-solid"></div>
-                        <!--begin::Body-->
-                        <div class="card-body pt-5">
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">MAXXIS TUBE 6.50-14 TR13</span>
-                                        <span class="text-muted fw-bold d-block fs-7">CODE: MXT0009</span>
-                                    </div>
-                                    <span class="badge badge-light fw-bolder my-2">$ 100</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-                            <div class="button-wrap">
-                                <div class="counter">
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-minus"></i>
-                                    </a>
-                                    <span>1</span>
-                                    <a href="#" class="btn btn-xs btn-icon mr-2">
-                                        <i class="fas fa-plus"></i>
-                                    </a>
-                                </div>
-                                <div class="remove"><a href="#">Remove</a></div>
-                            </div>
-                        </div>
-                        <div class="separator separator-solid"></div>
-                        <div class="place-button">
-                            <a href="#">PLACE ORDER</a>
-                        </div>
-                        <!--end::Body-->
-                    </div>
-                </div>
-                <!--end::Col-->
+    $('.qty').change(function(event) {
+        $value = $(this).val();
+        $url = $(this).attr('data-url');
+        $.ajax({
+            url: $url,
+            method: "POST",
+            data: {
+                _token:'{{ csrf_token() }}',
+                qty: $value,
+            }
+        })
+        .done(function(result) {
+            if(result.status == false){
+                toast_error(result.message);
+                setTimeout(function(){
+                    window.location.reload();
+                },1500)
+            }else{
+                toast_success(result.message);
+                setTimeout(function(){
+                    window.location.reload();
+                },1500)
+            }
+        })
+        .fail(function() {
+            toast_error("error");
+        });
+    });
 
-                <!--begin::Col-->
-                <div class="col-xl-4">
-                    <!--begin::List Widget 4-->
-                    <div class="card mb-5 mb-xl-8">
-                        <!--begin::Header-->
-                        <div class="card-header border-0 pt-5">
-                            <h3 class="card-title align-items-start flex-column">
-                                <span class="card-label fw-bolder text-dark">Price Details</span>
-                            </h3>
-                        </div>
-                        <!--end::Header-->
-                        <!--begin::Body-->
-                        <div class="card-body pt-5">
-                            <!--begin::Item-->
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">Price</span>
-                                    </div>
-                                    <span class="fw-bolder my-2">$ 820</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
+    $('body').on("click", ".placeOrder", function (e) {
+        e.preventDefault();
+        var validator = validate_form();
 
-                            <!--end::Item-->
-                            <!--begin::Item-->
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">Discount</span>
-                                    </div>
-                                    <span class="fw-bolder my-2">$ -20</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-                            <!--end::Item-->
-                            <!--begin::Item-->
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="text-gray-800 fs-6 fw-bolder">Delivery Charrges</span>
-                                    </div>
-                                    <span class="fw-bolder my-2">FREE</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-                            <!--end::Item-->
+        if (validator.form() != false) {
+            $('[type="submit"]').prop('disabled', true);
+            $('[name="address_id"]').removeAttr('disabled');
+            $.ajax({
+                url: "{{route('cart.placeOrder')}}",
+                type: "POST",
+                data: new FormData($("#myForm")[0]),
+                async: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data.status) {
+                        toast_success(data.message)
+                        setTimeout(function(){
+                            window.location.href = "{{ route('customer-order.index') }}";
+                        },1500)
+                    } else {
+                        toast_error(data.message);
+                        $('[type="submit"]').prop('disabled', false);
+                    }
+                },
+                error: function () {
+                    toast_error("Something went to wrong !");
+                    $('[type="submit"]').prop('disabled', false);
+                },
+            });
+        }
 
-                            <!--begin::Item-->
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                    <div class="flex-grow-1 me-2">
-                                        <h3 class="text-gray-800 fs-6 fw-bolder">Total Amount</h3>
-                                    </div>
-                                    <span class="fw-bolder my-2">$ 800</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-                            <!--end::Item-->
-                        </div>
-                        <!--end::Body-->
-                    </div>
-                     <div class="card shipping-card mb-5 mb-xl-8">
-                        <!--begin::Header-->
-                        <div class="card-header border-0 pt-5">
-                            <h3 class="card-title align-items-start flex-column">
-                                <span class="card-label fw-bolder text-dark">SHIPPING INFORMATION</span>
-                            </h3>
-                        </div>
-                        <!--end::Header-->
-                        <!--begin::Body-->
-                        <div class="card-body pt-5">
-                            <!--begin::Item-->
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="fs-4 fw-bolder">Delivery Date :</span>
-                                    </div>
-                                    <span class="fw-bolder my-2 detail">10 Sep 2021</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
+        function validate_form(){
+            var validator = $("#myForm").validate({
+                errorClass: "is-invalid",
+                validClass: "is-valid",
+                rules: {
+                    customer_id:{
+                        required: true,
+                    },
+                    address_id:{
+                        required: true,
+                    },
+                    due_date:{
+                        required: true,
+                    },
+                    product_id:{
+                        required: true,
+                    },
+                    quantity:{
+                        required: true,
+                        min: 1
+                    }
+                },
+                messages: {
+                    customer_id:{
+                        required: "Please select customer.",
+                    },
+                    address_id:{
+                        required: "Please select address.",
+                    },
+                    due_date:{
+                        required: "Please select due date.",
+                    },
+                    product_id:{
+                        required: "Please select product.",
+                    },
+                    quantity:{
+                        required: "Please enter quantity.",
+                        min: "Quentity must be grater than Zero."
+                    }
+                },
+                errorPlacement: function (error, element) {
+                    if (element.hasClass('.select2').length) {
+                        error.insertAfter(element.parent());
+                    } else {
+                        error.insertAfter(element);
+                    }
+                }
+            });
 
-                            <!--end::Item-->
-                            <!--begin::Item-->
-                            <div class="d-flex align-items-sm-center mb-7">
-                                <!--begin::Section-->
-                                <div class="">
-                                    <div class="flex-grow-1 me-2">
-                                        <span class="fs-4 fw-bolder">Delivery Location :
-                                        </span>
-                                    </div>
-                                    <span class="fw-bolder my-2 detail">10, Pricess St.<br>
-                                        EH 2 2AN  Edinburge<br>
-                                        United kingdom</span>
-                                </div>
-                                <!--end::Section-->
-                            </div>
-                            <!--end::Item-->
-                        </div>
-                        <!--end::Body-->
-                    </div>
-                    <!--end::List Widget 4-->
-                </div>
-                <!--end::Col-->
-            </div>
-        </div>
-    </div>
-    <!--begin::Profile Personal Information-->
+            $(".selectProducts").each(function() {
+                $(this).rules('add', {
+                    required: true,
+                });
+            });
 
-    <!--end::Profile Personal Information-->
-@endsection
-
-@push('css')
-<!-- Place you css here -->
-<style>
-    .button-wrap {
-        display: flex;
-        align-items: center;
-    }
-    .button-wrap .counter {
-        margin-right: 22px;
-        display: flex;
-        align-items: center;
-    }
-    .button-wrap .counter i {
-        color: black;
-    }
-    .button-wrap .counter a,
-    .button-wrap span {
-        color: black;
-        background: #FAFAFB;
-        border: 0.5px solid #E1E1FB !important;
-        Width: 26px !important;
-        Height: 27px !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 0;
-        font-weight: bold;
-    }
-    .button-wrap .remove a {
-        background-color: black;
-        padding: 4px 25px 6px;
-        color: white;
-        text-transform: uppercase;
-    }
-    .shipping-card {
-        color: black;
-    }
-    .shipping-card .detail {
-        color: #92929D;
-        font-size: 15px;
-    }
-    .shipping-card .card-header {
-        border-bottom: 1px solid rgba(146, 146, 157, 0.31) !important;
-    }
-    .place-button {
-        margin-top: 100px;
-        text-align: right;
-        line-height: 5;
-        margin-bottom: 20px;
-        margin-right: 20px
-    }
-    .place-button a {
-        background-color: black;
-        padding: 15px 35px 17px;
-        color: white;
-    }
-</style>
-@endpush
-
-@push('script')
-<script>
-
+            $(".quantity").each(function() {
+                $(this).rules('add', {
+                    required: true,
+                    min: 1,
+                });
+            });
+            return validator;
+        }
+    });
+});
 </script>
 @endpush

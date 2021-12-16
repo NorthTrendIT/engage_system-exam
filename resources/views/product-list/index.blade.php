@@ -9,10 +9,10 @@
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Product List</h1>
       </div>
-      
+
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -22,14 +22,14 @@
               <h5>View Details</h5>
             </div> --}}
             <div class="card-body">
-              
+
               <div class="row mb-5">
                 <div class="col-md-12">
                   <div class="form-group">
-                    
+
                     <!-- product list -->
                     <div class="row" id="product_list_row">
-                      
+
                     </div>
 
                     <div class="row mt-10">
@@ -86,6 +86,28 @@ $(document).ready(function() {
     $id = $(this).attr('data-id');
     getProductList($id);
   });
+
+    $(document).on('click', '.add-to-cart', function(event) {
+      event.preventDefault();
+      $url = $(this).attr('data-url');
+        $.ajax({
+            url: $url,
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}'
+                    }
+            })
+            .done(function(result) {
+                if(result.status == false){
+                    toast_error(result.message);
+                }else{
+                    toast_success(result.message);
+                }
+            })
+            .fail(function() {
+                toast_error("error");
+            });
+    });
 });
 </script>
 @endpush
