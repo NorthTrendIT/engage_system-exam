@@ -670,6 +670,24 @@
       },
       isFirstItemUndeletable: true,
     });
+
+    $(document).on('change', '.product_id', function(event) {
+      event.preventDefault();
+      
+      var value = $(this).val();
+
+      var $this = $(this);
+
+
+      $(".product_id").each(function () {
+        if (this.value == value) {
+          this.value = '';
+        }
+      });
+
+      $this.val(value);
+
+    });
   
   });
 </script>

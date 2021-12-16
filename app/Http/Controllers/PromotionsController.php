@@ -80,7 +80,7 @@ class PromotionsController extends Controller
                 $customer_promotions = CustomerPromotion::where('promotion_id',$input['id'])->count();
 
                 if($customer_promotions > 0){
-                    return $response = ['status'=>false,'message'=>"Oops! you have no access to update details because this promotion is claimed by customers."];
+                    return $response = ['status'=>false,'message'=>"Oops! you can not make any updates to this promotions because its already claimed by the customer."];
                 }
 
             }
@@ -113,9 +113,9 @@ class PromotionsController extends Controller
 
                     if( ($s > $value->promotion_start_date) && ($s < $value->promotion_end_date) ){
 
-                        return $response = ['status'=>false,'message'=>'This promotion type can not be assigned to another promotion unless the end date of that promotion is over.'];
+                        return $response = ['status'=>false,'message'=>'The selected Promotion Type is already assigned to another promotion. Please choose another Promotion Type OR you can choose the same promotion type once the other promotion ends.'];
                     }else if( ($e > $value->promotion_start_date) && ($e < $value->promotion_end_date) ){
-                        return $response = ['status'=>false,'message'=>'This promotion type can not be assigned to another promotion unless the end date of that promotion is over.'];
+                        return $response = ['status'=>false,'message'=>'The selected Promotion Type is already assigned to another promotion. Please choose another Promotion Type OR you can choose the same promotion type once the other promotion ends.'];
                     }
                 }
             }
