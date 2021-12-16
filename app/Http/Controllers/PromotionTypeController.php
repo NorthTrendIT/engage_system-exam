@@ -80,7 +80,7 @@ class PromotionTypeController extends Controller
                 })->count();
 
                 if($customer_promotions > 0){
-                    return $response = ['status'=>false,'message'=>"Oops! you have no access to update details because this promotion type is included in other claimed promotions by customers."];
+                    return $response = ['status'=>false,'message'=>"Oops! you can not make any updates to this promotion type because its already claimed by the customer."];
                 }
 
 
@@ -90,7 +90,7 @@ class PromotionTypeController extends Controller
                 $now = date("Y-m-d");
                 foreach ($promotions as $key => $promotion) {
                     if($now >= $promotion->promotion_start_date && $now <= $promotion->promotion_end_date){
-                        return $response = ['status'=>false,'message'=>"Oops! you have no access to update details because this promotion type is included in other running promotions."];
+                        return $response = ['status'=>false,'message'=>"Oops! This promotion type is in use, can not make any changes to this promotion type at this time."];
                     }
                 }
 
