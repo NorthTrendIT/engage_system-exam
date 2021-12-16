@@ -357,15 +357,15 @@ class CheckRoleModuleAccess
                 }
 
                 // Product List Module
-                // if(in_array($request->route()->getName(), ['product-list.index','product-list.get-all','product-list.show'])){
+                if(in_array($request->route()->getName(), ['product-list.index','product-list.get-all','product-list.show'])){
 
-                //     if($access['view-product-list'] != 1){
+                    if($access['view-product-list'] != 1){
 
-                //         $status = false;
-                //         $message = "Oops ! you have not access for product list module.";
+                        $status = false;
+                        $message = "Oops ! you have not access for product list module.";
 
-                //     }
-                // }
+                    }
+                }
 
                 // My Promotions Module
                 if(in_array($request->route()->getName(), ['customer-promotion.index','customer-promotion.get-all','customer-promotion.show','customer-promotion.get-all-product-list','customer-promotion.store-interest','customer-promotion.product-detail','customer-promotion.order.index','customer-promotion.order.create','customer-promotion.order.show','customer-promotion.order.store','customer-promotion.order.get-all'])){

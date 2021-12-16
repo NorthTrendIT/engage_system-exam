@@ -40,7 +40,7 @@ function get_user_role_module_access($role_id){
     foreach ($role_module_access as $value) {
 
         if(@$value->module->slug){
-            $access[$value->module->slug] = $value->toArray();
+            $access[$value->module->slug] = $value->access;
         }
     }
 
