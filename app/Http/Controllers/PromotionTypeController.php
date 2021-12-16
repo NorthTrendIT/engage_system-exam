@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\PromotionTypes;
 use App\Models\Product;
 use App\Models\PromotionTypeProduct;
+use App\Models\CustomerPromotion;
+use App\Models\Promotions;
 use DataTables;
 use Validator;
 use Auth;
@@ -40,6 +42,7 @@ class PromotionTypeController extends Controller
      */
     public function store(Request $request)
     {
+
         $input = $request->all();
 
         $rules = array(
@@ -68,6 +71,31 @@ class PromotionTypeController extends Controller
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
+
+            if(isset($input['id'])){
+                
+                // check in promotions claimed or not
+                $customer_promotions = CustomerPromotion::whereHas('promotion',function($q) use ($input){
+                    $q->where('promotion_type_id',$input['id']);
+                })->count();
+
+                if($customer_promotions > 0){
+                    return $response = ['status'=>false,'message'=>"Oops! you have no access to update details because this promotion type is included in other claimed promotions by customers."];
+                }
+
+
+                // Check Promotions is working at the moment or not
+                $promotions = Promotions::where('promotion_type_id', $input['id'])->get();
+
+                $now = date("Y-m-d");
+                foreach ($promotions as $key => $promotion) {
+                    if($now > $promotion->promotion_start_date && $now < $promotion->promotion_end_date){
+                        return $response = ['status'=>false,'message'=>"Oops! you have no access to update details because this promotion type is included in other running promotions."];
+                    }
+                }
+
+            }
+
 
             if(!in_array($input['scope'],['R'])){
                 $input['min_percentage'] = $input['max_percentage'] = NULL;
