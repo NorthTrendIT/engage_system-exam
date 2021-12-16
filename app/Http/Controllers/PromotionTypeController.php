@@ -56,6 +56,7 @@ class PromotionTypeController extends Controller
                         'percentage' => 'required_if:scope,P,U',
                         'fixed_price' => 'required_if:scope,U',
                         'product_list' => 'required|array',
+                        'product_list.*.product_id' => 'distinct',
 
                         'is_total_fixed_quantity' => 'required_if:is_fixed_quantity,1',
                         'total_fixed_quantity' => 'required_if:is_total_fixed_quantity,1',
@@ -65,8 +66,11 @@ class PromotionTypeController extends Controller
             $rules['title'] = 'required|max:185|unique:promotion_types,title,'.$input['id'].',id,deleted_at,NULL';
         }
 
+        $msg = array(
+                            'product_list.*.product_id.distinct'=>"The products are must be unique."
+                        );
 
-        $validator = Validator::make($input, $rules);
+        $validator = Validator::make($input, $rules,$msg);
 
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
@@ -286,6 +290,10 @@ class PromotionTypeController extends Controller
         
         if($search != ''){
             $data->where('item_name', 'like', '%' .$search . '%');
+        }
+
+        if(isset($request->product_ids) && count($request->product_ids)){
+            $data->whereNotIn('id', $request->product_ids);
         }
 
         $data = $data->limit(50)->get();

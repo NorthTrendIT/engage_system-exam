@@ -628,6 +628,14 @@
           $('.product_fixed_quantity_div').show();
         }
 
+        var product_ids = [];
+
+        $('.product_id').each(function(){
+
+          if(this.value){
+            product_ids.push(this.value);
+          }
+        });
 
         $('.multi_product_div').find('.select2-container').remove();
 
@@ -640,7 +648,8 @@
             data: function (params) {
                 return {
                     _token: "{{ csrf_token() }}",
-                    search: params.term
+                    search: params.term,
+                    product_ids: product_ids,
                 };
             },
             processResults: function (response) {
@@ -682,6 +691,7 @@
       $(".product_id").each(function () {
         if (this.value == value) {
           this.value = '';
+          $(this).val("");
         }
       });
 
