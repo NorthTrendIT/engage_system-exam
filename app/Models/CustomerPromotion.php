@@ -20,6 +20,11 @@ class CustomerPromotion extends Model
         return $this->belongsTo(Promotions::class,'promotion_id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
+
     public function products()
     {
         return $this->hasMany(CustomerPromotionProduct::class, 'customer_promotion_id', 'id');
