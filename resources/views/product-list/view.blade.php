@@ -17,15 +17,15 @@
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-      
+
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
-          
+
           <!--begin::Tables Widget 9-->
           <div class="card card-xl-stretch mb-5 mb-xl-8 product-detail-outer">
              <!--begin::Body-->
@@ -46,6 +46,8 @@
                                    <div class="tab-pane {{ $key == 0 ? "active" : "" }}" id="pic-{{ $key }}"><img src="{{ asset('assets') }}/assets/media/img-1.jpg" /></div>
                                   @endif
                                 @endforeach
+                              @else
+                                <img src="{{ asset('assets') }}/assets/media/img-1.jpg"/>
                               @endif
                             </div>
                             <ul class="preview-thumbnail nav nav-tabs">
@@ -61,10 +63,10 @@
                               @endif
 
                             </ul>
-                            
+
                          </div>
                       <div class="col-md-6">
-                   
+
                          <h5>{{ @$product->item_name ?? "" }}</h5>
                          <ul class="rating">
                             <li>
@@ -100,7 +102,7 @@
                             </table>
                          </div>
                          <hr>
-                         <div class="table-responsive mb-2">
+                         <!-- <div class="table-responsive mb-2">
                             <table class="table table-sm table-borderless">
                             <tbody>
                                <tr>
@@ -116,11 +118,11 @@
                                         class="plus"></button>
                                   </div>
                                   </td>
-                                  
+
                                </tr>
                             </tbody>
                             </table>
-                         </div>
+                         </div> -->
                          <button type="button" class="btn btn-primary btn-md mr-1 mb-2">Buy now</button>
                          <button type="button" class="btn btn-light btn-md mr-1 mb-2"><i
                             class="fas fa-shopping-cart pr-2"></i>Add to cart</button>
@@ -131,7 +133,7 @@
                       <div class=" product-desc classic-tabs border rounded px-4 pt-1">
 
                          <ul class="nav tabs-primary nav-justified" id="advancedTab" role="tablist">
-                        
+
                          <li class="nav-item">
                             <a class="nav-link active show" id="info-tab" data-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="false">Information</a>
                          </li>
@@ -140,12 +142,12 @@
                          </li>
                          </ul>
                          <div class="tab-content" id="advancedTabContent">
-                         
+
                          <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
                             <h6>Additional Information</h6>
                             <table class="table table-striped table-bordered mt-3">
                                <thead>
-                               
+
                                </thead>
                                <tbody>
                                 <tr>
@@ -234,17 +236,17 @@
                                <!-- Your review -->
                                <div class="md-form md-outline">
                                <textarea class="md-textarea form-control pr-6" rows="4" placeholder="Your review"></textarea>
-                               
+
                                </div>
                                <!-- Name -->
                                <div class="md-form md-outline">
                                <input type="text" class="form-control pr-6" placeholder="Name">
-                               
+
                                </div>
                                <!-- Email -->
                                <div class="md-form md-outline">
                                <input type="email"  class="form-control pr-6" placeholder="Email">
-                               
+
                                </div>
                                <div class="text-right pb-2">
                                <button type="button" class="btn btn-primary">Add a review</button>
@@ -252,10 +254,10 @@
                             </div>
                          </div>
                          </div>
-                      
+
                       </div>
                       <!-- Classic tabs -->
-                   
+
                    </section>
                    <!--Section: Block Content-->
                 <!-- end detail list -->
