@@ -89,7 +89,7 @@ class PromotionTypeController extends Controller
 
                 $now = date("Y-m-d");
                 foreach ($promotions as $key => $promotion) {
-                    if($now > $promotion->promotion_start_date && $now < $promotion->promotion_end_date){
+                    if($now >= $promotion->promotion_start_date && $now <= $promotion->promotion_end_date){
                         return $response = ['status'=>false,'message'=>"Oops! you have no access to update details because this promotion type is included in other running promotions."];
                     }
                 }
