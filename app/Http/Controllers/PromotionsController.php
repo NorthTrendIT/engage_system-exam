@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\PromotionFor;
 use App\Models\PromotionInterest;
+use App\Models\CustomerPromotion;
 use App\Models\Territory;
 use App\Models\Classes;
 use App\Models\User;
@@ -73,7 +74,18 @@ class PromotionsController extends Controller
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
 
-            // Start - Check Same Type Promotion User on Dates
+            if(isset($input['id'])){
+                
+                // check in promotions claimed or not
+                $customer_promotions = CustomerPromotion::where('promotion_id',$input['id'])->count();
+
+                if($customer_promotions > 0){
+                    return $response = ['status'=>false,'message'=>"Oops! you have no access to update details because this promotion is claimed by customers."];
+                }
+
+            }
+
+            // Start - Check Same Type Promotion Used on Dates
             $check = Promotions::where('promotion_type_id', $input['promotion_type_id']);
             if(isset($input['id'])){
                 $check->where('id','!=',$input['id']);
