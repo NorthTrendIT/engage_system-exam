@@ -39,8 +39,8 @@ function get_user_role_module_access($role_id){
     $role_module_access = RoleModuleAccess::where('role_id',$role_id)->get();
     foreach ($role_module_access as $value) {
 
-        if($value->module->slug){
-            $access[$value->module->slug] = $value->access;
+        if(@$value->module->slug){
+            $access[$value->module->slug] = $value->toArray();
         }
     }
 
@@ -84,7 +84,7 @@ function get_product_customer_price($item_prices,$number, $discount = false, $di
     if(is_null($number)){
         $number = 1;
     }
-    
+
     $item_prices = json_decode($item_prices,true);
     if(count($item_prices) > 0){
 
