@@ -11,5 +11,11 @@ class CustomerPromotionProductDelivery extends Model
     
     protected $fillable = [
     	'id',
+    	'customer_promotion_product_id',
+    	'delivery_date',
+    	'delivery_quantity',
+    	'last_data',
+    	'created_at',
+    	'updated_at',
     ];
 }

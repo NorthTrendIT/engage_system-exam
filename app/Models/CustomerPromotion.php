@@ -11,7 +11,18 @@ class CustomerPromotion extends Model
 
     protected $fillable = [
         'id',
+        'user_id',
+        'promotion_id',
+        'customer_bp_address_id',
+        'total_quantity',
+        'total_price',
+        'total_discount',
+        'total_amount',
         'status',
+        'cancel_reason',
+        'last_data',
+        'created_at',
+        'updated_at',
         'cancel_reason',
     ];
 
