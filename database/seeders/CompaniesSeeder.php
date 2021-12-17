@@ -1,0 +1,49 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use App\Models\Company;
+
+class CompaniesSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        \Schema::disableForeignKeyConstraints();
+        Company::truncate();
+        \Schema::enableForeignKeyConstraints();
+
+        $data = array(
+        			array(
+                        'company_name' => 'APBW',
+        				'user_name' => 'TEST-APBW',
+                        'db_name' => 'TEST-APBW',
+                        'password' => 'test',
+                    ),
+                    array(
+                        'company_name' => 'NTMC',
+        				'user_name' => 'TEST-NTMC',
+                        'db_name' => 'TEST-NTMC',
+                        'password' => 'test',
+                    ),
+                    array(
+                        'company_name' => 'PHILCREST',
+        				'user_name' => 'TEST-PHILCREST',
+                        'db_name' => 'TEST-PHILCREST',
+                        'password' => 'test',
+                    ),
+                    array(
+                        'company_name' => 'PHILSYN',
+        				'user_name' => 'TEST-PHILSYN',
+                        'db_name' => 'TEST-PHILSYN',
+                        'password' => 'test',
+                    ),
+        		);
+        Company::insert($data);
+    }
+}
