@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Support\SAPTestAPI;
-use App\Models\Company;
+use App\Models\SapConnection;
 use DataTables;
 use Validator;
 use Auth;
 
-class CompanyController extends Controller
+class SapConnectionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +18,7 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        return view('company.index');
+        return view('sap-connection.index');
     }
 
     /**
@@ -28,7 +28,7 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        return view('company.add');
+        //
     }
 
     /**
@@ -54,14 +54,14 @@ class CompanyController extends Controller
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
             if(isset($input['id'])){
-                $company = Company::find($input['id']);
-                $message = "Company details updated successfully.";
+                $connection = SapConnection::find($input['id']);
+                $message = "SAP Connection details updated successfully.";
             }else{
-                $company = new Company();
-                $message = "New Company created successfully.";
+                $connection = new SapConnection();
+                $message = "SAP Connection created successfully.";
             }
 
-            $company->fill($input)->save();
+            $connection->fill($input)->save();
 
             $response = ['status'=>true,'message'=>$message];
         }
@@ -87,9 +87,9 @@ class CompanyController extends Controller
      */
     public function edit($id)
     {
-        $edit = Company::findOrFail($id);
+        $edit = SapConnection::findOrFail($id);
 
-        return view('company.add', compact('edit'));
+        return view('sap-connection.add', compact('edit'));
     }
 
     /**
@@ -117,7 +117,7 @@ class CompanyController extends Controller
 
     public function testAPI($id)
     {
-        $data = Company::findOrFail($id);
+        $data = SapConnection::findOrFail($id);
         try {
 
             $testAPI = new SAPTestAPI($data->db_name, $data->user_name, $data->password);
@@ -133,7 +133,7 @@ class CompanyController extends Controller
 
     public function getAll(Request $request){
 
-        $data = Company::query();
+        $data = SapConnection::query();
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
@@ -169,21 +169,19 @@ class CompanyController extends Controller
                             ->orderColumn('db_name', function ($query, $order) {
                                 $query->orderBy('db_name', $order);
                             })
-                            ->orderColumn('password', function ($query, $order) {
-                                $query->orderBy('password', $order);
-                            })
-                            ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('company.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
-                                    <i class="fa fa-pencil"></i>
+                            ->addColumn('connection', function ($row) {
+                                $btn = '<a href="javascript:;" data-url="' . route('sap-connection.test',$row->id). '" class="btn btn-bg-light btn-active-color-primary btn-sm test-api">
+                                    Test Connection
                                   </a>';
-
-                                $btn .= '<a href="javascript:;" data-url="' . route('company.test',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm test-api">
-                                    <i class="fa fa-eye"></i>
-                                  </a>';
-
                                 return $btn;
                             })
-                            ->rawColumns(['action'])
+                            ->addColumn('action', function($row) {
+                                $btn = '<a href="' . route('sap-connection.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
+                                    <i class="fa fa-pencil"></i>
+                                  </a>';
+                                return $btn;
+                            })
+                            ->rawColumns(['connection', 'action'])
                             ->make(true);
     }
 }
