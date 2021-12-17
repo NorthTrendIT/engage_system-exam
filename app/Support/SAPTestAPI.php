@@ -4,6 +4,7 @@ namespace App\Support;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
+use GuzzleHttp\Exception\RequestException;
 
 class SAPTestAPI
 {
@@ -43,15 +44,25 @@ class SAPTestAPI
                     ]
                 );
 
-                if ($response->successful()) {
+                if (in_array($response->getStatusCode(), [200,201])) {
                     return ['status' => true, 'message' => "API Working"];
-                } elseif($response->failed()) {
-                    return ['status' => false, 'message' => "API Not Working, Failed"];
-                } elseif($response->clientError()){
-                    return ['status' => false, 'message' => "API Not Working, Client Error"];
-                } elseif($response->serverError()){
-                    return ['status' => false, 'message' => "API Not Working, Server Error"];
+                } else {
+                    return ['status' => false, 'message' => "API Not Working"];
                 }
+            } catch (\GuzzleHttp\Exception\ConnectException $e) {
+
+                $response = ['status' => false, 'message' => 'ConnectException'];
+                return $response;
+            } catch (\GuzzleHttp\Exception\ClientException $e) {
+                $response = ['status' => false, 'message' => 'ClientException'];
+                return $response;
+            } catch (\GuzzleHttp\Exception\BadResponseException $e) {
+
+                $response = ['status' => false, 'message' => 'BadResponseException'];
+                return $response;
+            } catch (\GuzzleHttp\Exception\ServerException $e) {
+                $response = ['status' => false, 'message' => 'ServerException'];
+                return $response;
             } catch (\Exception $e) {
                 // abort(500);
                 $response = ['status' => false, 'message' => 'API Not Working'];
