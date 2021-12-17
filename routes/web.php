@@ -194,6 +194,11 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('quotation/get-all', 'App\Http\Controllers\QuotationController@getAll')->name('quotation.get-all');
 	    Route::post('quotation/sync-quotation', 'App\Http\Controllers\QuotationController@syncQuotations')->name('quotation.sync-quotation');
 
+        // Company
+        Route::resource('company','App\Http\Controllers\CompanyController');
+        Route::post('company/get-all', 'App\Http\Controllers\CompanyController@getAll')->name('company.get-all');
+        Route::get('company/test/{id}','App\Http\Controllers\CompanyController@testAPI')->name('company.test');
+
     });
 
     // Customer Orders
