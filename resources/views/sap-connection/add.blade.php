@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title','Company')
+@section('title','SAP Connections')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Company</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">SAP Connections</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('company.index') }}" class="btn btn-sm btn-primary">Back</a>
+        <a href="{{ route('sap-connection.index') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -101,7 +101,7 @@
       if (validator.form() != false) {
         $('[type="submit"]').prop('disabled', true);
         $.ajax({
-          url: "{{route('company.store')}}",
+          url: "{{route('sap-connection.store')}}",
           type: "POST",
           data: new FormData($("#myForm")[0]),
           async: false,
@@ -111,7 +111,7 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.href = '{{ route('company.index') }}';
+                window.location.href = '{{ route('sap-connection.index') }}';
               },1500)
             } else {
               toast_error(data.message);
