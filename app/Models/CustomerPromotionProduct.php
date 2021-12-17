@@ -10,7 +10,16 @@ class CustomerPromotionProduct extends Model
     use HasFactory;
 
     protected $fillable = [
-    	'id',
+        'id',
+        'customer_promotion_id',
+        'product_id',
+        'quantity',
+        'price',
+        'discount',
+        'amount',
+        'last_data',
+        'created_at',
+    	'updated_at',
     ];
 
     public function product()
