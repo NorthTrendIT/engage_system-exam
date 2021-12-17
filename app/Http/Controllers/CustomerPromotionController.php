@@ -311,6 +311,11 @@ class CustomerPromotionController extends Controller
                 $total_quantity = $total_price = $total_discount = $total_amount = 0;
 
                 $customer_promotion = CustomerPromotion::firstOrNew(['id'=>@$input['id']]);
+
+                if(@$customer_promotion->id != null){
+                    $customer_promotion->last_data = $customer_promotion->toArray();
+                }
+
                 $customer_promotion->promotion_id = $input['promotion_id'];
                 $customer_promotion->customer_bp_address_id = $input['customer_bp_address_id'];
                 $customer_promotion->user_id = Auth::id();
@@ -337,6 +342,10 @@ class CustomerPromotionController extends Controller
                                 $p_product = PromotionTypeProduct::where($where)->first();
 
                                 $customer_promotion_product = CustomerPromotionProduct::firstOrNew(['id'=>@$value['id']]); 
+                                if(@$customer_promotion_product->id != null){
+                                    $customer_promotion_product->last_data = $customer_promotion_product->toArray();
+                                }
+
                                 $customer_promotion_product->customer_promotion_id = @$customer_promotion->id;
                                 $customer_promotion_product->product_id = $key;
                                 $customer_promotion_product->save();
@@ -350,6 +359,11 @@ class CustomerPromotionController extends Controller
                                             $quantity += $value['delivery_quantity'][$d_key];
 
                                             $c_p_p_d = CustomerPromotionProductDelivery::firstOrNew(['id'=>@$value['delivery_id'][$d_key]]);  
+                                            
+                                            if(@$c_p_p_d->id != null){
+                                                $c_p_p_d->last_data = $c_p_p_d->toArray();
+                                            }
+
                                             $c_p_p_d->customer_promotion_product_id = @$customer_promotion_product->id;
                                             $c_p_p_d->delivery_quantity = $value['delivery_quantity'][$d_key];
                                             $c_p_p_d->delivery_date = date("Y-m-d",strtotime(str_replace("/", "-", $d_value)));
@@ -548,6 +562,32 @@ class CustomerPromotionController extends Controller
         }else{
 
             $obj = CustomerPromotion::find($input['id']);
+
+            if($input['status'] == 'canceled'){
+                $input = json_decode($obj->last_data,true);
+
+                $input['last_data'] = NULL;
+                $input['status'] = 'canceled';
+                $input['cancel_reason'] = $request->cancel_reason;
+
+
+                foreach ($obj->products as $product) {
+
+                    $insert = json_decode($product->last_data,true);
+                    $insert['last_data'] = null;
+
+                    $product->fill($insert)->save();
+
+
+                    foreach ($product->deliveries as $delivery) {
+                        $insert = json_decode($delivery->last_data,true);
+                        $insert['last_data'] = null;
+
+                        $delivery->fill($insert)->save();
+                    }
+                }
+            }
+
 
             $obj->fill($input)->save();
             
