@@ -323,6 +323,11 @@ class CustomerPromotionController extends Controller
                 $customer_promotion->customer_bp_address_id = $input['customer_bp_address_id'];
                 $customer_promotion->user_id = Auth::id();
                 $customer_promotion->status = 'pending';
+
+                if(isset($input['id'])){
+                    $customer_promotion->updated_by = Auth::id();
+                }
+
                 $customer_promotion->save();
 
                 if(@$customer_promotion->id){
@@ -537,7 +542,7 @@ class CustomerPromotionController extends Controller
         // $sap_obj = new SAPCustomerPromotion('TEST-APBW', 'manager', 'test');
         
         // $sap_obj->createOrder($id);
-        
+
 
         $data = CustomerPromotion::where('id',$id);
 
