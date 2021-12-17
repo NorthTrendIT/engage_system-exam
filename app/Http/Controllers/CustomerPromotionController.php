@@ -13,6 +13,9 @@ use App\Models\CustomerPromotion;
 use App\Models\CustomerPromotionProduct;
 use App\Models\CustomerPromotionProductDelivery;
 use App\Models\CustomerBpAddress;
+
+use App\Support\SAPCustomerPromotion;
+
 use Validator;
 use DataTables;
 use Auth;
@@ -529,6 +532,12 @@ class CustomerPromotionController extends Controller
     }
 
     public function orderShow($id){
+
+
+        // $sap_obj = new SAPCustomerPromotion('TEST-APBW', 'manager', 'test');
+        
+        // $sap_obj->createOrder($id);
+        
 
         $data = CustomerPromotion::where('id',$id);
 
