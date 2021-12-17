@@ -34,7 +34,7 @@ class SAPTestAPI
                     env('SAP_API_URL').'/b1s/v1/Login',
                     [
                         'verify' => false,
-                        'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json', 'timeout' => 5, 'connect_timeout' => 5,],
+                        'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'],
                         'body' => json_encode([
                             'CompanyDB' => $this->database,
                             'Password' => $this->password,
@@ -43,10 +43,14 @@ class SAPTestAPI
                     ]
                 );
 
-                if (in_array($response->getStatusCode(), [200,201])) {
+                if ($response->successful()) {
                     return ['status' => true, 'message' => "API Working"];
-                } else {
-                    return ['status' => false, 'message' => "API Not Working"];
+                } elseif($response->failed()) {
+                    return ['status' => false, 'message' => "API Not Working, Failed"];
+                } elseif($response->clientError()){
+                    return ['status' => false, 'message' => "API Not Working, Client Error"];
+                } elseif($response->serverError()){
+                    return ['status' => false, 'message' => "API Not Working, Server Error"];
                 }
             } catch (\Exception $e) {
                 // abort(500);
