@@ -1,17 +1,13 @@
 @extends('layouts.master')
 
-@section('title','Companies')
+@section('title','SAP Connections')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Companies</h1>
-      </div>
-
-      <div class="d-flex align-items-center py-1">
-        <a href="{{ route('company.create') }}" class="btn btn-sm btn-primary sync-customers">Add Company</a>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">SAP Connections</h1>
       </div>
     </div>
   </div>
@@ -60,7 +56,7 @@
                                 <th>Company Name</th>
                                 <th>User Name</th>
                                 <th>DB Name</th>
-                                <th>Password</th>
+                                <th>Connection</th>
                                 <th>Action</th>
                             </tr>
                           </thead>
@@ -114,7 +110,7 @@
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('company.get-all') }}",
+              'url': "{{ route('sap-connection.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -128,7 +124,7 @@
               {data: 'company_name', name: 'company_name'},
               {data: 'user_name', name: 'user_name'},
               {data: 'db_name', name: 'db_name'},
-              {data: 'password', name: 'password'},
+              {data: 'connection', name: 'connection'},
               {data: 'action', name: 'action'},
           ],
           drawCallback:function(){

@@ -34,7 +34,7 @@ class SAPTestAPI
                     env('SAP_API_URL').'/b1s/v1/Login',
                     [
                         'verify' => false,
-                        'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'],
+                        'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json', 'timeout' => 5, 'connect_timeout' => 5,],
                         'body' => json_encode([
                             'CompanyDB' => $this->database,
                             'Password' => $this->password,

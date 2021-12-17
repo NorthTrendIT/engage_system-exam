@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Company;
+use App\Models\SapConnection;
 
-class CompaniesSeeder extends Seeder
+class SapConnectionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,7 +15,7 @@ class CompaniesSeeder extends Seeder
     public function run()
     {
         \Schema::disableForeignKeyConstraints();
-        Company::truncate();
+        SapConnection::truncate();
         \Schema::enableForeignKeyConstraints();
 
         $data = array(
@@ -44,6 +44,6 @@ class CompaniesSeeder extends Seeder
                         'password' => 'test',
                     ),
         		);
-        Company::insert($data);
+        SapConnection::insert($data);
     }
 }

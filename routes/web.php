@@ -195,9 +195,15 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('quotation/sync-quotation', 'App\Http\Controllers\QuotationController@syncQuotations')->name('quotation.sync-quotation');
 
         // Company
-        Route::resource('company','App\Http\Controllers\CompanyController');
-        Route::post('company/get-all', 'App\Http\Controllers\CompanyController@getAll')->name('company.get-all');
-        Route::get('company/test/{id}','App\Http\Controllers\CompanyController@testAPI')->name('company.test');
+        Route::resource('sap-connection','App\Http\Controllers\SapConnectionController', [
+            'names' => [
+                'index' => 'sap-connection.index',
+                'store' => 'sap-connection.store',
+                'edit' => 'sap-connection.edit',
+            ]
+        ]);
+        Route::post('sap-connection/get-all', 'App\Http\Controllers\SapConnectionController@getAll')->name('sap-connection.get-all');
+        Route::get('sap-connection/test/{id}','App\Http\Controllers\SapConnectionController@testAPI')->name('sap-connection.test');
 
     });
 
