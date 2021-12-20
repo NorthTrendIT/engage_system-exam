@@ -143,7 +143,7 @@ class CustomerPromotionController extends Controller
 
         $now = date("Y-m-d");
         // $now = "2021-12-12";
-        if( !($now > $data->promotion_start_date && $now < $data->promotion_end_date) ){
+        if( !($now >= $data->promotion_start_date && $now <= $data->promotion_end_date) ){
             return abort(404);
         }
 
@@ -248,7 +248,7 @@ class CustomerPromotionController extends Controller
 
         $now = date("Y-m-d");
         // $now = "2021-12-12";
-        if( !($now > $promotion->promotion_start_date && $now < $promotion->promotion_end_date) ){
+        if( !($now >= $promotion->promotion_start_date && $now <= $promotion->promotion_end_date) ){
             return abort(404);
         }
 
@@ -261,7 +261,7 @@ class CustomerPromotionController extends Controller
 
         $now = date("Y-m-d");
         // $now = "2021-12-12";
-        if( !($now > $promotion->promotion_start_date && $now < $promotion->promotion_end_date) ){
+        if( !($now >= $promotion->promotion_start_date && $now <= $promotion->promotion_end_date) ){
             return abort(404);
         }
 
@@ -297,7 +297,7 @@ class CustomerPromotionController extends Controller
             $promotion = Promotions::findOrFail($input['promotion_id']);
 
             $now = date("Y-m-d");
-            if( !($now > $promotion->promotion_start_date && $now < $promotion->promotion_end_date) ){
+            if( !($now >= $promotion->promotion_start_date && $now <= $promotion->promotion_end_date) ){
                 $response = ['status'=>false,'message'=> "Opps ! This promotion has been expired."];
             }else{
 
@@ -323,6 +323,7 @@ class CustomerPromotionController extends Controller
                 $customer_promotion->customer_bp_address_id = $input['customer_bp_address_id'];
                 $customer_promotion->user_id = Auth::id();
                 $customer_promotion->status = 'pending';
+                $customer_promotion->is_sap_pushed = false;
 
                 if(isset($input['id'])){
                     $customer_promotion->updated_by = Auth::id();
@@ -404,9 +405,9 @@ class CustomerPromotionController extends Controller
                                     }
 
                                     $customer_promotion_product->quantity = $quantity;
-                                    $customer_promotion_product->price = $price;
-                                    $customer_promotion_product->discount = $discount;
-                                    $customer_promotion_product->amount = $amount;
+                                    $customer_promotion_product->price = round($price,2);
+                                    $customer_promotion_product->discount = round($discount,2);
+                                    $customer_promotion_product->amount = round($amount,2);
                                     $customer_promotion_product->save();
 
 
@@ -420,9 +421,9 @@ class CustomerPromotionController extends Controller
                     }
 
                     $customer_promotion->total_quantity = $total_quantity;
-                    $customer_promotion->total_price = $total_price;
-                    $customer_promotion->total_discount = $total_discount;
-                    $customer_promotion->total_amount = $total_amount;
+                    $customer_promotion->total_price = round($total_price,2);
+                    $customer_promotion->total_discount = round($total_discount,2);
+                    $customer_promotion->total_amount = round($total_amount,2);
                     $customer_promotion->save();
 
 
@@ -538,12 +539,6 @@ class CustomerPromotionController extends Controller
 
     public function orderShow($id){
 
-
-        // $sap_obj = new SAPCustomerPromotion('TEST-APBW', 'manager', 'test');
-        
-        // $sap_obj->createOrder($id);
-
-
         $data = CustomerPromotion::where('id',$id);
 
         if(Auth::id() != 1){
@@ -584,6 +579,7 @@ class CustomerPromotionController extends Controller
                 $input['status'] = 'canceled';
                 $input['cancel_reason'] = $request->cancel_reason;
 
+                unset($input['doc_entry']);
 
                 foreach ($obj->products as $product) {
 
@@ -600,8 +596,24 @@ class CustomerPromotionController extends Controller
                         $delivery->fill($insert)->save();
                     }
                 }
-            }
+            }elseif($input['status'] == 'approved'){
 
+
+                try {
+                    $sap_obj = new SAPCustomerPromotion('TEST-APBW', 'manager', 'test');
+            
+                    if($obj->doc_entry){ 
+                        // Update Order
+                        $sap_obj->updateOrder($input['id'], $obj->doc_entry);
+
+                    }else{ 
+                        // Create Order
+                        $sap_obj->createOrder($input['id']);
+                    }
+                } catch (\Exception $e) {
+                    
+                }
+            }
 
             $obj->fill($input)->save();
             
@@ -652,5 +664,47 @@ class CustomerPromotionController extends Controller
         }
 
         return view('customer-promotion.order_add',compact('promotion','edit','edit_products','edit_deliveries'));
+    }
+
+    public function orderPushInSap(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'id' => 'required|exists:customer_promotions,id',
+                );
+
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+            $obj = CustomerPromotion::where('id',$input['id'])->where('is_sap_pushed',false)->first();
+
+            if(!is_null($obj)){
+                try {
+                    $sap_obj = new SAPCustomerPromotion('TEST-APBW', 'manager', 'test');
+            
+                    if($obj->doc_entry){ 
+                        // Update Order
+                        $sap_obj->updateOrder($input['id'], $obj->doc_entry);
+
+                    }else{ 
+                        // Create Order
+                        $sap_obj->createOrder($input['id']);
+                    }
+
+                    $response = ['status'=>true,'message'=>"Order pushed in SAP successfully."];
+                
+                } catch (\Exception $e) {
+                    $response = ['status'=>false,'message'=>$e->getMessage()];
+                }
+            }else{
+                $response = ['status'=>false,'message'=>"Record Not Found !"];
+            }
+        }
+
+        return $response;
     }
 }
