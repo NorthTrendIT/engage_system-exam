@@ -188,6 +188,8 @@ Route::middleware(['auth'])->group(function(){
         Route::post('customer-promotion/order/get-customer-address', 'App\Http\Controllers\CustomerPromotionController@getCustomerAddress')->name('customer-promotion.order.get-customer-address');
         Route::post('customer-promotion/order/status', 'App\Http\Controllers\CustomerPromotionController@orderStatus')->name('customer-promotion.order.status');
         Route::get('customer-promotion/order/edit/{id}', 'App\Http\Controllers\CustomerPromotionController@orderEdit')->name('customer-promotion.order.edit');
+        Route::post('customer-promotion/order/push-in-sap', 'App\Http\Controllers\CustomerPromotionController@orderPushInSap')->name('customer-promotion.order.push-in-sap');
+
 
         // Quotations
         Route::resource('quotation','App\Http\Controllers\QuotationController');
