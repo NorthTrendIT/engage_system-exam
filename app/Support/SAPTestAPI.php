@@ -49,20 +49,6 @@ class SAPTestAPI
                 } else {
                     return ['status' => false, 'message' => "API Not Working"];
                 }
-            } catch (\GuzzleHttp\Exception\ConnectException $e) {
-
-                $response = ['status' => false, 'message' => 'ConnectException'];
-                return $response;
-            } catch (\GuzzleHttp\Exception\ClientException $e) {
-                $response = ['status' => false, 'message' => 'ClientException'];
-                return $response;
-            } catch (\GuzzleHttp\Exception\BadResponseException $e) {
-
-                $response = ['status' => false, 'message' => 'BadResponseException'];
-                return $response;
-            } catch (\GuzzleHttp\Exception\ServerException $e) {
-                $response = ['status' => false, 'message' => 'ServerException'];
-                return $response;
             } catch (\Exception $e) {
                 // abort(500);
                 $response = ['status' => false, 'message' => 'API Not Working'];
