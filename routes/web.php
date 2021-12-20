@@ -226,6 +226,13 @@ Route::middleware(['auth'])->group(function(){
     Route::post('promotion-type/status/{id}', 'App\Http\Controllers\PromotionTypeController@updateStatus')->name('promotion-type.status')->middleware('super-admin');
     Route::post('promotion-type/get-products/','App\Http\Controllers\PromotionTypeController@getProducts')->name('promotion-type.get-products')->middleware('super-admin');
 
+
+    // Customer Delivery Schedule
+    Route::resource('customer-delivery-schedule','App\Http\Controllers\CustomerDeliveryScheduleController');
+    Route::post('customer-delivery-schedule/get-all', 'App\Http\Controllers\CustomerDeliveryScheduleController@getAll')->name('customer-delivery-schedule.get-all');
+    Route::post('customer-delivery-schedule/get-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getCustomerList')->name('customer-delivery-schedule.get-customer-list');
+
+
 	Route::resource('help-desk','App\Http\Controllers\HelpDeskController');
     Route::post('help-desk/get-all', 'App\Http\Controllers\HelpDeskController@getAll')->name('help-desk.get-all');
     Route::post('help-desk/status', 'App\Http\Controllers\HelpDeskController@updateStatus')->name('help-desk.status');

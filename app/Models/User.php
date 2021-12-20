@@ -94,4 +94,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Customer::class,'customer_id');
     }
+
+    public function customer_delivery_schedules()
+    {
+        return $this->hasMany(CustomerDeliverySchedule::class,'user_id','id');
+    }
 }
