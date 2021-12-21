@@ -61,7 +61,6 @@ class CustomerDeliveryScheduleController extends Controller
 
 
             if(!isset($input['id'])){
-                
 
                 if(@$input['customer_id']){
 
@@ -81,26 +80,20 @@ class CustomerDeliveryScheduleController extends Controller
                 }
 
             }else{
-                $territory_ids = [];
-                if(isset($input['territory_id'])){
-                    foreach ($input['territory_id'] as $key => $value) {
-                        $territory_ids[] = $value;
+                $dates = [];
+                CustomerDeliverySchedule::where('user_id', $input['id'])->delete();
+                if(isset($input['date'])){
+                    foreach (explode(",", $input['date']) as $key => $value) {
+                        $dates[] = $value;
 
-                        TerritorySalesSpecialist::updateOrCreate(
-                                                    array(
-                                                        'territory_id' => $value,
-                                                        'user_id' => $user->id,
-                                                    ),
-                                                    array(
-                                                        'territory_id' => $value,
-                                                        'user_id' => $user->id,
-                                                    )
+                        CustomerDeliverySchedule::create(
+                                                    [
+                                                        'user_id' => $input['id'],
+                                                        'date' => date("Y-m-d",strtotime(str_replace("/", "-", $value))),
+                                                    ]
                                                 );
                         
                     }
-                    TerritorySalesSpecialist::where('user_id', $user->id)->whereNotIn('territory_id',$territory_ids)->delete();
-                }else{
-                    TerritorySalesSpecialist::where('user_id', $user->id)->delete();
                 }
             }
             

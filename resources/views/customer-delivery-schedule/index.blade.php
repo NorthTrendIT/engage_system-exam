@@ -13,7 +13,7 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('customer-delivery-schedule.create') }}" class="btn btn-sm btn-primary">New Assignment</a>
+        <a href="{{ route('customer-delivery-schedule.create') }}" class="btn btn-sm btn-primary">New Schedule</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->

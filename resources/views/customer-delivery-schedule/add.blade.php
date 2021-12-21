@@ -90,7 +90,9 @@ $(document).ready(function() {
       format: 'dd/mm/yyyy',
       todayHighlight: true,
       orientation: "bottom left",
+      @if(!isset($edit))
       startDate:'{{ date('d/m/Y') }}',
+      @endif
       autoclose: true,
       multidate: true,
       clearBtn: true,
