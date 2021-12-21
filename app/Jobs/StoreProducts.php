@@ -55,6 +55,22 @@ class StoreProducts implements ShouldQueue
                                 'is_active' => @$value['Valid'] == "tYES" ? true : false,
                                 'item_prices' => json_encode(@$value['ItemPrices']),
                                 //'response' => json_encode($value),
+
+                                'u_mobil_sc' => @$value['U_MOBIL_SC'],
+                                'u_item_type' => @$value['U_ItemType'],
+                                'u_item_application' => @$value['U_ItemApplication'],
+                                'u_pattern_type' => @$value['U_PatternType'],
+                                'u_tire_size' => @$value['U_TireSize'],
+                                'u_tire_diameter' => @$value['U_TireDiameter'],
+                                'u_speed_symbol' => @$value['U_SpeedSymbol'],
+                                'u_ply_rating' => @$value['U_PlyRating'],
+                                'u_tire_const' => @$value['U_TireConst'],
+                                'u_fitment_conf' => @$value['U_FitmentConf'],
+                                'u_business_group' => @$value['U_BusinessGroup'],
+                                'u_section_width' => @$value['U_SectionWidth'],
+                                'u_series' => @$value['U_Series'],
+
+
                                 'sap_connection_id' => $this->sap_connection_id,
                             );
 

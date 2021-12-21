@@ -28,6 +28,19 @@ class Product extends Model
     	'item_prices',
 
         'sap_connection_id',
+        'u_mobil_sc',
+        'u_item_type',
+        'u_item_application',
+        'u_pattern_type',
+        'u_tire_size',
+        'u_tire_diameter',
+        'u_speed_symbol',
+        'u_ply_rating',
+        'u_tire_const',
+        'u_fitment_conf',
+        'u_business_group',
+        'u_section_width',
+        'u_series',
     ];
 
     public function product_images()

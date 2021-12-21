@@ -42,6 +42,11 @@ class Customer extends Model
         'territory',
 
         'sap_connection_id',
+        'u_mkt_segment',
+        'u_cust_segment',
+        'u_subsector',
+        'u_province',
+        'u_card_code',
     ];
 
     public function bp_addresses()

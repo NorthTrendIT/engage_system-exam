@@ -93,6 +93,12 @@ class StoreCustomers implements ShouldQueue
                                 
                                 'class_id' => !is_null(@$value['U_CLASS']) ? @$obj_class->id : NULL,
 
+                                'u_mkt_segment' => @$value['U_MktSegment'],
+                                'u_cust_segment' => @$value['U_CustSegment'],
+                                'u_subsector' => @$value['U_Subsector'],
+                                'u_province' => @$value['U_Province'],
+                                'u_card_code' => @$value['U_CardCode'],
+
                                 'sap_connection_id' => $this->sap_connection_id,
                             );
 
