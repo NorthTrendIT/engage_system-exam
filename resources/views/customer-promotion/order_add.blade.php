@@ -320,12 +320,52 @@
 <script>
   $(document).ready(function() {
 
+    @php
+      $dates = @Auth::user()->customer_delivery_schedules->where('date','>',date("Y-m-d"));
+      if(count($dates)){
+        $dates = array_map( function ( $t ) {
+                           return date('d/m/Y',strtotime($t));
+                        }, array_column( $dates->toArray(), 'date' ) );
+      }
+    @endphp
+    @if(count($dates))
+      var enableDays = {!! json_encode($dates) !!};
+    @endif
+
+    function formatDate(d) {
+      var day = String(d.getDate())
+      //add leading zero if day is is single digit
+      if (day.length == 1)
+        day = '0' + day
+      var month = String((d.getMonth()+1))
+      //add leading zero if month is is single digit
+      if (month.length == 1)
+        month = '0' + month
+      return day + "/" + month + "/" + d.getFullYear()
+    }
+
+
     $('.delivery_date').datepicker({
-        format: 'dd/mm/yyyy',
-        todayHighlight: true,
-        orientation: "bottom left",
-        startDate:'{{ date('d/m/Y',strtotime($promotion->promotion_end_date)) }}',
-        autoclose: true,
+      format: 'dd/mm/yyyy',
+      todayHighlight: true,
+      orientation: "bottom left",
+      startDate: "+3d",
+      {{-- startDate:'{{ date('d/m/Y',strtotime($promotion->promotion_end_date)) }}', --}}
+      autoclose: true,
+
+      @if(count($dates))
+      beforeShowDay: function(date){
+        if (enableDays.indexOf(formatDate(date)) < 0)
+          return {
+            enabled: false
+          }
+        else
+          return {
+            enabled: true
+          }
+      },
+      @endif
+
     });
 
     $(document).on('change', '.delivery_quantity', function(event) {
