@@ -22,9 +22,13 @@ class StoreProducts implements ShouldQueue
 
     protected $data;
 
-    public function __construct($data)
+    protected $sap_connection_id;
+
+    public function __construct($data, $sap_connection_id)
     {
         $this->data = $data;
+        $this->sap_connection_id = $sap_connection_id;
+
     }
 
     /**
@@ -51,11 +55,13 @@ class StoreProducts implements ShouldQueue
                                 'is_active' => @$value['Valid'] == "tYES" ? true : false,
                                 'item_prices' => json_encode(@$value['ItemPrices']),
                                 //'response' => json_encode($value),
+                                'sap_connection_id' => $this->sap_connection_id,
                             );
 
                 $obj = Product::updateOrCreate(
                                         [
                                             'item_code' => @$value['ItemCode'],
+                                            'sap_connection_id' => $this->sap_connection_id,
                                         ],
                                         $insert
                                     );

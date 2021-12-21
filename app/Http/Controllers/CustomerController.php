@@ -8,6 +8,7 @@ use App\Jobs\SyncCustomers;
 use App\Models\Customer;
 use App\Models\Classes;
 use App\Models\CustomerGroup;
+use App\Models\SapConnection;
 use DataTables;
 
 class CustomerController extends Controller
@@ -100,8 +101,14 @@ class CustomerController extends Controller
             // Add Sync Customer data log.
             add_log(15, null);
 
-            // Save Data of customer in database
-            SyncCustomers::dispatch('TEST-APBW', 'manager', 'test');
+            $sap_connections = SapConnection::all();
+
+            foreach ($sap_connections as $value) {
+                // Save Data of customer in database
+                SyncCustomers::dispatch($value->db_name, $value->user_name , $value->password);
+            }
+            // // Save Data of customer in database
+            // SyncCustomers::dispatch('TEST-APBW', 'manager', 'test');
 
             $response = ['status' => true, 'message' => 'Sync Customer successfully !'];
         } catch (\Exception $e) {

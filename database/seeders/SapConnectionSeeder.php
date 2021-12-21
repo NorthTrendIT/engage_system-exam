@@ -21,25 +21,25 @@ class SapConnectionSeeder extends Seeder
         $data = array(
         			array(
                         'company_name' => 'APBW',
-        				'user_name' => 'TEST-APBW',
+        				'user_name' => 'manager',
                         'db_name' => 'TEST-APBW',
                         'password' => 'test',
                     ),
                     array(
                         'company_name' => 'NTMC',
-        				'user_name' => 'TEST-NTMC',
+        				'user_name' => 'manager',
                         'db_name' => 'TEST-NTMC',
                         'password' => 'test',
                     ),
                     array(
                         'company_name' => 'PHILCREST',
-        				'user_name' => 'TEST-PHILCREST',
+        				'user_name' => 'manager',
                         'db_name' => 'TEST-PHILCREST',
                         'password' => 'test',
                     ),
                     array(
                         'company_name' => 'PHILSYN',
-        				'user_name' => 'TEST-PHILSYN',
+        				'user_name' => 'manager',
                         'db_name' => 'TEST-PHILSYN',
                         'password' => 'test',
                     ),

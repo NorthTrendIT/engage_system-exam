@@ -25,9 +25,12 @@ class StoreCustomers implements ShouldQueue
      */
     protected $data;
 
-    public function __construct($data)
+    protected $sap_connection_id;
+
+    public function __construct($data, $sap_connection_id)
     {
         $this->data = $data;
+        $this->sap_connection_id = $sap_connection_id;
     }
 
     /**
@@ -40,6 +43,10 @@ class StoreCustomers implements ShouldQueue
         if(!empty($this->data)){
 
             foreach ($this->data as $value) {
+
+                if(@$value['CardType'] != "cCustomer"){
+                    continue;
+                }
 
                 if(!is_null(@$value['U_CLASS'])){
                     $obj_class = Classes::updateOrCreate(
@@ -85,11 +92,14 @@ class StoreCustomers implements ShouldQueue
                                 'territory' => @$value['Territory'],
                                 
                                 'class_id' => !is_null(@$value['U_CLASS']) ? @$obj_class->id : NULL,
+
+                                'sap_connection_id' => $this->sap_connection_id,
                             );
 
                 $obj = Customer::updateOrCreate(
                                         [
                                             'card_code' => @$value['CardCode'],
+                                            'sap_connection_id' => $this->sap_connection_id,
                                         ],
                                         $insert
                                     );

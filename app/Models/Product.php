@@ -26,6 +26,8 @@ class Product extends Model
         'product_benefits',
         'product_sell_sheets',
     	'item_prices',
+
+        'sap_connection_id',
     ];
 
     public function product_images()

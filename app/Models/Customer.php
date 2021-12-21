@@ -40,6 +40,8 @@ class Customer extends Model
         'class_id',
         'price_list_num',
         'territory',
+
+        'sap_connection_id',
     ];
 
     public function bp_addresses()
