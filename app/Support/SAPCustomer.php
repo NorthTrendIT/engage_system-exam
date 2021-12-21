@@ -45,6 +45,9 @@ class SAPCustomer
                 [
                     'headers' => $this->headers,
                     'verify' => false,
+                    'query' => [
+                        '$filter' => "CardType eq 'cCustomer'",
+                    ],
                 ]
             );
 
