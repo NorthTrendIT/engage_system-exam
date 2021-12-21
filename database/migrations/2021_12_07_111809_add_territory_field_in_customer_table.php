@@ -14,7 +14,8 @@ class AddTerritoryFieldInCustomerTable extends Migration
     public function up()
     {
         Schema::table('customers', function (Blueprint $table) {
-            $table->bigInteger('territory')->nullable();
+            $table->string('territory')->nullable();
+            // $table->bigInteger('territory')->nullable();
         });
     }
 

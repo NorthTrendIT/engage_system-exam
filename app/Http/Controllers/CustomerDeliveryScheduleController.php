@@ -117,7 +117,22 @@ class CustomerDeliveryScheduleController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = User::where('id', $id)->where('role_id', 4)->firstOrFail();
+
+        $dates = array();
+
+        foreach (@$data->customer_delivery_schedules as $value) {
+            $dates[] = array(
+                                // 'allDay' => true,
+                                // 'title' => "",
+                                'start' => date("Y-m-d",strtotime($value->date)),
+                                'end' => date("Y-m-d",strtotime($value->date)),
+                                // 'className' => "calendar-event-enduring",
+                                "display" => 'background'
+                            );
+        }
+
+        return view('customer-delivery-schedule.view',compact('data','dates'));
     }
 
     /**
@@ -186,16 +201,14 @@ class CustomerDeliveryScheduleController extends Controller
 
 
         return DataTables::of($data)
-                            ->addColumn('date', function($row) {
+                            // ->addColumn('date', function($row) {
 
-                                $dates = array_map( function ( $t ) {
-                                               return date('M d, Y',strtotime($t));
-                                            }, array_column( $row->toArray(), 'date' ) );
+                            //     $dates = array_map( function ( $t ) {
+                            //                    return date('M d, Y',strtotime($t));
+                            //                 }, array_column( $row->toArray(), 'date' ) );
 
-                                return implode(" | ", $dates);
-
-                                // return implode(" | ", array_column( $row->toArray(), 'date' ));
-                            })
+                            //     return implode(" | ", $dates);
+                            // })
                             ->addColumn('customer', function($row) {
                                 return @$row->first()->user->sales_specialist_name ?? "-";
                             })
@@ -203,8 +216,13 @@ class CustomerDeliveryScheduleController extends Controller
                                 $btn = '<a href="' . route('customer-delivery-schedule.edit',$row->first()->user_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
+
                                 $btn .= ' <a href="javascript:void(0)" data-url="' . route('customer-delivery-schedule.destroy',$row->first()->user_id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
                                     <i class="fa fa-trash"></i>
+                                  </a>';
+
+                                $btn .= ' <a href="' . route('customer-delivery-schedule.show',$row->first()->user_id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
                                   </a>';
 
                                 return $btn;
