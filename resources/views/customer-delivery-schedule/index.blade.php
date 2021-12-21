@@ -57,7 +57,7 @@
                           <thead>
                             <tr>
                               <th>Customer</th>
-                              <th>Schedule Dates</th>
+                              {{-- <th>Schedule Dates</th> --}}
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -121,7 +121,7 @@
           },
           columns: [
               {data: 'customer', name: 'customer'},
-              {data: 'date', name: 'date', orderable:false},
+              // {data: 'date', name: 'date', orderable:false},
               {data: 'action', name: 'action', orderable:false},
           ],
           drawCallback:function(){
