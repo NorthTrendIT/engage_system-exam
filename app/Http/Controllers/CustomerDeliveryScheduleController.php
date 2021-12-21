@@ -186,16 +186,14 @@ class CustomerDeliveryScheduleController extends Controller
 
 
         return DataTables::of($data)
-                            ->addColumn('date', function($row) {
+                            // ->addColumn('date', function($row) {
 
-                                $dates = array_map( function ( $t ) {
-                                               return date('M d, Y',strtotime($t));
-                                            }, array_column( $row->toArray(), 'date' ) );
+                            //     $dates = array_map( function ( $t ) {
+                            //                    return date('M d, Y',strtotime($t));
+                            //                 }, array_column( $row->toArray(), 'date' ) );
 
-                                return implode(" | ", $dates);
-
-                                // return implode(" | ", array_column( $row->toArray(), 'date' ));
-                            })
+                            //     return implode(" | ", $dates);
+                            // })
                             ->addColumn('customer', function($row) {
                                 return @$row->first()->user->sales_specialist_name ?? "-";
                             })
