@@ -270,15 +270,24 @@ class CustomerPromotionController extends Controller
 
     public function orderStore(Request $request){
 
+        if(!@Auth::user()->customer->sap_connection_id){
+            return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
+        }
+
         $input = $request->all();
 
         $rules = array(
                     'promotion_id' => 'required|exists:promotions,id',
                     'customer_bp_address_id' => 'required|exists:customer_bp_addresses,id',
                     'products' => 'required|array',
+                    'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@Auth::user()->customer->sap_connection_id,
                 );
 
-        $validator = Validator::make($input, $rules);
+        $messages = array(
+                        'products.*.product_id.exists' => "Oops! Customer or Items can not be located in the DataBase.",
+                    );
+
+        $validator = Validator::make($input, $rules, $messages);
 
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
@@ -324,6 +333,7 @@ class CustomerPromotionController extends Controller
                 $customer_promotion->user_id = Auth::id();
                 $customer_promotion->status = 'pending';
                 $customer_promotion->is_sap_pushed = false;
+                $customer_promotion->sap_connection_id = @Auth::user()->customer->sap_connection_id;
 
                 if(isset($input['id'])){
                     $customer_promotion->updated_by = Auth::id();
@@ -600,16 +610,31 @@ class CustomerPromotionController extends Controller
 
 
                 try {
-                    $sap_obj = new SAPCustomerPromotion('TEST-APBW', 'manager', 'test');
-            
-                    if($obj->doc_entry){ 
-                        // Update Order
-                        $sap_obj->updateOrder($input['id'], $obj->doc_entry);
 
-                    }else{ 
-                        // Create Order
-                        $sap_obj->createOrder($input['id']);
+                    $sap_connection = SapConnection::find($obj->sap_connection_id);
+
+                    if(!is_null($sap_connection)){
+                        $sap_obj = new SAPCustomerPromotion($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
+                
+                        if($obj->doc_entry){ 
+
+                            // Cancel Old Order
+                            $cancel = $sap_obj->cancelOrder($input['id'], $obj->doc_entry);
+
+                            if(isset($cancel['status']) && $cancel['status']){
+                                // Create Order
+                                $sap_obj->createOrder($input['id']);
+                            }
+
+                            // // Update Order
+                            // $sap_obj->updateOrder($input['id'], $obj->doc_entry);
+
+                        }else{ 
+                            // Create Order
+                            $sap_obj->createOrder($input['id']);
+                        }
                     }
+
                 } catch (\Exception $e) {
                     
                 }
