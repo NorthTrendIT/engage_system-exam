@@ -8,6 +8,7 @@ use App\Support\SAPAuthentication;
 use App\Models\Product;
 use App\Jobs\StoreProducts;
 use App\Jobs\SyncNextProducts;
+use App\Models\SapConnection;
 
 class SAPProduct
 {
@@ -102,8 +103,15 @@ class SAPProduct
                                         );
                 }*/
 
+                $where = array(
+                            'db_name' => $this->database,
+                            'user_name' => $this->username,
+                        );
+
+                $sap_connection = SapConnection::where($where)->first();
+
                 // Store Data of Product in database
-                StoreProducts::dispatch($data['value']);
+                StoreProducts::dispatch($data['value'],@$sap_connection->id);
 
                 if(isset($data['odata.nextLink'])){
                     //$this->addProductDataInDatabase($data['odata.nextLink']);

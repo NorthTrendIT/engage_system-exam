@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\Customer;
+use App\Models\SapConnection;
 use App\Models\CustomerBpAddress;
 use App\Jobs\StoreCustomers;
 use App\Jobs\SyncNextCustomers;
@@ -45,9 +46,9 @@ class SAPCustomer
                 [
                     'headers' => $this->headers,
                     'verify' => false,
-                    'query' => [
-                        '$filter' => "CardType eq 'cCustomer'",
-                    ],
+                    // 'query' => [
+                    //     '$filter' => "CardType eq 'cCustomer'",
+                    // ],
                 ]
             );
 
@@ -165,8 +166,15 @@ class SAPCustomer
                 }*/
 
 
+                $where = array(
+                            'db_name' => $this->database,
+                            'user_name' => $this->username,
+                        );
+
+                $sap_connection = SapConnection::where($where)->first();
+
                 // Store Data of Customer in database
-                StoreCustomers::dispatch($data['value']);
+                StoreCustomers::dispatch($data['value'],@$sap_connection->id);
 
                 if(isset($data['odata.nextLink'])){
 
