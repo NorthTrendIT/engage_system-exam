@@ -169,7 +169,7 @@ class StoreCustomers implements ShouldQueue
                                             'last_name' => !empty($name[1]) ? $name[1] : null,
                                             'is_active' => $obj->is_active,
                                             'password' => Hash::make(@$obj->card_code),
-                                            'email' => strtolower(@$obj->card_code).'@mailinator.com',
+                                            'email' => strtolower(@$obj->card_code)."-".$this->sap_connection_id.'@mailinator.com',
                                             'first_login' => true,
                                         );
 

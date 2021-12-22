@@ -41,6 +41,8 @@ class Product extends Model
         'u_business_group',
         'u_section_width',
         'u_series',
+        'u_item_line',
+        'u_tires',
     ];
 
     public function product_images()
@@ -48,4 +50,14 @@ class Product extends Model
         return $this->hasMany(ProductImage::class,'product_id');
     }
 
+
+    public function product_item_line()
+    {
+        return $this->belongsTo(ProductItemLine::class,'u_item_line','u_item_line')->where('sap_connection_id', $this->sap_connection_id);
+    }
+
+    public function product_tires_category()
+    {
+        return $this->belongsTo(ProductTiresCategory::class,'u_tires','u_tires')->where('sap_connection_id', $this->sap_connection_id);
+    }
 }

@@ -9,6 +9,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Product;
+use App\Models\ProductItemLine;
+use App\Models\ProductTiresCategory;
 
 class StoreProducts implements ShouldQueue
 {
@@ -69,6 +71,8 @@ class StoreProducts implements ShouldQueue
                                 'u_business_group' => @$value['U_BusinessGroup'],
                                 'u_section_width' => @$value['U_SectionWidth'],
                                 'u_series' => @$value['U_Series'],
+                                'u_tires' => @$value['U_TIRES'],
+                                'u_item_line' => @$value['U_ItemLine'],
 
 
                                 'sap_connection_id' => $this->sap_connection_id,
@@ -81,6 +85,33 @@ class StoreProducts implements ShouldQueue
                                         ],
                                         $insert
                                     );
+
+                if(!is_null(@$value['U_TIRES'])){
+                    $obj_t = ProductTiresCategory::updateOrCreate(
+                                            [
+                                                'u_tires' => @$value['U_TIRES'],
+                                                'sap_connection_id' => $this->sap_connection_id,
+                                            ],
+                                            [
+                                                'u_tires' => @$value['U_TIRES'],
+                                                'sap_connection_id' => $this->sap_connection_id,
+                                            ]
+                                        );
+                }
+
+
+                if(!is_null(@$value['U_ItemLine'])){
+                    $obj_i = ProductItemLine::updateOrCreate(
+                                            [
+                                                'u_item_line' => @$value['U_ItemLine'],
+                                                'sap_connection_id' => $this->sap_connection_id,
+                                            ],
+                                            [
+                                                'u_item_line' => @$value['U_ItemLine'],
+                                                'sap_connection_id' => $this->sap_connection_id,
+                                            ]
+                                        );
+                }
             }
 
         }
