@@ -18,11 +18,11 @@ class CreateNotificationsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->char('type',4);
             $table->string('title');
-            $table->lognText('message');
-            $table->string('image');
-            $table->time('post_time');
+            $table->longText('message');
+            $table->string('image')->nullable();
+            $table->time('post_time')->nullable();
             $table->longText('request_payload')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_important')->default(false);
             $table->timestamps();
         });
     }

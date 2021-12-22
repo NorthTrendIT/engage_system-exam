@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateNotificationConnectionsTable extends Migration
+class CreateNotificationDocumentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateNotificationConnectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('notification_connections', function (Blueprint $table) {
+        Schema::create('notification_documents', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('notification_id');
-            $table->string('module');
-            $table->unsignedBigInteger('record_id');
+            $table->string('file');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ class CreateNotificationConnectionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('notification_connections');
+        Schema::dropIfExists('notification_documents');
     }
 }
