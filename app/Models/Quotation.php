@@ -34,5 +34,7 @@ class Quotation extends Model
         'response',
         'created_at',
         'updated_at',
+        'sap_connection_id',
+        'customer_promotion_id',
     ];
 }

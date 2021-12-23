@@ -55,10 +55,6 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');
 	    Route::post('customer/sync-customers', 'App\Http\Controllers\CustomerController@syncCustomers')->name('customer.sync-customers');
 
-	    Route::resource('role','App\Http\Controllers\RoleController')->except(['show'])->middleware('super-admin');
-	    Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all')->middleware('super-admin');
-	    Route::get('role/chart', 'App\Http\Controllers\RoleController@getRoleChart')->name('role.chart')->middleware('super-admin');
-
 	    Route::resource('user','App\Http\Controllers\UserController');
 	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
 	    Route::post('user/status/{id}', 'App\Http\Controllers\UserController@updateStatus')->name('user.status');
@@ -188,6 +184,8 @@ Route::middleware(['auth'])->group(function(){
         Route::post('customer-promotion/order/get-customer-address', 'App\Http\Controllers\CustomerPromotionController@getCustomerAddress')->name('customer-promotion.order.get-customer-address');
         Route::post('customer-promotion/order/status', 'App\Http\Controllers\CustomerPromotionController@orderStatus')->name('customer-promotion.order.status');
         Route::get('customer-promotion/order/edit/{id}', 'App\Http\Controllers\CustomerPromotionController@orderEdit')->name('customer-promotion.order.edit');
+        Route::post('customer-promotion/order/push-in-sap', 'App\Http\Controllers\CustomerPromotionController@orderPushInSap')->name('customer-promotion.order.push-in-sap');
+
 
         // Quotations
         Route::resource('quotation','App\Http\Controllers\QuotationController');
@@ -222,11 +220,28 @@ Route::middleware(['auth'])->group(function(){
     Route::post('draft-order/get-address/','App\Http\Controllers\DraftOrderController@getAddress')->name('draft-order.getAddress');
     Route::post('draft-order/place-order/','App\Http\Controllers\DraftOrderController@placeOrder')->name('draft-order.placeOrder');
 
-    // Pramotion Type
-    Route::resource('promotion-type','App\Http\Controllers\PromotionTypeController')->middleware('super-admin');
-    Route::post('promotion-type/get-all', 'App\Http\Controllers\PromotionTypeController@getAll')->name('promotion-type.get-all')->middleware('super-admin');
-    Route::post('promotion-type/status/{id}', 'App\Http\Controllers\PromotionTypeController@updateStatus')->name('promotion-type.status')->middleware('super-admin');
-    Route::post('promotion-type/get-products/','App\Http\Controllers\PromotionTypeController@getProducts')->name('promotion-type.get-products')->middleware('super-admin');
+
+    // Super Admin Routes
+    Route::middleware('super-admin')->group(function(){
+
+        // Role
+        Route::resource('role','App\Http\Controllers\RoleController')->except(['show']);
+        Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all');
+        Route::get('role/chart', 'App\Http\Controllers\RoleController@getRoleChart')->name('role.chart');
+
+        // Pramotion Type
+        Route::resource('promotion-type','App\Http\Controllers\PromotionTypeController');
+        Route::post('promotion-type/get-all', 'App\Http\Controllers\PromotionTypeController@getAll')->name('promotion-type.get-all');
+        Route::post('promotion-type/status/{id}', 'App\Http\Controllers\PromotionTypeController@updateStatus')->name('promotion-type.status');
+        Route::post('promotion-type/get-products/','App\Http\Controllers\PromotionTypeController@getProducts')->name('promotion-type.get-products');
+
+
+        // Customer Delivery Schedule
+        Route::resource('customer-delivery-schedule','App\Http\Controllers\CustomerDeliveryScheduleController');
+        Route::post('customer-delivery-schedule/get-all', 'App\Http\Controllers\CustomerDeliveryScheduleController@getAll')->name('customer-delivery-schedule.get-all');
+        Route::post('customer-delivery-schedule/get-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getCustomerList')->name('customer-delivery-schedule.get-customer-list');
+    });
+
 
 	Route::resource('help-desk','App\Http\Controllers\HelpDeskController');
     Route::post('help-desk/get-all', 'App\Http\Controllers\HelpDeskController@getAll')->name('help-desk.get-all');

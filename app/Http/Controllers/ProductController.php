@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Jobs\SyncProducts;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\SapConnection;
 use DataTables;
 use Validator;
 use Auth;
@@ -166,8 +167,14 @@ class ProductController extends Controller
       // Add sync Product data log.
       add_log(18, null);
 
-      // Save Data of Product in database
-      SyncProducts::dispatch('TEST-APBW', 'manager', 'test');
+      // // Save Data of Product in database
+      // SyncProducts::dispatch('TEST-APBW', 'manager', 'test');
+
+      $sap_connections = SapConnection::all();
+      foreach ($sap_connections as $value) {
+        // Save Data of Product in database
+        SyncProducts::dispatch($value->db_name, $value->user_name , $value->password);
+      }
 
       $response = ['status' => true, 'message' => 'Sync Product successfully !'];
     } catch (\Exception $e) {

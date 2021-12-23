@@ -96,10 +96,12 @@ class TerritoriesController extends Controller
 
             // Save Data of Territories in database
             SyncTerritories::dispatch('TEST-APBW', 'manager', 'test');
+            // SyncTerritories::dispatch('TEST-NTMC', 'manager', 'test');
+            // SyncTerritories::dispatch('TEST-PHILCREST', 'manager', 'test');
+            // SyncTerritories::dispatch('TEST-PHILSYN', 'manager', 'test');
 
             $response = ['status' => true, 'message' => 'Sync Territories successfully !'];
         } catch (\Exception $e) {
-            dd($e);
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
         return $response;

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddTerritoryFieldInCustomerTable extends Migration
+class AddUItemLineFieldInProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class AddTerritoryFieldInCustomerTable extends Migration
      */
     public function up()
     {
-        Schema::table('customers', function (Blueprint $table) {
-            $table->string('territory')->nullable();
-            // $table->bigInteger('territory')->nullable();
+        Schema::table('products', function (Blueprint $table) {
+            $table->string('u_tires')->nullable();
+            $table->string('u_item_line')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class AddTerritoryFieldInCustomerTable extends Migration
      */
     public function down()
     {
-        Schema::table('customers', function (Blueprint $table) {
+        Schema::table('products', function (Blueprint $table) {
             //
         });
     }

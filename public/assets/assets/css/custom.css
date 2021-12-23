@@ -414,3 +414,8 @@ td.disabled.day {
 .datepicker thead th.prev, .datepicker thead th.datepicker-switch, .datepicker thead th.next {
     text-align: center !important;
 }
+
+.datepicker tfoot tr > th.today, .datepicker tfoot tr > th.clear {
+    text-align: center;
+    border: 0.5px solid #d3c4c4;
+}

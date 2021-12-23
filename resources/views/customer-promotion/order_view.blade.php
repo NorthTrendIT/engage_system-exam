@@ -46,11 +46,11 @@
                           <div class="fw-bolder fs-3 text-gray-800 mb-8">Invoice</div>
                           <!--end::Label-->
 
-                          @if(Auth::id() == 1)
+                          @if(userrole() == 1)
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
-                            <div class="col-sm-12">
+                            <div class="col-sm-9">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Customer:</div>
                               <!--end::Label-->
@@ -59,6 +59,21 @@
                               <!--end::Col-->
                             </div>
                             <!--end::Col-->
+
+                            @if($data->status == "approved" && $data->is_sap_pushed == false)
+                            <!--end::Col-->
+                            <div class="col-sm-3">
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Push Details In SAP:</div>
+                              <!--end::Label-->
+                              <!--end::Col-->
+                              <div class="fw-bolder fs-6 text-gray-800">
+                                <a href="javascript:" class="btn btn-sm btn-info btn-inline push-in-sap">Push Details</a>
+                              </div>
+                              <!--end::Col-->
+                            </div>
+                            <!--end::Col-->
+                            @endif
+
                           </div>
                           <!--end::Row-->
                           @endif
@@ -98,7 +113,7 @@
                                 @if($data->status == "approved")
                                   <a href="javascript:" class="btn btn-sm btn-success btn-inline ">Approved</a>
                                 @elseif($data->status == "pending")
-                                  <a href="javascript:" class="btn btn-sm btn-info btn-inline ">Pending</a>
+                                  <a href="javascript:" class="btn btn-sm btn-warning btn-inline ">Pending</a>
                                 @elseif($data->status == "canceled")
                                   <a href="javascript:" class="btn btn-sm btn-danger btn-inline ">Canceled</a>
                                 @endif
@@ -299,7 +314,7 @@
                     <div class="form-group">
                       <select class="form-control form-control-lg form-control-solid" name="status" data-control="select2" data-hide-search="false" data-placeholder="Select a status" data-allow-clear="false">
                         <option value=""></option>
-                        <option value="pending" @if($data->status == "pending") selected="" @endif>Pending</option>
+                        {{-- <option value="pending" @if($data->status == "pending") selected="" @endif>Pending</option> --}}
                         <option value="approved" @if($data->status == "approved") selected="" @endif>Approved</option>
                         <option value="canceled" @if($data->status == "canceled") selected="" @endif>Canceled</option>
                       </select>
@@ -316,7 +331,7 @@
                 <div class="row mb-5 mt-5">
                   <div class="col-md-6">
                     <div class="form-group">
-                      <input type="submit" class="btn btn-success" value="Update">
+                      <input type="submit" class="btn btn-success update_status_btn" value="Update" style="display: none;">
                     </div>
                   </div>
                 </div>
@@ -354,6 +369,12 @@
         $('.cancel_reason_div').show();
       }else{
         $('.cancel_reason_div').hide();
+      }
+
+      if($(this).find('option:selected').val() != "{{ $data->status }}"){
+        $('.update_status_btn').show();
+      }else{
+        $('.update_status_btn').hide();
       }
 
     });
@@ -416,6 +437,44 @@
       });
       return validator;
     }
+
+    $(document).on('click', '.push-in-sap', function(event) {
+      event.preventDefault();
+
+      Swal.fire({
+        title: 'Are you sure want to do this?',
+        //text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('customer-promotion.order.push-in-sap') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                    id:'{{ @$data->id }}',
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              setTimeout(function(){
+                window.location.reload();
+              },500)
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
   });
 
 </script>

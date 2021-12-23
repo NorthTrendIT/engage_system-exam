@@ -25,9 +25,12 @@ class StoreCustomers implements ShouldQueue
      */
     protected $data;
 
-    public function __construct($data)
+    protected $sap_connection_id;
+
+    public function __construct($data, $sap_connection_id)
     {
         $this->data = $data;
+        $this->sap_connection_id = $sap_connection_id;
     }
 
     /**
@@ -40,6 +43,10 @@ class StoreCustomers implements ShouldQueue
         if(!empty($this->data)){
 
             foreach ($this->data as $value) {
+
+                if(@$value['CardType'] != "cCustomer"){
+                    continue;
+                }
 
                 if(!is_null(@$value['U_CLASS'])){
                     $obj_class = Classes::updateOrCreate(
@@ -85,11 +92,20 @@ class StoreCustomers implements ShouldQueue
                                 'territory' => @$value['Territory'],
                                 
                                 'class_id' => !is_null(@$value['U_CLASS']) ? @$obj_class->id : NULL,
+
+                                'u_mkt_segment' => @$value['U_MktSegment'],
+                                'u_cust_segment' => @$value['U_CustSegment'],
+                                'u_subsector' => @$value['U_Subsector'],
+                                'u_province' => @$value['U_Province'],
+                                'u_card_code' => @$value['U_CardCode'],
+
+                                'sap_connection_id' => $this->sap_connection_id,
                             );
 
                 $obj = Customer::updateOrCreate(
                                         [
                                             'card_code' => @$value['CardCode'],
+                                            'sap_connection_id' => $this->sap_connection_id,
                                         ],
                                         $insert
                                     );
@@ -153,7 +169,7 @@ class StoreCustomers implements ShouldQueue
                                             'last_name' => !empty($name[1]) ? $name[1] : null,
                                             'is_active' => $obj->is_active,
                                             'password' => Hash::make(@$obj->card_code),
-                                            'email' => strtolower(@$obj->card_code).'@mailinator.com',
+                                            'email' => strtolower(@$obj->card_code)."-".$this->sap_connection_id.'@mailinator.com',
                                             'first_login' => true,
                                         );
 

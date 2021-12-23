@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddTerritoryFieldInCustomerTable extends Migration
+class AddSapConnectionIdInCustomersAndProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,11 @@ class AddTerritoryFieldInCustomerTable extends Migration
     public function up()
     {
         Schema::table('customers', function (Blueprint $table) {
-            $table->string('territory')->nullable();
-            // $table->bigInteger('territory')->nullable();
+            $table->unsignedBigInteger('sap_connection_id')->nullable();
+        });
+
+        Schema::table('products', function (Blueprint $table) {
+            $table->unsignedBigInteger('sap_connection_id')->nullable();
         });
     }
 
@@ -26,7 +29,7 @@ class AddTerritoryFieldInCustomerTable extends Migration
      */
     public function down()
     {
-        Schema::table('customers', function (Blueprint $table) {
+        Schema::table('customers_and_products', function (Blueprint $table) {
             //
         });
     }
