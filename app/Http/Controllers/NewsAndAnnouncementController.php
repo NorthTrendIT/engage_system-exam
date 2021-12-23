@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Notification;
 use App\Models\NotificationConnection;
 use App\Models\NotificationDocument;
+use App\Models\Role;
 use OneSignal;
 use DataTables;
 use Validator;
@@ -42,13 +43,12 @@ class NewsAndAnnouncementController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-        // dd($input);
-        $input = $request->all();
 
         $rules = array(
                     'title' => 'required',
                     'type' => 'required',
                     'message' => 'required',
+                    'module' => 'required',
                 );
 
 
@@ -70,6 +70,12 @@ class NewsAndAnnouncementController extends Controller
             $notification->message = $input['message'];
             $notification->user_id = Auth::user()->id;
             $notification->save();
+
+            $connection = new NotificationConnection();
+            $connection->notification_id = $notification->id;
+            $connection->module = $input['module'];
+            $connection->record_id = $input['record_id'];
+            $connection->save();
 
             // Start Notification Document
             $docs_ids = array();
@@ -117,7 +123,21 @@ class NewsAndAnnouncementController extends Controller
             }
             // End Notification Document
 
+            // Send Push Notification
+            if(isset($notification->id) && isset($connection->id)){
+                $fields['filters'] = array(array("field" => "tag", "key" => ".$connection->module.", "relation"=> "=", "value"=> ".$connection->record_id."));
+                $message = $notification->title;
 
+                $push = OneSignal::sendPush($fields, $message);
+                if(!empty($push['id'])){
+                    $message = "Notification Send.";
+                    return $response = ['status'=>true,'message'=>$message];
+                }
+                if(!empty($push['errors'])){
+                    $message = $push['errors'][0];
+                    return $response = ['status'=>false,'message'=>$message];
+                }
+            }
 
             $response = ['status'=>true,'message'=>$message];
         }
@@ -169,7 +189,16 @@ class NewsAndAnnouncementController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $notification = Notification::where('id', $id)->firstOrFail();
+        if(!is_null($notification)){
+            Notification::where('id', $id)->delete();
+            NotificationDocument::where('notification_id',$id)->delete();
+            NotificationConnection::where('notification_id',$id)->delete();
+            $response = ['status'=>true,'message'=>'Record deleted successfully !'];
+        }else{
+            $response = ['status'=>false,'message'=>'Record not found !'];
+        }
+        return $response;
     }
 
     public function getAll(Request $request){
@@ -220,12 +249,32 @@ class NewsAndAnnouncementController extends Controller
                                 $query->orderBy('user_name', $order);
                             })
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('news-and-announcement.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
-                                    <i class="fa fa-pencil"></i>
+                                $btn = '<a href="javascript:"  data-url="' . route('news-and-announcement.destroy',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10 delete">
+                                    <i class="fa fa-trash"></i>
                                   </a>';
                                 return $btn;
                             })
                             ->rawColumns(['action'])
                             ->make(true);
+    }
+
+    public function getRoles(Request $request){
+        $search = $request->search;
+
+        if($search == ''){
+            $data = Role::orderby('name','asc')->select('id','name')->limit(50)->get();
+        }else{
+            $data = Role::orderby('name','asc')->select('id','name')->where('name', 'like', '%' .$search . '%')->limit(50)->get();
+        }
+
+        $response = array();
+        foreach($data as $value){
+            $response[] = array(
+                "id"=>$value->id,
+                "text"=>$value->name
+            );
+        }
+
+        return response()->json($response);
     }
 }

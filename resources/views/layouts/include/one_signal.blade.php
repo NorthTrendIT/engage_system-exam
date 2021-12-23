@@ -88,9 +88,8 @@ OneSignal.push(function() {
 
       var tagsCounts = 3; // random number between 1 and 10
       var tags = {
-          'external_id': 1,
-          'user_type': 'super_admin',
-          'territory': 'all',
+          'user_id': "{{ Auth::user()->id }}",
+          'role': '{{ Auth::user()->role_id }}',
       };
 
       OneSignal.sendTags(tags, function(tagsSent) {

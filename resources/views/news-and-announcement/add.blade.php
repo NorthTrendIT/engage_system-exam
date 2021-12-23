@@ -65,6 +65,28 @@
                     </div>
                 </div>
 
+                <div class="row mb-5">
+                    <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Select Module<span class="asterisk">*</span></label>
+                                <select class="form-select form-select-solid" data-control="select2" id="selectModule" data-hide-search="false" name="module">
+                                    <option value="">Select Module</option>
+                                    <option value="role" @if(isset($edit->connection) && $edit->connection->module == 'role') selected @endif>Role</option>
+                                </select>
+                            </div>
+                    </div>
+                    <!-- Roles -->
+                    <div class="col-md-6 roles" style="display:none">
+                        <div class="form-group">
+                            <label>Select Role<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" id="selectRole" data-hide-search="false" name="record_id">
+                                <option value="">Select Role</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
                 <div class="row mb-5 mt-10">
                   <div class="col-md-12">
                     <div class="form-group">
@@ -136,7 +158,7 @@
                 <div class="row mb-5">
                   <div class="col-md-12">
                     <div class="form-group">
-                      <input type="submit" value="{{ isset($edit) ? "Update" : "Save" }}" class="btn btn-primary">
+                      <input type="submit" value="Save and Send Push" class="btn btn-primary">
                     </div>
                   </div>
                 </div>
@@ -166,6 +188,16 @@
 
     CKEDITOR.replace( 'message',{
       removePlugins: ['image', 'uploadimage']
+    });
+
+    $('body').on('change' ,'#selectModule', function(){
+        $module = $('[name="module"]').val();
+
+        $('.roles').hide();
+
+        if($module == "role"){
+            $('.roles').show();
+        }
     });
 
     $('body').on("submit", "#myForm", function (e) {
@@ -215,6 +247,9 @@
             message:{
               required:true,
             },
+            module:{
+              required:true,
+            },
           },
           messages: {
             title:{
@@ -226,6 +261,9 @@
             },
             message:{
               required:"Please enter message.",
+            },
+            module:{
+              required:"Please select Module.",
             },
           },
       });
@@ -257,6 +295,30 @@
       ready: function (setIndexes) {
       },
       isFirstItemUndeletable: true,
+    });
+
+    $("#selectRole").select2({
+        ajax: {
+            url: "{{route('news-and-announcement.getRoles')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Role',
+        // minimumInputLength: 1,
+        multiple: false,
     });
 
   });

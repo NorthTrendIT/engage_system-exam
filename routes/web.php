@@ -206,6 +206,7 @@ Route::middleware(['auth'])->group(function(){
         // News and Announcement
         Route::resource('news-and-announcement','App\Http\Controllers\NewsAndAnnouncementController');
         Route::post('news-and-announcement/get-all', 'App\Http\Controllers\NewsAndAnnouncementController@getAll')->name('news-and-announcement.get-all');
+        Route::post('news-and-announcement/get-roles/','App\Http\Controllers\NewsAndAnnouncementController@getRoles')->name('news-and-announcement.getRoles');
 
     });
 
