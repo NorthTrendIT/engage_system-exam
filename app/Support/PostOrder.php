@@ -53,9 +53,17 @@ class PostOrder
             }
 
         } catch (\Exception $e) {
+            $message = "API Error:";
+            $statusCode = !empty($e->getResponse()->getStatusCode()) ? $e->getResponse()->getStatusCode() : NULL;
+            $responsePhrase = !empty($e->getResponse()->getReasonPhrase()) ? $e->getResponse()->getReasonPhrase() : NULL;
+            if($statusCode == 401){
+                $message = $message.' Username and password do not match.';
+            } else {
+                $message = $message.' '.$statusCode.' '.$responsePhrase;
+            }
             return array(
                         'status' => false,
-                        'data' => [$e]
+                        'data' => $message
                     );
         }
     }
@@ -164,6 +172,6 @@ class PostOrder
             }
         }
 
-        // return response()->json(['status' => true, 'data' => $response]);
+        return ['status' => $response['status'], 'message' => $response['data']];
     }
 }

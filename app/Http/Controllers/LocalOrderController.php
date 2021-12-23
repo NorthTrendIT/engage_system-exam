@@ -43,6 +43,10 @@ class LocalOrderController extends Controller
      */
     public function store(Request $request)
     {
+        if(!@Auth::user()->customer->sap_connection_id){
+            return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
+        }
+
         $input = $request->all();
         // dd($input);
         $rules = array(
@@ -253,7 +257,7 @@ class LocalOrderController extends Controller
         $obj = array();
 
         $update = $this->store($request);
-        if($update['message'] == 'Order details updated successfully.'){
+        if($update['status']){
             $order = LocalOrder::where('id', $id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
             $obj['CardCode'] = $order->customer->card_code;
