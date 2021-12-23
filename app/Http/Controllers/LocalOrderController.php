@@ -43,6 +43,10 @@ class LocalOrderController extends Controller
      */
     public function store(Request $request)
     {
+        if(!@Auth::user()->customer->sap_connection_id){
+            return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
+        }
+
         $input = $request->all();
         // dd($input);
         $rules = array(
@@ -253,7 +257,7 @@ class LocalOrderController extends Controller
         $obj = array();
 
         $update = $this->store($request);
-        if($update['message'] == 'Order details updated successfully.'){
+        if($update['status']){
             $order = LocalOrder::where('id', $id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
             $obj['CardCode'] = $order->customer->card_code;
@@ -282,23 +286,23 @@ class LocalOrderController extends Controller
             $obj['AddressExtension'] = $address;
         }
         try {
-
+            $message = "";
             $post = new PostOrder('TEST-APBW', 'manager', 'test');
 
             $post = $post->pushOrder($obj);
 
-            if(isset($post) && !empty($post['error'])){
-                $order = LocalOrder::where('id', $id)->first();
-                $order->confirmation_status = 'ERR';
-                $order->message = $post['error']['message']['value'];
-                $order->save();
-            } else {
-                $order = LocalOrder::where('id', $id)->first();
+            $order = LocalOrder::where('id', $order->id)->first();
+            if($post['status']){
                 $order->confirmation_status = 'C';
-                $order->save();
+                $message = 'Order Placed successfully !';
+            } else {
+                $order->confirmation_status = 'ERR';
+                $order->message = $post['message'];
+                $message = $post['massage'];
             }
+            $order->save();
 
-            $response = ['status' => true, 'message' => 'Order Placed successfully !'];
+            $response = ['status' => true, 'message' => $message];
         } catch (\Exception $e) {
             dd($e);
             $response = ['status' => false, 'message' => 'Something went wrong !'];
