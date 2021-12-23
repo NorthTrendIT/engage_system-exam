@@ -378,6 +378,24 @@ class CheckRoleModuleAccess
                     }
                 }
 
+                // Product Group Module
+                if(in_array($request->route()->getName(), ['product-group.index','product-group.get-all'])){
+
+                    if(@$access['view-product-group'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for product group module.";
+
+                    }
+                }elseif(in_array($request->route()->getName(), ['product-group.sync-product-groups'])){
+                    if(@$access['add-product-group'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for sync product groups.";
+
+                    }
+                }
+
             }
 
             if(!$status){
