@@ -331,7 +331,7 @@
                 <div class="row mb-5 mt-5">
                   <div class="col-md-6">
                     <div class="form-group">
-                      <input type="submit" class="btn btn-success" value="Update">
+                      <input type="submit" class="btn btn-success update_status_btn" value="Update" style="display: none;">
                     </div>
                   </div>
                 </div>
@@ -369,6 +369,12 @@
         $('.cancel_reason_div').show();
       }else{
         $('.cancel_reason_div').hide();
+      }
+
+      if($(this).find('option:selected').val() != "{{ $data->status }}"){
+        $('.update_status_btn').show();
+      }else{
+        $('.update_status_btn').hide();
       }
 
     });

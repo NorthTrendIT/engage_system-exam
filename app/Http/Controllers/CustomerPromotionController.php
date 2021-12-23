@@ -15,6 +15,7 @@ use App\Models\CustomerPromotionProductDelivery;
 use App\Models\CustomerBpAddress;
 
 use App\Support\SAPCustomerPromotion;
+use App\Models\SapConnection;
 
 use Validator;
 use DataTables;
@@ -708,7 +709,7 @@ class CustomerPromotionController extends Controller
             $obj = CustomerPromotion::where('id',$input['id'])->where('is_sap_pushed',false)->first();
 
             if(!is_null($obj)){
-                try {
+                /*try {
                     $sap_obj = new SAPCustomerPromotion('TEST-APBW', 'manager', 'test');
             
                     if($obj->doc_entry){ 
@@ -722,6 +723,39 @@ class CustomerPromotionController extends Controller
 
                     $response = ['status'=>true,'message'=>"Order pushed in SAP successfully."];
                 
+                } catch (\Exception $e) {
+                    $response = ['status'=>false,'message'=>$e->getMessage()];
+                }*/
+
+
+                try {
+
+                    $sap_connection = SapConnection::find($obj->sap_connection_id);
+
+                    if(!is_null($sap_connection)){
+                        $sap_obj = new SAPCustomerPromotion($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
+                
+                        if($obj->doc_entry){ 
+
+                            // Cancel Old Order
+                            $cancel = $sap_obj->cancelOrder($input['id'], $obj->doc_entry);
+
+                            if(isset($cancel['status']) && $cancel['status']){
+                                // Create Order
+                                $sap_obj->createOrder($input['id']);
+                            }
+
+                            // // Update Order
+                            // $sap_obj->updateOrder($input['id'], $obj->doc_entry);
+
+                        }else{ 
+                            // Create Order
+                            $sap_obj->createOrder($input['id']);
+                        }
+                    }
+
+                    $response = ['status'=>true,'message'=>"Order pushed in SAP successfully."];
+
                 } catch (\Exception $e) {
                     $response = ['status'=>false,'message'=>$e->getMessage()];
                 }
