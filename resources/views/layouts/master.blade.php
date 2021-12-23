@@ -10,7 +10,7 @@
       <meta property="og:locale" content="en_US" />
       <meta property="og:type" content="article" />
       <link rel="shortcut icon" href="{{ asset('assets') }}/assets/media/logo.png" />
-      
+
       @include('layouts.include.head')
    </head>
    <!--end::Head-->
@@ -21,12 +21,12 @@
       <div class="d-flex flex-column flex-root">
          <!--begin::Page-->
          <div class="page d-flex flex-row flex-column-fluid">
-            
+
             @include('layouts.include.sidebar')
 
             <!--begin::Wrapper-->
             <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
-               
+
                @include('layouts.include.header')
 
                <!--begin::Content-->
@@ -41,7 +41,7 @@
          <!--end::Page-->
       </div>
       <!--end::Root-->
-      
+
       <!--begin::Scrolltop-->
       <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
          <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
@@ -56,6 +56,8 @@
       <!--end::Scrolltop-->
       <!--end::Main-->
       @include('layouts.include.script')
+      <!-- OneSignalJS -->
+      @include('layouts.include.one_signal')
    </body>
    <!--end::Body-->
 </html>

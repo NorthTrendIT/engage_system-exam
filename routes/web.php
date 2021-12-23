@@ -210,6 +210,11 @@ Route::middleware(['auth'])->group(function(){
         Route::post('sap-connection/get-all', 'App\Http\Controllers\SapConnectionController@getAll')->name('sap-connection.get-all');
         Route::get('sap-connection/test/{id}','App\Http\Controllers\SapConnectionController@testAPI')->name('sap-connection.test');
 
+        // News and Announcement
+        Route::resource('news-and-announcement','App\Http\Controllers\NewsAndAnnouncementController');
+        Route::post('news-and-announcement/get-all', 'App\Http\Controllers\NewsAndAnnouncementController@getAll')->name('news-and-announcement.get-all');
+        Route::post('news-and-announcement/get-roles/','App\Http\Controllers\NewsAndAnnouncementController@getRoles')->name('news-and-announcement.getRoles');
+
     });
 
     // Customer Orders
@@ -251,6 +256,7 @@ Route::middleware(['auth'])->group(function(){
     Route::post('help-desk/status', 'App\Http\Controllers\HelpDeskController@updateStatus')->name('help-desk.status');
     Route::post('help-desk/comment/store', 'App\Http\Controllers\HelpDeskController@storeComment')->name('help-desk.comment.store');
     Route::post('help-desk/comment/get-all', 'App\Http\Controllers\HelpDeskController@getAllComment')->name('help-desk.comment.get-all');
+
 });
 
 Route::get('clear-cache', function () {
