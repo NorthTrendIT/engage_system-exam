@@ -67,14 +67,14 @@
                               <td>{{ @$data->parent->first_name ?? "" }} {{ @$data->parent->last_name ?? "" }}</td>
                             </tr>
 
-                            <tr>
+                            {{-- <tr>
                               <th> <b>Province:</b> </th>
                               <td>{{ @$data->province->name ?? "" }}</td>
                             </tr>
                             <tr>
                               <th> <b>City:</b> </th>
                               <td>{{ @$data->city->name ?? "" }}</td>
-                            </tr>
+                            </tr> --}}
 
                             <tr>
                               <th> <b>Created Date:</b> </th>

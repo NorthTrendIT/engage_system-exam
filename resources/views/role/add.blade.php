@@ -83,7 +83,8 @@
                           <i class="fa fa-plus"></i>
                           <label>
                             <input data-id="usermgt" type="checkbox" 
-                              @if(@$role_module_access[@$modules['location']['id']]['access'] == 1 && @$role_module_access[@$modules['user']['id']]['access'] == 1 && @$role_module_access[@$modules['department']['id']]['access'] == 1) checked="" @endif
+                              {{-- @if(@$role_module_access[@$modules['location']['id']]['access'] == 1 && @$role_module_access[@$modules['user']['id']]['access'] == 1 && @$role_module_access[@$modules['department']['id']]['access'] == 1) checked="" @endif --}}
+                              @if(@$role_module_access[@$modules['user']['id']]['access'] == 1 && @$role_module_access[@$modules['department']['id']]['access'] == 1) checked="" @endif
                             /> User Management
                           </label>
                           <ul>
@@ -124,7 +125,7 @@
                             @endif
 
                             {{-- Locations --}}
-                            @if(@$modules['location']['id'])
+                            {{-- @if(@$modules['location']['id'])
                             <li>
                               <i class="fa fa-plus"></i>
                               <label>
@@ -156,7 +157,7 @@
                                 </li>
                               </ul>
                             </li>
-                            @endif
+                            @endif --}}
 
                             {{-- department --}}
                             @if(@$modules['department']['id'])

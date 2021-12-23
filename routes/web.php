@@ -109,9 +109,9 @@ Route::middleware(['auth'])->group(function(){
         Route::post('promotion/get-sales-specialist/','App\Http\Controllers\PromotionsController@getSalesSpecialist')->name('promotion.getSalesSpecialist');
         Route::post('promotion/get-promotion-interest-data/','App\Http\Controllers\PromotionsController@getPromotionInterestData')->name('promotion.get-promotion-interest-data');
 
-        Route::resource('location','App\Http\Controllers\LocationController');
-	    Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');
-	    Route::post('location/status/{id}', 'App\Http\Controllers\LocationController@updateStatus')->name('location.status');
+     //    Route::resource('location','App\Http\Controllers\LocationController');
+	    // Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');
+	    // Route::post('location/status/{id}', 'App\Http\Controllers\LocationController@updateStatus')->name('location.status');
 
 	    Route::resource('department','App\Http\Controllers\DepartmentController');
 	    Route::post('department/get-all', 'App\Http\Controllers\DepartmentController@getAll')->name('department.get-all');
@@ -180,6 +180,7 @@ Route::middleware(['auth'])->group(function(){
         Route::get('customer-promotion/show/{id}', 'App\Http\Controllers\CustomerPromotionController@show')->name('customer-promotion.show');
         Route::post('customer-promotion/get-all-product-list', 'App\Http\Controllers\CustomerPromotionController@getAllProductList')->name('customer-promotion.get-all-product-list');
         Route::post('customer-promotion/store-interest', 'App\Http\Controllers\CustomerPromotionController@storeInterest')->name('customer-promotion.store-interest');
+        Route::get('customer-promotion/get-interest', 'App\Http\Controllers\CustomerPromotionController@getInterest')->name('customer-promotion.get-interest');
         Route::get('customer-promotion/product-detail/{id}/{promotion_id}', 'App\Http\Controllers\CustomerPromotionController@productDetail')->name('customer-promotion.product-detail');
 
 
