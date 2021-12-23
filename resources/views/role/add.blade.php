@@ -280,6 +280,75 @@
                         </li>
                         @endif
 
+
+                        {{-- Product Management --}}
+                        @if(@$modules['product']['id'])
+                        <li>
+                          <i class="fa fa-plus"></i>
+                          <label>
+                            <input data-id="usermgt" type="checkbox" 
+                              @if(@$role_module_access[@$modules['product-group']['id']]['access'] == 1 && @$role_module_access[@$modules['product']['id']]['access'] == 1) checked="" @endif
+                              /> Product Management
+                          </label>
+                          <ul>
+
+                            {{-- product --}}
+                            @if(@$modules['product']['id'])
+                            <li>
+                              <i class="fa fa-plus"></i>
+                              <label>
+                                <input data-id="{{ @$modules['product']['id'] }}" type="checkbox"  /> {{ @$modules['product']['title'] }}
+                              </label>
+                              <ul>
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['add-product']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-product']['id'] }}]" /> {{ @$modules['add-product']['title'] }}
+                                  </label>
+                                </li>
+
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['edit-product']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-product']['id'] }}]"   /> {{ @$modules['edit-product']['title'] }}
+                                  </label>
+                                </li>
+
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['view-product']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-product']['id'] }}]"  /> {{ @$modules['view-product']['title'] }}
+                                  </label>
+                                </li>
+                              </ul>
+                            </li>
+                            @endif
+
+                            {{-- Product Group --}}
+                            @if(@$modules['product-group']['id'])
+                            <li>
+                              <i class="fa fa-plus"></i>
+                              <label>
+                                <input data-id="{{ @$modules['product-group']['id'] }}" type="checkbox"  /> {{ @$modules['product-group']['title'] }}
+                              </label>
+                              <ul>
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['add-product-group']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-product-group']['id'] }}]"  /> {{ @$modules['add-product-group']['title'] }}
+                                  </label>
+                                </li>
+
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['view-product-group']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-product-group']['id'] }}]"  /> {{ @$modules['view-product-group']['title'] }}
+                                  </label>
+                                </li>
+
+                              </ul>
+                            </li>
+                            @endif
+
+                          </ul>
+                        </li>
+                        @endif
+
                         {{-- Orders --}}
                         @if(@$modules['order']['id'])
                         <li>
@@ -325,59 +394,6 @@
                           </ul>
                         </li>
                         @endif
-
-                        {{-- Product --}}
-                        @if(@$modules['product']['id'])
-                        <li>
-                          <i class="fa fa-plus"></i>
-                          <label>
-                            <input data-id="{{ @$modules['product']['id'] }}" type="checkbox" /> {{ @$modules['product']['title'] }}
-                          </label>
-                          <ul>
-                            <li>
-                              <label>
-                                <input data-id="{{ @$modules['add-product']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-product']['id'] }}]" /> {{ @$modules['add-product']['title'] }}
-                              </label>
-                            </li>
-
-                            <li>
-                              <label>
-                                <input data-id="{{ @$modules['edit-product']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-product']['id'] }}]"   /> {{ @$modules['edit-product']['title'] }}
-                              </label>
-                            </li>
-
-                            <li>
-                              <label>
-                                <input data-id="{{ @$modules['view-product']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-product']['id'] }}]"  /> {{ @$modules['view-product']['title'] }}
-                              </label>
-                            </li>
-                          </ul>
-                        </li>
-                        @endif
-
-                        {{-- Product List --}}
-                        {{-- @if(@$modules['product-list']['id'])
-                        <li>
-                          <i class="fa fa-plus"></i>
-                          <label>
-                            <input data-id="{{ @$modules['product-list']['id'] }}" type="checkbox"  name="modules[{{ @$modules['product-list']['id'] }}]"  /> {{ @$modules['product-list']['title'] }}
-                          </label>
-                          <ul>
-                            <li>
-                              <label>
-                                <input data-id="{{ @$modules['add-product-list']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-product-list']['id'] }}]" /> {{ @$modules['add-product-list']['title'] }}
-                              </label>
-                            </li>
-
-                            <li>
-                              <label>
-                                <input data-id="{{ @$modules['view-product-list']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-product-list']['id'] }}]" /> {{ @$modules['view-product-list']['title'] }}
-                              </label>
-                            </li>
-                            
-                          </ul>
-                        </li>
-                        @endif --}}
 
                         {{-- Promotions --}}
                         @if(@$modules['promotion']['id'])

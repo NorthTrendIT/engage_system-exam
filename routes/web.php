@@ -77,9 +77,15 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('sales-persons/get-all', 'App\Http\Controllers\SalesPersonsController@getAll')->name('sales-persons.get-all');
 	    Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
 
+        // Product
 	    Route::resource('product','App\Http\Controllers\ProductController');
 	    Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
 	    Route::post('product/sync-products', 'App\Http\Controllers\ProductController@syncProducts')->name('product.sync-products');
+
+        // Product Group
+        Route::resource('product-group','App\Http\Controllers\ProductGroupController');
+        Route::post('product-group/get-all', 'App\Http\Controllers\ProductGroupController@getAll')->name('product-group.get-all');
+        Route::post('product-group/sync-product-groups', 'App\Http\Controllers\ProductGroupController@syncProductGroups')->name('product-group.sync-product-groups');
 
         // Orders
         Route::resource('orders','App\Http\Controllers\OrdersController');
@@ -126,6 +132,7 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('territory/get-all', 'App\Http\Controllers\TerritoriesController@getAll')->name('territory.get-all');
 	    Route::post('territory/sync-territory', 'App\Http\Controllers\TerritoriesController@syncTerritories')->name('territory.sync-territory');
 
+        // Customer Groups
 	    Route::resource('customer-group','App\Http\Controllers\CustomerGroupController');
 	    Route::post('customer-group/get-all', 'App\Http\Controllers\CustomerGroupController@getAll')->name('customer-group.get-all');
 	    Route::post('customer-group/sync-customer-groups', 'App\Http\Controllers\CustomerGroupController@syncCustomerGroups')->name('customer-group.sync-customer-groups');

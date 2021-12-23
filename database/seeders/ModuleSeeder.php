@@ -114,6 +114,14 @@ class ModuleSeeder extends Seeder
                             )
                         );
 
+        $product_group = Module::create(
+                            array(
+                                'title' => 'Product Group',
+                                'slug' => 'product-group',
+                                'parent_id' => null,
+                            )
+                        );
+
         // $promotion = Module::create(
         //                     array(
         //                         'title' => 'Promotion',
@@ -296,6 +304,19 @@ class ModuleSeeder extends Seeder
                     //     'slug' => 'delete-promotion',
                     //     'parent_id' => $promotion->id,
                     // ),
+
+
+                    array(
+                        'title' => 'Add/Sync',
+                        'slug' => 'add-product-group',
+                        'parent_id' => $product_group->id,
+                    ),
+                    array(
+                        'title' => 'view',
+                        'slug' => 'view-product-group',
+                        'parent_id' => $product_group->id,
+                    ),
+
         		);
         Module::insert($data);
     }
