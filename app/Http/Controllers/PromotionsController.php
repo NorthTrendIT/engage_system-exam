@@ -540,7 +540,7 @@ class PromotionsController extends Controller
         return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('customer', function($row) {
-                    return @$row->customer->sales_specialist_name ?? "-";
+                    return @$row->user->sales_specialist_name ?? "-";
                 })
                 ->addColumn('is_interested', function($row) {
                     return $row->is_interested ? "Yes" : "No";
