@@ -17,6 +17,9 @@ class SAPCustomerPromotion
 	/** @var string */
 	protected $headers;
 
+    protected $sap_connection_id;
+    protected $customer_promotion_id;
+
 	protected $database;
 	protected $username;
 	protected $password;
@@ -30,6 +33,8 @@ class SAPCustomerPromotion
         $this->headers['Accept'] = 'application/json';
 
         $this->httpClient = new Client();
+
+        $this->sap_connection_id = $this->customer_promotion_id = null;
     }
 
     public function requestSapApi($url = '/b1s/v1/Quotations', $method = "POST", $body = "")
@@ -109,10 +114,15 @@ class SAPCustomerPromotion
                         'created_at' => $data['CreationDate'],
                         'updated_at' => $data['UpdateDate'],
                         //'response' => json_encode($order),
+                        
+                        'sap_connection_id' => $this->sap_connection_id,
+                        'customer_promotion_id' => $this->customer_promotion_id,
+                        
                     );
 
             $obj = Quotation::updateOrCreate([
                                         'doc_entry' => $data['DocEntry'],
+                                        'sap_connection_id' => $this->sap_connection_id,
                                     ],
                                     $insert
                                 );
@@ -207,15 +217,71 @@ class SAPCustomerPromotion
         return $response;
     }
 
+    public function cancelOrder($id, $doc_entry){
+
+        $response = array(
+                            'status' => false,
+                            'data' => []
+                        );
+
+        if(!empty($doc_entry)){
+            
+            try {
+                $response = $this->httpClient->request(
+                    "POST",
+                    env('SAP_API_URL').'/b1s/v1/Quotations('.$doc_entry.')/Cancel',
+                    [
+                        'headers' => $this->headers,
+                        'verify' => false,
+                    ]
+                );
+
+                if(in_array($response->getStatusCode(), [200,201,204])){
+                    $response = json_decode($response->getBody(),true);
+
+                    $customer_promotion = CustomerPromotion::find($id);
+                    $customer_promotion->doc_entry = null;
+                    $customer_promotion->is_sap_pushed = false;
+                    $customer_promotion->save();
+
+
+                    $where = array(
+                                'doc_entry' => $doc_entry,
+                                'customer_promotion_id' => $id,
+                            );
+
+                    $quotation = Quotation::where($where)->first();
+                    $quotation->document_status = "Cancelled";
+                    $quotation->save();
+
+                    return array(
+                                'status' => true,
+                                'data' => []
+                            );
+                }
+
+            } catch (\Exception $e) {
+                
+            }
+
+        }
+
+        return $response;
+    }
+
     public function madeSapData($id){
 
         $response = [];
         $customer_promotion = CustomerPromotion::find($id);
 
+        $this->customer_promotion_id = $id;
+
         if(!is_null($customer_promotion)){
 
             if(@$customer_promotion->user->customer->card_code){
                 
+                $this->sap_connection_id = @$customer_promotion->sap_connection_id;
+
                 $response['CardCode'] = @$customer_promotion->user->customer->card_code;
                 $response['CardName'] = @$customer_promotion->user->customer->card_name;
                 $response['DocTotal'] = @$customer_promotion->total_amount;

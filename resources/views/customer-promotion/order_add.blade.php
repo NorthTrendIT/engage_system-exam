@@ -127,6 +127,8 @@
                         <input type="hidden" name="products[{{ @$p->product->id }}][id]" value="{{ $edit_products[@$p->product->id]['id'] }}">
                       @endif
 
+                      <input type="hidden" name="products[{{ @$p->product->id }}][product_id]" value="{{ @$p->product->id }}">
+
                       <div class="row">
                         <div class="col-md-3">
                           <div class="form-group">

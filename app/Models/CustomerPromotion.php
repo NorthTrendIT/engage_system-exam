@@ -26,7 +26,8 @@ class CustomerPromotion extends Model
         'cancel_reason',
         'is_sap_pushed',
         'updated_by',
-        'doc_entry'
+        'doc_entry',
+        'sap_connection_id',
     ];
 
     public function promotion()
