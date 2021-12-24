@@ -13,5 +13,6 @@ class CustomerGroup extends Model
         'code',
     	'name',
     	'type',
+        'sap_connection_id',
     ];
 }

@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\User;
+use App\Models\SapConnection;
 use Hash;
 
 class SAPSalesPersons
@@ -68,6 +69,13 @@ class SAPSalesPersons
             $response = $this->getSalesPersonsData();
         }
 
+        $where = array(
+                    'db_name' => $this->database,
+                    'user_name' => $this->username,
+                );
+
+        $sap_connection = SapConnection::where($where)->first();
+
         if($response['status']){
             $data = $response['data'];
 
@@ -86,11 +94,13 @@ class SAPSalesPersons
                                     'password' => Hash::make('12345678'),
                                     'email' => $email.'@mailinator.com',
                                     //'response' => json_encode($value),
+                                    'sap_connection_id' => @$sap_connection->id,
                                 );
 
                     $obj = User::updateOrCreate(
                                             [
                                                 'sales_specialist_name' => @$value['SalesEmployeeName'],
+                                                'sap_connection_id' => @$sap_connection->id,
                                             ],
                                             $insert
                                         );

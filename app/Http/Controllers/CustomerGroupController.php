@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Jobs\SyncCustomerGroups;
 use App\Models\CustomerGroup;
+use App\Models\SapConnection;
 use DataTables;
 
 class CustomerGroupController extends Controller
@@ -88,8 +89,15 @@ class CustomerGroupController extends Controller
     public function syncCustomerGroups(){
         try {
 
-            // Save Data of customer group in database
-            SyncCustomerGroups::dispatch('TEST-APBW', 'manager', 'test');
+            // // Save Data of customer group in database
+            // SyncCustomerGroups::dispatch('TEST-APBW', 'manager', 'test');
+
+            $sap_connections = SapConnection::all();
+            foreach ($sap_connections as $value) {
+
+                // Save Data of customer group in database
+                SyncCustomerGroups::dispatch($value->db_name, $value->user_name , $value->password);
+            }
 
             $response = ['status' => true, 'message' => 'Sync Customer Groups Successfully !'];
         } catch (\Exception $e) {

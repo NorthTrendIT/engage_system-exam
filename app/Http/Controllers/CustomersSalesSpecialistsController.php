@@ -4,8 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CustomersSalesSpecialist;
-use App\Models\Customer;
 use App\Models\User;
+use App\Models\Customer;
+use App\Models\ProductItemLine;
+use App\Models\ProductGroup;
+use App\Models\ProductTiresCategory;
+use App\Models\CustomerProductItemLine;
+use App\Models\CustomerProductGroup;
+use App\Models\CustomerProductTiresCategory;
 use Validator;
 use DataTables;
 
@@ -42,14 +48,23 @@ class CustomersSalesSpecialistsController extends Controller
         $input = $request->all();
 
         $rules = array(
-                    'customer_ids' => 'required',
-                    'customer_ids.*' => 'required|exists:customers,id',
+                    'customer_id' => 'required|exists:customers,id',
+                    
                     'ss_ids' => 'required',
                     'ss_ids.*' => 'required|exists:users,id',
+
+                    'product_group_id' => 'nullable|array',
+                    'product_group_id.*' => 'exists:product_groups,id',
+
+                    'product_tires_category_id' => 'nullable|array',
+                    'product_tires_category_id.*' => 'exists:product_tires_categories,id',
+
+                    'product_item_line_id' => 'nullable|array',
+                    'product_item_line_id.*' => 'exists:product_item_lines,id',
                 );
 
         $message = array(
-                        'customer_ids.required' => 'Please select customers.',
+                        'customer_id.required' => 'Please select customer.',
                         'ss_ids.required' => 'Please select sales specialists.',
                     );
 
@@ -58,43 +73,60 @@ class CustomersSalesSpecialistsController extends Controller
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
+
+            // Create Time
+            if(!isset($input['id'])){
+                $count = CustomersSalesSpecialist::where('customer_id', $input['customer_id'])->count();
+
+                if($count > 0){
+                    return $response = ['status' => false,'message' => "The selected customer is already used."];
+                }
+            }
+
+
             if(isset($input['id'])){
                 $message = "Details updated successfully.";
             }else{
                 $message = "Created successfully.";
             }
 
-            if(isset($input['ss_ids']) && isset($input['customer_ids'])){
-                $s_ids = $input['ss_ids'];
-                // CustomersSalesSpecialist::where('customer_id', $input['customer_id'])->delete();
-                // foreach($s_ids as $value){
-                //     $ss = new CustomersSalesSpecialist();
-                //     $ss->customer_id = $input['customer_id'];
-                //     $ss->ss_id = $value;
-                //     $ss->save();
-                // }
-
-                $sids = [];
-
-                foreach ($input['customer_ids'] as $c_key => $c_value) {
-                    foreach ($input['ss_ids'] as $s_key => $s_value) {
-                        
-                        $sids[] = $s_value;
-                        CustomersSalesSpecialist::updateOrCreate(
-                                                    array(
-                                                        'customer_id' => $c_value,
-                                                        'ss_id' => $s_value,
-                                                    ),
-                                                    array(
-                                                        'customer_id' => $c_value,
-                                                        'ss_id' => $s_value,
-                                                    )
-                                                );
-                    }
+            CustomersSalesSpecialist::where('customer_id', $input['customer_id'])->delete();
+            if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
+                foreach($input['ss_ids'] as $value){
+                    $ss = new CustomersSalesSpecialist();
+                    $ss->customer_id = $input['customer_id'];
+                    $ss->ss_id = $value;
+                    $ss->save();
                 }
+            }
 
-                if(!empty($sids) && isset($input['id'])){
-                    CustomersSalesSpecialist::where('customer_id', $input['id'])->whereNotIn('ss_id',$sids)->delete();
+            CustomerProductGroup::where('customer_id', $input['customer_id'])->delete();
+            if(isset($input['product_group_id']) && !empty($input['product_group_id'])){
+                foreach($input['product_group_id'] as $value){
+                    $ss = new CustomerProductGroup();
+                    $ss->customer_id = $input['customer_id'];
+                    $ss->product_group_id = $value;
+                    $ss->save();
+                }
+            }
+
+            CustomerProductItemLine::where('customer_id', $input['customer_id'])->delete();
+            if(isset($input['product_item_line_id']) && !empty($input['product_item_line_id'])){
+                foreach($input['product_item_line_id'] as $value){
+                    $ss = new CustomerProductItemLine();
+                    $ss->customer_id = $input['customer_id'];
+                    $ss->product_item_line_id = $value;
+                    $ss->save();
+                }
+            }
+
+            CustomerProductTiresCategory::where('customer_id', $input['customer_id'])->delete();
+            if(isset($input['product_tires_category_id']) && !empty($input['product_tires_category_id'])){
+                foreach($input['product_tires_category_id'] as $value){
+                    $ss = new CustomerProductTiresCategory();
+                    $ss->customer_id = $input['customer_id'];
+                    $ss->product_tires_category_id = $value;
+                    $ss->save();
                 }
             }
 
@@ -123,10 +155,9 @@ class CustomersSalesSpecialistsController extends Controller
      */
     public function edit($id)
     {
-        $customer = Customer::findOrFail($id);
-        $edit = CustomersSalesSpecialist::where('customer_id', $id)->with('sales_person')->get();
+        $edit = Customer::has('sales_specialist')->findOrFail($id);
 
-        return view('customers-sales-specialist.add',compact('edit','customer'));
+        return view('customers-sales-specialist.add',compact('edit'));
     }
 
     /**
@@ -152,6 +183,9 @@ class CustomersSalesSpecialistsController extends Controller
         $data = CustomersSalesSpecialist::where('customer_id', $id)->count();
         if($data > 0){
             CustomersSalesSpecialist::where('customer_id', $id)->delete();
+            CustomerProductGroup::where('customer_id', $id)->delete();
+            CustomerProductItemLine::where('customer_id', $id)->delete();
+            CustomerProductTiresCategory::where('customer_id', $id)->delete();
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
@@ -164,12 +198,7 @@ class CustomersSalesSpecialistsController extends Controller
 
         $data = Customer::whereHas('sales_specialist');
 
-        // dd($data);
-
         if($request->filter_search != ""){
-            // $data->where(function($q) use ($request) {
-            //     $q->orwhere('locations.name','LIKE',"%".$request->filter_search."%");
-            // });
             $data->with('sales_specialist.sales_person')->where(function($q) use ($request) {
                 $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
             });
@@ -178,23 +207,12 @@ class CustomersSalesSpecialistsController extends Controller
         }
 
         $data->when(!isset($request->order), function ($q) {
-            // $q->orderBy('locations.id', 'desc');
+            $q->orderBy('card_name', 'ASC');
         });
 
         return DataTables::of($data)
                             ->addColumn('customer', function($row) {
                                 return $row->card_name;
-                            })
-                            ->addColumn('sales_specialist', function($row) {
-                                $ss = array();
-                                if(!empty($row->sales_specialist)){
-                                    foreach($row->sales_specialist as $value){
-                                        if(!empty($value->sales_person->sales_specialist_name)){
-                                            $ss[] = $value->sales_person->sales_specialist_name;
-                                        }
-                                    }
-                                }
-                                return implode(" | ",$ss);
                             })
                             ->addColumn('action', function($row) {
                                 $btn = '<a href="' . route('customers-sales-specialist.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
@@ -250,28 +268,29 @@ class CustomersSalesSpecialistsController extends Controller
 
 
     public function getSalseSpecialist(Request $request){
-        $search = $request->search;
-
-        if($search == ''){
-            $data = User::whereHas(
-                        'role', function($q){
-                            $q->where('name', '=' ,'Sales Specialist');
-                        }
-                    )->orderby('sales_specialist_name','asc')->select('id','sales_specialist_name')->limit(50)->get();
-        }else{
-            $data = User::whereHas(
-                'role', function($q){
-                    $q->where('name', '=' ,'Sales Specialist');
-                }
-            )->orderby('sales_specialist_name','asc')->select('id','sales_specialist_name')->where('sales_specialist_name', 'like', '%' .$search . '%')->limit(50)->get();
-        }
 
         $response = array();
-        foreach($data as $value){
-            $response[] = array(
-                "id"=>$value->id,
-                "text"=>$value->sales_specialist_name
-            );
+        if($request->sap_connection_id){
+            $search = $request->search;
+
+            $data = User::where('sap_connection_id',$request->sap_connection_id)
+                            ->where('role_id',2)
+                            ->orderby('sales_specialist_name','asc')
+                            ->select('id','sales_specialist_name')
+                            ->limit(50);
+
+            if($search != ''){
+                $data->where('sales_specialist_name', 'like', '%' .$search . '%');
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+                $response[] = array(
+                    "id"=>$value->id,
+                    "text"=>$value->sales_specialist_name
+                );
+            }
         }
 
         return response()->json($response);
@@ -281,17 +300,103 @@ class CustomersSalesSpecialistsController extends Controller
         $search = $request->search;
 
         if($search == ''){
-            $data = Customer::orderby('card_name','asc')->select('id','card_name')->limit(50)->get();
+            $data = Customer::orderby('card_name','asc')->limit(50)->get();
         }else{
-            $data = Customer::orderby('card_name','asc')->select('id','card_name')->where('card_name', 'like', '%' .$search . '%')->limit(50)->get();
+            $data = Customer::orderby('card_name','asc')->where('card_name', 'like', '%' .$search . '%')->limit(50)->get();
         }
 
         $response = array();
         foreach($data as $value){
             $response[] = array(
-                "id"=>$value->id,
-                "text"=>$value->card_name
+                "id" => $value->id,
+                "text" => $value->card_name,
+                "sap_connection_id" => $value->sap_connection_id
             );
+        }
+
+        return response()->json($response);
+    }
+
+
+    public function getProductBrand(Request $request){
+
+        $response = array();
+        if($request->sap_connection_id){
+            $search = $request->search;
+
+            $data = ProductGroup::where('sap_connection_id',$request->sap_connection_id)
+                                ->orderby('group_name','asc')
+                                ->select('id','group_name')
+                                ->limit(50);
+
+            if($search != ''){
+                $data->where('group_name', 'like', '%' .$search . '%');
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+                $response[] = array(
+                    "id" => $value->id,
+                    "text" => $value->group_name
+                );
+            }
+        }
+
+        return response()->json($response);
+    }
+
+    public function getProductLine(Request $request){
+
+        $response = array();
+        if($request->sap_connection_id){
+            $search = $request->search;
+
+            $data = ProductItemLine::where('sap_connection_id',$request->sap_connection_id)
+                                ->orderby('u_item_line','asc')
+                                ->select('id','u_item_line')
+                                ->limit(50);
+
+            if($search != ''){
+                $data->where('u_item_line', 'like', '%' .$search . '%');
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+                $response[] = array(
+                    "id" => $value->id,
+                    "text" => $value->u_item_line
+                );
+            }
+        }
+
+        return response()->json($response);
+    }
+
+    public function getProductCategory(Request $request){
+
+        $response = array();
+        if($request->sap_connection_id){
+            $search = $request->search;
+
+            $data = ProductTiresCategory::where('sap_connection_id',$request->sap_connection_id)
+                                        ->orderby('u_tires','asc')
+                                        ->select('id','u_tires')
+                                        ->limit(50);
+
+            if($search != ''){
+                $data->where('u_tires', 'like', '%' .$search . '%');
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+                $response[] = array(
+                    "id" => $value->id,
+                    "text" => $value->u_tires
+                );
+            }
         }
 
         return response()->json($response);

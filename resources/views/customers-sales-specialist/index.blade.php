@@ -57,7 +57,6 @@
                           <thead>
                             <tr>
                               <th>Custumer</th>
-                              <th>Sales Specialist</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -121,7 +120,6 @@
           },
           columns: [
               {data: 'customer', name: 'customer'},
-              {data: 'sales_specialist', name: 'sales_specialist'},
               {data: 'action', name: 'action'},
           ],
           drawCallback:function(){

@@ -67,4 +67,16 @@ class Customer extends Model
     {
         return $this->belongsTo(Territory::class,'territory','territory_id');
     }
+
+    public function product_groups(){
+        return $this->hasMany(CustomerProductGroup::class, 'customer_id');
+    }
+
+    public function product_item_lines(){
+        return $this->hasMany(CustomerProductItemLine::class, 'customer_id');
+    }
+
+    public function product_tires_categories(){
+        return $this->hasMany(CustomerProductTiresCategory::class, 'customer_id');
+    }
 }

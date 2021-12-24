@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\CustomerGroup;
+use App\Models\SapConnection;
 
 class SAPCustomerGroup
 {
@@ -71,6 +72,13 @@ class SAPCustomerGroup
             $response = $this->getCustomerGroupData();
         }
 
+        $where = array(
+                    'db_name' => $this->database,
+                    'user_name' => $this->username,
+                );
+
+        $sap_connection = SapConnection::where($where)->first();
+
         if($response['status']){
             $data = $response['data'];
 
@@ -82,11 +90,13 @@ class SAPCustomerGroup
                                     'code' => @$value['Code'],
                                     'name' => @$value['Name'],
                                     'type' => @$value['Type'],
+                                    'sap_connection_id' => @$sap_connection->id,
                                 );
 
                     $obj = CustomerGroup::updateOrCreate(
                                             [
                                                 'code' => @$value['Code'],
+                                                'sap_connection_id' => @$sap_connection->id,
                                             ],
                                             $insert
                                         );
