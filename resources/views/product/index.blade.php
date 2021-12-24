@@ -40,6 +40,14 @@
                   </div>
                 </div>
 
+                <div class="col-md-3">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($product_groups as $product_group)
+                    <option value="{{ $product_group->number }}">{{ $product_group->group_name }} @if(in_array(userrole(),[1,2]) && @$product_group->sap_connection->company_name) ({{ @$product_group->sap_connection->company_name }}) @endif</option>
+                    @endforeach
+                  </select>
+                </div>
 
                 <div class="col-md-3">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
@@ -66,6 +74,7 @@
                           <thead>
                             <tr>
                               <th>Name</th>
+                              <th>Brand</th>
                               <th>Code</th>
                               <th>Date</th>
                               <th>Status</th>
@@ -115,6 +124,7 @@
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -130,10 +140,12 @@
               data:{
                 filter_search : $filter_search,
                 filter_status : $filter_status,
+                filter_brand : $filter_brand,
               }
           },
           columns: [
               {data: 'item_name', name: 'item_name'},
+              {data: 'brand', name: 'brand'},
               {data: 'item_code', name: 'item_code'},
               {data: 'created_date', name: 'created_date'},
               {data: 'status', name: 'status'},
@@ -157,6 +169,7 @@
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
+      $('[name="filter_brand"]').val('').trigger('change');
       render_table();
     })
 

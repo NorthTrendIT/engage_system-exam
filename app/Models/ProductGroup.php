@@ -14,4 +14,9 @@ class ProductGroup extends Model
         'group_name',
         'sap_connection_id',
     ];
+
+    public function sap_connection()
+    {
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
+    }
 }

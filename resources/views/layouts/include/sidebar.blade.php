@@ -330,7 +330,7 @@
                         <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                         </span>
-                        <span class="menu-title">Product Group</span>
+                        <span class="menu-title">Product Brand</span>
                      </a>
                   </div>
                   @endif

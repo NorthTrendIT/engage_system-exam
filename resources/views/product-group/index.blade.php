@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title','Product Group')
+@section('title','Product Brand')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Product Group</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Product Brand</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="javascript:" class="btn btn-sm btn-primary sync-product-groups">Sync Product Groups</a>
+        <a href="javascript:" class="btn btn-sm btn-primary sync-product-groups">Sync Product Brands</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -146,8 +146,8 @@
       event.preventDefault();
 
       Swal.fire({
-        title: 'Are you sure you want to Sync Product Groups?',
-        text: "Syncing process will run in background and it may take some time to sync all Product Groups Data.",
+        title: 'Are you sure you want to Sync Product Brands?',
+        text: "Syncing process will run in background and it may take some time to sync all Product Brands Data.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
