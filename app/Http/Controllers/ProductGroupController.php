@@ -95,7 +95,7 @@ class ProductGroupController extends Controller
                 SyncProductGroups::dispatch($value->db_name, $value->user_name , $value->password);
             }
 
-            $response = ['status' => true, 'message' => 'Sync Product Groups Successfully !'];
+            $response = ['status' => true, 'message' => 'Sync Product Brands Successfully !'];
         } catch (\Exception $e) {
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
@@ -121,7 +121,12 @@ class ProductGroupController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('group_name', function($row) {
-                                return @$row->group_name ?? "-";
+                                $name = @$row->group_name ?? "-";
+
+                                if(in_array(userrole(),[1,2]) && @$row->sap_connection->company_name){
+                                    $name .= " (".@$row->sap_connection->company_name.")";
+                                }
+                                return $name;
                             })
                             ->addColumn('number', function($row) {
                                 return @$row->number ?? "-";
