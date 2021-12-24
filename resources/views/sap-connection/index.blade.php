@@ -158,9 +158,26 @@
         })
         .done(function(result) {
             if(result.status){
-                toast_success(result.message);
+                Swal.fire({
+                    title: 'API working!',
+                    // text: result.message,
+                    icon: 'success',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ok'
+                });
+                // toast_success(result.message);
             }else{
-                toast_error(result.message);
+                Swal.fire({
+                    title: 'API not working!',
+                    text: result.message,
+                    icon: 'warning',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ok'
+                });
             }
         })
         .fail(function() {

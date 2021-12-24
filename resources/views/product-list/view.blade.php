@@ -85,7 +85,7 @@
                             <i class="far fa-star fa-sm text-primary"></i>
                             </li>
                          </ul>
-                         <p><span class="mr-1 price"><strong>$66.00</strong></span></p>
+                         <p><span class="mr-1 price"><strong>₱ {{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num) }}</strong></span></p>
                          <p class="pt-1">{!! @$product->technical_specifications ?? "" !!}</p>
                          <div class="table-responsive">
                             <table class="table table-sm table-borderless mb-0">
@@ -124,8 +124,15 @@
                             </table>
                          </div> -->
                          <button type="button" class="btn btn-primary btn-md mr-1 mb-2">Buy now</button>
-                         <button type="button" class="btn btn-light btn-md mr-1 mb-2"><i
-                            class="fas fa-shopping-cart pr-2"></i>Add to cart</button>
+                         @if(is_in_cart(@$product->id) == 1)
+                         <a class="btn btn-light btn-md mr-1 mb-2" href="{{ route('cart.index') }}">
+                             <i class="fas fa-shopping-cart pr-2"></i>Go to cart
+                         </a>
+                         @else
+                         <button type="button" class="btn btn-light btn-md mr-1 mb-2 addToCart" data-url="{{ route('cart.add',@$product->id) }}">
+                             <i class="fas fa-shopping-cart pr-2"></i>Add to cart
+                         </button>
+                         @endif
                       </div>
                       </div>
 
@@ -286,6 +293,31 @@
 
 
 <script>
-
+$(document).ready(function() {
+    $(document).on('click', '.addToCart', function(event) {
+        event.preventDefault();
+        $url = $(this).attr('data-url');
+        $.ajax({
+            url: $url,
+            method: "POST",
+            data: {
+                _token:'{{ csrf_token() }}'
+                }
+        })
+        .done(function(result) {
+            if(result.status == false){
+                toast_error(result.message);
+            }else{
+                toast_success(result.message);
+                setTimeout(function(){
+                    window.location.reload();
+                },1500)
+            }
+        })
+        .fail(function() {
+            toast_error("error");
+        });
+    });
+});
 </script>
 @endpush

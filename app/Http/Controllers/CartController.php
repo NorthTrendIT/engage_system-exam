@@ -95,9 +95,9 @@ class CartController extends Controller
     }
 
     public function addToCart($id){
-        // if(!@Auth::user()->customer->sap_connection_id){
-        //     return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
-        // }
+        if(!@Auth::user()->customer->sap_connection_id){
+            return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
+        }
 
         if(isset($id)){
             $cart = new Cart();
@@ -122,7 +122,35 @@ class CartController extends Controller
             return $response = ['status'=>true,'message'=>"Product quantity updated successfully."];
         }
 
-        return $response = ['status'=>false,'message'=>"Something went wrong please try again."];
+        return $response = ['status'=>false,'message'=>"Something went wrong !"];
+    }
+
+    public function qtyPlus($id){
+        if(isset($id)){
+            $cart = Cart::findOrFail($id);
+            $cart->qty = $cart->qty + 1;
+            $cart->save();
+
+            return $response = ['status'=>true,'message'=>"Product quantity updated successfully."];
+        }
+
+        return $response = ['status'=>false,'message'=>"Something went wrong !"];
+    }
+
+    public function qtyMinus($id){
+        if(isset($id)){
+            $cart = Cart::findOrFail($id);
+            $cart->qty = $cart->qty - 1;
+            if($cart->qty <= 0){
+                $cart->delete();
+            } else {
+                $cart->save();
+            }
+
+            return $response = ['status'=>true,'message'=>"Product quantity updated successfully."];
+        }
+
+        return $response = ['status'=>false,'message'=>"Something went wrong !"];
     }
 
     public function removeFromCart($id){
@@ -219,7 +247,7 @@ class CartController extends Controller
             $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
         } catch (\Exception $e) {
             // dd($e);
-            $response = ['status' => false, 'message' => 'Something went wrong !'];
+            $response = ['status' => false, 'message' => 'Order Placed Successfully!'];
         }
         return $response;
     }
