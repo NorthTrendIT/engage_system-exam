@@ -780,9 +780,9 @@ class CustomerPromotionController extends Controller
                     ->addColumn('action', function($row) {
                         $btn = "";
                         if($row->is_interested){
-                            $btn .= '<a href="javascript:" class="btn btn-sm btn-danger btn-inline btn_interest" data-value="0" data-id="'.$row->id.'">Remove Interest</a>';
+                            $btn .= '<a href="javascript:" class="btn btn-sm btn-danger btn-inline btn_interest" data-value="0" data-id="'.$row->promotion_id.'">Remove Interest</a>';
                         }else{
-                            $btn .= '<a href="javascript:" class="btn btn-sm btn-success btn-inline btn_interest" data-value="1" data-id="'.$row->id.'">Add Interest</a>';
+                            $btn .= '<a href="javascript:" class="btn btn-sm btn-success btn-inline btn_interest" data-value="1" data-id="'.$row->promotion_id.'">Add Interest</a>';
                         }
 
                         return $btn;
