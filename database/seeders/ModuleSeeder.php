@@ -116,7 +116,7 @@ class ModuleSeeder extends Seeder
 
         $product_group = Module::create(
                             array(
-                                'title' => 'Product Group',
+                                'title' => 'Product Brand',
                                 'slug' => 'product-group',
                                 'parent_id' => null,
                             )

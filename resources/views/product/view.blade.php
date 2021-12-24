@@ -45,6 +45,10 @@
                               <td>{{ @$data->item_name ?? "" }}</td>
                             </tr>
                             <tr>
+                              <th> <b>Product Brand:</b> </th>
+                              <td>{{ @$data->group->group_name ?? "" }}</td>
+                            </tr>
+                            <tr>
                               <th> <b>Product Code:</b> </th>
                               <td>{{ @$data->item_code ?? "" }}</td>
                             </tr>
