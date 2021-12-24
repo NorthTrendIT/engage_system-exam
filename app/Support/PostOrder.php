@@ -78,37 +78,18 @@ class PostOrder
     {
         if(!empty($data)){
             $response = $this->pushOrderInSAP($data);
+            return $response->getBody();
         }
 
         if($response['status']){
             $data = $response['data'];
 
             if($data){
-
-                $status = '';
-
-                if($data['Cancelled'] == "tYES" ){
-                    $status = "Cancelled";
-                } else {
-                    if($data['DocumentStatus'] == 'bost_Open') {
-                        $status = 'On Process';
-                    }
-                    if($data['DocumentStatus'] == 'bost_Open' && $data['U_SOSTAT'] == 'For Delivery'){
-                        $status = 'For Delivery';
-                    }
-                    if($data['DocumentStatus'] == 'bost_Open' && $data['U_SOSTAT'] == 'Delivered'){
-                        $status = 'Delivered';
-                    }
-                    if($data['DocumentStatus'] == 'bost_Open' && $data['U_SOSTAT'] == 'Confirmed'){
-                        $status = 'Complated';
-                    }
-                }
-
                 $insert = array(
                             'doc_entry' => $data['DocEntry'],
                             'doc_num' => $data['DocNum'],
                             'doc_type' => $data['DocType'],
-                            'document_status' => $status,
+                            'document_status' => $data['DocumentStatus'],
                             'doc_date' => $data['DocDate'],
                             'doc_due_date' => $data['DocDueDate'],
                             'card_code' => $data['CardCode'],
@@ -176,8 +157,12 @@ class PostOrder
 
                 }
             }
+        } else {
+            $data = $response['data'];
+            // dd($data->getBody());
+            $message = 'API Error: '.$data->getStatusCode();
+            return ['status' => $response['status'], 'message' => $message];
         }
-
         return ['status' => $response['status'], 'message' => $response['data']];
     }
 }

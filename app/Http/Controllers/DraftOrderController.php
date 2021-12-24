@@ -161,7 +161,10 @@ class DraftOrderController extends Controller
 
         return DataTables::of($data)
                             ->addColumn('sales_specialist_name', function($row) {
-                                return $row->sales_specialist->sales_specialist_name;
+                                if(isset($row->sales_specialist)){
+                                    return $row->sales_specialist->sales_specialist_name;
+                                }
+                                return "";
                             })
                             ->addColumn('confirmation_status', function($row) {
                                 if($row->confirmation_status == 'P'){

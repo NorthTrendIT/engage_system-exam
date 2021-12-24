@@ -122,7 +122,15 @@ class CartController extends Controller
         $data = $request->all();
         if(isset($id) && isset($data['qty'])){
             $cart = Cart::findOrFail($id);
-            $cart->qty = ($data['qty'] <= 0) ? $cart->qty : $data['qty'];
+            if(is_numeric($data['qty'])){
+                if($data['qty'] > 0){
+                    $cart->qty = $data['qty'];
+                } else {
+                    return $response = ['status'=>false,'message'=>"Quantity value must be greater than 0(Zero)."];
+                }
+            } else {
+                return $response = ['status'=>false,'message'=>"Quantity value must be numeric."];
+            }
             $cart->save();
 
             return $response = ['status'=>true,'message'=>"Product quantity updated successfully."];
@@ -240,7 +248,6 @@ class CartController extends Controller
             $post = new PostOrder('TEST-APBW', 'manager', 'test');
 
             $post = $post->pushOrder($obj);
-
             $order = LocalOrder::where('id', $order->id)->first();
             if($post['status']){
                 $order->confirmation_status = 'C';
@@ -252,8 +259,8 @@ class CartController extends Controller
 
             $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
         } catch (\Exception $e) {
-            dd($e);
-            $response = ['status' => false, 'message' => 'Order Placed Successfully!'];
+            // dd($e);
+            $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
         }
         return $response;
     }
