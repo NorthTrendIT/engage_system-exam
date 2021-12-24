@@ -87,7 +87,7 @@ $(document).ready(function() {
     getProductList($id);
   });
 
-    $(document).on('click', '.add-to-cart', function(event) {
+    $(document).on('click', '.addToCart', function(event) {
       event.preventDefault();
       $url = $(this).attr('data-url');
         $.ajax({
@@ -102,6 +102,9 @@ $(document).ready(function() {
                     toast_error(result.message);
                 }else{
                     toast_success(result.message);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1500)
                 }
             })
             .fail(function() {

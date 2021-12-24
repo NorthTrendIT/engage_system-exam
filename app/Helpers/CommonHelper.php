@@ -4,6 +4,7 @@ use App\Models\RoleModuleAccess;
 use App\Models\ActivityLog;
 use App\Models\ActivityMaster;
 use App\Models\Module;
+use App\Models\Cart;
 use Auth as Auth;
 
 function add_login_log(){
@@ -123,4 +124,12 @@ function ordinal($number) {
         return $number. 'th';
     else
         return $number. $ends[$number % 10];
+}
+
+function is_in_cart($id){
+    $cart = Cart::where(['product_id' => $id, 'customer_id' => @Auth::user()->customer_id])->get();
+    if(count($cart)){
+        return 1;
+    }
+    return 0;
 }
