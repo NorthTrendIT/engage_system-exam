@@ -53,14 +53,20 @@ class PostOrder
             }
 
         } catch (\Exception $e) {
-            $message = "API Error:";
-            $statusCode = !empty($e->getResponse()->getStatusCode()) ? $e->getResponse()->getStatusCode() : NULL;
-            $responsePhrase = !empty($e->getResponse()->getReasonPhrase()) ? $e->getResponse()->getReasonPhrase() : NULL;
-            if($statusCode == 401){
-                $message = $message.' Username and password do not match.';
+            $code = $e->getCode();
+            if($code){
+                $message = "API Error:";
+                $statusCode = !empty($e->getResponse()->getStatusCode()) ? $e->getResponse()->getStatusCode() : NULL;
+                $responsePhrase = !empty($e->getResponse()->getReasonPhrase()) ? $e->getResponse()->getReasonPhrase() : NULL;
+                if($statusCode == 401){
+                    $message = $message.' Username and password do not match.';
+                } else {
+                    $message = $message.' '.$statusCode.' '.$responsePhrase;
+                }
             } else {
-                $message = $message.' '.$statusCode.' '.$responsePhrase;
+                $message = $message." API is Down.";
             }
+
             return array(
                         'status' => false,
                         'data' => $message

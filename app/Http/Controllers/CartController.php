@@ -22,10 +22,16 @@ class CartController extends Controller
     public function index()
     {
         $customer_id = Auth::user()->customer_id;
+        $total = 0;
         $data = Cart::with(['product', 'customer'])->where('customer_id', $customer_id)->get();
         $address = CustomerBpAddress::where('customer_id', $customer_id)->get();
-        // dd($address);
-        return view('cart.index', compact(['data', 'address']));
+
+        foreach($data as $item){
+            $subTotal = get_product_customer_price(@$item->product->item_prices,@Auth::user()->customer->price_list_num) * $item->qty;
+            $total += $subTotal;
+        }
+        // dd($data);
+        return view('cart.index', compact(['data', 'address', 'total']));
     }
 
     /**
@@ -246,7 +252,7 @@ class CartController extends Controller
 
             $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
         } catch (\Exception $e) {
-            // dd($e);
+            dd($e);
             $response = ['status' => false, 'message' => 'Order Placed Successfully!'];
         }
         return $response;
