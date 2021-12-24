@@ -159,6 +159,8 @@ Route::middleware(['auth'])->group(function(){
         Route::post('cart/remove/{id}','App\Http\Controllers\CartController@removeFromCart')->name('cart.remove');
         Route::post('cart/update-qty/{id}','App\Http\Controllers\CartController@updateQty')->name('cart.update-qty');
         Route::post('cart/placeOrder','App\Http\Controllers\CartController@placeOrder')->name('cart.placeOrder');
+        Route::post('cart/qty-plus/{id}','App\Http\Controllers\CartController@qtyPlus')->name('cart.qty-plus');
+        Route::post('cart/qty-minus/{id}','App\Http\Controllers\CartController@qtyMinus')->name('cart.qty-minus');
 
         // Local Orders
         Route::resource('sales-specialist-orders','App\Http\Controllers\LocalOrderController', [

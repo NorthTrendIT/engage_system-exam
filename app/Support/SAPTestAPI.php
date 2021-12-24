@@ -50,16 +50,18 @@ class SAPTestAPI
                     return ['status' => false, 'message' => "API Not Working"];
                 }
             } catch (\Exception $e) {
-                // $data = $e->getMessage();
-                // print_r($data);
-                // exit;
-                $message = "API not working.";
-                $statusCode = !empty($e->getResponse()->getStatusCode()) ? $e->getResponse()->getStatusCode() : NULL;
-                $responsePhrase = !empty($e->getResponse()->getReasonPhrase()) ? $e->getResponse()->getReasonPhrase() : NULL;
-                if($statusCode == 401){
-                    $message = $message.': Username and password do not match.';
-                } else {
-                    $message = $message.' '.$statusCode.' '.$responsePhrase;
+                $code = $e->getCode();
+                if($code){
+                    $message = "";
+                    $statusCode = !empty($e->getResponse()->getStatusCode()) ? $e->getResponse()->getStatusCode() : NULL;
+                    $responsePhrase = !empty($e->getResponse()->getReasonPhrase()) ? $e->getResponse()->getReasonPhrase() : NULL;
+                    if($statusCode == 401){
+                        $message = 'Username and password do not match.';
+                    } else {
+                        $message = $statusCode.' '.$responsePhrase;
+                    }
+                } else{
+                    $message = "API is Down.";
                 }
                 $response = ['status' => false, 'message' => $message];
                 return $response;

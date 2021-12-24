@@ -40,13 +40,15 @@
                                 </div>
                                 <div class="button-wrap">
                                     <div class="counter">
-                                        <!-- <a href="javascript:;" class="btn btn-xs btn-icon mr-2">
+                                        <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyMinus" data-url="{{ route('cart.qty-minus', $value->id)}}">
                                             <i class="fas fa-minus"></i>
-                                        </a> -->
-                                        <input class="form-control qty" data-url="{{ route('cart.update-qty', $value->id)}}" type="number" min="1" value="{{ $value->qty }}" />
-                                        <!-- <a href="javascript:;" class="btn btn-xs btn-icon mr-2">
+                                        </a>
+
+                                        <input class="form-control qty" data-url="{{ route('cart.update-qty', $value->id)}}" type="number" min="1" value="{{ $value->qty }}" >
+
+                                        <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyPlus" data-url="{{ route('cart.qty-plus', $value->id)}}">
                                             <i class="fas fa-plus"></i>
-                                        </a> -->
+                                        </a>
                                     </div>
                                     <div class="remove">
                                         <a href="javascript:;" class="remove-from-cart" data-url="{{ route('cart.remove',$value->id) }}">Remove</a>
@@ -55,10 +57,6 @@
                             </div>
                             <div class="separator separator-solid"></div>
                             @endforeach
-
-                            <div class="place-button">
-                                <a href="javascript:;" class="placeOrder">PLACE ORDER</a>
-                            </div>
                         </div>
                     </div>
                     <!--end::Col-->
@@ -140,7 +138,7 @@
                             <!--begin::Body-->
                             <div class="card-body pt-5">
                                 <!--begin::Item-->
-                                <div class="d-flex align-items-sm-center mb-7">
+                                <div class="align-items-sm-center mb-7">
                                     <!--begin::Section-->
                                     <div class="">
                                         <div class="flex-grow-1 me-2">
@@ -153,7 +151,7 @@
 
                                 <!--end::Item-->
                                 <!--begin::Item-->
-                                <div class="d-flex align-items-sm-center mb-7">
+                                <div class="align-items-sm-center mb-7">
                                     <!--begin::Section-->
                                     <div class="">
                                         <div class="flex-grow-1 me-2">
@@ -182,6 +180,9 @@
                         <!--end::List Widget 4-->
                     </div>
                     <!--end::Col-->
+                    <div class="place-button">
+                        <a href="javascript:;" class="placeOrder">PLACE ORDER</a>
+                    </div>
                 </div>
             </form>
             @else
@@ -214,13 +215,24 @@
     .button-wrap .counter i {
         color: black;
     }
-    .button-wrap .counter a,
-    .button-wrap span {
+    .button-wrap .counter a {
         color: black;
         background: #FAFAFB;
         border: 0.5px solid #E1E1FB !important;
-        Width: 26px !important;
-        Height: 27px !important;
+        Width: 32px !important;
+        Height: 32px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0;
+        font-weight: bold;
+    }
+    .button-wrap input {
+        color: black;
+        background: #FAFAFB;
+        border: 0.5px solid #E1E1FB !important;
+        Width: 100px !important;
+        Height: 32px !important;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -244,11 +256,9 @@
         border-bottom: 1px solid rgba(146, 146, 157, 0.31) !important;
     }
     .place-button {
-        margin-top: 100px;
-        text-align: right;
+        text-align: center;
         line-height: 5;
-        margin-bottom: 20px;
-        margin-right: 20px
+        margin-bottom: 30px;
     }
     .place-button a {
         background-color: black;
@@ -310,6 +320,32 @@ $(document).ready(function() {
         @endif
     });
 
+    $('.qty').change(function(event) {
+        $value = $(this).val();
+        $url = $(this).attr('data-url');
+        $.ajax({
+            url: $url,
+            method: "POST",
+            data: {
+                _token:'{{ csrf_token() }}',
+                qty: $value,
+            }
+        })
+        .done(function(result) {
+            if(result.status == false){
+                toast_error(result.message);
+            }else{
+                toast_success(result.message);
+                setTimeout(function(){
+                    window.location.reload();
+                },1500)
+            }
+        })
+        .fail(function() {
+            toast_error("error");
+        });
+    });
+
     $(document).on('click', '.remove-from-cart', function(event) {
         event.preventDefault();
         $url = $(this).attr('data-url');
@@ -347,15 +383,37 @@ $(document).ready(function() {
         })
     });
 
-    $('.qty').change(function(event) {
-        $value = $(this).val();
+    $(document).on('click', '.qtyPlus', function(event) {
         $url = $(this).attr('data-url');
         $.ajax({
             url: $url,
             method: "POST",
             data: {
                 _token:'{{ csrf_token() }}',
-                qty: $value,
+            }
+        })
+        .done(function(result) {
+            if(result.status == false){
+                toast_error(result.message);
+            }else{
+                toast_success(result.message);
+                setTimeout(function(){
+                    window.location.reload();
+                },1500)
+            }
+        })
+        .fail(function() {
+            toast_error("error");
+        });
+    });
+
+    $(document).on('click', '.qtyMinus', function(event) {
+        $url = $(this).attr('data-url');
+        $.ajax({
+            url: $url,
+            method: "POST",
+            data: {
+                _token:'{{ csrf_token() }}',
             }
         })
         .done(function(result) {
@@ -443,13 +501,6 @@ $(document).ready(function() {
                     quantity:{
                         required: "Please enter quantity.",
                         min: "Quentity must be grater than Zero."
-                    }
-                },
-                errorPlacement: function (error, element) {
-                    if (element.hasClass('.select2').length) {
-                        error.insertAfter(element.parent());
-                    } else {
-                        error.insertAfter(element);
                     }
                 }
             });
