@@ -101,7 +101,7 @@
 
                 </div>
 
-                <div class="row mb-5">
+                {{-- <div class="row mb-5">
                   
                   <div class="col-md-6">
                     <div class="form-group">
@@ -129,7 +129,7 @@
                     </div>
                   </div>
 
-                </div>
+                </div> --}}
 
 
                 @if(!isset($edit))

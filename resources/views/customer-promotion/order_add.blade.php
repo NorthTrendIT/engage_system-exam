@@ -118,6 +118,7 @@
                         <div class="col-md-6">
                           <div class="form-group">
                             <label>Brand</label>
+                            <input type="text" class="form-control form-control-solid" readonly="" disabled="" value="{{ @$p->product->group->group_name }}" >
                           </div>
                         </div>
                       </div>

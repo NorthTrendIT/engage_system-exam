@@ -202,44 +202,6 @@ class CustomerPromotionController extends Controller
         }
     }
 
-    public function storeInterest(Request $request){
-        $input = $request->all();
-
-        $rules = array(
-                    'promotion_id' => 'required|nullable|exists:promotions,id',
-                    'is_interested' => 'nullable|required',
-                );
-
-        $validator = Validator::make($input, $rules);
-
-        if ($validator->fails()) {
-            $response = ['status'=>false,'message'=>$validator->errors()->first()];
-        }else{
-
-            $input['user_id'] = Auth::id();
-
-            $obj = PromotionInterest::firstOrNew([
-                                        'promotion_id' => $input['promotion_id'],
-                                        'user_id' => $input['user_id'],
-                                    ]);
-
-            if($input['is_interested'] == true){
-                $message = "Promotion interest added successfully.";
-            }else{
-                $message = "Promotion interest removed successfully.";
-            }
-
-            $obj->fill($input)->save();
-
-            // Add Log.
-            add_log(29, $input);
-
-            $response = ['status'=>true,'message'=>$message];
-        }
-
-        return $response;
-    }
-
     public function productDetail($id,$promotion_id){
         $data = PromotionTypeProduct::where('id',$id)->firstOrFail();
         
@@ -561,7 +523,6 @@ class CustomerPromotionController extends Controller
         return view('customer-promotion.order_view',compact('data'));
     }
 
-
     public function orderStatus(Request $request){
         $input = $request->all();
 
@@ -654,7 +615,6 @@ class CustomerPromotionController extends Controller
         return $response;
     }
 
-
     public function getCustomerAddress(Request $request){
         $search = $request->search;
 
@@ -668,7 +628,6 @@ class CustomerPromotionController extends Controller
 
         return response()->json($data);
     }
-
 
     public function orderEdit($id){
         $edit = CustomerPromotion::where('id',$id)->where('user_id',Auth::id())->where('status','!=','canceled')->firstOrFail();
@@ -765,5 +724,73 @@ class CustomerPromotionController extends Controller
         }
 
         return $response;
+    }
+
+    public function storeInterest(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'promotion_id' => 'required|nullable|exists:promotions,id',
+                    'is_interested' => 'nullable|required',
+                );
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+            $input['user_id'] = Auth::id();
+
+            $obj = PromotionInterest::firstOrNew([
+                                        'promotion_id' => $input['promotion_id'],
+                                        'user_id' => $input['user_id'],
+                                    ]);
+
+            if($input['is_interested'] == true){
+                $message = "Promotion interest added successfully.";
+            }else{
+                $message = "Promotion interest removed successfully.";
+            }
+
+            $obj->fill($input)->save();
+
+            // Add Log.
+            add_log(29, $input);
+
+            $response = ['status'=>true,'message'=>$message];
+        }
+
+        return $response;
+    }
+
+    public function getInterest(Request $request){
+        
+        if($request->ajax()){
+            $data = PromotionInterest::where('user_id', @Auth::id())->latest()->get();
+
+            return DataTables::of($data)
+                    ->addIndexColumn()
+                    ->addColumn('promotion', function($row) {
+                        return @$row->promotion->title ?? "-";
+                    })
+                    ->addColumn('is_interested', function($row) {
+                        return $row->is_interested ? "Yes" : "No";
+                    })
+                    ->addColumn('action', function($row) {
+                        $btn = "";
+                        if($row->is_interested){
+                            $btn .= '<a href="javascript:" class="btn btn-sm btn-danger btn-inline btn_interest" data-value="0" data-id="'.$row->promotion_id.'">Remove Interest</a>';
+                        }else{
+                            $btn .= '<a href="javascript:" class="btn btn-sm btn-success btn-inline btn_interest" data-value="1" data-id="'.$row->promotion_id.'">Add Interest</a>';
+                        }
+
+                        return $btn;
+                    })
+                    ->rawColumns(['action'])
+                    ->make(true);
+        }
+
+        return view('customer-promotion.interest_index');
     }
 }
