@@ -35,6 +35,7 @@ class User extends Authenticatable
         'customer_id',
         'first_login',
         'sap_connection_id',
+        'sales_employee_code',
     ];
 
     /**

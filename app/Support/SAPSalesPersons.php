@@ -87,23 +87,25 @@ class SAPSalesPersons
 
                 foreach ($data['value'] as $value) {
                     $name = explode(" ", $value['SalesEmployeeName'], 2);
-                    $email = strtolower($name[0])."-".@$sap_connection->id;
+                    $email = strtolower($name[0]).$value['SalesEmployeeCode']."-".@$sap_connection->id.'@mailinator.com';
 
                     $insert = array(
                                     'role_id' => 2,
+                                    'sales_employee_code' => $value['SalesEmployeeCode'],
                                     'sales_specialist_name' => $value['SalesEmployeeName'],
                                     'first_name' => !empty($name[0]) ? $name[0] : null,
                                     'last_name' => !empty($name[1]) ? $name[1] : null,
                                     'is_active' => $value['Active'] == "tYES" ? true : false,
                                     'password' => Hash::make('12345678'),
-                                    'email' => $email.'@mailinator.com',
+                                    'email' => $email,
                                     //'response' => json_encode($value),
                                     'sap_connection_id' => @$sap_connection->id,
                                 );
 
                     $obj = User::updateOrCreate(
                                             [
-                                                'sales_specialist_name' => @$value['SalesEmployeeName'],
+                                                'role_id' => 2,
+                                                'email' => $email,
                                                 'sap_connection_id' => @$sap_connection->id,
                                             ],
                                             $insert
