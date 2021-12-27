@@ -23,6 +23,10 @@ class SAPSalesPersons
 
     public function __construct($database, $username, $password)
     {
+        $this->database = $database;
+        $this->username = $username;
+        $this->password = $password;
+        
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
         $this->headers['Cookie'] = $this->authentication->getSessionCookie();

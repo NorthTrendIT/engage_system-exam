@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title','Assign sales Specialist')
+@section('title','Customers Sales Specialist')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">

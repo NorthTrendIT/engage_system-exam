@@ -125,7 +125,14 @@ class CustomerGroupController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('name', function($row) {
-                                return @$row->name ?? "-";
+                                //return @$row->name ?? "-";
+
+                                $name = @$row->name ?? "-";
+
+                                if(in_array(userrole(),[1,2]) && @$row->sap_connection->company_name){
+                                    $name .= " (".@$row->sap_connection->company_name.")";
+                                }
+                                return $name;
                             })
                             ->addColumn('code', function($row) {
                                 return @$row->code ?? "-";

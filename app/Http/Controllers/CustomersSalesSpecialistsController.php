@@ -144,7 +144,9 @@ class CustomersSalesSpecialistsController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = Customer::has('sales_specialist')->findOrFail($id);
+
+        return view('customers-sales-specialist.view',compact('data'));
     }
 
     /**
@@ -256,8 +258,13 @@ class CustomersSalesSpecialistsController extends Controller
                                 $btn = '<a href="' . route('customers-sales-specialist.edit',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
+
                                 $btn .= ' <a href="javascript:void(0)" data-url="' . route('customers-sales-specialist.destroy',$row->first()->customer_id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
                                     <i class="fa fa-trash"></i>
+                                  </a>';
+
+                                $btn .= ' <a href="' . route('customers-sales-specialist.show',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
                                   </a>';
 
                                 return $btn;

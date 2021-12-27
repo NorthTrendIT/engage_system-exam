@@ -86,6 +86,10 @@ class SAPCustomerGroup
 
                 foreach ($data['value'] as $value) {
                     
+                    if(@$value['Type'] != "bbpgt_CustomerGroup"){
+                        continue;
+                    }
+                
                     $insert = array(
                                     'code' => @$value['Code'],
                                     'name' => @$value['Name'],
