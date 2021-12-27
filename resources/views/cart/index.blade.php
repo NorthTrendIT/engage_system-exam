@@ -34,7 +34,7 @@
                                             <span class="text-gray-800 fs-6 fw-bolder">{{ $value->product->item_name}}</span>
                                             <span class="text-muted fw-bold d-block fs-7">CODE: {{ $value->product->item_code }}</span>
                                         </div>
-                                        <span class="fw-bolder my-2">0</span>
+                                        <span class="fw-bolder my-2 price">₱ {{ get_product_customer_price(@$value->product->item_prices,@Auth::user()->customer->price_list_num) * $value->qty }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>
@@ -81,7 +81,8 @@
                                         <div class="flex-grow-1 me-2">
                                             <span class="text-gray-800 fs-6 fw-bolder">Price</span>
                                         </div>
-                                        <span class="fw-bolder my-2">0</span>
+
+                                        <span class="fw-bolder my-2">₱ {{ $total}}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>
@@ -119,7 +120,7 @@
                                         <div class="flex-grow-1 me-2">
                                             <h3 class="text-gray-800 fs-6 fw-bolder">Total Amount</h3>
                                         </div>
-                                        <span class="fw-bolder my-2">0</span>
+                                        <span class="fw-bolder my-2">₱ {{ $total }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>
@@ -181,7 +182,7 @@
                     </div>
                     <!--end::Col-->
                     <div class="place-button">
-                        <a href="javascript:;" class="placeOrder">PLACE ORDER</a>
+                        <a href="javascript:;" class="placeOrder" >PLACE ORDER</a>
                     </div>
                 </div>
             </form>
@@ -385,6 +386,8 @@ $(document).ready(function() {
 
     $(document).on('click', '.qtyPlus', function(event) {
         $url = $(this).attr('data-url');
+        $qty = parseInt($(this).parent().find('.qty').val());
+        $(this).parent().find('.qty').val($qty + 1);
         $.ajax({
             url: $url,
             method: "POST",
@@ -409,6 +412,8 @@ $(document).ready(function() {
 
     $(document).on('click', '.qtyMinus', function(event) {
         $url = $(this).attr('data-url');
+        $qty = parseInt($(this).parent().find('.qty').val());
+        $(this).parent().find('.qty').val($qty - 1);
         $.ajax({
             url: $url,
             method: "POST",
@@ -434,10 +439,10 @@ $(document).ready(function() {
     $('body').on("click", ".placeOrder", function (e) {
         e.preventDefault();
         var validator = validate_form();
-
         if (validator.form() != false) {
-            $('[type="submit"]').prop('disabled', true);
-            $('[name="address_id"]').removeAttr('disabled');
+            show_loader();
+            // $('[type="submit"]').prop('disabled', true);
+            // $('[name="address_id"]').removeAttr('disabled');
             $.ajax({
                 url: "{{route('cart.placeOrder')}}",
                 type: "POST",
@@ -451,14 +456,17 @@ $(document).ready(function() {
                         setTimeout(function(){
                             window.location.href = "{{ route('customer-order.index') }}";
                         },1500)
+                        hide_loader();
                     } else {
                         toast_error(data.message);
-                        $('[type="submit"]').prop('disabled', false);
+                        // $('[type="submit"]').prop('disabled', false);
+                        hide_loader();
                     }
                 },
                 error: function () {
                     toast_error("Something went to wrong !");
-                    $('[type="submit"]').prop('disabled', false);
+                    // $('[type="submit"]').prop('disabled', false);
+                    hide_loader();
                 },
             });
         }

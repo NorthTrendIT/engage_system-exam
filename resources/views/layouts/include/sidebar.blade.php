@@ -452,7 +452,7 @@
             </div>
             @endif
 
-            @if(Auth::user()->role_id == 1)
+            @if(Auth::user()->role_id == 2)
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['sales-specialist-orders.index','sales-specialist-orders.create','sales-specialist-orders.edit'])) ? 'active' : '' }}" href="{{ route('sales-specialist-orders.index') }}">
                   <span class="menu-icon">

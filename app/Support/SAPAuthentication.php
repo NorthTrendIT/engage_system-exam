@@ -49,9 +49,10 @@ class SAPAuthentication
 	        	$response = json_decode($response->getBody(), true);
 
 	        	$this->saveAuthentication($response);
-	        }	
-	       
+	        }
+
     	} catch (\Exception $e) {
+            return $e;
             abort(500);
     		dd($e);
     	}
@@ -105,7 +106,7 @@ class SAPAuthentication
 		])->where('expires_at', '>=', Carbon::now())->first();
     }
 
-    
+
     public function getAuthenticationSession()
     {
     	if ($session = $this->getSession()) {
@@ -118,7 +119,7 @@ class SAPAuthentication
     }
 
     public function getSessionCookie()
-    {   
+    {
         $cookie = "";
         if ($session = $this->getAuthenticationSession()) {
             $cookie = "B1SESSION=".$session->session_id.";";

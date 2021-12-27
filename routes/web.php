@@ -186,6 +186,8 @@ Route::middleware(['auth'])->group(function(){
         Route::post('sales-specialist-orders/get-products/','App\Http\Controllers\LocalOrderController@getProducts')->name('sales-specialist-orders.getProducts');
         Route::post('sales-specialist-orders/get-address/','App\Http\Controllers\LocalOrderController@getAddress')->name('sales-specialist-orders.getAddress');
         Route::post('sales-specialist-orders/place-order/','App\Http\Controllers\LocalOrderController@placeOrder')->name('sales-specialist-orders.placeOrder');
+        Route::post('sales-specialist-orders/get-price/','App\Http\Controllers\LocalOrderController@getPrice')->name('sales-specialist-orders.get-price');
+        Route::post('sales-specialist-orders/get-customer-schedule/','App\Http\Controllers\LocalOrderController@getCustomerSchedule')->name('sales-specialist-orders.get-customer-schedule');
 
         Route::get('customer-promotion/', 'App\Http\Controllers\CustomerPromotionController@index')->name('customer-promotion.index')/*->middleware('not-super-admin')*/;
         Route::post('customer-promotion/get-all', 'App\Http\Controllers\CustomerPromotionController@getAll')->name('customer-promotion.get-all');
@@ -240,6 +242,7 @@ Route::middleware(['auth'])->group(function(){
     Route::post('draft-order/get-products/','App\Http\Controllers\DraftOrderController@getProducts')->name('draft-order.getProducts');
     Route::post('draft-order/get-address/','App\Http\Controllers\DraftOrderController@getAddress')->name('draft-order.getAddress');
     Route::post('draft-order/place-order/','App\Http\Controllers\DraftOrderController@placeOrder')->name('draft-order.placeOrder');
+    Route::post('draft-order/get-price/','App\Http\Controllers\DraftOrderController@getPrice')->name('draft-order.get-price');
 
 
     // Super Admin Routes
