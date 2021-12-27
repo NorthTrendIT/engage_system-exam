@@ -40,10 +40,10 @@
                        <table class="table table-bordered" id="myTable">
                           <!--begin::Table head-->
                           <thead>
-                            {{-- <tr>
+                            <tr>
                               <th> <b>Card Code:</b> </th>
                               <td>{{ @$data->card_code ?? "" }}</td>
-                            </tr> --}}
+                            </tr>
                             <tr>
                               <th> <b>Card Name:</b> </th>
                               <td>{{ @$data->card_name ?? "" }}</td>

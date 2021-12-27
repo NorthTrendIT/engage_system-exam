@@ -144,6 +144,10 @@ Route::middleware(['auth'])->group(function(){
         Route::post('customers-sales-specialist/get-customers/','App\Http\Controllers\CustomersSalesSpecialistsController@getCustomers')->name('customers-sales-specialist.getCustomers');
         Route::post('customers-sales-specialist/get-salse-specialist/','App\Http\Controllers\CustomersSalesSpecialistsController@getSalseSpecialist')->name('customers-sales-specialist.getSalseSpecialist');
 
+        Route::post('customers-sales-specialist/get-product-brand/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductBrand')->name('customers-sales-specialist.get-product-brand');
+        Route::post('customers-sales-specialist/get-product-line/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductLine')->name('customers-sales-specialist.get-product-line');
+        Route::post('customers-sales-specialist/get-product-category/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductCategory')->name('customers-sales-specialist.get-product-category');
+
 	    Route::resource('class','App\Http\Controllers\ClassController');
 	    Route::post('class/get-all', 'App\Http\Controllers\ClassController@getAll')->name('class.get-all');
 
