@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\User;
+use App\Models\SapConnection;
 use Hash;
 
 class SAPSalesPersons
@@ -22,6 +23,10 @@ class SAPSalesPersons
 
     public function __construct($database, $username, $password)
     {
+        $this->database = $database;
+        $this->username = $username;
+        $this->password = $password;
+        
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
         $this->headers['Cookie'] = $this->authentication->getSessionCookie();
@@ -68,6 +73,13 @@ class SAPSalesPersons
             $response = $this->getSalesPersonsData();
         }
 
+        $where = array(
+                    'db_name' => $this->database,
+                    'user_name' => $this->username,
+                );
+
+        $sap_connection = SapConnection::where($where)->first();
+
         if($response['status']){
             $data = $response['data'];
 
@@ -75,22 +87,26 @@ class SAPSalesPersons
 
                 foreach ($data['value'] as $value) {
                     $name = explode(" ", $value['SalesEmployeeName'], 2);
-                    $email = strtolower($name[0]);
+                    $email = strtolower($name[0]).$value['SalesEmployeeCode']."-".@$sap_connection->id.'@mailinator.com';
 
                     $insert = array(
                                     'role_id' => 2,
+                                    'sales_employee_code' => $value['SalesEmployeeCode'],
                                     'sales_specialist_name' => $value['SalesEmployeeName'],
                                     'first_name' => !empty($name[0]) ? $name[0] : null,
                                     'last_name' => !empty($name[1]) ? $name[1] : null,
                                     'is_active' => $value['Active'] == "tYES" ? true : false,
                                     'password' => Hash::make('12345678'),
-                                    'email' => $email.'@mailinator.com',
+                                    'email' => $email,
                                     //'response' => json_encode($value),
+                                    'sap_connection_id' => @$sap_connection->id,
                                 );
 
                     $obj = User::updateOrCreate(
                                             [
-                                                'sales_specialist_name' => @$value['SalesEmployeeName'],
+                                                'role_id' => 2,
+                                                'email' => $email,
+                                                'sap_connection_id' => @$sap_connection->id,
                                             ],
                                             $insert
                                         );

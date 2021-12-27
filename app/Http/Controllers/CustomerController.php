@@ -10,6 +10,7 @@ use App\Models\Classes;
 use App\Models\CustomerGroup;
 use App\Models\SapConnection;
 use DataTables;
+use Auth;
 
 class CustomerController extends Controller
 {
@@ -57,7 +58,18 @@ class CustomerController extends Controller
      */
     public function show($id)
     {
-        $data = Customer::where('id',$id)->firstOrFail();
+        $data = Customer::where('id',$id);
+
+        if(userrole() != 4){
+            if(in_array(userrole(),[2])){
+                $data->whereHas('sales_specialist', function($q) {
+                    return $q->where('ss_id',Auth::id());
+                });
+            }
+        }
+
+        $data = $data->firstOrFail();
+
         return view('customer.view',compact('data'));
     }
 
@@ -145,6 +157,16 @@ class CustomerController extends Controller
             });
         }
 
+        // Not a customer
+        if(userrole() != 4){
+            // Sales specialist can see only assigned customer
+            if(in_array(userrole(),[2])){
+                $data->whereHas('sales_specialist', function($q) {
+                    return $q->where('ss_id',Auth::id());
+                });
+            }
+        }
+
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
         });
@@ -173,8 +195,10 @@ class CustomerController extends Controller
                                 $html .= '</a>
                                                 <span class="text-muted fw-bold text-muted d-block fs-7">';
 
+                                $html .= "Code: ".$row->card_code;
+
                                 if($row->email != null){
-                                    $html .= "Email: ".$row->email;
+                                    $html .= " | Email: ".$row->email;
                                 }
 
                                 $html .= '</span>

@@ -7,7 +7,7 @@
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Assign Salse Specialist</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Assign Sales Specialist</h1>
       </div>
 
       <!--begin::Actions-->
@@ -33,26 +33,58 @@
                 @csrf
 
                 @if(isset($edit))
-                  <input type="hidden" name="id" value="{{ $customer->id }}">
+                  <input type="hidden" name="id" value="{{ $edit->id }}">
                 @endif
 
                 <div class="row mb-5">
 
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Select Customer<span class="asterisk">*</span></label>
-                            <select class="form-select form-select-solid" id='selectCustomer' data-control="select2" data-hide-search="false" name="customer_ids[]">
-                            </select>
-                        </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Customer<span class="asterisk">*</span></label>
+                      <select class="form-select form-select-solid" id='selectCustomer' data-control="select2" data-hide-search="false" name="customer_id">
+                      </select>
                     </div>
+                  </div>
 
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Select Sales Specialist<span class="asterisk">*</span></label>
-                            <select class="form-select form-select-solid" id='selectSalseSpecialist' multiple="multiple" data-control="select2" data-hide-search="false" name="ss_ids[]">
-                            </select>
-                        </div>
+                </div>
+
+                <div class="row mb-5">
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Sales Specialist<span class="asterisk">*</span></label>
+                      <select class="form-select form-select-solid" id='selectSalseSpecialist' multiple="multiple" data-control="select2" data-hide-search="false" data-allow-clear="true" name="ss_ids[]">
+                      </select>
                     </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Product Brand</label>
+                      <select class="form-select form-select-solid" id='selectProductBrand' data-control="select2" data-hide-search="false" data-allow-clear="true" name="product_group_id[]">
+                      </select>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="row mb-5">
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Product Line</label>
+                      <select class="form-select form-select-solid" id='selectProductLine' data-control="select2" data-hide-search="false" data-allow-clear="true" name="product_item_line_id[]">
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Product Category</label>
+                      <select class="form-select form-select-solid" id='selectProductCategory' multiple="multiple" data-control="select2" data-hide-search="false" data-allow-clear="true" name="product_tires_category_id[]">
+                      </select>
+                    </div>
+                  </div>
 
                 </div>
 
@@ -82,11 +114,6 @@
 
 <script>
 $(document).ready(function() {
-
-    $('[name="parent_id"]').select2({
-      placeholder: "Select a province",
-      allowClear: true
-    });
 
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
@@ -128,7 +155,7 @@ $(document).ready(function() {
             customer_id:{
               required: true
             },
-            ss_ids:{
+            "ss_ids[]":{
               required: true
             }
           },
@@ -144,27 +171,65 @@ $(document).ready(function() {
     }
 
     $initialCustomer = [];
-    $initialSalesPerson= [];
+    $initialSalesPerson = [];
+    $initialProductBrand = [];
+    $initialProductLine = [];
+    $initialProductCategory = [];
 
-    @if(isset($customer) && !empty($customer))
+    @if(isset($edit) && !empty($edit))
         var initialOption = {
-            id: {{ $customer->id }},
-            text: '{!! $customer->card_name !!}',
+            id: {{ $edit->id }},
+            text: '{!! $edit->card_name !!}',
+            sap_connection_id: '{!! $edit->sap_connection_id !!}',
             selected: true
         }
         $initialCustomer.push(initialOption);
     @endif
 
-    @if(isset($edit) && !empty($edit))
-        @foreach ($edit as $data)
-            var initialOption = {
-                id: {{ $data->ss_id }},
-                text: '{!! $data->sales_person->sales_specialist_name !!}',
-                selected: true
-            }
-            $initialSalesPerson.push(initialOption);
-        @endforeach
+    @if(isset($edit) && @$edit->sales_specialist)
+      @foreach ($edit->sales_specialist as $data)
+        var initialOption = {
+            id: {{ $data->ss_id }},
+            text: '{!! $data->sales_person->sales_specialist_name !!}',
+            selected: true
+        }
+        $initialSalesPerson.push(initialOption);
+      @endforeach
     @endif
+    
+    @if(isset($edit) && @$edit->product_groups)
+      @foreach ($edit->product_groups as $data)
+        var initialOption = {
+            id: {{ $data->product_group_id }},
+            text: '{!! $data->product_group->group_name !!}',
+            selected: true
+        }
+        $initialProductBrand.push(initialOption);
+      @endforeach
+    @endif
+
+    @if(isset($edit) && @$edit->product_item_lines)
+      @foreach ($edit->product_item_lines as $data)
+        var initialOption = {
+            id: {{ $data->product_item_line_id }},
+            text: '{!! $data->product_item_line->u_item_line !!}',
+            selected: true
+        }
+        $initialProductLine.push(initialOption);
+      @endforeach
+    @endif
+
+    @if(isset($edit) && @$edit->product_tires_categories)
+      @foreach ($edit->product_tires_categories as $data)
+        var initialOption = {
+            id: {{ $data->product_tires_category_id }},
+            text: '{!! $data->product_tires_category->u_tires !!}',
+            selected: true
+        }
+        $initialProductCategory.push(initialOption);
+      @endforeach
+    @endif
+
 
     $("#selectCustomer").select2({
         @if(!isset($edit))
@@ -188,36 +253,151 @@ $(document).ready(function() {
         },
         @endif
         placeholder: 'Select Customer',
-        multiple: true,
+        multiple: false,
         @if(isset($edit))
         data: $initialCustomer,
         @endif
     });
 
+    /*$(document).on("change", "#selectCustomer", function (e) {
+      e.preventDefault();
+      var selected_customer_data = $("#selectCustomer").select2('data')[0];
+
+      console.log(data);
+
+    });*/
+
+
     $("#selectSalseSpecialist").select2({
-        ajax: {
-            url: "{{route('customers-sales-specialist.getSalseSpecialist')}}",
-            type: "post",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    _token: "{{ csrf_token() }}",
-                    search: params.term
-                };
-            },
-            processResults: function (response) {
-                return {
-                    results: response
-                };
-            },
-            cache: true
-        },
-        placeholder: 'Select Sales Specialist',
-        multiple: true,
-        @if(isset($edit))
-        data: $initialSalesPerson,
-        @endif
+      ajax: {
+          url: "{{route('customers-sales-specialist.getSalseSpecialist')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            var customer_data = $("#selectCustomer").select2('data')[0];
+            sap_connection_id = null;
+            if(customer_data != undefined){
+              sap_connection_id = customer_data.sap_connection_id;
+            }
+
+            return {
+              _token: "{{ csrf_token() }}",
+              search: params.term,
+              sap_connection_id: sap_connection_id
+            };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+      placeholder: 'Select Sales Specialist',
+      multiple: true,
+      @if(isset($edit))
+      data: $initialSalesPerson,
+      @endif
+    });
+
+    $("#selectProductBrand").select2({
+      ajax: {
+          url: "{{route('customers-sales-specialist.get-product-brand')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            var customer_data = $("#selectCustomer").select2('data')[0];
+            sap_connection_id = null;
+            if(customer_data != undefined){
+              sap_connection_id = customer_data.sap_connection_id;
+            }
+
+            return {
+              _token: "{{ csrf_token() }}",
+              search: params.term,
+              sap_connection_id: sap_connection_id
+            };
+          },
+          processResults: function (response) {
+              return {
+                  results: response
+              };
+          },
+          cache: true
+      },
+      placeholder: 'Select Product Brand',
+      multiple: true,
+      @if(isset($edit))
+      data: $initialProductBrand,
+      @endif
+    });
+
+    $("#selectProductLine").select2({
+      ajax: {
+          url: "{{route('customers-sales-specialist.get-product-line')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            var customer_data = $("#selectCustomer").select2('data')[0];
+            sap_connection_id = null;
+            if(customer_data != undefined){
+              sap_connection_id = customer_data.sap_connection_id;
+            }
+
+            return {
+              _token: "{{ csrf_token() }}",
+              search: params.term,
+              sap_connection_id: sap_connection_id
+            };
+          },
+          processResults: function (response) {
+              return {
+                  results: response
+              };
+          },
+          cache: true
+      },
+      placeholder: 'Select Product Line',
+      multiple: true,
+      @if(isset($edit))
+      data: $initialProductLine,
+      @endif
+    });
+
+    $("#selectProductCategory").select2({
+      ajax: {
+          url: "{{route('customers-sales-specialist.get-product-category')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            var customer_data = $("#selectCustomer").select2('data')[0];
+            sap_connection_id = null;
+            if(customer_data != undefined){
+              sap_connection_id = customer_data.sap_connection_id;
+            }
+
+            return {
+              _token: "{{ csrf_token() }}",
+              search: params.term,
+              sap_connection_id: sap_connection_id
+            };
+          },
+          processResults: function (response) {
+              return {
+                  results: response
+              };
+          },
+          cache: true
+      },
+      placeholder: 'Select Product Category',
+      multiple: true,
+      @if(isset($edit))
+      data: $initialProductCategory,
+      @endif
     });
 
 });

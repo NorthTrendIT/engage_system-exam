@@ -76,6 +76,13 @@
                               <td>{{ @$data->city->name ?? "" }}</td>
                             </tr> --}}
 
+                            @if(@$data->role_id == 2)
+                            <tr>
+                              <th> <b>Sales Employee Code:</b> </th>
+                              <td>{{ @$data->sales_employee_code ?? "" }}</td>
+                            </tr>
+                            @endif
+
                             <tr>
                               <th> <b>Created Date:</b> </th>
                               <td>{{ date('M d, Y',strtotime(@$data->created_at)) }}</td>
