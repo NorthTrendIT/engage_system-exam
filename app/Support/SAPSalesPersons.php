@@ -87,7 +87,7 @@ class SAPSalesPersons
 
                 foreach ($data['value'] as $value) {
                     $name = explode(" ", $value['SalesEmployeeName'], 2);
-                    $email = strtolower($name[0]);
+                    $email = strtolower($name[0])."-".@$sap_connection->id;
 
                     $insert = array(
                                     'role_id' => 2,
