@@ -18,6 +18,8 @@ class LocalOrder extends Model
         'card_code',
         'card_name',
         'address_id',
+        'doc_entry',
+        'doc_num',
     ];
 
     public function customer(){
