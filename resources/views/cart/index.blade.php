@@ -453,9 +453,9 @@ $(document).ready(function() {
                 success: function (data) {
                     if (data.status) {
                         toast_success(data.message)
-                        // setTimeout(function(){
-                        //     window.location.href = "{{ route('customer-order.index') }}";
-                        // },1500)
+                        setTimeout(function(){
+                            window.location.href = "{{ route('customer-order.index') }}";
+                        },1500)
                         hide_loader();
                     } else {
                         toast_error(data.message);
