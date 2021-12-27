@@ -13,7 +13,9 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
+        @if(userrole() == 1)
         <a href="{{ route('role.chart') }}" class="btn btn-sm btn-primary mr-10">Role Chart</a>
+        @endif
 
         <a href="{{ route('role.create') }}" class="btn btn-sm btn-primary">Create</a>
         <!--end::Button-->

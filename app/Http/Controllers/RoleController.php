@@ -19,13 +19,29 @@ class RoleController extends Controller
      */
     public function index()
     {
-      $ids = array();
-      $roles = Role::where('id','!=',1)->whereNotNull('parent_id')->get();
-      if(count($roles)){
-        $ids = array_column($roles->toArray(), 'parent_id');
-      }
-      $parents = Role::where('id','!=',1)->whereNull('parent_id')->orwhereIn('id',$ids)->get();
-      return view('role.index',compact('parents'));
+        $ids = array();
+
+        // If not admin then show only its
+        if(userrole() != 1){
+            $roles = Role::where('user_id',Auth::id())->whereNotNull('parent_id')->get();
+        }else{
+            $roles = Role::where('id','!=',1)->whereNotNull('parent_id')->get();
+        }
+
+
+        if(count($roles)){
+            $ids = array_column($roles->toArray(), 'parent_id');
+        }
+        $parents = Role::where('id','!=',1)->whereNull('parent_id')->orwhereIn('id',$ids)->get();
+
+        // If not admin then show only its
+        if(userrole() != 1){
+            $parents = Role::where('user_id',Auth::id())->whereNull('parent_id')->orwhereIn('id',$ids)->get();
+        }else{
+            $parents = Role::where('id','!=',1)->whereNull('parent_id')->orwhereIn('id',$ids)->get();
+        }
+
+        return view('role.index',compact('parents'));
     }
 
     /**
@@ -34,10 +50,24 @@ class RoleController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-      $modules = get_modules();
-      $parents = Role::where('id','!=',1)->get();
-      return view('role.add',compact('modules','parents'));
+    {   
+
+        // If not admin then edit only its
+        $disable_modules = [];
+        if(userrole() != 1){
+            $disable_modules = Module::whereNotIn('slug',array_keys(get_user_role_module_access(Auth::user()->role_id)))->pluck('id')->toArray();
+        }
+
+        $modules = get_modules();
+
+        // If not admin then show only its
+        if(userrole() != 1){
+            $parents = Role::where('user_id',Auth::id())->get();
+        }else{
+            $parents = Role::where('id','!=',1)->get();
+        }
+
+        return view('role.add',compact('modules','parents','disable_modules'));
     }
 
     /**
@@ -67,6 +97,10 @@ class RoleController extends Controller
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
+
+            if(userrole() != 1){
+                $input['user_id'] = Auth::id();
+            }
 
             if(isset($input['id'])){
               $role = Role::find($input['id']);
@@ -156,18 +190,40 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-        $edit = Role::whereNotIn('id',[3,1])->where('id',$id)->firstOrFail();
-        $modules = get_modules();;
-        $parents = Role::where('id','!=',$id)->where('id','!=',1)->get();
+        $edit = Role::whereNotIn('id',[3,1])->where('id',$id);
+
+        // If not admin then edit only its
+        if(userrole() != 1){
+            $edit->where('user_id',Auth::id());
+        }
+        $edit = $edit->firstOrFail();
+
+
+        $modules = get_modules();
+
+        // If not admin then show only its
+        if(userrole() != 1){
+            $parents = Role::where('id','!=',$id)->where('user_id',Auth::id())->get();
+        }else{
+            $parents = Role::where('id','!=',$id)->where('id','!=',1)->get();
+        }
+        
 
         $role_module_access = array();
         if($edit->role_module_access){
-          $role_module_access = $edit->role_module_access->toArray();
-          $key = array_column($role_module_access, 'module_id');
+            $role_module_access = $edit->role_module_access->toArray();
+            $key = array_column($role_module_access, 'module_id');
 
-          $role_module_access = array_combine($key, $role_module_access);
+            $role_module_access = array_combine($key, $role_module_access);
         }
-        return view('role.add',compact('modules','edit','role_module_access','parents'));
+
+        // If not admin then edit only its
+        $disable_modules = [];
+        if(userrole() != 1){
+            $disable_modules = Module::whereNotIn('slug',array_keys(get_user_role_module_access(Auth::user()->role_id)))->pluck('id')->toArray();
+        }
+
+        return view('role.add',compact('modules','edit','role_module_access','parents','disable_modules'));
     }
 
     /**
@@ -190,7 +246,14 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        $data = Role::find($id);
+        $data = Role::where('id', $id);
+
+        // If not admin then edit only its
+        if(userrole() != 1){
+            $data->where('user_id',Auth::id());
+        }
+        $data = $data->first();
+
         if(!is_null($data)){
             $data->delete();
 
@@ -207,6 +270,11 @@ class RoleController extends Controller
     public function getAll(Request $request){
 
         $data = Role::where('id','!=',1)->orderBy('id','desc');
+
+        // If not admin then edit only its
+        if(userrole() != 1){
+            $data->where('user_id',Auth::id());
+        }
 
         if($request->filter_parent != ""){
             $data->where('parent_id',$request->filter_parent);

@@ -89,6 +89,41 @@
                           </label>
                           <ul>
 
+                            {{-- Role --}}
+                            @if(@$modules['role']['id'])
+                            <li>
+                              <i class="fa fa-plus"></i>
+                              <label>
+                                <input data-id="{{ @$modules['role']['id'] }}" type="checkbox" /> {{ @$modules['role']['title'] }}
+                              </label>
+                              <ul>
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['add-role']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-role']['id'] }}]"   /> {{ @$modules['add-role']['title'] }}
+                                  </label>
+                                </li>
+
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['edit-role']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-role']['id'] }}]"   /> {{ @$modules['edit-role']['title'] }}
+                                  </label>
+                                </li>
+
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['view-role']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-role']['id'] }}]"   /> {{ @$modules['view-role']['title'] }}
+                                  </label>
+                                </li>
+
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['delete-role']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['delete-role']['id'] }}]"   /> {{ @$modules['delete-role']['title'] }}
+                                  </label>
+                                </li>
+                              </ul>
+                            </li>
+                            @endif
+
                             {{-- User --}}
                             @if(@$modules['user']['id'])
                             <li>
@@ -553,6 +588,18 @@
     $("#module_treeview").hummingbird("expandNode",{sel:"data-id",vals:<?php echo json_encode(array_keys($role_module_access)); ?>,expandParents:true});
 
     $("#module_treeview").hummingbird("checkNode",{sel:"data-id", vals:<?php echo json_encode(array_keys($role_module_access)); ?>});
+  @endif
+
+
+  @if(isset($disable_modules) && !empty($disable_modules))
+    // disable a specific node
+    $("#module_treeview").hummingbird("disableNode",{
+      sel:"data-id",
+      // vals:[15,16,17,18,38,39],
+      vals:<?php echo json_encode($disable_modules); ?>,
+      state:true,
+      disableChildren:false,
+    });
   @endif
 
 
