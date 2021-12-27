@@ -8,6 +8,8 @@ use App\Models\LocalOrderItem;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\CustomerBpAddress;
+use App\Models\User;
+use App\Models\CustomerDeliverySchedule;
 use App\Support\PostOrder;
 use Validator;
 use Auth;
@@ -120,9 +122,15 @@ class LocalOrderController extends Controller
      */
     public function edit($id)
     {
+        $total = 0;
         $edit = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id',$id)->firstOrFail();
-        // dd($edit);
-        return view('local-order.add',compact('edit'));
+        $customer = Customer::findOrFail($edit->customer->id);
+        $customer_price_list_no = @$customer->price_list_num;
+
+        foreach($edit->items as $value){
+            $total += get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity;
+        }
+        return view('local-order.add',compact(['edit', 'customer_price_list_no', 'total']));
     }
 
     /**
@@ -153,53 +161,65 @@ class LocalOrderController extends Controller
         $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items']);
         // dd($data);
 
-        // if($request->filter_search != ""){
-        //     $data->where(function($q) use ($request) {
-        //         $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
-        //         $q->orwhere('doc_type','LIKE',"%".$request->filter_search."%");
-        //     });
-        // }
+        $data->whereHas(
+            'customer', function($q){
+                $q->whereHas('sales_specialist', function ($query) use ($q){
+                    $query->where('ss_id', @Auth::user()->id);
+                });
+            }
+        );
+
+        // dd($data->get());
+
+        if($request->filter_search != ""){
+            $data->whereHas('customer', function($q) use ($request) {
+                $q->where('card_name','LIKE',"%".$request->filter_search."%");
+            });
+        }
 
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
         });
 
         return DataTables::of($data)
-                            ->addColumn('customer_name', function($row) {
-                                return $row->customer->card_name;
-                            })
-                            ->addColumn('confirmation_status', function($row) {
-                                if($row->confirmation_status == 'P'){
-                                    return "Pending";
-                                }
-                                if($row->confirmation_status == 'C'){
-                                    return "Confirm";
-                                }
-                            })
-                            ->addColumn('due_date', function($row) {
-                                return date('M d, Y',strtotime($row->due_date));
-                            })
-                            ->orderColumn('due_date', function ($query, $order) {
-                                $query->orderBy('doc_due_date', $order);
-                            })
-                            ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('sales-specialist-orders.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
-                                    <i class="fa fa-pencil"></i>
-                                  </a>';
+                        ->addColumn('customer_name', function($row) {
+                            return $row->customer->card_name;
+                        })
+                        ->addColumn('confirmation_status', function($row) {
+                            if($row->confirmation_status == 'P'){
+                                return "Pending";
+                            }
+                            if($row->confirmation_status == 'C'){
+                                return "Confirm";
+                            }
+                        })
+                        ->addColumn('due_date', function($row) {
+                            return date('M d, Y',strtotime($row->due_date));
+                        })
+                        ->orderColumn('due_date', function ($query, $order) {
+                            $query->orderBy('due_date', $order);
+                        })
+                        ->orderColumn('confirmation_status', function ($query, $order) {
+                            $query->orderBy('confirmation_status', $order);
+                        })
+                        ->addColumn('action', function($row) {
+                            $btn = '<a href="' . route('sales-specialist-orders.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                <i class="fa fa-pencil"></i>
+                                </a>';
 
-                                return $btn;
-                            })
-                            ->rawColumns(['action'])
-                            ->make(true);
+                            return $btn;
+                        })
+                        ->rawColumns(['action'])
+                        ->make(true);
     }
 
     function getCustomers(Request $request){
         $search = $request->search;
 
         if($search == ''){
-            $data = Customer::where(['card_type' => 'cCustomer', 'is_active' => 1])->orderby('card_name','asc')->select('id','card_name')->limit(50)->get();
+            $data = Customer::where(['card_type' => 'cCustomer', 'is_active' => 1])->whereNotNull('sap_connection_id')->orderby('card_name','asc')->select('id','card_name')->limit(50)->get();
         }else{
-            $data = Customer::where(['card_type' => 'cCustomer', 'is_active' => 1])->orderby('card_name','asc')->select('id','card_name')->where('card_name', 'like', '%' .$search . '%')->limit(50)->get();
+            $data = Customer::where(['card_type' => 'cCustomer', 'is_active' => 1])->whereNotNull('sap_connection_id')->orderby('card_name','asc')->select('id','card_name')->where('card_name', 'like', '%' .$search . '%')->limit(50)->get();
         }
 
         $response = array();
@@ -215,11 +235,16 @@ class LocalOrderController extends Controller
 
     function getProducts(Request $request){
         $search = $request->search;
-
-        if($search == ''){
+        if(isset($request->customer_id)){
+            $customer_id = $request->customer_id;
+            $customer = Customer::findOrFail($customer_id);
+            if($search == ''){
+                $data = Product::where(['is_active'=> 1, 'sap_connection_id' => $customer->sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
+            }else{
+                $data = Product::where(['is_active'=> 1, 'sap_connection_id' => $customer->sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
+            }
+        } else {
             $data = Product::where('is_active', 1)->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
-        }else{
-            $data = Product::where('is_active', 1)->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
         }
 
         $response = array();
@@ -308,5 +333,34 @@ class LocalOrderController extends Controller
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
         return $response;
+    }
+
+    function getPrice(Request $request){
+        $input = $request->all();
+        if($input['customer_id'] && $input['product_id']){
+            $customer = Customer::findOrFail($input['customer_id']);
+            // dd($customer);
+            $product = Product::findOrFail($input['product_id']);
+            $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
+            return $response = ['status' => true, 'price' => $price];
+        }
+        return $response = ['status' => false, 'message' => "Something went wrong!"];
+    }
+
+    function getCustomerSchedule(Request $request){
+        $customer_id = $request->customer_id;
+
+        $user = User::where('customer_id', $customer_id)->first();
+        $dates = CustomerDeliverySchedule::where('user_id', $user->id)->where('date','>',date("Y-m-d"))->get();
+        // dd($dates);
+
+        if(count($dates)){
+            $dates = array_map( function ( $t ) {
+                    return date('d/m/Y',strtotime($t));
+                }, array_column( $dates->toArray(), 'date' ) );
+
+            return $response = ['status' => true, 'dates' => json_encode($dates)];
+        }
+        return $response = ['status' => false, 'dates' => []];
     }
 }

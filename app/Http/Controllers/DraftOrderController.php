@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\CustomerBpAddress;
 use App\Support\PostOrder;
+use App\Models\SapConnection;
 use Validator;
 use Auth;
 use DataTables;
@@ -44,16 +45,22 @@ class DraftOrderController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
+        // dd($input);
         $customer_id = Auth::user()->customer_id;
         $rules = array(
                 'address_id' => 'required|string|max:185',
-                'due_date' => 'required|date',
+                'due_date' => 'required',
+                'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@Auth::user()->customer->sap_connection_id,
             );
 
-        $validator = Validator::make($input, $rules);
+        $messages = array(
+                'products.*.product_id.exists' => "Oops! Customer or Items can not be located in the DataBase.",
+            );
+
+        $validator = Validator::make($input, $rules, $messages);
 
         if ($validator->fails()) {
-            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+            return $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
             // dd($input);
             if(isset($input['id'])){
@@ -68,9 +75,10 @@ class DraftOrderController extends Controller
             $address = CustomerBpAddress::find($input['address_id']);
 
             if(!empty($customer) && !empty($address)){
+                $due_date = strtr($input['due_date'], '/', '-');
                 $order->customer_id = $customer_id;
                 $order->address_id = $input['address_id'];
-                $order->due_date = date('Y-m-d',strtotime($input['due_date']));
+                $order->due_date = date('Y-m-d',strtotime($due_date));
                 // $order->sales_specialist_id = Auth::id();
                 $order->placed_by = "S";
                 $order->confirmation_status = "P";
@@ -89,11 +97,12 @@ class DraftOrderController extends Controller
                     }
                 }
             } else {
-                $message = "Something went wrong! Please try again later.";
+                $message = "Something went wrong!";
             }
 
-            return $response = ['status'=>true,'message'=>$message];
         }
+
+        return $response = ['status'=>true,'message'=>$message];
     }
 
     /**
@@ -104,9 +113,16 @@ class DraftOrderController extends Controller
      */
     public function show($id)
     {
+        $total = 0;
         $edit = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id',$id)->firstOrFail();
+        $customer = Customer::findOrFail($edit->customer->id);
+        $customer_price_list_no = @$customer->price_list_num;
 
-        return view('draft-order.view',compact('edit'));
+        foreach($edit->items as $value){
+            $total += get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity;
+        }
+
+        return view('draft-order.view',compact(['edit', 'customer_price_list_no', 'total']));
     }
 
     /**
@@ -145,15 +161,13 @@ class DraftOrderController extends Controller
 
     public function getAll(Request $request){
         $customer_id = Auth::user()->customer_id;
-        $data = LocalOrder::with('sales_specialist')->where('customer_id', $customer_id);
-        // dd($data->get());
+        $data = LocalOrder::with('sales_specialist')->where(['customer_id' => $customer_id, 'confirmation_status' => 'P']);
 
-        // if($request->filter_search != ""){
-        //     $data->where(function($q) use ($request) {
-        //         $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
-        //         $q->orwhere('doc_type','LIKE',"%".$request->filter_search."%");
-        //     });
-        // }
+        if($request->filter_search != ""){
+            $data->whereHas('sales_specialist', function($q) use ($request) {
+                $q->where('sales_specialist_name','LIKE',"%".$request->filter_search."%");
+            });
+        }
 
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
@@ -179,6 +193,9 @@ class DraftOrderController extends Controller
                             })
                             ->orderColumn('due_date', function ($query, $order) {
                                 $query->orderBy('due_date', $order);
+                            })
+                            ->orderColumn('confirmation_status', function ($query, $order) {
+                                $query->orderBy('confirmation_status', $order);
                             })
                             ->addColumn('action', function($row) {
                                 $btn = ' <a href="' . route('draft-order.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
@@ -215,9 +232,9 @@ class DraftOrderController extends Controller
         $search = $request->search;
 
         if($search == ''){
-            $data = Product::where('is_active', 1)->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
+            $data = Product::where(['is_active' => 1, 'sap_connection_id' => @Auth::user()->customer->sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
         }else{
-            $data = Product::where('is_active', 1)->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
+            $data = Product::where(['is_active' => 1, 'sap_connection_id' => @Auth::user()->customer->sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
         }
 
         $response = array();
@@ -251,13 +268,23 @@ class DraftOrderController extends Controller
         return response()->json($response);
     }
 
+    function getPrice(Request $request){
+        $input = $request->all();
+        if($input['price_list_num'] && $input['product_id']){
+            $product = Product::findOrFail($input['product_id']);
+            $price = get_product_customer_price(@$product->item_prices, $input['price_list_num']);
+            return $response = ['status' => true, 'price' => $price];
+        }
+        return $response = ['status' => false, 'message' => "Something went wrong!"];
+    }
+
     public function placeOrder(Request $request){
         $data = $request->all();
         $id = $data['id'];
         $obj = array();
 
         $update = $this->store($request);
-        if($update['message'] == 'Order details updated successfully.'){
+        if($update['status']){
             $order = LocalOrder::where('id', $id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
             $obj['CardCode'] = $order->customer->card_code;
@@ -269,7 +296,7 @@ class DraftOrderController extends Controller
                     'ItemCode' => $item->product->item_code,
                     'Quantity' => $item->quantity,
                     'TaxCode' => $order->address->tax_code,
-                    'UnitPrice' => '30',
+                    'Price' => get_product_customer_price(@$item->product->item_prices, $order->customer->price_list_num),
                 );
 
             }
@@ -284,23 +311,22 @@ class DraftOrderController extends Controller
             $address['BillToAddressType'] = $order->address->address_type;
 
             $obj['AddressExtension'] = $address;
+        } else {
+            return $update;
         }
         try {
-
-            $post = new PostOrder('TEST-APBW', 'manager', 'test');
+            $sap_connection = SapConnection::where('id', @Auth::user()->customer->sap_connection_id)->first();
+            $post = new PostOrder($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
 
             $post = $post->pushOrder($obj);
-
-            if(isset($post) && !empty($post['error'])){
-                $order = LocalOrder::where('id', $id)->first();
-                $order->confirmation_status = 'ERR';
-                $order->message = $post['error']['message']['value'];
-                $order->save();
-            } else {
-                $order = LocalOrder::where('id', $id)->first();
+            $order = LocalOrder::where('id', $order->id)->first();
+            if($post['status']){
                 $order->confirmation_status = 'C';
-                $order->save();
+            } else {
+                $order->confirmation_status = 'ERR';
+                $order->message = $post['message'];
             }
+            $order->save();
 
             $response = ['status' => true, 'message' => 'Order Placed successfully !'];
         } catch (\Exception $e) {

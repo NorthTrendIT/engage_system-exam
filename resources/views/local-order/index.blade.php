@@ -121,7 +121,7 @@ $(document).ready(function() {
           },
           columns: [
               {data: 'customer_name', name: 'customer_name'},
-              {data: 'confirmation_status', name: 'total'},
+              {data: 'confirmation_status', name: 'confirmation_status'},
               {data: 'due_date', name: 'due_date'},
               {data: 'action', name: 'action'},
           ],

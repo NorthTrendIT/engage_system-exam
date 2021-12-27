@@ -10,6 +10,9 @@ use App\Models\CustomerBpAddress;
 use App\Models\Customer;
 use App\Models\LocalOrder;
 use App\Models\LocalOrderItem;
+use App\Models\SapConnection;
+use App\Models\Product;
+use Validator;
 use Auth;
 
 class CartController extends Controller
@@ -106,6 +109,13 @@ class CartController extends Controller
         }
 
         if(isset($id)){
+            $product = Product::findOrFail($id);
+            if($product->sap_conection_id != @Auth::user()->customer->sap_connection_id){
+                return $response = ['status'=>false,'message'=>"Oops! Customer or Items can not be located in the DataBase."];
+            }
+        }
+
+        if(isset($id)){
             $cart = new Cart();
             $cart->customer_id = Auth::user()->customer_id;
             $cart->product_id = $id;
@@ -183,38 +193,53 @@ class CartController extends Controller
         }
 
         $data = $request->all();
-        // dd($data);
-        $customer_id = Auth::user()->customer_id;
-        $address_id = $data['address_id'];
-        $due_date = strtr($data['due_date'], '/', '-');
-        $obj = array();
+        $rules = array(
+                'address_id' => 'required|string|max:185',
+                'due_date' => 'required',
+                'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@Auth::user()->customer->sap_connection_id,
+            );
 
-        $customer = Customer::find($customer_id);
-        $address = CustomerBpAddress::find($address_id);
+        $messages = array(
+                'products.*.product_id.exists' => "Oops! Customer or Items can not be located in the DataBase.",
+            );
 
-        $order = new LocalOrder();
-        if(!empty($customer) && !empty($address)){
-            $order->customer_id = $customer_id;
-            $order->address_id = $address_id;
-            $order->due_date = date('Y-m-d',strtotime($due_date));
-            $order->placed_by = "C";
-            $order->confirmation_status = "P";
-            $order->save();
+        $validator = Validator::make($data, $rules, $messages);
+        // dd($validator->errors());
+        if ($validator->fails()) {
+            return $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+            $customer_id = Auth::user()->customer_id;
+            $address_id = $data['address_id'];
+            $due_date = strtr($data['due_date'], '/', '-');
 
-            $products = Cart::where('customer_id', $customer_id)->get();
-            if( !empty($products) ){
-                foreach($products as $value){
-                    // dd($value);
-                    $item = new LocalOrderItem();
-                    $item->local_order_id = $order->id;
-                    $item->product_id = @$value['product_id'];
-                    $item->quantity = @$value['qty'];
-                    $item->save();
+            $customer = Customer::find($customer_id);
+            $address = CustomerBpAddress::find($address_id);
+
+            $order = new LocalOrder();
+            if(!empty($customer) && !empty($address)){
+                $order->customer_id = $customer_id;
+                $order->address_id = $address_id;
+                $order->due_date = date('Y-m-d',strtotime($due_date));
+                $order->placed_by = "C";
+                $order->confirmation_status = "P";
+                $order->save();
+
+                $products = Cart::where('customer_id', $customer_id)->get();
+                if( !empty($products) ){
+                    foreach($products as $value){
+                        // dd($value);
+                        $item = new LocalOrderItem();
+                        $item->local_order_id = $order->id;
+                        $item->product_id = @$value['product_id'];
+                        $item->quantity = @$value['qty'];
+                        $item->save();
+                    }
                 }
             }
         }
 
         if($order->id){
+            $obj = array();
             Cart::where('customer_id', $customer_id)->delete();
             $order = LocalOrder::where('id', $order->id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
@@ -243,14 +268,18 @@ class CartController extends Controller
 
             $obj['AddressExtension'] = $address;
         }
-        try {
 
-            $post = new PostOrder('TEST-APBW', 'manager', 'test');
+        try {
+            $sap_connection = SapConnection::where('id', @Auth::user()->customer->sap_connection_id)->first();
+            $post = new PostOrder($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
 
             $post = $post->pushOrder($obj);
             $order = LocalOrder::where('id', $order->id)->first();
             if($post['status']){
+                $orderData = $post['message'];
                 $order->confirmation_status = 'C';
+                $order->doc_entry = $orderData['DocEntry'];
+                $order->doc_num = $orderData['DocNum'];
             } else {
                 $order->confirmation_status = 'ERR';
                 $order->message = $post['message'];
@@ -259,7 +288,11 @@ class CartController extends Controller
 
             $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
         } catch (\Exception $e) {
-            // dd($e);
+            if(!empty($e->getStatusCode)){
+                $order->confirmation_status = "ERR";
+                $order->message = "API Error.";
+                $order->save();
+            }
             $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
         }
         return $response;

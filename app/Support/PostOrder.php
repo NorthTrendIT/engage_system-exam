@@ -50,6 +50,12 @@ class PostOrder
                             'status' => true,
                             'data' => $response
                         );
+            } else {
+                // $statusCode = $response->getStatusCode();
+                return array(
+                    'status' => false,
+                    'data' => $response->getStatusCode(),
+                );
             }
 
         } catch (\Exception $e) {
@@ -78,7 +84,6 @@ class PostOrder
     {
         if(!empty($data)){
             $response = $this->pushOrderInSAP($data);
-            return $response->getBody();
         }
 
         if($response['status']){
@@ -157,12 +162,12 @@ class PostOrder
 
                 }
             }
-        } else {
-            $data = $response['data'];
-            // dd($data->getBody());
-            $message = 'API Error: '.$data->getStatusCode();
-            return ['status' => $response['status'], 'message' => $message];
-        }
+        } // else {
+        //     $data = $response['data'];
+        //     // dd($data->getBody());
+        //     $message = 'API Error: '.$data->getStatusCode();
+        //     return ['status' => $response['status'], 'message' => $message];
+        // }
         return ['status' => $response['status'], 'message' => $response['data']];
     }
 }

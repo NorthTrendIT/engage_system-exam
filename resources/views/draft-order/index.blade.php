@@ -28,15 +28,15 @@
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-body">
               <div class="row mt-5">
-                <div class="col-md-3">
+
+                <!-- <div class="col-md-3">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
                   </div>
-                </div>
-
+                </div> -->
 
                 <!-- <div class="col-md-3">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
@@ -46,10 +46,10 @@
                   </select>
                 </div> -->
 
-                <div class="col-md-3">
+                <!-- <div class="col-md-3">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
-                </div>
+                </div> -->
 
               </div>
               <div class="row mb-5 mt-5">
@@ -120,8 +120,8 @@ $(document).ready(function() {
               }
           },
           columns: [
-              {data: 'sales_specialist_name', name: 'sales_specialist_name'},
-              {data: 'confirmation_status', name: 'total'},
+              {data: 'sales_specialist_name', name: 'sales_specialist_name', orderable: false},
+              {data: 'confirmation_status', name: 'confirmation_status'},
               {data: 'due_date', name: 'due_date'},
               {data: 'action', name: 'action'},
           ],
