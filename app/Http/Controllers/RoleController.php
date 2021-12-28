@@ -140,7 +140,11 @@ class RoleController extends Controller
 
                 }elseif ($role->all_module_access == 1) {
 
-                    $modules = Module::all();
+                    if(userrole() != 1){
+                        $modules = Module::whereIn('id', $this->getEnableModules())->get();
+                    }else{
+                        $modules = Module::all();
+                    }
 
                     foreach ($modules as $key => $value) {
                         $insert = array(
@@ -158,7 +162,7 @@ class RoleController extends Controller
                                         );
                     }
                 }elseif ($role->all_module_access == 0 && !isset($input['modules'])) {
-                  RoleModuleAccess::where('role_id',$role->id)->delete();
+                    RoleModuleAccess::where('role_id',$role->id)->delete();
                 }
             }
 
@@ -412,5 +416,10 @@ class RoleController extends Controller
         }
 
         return $disable_modules;
+    }
+
+    public function getEnableModules(){
+        $get_user_role_module_access = array_keys(get_user_role_module_access(Auth::user()->role_id));
+        return $enable_modules = Module::whereIn('slug',$get_user_role_module_access)->pluck('id')->toArray();
     }
 }
