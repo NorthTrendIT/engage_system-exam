@@ -18,6 +18,29 @@ class ModuleSeeder extends Seeder
         Module::truncate();
         \Schema::enableForeignKeyConstraints();
 
+        $usermgt = Module::create(
+                            array(
+                                'title' => 'User Management',
+                                'slug' => 'user-management',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $customermgt = Module::create(
+                            array(
+                                'title' => 'Customer Management',
+                                'slug' => 'customer-management',
+                                'parent_id' => null,
+                            )
+                        );
+        $productmgt = Module::create(
+                            array(
+                                'title' => 'Product Management',
+                                'slug' => 'product-management',
+                                'parent_id' => null,
+                            )
+                        );
+
         $role = Module::create(
                             array(
                                 'title' => 'Role',

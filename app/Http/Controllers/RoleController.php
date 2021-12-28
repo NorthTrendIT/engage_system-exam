@@ -53,10 +53,7 @@ class RoleController extends Controller
     {   
 
         // If not admin then edit only its
-        $disable_modules = [];
-        if(userrole() != 1){
-            $disable_modules = Module::whereNotIn('slug',array_keys(get_user_role_module_access(Auth::user()->role_id)))->pluck('id')->toArray();
-        }
+        $disable_modules = $this->getDisableModules();
 
         $modules = get_modules();
 
@@ -218,10 +215,7 @@ class RoleController extends Controller
         }
 
         // If not admin then edit only its
-        $disable_modules = [];
-        if(userrole() != 1){
-            $disable_modules = Module::whereNotIn('slug',array_keys(get_user_role_module_access(Auth::user()->role_id)))->pluck('id')->toArray();
-        }
+        $disable_modules = $this->getDisableModules();
 
         return view('role.add',compact('modules','edit','role_module_access','parents','disable_modules'));
     }
@@ -382,5 +376,41 @@ class RoleController extends Controller
       }
 
       return $result;
+    }
+
+    public function getDisableModules(){
+        
+        // If not admin then edit only its
+        $disable_modules = [];
+        if(userrole() != 1){
+
+            $get_user_role_module_access = array_keys(get_user_role_module_access(Auth::user()->role_id));
+            $disable_modules = Module::whereNotNull('parent_id')->whereNotIn('slug',$get_user_role_module_access)->pluck('id')->toArray();
+            $enable_modules = Module::whereIn('slug',$get_user_role_module_access)->pluck('id')->toArray();
+            
+            $modules = Module::whereNotIn('id',[1,2,3])->whereNull('parent_id')->get();
+            foreach($modules as $m){
+                $sub_modules = Module::where('parent_id',$m->id)->pluck('id')->toArray();
+
+                if(!array_intersect($sub_modules, $enable_modules)){
+                    array_push($disable_modules,$m->id);
+                }
+            }
+
+            // User Management
+            if(count(array_intersect([4,5,7], $disable_modules)) == 3){
+                array_push($disable_modules,1);
+            }
+            // Customer Management
+            if(count(array_intersect([8,9,10], $disable_modules)) == 3){
+                array_push($disable_modules,2);
+            }
+            // Product Management
+            if(count(array_intersect([13,17], $disable_modules)) == 2){
+                array_push($disable_modules,3);
+            }
+        }
+
+        return $disable_modules;
     }
 }

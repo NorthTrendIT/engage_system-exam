@@ -56,7 +56,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>Custumer</th>
+                              <th>Customer</th>
                               <th>Action</th>
                             </tr>
                           </thead>

@@ -82,10 +82,10 @@
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
-                            <input data-id="usermgt" type="checkbox" 
+                            <input data-id="{{ @$modules['user-management']['id'] }}" type="checkbox" 
                               {{-- @if(@$role_module_access[@$modules['location']['id']]['access'] == 1 && @$role_module_access[@$modules['user']['id']]['access'] == 1 && @$role_module_access[@$modules['department']['id']]['access'] == 1) checked="" @endif --}}
                               @if(@$role_module_access[@$modules['user']['id']]['access'] == 1 && @$role_module_access[@$modules['department']['id']]['access'] == 1) checked="" @endif
-                            /> User Management
+                            /> {{ @$modules['user-management']['title'] }}
                           </label>
                           <ul>
 
@@ -239,9 +239,9 @@
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
-                            <input data-id="usermgt" type="checkbox" 
+                            <input data-id="{{ @$modules['customer-management']['id'] }}" type="checkbox" 
                               @if(@$role_module_access[@$modules['customer-group']['id']]['access'] == 1 && @$role_module_access[@$modules['class']['id']]['access'] == 1 && @$role_module_access[@$modules['customer']['id']]['access'] == 1) checked="" @endif
-                              /> Customer Management
+                              /> {{ @$modules['customer-management']['title'] }}
                           </label>
                           <ul>
 
@@ -322,9 +322,9 @@
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
-                            <input data-id="usermgt" type="checkbox" 
+                            <input data-id="{{ @$modules['product-management']['id'] }}" type="checkbox" 
                               @if(@$role_module_access[@$modules['product-group']['id']]['access'] == 1 && @$role_module_access[@$modules['product']['id']]['access'] == 1) checked="" @endif
-                              /> Product Management
+                              /> {{ @$modules['product-management']['title'] }}
                           </label>
                           <ul>
 
@@ -600,6 +600,14 @@
       state:true,
       disableChildren:false,
     });
+
+    $("#module_treeview").hummingbird("hideNode",{
+      sel:"data-id",
+      vals:<?php echo json_encode($disable_modules); ?>,
+      state:true,
+      disableChildren:true
+    });
+
   @endif
 
 
