@@ -25,20 +25,20 @@ class RoleController extends Controller
         if(userrole() != 1){
             $roles = Role::where('user_id',Auth::id())->whereNotNull('parent_id')->get();
         }else{
-            $roles = Role::where('id','!=',1)->whereNotNull('parent_id')->get();
+            $roles = Role::where('id','!=',1)->whereNull('user_id')->whereNotNull('parent_id')->get();
         }
 
 
         if(count($roles)){
             $ids = array_column($roles->toArray(), 'parent_id');
         }
-        $parents = Role::where('id','!=',1)->whereNull('parent_id')->orwhereIn('id',$ids)->get();
+        // $parents = Role::where('id','!=',1)->whereNull('parent_id')->orwhereIn('id',$ids)->get();
 
         // If not admin then show only its
         if(userrole() != 1){
             $parents = Role::where('user_id',Auth::id())->whereNull('parent_id')->orwhereIn('id',$ids)->get();
         }else{
-            $parents = Role::where('id','!=',1)->whereNull('parent_id')->orwhereIn('id',$ids)->get();
+            $parents = Role::where('id','!=',1)->whereNull('user_id')->whereNull('parent_id')->orwhereIn('id',$ids)->get();
         }
 
         return view('role.index',compact('parents'));
@@ -64,7 +64,7 @@ class RoleController extends Controller
         if(userrole() != 1){
             $parents = Role::where('user_id',Auth::id())->get();
         }else{
-            $parents = Role::where('id','!=',1)->get();
+            $parents = Role::where('id','!=',1)->whereNull('user_id')->get();
         }
 
         return view('role.add',compact('modules','parents','disable_modules'));
@@ -205,7 +205,7 @@ class RoleController extends Controller
         if(userrole() != 1){
             $parents = Role::where('id','!=',$id)->where('user_id',Auth::id())->get();
         }else{
-            $parents = Role::where('id','!=',$id)->where('id','!=',1)->get();
+            $parents = Role::where('id','!=',$id)->whereNull('user_id')->where('id','!=',1)->get();
         }
         
 
@@ -274,6 +274,8 @@ class RoleController extends Controller
         // If not admin then edit only its
         if(userrole() != 1){
             $data->where('user_id',Auth::id());
+        }else{
+            $data->whereNull('user_id');
         }
 
         if($request->filter_parent != ""){
@@ -330,7 +332,7 @@ class RoleController extends Controller
                     );
         $result = array_merge($result,$temp);
 
-        $parent_roles = Role::where('id','!=',1)->whereNull('parent_id')->get();
+        $parent_roles = Role::where('id','!=',1)->whereNull('user_id')->whereNull('parent_id')->get();
         if(count($parent_roles)){
 
             foreach ($parent_roles as $key => $value) {
