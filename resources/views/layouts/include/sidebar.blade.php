@@ -470,7 +470,9 @@
                   <span class="menu-title">Place Order For Customer</span>
                </a>
             </div>
+            @endif
 
+            @if(Auth::user()->role_id == 1)
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer-promotion.order.index','customer-promotion.order.create','customer-promotion.order.show'])) ? 'active' : '' }}" href="{{ route('customer-promotion.order.index') }}">
                   <span class="menu-icon">
@@ -488,7 +490,6 @@
                   <span class="menu-title">Claimed Promotions </span>
                </a>
             </div>
-
             @endif
 
             @if(Auth::user()->role_id == 4)
