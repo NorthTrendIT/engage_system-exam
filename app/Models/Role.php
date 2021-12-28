@@ -13,6 +13,7 @@ class Role extends Model
 		'name',
 		'parent_id',
 		'all_module_access',
+        'user_id',
 	];
 
 	public function role_module_access()

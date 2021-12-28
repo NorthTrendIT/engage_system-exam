@@ -51,6 +51,12 @@ Route::middleware(['auth'])->group(function(){
 
     Route::middleware('check-access')->group(function(){
 
+        // Role
+        Route::resource('role','App\Http\Controllers\RoleController')->except(['show']);
+        Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all');
+        Route::get('role/chart', 'App\Http\Controllers\RoleController@getRoleChart')->name('role.chart')->middleware('super-admin');
+
+        // Customer
 		Route::resource('customer','App\Http\Controllers\CustomerController');
 	    Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');
 	    Route::post('customer/sync-customers', 'App\Http\Controllers\CustomerController@syncCustomers')->name('customer.sync-customers');
@@ -241,11 +247,6 @@ Route::middleware(['auth'])->group(function(){
 
     // Super Admin Routes
     Route::middleware('super-admin')->group(function(){
-
-        // Role
-        Route::resource('role','App\Http\Controllers\RoleController')->except(['show']);
-        Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all');
-        Route::get('role/chart', 'App\Http\Controllers\RoleController@getRoleChart')->name('role.chart');
 
         // Pramotion Type
         Route::resource('promotion-type','App\Http\Controllers\PromotionTypeController');
