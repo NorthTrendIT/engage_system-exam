@@ -53,10 +53,11 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                                <th>Activity</th>
-                                <th>User Name</th>
-                                <th>IP Address</th>
-                                <th>Date & Time</th>
+                              <th>No.</th>
+                              <th>Activity</th>
+                              <th>User Name</th>
+                              <th>IP Address</th>
+                              <th>Date & Time</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -120,6 +121,7 @@
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'activity', name: 'activity'},
               {data: 'user_name', name: 'user_name'},
               {data: 'ip_address', name: 'ip_address'},

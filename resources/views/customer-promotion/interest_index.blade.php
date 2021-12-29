@@ -56,6 +56,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                              <th>No.</th>
                               <th>Promotion</th>
                               <th>Is Interested ?</th>
                               <th>Action</th>
@@ -118,6 +119,7 @@
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'promotion', name: 'promotion'},
               {data: 'is_interested', name: 'is_interested'},
               {data: 'action', name: 'action', orderable: false, searchable: false},

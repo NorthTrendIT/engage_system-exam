@@ -232,7 +232,13 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.href = '{{ route('user.index') }}';
+
+                @if(isset($edit->id))
+                  window.location.reload(); 
+                @else
+                  window.location.href = '{{ route('user.index') }}';
+                @endif
+                
               },1500)
             } else {
               toast_error(data.message);

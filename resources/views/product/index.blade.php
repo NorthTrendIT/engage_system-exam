@@ -73,6 +73,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                              <th>No.</th>
                               <th>Name</th>
                               <th>Brand</th>
                               <th>Code</th>
@@ -144,6 +145,7 @@
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'item_name', name: 'item_name'},
               {data: 'brand', name: 'brand'},
               {data: 'item_code', name: 'item_code'},
