@@ -51,20 +51,28 @@ class RoleController extends Controller
      */
     public function create()
     {   
-
         // If not admin then edit only its
-        $disable_modules = $this->getDisableModules();
+        // $disable_modules = $this->getDisableModules();
 
-        $modules = get_modules();
 
+        $modules = [];
         // If not admin then show only its
         if(userrole() != 1){
             $parents = Role::where('user_id',Auth::id())->get();
+            $module = Module::whereIn('id', $this->getEnableModules())->get();
+
+            foreach ($module as $value) {
+                if($value->slug){
+                    $modules[$value->slug] = $value->toArray();
+                }
+            }
+
         }else{
             $parents = Role::where('id','!=',1)->whereNull('user_id')->get();
+            $modules = get_modules();
         }
 
-        return view('role.add',compact('modules','parents','disable_modules'));
+        return view('role.add',compact('modules','parents'));
     }
 
     /**
@@ -200,13 +208,22 @@ class RoleController extends Controller
         $edit = $edit->firstOrFail();
 
 
-        $modules = get_modules();
 
         // If not admin then show only its
         if(userrole() != 1){
             $parents = Role::where('id','!=',$id)->where('user_id',Auth::id())->get();
+
+            $module = Module::whereIn('id', $this->getEnableModules())->get();
+
+            foreach ($module as $value) {
+                if($value->slug){
+                    $modules[$value->slug] = $value->toArray();
+                }
+            }
         }else{
+            
             $parents = Role::where('id','!=',$id)->whereNull('user_id')->where('id','!=',1)->get();
+            $modules = get_modules();
         }
         
 
@@ -219,9 +236,9 @@ class RoleController extends Controller
         }
 
         // If not admin then edit only its
-        $disable_modules = $this->getDisableModules();
+        // $disable_modules = $this->getDisableModules();
 
-        return view('role.add',compact('modules','edit','role_module_access','parents','disable_modules'));
+        return view('role.add',compact('modules','edit','role_module_access','parents'));
     }
 
     /**
@@ -420,6 +437,31 @@ class RoleController extends Controller
 
     public function getEnableModules(){
         $get_user_role_module_access = array_keys(get_user_role_module_access(Auth::user()->role_id));
-        return $enable_modules = Module::whereIn('slug',$get_user_role_module_access)->pluck('id')->toArray();
+
+        $enable_modules = Module::whereIn('slug',$get_user_role_module_access)->pluck('id')->toArray();
+            
+        $modules = Module::whereNotIn('id',[1,2,3])->whereNull('parent_id')->get();
+        foreach($modules as $m){
+            $sub_modules = Module::where('parent_id',$m->id)->pluck('id')->toArray();
+
+            if(array_intersect($sub_modules, $enable_modules)){
+                array_push($enable_modules,$m->id);
+            }
+        }
+
+        // User Management
+        if(array_intersect([4,5,7], $enable_modules)){
+            array_push($enable_modules,1);
+        }
+        // Customer Management
+        if(array_intersect([8,9,10], $enable_modules)){
+            array_push($enable_modules,2);
+        }
+        // Product Management
+        if(array_intersect([13,17], $enable_modules)){
+            array_push($enable_modules,3);
+        }
+
+        return $enable_modules;
     }
 }
