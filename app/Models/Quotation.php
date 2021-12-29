@@ -37,4 +37,12 @@ class Quotation extends Model
         'sap_connection_id',
         'customer_promotion_id',
     ];
+
+    public function items(){
+        return $this->hasMany(QuotationItem::class, 'quotation_id', 'id');
+    }
+
+    public function customer(){
+        return $this->hasOne(Customer::class, 'card_code', 'card_code');
+    }
 }

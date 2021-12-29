@@ -516,51 +516,50 @@
            </div>
            <!--end::Col-->
            <!--begin::Col-->
+           @if(Auth::user()->role_id == 1)
            <div class="col-xl-4">
               <!--begin::Mixed Widget 7-->
-              <div class="card card-xl-stretch-50 mb-5 mb-xl-8">
-                 <!--begin::Body-->
-                 <div class="card-body d-flex flex-column p-0">
-                    <!--begin::Stats-->
-                    <div class="flex-grow-1 card-p pb-0">
-                       <div class="d-flex flex-stack flex-wrap">
-                          <div class="me-2">
-                             <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Generate Reports</a>
-                             <div class="text-muted fs-7 fw-bold">Finance and accounting reports</div>
-                          </div>
-                          <div class="fw-bolder fs-3 text-primary">$24,500</div>
-                       </div>
+                <div class="card card-custom gutter-b">
+                    <!--begin::Header-->
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column mb-5">
+                            <span class="card-label font-weight-bolder text-dark mb-1">Pending Orders</span>
+                        </h3>
                     </div>
-                    <!--end::Stats-->
-                    <!--begin::Chart-->
-                    <div class="mixed-widget-7-chart card-rounded-bottom" data-kt-chart-color="primary" style="height: 150px"></div>
-                    <!--end::Chart-->
-                 </div>
-                 <!--end::Body-->
-              </div>
-              <!--end::Mixed Widget 7-->
-              <!--begin::Mixed Widget 10-->
-              <div class="card card-xl-stretch-50 mb-5 mb-xl-8">
-                 <!--begin::Body-->
-                 <div class="card-body p-0 d-flex justify-content-between flex-column overflow-hidden">
-                    <!--begin::Hidden-->
-                    <div class="d-flex flex-stack flex-wrap flex-grow-1 px-9 pt-9 pb-3">
-                       <div class="me-2">
-                          <span class="fw-bolder text-gray-800 d-block fs-3">Sales</span>
-                          <span class="text-gray-400 fw-bold">Oct 8 - Oct 26 21</span>
-                       </div>
-                       <div class="fw-bolder fs-3 text-primary">$15,300</div>
+                    <!--end::Header-->
+                    <!--begin::Body-->
+                    <div class="card-body pt-2">
+                        <!--begin::Item-->
+                        @if(isset($local_order) && count($local_order) > 0)
+                            @foreach($local_order as $item)
+                            <div class="d-flex mb-8">
+                                <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                    <a href="#" class="card-title fw-bolder text-dark mb-2">{{ $item->customer->card_name }}</a>
+                                    <span class="text-danger font-weight-bold font-size-sm mb-3">{{ $item->message }}</span>
+                                    <div class="d-flex pt-2">
+                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm">View</a>
+                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5">Push</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="separator separator-solid text-dark-75 mb-2"></div>
+                            @endforeach
+                        @else
+                        <div class="d-flex mb-8">
+                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                <span class="text-dark-75 font-weight-bolder font-size-lg mb-2">No Pending Order to push.</span>
+                            </div>
+                        </div>
+                        @endif
+                        <!--end::Item-->
                     </div>
-                    <!--end::Hidden-->
-                    <!--begin::Chart-->
-                    <div class="mixed-widget-10-chart" data-kt-color="primary" style="height: 175px"></div>
-                    <!--end::Chart-->
-                 </div>
-              </div>
+                    <!--end::Body-->
+                </div>
               <!--end::Mixed Widget 10-->
            </div>
            <!--end::Col-->
         </div>
+        @endif
         <!--end::Row-->
         <!--begin::Row-->
         <div class="row gy-5 g-xl-8">
@@ -1177,7 +1176,7 @@
         <!--end::Row-->
         <!--begin::Row-->
         <div class="row gy-5 g-xl-8">
-           
+
            <!--begin::Col-->
            <div class="col-xl-4">
               <!--begin::Mixed Widget 5-->
@@ -1371,12 +1370,12 @@
               <!--end::Mixed Widget 5-->
            </div>
            <!--end::Col-->
-          
-           
+
+
         </div>
         <!--end::Row-->
-        
-       
+
+
         <!--begin::Modals-->
         <!--begin::Modal - New Product-->
         <div class="modal fade" id="kt_modal_add_event" tabindex="-1" aria-hidden="true">
