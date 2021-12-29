@@ -153,6 +153,8 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'promo_image' => 'Promotion Image'
+    ],
 
 ];

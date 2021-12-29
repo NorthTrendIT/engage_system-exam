@@ -177,7 +177,9 @@
                                     <!-- Promotion Image -->
                                     <div class="col-md-6 mt-5">
                                         <div class="custom-file">
-                                            <input type="file" class="form-control form-control-solid" name="promo_image"/>
+
+                                            <label>Promotion Image<span class="asterisk">*</span></label>
+                                            <input type="file" class="form-control form-control-solid" name="promo_image" accept="image/*" />
                                             @if(isset($edit))
                                                 <input type="hidden" class="form-control form-control-solid" name="old_promo_image" value="{{ $edit->promo_image }}"/>
                                                 @if($edit->promo_image)
@@ -305,6 +307,11 @@
             promotion_end_date:{
               required: true,
             },
+            @if(!isset($edit))
+            promo_image:{
+              required: true,
+            },
+            @endif
             'customer_ids[]':{
                 required: function () {
                         if($('[name="promotion_scope"]').find('option:selected').val() == 'C'){
@@ -366,6 +373,9 @@
             },
             promotion_end_date:{
               required: "Please enter promotion end date.",
+            },
+            promo_image:{
+              required: "Please upload promotion image.",
             },
           },
       });
