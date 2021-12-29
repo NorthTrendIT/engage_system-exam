@@ -425,9 +425,9 @@
                     success: function (data) {
                         if (data.status) {
                             toast_success(data.message)
-                            // setTimeout(function(){
-                            //     window.location.href = '{{ route('draft-order.index') }}';
-                            // },1500)
+                            setTimeout(function(){
+                                window.location.href = '{{ route('draft-order.index') }}';
+                            },1500)
                         } else {
                             toast_error(data.message);
                             $('[type="submit"]').prop('disabled', false);

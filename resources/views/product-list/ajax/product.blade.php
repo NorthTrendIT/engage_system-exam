@@ -36,7 +36,6 @@
     </div>
 
     <div class="product-content">
-      
       <h3 class="title">
         <a href="{{ route('product-list.show',@$product->id) }}">{{ @$product->item_name ?? "-" }}</a>
       </h3>

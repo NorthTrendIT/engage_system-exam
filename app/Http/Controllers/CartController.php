@@ -108,12 +108,12 @@ class CartController extends Controller
             return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
         }
 
-        if(isset($id)){
-            $product = Product::findOrFail($id);
-            if($product->sap_conection_id != @Auth::user()->customer->sap_connection_id){
-                return $response = ['status'=>false,'message'=>"Oops! Customer or Items can not be located in the DataBase."];
-            }
-        }
+        // if(isset($id)){
+        //     $product = Product::findOrFail($id);
+        //     if($product->sap_conection_id != @Auth::user()->customer->sap_connection_id){
+        //         return $response = ['status'=>false,'message'=>"Oops! Customer or Items can not be located in the DataBase."];
+        //     }
+        // }
 
         if(isset($id)){
             $cart = new Cart();
