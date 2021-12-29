@@ -269,7 +269,7 @@ class OrdersController extends Controller
 
     public function getAllPendingPromotion(Request $request){
 
-        $data = CustomerPromotion::where('is_sap_pushed', 0);
+        $data = CustomerPromotion::where(['is_sap_pushed' => 0, 'status' => 'approved']);
 
         if(Auth::id() != 1){
             $data->where('customer_promotions.user_id',Auth::id());
