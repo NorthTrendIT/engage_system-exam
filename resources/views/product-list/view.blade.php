@@ -37,7 +37,7 @@
                       <div class="row">
                          <div class="preview col-md-6">
 
-                            <div class="preview-pic tab-content">
+                           <div class="preview-pic tab-content">
                               @if(isset($product->product_images) && count($product->product_images) > 0)
                                 @foreach($product->product_images as $key => $image)
                                   @if($image->image && get_valid_file_url('sitebucket/products',$image->image))
@@ -49,20 +49,20 @@
                               @else
                                 <img src="{{ asset('assets') }}/assets/media/img-1.jpg"/>
                               @endif
-                            </div>
-                            <ul class="preview-thumbnail nav nav-tabs">
+                           </div>
+                           <ul class="preview-thumbnail nav nav-tabs">
 
                               @if(isset($product->product_images) && count($product->product_images) > 0)
-                                @foreach($product->product_images as $key => $image)
+                                 @foreach($product->product_images as $key => $image)
                                   @if($image->image && get_valid_file_url('sitebucket/products',$image->image))
                                     <li class="{{ $key == 0 ? "active" : "" }}"><a data-target="#pic-{{ $key }}" data-toggle="tab"><img src="{{ get_valid_file_url('sitebucket/products',$image->image) }}" /></a></li>
                                   @else
                                    <li class="{{ $key == 0 ? "active" : "" }}"><a data-target="#pic-{{ $key }}" data-toggle="tab"><img src="{{ asset('assets') }}/assets/media/img-1.jpg" /></a></li>
                                   @endif
-                                @endforeach
+                                 @endforeach
                               @endif
 
-                            </ul>
+                           </ul>
 
                          </div>
                       <div class="col-md-6">
@@ -144,9 +144,7 @@
                          <li class="nav-item">
                             <a class="nav-link active show" id="info-tab" data-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="false">Information</a>
                          </li>
-                         <li class="nav-item">
-                            <a class="nav-link" id="reviews-tab" data-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Reviews (1)</a>
-                         </li>
+                         
                          </ul>
                          <div class="tab-content" id="advancedTabContent">
 
@@ -176,90 +174,7 @@
                                </tbody>
                             </table>
                          </div>
-                         <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
-                            <h6><span>1</span> review for <span>{{ @$product->name ?? ""}}</span></h6>
-                            <div class="media mt-3 mb-4">
-                               <img class="d-flex mr-3 z-depth-1" src="{{ asset('assets') }}/assets/media/img-1.jpg" width="62" alt="Generic placeholder image">
-                               <div class="media-body">
-                               <div class="d-sm-flex justify-content-between">
-                                  <p class="mt-1 mb-2">
-                                     <strong>Marthasteward </strong>
-                                     <span>– </span><span>January 28, 2020</span>
-                                  </p>
-                                  <ul class="rating mb-sm-0">
-                                     <li>
-                                     <i class="fas fa-star fa-sm text-primary"></i>
-                                     </li>
-                                     <li>
-                                     <i class="fas fa-star fa-sm text-primary"></i>
-                                     </li>
-                                     <li>
-                                     <i class="fas fa-star fa-sm text-primary"></i>
-                                     </li>
-                                     <li>
-                                     <i class="fas fa-star fa-sm text-primary"></i>
-                                     </li>
-                                     <li>
-                                     <i class="far fa-star fa-sm text-primary"></i>
-                                     </li>
-                                  </ul>
-                               </div>
-                               <p class="mb-0">Nice one, love it!</p>
-                               </div>
-                            </div>
-                            <hr>
-                            <h6 class="mt-4">Add a review</h6>
-                            <p>Your email address will not be published.</p>
-                            <div class="my-3">
-                               <ul class="rating mb-0">
-                               <li>
-                                  <a href="#!">
-                                     <i class="fas fa-star fa-sm text-primary"></i>
-                                  </a>
-                               </li>
-                               <li>
-                                  <a href="#!">
-                                     <i class="fas fa-star fa-sm text-primary"></i>
-                                  </a>
-                               </li>
-                               <li>
-                                  <a href="#!">
-                                     <i class="fas fa-star fa-sm text-primary"></i>
-                                  </a>
-                               </li>
-                               <li>
-                                  <a href="#!">
-                                     <i class="fas fa-star fa-sm text-primary"></i>
-                                  </a>
-                               </li>
-                               <li>
-                                  <a href="#!">
-                                     <i class="far fa-star fa-sm text-primary"></i>
-                                  </a>
-                               </li>
-                               </ul>
-                            </div>
-                            <div>
-                               <!-- Your review -->
-                               <div class="md-form md-outline">
-                               <textarea class="md-textarea form-control pr-6" rows="4" placeholder="Your review"></textarea>
-
-                               </div>
-                               <!-- Name -->
-                               <div class="md-form md-outline">
-                               <input type="text" class="form-control pr-6" placeholder="Name">
-
-                               </div>
-                               <!-- Email -->
-                               <div class="md-form md-outline">
-                               <input type="email"  class="form-control pr-6" placeholder="Email">
-
-                               </div>
-                               <div class="text-right pb-2">
-                               <button type="button" class="btn btn-primary">Add a review</button>
-                               </div>
-                            </div>
-                         </div>
+                         
                          </div>
 
                       </div>

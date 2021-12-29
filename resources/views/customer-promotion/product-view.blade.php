@@ -46,6 +46,8 @@
                                    <div class="tab-pane {{ $key == 0 ? "active" : "" }}" id="pic-{{ $key }}"><img src="{{ asset('assets') }}/assets/media/img-1.jpg" /></div>
                                   @endif
                                 @endforeach
+                              @else
+                                <div class="tab-pane active" id="pic-"><img src="{{ asset('assets') }}/assets/media/img-1.jpg" /></div>
                               @endif
                             </div>
                             <ul class="preview-thumbnail nav nav-tabs">
@@ -58,6 +60,8 @@
                                    <li class="{{ $key == 0 ? "active" : "" }}"><a data-target="#pic-{{ $key }}" data-toggle="tab"><img src="{{ asset('assets') }}/assets/media/img-1.jpg" /></a></li>
                                   @endif
                                 @endforeach
+                              @else
+                               <li class="active"><a data-target="#pic-" data-toggle="tab"><img src="{{ asset('assets') }}/assets/media/img-1.jpg" /></a></li>
                               @endif
 
                             </ul>
@@ -66,23 +70,6 @@
                       <div class="col-md-6">
                    
                          <h5>{{ @$product->item_name ?? "" }}</h5>
-                         <ul class="rating">
-                            <li>
-                            <i class="fas fa-star fa-sm text-primary"></i>
-                            </li>
-                            <li>
-                            <i class="fas fa-star fa-sm text-primary"></i>
-                            </li>
-                            <li>
-                            <i class="fas fa-star fa-sm text-primary"></i>
-                            </li>
-                            <li>
-                            <i class="fas fa-star fa-sm text-primary"></i>
-                            </li>
-                            <li>
-                            <i class="far fa-star fa-sm text-primary"></i>
-                            </li>
-                         </ul>
 
                         @php
                           if(isset($promotion)){

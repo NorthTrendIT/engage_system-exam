@@ -22,11 +22,11 @@
 
       </a>
       <ul class="product-links">
-        <li>
+        {{-- <li>
           <a href="{{ route('product-list.show',@$product->id) }}" data-tip="Add to Wishlist">
             <i class="fas fa-heart"></i>
           </a>
-        </li>
+        </li> --}}
         <li>
           <a href="{{ route('product-list.show',@$product->id) }}" data-tip="Quick View">
             <i class="fa fa-search"></i>
@@ -36,14 +36,7 @@
     </div>
 
     <div class="product-content">
-      <ul class="rating">
-        <li class="fas fa-star"></li>
-        <li class="fas fa-star"></li>
-        <li class="fas fa-star"></li>
-        <li class="far fa-star"></li>
-        <li class="far fa-star"></li>
-      </ul>
-
+      
       <h3 class="title">
         <a href="{{ route('product-list.show',@$product->id) }}">{{ @$product->item_name ?? "-" }}</a>
       </h3>
