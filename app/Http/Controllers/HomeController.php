@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\LocalOrder;
+use App\Models\CustomerPromotion;
 use Auth;
 
 class HomeController extends Controller
@@ -12,8 +13,9 @@ class HomeController extends Controller
     {
 
         if(Auth::user()->role_id == 1){
-            $local_order = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('confirmation_status', 'ERR')->get();
-            return view('dashboard.index', compact('local_order'));
+            $local_order = LocalOrder::where('confirmation_status', 'ERR')->get();
+            $promotion =  CustomerPromotion::where('is_sap_pushed', 0)->get();
+            return view('dashboard.index', compact('local_order', 'promotion'));
         }
     	return view('dashboard.index');
     }

@@ -170,8 +170,18 @@ class OrdersController extends Controller
                             ->make(true);
     }
 
+    /* Pending Orders */
     public function pendingOrder(){
         return view('orders.pending_orders');
+    }
+
+    public function pendingOrderView($id){
+        $total = 0;
+        $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id', $id)->firstOrFail();
+        foreach($data->items as $item){
+            $total += $item->gross_price;
+        }
+        return view('orders.pending_order_view', compact('data', 'total'));
     }
 
     public function getAllPendingOrder(Request $request){
@@ -237,16 +247,9 @@ class OrdersController extends Controller
                         ->rawColumns(['action'])
                         ->make(true);
     }
+    /* End Pending Orders */
 
-    public function pendingOrderView($id){
-        $total = 0;
-        $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id', $id)->firstOrFail();
-        foreach($data->items as $item){
-            $total += $item->gross_price;
-        }
-        return view('orders.pending_order_view', compact('data', 'total'));
-    }
-
+    /* Pending Promotions */
     public function pendingPromotion(){
         return view('orders.pending_promotion');
     }
@@ -261,7 +264,7 @@ class OrdersController extends Controller
 
         $data = $data->firstOrFail();
 
-        return view('customer-promotion.order_view',compact('data'));
+        return view('orders.pending_promotion_view',compact('data'));
     }
 
     public function getAllPendingPromotion(Request $request){
@@ -303,6 +306,10 @@ class OrdersController extends Controller
                                     <i class="fa fa-eye"></i>
                                   </a>';
 
+                                $btn .= '<a href="javascript:;" class="btn btn-sm btn-light-info btn-inline m-2">
+                                  Push
+                                </a>';
+
                                 return $btn;
                             })
                             ->addColumn('created_at', function($row) {
@@ -314,7 +321,7 @@ class OrdersController extends Controller
                                 if($row->status == "approved"){
                                     $btn .= '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline ">Approved</a>';
                                 }else if($row->status == "pending"){
-                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-info btn-inline ">Pending</a>';
+                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-info btn-inline">Pending</a>';
                                 }else if($row->status == "canceled"){
                                     $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline ">Canceled</a>';
                                 }
@@ -337,6 +344,18 @@ class OrdersController extends Controller
                             })
                             ->rawColumns(['action','status','created_at','user'])
                             ->make(true);
+    }
+    /* End Pending Promotion */
+
+    // Push Orders to SAP
+    public function pushSingleOrder(Request $request){
+        $data = $request->all();
+        dd($data);
+    }
+
+    public function pushAllOrder(Request $request){
+        $data = $request->all();
+        dd($data);
     }
 
 }

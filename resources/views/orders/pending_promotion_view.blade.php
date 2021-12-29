@@ -7,13 +7,13 @@
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Claimed Promotions</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Pending Promotion</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
 
-        <a href="{{ route('customer-promotion.order.index') }}" class="btn btn-sm btn-primary">Back</a>
+        <a href="{{ route('orders.pending-promotion') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -43,7 +43,7 @@
                         <!--begin::Wrapper-->
                         <div class="m-0">
                           <!--begin::Label-->
-                          <div class="fw-bolder fs-3 text-gray-800 mb-8">Invoice</div>
+                          <!-- <div class="fw-bolder fs-3 text-gray-800 mb-8">Invoice</div> -->
                           <!--end::Label-->
 
                           @if(userrole() == 1)

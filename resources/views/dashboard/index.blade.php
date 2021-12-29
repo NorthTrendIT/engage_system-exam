@@ -518,32 +518,29 @@
            <!--begin::Col-->
            @if(Auth::user()->role_id == 1)
            <div class="col-xl-4">
-              <!--begin::Mixed Widget 7-->
+                <!-- Pending Orders -->
                 <div class="card card-custom gutter-b">
-                    <!--begin::Header-->
                     <div class="card-header border-0 pt-5">
                         <h3 class="card-title align-items-start flex-column mb-5">
-                            <span class="card-label font-weight-bolder text-dark mb-1">Pending Orders</span>
+                            @if(count($local_order) > 0)
+                            <span class="card-label font-weight-bolder fw-bolder text-danger mb-1">Pending Orders ({{ count($local_order) }})</span>
+                            @else
+                            <span class="card-label font-weight-bolder fw-bolder text-primary mb-1">Pending Orders</span>
+                            @endif
                         </h3>
                     </div>
-                    <!--end::Header-->
-                    <!--begin::Body-->
                     <div class="card-body pt-2">
-                        <!--begin::Item-->
                         @if(isset($local_order) && count($local_order) > 0)
-                            @foreach($local_order as $item)
                             <div class="d-flex mb-8">
                                 <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
-                                    <a href="#" class="card-title fw-bolder text-dark mb-2">{{ $item->customer->card_name }}</a>
-                                    <span class="text-danger font-weight-bold font-size-sm mb-3">{{ $item->message }}</span>
                                     <div class="d-flex pt-2">
-                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm">View</a>
-                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5">Push</a>
+                                        <a href="{{ route('orders.panding-orders') }}" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm">View All</a>
+                                        @if(count($local_order) > 0)
+                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5">Push All</a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
-                            <div class="separator separator-solid text-dark-75 mb-2"></div>
-                            @endforeach
                         @else
                         <div class="d-flex mb-8">
                             <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
@@ -551,13 +548,42 @@
                             </div>
                         </div>
                         @endif
-                        <!--end::Item-->
                     </div>
-                    <!--end::Body-->
                 </div>
-              <!--end::Mixed Widget 10-->
+
+                <!-- Pending Promotion -->
+                <div class="card card-custom gutter-b mt-5">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column mb-5">
+                            @if(count($promotion) > 0)
+                            <span class="card-label fw-bolder text-danger mb-1">Pending Promotion ({{ count($promotion) }})</span>
+                            @else
+                            <span class="card-label fw-bolder text-primary mb-1">Pending Promotion</span>
+                            @endif
+                        </h3>
+                    </div>
+                    <div class="card-body pt-2">
+                        @if(isset($promotion) && count($promotion) > 0)
+                            <div class="d-flex mb-8">
+                                <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                    <div class="d-flex pt-2">
+                                        <a href="{{ route('orders.pending-promotion') }}" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm">View All</a>
+                                        @if(count($promotion) > 0)
+                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5">Push All</a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                        <div class="d-flex mb-8">
+                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                <span class="text-dark-75 font-weight-bolder font-size-lg mb-2">No Pending Promotion to push.</span>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
            </div>
-           <!--end::Col-->
         </div>
         @endif
         <!--end::Row-->

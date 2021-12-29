@@ -36,14 +36,6 @@
     </div>
 
     <div class="product-content">
-      <ul class="rating">
-        <li class="fas fa-star"></li>
-        <li class="fas fa-star"></li>
-        <li class="fas fa-star"></li>
-        <li class="far fa-star"></li>
-        <li class="far fa-star"></li>
-      </ul>
-
       <h3 class="title">
         <a href="{{ route('product-list.show',@$product->id) }}">{{ @$product->item_name ?? "-" }}</a>
       </h3>
