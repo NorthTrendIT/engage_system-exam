@@ -6,7 +6,7 @@ style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: 
 <head>
 <meta name="viewport" content="width=device-width"/>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<title>B2B CRM</title>
+<title>B2B OMS</title>
 
 </head>
 
@@ -38,7 +38,7 @@ bgcolor="#f6f6f6">
                            style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                         <tr>
                             <td style="text-align: center">
-                                <h3>B2B CRM</h3>    
+                                <h3>B2B OMS</h3>    
                                 <br/>
                             </td>
                         </tr>
@@ -53,7 +53,14 @@ bgcolor="#f6f6f6">
                             <td class="content-block"
                                 style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                 valign="top">
-                                Your account has been created by us. For, login use below details,
+                                Your account has been created in OMS.
+                            </td>
+                        </tr>
+                        <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                            <td class="content-block"
+                                style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
+                                valign="top">
+                                Use below credentials to login to the system and access our services.
                             </td>
                         </tr>
                         <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
@@ -64,6 +71,13 @@ bgcolor="#f6f6f6">
 
                                 Password : <b>{{ @$password }}</b>
 
+                            </td>
+                        </tr>
+                        <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                            <td class="content-block"
+                                style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
+                                valign="top">
+                                <b style="color:red;">NOTE: The above credential is being generated temporary for your first time login. Please make sure to change your email and password once you login to the system.</b>
                             </td>
                         </tr>
 
@@ -80,8 +94,8 @@ bgcolor="#f6f6f6">
                             <td class="content-block"
                                 style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                 valign="top">
-                                From,<br>
-                                Admin, B2B CRM
+                                Regards,<br>
+                                OMS Team
                             </td>
                         </tr>
                     </table>
