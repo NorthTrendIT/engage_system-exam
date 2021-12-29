@@ -351,7 +351,7 @@ class UserController extends Controller
                             ->addColumn('action', function($row) {
                                 $btn = "";
 
-                                if(is_null($row->created_by)){
+                                if( (is_null($row->created_by) && userrole() == 1) || (!is_null($row->created_by) && $row->created_by == Auth::id()) ){
                                     $btn .= '<a href="' . route('user.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                         <i class="fa fa-pencil"></i>
                                       </a>';

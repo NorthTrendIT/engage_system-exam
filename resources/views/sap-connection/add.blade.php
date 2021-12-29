@@ -111,7 +111,13 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.href = '{{ route('sap-connection.index') }}';
+
+                @if(isset($edit->id))
+                  window.location.reload(); 
+                @else
+                  window.location.href = '{{ route('sap-connection.index') }}';
+                @endif
+                
               },1500)
             } else {
               toast_error(data.message);

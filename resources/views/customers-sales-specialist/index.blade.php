@@ -56,6 +56,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                              <th>No.</th>
                               <th>Customer</th>
                               <th>Action</th>
                             </tr>
@@ -119,6 +120,7 @@
               // }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'customer', name: 'customer'},
               {data: 'action', name: 'action'},
           ],

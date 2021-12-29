@@ -57,6 +57,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                                <th>No.</th>
                                 <th>Title</th>
                                 <th>Type</th>
                                 <th>User Name</th>
@@ -125,6 +126,7 @@ $(document).ready(function() {
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'title', name: 'title'},
               {data: 'type', name: 'type'},
               {data: 'user_name', name: 'user_name'},

@@ -65,6 +65,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                              <th>No.</th>
                               <th>Promotion</th>
                               @if(Auth::id() == 1)
                               <th>Customer</th>
@@ -135,6 +136,7 @@
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'promotion', name: 'promotion'},
               @if(Auth::id() == 1)
               {data: 'user', name: 'user'},

@@ -243,6 +243,7 @@ class CustomersSalesSpecialistsController extends Controller
 
 
         return DataTables::of($data)
+                            ->addIndexColumn()
                             ->addColumn('sales_specialist', function($row) {
 
                                 $descriptions = array_map( function ( $t ) {
