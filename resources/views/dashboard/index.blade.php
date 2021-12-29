@@ -516,51 +516,76 @@
            </div>
            <!--end::Col-->
            <!--begin::Col-->
+           @if(Auth::user()->role_id == 1)
            <div class="col-xl-4">
-              <!--begin::Mixed Widget 7-->
-              <div class="card card-xl-stretch-50 mb-5 mb-xl-8">
-                 <!--begin::Body-->
-                 <div class="card-body d-flex flex-column p-0">
-                    <!--begin::Stats-->
-                    <div class="flex-grow-1 card-p pb-0">
-                       <div class="d-flex flex-stack flex-wrap">
-                          <div class="me-2">
-                             <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Generate Reports</a>
-                             <div class="text-muted fs-7 fw-bold">Finance and accounting reports</div>
-                          </div>
-                          <div class="fw-bolder fs-3 text-primary">$24,500</div>
-                       </div>
+                <!-- Pending Orders -->
+                <div class="card card-custom gutter-b">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column mb-5">
+                            @if(count($local_order) > 0)
+                            <span class="card-label font-weight-bolder fw-bolder text-danger mb-1">Pending Orders ({{ count($local_order) }})</span>
+                            @else
+                            <span class="card-label font-weight-bolder fw-bolder text-primary mb-1">Pending Orders</span>
+                            @endif
+                        </h3>
                     </div>
-                    <!--end::Stats-->
-                    <!--begin::Chart-->
-                    <div class="mixed-widget-7-chart card-rounded-bottom" data-kt-chart-color="primary" style="height: 150px"></div>
-                    <!--end::Chart-->
-                 </div>
-                 <!--end::Body-->
-              </div>
-              <!--end::Mixed Widget 7-->
-              <!--begin::Mixed Widget 10-->
-              <div class="card card-xl-stretch-50 mb-5 mb-xl-8">
-                 <!--begin::Body-->
-                 <div class="card-body p-0 d-flex justify-content-between flex-column overflow-hidden">
-                    <!--begin::Hidden-->
-                    <div class="d-flex flex-stack flex-wrap flex-grow-1 px-9 pt-9 pb-3">
-                       <div class="me-2">
-                          <span class="fw-bolder text-gray-800 d-block fs-3">Sales</span>
-                          <span class="text-gray-400 fw-bold">Oct 8 - Oct 26 21</span>
-                       </div>
-                       <div class="fw-bolder fs-3 text-primary">$15,300</div>
+                    <div class="card-body pt-2">
+                        @if(isset($local_order) && count($local_order) > 0)
+                            <div class="d-flex mb-8">
+                                <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                    <div class="d-flex pt-2">
+                                        <a href="{{ route('orders.panding-orders') }}" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm">View All</a>
+                                        @if(count($local_order) > 0)
+                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5">Push All</a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                        <div class="d-flex mb-8">
+                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                <span class="text-dark-75 font-weight-bolder font-size-lg mb-2">No Pending Order to push.</span>
+                            </div>
+                        </div>
+                        @endif
                     </div>
-                    <!--end::Hidden-->
-                    <!--begin::Chart-->
-                    <div class="mixed-widget-10-chart" data-kt-color="primary" style="height: 175px"></div>
-                    <!--end::Chart-->
-                 </div>
-              </div>
-              <!--end::Mixed Widget 10-->
+                </div>
+
+                <!-- Pending Promotion -->
+                <div class="card card-custom gutter-b mt-5">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column mb-5">
+                            @if(count($promotion) > 0)
+                            <span class="card-label fw-bolder text-danger mb-1">Pending Promotion ({{ count($promotion) }})</span>
+                            @else
+                            <span class="card-label fw-bolder text-primary mb-1">Pending Promotion</span>
+                            @endif
+                        </h3>
+                    </div>
+                    <div class="card-body pt-2">
+                        @if(isset($promotion) && count($promotion) > 0)
+                            <div class="d-flex mb-8">
+                                <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                    <div class="d-flex pt-2">
+                                        <a href="{{ route('orders.pending-promotion') }}" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm">View All</a>
+                                        @if(count($promotion) > 0)
+                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5">Push All</a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                        <div class="d-flex mb-8">
+                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
+                                <span class="text-dark-75 font-weight-bolder font-size-lg mb-2">No Pending Promotion to push.</span>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
            </div>
-           <!--end::Col-->
         </div>
+        @endif
         <!--end::Row-->
         <!--begin::Row-->
         <div class="row gy-5 g-xl-8">
@@ -1177,7 +1202,7 @@
         <!--end::Row-->
         <!--begin::Row-->
         <div class="row gy-5 g-xl-8">
-           
+
            <!--begin::Col-->
            <div class="col-xl-4">
               <!--begin::Mixed Widget 5-->
@@ -1371,12 +1396,12 @@
               <!--end::Mixed Widget 5-->
            </div>
            <!--end::Col-->
-          
-           
+
+
         </div>
         <!--end::Row-->
-        
-       
+
+
         <!--begin::Modals-->
         <!--begin::Modal - New Product-->
         <div class="modal fade" id="kt_modal_add_event" tabindex="-1" aria-hidden="true">

@@ -97,6 +97,12 @@ Route::middleware(['auth'])->group(function(){
         Route::resource('orders','App\Http\Controllers\OrdersController');
 	    Route::post('orders/get-all', 'App\Http\Controllers\OrdersController@getAll')->name('orders.get-all');
 	    Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
+        Route::get('pending-orders', 'App\Http\Controllers\OrdersController@pendingOrder')->name('orders.panding-orders');
+        Route::get('pending-orders/{id}', 'App\Http\Controllers\OrdersController@pendingOrderView')->name('orders.panding-orders.view');
+        Route::post('pending-orders/get-all', 'App\Http\Controllers\OrdersController@getAllPendingOrder')->name('orders.get-all-pending-orders');
+        Route::get('pending-promotion', 'App\Http\Controllers\OrdersController@pendingPromotion')->name('orders.pending-promotion');
+        Route::get('pending-promotion/{id}', 'App\Http\Controllers\OrdersController@pendingPromotionView')->name('orders.pending-promotion.view');
+        Route::post('pending-promotion/get-all', 'App\Http\Controllers\OrdersController@getAllPendingPromotion')->name('orders.get-all-pending-promotion');
 
         // Invoices
         Route::resource('invoices','App\Http\Controllers\InvoicesController');
@@ -229,6 +235,7 @@ Route::middleware(['auth'])->group(function(){
         Route::resource('news-and-announcement','App\Http\Controllers\NewsAndAnnouncementController');
         Route::post('news-and-announcement/get-all', 'App\Http\Controllers\NewsAndAnnouncementController@getAll')->name('news-and-announcement.get-all');
         Route::post('news-and-announcement/get-roles/','App\Http\Controllers\NewsAndAnnouncementController@getRoles')->name('news-and-announcement.getRoles');
+
 
     });
 

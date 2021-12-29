@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title','Orders')
+@section('title','Pending Orders')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Orders</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Pending Orders</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="javascript:" class="btn btn-sm btn-primary sync-orders">Sync Orders</a>
+        <a href="javascript:;" class="btn btn-sm btn-info">Push All</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -68,7 +68,6 @@
                               <th>No</th>
                               <th>Customer Name</th>
                               <th>Status</th>
-                              <th>Total</th>
                               <th>Date</th>
                               <th>Due Date</th>
                               <th>Action</th>
@@ -124,7 +123,7 @@
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('orders.get-all') }}",
+              'url': "{{ route('orders.get-all-pending-orders') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -136,9 +135,8 @@
           },
           columns: [
               {data: 'DT_RowIndex'},
-              {data: 'name', name: 'name'},
+              {data: 'customer_name', name: 'customer_name'},
               {data: 'status', name: 'status'},
-              {data: 'total', name: 'total'},
               {data: 'date', name: 'date'},
               {data: 'due_date', name: 'due_date'},
               {data: 'action', name: 'action'},
@@ -163,41 +161,6 @@
       $('[name="filter_status"]').val('').trigger('change');
       render_table();
     })
-
-    $(document).on('click', '.sync-orders', function(event) {
-      event.preventDefault();
-
-      Swal.fire({
-        title: 'Are you sure want to sync orders?',
-        text: "Syncing process will run in background and it may take some time to sync all Orders Data.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: '{{ route('orders.sync-orders') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}'
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              render_table();
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
-    });
   })
 </script>
 @endpush

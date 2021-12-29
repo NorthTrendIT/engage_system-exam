@@ -6,8 +6,12 @@ use Illuminate\Http\Request;
 use App\Support\SAPOrders;
 use App\Jobs\SyncOrders;
 use App\Models\Order;
-use App\Models\OrderItem;
+use App\Models\Quotation;
+use App\Models\Invoice;
+use App\Models\LocalOrder;
+use App\Models\CustomerPromotion;
 use DataTables;
+use Auth;
 
 class OrdersController extends Controller
 {
@@ -53,7 +57,12 @@ class OrdersController extends Controller
      */
     public function show($id)
     {
-        //
+        $total = 0;
+        $data = Quotation::with(['items.product', 'customer'])->where('id', $id)->first();
+        foreach($data->items as $item){
+            $total += $item->gross_total;
+        }
+        return view('orders.order_view', compact('data', 'total'));
     }
 
     /**
@@ -108,7 +117,7 @@ class OrdersController extends Controller
 
     public function getAll(Request $request){
 
-        $data = Order::query();
+        $data = Quotation::query();
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
@@ -121,13 +130,14 @@ class OrdersController extends Controller
             $q->orderBy('id', 'desc');
         });
 
+        // dd($data->get());
         return DataTables::of($data)
                             ->addIndexColumn()
-                            ->addColumn('type', function($row) {
-                                return $row->doc_type;
-                            })
                             ->addColumn('name', function($row) {
                                 return $row->card_name;
+                            })
+                            ->addColumn('status', function($row) {
+                                return $row->document_status;
                             })
                             ->addColumn('total', function($row) {
                                 return $row->doc_total;
@@ -137,9 +147,6 @@ class OrdersController extends Controller
                             })
                             ->addColumn('due_date', function($row) {
                                 return date('M d, Y',strtotime($row->doc_due_date));
-                            })
-                            ->orderColumn('type', function ($query, $order) {
-                                $query->orderBy('doc_type', $order);
                             })
                             ->orderColumn('name', function ($query, $order) {
                                 $query->orderBy('card_name', $order);
@@ -153,6 +160,202 @@ class OrdersController extends Controller
                             ->orderColumn('due_date', function ($query, $order) {
                                 $query->orderBy('doc_due_date', $order);
                             })
+                            ->addColumn('action', function($row){
+                                $btn = '<a href="' . route('orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary">
+                                            <i class="fa fa-eye"></i>
+                                        </a>';
+                                return $btn;
+                            })
+                            ->rawColumns(['action'])
                             ->make(true);
     }
+
+    /* Pending Orders */
+    public function pendingOrder(){
+        return view('orders.pending_orders');
+    }
+
+    public function pendingOrderView($id){
+        $total = 0;
+        $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id', $id)->firstOrFail();
+        foreach($data->items as $item){
+            $total += $item->gross_price;
+        }
+        return view('orders.pending_order_view', compact('data', 'total'));
+    }
+
+    public function getAllPendingOrder(Request $request){
+
+        $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items']);
+        // dd($data);
+
+        $data->where('confirmation_status', 'ERR');
+
+        // dd($data->get());
+
+        if($request->filter_search != ""){
+            $data->whereHas('customer', function($q) use ($request) {
+                $q->where('card_name','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('id', 'desc');
+        });
+
+        return DataTables::of($data)
+                        ->addIndexColumn()
+                        ->addColumn('customer_name', function($row) {
+                            return $row->customer->card_name ?? '-';
+                        })
+                        ->addColumn('status', function($row) {
+                            if($row->confirmation_status == 'P'){
+                                return "Pending";
+                            }
+                            if($row->confirmation_status == 'C'){
+                                return "Confirm";
+                            }
+                            if($row->confirmation_status == 'ERR'){
+                                return $row->message;
+                            }
+                        })
+                        ->addColumn('date', function($row) {
+                            return date('M d, Y',strtotime($row->created_at));
+                        })
+                        ->addColumn('due_date', function($row) {
+                            return date('M d, Y',strtotime($row->due_date));
+                        })
+                        ->orderColumn('due_date', function ($query, $order) {
+                            $query->orderBy('due_date', $order);
+                        })
+                        ->orderColumn('date', function ($query, $order) {
+                            $query->orderBy('created_at', $order);
+                        })
+                        ->orderColumn('confirmation_status', function ($query, $order) {
+                            $query->orderBy('confirmation_status', $order);
+                        })
+                        ->addColumn('action', function($row) {
+                            $btn = '<a href="' . route('orders.panding-orders.view',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                <i class="fa fa-eye"></i>
+                                </a>';
+                            $btn .= '<a href="' . route('orders.panding-orders.view',$row->id). '" class="btn btn-bg-light btn-light-info btn-sm m-2">
+                                Push
+                            </a>';
+
+                            return $btn;
+                        })
+                        ->rawColumns(['action'])
+                        ->make(true);
+    }
+    /* End Pending Orders */
+
+    /* Pending Promotions */
+    public function pendingPromotion(){
+        return view('orders.pending_promotion');
+    }
+
+    public function pendingPromotionView($id){
+
+        $data = CustomerPromotion::where('id',$id);
+
+        if(Auth::id() != 1){
+            $data->where('user_id',Auth::id());
+        }
+
+        $data = $data->firstOrFail();
+
+        return view('orders.pending_promotion_view',compact('data'));
+    }
+
+    public function getAllPendingPromotion(Request $request){
+
+        $data = CustomerPromotion::where('is_sap_pushed', 0);
+
+        if(Auth::id() != 1){
+            $data->where('customer_promotions.user_id',Auth::id());
+        }
+
+        if($request->filter_status != ""){
+            $data->where('customer_promotions.status',$request->filter_status);
+        }
+
+        if($request->filter_search != ""){
+            $data->where(function($query) use ($request) {
+
+                $query->whereHas('promotion',function($q) use ($request) {
+                    $q->where('title','LIKE',"%".$request->filter_search."%");
+                });
+
+            });
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('customer_promotions.id', 'desc');
+        });
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('promotion', function($row) {
+                                return @$row->promotion->title ?? "-";
+                            })
+                            ->addColumn('user', function($row) {
+                                return @$row->user->sales_specialist_name ?? "-";
+                            })
+                            ->addColumn('action', function($row) {
+                                $btn = '<a href="' . route('orders.pending-promotion.view',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
+                                  </a>';
+
+                                $btn .= '<a href="javascript:;" class="btn btn-sm btn-light-info btn-inline m-2">
+                                  Push
+                                </a>';
+
+                                return $btn;
+                            })
+                            ->addColumn('created_at', function($row) {
+                                return date('M d, Y',strtotime($row->created_at));
+                            })
+                            ->addColumn('status', function($row) {
+
+                                $btn = "";
+                                if($row->status == "approved"){
+                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline ">Approved</a>';
+                                }else if($row->status == "pending"){
+                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-info btn-inline">Pending</a>';
+                                }else if($row->status == "canceled"){
+                                    $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline ">Canceled</a>';
+                                }
+
+                                return $btn;
+                            })
+                            ->orderColumn('promotion', function ($query, $order) {
+                                $query->select('customer_promotions.*')->join('promotions', 'customer_promotions.promotion_id', '=', 'promotions.id')
+                                    ->orderBy('promotions.title', $order);
+                            })
+                            ->orderColumn('user', function ($query, $order) {
+                                $query->select('customer_promotions.*')->join('users', 'customer_promotions.user_id', '=', 'users.id')
+                                    ->orderBy('users.sales_specialist_name', $order);
+                            })
+                            ->orderColumn('status', function ($query, $order) {
+                                $query->orderBy('status', $order);
+                            })
+                            ->orderColumn('created_at', function ($query, $order) {
+                                $query->orderBy('created_at', $order);
+                            })
+                            ->rawColumns(['action','status','created_at','user'])
+                            ->make(true);
+    }
+    /* End Pending Promotion */
+
+    // Push Orders to SAP
+    public function pushSingleOrder(Request $request){
+        $data = $request->all();
+        dd($data);
+    }
+
+    public function pushAllOrder(Request $request){
+        $data = $request->all();
+        dd($data);
+    }
+
 }
