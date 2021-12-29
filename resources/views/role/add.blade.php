@@ -75,7 +75,7 @@
                       {{-- <input type="checkbox" value="1" name="modules[{{ @$modules['user']['id'] }}]"  @if(isset($role_module_access) && @$role_module_access[@$modules['user']['id']]['access'] == 1) checked="" @endif>{{ @$modules['user']['title']}} --}}
 
                     <div class="hummingbird-treeview">
-                      <ul id="module_treeview" class="hummingbird-base">
+                      <ul id="module_treeview" class="hummingbird-base" style="display:none;">
 
                         {{-- User Management --}}
                         @if(@$modules['user-management']['id'])
@@ -636,7 +636,6 @@
                           </ul>
                         </li>
                         @endif
-
                       </ul>
                     </div>
 
@@ -708,6 +707,8 @@
       }
 
     });
+
+    $("#module_treeview").show();
 
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
