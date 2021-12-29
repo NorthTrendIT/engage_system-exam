@@ -17,7 +17,12 @@ class CustomerGroupController extends Controller
      */
     public function index()
     {
-        return view('customer-group.index');
+        if(in_array(userrole(),[1,2])){
+            $company = SapConnection::all();
+        }else{
+            $company = collect();
+        }
+        return view('customer-group.index',compact('company'));
     }
 
     /**
@@ -118,6 +123,10 @@ class CustomerGroupController extends Controller
             });
         }
 
+        if($request->filter_company != ""){
+            $data->where('sap_connection_id',$request->filter_company);
+        }
+
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
         });
@@ -125,17 +134,17 @@ class CustomerGroupController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('name', function($row) {
-                                //return @$row->name ?? "-";
-
-                                $name = @$row->name ?? "-";
-
-                                if(in_array(userrole(),[1,2]) && @$row->sap_connection->company_name){
-                                    $name .= " (".@$row->sap_connection->company_name.")";
-                                }
-                                return $name;
+                                return @$row->name ?? "-";
                             })
                             ->addColumn('code', function($row) {
                                 return @$row->code ?? "-";
+                            })
+                            ->addColumn('company', function($row) {
+                                $name = "";
+                                if(in_array(userrole(),[1,2]) && @$row->sap_connection->company_name){
+                                    $name = @$row->sap_connection->company_name;
+                                }
+                                return $name;
                             })
                             ->orderColumn('name', function ($query, $order) {
                                 $query->orderBy('name', $order);
@@ -143,7 +152,10 @@ class CustomerGroupController extends Controller
                             ->orderColumn('code', function ($query, $order) {
                                 $query->orderBy('code', $order);
                             })
-                            ->rawColumns(['name', 'code'])
+                            ->orderColumn('company', function ($query, $order) {
+                                $query->join('sap_connections', 'customer_groups.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
+                            })
+                            ->rawColumns(['name', 'code','company'])
                             ->make(true);
     }
 }

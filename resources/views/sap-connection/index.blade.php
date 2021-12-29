@@ -53,6 +53,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                                <th>No.</th>
                                 <th>Company Name</th>
                                 <th>User Name</th>
                                 <th>DB Name</th>
@@ -121,6 +122,7 @@
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'company_name', name: 'company_name'},
               {data: 'user_name', name: 'user_name'},
               {data: 'db_name', name: 'db_name'},

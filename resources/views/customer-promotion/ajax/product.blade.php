@@ -56,13 +56,6 @@
     </div>
            
     <div class="product-content">
-      <ul class="rating">
-        <li class="fas fa-star"></li>
-        <li class="fas fa-star"></li>
-        <li class="fas fa-star"></li>
-        <li class="far fa-star"></li>
-        <li class="far fa-star"></li>
-      </ul>
                   
       <h3 class="title">
         <a href="{{ route('customer-promotion.product-detail',['id' => @$promotion_type_product->id, 'promotion_id' => $promotion_id]) }}" target="_blank">{{ @$product->item_name ?? "-" }}</a>

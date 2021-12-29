@@ -19,7 +19,7 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-      return view('department.index');
+        return view('department.index');
     }
 
     /**
@@ -29,8 +29,12 @@ class DepartmentController extends Controller
      */
     public function create()
     {
-      $roles = Role::where('id','!=',1)->get();
-      return view('department.add',compact('roles'));
+        if(userrole() != 1){
+            $roles = Role::where('id','!=',1)->where('user_id',Auth::id())->get();
+        }else{
+            $roles = Role::where('id','!=',1)->whereNull('user_id')->get();
+        }
+        return view('department.add',compact('roles'));
     }
 
     /**
@@ -56,6 +60,10 @@ class DepartmentController extends Controller
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
+
+            if(userrole() != 1){
+                $input['user_id'] = Auth::id();
+            }
 
             if(isset($input['id'])){
                 $obj = Department::find($input['id']);
@@ -111,11 +119,15 @@ class DepartmentController extends Controller
      */
     public function show($id)
     {
-      $data = Department::where('id',$id)->firstOrFail();
+        if(userrole() != 1){
+            $data = Department::where('id',$id)->where('user_id',Auth::id())->firstOrFail();
+        }else{
+            $data = Department::where('id',$id)->whereNull('user_id')->firstOrFail();
+        }
 
-      $tree = json_encode($this->getDepartmentTreeData($id));
+        $tree = json_encode($this->getDepartmentTreeData($id));
 
-      return view('department.view',compact('data','tree'));
+        return view('department.view',compact('data','tree'));
     }
 
     /**
@@ -126,8 +138,14 @@ class DepartmentController extends Controller
      */
     public function edit($id)
     {
-        $edit = Department::where('id',$id)->whereNotIn('id',[1])->firstOrFail();
-        $roles = Role::where('id','!=',1)->get();
+        
+        if(userrole() != 1){
+            $edit = Department::where('id',$id)->whereNotIn('id',[1])->where('user_id',Auth::id())->firstOrFail();
+            $roles = Role::where('id','!=',1)->where('user_id',Auth::id())->get();
+        }else{
+            $edit = Department::where('id',$id)->whereNotIn('id',[1])->firstOrFail();
+            $roles = Role::where('id','!=',1)->whereNull('user_id')->get();
+        }
 
         $department_roles = array();
         if($edit->roles){
@@ -197,6 +215,13 @@ class DepartmentController extends Controller
             $data->where(function($q) use ($request) {
                 $q->orwhere('departments.name','LIKE',"%".$request->filter_search."%");
             });
+        }
+
+
+        if(userrole() != 1){
+            $data->where('user_id',Auth::id());
+        }else{
+            $data->whereNull('user_id');
         }
 
         $data->when(!isset($request->order), function ($q) {

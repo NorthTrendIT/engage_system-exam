@@ -22,11 +22,11 @@
 
       </a>
       <ul class="product-links">
-        <li>
+        {{-- <li>
           <a href="{{ route('product-list.show',@$product->id) }}" data-tip="Add to Wishlist">
             <i class="fas fa-heart"></i>
           </a>
-        </li>
+        </li> --}}
         <li>
           <a href="{{ route('product-list.show',@$product->id) }}" data-tip="Quick View">
             <i class="fa fa-search"></i>

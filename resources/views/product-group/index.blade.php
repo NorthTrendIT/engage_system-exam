@@ -41,6 +41,15 @@
                 </div>
 
                 <div class="col-md-3">
+                  <select class="form-control form-control-lg form-control-solid filter_company" name="filter_company" data-control="select2" data-hide-search="false" data-placeholder="Select company" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($company as $c)
+                    <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -56,6 +65,10 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                              <th>No.</th>
+                              @if(in_array(userrole(),[1,2]))
+                              <th>Company</th>
+                              @endif
                               <th>Number</th>
                               <th>Name</th>
                             </tr>
@@ -102,6 +115,7 @@
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_search"]').val();
+      $filter_company = $('[name="filter_company"]').val();
 
       table.DataTable({
           processing: true,
@@ -116,9 +130,14 @@
               },
               data:{
                 filter_search : $filter_search,
+                filter_company : $filter_company,
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              @if(in_array(userrole(),[1,2]))
+              {data: 'company', name: 'company'},
+              @endif
               {data: 'number', name: 'number'},
               {data: 'group_name', name: 'group_name'},
           ],
@@ -139,6 +158,7 @@
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
+      $('[name="filter_company"]').val('').trigger('change');
       render_table();
     })
 

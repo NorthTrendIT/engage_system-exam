@@ -62,10 +62,18 @@
                               <th> <b>Role Name:</b> </th>
                               <td>{{ @$data->role->name ?? "" }}</td>
                             </tr>
+                            
                             <tr>
                               <th> <b>Parent User Name:</b> </th>
                               <td>{{ @$data->parent->first_name ?? "" }} {{ @$data->parent->last_name ?? "" }}</td>
                             </tr>
+
+                            @if(!is_null($data->created_by))
+                            <tr>
+                              <th> <b>Created By:</b> </th>
+                              <td>{{ @$data->created_by_user->first_name ?? "" }} {{ @$data->created_by_user->last_name ?? "" }}</td>
+                            </tr>
+                            @endif
 
                             {{-- <tr>
                               <th> <b>Province:</b> </th>

@@ -75,19 +75,64 @@
                       {{-- <input type="checkbox" value="1" name="modules[{{ @$modules['user']['id'] }}]"  @if(isset($role_module_access) && @$role_module_access[@$modules['user']['id']]['access'] == 1) checked="" @endif>{{ @$modules['user']['title']}} --}}
 
                     <div class="hummingbird-treeview">
-                      <ul id="module_treeview" class="hummingbird-base">
+                      <ul id="module_treeview" class="hummingbird-base" style="display:none;">
 
                         {{-- User Management --}}
-                        @if(@$modules['user']['id'])
+                        @if(@$modules['user-management']['id'])
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
-                            <input data-id="usermgt" type="checkbox" 
+                            <input data-id="{{ @$modules['user-management']['id'] }}" type="checkbox" 
                               {{-- @if(@$role_module_access[@$modules['location']['id']]['access'] == 1 && @$role_module_access[@$modules['user']['id']]['access'] == 1 && @$role_module_access[@$modules['department']['id']]['access'] == 1) checked="" @endif --}}
                               @if(@$role_module_access[@$modules['user']['id']]['access'] == 1 && @$role_module_access[@$modules['department']['id']]['access'] == 1) checked="" @endif
-                            /> User Management
+                            /> {{ @$modules['user-management']['title'] }}
                           </label>
                           <ul>
+
+                            {{-- Role --}}
+                            @if(@$modules['role']['id'])
+                            <li>
+                              <i class="fa fa-plus"></i>
+                              <label>
+                                <input data-id="{{ @$modules['role']['id'] }}" type="checkbox" /> {{ @$modules['role']['title'] }}
+                              </label>
+                              <ul>
+
+                                @if(@$modules['add-role']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['add-role']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-role']['id'] }}]"   /> {{ @$modules['add-role']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['edit-role']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['edit-role']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-role']['id'] }}]"   /> {{ @$modules['edit-role']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['view-role']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['view-role']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-role']['id'] }}]"   /> {{ @$modules['view-role']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['delete-role']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['delete-role']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['delete-role']['id'] }}]"   /> {{ @$modules['delete-role']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                              </ul>
+                            </li>
+                            @endif
 
                             {{-- User --}}
                             @if(@$modules['user']['id'])
@@ -97,29 +142,39 @@
                                 <input data-id="{{ @$modules['user']['id'] }}" type="checkbox" /> {{ @$modules['user']['title'] }}
                               </label>
                               <ul>
+
+                                @if(@$modules['add-user']['id'])  
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['add-user']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-user']['id'] }}]"   /> {{ @$modules['add-user']['title'] }}
                                   </label>
                                 </li>
-
+                                @endif
+  
+                                @if(@$modules['edit-user']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['edit-user']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-user']['id'] }}]"   /> {{ @$modules['edit-user']['title'] }}
                                   </label>
                                 </li>
+                                @endif
 
+                                @if(@$modules['view-user']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['view-user']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-user']['id'] }}]"   /> {{ @$modules['view-user']['title'] }}
                                   </label>
                                 </li>
+                                @endif
 
+                                @if(@$modules['delete-user']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['delete-user']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['delete-user']['id'] }}]"   /> {{ @$modules['delete-user']['title'] }}
                                   </label>
                                 </li>
+                                @endif
+
                               </ul>
                             </li>
                             @endif
@@ -167,29 +222,39 @@
                                 <input data-id="{{ @$modules['department']['id'] }}" type="checkbox"  /> {{ @$modules['department']['title'] }}
                               </label>
                               <ul>
+
+                                @if(@$modules['add-department']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['add-department']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-department']['id'] }}]"  /> {{ @$modules['add-department']['title'] }}
                                   </label>
                                 </li>
+                                @endif
 
+                                @if(@$modules['edit-department']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['edit-department']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-department']['id'] }}]" /> {{ @$modules['edit-department']['title'] }}
                                   </label>
                                 </li>
+                                @endif
 
+                                @if(@$modules['view-department']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['view-department']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-department']['id'] }}]" /> {{ @$modules['view-department']['title'] }}
                                   </label>
                                 </li>
+                                @endif
 
+                                @if(@$modules['delete-department']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['delete-department']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['delete-department']['id'] }}]" /> {{ @$modules['delete-department']['title'] }}
                                   </label>
                                 </li>
+                                @endif
+
                               </ul>
                             </li>
                             @endif
@@ -200,13 +265,13 @@
 
 
                         {{-- Customer Management --}}
-                        @if(@$modules['customer']['id'])
+                        @if(@$modules['customer-management']['id'])
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
-                            <input data-id="usermgt" type="checkbox" 
+                            <input data-id="{{ @$modules['customer-management']['id'] }}" type="checkbox" 
                               @if(@$role_module_access[@$modules['customer-group']['id']]['access'] == 1 && @$role_module_access[@$modules['class']['id']]['access'] == 1 && @$role_module_access[@$modules['customer']['id']]['access'] == 1) checked="" @endif
-                              /> Customer Management
+                              /> {{ @$modules['customer-management']['title'] }}
                           </label>
                           <ul>
 
@@ -219,12 +284,14 @@
                               </label>
                               <ul>
 
+                                @if(@$modules['view-class']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['view-class']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-class']['id'] }}]"  /> {{ @$modules['view-class']['title'] }}
                                   </label>
                                 </li>
-                                
+                                @endif
+
                               </ul>
                             </li>
                             @endif
@@ -237,17 +304,22 @@
                                 <input data-id="{{ @$modules['customer']['id'] }}" type="checkbox"  /> {{ @$modules['customer']['title'] }}
                               </label>
                               <ul>
+
+                                @if(@$modules['add-customer']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['add-customer']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-customer']['id'] }}]"  /> {{ @$modules['add-customer']['title'] }}
                                   </label>
                                 </li>
+                                @endif
 
+                                @if(@$modules['view-customer']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['view-customer']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-customer']['id'] }}]"  /> {{ @$modules['view-customer']['title'] }}
                                   </label>
                                 </li>
+                                @endif
 
                               </ul>
                             </li>
@@ -261,17 +333,22 @@
                                 <input data-id="{{ @$modules['customer-group']['id'] }}" type="checkbox"  /> {{ @$modules['customer-group']['title'] }}
                               </label>
                               <ul>
+
+                                @if(@$modules['add-customer-group']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['add-customer-group']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-customer-group']['id'] }}]"  /> {{ @$modules['add-customer-group']['title'] }}
                                   </label>
                                 </li>
+                                @endif
 
+                                @if(@$modules['view-customer-group']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['view-customer-group']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-customer-group']['id'] }}]"  /> {{ @$modules['view-customer-group']['title'] }}
                                   </label>
                                 </li>
+                                @endif
 
                               </ul>
                             </li>
@@ -283,13 +360,13 @@
 
 
                         {{-- Product Management --}}
-                        @if(@$modules['product']['id'])
+                        @if(@$modules['product-management']['id'])
                         <li>
                           <i class="fa fa-plus"></i>
                           <label>
-                            <input data-id="usermgt" type="checkbox" 
+                            <input data-id="{{ @$modules['product-management']['id'] }}" type="checkbox" 
                               @if(@$role_module_access[@$modules['product-group']['id']]['access'] == 1 && @$role_module_access[@$modules['product']['id']]['access'] == 1) checked="" @endif
-                              /> Product Management
+                              /> {{ @$modules['product-management']['title'] }}
                           </label>
                           <ul>
 
@@ -301,23 +378,31 @@
                                 <input data-id="{{ @$modules['product']['id'] }}" type="checkbox"  /> {{ @$modules['product']['title'] }}
                               </label>
                               <ul>
+
+                                @if(@$modules['add-product']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['add-product']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-product']['id'] }}]" /> {{ @$modules['add-product']['title'] }}
                                   </label>
                                 </li>
+                                @endif
 
+                                @if(@$modules['edit-product']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['edit-product']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-product']['id'] }}]"   /> {{ @$modules['edit-product']['title'] }}
                                   </label>
                                 </li>
+                                @endif
 
+                                @if(@$modules['view-product']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['view-product']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-product']['id'] }}]"  /> {{ @$modules['view-product']['title'] }}
                                   </label>
                                 </li>
+                                @endif
+
                               </ul>
                             </li>
                             @endif
@@ -330,17 +415,22 @@
                                 <input data-id="{{ @$modules['product-group']['id'] }}" type="checkbox"  /> {{ @$modules['product-group']['title'] }}
                               </label>
                               <ul>
+
+                                @if(@$modules['add-product-group']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['add-product-group']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-product-group']['id'] }}]"  /> {{ @$modules['add-product-group']['title'] }}
                                   </label>
                                 </li>
+                                @endif
 
+                                @if(@$modules['view-product-group']['id'])
                                 <li>
                                   <label>
                                     <input data-id="{{ @$modules['view-product-group']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-product-group']['id'] }}]"  /> {{ @$modules['view-product-group']['title'] }}
                                   </label>
                                 </li>
+                                @endif
 
                               </ul>
                             </li>
@@ -358,17 +448,23 @@
                             <input data-id="{{ @$modules['order']['id'] }}" type="checkbox" /> {{ @$modules['order']['title'] }}
                           </label>
                           <ul>
+
+                            @if(@$modules['add-order']['id'])
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['add-order']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-order']['id'] }}]"  /> {{ @$modules['add-order']['title'] }}
                               </label>
                             </li>
+                            @endif
 
+                            @if(@$modules['view-order']['id'])
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['view-order']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-order']['id'] }}]"  /> {{ @$modules['view-order']['title'] }}
                               </label>
                             </li>
+                            @endif
+
                           </ul>
                         </li>
                         @endif
@@ -381,17 +477,23 @@
                             <input data-id="{{ @$modules['invoice']['id'] }}" type="checkbox" /> {{ @$modules['invoice']['title'] }}
                           </label>
                           <ul>
+
+                            @if(@$modules['add-invoice']['id'])
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['add-invoice']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-invoice']['id'] }}]" /> {{ @$modules['add-invoice']['title'] }}
                               </label>
                             </li>
+                            @endif
 
+                            @if(@$modules['view-invoice']['id'])
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['view-invoice']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-invoice']['id'] }}]"  /> {{ @$modules['view-invoice']['title'] }}
                               </label>
                             </li>
+                            @endif
+
                           </ul>
                         </li>
                         @endif
@@ -404,29 +506,39 @@
                             <input data-id="{{ @$modules['promotion']['id'] }}" type="checkbox" /> {{ @$modules['promotion']['title'] }}
                           </label>
                           <ul>
+
+                            @if(@$modules['add-promotion']['id'])
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['add-promotion']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-promotion']['id'] }}]" /> {{ @$modules['add-promotion']['title'] }}
                               </label>
                             </li>
+                            @endif
 
+                            @if(@$modules['edit-promotion']['id'])
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['edit-promotion']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-promotion']['id'] }}]"  /> {{ @$modules['edit-promotion']['title'] }}
                               </label>
                             </li>
+                            @endif
 
+                            @if(@$modules['view-promotion']['id'])
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['view-promotion']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-promotion']['id'] }}]"  /> {{ @$modules['view-promotion']['title'] }}
                               </label>
                             </li>
+                            @endif
 
+                            @if(@$modules['delete-promotion']['id'])
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['delete-promotion']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['delete-promotion']['id'] }}]" /> {{ @$modules['delete-promotion']['title'] }}
                               </label>
                             </li>
+                            @endif
+
                           </ul>
                         </li>
                         @endif
@@ -440,17 +552,23 @@
                             <input data-id="{{ @$modules['territories']['id'] }}" type="checkbox" /> {{ @$modules['territories']['title'] }}
                           </label>
                           <ul>
+
+                            @if(@$modules['add-territories']['id'])
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['add-territories']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-territories']['id'] }}]"  /> {{ @$modules['add-territories']['title'] }}
                               </label>
                             </li>
+                            @endif
 
+                            @if(@$modules['view-territories']['id'])
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['view-territories']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-territories']['id'] }}]"  /> {{ @$modules['view-territories']['title'] }}
                               </label>
                             </li>
+                            @endif
+
                           </ul>
                         </li>
                         @endif
@@ -464,11 +582,15 @@
                             <input data-id="{{ @$modules['activity-log']['id'] }}" type="checkbox" /> {{ @$modules['activity-log']['title'] }}
                           </label>
                           <ul>
+
+                            @if(@$modules['view-activity-log']['id'])
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['view-activity-log']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['activity-log']['id'] }}]" /> {{ @$modules['view-activity-log']['title'] }}
                               </label>
                             </li>
+                            @endif
+
                           </ul>
                         </li>
                         @endif
@@ -481,11 +603,15 @@
                             <input data-id="{{ @$modules['my-promotions']['id'] }}" type="checkbox" /> {{ @$modules['my-promotions']['title'] }}
                           </label>
                           <ul>
+
+                            @if(@$modules['view-my-promotions']['id'])
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['view-my-promotions']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-my-promotions']['id'] }}]" /> {{ @$modules['view-my-promotions']['title'] }}
                               </label>
                             </li>
+                            @endif
+
                           </ul>
                         </li>
                         @endif
@@ -498,15 +624,18 @@
                             <input data-id="{{ @$modules['product-list']['id'] }}" type="checkbox" /> {{ @$modules['product-list']['title'] }}
                           </label>
                           <ul>
+
+                            @if(@$modules['view-product-list']['id'])
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['view-product-list']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-product-list']['id'] }}]" /> {{ @$modules['view-product-list']['title'] }}
                               </label>
                             </li>
+                            @endif
+
                           </ul>
                         </li>
                         @endif
-
                       </ul>
                     </div>
 
@@ -579,6 +708,8 @@
 
     });
 
+    $("#module_treeview").show();
+
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
       var validator = validate_form();
@@ -596,8 +727,11 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                // window.location.reload();
-                window.location.href = '{{ route('role.index') }}';
+                @if(isset($edit->id))
+                  window.location.reload(); 
+                @else
+                  window.location.href = '{{ route('role.index') }}';
+                @endif
               },1500)
             } else {
               toast_error(data.message);

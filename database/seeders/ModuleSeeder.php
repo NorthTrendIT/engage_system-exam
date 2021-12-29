@@ -18,6 +18,37 @@ class ModuleSeeder extends Seeder
         Module::truncate();
         \Schema::enableForeignKeyConstraints();
 
+        $usermgt = Module::create(
+                            array(
+                                'title' => 'User Management',
+                                'slug' => 'user-management',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $customermgt = Module::create(
+                            array(
+                                'title' => 'Customer Management',
+                                'slug' => 'customer-management',
+                                'parent_id' => null,
+                            )
+                        );
+        $productmgt = Module::create(
+                            array(
+                                'title' => 'Product Management',
+                                'slug' => 'product-management',
+                                'parent_id' => null,
+                            )
+                        );
+
+        $role = Module::create(
+                            array(
+                                'title' => 'Role',
+                                'slug' => 'role',
+                                'parent_id' => null,
+                            )
+                        );
+
         $user = Module::create(
                             array(
                                 'title' => 'User',
@@ -131,6 +162,28 @@ class ModuleSeeder extends Seeder
         //                 );
 
         $data = array(
+
+                    array(
+                        'title' => 'Add',
+                        'slug' => 'add-role',
+                        'parent_id' => $role->id,
+                    ),
+                    array(
+                        'title' => 'Edit',
+                        'slug' => 'edit-role',
+                        'parent_id' => $role->id,
+                    ),
+                    array(
+                        'title' => 'View',
+                        'slug' => 'view-role',
+                        'parent_id' => $role->id,
+                    ),
+                    array(
+                        'title' => 'Delete',
+                        'slug' => 'delete-role',
+                        'parent_id' => $role->id,
+                    ),
+
         			array(
                         'title' => 'Add',
                         'slug' => 'add-user',
@@ -142,12 +195,12 @@ class ModuleSeeder extends Seeder
                         'parent_id' => $user->id,
                     ),
                     array(
-                        'title' => 'view',
+                        'title' => 'View',
                         'slug' => 'view-user',
                         'parent_id' => $user->id,
                     ),
                     array(
-                        'title' => 'delete',
+                        'title' => 'Delete',
                         'slug' => 'delete-user',
                         'parent_id' => $user->id,
                     ),
@@ -159,17 +212,17 @@ class ModuleSeeder extends Seeder
                         'parent_id' => $department->id,
                     ),
                     array(
-                        'title' => 'edit',
+                        'title' => 'Edit',
                         'slug' => 'edit-department',
                         'parent_id' => $department->id,
                     ),
                     array(
-                        'title' => 'view',
+                        'title' => 'View',
                         'slug' => 'view-department',
                         'parent_id' => $department->id,
                     ),
                     array(
-                        'title' => 'delete',
+                        'title' => 'Delete',
                         'slug' => 'delete-department',
                         'parent_id' => $department->id,
                     ),
@@ -180,23 +233,23 @@ class ModuleSeeder extends Seeder
                         'parent_id' => $location->id,
                     ),
                     array(
-                        'title' => 'edit',
+                        'title' => 'Edit',
                         'slug' => 'edit-location',
                         'parent_id' => $location->id,
                     ),
                     array(
-                        'title' => 'view',
+                        'title' => 'View',
                         'slug' => 'view-location',
                         'parent_id' => $location->id,
                     ),
                     array(
-                        'title' => 'delete',
+                        'title' => 'Delete',
                         'slug' => 'delete-location',
                         'parent_id' => $location->id,
                     ),
 
                     array(
-                        'title' => 'view',
+                        'title' => 'View',
                         'slug' => 'view-class',
                         'parent_id' => $class->id,
                     ),
@@ -207,7 +260,7 @@ class ModuleSeeder extends Seeder
                         'parent_id' => $customer->id,
                     ),
                     array(
-                        'title' => 'view',
+                        'title' => 'View',
                         'slug' => 'view-customer',
                         'parent_id' => $customer->id,
                     ),
@@ -218,7 +271,7 @@ class ModuleSeeder extends Seeder
                         'parent_id' => $customer_group->id,
                     ),
                     array(
-                        'title' => 'view',
+                        'title' => 'View',
                         'slug' => 'view-customer-group',
                         'parent_id' => $customer_group->id,
                     ),
@@ -229,7 +282,7 @@ class ModuleSeeder extends Seeder
                         'parent_id' => $order->id,
                     ),
                     array(
-                        'title' => 'view',
+                        'title' => 'View',
                         'slug' => 'view-order',
                         'parent_id' => $order->id,
                     ),
@@ -240,7 +293,7 @@ class ModuleSeeder extends Seeder
                         'parent_id' => $invoice->id,
                     ),
                     array(
-                        'title' => 'view',
+                        'title' => 'View',
                         'slug' => 'view-invoice',
                         'parent_id' => $invoice->id,
                     ),
@@ -251,24 +304,24 @@ class ModuleSeeder extends Seeder
                         'parent_id' => $product->id,
                     ),
                     array(
-                        'title' => 'edit',
+                        'title' => 'Edit',
                         'slug' => 'edit-product',
                         'parent_id' => $product->id,
                     ),
                     array(
-                        'title' => 'view',
+                        'title' => 'View',
                         'slug' => 'view-product',
                         'parent_id' => $product->id,
                     ),
 
                     array(
-                        'title' => 'view',
+                        'title' => 'View',
                         'slug' => 'view-product-list',
                         'parent_id' => $product_list->id,
                     ),
 
                     array(
-                        'title' => 'view',
+                        'title' => 'View',
                         'slug' => 'view-my-promotions',
                         'parent_id' => $my_promotions->id,
                     ),
@@ -279,7 +332,7 @@ class ModuleSeeder extends Seeder
                         'parent_id' => $quotation->id,
                     ),
                     array(
-                        'title' => 'view',
+                        'title' => 'View',
                         'slug' => 'view-quotation',
                         'parent_id' => $quotation->id,
                     ),
@@ -290,17 +343,17 @@ class ModuleSeeder extends Seeder
                     //     'parent_id' => $promotion->id,
                     // ),
                     // array(
-                    //     'title' => 'edit',
+                    //     'title' => 'Edit',
                     //     'slug' => 'edit-promotion',
                     //     'parent_id' => $promotion->id,
                     // ),
                     // array(
-                    //     'title' => 'view',
+                    //     'title' => 'View',
                     //     'slug' => 'view-promotion',
                     //     'parent_id' => $promotion->id,
                     // ),
                     // array(
-                    //     'title' => 'delete',
+                    //     'title' => 'Delete',
                     //     'slug' => 'delete-promotion',
                     //     'parent_id' => $promotion->id,
                     // ),
@@ -312,7 +365,7 @@ class ModuleSeeder extends Seeder
                         'parent_id' => $product_group->id,
                     ),
                     array(
-                        'title' => 'view',
+                        'title' => 'View',
                         'slug' => 'view-product-group',
                         'parent_id' => $product_group->id,
                     ),
