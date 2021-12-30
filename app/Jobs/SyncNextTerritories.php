@@ -27,12 +27,14 @@ class SyncNextTerritories implements ShouldQueue
     protected $database;
     protected $username;
     protected $password;
+    protected $log_id;
 
-    public function __construct($database, $username, $password, $next_url)
+    public function __construct($database, $username, $password, $next_url, $log_id = false)
     {
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
+        $this->log_id = $log_id;
 
         $this->next_url = $next_url;
     }
@@ -44,7 +46,7 @@ class SyncNextTerritories implements ShouldQueue
      */
     public function handle()
     {
-        $sap_territory = new SAPTerritory($this->database, $this->username, $this->password);
+        $sap_territory = new SAPTerritory($this->database, $this->username, $this->password, $this->log_id);
 
         // Save Data of Territory in database
         $sap_territory->addTerritoryDataInDatabase($this->next_url);

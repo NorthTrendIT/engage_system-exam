@@ -139,6 +139,18 @@ class ActivityMasterSeeder extends Seeder
                         'id' => 30,
                         'name' => 'My Promotion Claimed Details Update'
                     ),
+                    array(
+                        'id' => 31,
+                        'name' => 'Sync Customer Group Data'
+                    ),
+                    array(
+                        'id' => 32,
+                        'name' => 'Sync Product Brands Data'
+                    ),
+                    array(
+                        'id' => 33,
+                        'name' => 'Sync Sales Specialist Data'
+                    ),
 
         		);
         ActivityMaster::insert($data);

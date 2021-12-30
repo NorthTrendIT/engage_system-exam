@@ -14,6 +14,10 @@ class ActivityLog extends Model
     	'user_id',
     	'ip_address',
         'data',
+        'type',
+        'status',
+        'error_data',
+        'sap_connection_id',
     ];
 
     public function activity(){
@@ -22,5 +26,9 @@ class ActivityLog extends Model
 
     public function user(){
         return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function sap_connection(){
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
     }
 }

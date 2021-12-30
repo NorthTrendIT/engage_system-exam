@@ -19,13 +19,15 @@ class SAPSalesPersons
 
 	protected $database;
 	protected $username;
-	protected $password;
+    protected $password;
+	protected $log_id;
 
-    public function __construct($database, $username, $password)
+    public function __construct($database, $username, $password, $log_id = false)
     {
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
+        $this->log_id = $log_id;
         
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
@@ -57,6 +59,12 @@ class SAPSalesPersons
             }
 
         } catch (\Exception $e) {
+
+            add_sap_log([
+                            'status' => "error",
+                            'error_data' => $e->getMessage(),
+                        ], $this->log_id);
+            
             return array(
                         'status' => false,
                         'data' => []
@@ -114,6 +122,10 @@ class SAPSalesPersons
 
                 if(!empty($data['odata.nextLink'])){
                     $this->addSalesPersonsDataInDatabase($data['odata.nextLink']);
+                }else{
+                    add_sap_log([
+                            'status' => "completed",
+                        ], $this->log_id);
                 }
             }
         }
