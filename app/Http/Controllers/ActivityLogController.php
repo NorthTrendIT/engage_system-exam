@@ -139,7 +139,7 @@ class ActivityLogController extends Controller
                     if($row->status == "completed"){
                         $btn .= '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline ">Completed</a>';
                     }else if($row->status == "error"){
-                        $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline ">Error</a>';
+                        $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline error-status" data-error-data=\''. $row->error_data .'\'>Error</a>';
                     }else if(!is_null($row->status)){
                         $btn .= '<a href="javascript:" class="btn btn-sm btn-light-info btn-inline ">'.ucfirst(@$row->status ?? "").'</a>';
                     }else {
