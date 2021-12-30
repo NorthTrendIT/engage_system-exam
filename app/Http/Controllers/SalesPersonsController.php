@@ -99,8 +99,18 @@ class SalesPersonsController extends Controller
             $sap_connections = SapConnection::all();
             foreach ($sap_connections as $value) {
 
+                $log_id = add_sap_log([
+                                'ip_address' => userip(),
+                                'activity_id' => 33,
+                                'user_id' => userid(),
+                                'data' => null,
+                                'type' => "S",
+                                'status' => "in progress",
+                                'sap_connection_id' => $value->id,
+                            ]);
+
                 // Save Data of sales persons in database
-                SyncSalesPersons::dispatch($value->db_name, $value->user_name , $value->password);
+                SyncSalesPersons::dispatch($value->db_name, $value->user_name , $value->password, $log_id);
             }
 
             $response = ['status' => true, 'message' => 'Sync Sales Persons successfully !'];

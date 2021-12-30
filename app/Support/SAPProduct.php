@@ -21,12 +21,14 @@ class SAPProduct
 	protected $database;
 	protected $username;
 	protected $password;
+    protected $log_id;
 
-    public function __construct($database, $username, $password)
+    public function __construct($database, $username, $password, $log_id = false)
     {
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
+        $this->log_id = $log_id;
 
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
@@ -58,6 +60,12 @@ class SAPProduct
             }
             
         } catch (\Exception $e) {
+
+            add_sap_log([
+                            'status' => "error",
+                            'error_data' => $e->getMessage(),
+                        ], $this->log_id);
+
             return array(
                                 'status' => false,
                                 'data' => []
@@ -116,7 +124,11 @@ class SAPProduct
                 if(isset($data['odata.nextLink'])){
                     //$this->addProductDataInDatabase($data['odata.nextLink']);
                     
-                    SyncNextProducts::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink']);
+                    SyncNextProducts::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
+                }else{
+                    add_sap_log([
+                            'status' => "completed",
+                        ], $this->log_id);
                 }
             }
         }

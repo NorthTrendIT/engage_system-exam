@@ -54,6 +54,8 @@ function add_log($activity_id, $data = NULL){
     $log->activity_id = $activity_id;
     $log->user_id = \Auth::id();
     $log->data = json_encode($data);
+    $log->type = "O";
+    $log->status = null;
     $log->save();
 }
 
@@ -132,4 +134,24 @@ function is_in_cart($id){
         return 1;
     }
     return 0;
+}
+
+function add_sap_log($data, $id = false){
+
+    if($id){
+        $log = ActivityLog::find($id);
+    }else{
+        $log = new ActivityLog();
+    }
+    $log->fill($data)->save();
+
+    return @$log->id;
+}
+
+function userid(){
+    return @Auth::user()->id;
+}
+
+function userip(){
+    return \Request::ip();
 }

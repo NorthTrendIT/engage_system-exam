@@ -19,28 +19,36 @@
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-body">
               <div class="row mt-5">
-                <!-- <div class="col-md-3">
+                <div class="col-md-3">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
                   </div>
-                </div> -->
+                </div>
 
-
-                <!-- <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
-                    <option value="">Select status</option>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
+                <div class="col-md-3">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select status" data-allow-clear="true">
+                    <option value=""></option>
+                    <option value="in progress">In progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="error">Error</option>
                   </select>
-                </div> -->
+                </div>
 
-                <!-- <div class="col-md-3">
+                <div class="col-md-3">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_type" data-control="select2" data-hide-search="true" data-placeholder="Select type" data-allow-clear="true">
+                    <option value=""></option>
+                    <option value="O">OMS</option>
+                    <option value="S">SAP</option>
+                  </select>
+                </div>
+
+                <div class="col-md-3">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
-                </div> -->
+                </div>
 
               </div>
               <div class="row mb-5 mt-5">
@@ -54,8 +62,11 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>Type</th>
                               <th>Activity</th>
+                              <th>Company</th>
                               <th>User Name</th>
+                              <th>Status</th>
                               <th>IP Address</th>
                               <th>Date & Time</th>
                             </tr>
@@ -103,12 +114,15 @@
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_type = $('[name="filter_type"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
           serverSide: true,
           scrollX: true,
           order: [],
+          lengthMenu: [50, 100, 250, 500],
+          pageLength: 50,
           ajax: {
               'url': "{{ route('activitylog.get-all') }}",
               'type': 'POST',
@@ -118,13 +132,17 @@
               data:{
                 filter_search : $filter_search,
                 filter_status : $filter_status,
+                filter_type : $filter_type,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'type', name: 'type'},
               {data: 'activity', name: 'activity'},
+              {data: 'company', name: 'company'},
               {data: 'user_name', name: 'user_name'},
-              {data: 'ip_address', name: 'ip_address'},
+              {data: 'status', name: 'status'},
+              {data: 'ip_address', name: 'ip_address',orderable:false,searchable:false},
               {data: 'date_time', name: 'date_time'},
           ],
           drawCallback:function(){
@@ -145,43 +163,9 @@
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
+      $('[name="filter_type"]').val('').trigger('change');
       render_table();
     })
-
-    $(document).on('click', '.sync-invoices', function(event) {
-      event.preventDefault();
-
-      Swal.fire({
-        title: 'Are you sure want to sync Invoices?',
-        text: "Syncing process will run in background and it may take some time to sync all Invoices Data.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: '{{ route('invoices.sync-invoices') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}'
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              render_table();
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
-    });
   })
 </script>
 @endpush

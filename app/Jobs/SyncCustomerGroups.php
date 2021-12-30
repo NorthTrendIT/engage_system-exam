@@ -24,12 +24,14 @@ class SyncCustomerGroups implements ShouldQueue
     protected $database;
     protected $username;
     protected $password;
+    protected $log_id;
 
-    public function __construct($database, $username, $password)
+    public function __construct($database, $username, $password, $log_id)
     {
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
+        $this->log_id = $log_id;
     }
 
     /**
@@ -39,7 +41,7 @@ class SyncCustomerGroups implements ShouldQueue
      */
     public function handle()
     {
-        $sap_customer_group = new SAPCustomerGroup($this->database, $this->username, $this->password);
+        $sap_customer_group = new SAPCustomerGroup($this->database, $this->username, $this->password, $this->log_id);
         
         // Save Data of Customer Group in database
         $sap_customer_group->addCustomerGroupDataInDatabase();
