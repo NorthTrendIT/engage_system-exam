@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ActivityLog;
+use App\Models\SapConnection;
 use DataTables;
 class ActivityLogController extends Controller
 {
@@ -14,7 +15,8 @@ class ActivityLogController extends Controller
      */
     public function index()
     {
-        return view('activity-log.index');
+        $company = SapConnection::all();
+        return view('activity-log.index',compact('company'));
     }
 
     /**
@@ -95,6 +97,10 @@ class ActivityLogController extends Controller
             $data->where('type',$request->filter_type);
         }
 
+        if($request->filter_company != ""){
+            $data->where('sap_connection_id',$request->filter_company);
+        }
+
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
                 $q->whereHas('activity', function($q1) use ($request) {
@@ -136,6 +142,8 @@ class ActivityLogController extends Controller
                         $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline ">Error</a>';
                     }else if(!is_null($row->status)){
                         $btn .= '<a href="javascript:" class="btn btn-sm btn-light-info btn-inline ">'.ucfirst(@$row->status ?? "").'</a>';
+                    }else {
+                        $btn .= "-";
                     }
 
                     return $btn;

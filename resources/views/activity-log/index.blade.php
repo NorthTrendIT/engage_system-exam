@@ -28,7 +28,16 @@
                   </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
+                  <select class="form-control form-control-lg form-control-solid filter_company" name="filter_company" data-control="select2" data-hide-search="false" data-placeholder="Select company" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($company as $c)
+                    <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-2">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select status" data-allow-clear="true">
                     <option value=""></option>
                     <option value="in progress">In progress</option>
@@ -37,7 +46,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                   <select class="form-control form-control-lg form-control-solid" name="filter_type" data-control="select2" data-hide-search="true" data-placeholder="Select type" data-allow-clear="true">
                     <option value=""></option>
                     <option value="O">OMS</option>
@@ -115,6 +124,7 @@
       $filter_search = $('[name="filter_search"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
       $filter_type = $('[name="filter_type"]').find('option:selected').val();
+      $filter_company = $('[name="filter_company"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -133,6 +143,7 @@
                 filter_search : $filter_search,
                 filter_status : $filter_status,
                 filter_type : $filter_type,
+                filter_company : $filter_company,
               }
           },
           columns: [
@@ -164,6 +175,7 @@
       $('[name="filter_search"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
       $('[name="filter_type"]').val('').trigger('change');
+      $('[name="filter_company"]').val('').trigger('change');
       render_table();
     })
   })
