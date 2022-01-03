@@ -162,6 +162,7 @@ class StoreCustomers implements ShouldQueue
                         $name = explode(" ", $obj->card_name, 2);
 
                         $insert_user =  array(
+                                            'department_id' => 3,
                                             'role_id' => 4,
                                             'customer_id' => $obj->id,
                                             'sales_specialist_name' => @$obj->card_name,

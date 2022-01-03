@@ -190,6 +190,7 @@ $(document).ready(function() {
       @endif
       placeholder: 'Select Customers',
       allowClear: true,
+      // minimumInputLength: 2,
       multiple: true,
       @if(isset($edit))
       data:[{

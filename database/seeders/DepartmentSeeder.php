@@ -22,6 +22,14 @@ class DepartmentSeeder extends Seeder
         			array(
                         'id' => 1,
         				'name' => 'Support'
+                    ),
+                    array(
+                        'id' => 2,
+                        'name' => 'Sales'
+                    ),
+                    array(
+                        'id' => 3,
+                        'name' => 'Customer'
                     )
         		);
         Department::insert($data);

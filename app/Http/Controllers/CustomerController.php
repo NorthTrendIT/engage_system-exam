@@ -111,13 +111,25 @@ class CustomerController extends Controller
         try {
 
             // Add Sync Customer data log.
-            add_log(15, null);
+            // add_log(15, null);
 
             $sap_connections = SapConnection::all();
 
             foreach ($sap_connections as $value) {
+
+                $log_id = add_sap_log([
+                                'ip_address' => userip(),
+                                'activity_id' => 15,
+                                'user_id' => userid(),
+                                'data' => null,
+                                'type' => "S",
+                                'status' => "in progress",
+                                'sap_connection_id' => $value->id,
+                            ]);
+
+
                 // Save Data of customer in database
-                SyncCustomers::dispatch($value->db_name, $value->user_name , $value->password);
+                SyncCustomers::dispatch($value->db_name, $value->user_name , $value->password, $log_id);
             }
             // // Save Data of customer in database
             // SyncCustomers::dispatch('TEST-APBW', 'manager', 'test');
@@ -188,7 +200,7 @@ class CustomerController extends Controller
                                                 <img src="'.asset('assets/assets/media/default_user.png').'" alt="">
                                             </div>
                                             <div class="d-flex justify-content-start flex-column">
-                                                <a href="javascript:" class="text-dark fw-bolder text-hover-primary fs-6">';
+                                                <a href="' . route('customer.show',$row->id). '" class="text-dark fw-bolder text-hover-primary fs-6">';
 
                                 $html .= @$row->card_name ?? " ";
 
