@@ -99,6 +99,7 @@ class SAPSalesPersons
                     $password = get_random_password();
 
                     $insert = array(
+                                    'department_id' => 2,
                                     'role_id' => 2,
                                     'sales_employee_code' => $value['SalesEmployeeCode'],
                                     'sales_specialist_name' => $value['SalesEmployeeName'],

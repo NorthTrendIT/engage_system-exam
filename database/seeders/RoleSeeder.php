@@ -43,7 +43,11 @@ class RoleSeeder extends Seeder
                     array(
                         'role_id' => 3,
                         'department_id' => 1,
-                    )
+                    ),
+                    array(
+                        'role_id' => 4,
+                        'department_id' => 2,
+                    ),
                 );
         DepartmentRole::insert($data);
     }
