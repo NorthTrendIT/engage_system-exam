@@ -72,6 +72,10 @@
                                 <select class="form-select form-select-solid" data-control="select2" id="selectModule" data-hide-search="false" name="module">
                                     <option value="">Select Module</option>
                                     <option value="role" @if(isset($edit->connection) && $edit->connection->module == 'role') selected @endif>Role</option>
+                                    <option value="customer" @if(isset($edit->connection) && $edit->connection->module == 'customer') selected @endif>Customer</option>
+                                    <option value="customer_class" @if(isset($edit->connection) && $edit->connection->module == 'customer_class') selected @endif>Customer Class</option>
+                                    <option value="sales_specialist" @if(isset($edit->connection) && $edit->connection->module == 'sales_specialist') selected @endif>Sales Specialist</option>
+                                    <option value="territory" @if(isset($edit->connection) && $edit->connection->module == 'territory') selected @endif>Territory</option>
                                 </select>
                             </div>
                     </div>
@@ -79,8 +83,43 @@
                     <div class="col-md-6 roles" style="display:none">
                         <div class="form-group">
                             <label>Select Role<span class="asterisk">*</span></label>
-                            <select class="form-select form-select-solid" data-control="select2" id="selectRole" data-hide-search="false" name="record_id">
-                                <option value="">Select Role</option>
+                            <select class="form-select form-select-solid" data-control="select2" id="selectRole" data-hide-search="false" name="record_id[]">
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Customer -->
+                    <div class="col-md-6 customer" style="display:none">
+                        <div class="form-group">
+                            <label>Select Customer<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" id="selectCustomer" data-hide-search="false" name="record_id[]">
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Customer Class -->
+                    <div class="col-md-6 customer_class" style="display:none">
+                        <div class="form-group">
+                            <label>Select Customer Class<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" id="selectCustomerClass" data-hide-search="false" name="record_id[]">
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Sales Specilalist -->
+                    <div class="col-md-6 sales_specialist" style="display:none">
+                        <div class="form-group">
+                            <label>Select Sales Specialist<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" id="selectSalesSpecialist" data-hide-search="false" name="record_id[]">
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Territory -->
+                    <div class="col-md-6 territory" style="display:none">
+                        <div class="form-group">
+                            <label>Select Territory<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" id="selectTerritory" data-hide-search="false" name="record_id[]">
                             </select>
                         </div>
                     </div>
@@ -192,11 +231,41 @@
 
     $('body').on('change' ,'#selectModule', function(){
         $module = $('[name="module"]').val();
-
+        // Hide all.
         $('.roles').hide();
+        $('.customer').hide();
+        $('.customer_class').hide();
+        $('.sales_specialist').hide();
+        $('.territory').hide();
+        // Dissable all.
+        $('#selectRole').prop('disabled', true);
+        $('#selectCustomer').prop('disabled', true);
+        $('#selectCustomerClass').prop('disabled', true);
+        $('#selectSalesSpecialist').prop('disabled', true);
+        $('#selectTerritory').prop('disabled', true);
+        // Set null value to all.
+        $('#selectRole').val(null).trigger("change");
+        $('#selectCustomer').val(null).trigger("change");
+        $('#selectCustomerClass').val(null).trigger("change");
+        $('#selectSalesSpecialist').val(null).trigger("change");
+        $('#selectTerritory').val(null).trigger("change");
 
+        // Show and enable according to Module selection.
         if($module == "role"){
             $('.roles').show();
+            $('#selectRole').prop('disabled', false);
+        } else if ($module == "customer"){
+            $('.customer').show();
+            $('#selectCustomer').prop('disabled', false);
+        } else if($module == "customer_class"){
+            $('.customer_class').show();
+            $('#selectCustomerClass').prop('disabled', false);
+        } else if($module == "sales_specialist"){
+            $('.sales_specialist').show();
+            $('#selectSalesSpecialist').prop('disabled', false);
+        } else if($module == "territory"){
+            $('.territory').show();
+            $('#selectTerritory').prop('disabled', false);
         }
     });
 
@@ -297,6 +366,7 @@
       isFirstItemUndeletable: true,
     });
 
+    // Role
     $("#selectRole").select2({
         ajax: {
             url: "{{route('news-and-announcement.getRoles')}}",
@@ -318,7 +388,107 @@
         },
         placeholder: 'Select Role',
         // minimumInputLength: 1,
-        multiple: false,
+        multiple: true,
+    });
+
+    // getCustomer
+    $("#selectCustomer").select2({
+        ajax: {
+            url: "{{route('news-and-announcement.getCustomer')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Customer',
+        // minimumInputLength: 2,
+        multiple: true,
+    });
+
+    // getCustomerClass
+    $("#selectCustomerClass").select2({
+        ajax: {
+            url: "{{route('news-and-announcement.getCustomerClass')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Customer Class',
+        // minimumInputLength: 2,
+        multiple: true,
+    });
+
+    // getSalesSpecialist
+    $("#selectSalesSpecialist").select2({
+        ajax: {
+            url: "{{route('news-and-announcement.getSalesSpecialist')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Sales Specialist',
+        // minimumInputLength: 2,
+        multiple: true,
+    });
+
+    // getTerritory
+    $("#selectTerritory").select2({
+        ajax: {
+            url: "{{route('news-and-announcement.getTerritory')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Territory',
+        // minimumInputLength: 2,
+        multiple: true,
     });
 
   });
