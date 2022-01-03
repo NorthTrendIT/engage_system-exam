@@ -2,17 +2,17 @@
   <div class="product-grid">
   	<div class="p-2">
 
-      @php
-        
-        $interest = @$promotion->promotion_interests->firstWhere('user_id' , Auth::id());
+      @if(!in_array(userrole(), [2]))
+        @php
+          $interest = @$promotion->promotion_interests->firstWhere('user_id' , Auth::id());
+        @endphp
 
-      @endphp
-
-      @if(@$interest->is_interested == 1)
-  		  <a href="javascript:" data-value="0" data-id="{{ @$promotion->id }}" class="btn btn-light-danger btn_interest">Not Interested</a>
-      @else
-  		  <a href="javascript:" data-value="1" data-id="{{ @$promotion->id }}" class="btn btn-light-success btn_interest">Interested</a>
-        <a href="javascript:" data-value="0" data-id="{{ @$promotion->id }}" class="btn btn-light-danger btn_interest">Not Interested</a>
+        @if(@$interest->is_interested == 1)
+    		  <a href="javascript:" data-value="0" data-id="{{ @$promotion->id }}" class="btn btn-light-danger btn_interest">Not Interested</a>
+        @else
+    		  <a href="javascript:" data-value="1" data-id="{{ @$promotion->id }}" class="btn btn-light-success btn_interest">Interested</a>
+          <a href="javascript:" data-value="0" data-id="{{ @$promotion->id }}" class="btn btn-light-danger btn_interest">Not Interested</a>
+        @endif
       @endif
 
   	</div>

@@ -452,7 +452,7 @@ class CheckRoleModuleAccess
                 }
 
             }
-
+            
             if(!$status){
                 if($request->ajax()){
                     $response = array('status' => $status, "message" => $message);

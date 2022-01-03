@@ -28,6 +28,8 @@ class CustomerPromotion extends Model
         'updated_by',
         'doc_entry',
         'sap_connection_id',
+        'sales_specialist_id',
+        'is_approved',
     ];
 
     public function promotion()
@@ -48,5 +50,10 @@ class CustomerPromotion extends Model
     public function customer_bp_address()
     {
         return $this->belongsTo(CustomerBpAddress::class,'customer_bp_address_id');
+    }
+
+    public function sales_specialist()
+    {
+        return $this->belongsTo(User::class,'sales_specialist_id');
     }
 }

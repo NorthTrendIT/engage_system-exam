@@ -13,7 +13,9 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('customer-promotion.get-interest') }}" class="btn btn-sm btn-primary mr-10">Interested Promotions</a>
+        @if(!in_array(userrole(), [2]))
+          <a href="{{ route('customer-promotion.get-interest') }}" class="btn btn-sm btn-primary mr-10">Interested Promotions</a>
+        @endif
 
         <a href="{{ route('customer-promotion.order.index') }}" class="btn btn-sm btn-primary mr-10">Claimed Promotions</a>
         <!--end::Button-->

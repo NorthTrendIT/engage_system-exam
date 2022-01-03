@@ -46,11 +46,11 @@
                           <div class="fw-bolder fs-3 text-gray-800 mb-8">Invoice</div>
                           <!--end::Label-->
 
-                          @if(userrole() == 1)
+                          @if(in_array(userrole(),[1,2]))
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
-                            <div class="col-sm-9">
+                            <div class="col-sm-5">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Customer:</div>
                               <!--end::Label-->
@@ -60,18 +60,49 @@
                             </div>
                             <!--end::Col-->
 
-                            @if($data->status == "approved" && $data->is_sap_pushed == false)
-                            <!--end::Col-->
-                            <div class="col-sm-3">
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Push Details In SAP:</div>
-                              <!--end::Label-->
+                            @if(userrole() != 2 && @$data->sales_specialist)
                               <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">
-                                <a href="javascript:" class="btn btn-sm btn-info btn-inline push-in-sap">Push Details</a>
+                              <div class="col-sm-3">
+                                <!--end::Label-->
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Sales Specialist:</div>
+                                <!--end::Label-->
+                                <!--end::Col-->
+                                <div class="fw-bolder fs-6 text-gray-800">{{ @$data->sales_specialist->sales_specialist_name ?? "" }}</div>
+                                <!--end::Col-->
                               </div>
                               <!--end::Col-->
-                            </div>
-                            <!--end::Col-->
+                            @endif
+
+                            @if(userrole() != 4)
+                              <!--end::Col-->
+                              <div class="col-sm-2">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Approval:</div>
+                                <!--end::Label-->
+                                <!--end::Col-->
+                                <div class="fw-bolder fs-6 text-gray-800">
+                                  {{ !$data->is_approved ? "Pending" : "Completed"}}
+                                </div>
+                                <!--end::Col-->
+                              </div>
+                              <!--end::Col-->
+                            @endif
+
+                            @if(userrole() == 1)
+                              
+                              @if($data->status == "approved" && $data->is_sap_pushed == false && $data->is_approved)
+                              <!--end::Col-->
+                              <div class="col-sm-3">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Push Details In SAP:</div>
+                                <!--end::Label-->
+                                <!--end::Col-->
+                                <div class="fw-bolder fs-6 text-gray-800">
+                                  <a href="javascript:" class="btn btn-sm btn-info btn-inline push-in-sap">Push Details</a>
+                                </div>
+                                <!--end::Col-->
+                              </div>
+                              <!--end::Col-->
+                              @endif
+                            
                             @endif
 
                           </div>
@@ -81,18 +112,7 @@
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
-                            <div class="col-sm-4">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Claimed Date:</div>
-                              <!--end::Label-->
-                              <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime($data->created_at)) }}</div>
-                              <!--end::Col-->
-                            </div>
-                            <!--end::Col-->
-
-                            <!--end::Col-->
-                            <div class="col-sm-4">
+                            <div class="col-sm-5">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Promotion Details:</div>
                               <!--end::Label-->
@@ -103,7 +123,18 @@
                             <!--end::Col-->
 
                             <!--end::Col-->
-                            <div class="col-sm-4">
+                            <div class="col-sm-3">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Claimed Date:</div>
+                              <!--end::Label-->
+                              <!--end::Col-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime($data->created_at)) }}</div>
+                              <!--end::Col-->
+                            </div>
+                            <!--end::Col-->
+
+                            <!--end::Col-->
+                            <div class="col-sm-3">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
                               <!--end::Label-->
@@ -295,7 +326,7 @@
 
 
       <!-- Access only for admin -->
-      @if(userrole() == 1 && $data->status != "canceled")
+      @if(userrole() == 1 && $data->status != "canceled" && $data->is_approved)
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">

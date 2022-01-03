@@ -201,18 +201,20 @@ Route::middleware(['auth'])->group(function(){
         Route::post('customer-promotion/get-all-product-list', 'App\Http\Controllers\CustomerPromotionController@getAllProductList')->name('customer-promotion.get-all-product-list');
         Route::post('customer-promotion/store-interest', 'App\Http\Controllers\CustomerPromotionController@storeInterest')->name('customer-promotion.store-interest');
         Route::get('customer-promotion/get-interest', 'App\Http\Controllers\CustomerPromotionController@getInterest')->name('customer-promotion.get-interest');
-        Route::get('customer-promotion/product-detail/{id}/{promotion_id}', 'App\Http\Controllers\CustomerPromotionController@productDetail')->name('customer-promotion.product-detail');
+        Route::get('customer-promotion/product-detail/{id}/{promotion_id}/{customer_id?}', 'App\Http\Controllers\CustomerPromotionController@productDetail')->name('customer-promotion.product-detail');
+        Route::post('customer-promotion/get-customer', 'App\Http\Controllers\CustomerPromotionController@getCustomer')->name('customer-promotion.get-customer');
 
 
         Route::get('customer-promotion/order/', 'App\Http\Controllers\CustomerPromotionController@orderIndex')->name('customer-promotion.order.index');
-        Route::get('customer-promotion/order/{id}', 'App\Http\Controllers\CustomerPromotionController@orderCreate')->name('customer-promotion.order.create');
+        Route::get('customer-promotion/order/create/{id}/{customer_id?}', 'App\Http\Controllers\CustomerPromotionController@orderCreate')->name('customer-promotion.order.create');
+        Route::get('customer-promotion/order/edit/{id}/{customer_id?}', 'App\Http\Controllers\CustomerPromotionController@orderEdit')->name('customer-promotion.order.edit');
         Route::post('customer-promotion/order/store', 'App\Http\Controllers\CustomerPromotionController@orderStore')->name('customer-promotion.order.store');
         Route::post('customer-promotion/order/get-all', 'App\Http\Controllers\CustomerPromotionController@orderGetAll')->name('customer-promotion.order.get-all');
         Route::get('customer-promotion/order/show/{id}', 'App\Http\Controllers\CustomerPromotionController@orderShow')->name('customer-promotion.order.show');
         Route::post('customer-promotion/order/get-customer-address', 'App\Http\Controllers\CustomerPromotionController@getCustomerAddress')->name('customer-promotion.order.get-customer-address');
         Route::post('customer-promotion/order/status', 'App\Http\Controllers\CustomerPromotionController@orderStatus')->name('customer-promotion.order.status');
-        Route::get('customer-promotion/order/edit/{id}', 'App\Http\Controllers\CustomerPromotionController@orderEdit')->name('customer-promotion.order.edit');
         Route::post('customer-promotion/order/push-in-sap', 'App\Http\Controllers\CustomerPromotionController@orderPushInSap')->name('customer-promotion.order.push-in-sap');
+        Route::post('customer-promotion/order/approved', 'App\Http\Controllers\CustomerPromotionController@orderApproved')->name('customer-promotion.order.approved');
 
 
         // Quotations
