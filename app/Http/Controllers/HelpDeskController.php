@@ -70,7 +70,7 @@ class HelpDeskController extends Controller
         }else{
 
             $input['user_id'] = Auth::id();
-            $input['help_desk_status_id'] = 2;
+            $input['help_desk_status_id'] = 1;
             $input['ticket_number'] = '#OMS';
 
             $ticket = new HelpDesk();

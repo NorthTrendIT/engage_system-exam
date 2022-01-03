@@ -200,7 +200,7 @@ class CustomerController extends Controller
                                                 <img src="'.asset('assets/assets/media/default_user.png').'" alt="">
                                             </div>
                                             <div class="d-flex justify-content-start flex-column">
-                                                <a href="javascript:" class="text-dark fw-bolder text-hover-primary fs-6">';
+                                                <a href="' . route('customer.show',$row->id). '" class="text-dark fw-bolder text-hover-primary fs-6">';
 
                                 $html .= @$row->card_name ?? " ";
 

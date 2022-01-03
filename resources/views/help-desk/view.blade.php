@@ -309,7 +309,7 @@
       .done(function(data) {
         $('#comment_list_row').append(data.output);
         $('#view_more_col').html(data.button);
-        toast_success("Comment List Updated Successfully !");
+        // toast_success("Comment List Updated Successfully !");
       })
       .fail(function() {
         toast_error("error");
