@@ -96,6 +96,7 @@ class SAPSalesPersons
                 foreach ($data['value'] as $value) {
                     $name = explode(" ", $value['SalesEmployeeName'], 2);
                     $email = strtolower($name[0]).$value['SalesEmployeeCode']."-".@$sap_connection->id.'@mailinator.com';
+                    $password = get_random_password();
 
                     $insert = array(
                                     'role_id' => 2,
@@ -104,7 +105,8 @@ class SAPSalesPersons
                                     'first_name' => !empty($name[0]) ? $name[0] : null,
                                     'last_name' => !empty($name[1]) ? $name[1] : null,
                                     'is_active' => $value['Active'] == "tYES" ? true : false,
-                                    'password' => Hash::make('12345678'),
+                                    'password' => Hash::make($password),
+                                    'password_text' => $password,
                                     'email' => $email,
                                     //'response' => json_encode($value),
                                     'sap_connection_id' => @$sap_connection->id,

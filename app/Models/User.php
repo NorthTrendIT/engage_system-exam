@@ -37,6 +37,7 @@ class User extends Authenticatable
         'sap_connection_id',
         'sales_employee_code',
         'created_by',
+        'password_text',
     ];
 
     /**

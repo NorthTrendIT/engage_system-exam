@@ -100,16 +100,16 @@
       $value = $(this).attr('data-value');
       $this = $(this);
 
-      Swal.fire({
-        title: 'Are you sure want to do this ?',
-        //text: "Once deleted, you will not be able to recover this record!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
+      // Swal.fire({
+      //   title: 'Are you sure want to do this ?',
+      //   //text: "Once deleted, you will not be able to recover this record!",
+      //   icon: 'warning',
+      //   showCancelButton: true,
+      //   confirmButtonColor: '#3085d6',
+      //   cancelButtonColor: '#d33',
+      //   confirmButtonText: 'Yes, do it!'
+      // }).then((result) => {
+      //   if (result.isConfirmed) {
           $.ajax({
             url: '{{ route('customer-promotion.store-interest') }}',
             method: "POST",
@@ -136,8 +136,8 @@
           .fail(function() {
             toast_error("error");
           });
-        }
-      })
+      //   }
+      // })
     });
   
   });

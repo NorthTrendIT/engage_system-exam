@@ -163,11 +163,11 @@
                 
                 $role = $('[name="filter_role"]').find('option:selected').val();
                 if($role == 2){
-                  $("#myTable").DataTable().column(4).visible(true);
-                  $("#myTable").DataTable().column(0).visible(false);
+                  $("#myTable").DataTable().column(5).visible(true);
+                  $("#myTable").DataTable().column(1).visible(false);
                 } else {
-                  $("#myTable").DataTable().column(0).visible(true);
-                  $("#myTable").DataTable().column(4).visible(false);
+                  $("#myTable").DataTable().column(1).visible(true);
+                  $("#myTable").DataTable().column(5).visible(false);
                 }
               })
           },
@@ -192,13 +192,13 @@
         if($role == 2){
           $('.sync-sales-persons').show();
           $('.create-btn').hide();
-          $("#myTable").DataTable().column(4).visible(true);
-          $("#myTable").DataTable().column(0).visible(false);
+          $("#myTable").DataTable().column(5).visible(true);
+          $("#myTable").DataTable().column(1).visible(false);
         } else {
           $('.sync-sales-persons').hide();
           $('.create-btn').show();
-          $("#myTable").DataTable().column(0).visible(true);
-          $("#myTable").DataTable().column(4).visible(false);
+          $("#myTable").DataTable().column(1).visible(true);
+          $("#myTable").DataTable().column(5).visible(false);
         }
     });
 
