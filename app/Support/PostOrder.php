@@ -41,6 +41,7 @@ class PostOrder
                     'headers' => $this->headers,
                     'verify' => false,
                     'body' => json_encode($body),
+                    'timeout' => 15,
                 ]
             );
 
