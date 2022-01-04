@@ -25,4 +25,8 @@ class Notification extends Model
     public function documents(){
         return $this->hasMany(NotificationDocument::class, 'notification_id', 'id');
     }
+
+    public function connections(){
+        return $this->hasMany(NotificationConnection::class, 'notification_id', 'id');
+    }
 }

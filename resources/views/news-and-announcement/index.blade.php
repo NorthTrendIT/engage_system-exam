@@ -9,10 +9,11 @@
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">News & Announcement</h1>
       </div>
-
+      @if(@Auth::user()->role_id == 1)
       <div class="d-flex align-items-center py-1">
         <a href="{{ route('news-and-announcement.create') }}" class="btn btn-sm btn-primary">Create</a>
       </div>
+      @endif
     </div>
   </div>
 
@@ -57,10 +58,12 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                                <th>No.</th>
+                                <th>No</th>
                                 <th>Title</th>
                                 <th>Type</th>
+                                @if(@Auth::user()->role_id == 1)
                                 <th>User Name</th>
+                                @endif
                                 <th>Is Important</th>
                                 <th>Action</th>
                             </tr>
@@ -95,6 +98,7 @@
 @endpush
 
 @push('js')
+
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script>
@@ -126,12 +130,18 @@ $(document).ready(function() {
               }
           },
           columns: [
+<<<<<<< HEAD
+              {data: 'DT_RowIndex', orderable: false},
+=======
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+>>>>>>> 9704ae1282438a7e447986b05b3f061063e910c2
               {data: 'title', name: 'title'},
               {data: 'type', name: 'type'},
+              @if(@Auth::user()->role_id == 1)
               {data: 'user_name', name: 'user_name'},
-              {data: 'is_important', name: 'is_important'},
-              {data: 'action', name: 'action'},
+              @endif
+              {data: 'is_important', name: 'is_important', orderable: false},
+              {data: 'action', name: 'action', orderable: false},
           ],
           drawCallback:function(){
               $(function () {
@@ -150,7 +160,7 @@ $(document).ready(function() {
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
-      $('[name="filter_status"]').val('').trigger('change');
+      $('[name="filter_type"]').val('').trigger('change');
       render_table();
     });
 
