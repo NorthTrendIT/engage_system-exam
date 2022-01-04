@@ -185,7 +185,7 @@ $(document).ready(function() {
     @if(isset($edit) && !empty($edit))
         var initialOption = {
             id: {{ $edit->id }},
-            text: '{!! $edit->card_name !!}',
+            text: '{!! $edit->card_name.' (Code: '.$edit->card_code. (@$edit->user->email ? ', Email: '.@$edit->user->email : ""). ')' !!}',
             sap_connection_id: '{!! $edit->sap_connection_id !!}',
             selected: true
         }
