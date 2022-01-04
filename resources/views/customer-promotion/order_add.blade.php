@@ -13,7 +13,7 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('customer-promotion.show',$promotion->id) }}" class="btn btn-sm btn-primary">Back</a>
+        <a href="{{ (isset($edit)) ? route('customer-promotion.order.index') : route('customer-promotion.show',$promotion->id) }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->

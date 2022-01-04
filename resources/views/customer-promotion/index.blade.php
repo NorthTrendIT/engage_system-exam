@@ -127,6 +127,8 @@
             }else{
 
               if($value == 1){
+                $($this).closest('.product-grid').find(".interested_text_a").show();
+                $($this).closest('.product-grid').find(".btn_interest").remove();
                 $($this).remove();
               }else{
                 $($this).closest('.product-grid-outer').remove();

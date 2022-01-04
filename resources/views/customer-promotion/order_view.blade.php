@@ -46,6 +46,40 @@
                           <div class="fw-bolder fs-3 text-gray-800 mb-8">Invoice</div>
                           <!--end::Label-->
 
+                          @if(in_array(userrole(),[4]))
+                          <!--begin::Row-->
+                          <div class="row g-5 mb-11">
+                            
+                            @if(@$data->sales_specialist)
+                              <!--end::Col-->
+                              <div class="col-sm-5">
+                                <!--end::Label-->
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Sales Specialist:</div>
+                                <!--end::Label-->
+                                <!--end::Col-->
+                                <div class="fw-bolder fs-6 text-gray-800">{{ @$data->sales_specialist->sales_specialist_name ?? "" }}</div>
+                                <!--end::Col-->
+                              </div>
+                              <!--end::Col-->
+                            @endif
+
+                            @if(!$data->is_approved)
+                              <!--end::Col-->
+                              <div class="col-sm-5">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Click Below Button For Approve Details:</div>
+                                <!--end::Label-->
+                                <!--end::Col-->
+                                <div class="fw-bolder fs-6 text-gray-800">
+                                  <a href="javascript:" class="btn btn-sm btn-success btn-inline approve-details">Approve</a>
+                                </div>
+                                <!--end::Col-->
+                              </div>
+                              <!--end::Col-->
+                            @endif
+
+                          </div>
+                          @endif
+
                           @if(in_array(userrole(),[1,2]))
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
@@ -102,7 +136,6 @@
                               </div>
                               <!--end::Col-->
                               @endif
-                            
                             @endif
 
                           </div>
@@ -136,7 +169,7 @@
                             <!--end::Col-->
                             <div class="col-sm-3">
                               <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Promotion Status:</div>
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
@@ -506,6 +539,50 @@
         }
       })
     });
+
+
+    @if(userrole() == 4)
+
+      $(document).on('click', '.approve-details', function(event) {
+        event.preventDefault();
+
+        Swal.fire({
+          title: 'Are you sure want to do this?',
+          //text: "Once deleted, you will not be able to recover this record!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, do it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: '{{ route('customer-promotion.order.approved') }}',
+              method: "POST",
+              data: {
+                      _token:'{{ csrf_token() }}',
+                      id:'{{ @$data->id }}',
+                    }
+            })
+            .done(function(result) {
+              if(result.status == false){
+                toast_error(result.message);
+              }else{
+                toast_success(result.message);
+                setTimeout(function(){
+                  window.location.reload();
+                },500)
+              }
+            })
+            .fail(function() {
+              toast_error("error");
+            });
+          }
+        })
+        
+      });
+
+    @endif
   });
 
 </script>

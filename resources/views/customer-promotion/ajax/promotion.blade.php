@@ -8,9 +8,11 @@
         @endphp
 
         @if(@$interest->is_interested == 1)
-    		  <a href="javascript:" data-value="0" data-id="{{ @$promotion->id }}" class="btn btn-light-danger btn_interest">Not Interested</a>
+    		  {{-- <a href="javascript:" data-value="0" data-id="{{ @$promotion->id }}" class="btn btn-light-danger btn_interest">Not Interested</a> --}}
+          <a href="javascript:" class="btn btn-light-success"><i class="fa fa-check"></i> Interested</a>
         @else
     		  <a href="javascript:" data-value="1" data-id="{{ @$promotion->id }}" class="btn btn-light-success btn_interest">Interested</a>
+          <a href="javascript:" class="btn btn-light-success interested_text_a" style="display:none;"><i class="fa fa-check"></i> Interested</a>
           <a href="javascript:" data-value="0" data-id="{{ @$promotion->id }}" class="btn btn-light-danger btn_interest">Not Interested</a>
         @endif
       @endif

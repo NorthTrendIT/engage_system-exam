@@ -106,7 +106,6 @@ class SAPCustomerPromotion
                                     ],
                                     $insert
                                 );
-
             if(!empty($data['DocumentLines'])){
 
                 $quo_items = $data['DocumentLines'];
@@ -137,11 +136,12 @@ class SAPCustomerPromotion
                     );
 
                     $item_obj = QuotationItem::updateOrCreate([
-                                    'order_id' => $obj->id,
+                                    'order_id' => $fields['order_id'],
                                     'item_code' => $item['ItemCode'],
                                 ],
                                 $fields
                             );
+
                 }
             }
         }
@@ -266,6 +266,11 @@ class SAPCustomerPromotion
                 $response['CardName'] = @$customer_promotion->user->customer->card_name;
                 $response['DocTotal'] = @$customer_promotion->total_amount;
                 $response['Address'] = @$customer_promotion->customer_bp_address->address;
+
+                if(@$customer_promotion->sales_specialist->sales_employee_code && @$customer_promotion->sales_specialist->is_active){
+                    $response['SalesPersonCode'] = @$customer_promotion->sales_specialist->sales_employee_code;
+                }
+
                 $response['DocCurrency'] = "PHP";
                 $response['DocumentLines'] = [];
 

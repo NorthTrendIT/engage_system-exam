@@ -10,6 +10,7 @@ class QuotationItem extends Model
     use HasFactory;
 
     protected $fillable = [
+        'order_id',
         'quotation_id',
         'line_num',
         'item_code',
