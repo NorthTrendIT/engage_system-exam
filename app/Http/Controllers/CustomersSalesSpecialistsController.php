@@ -308,17 +308,22 @@ class CustomersSalesSpecialistsController extends Controller
     function getCustomers(Request $request){
         $search = $request->search;
 
-        if($search == ''){
-            $data = Customer::orderby('card_name','asc')->limit(50)->get();
-        }else{
-            $data = Customer::orderby('card_name','asc')->where('card_name', 'like', '%' .$search . '%')->limit(50)->get();
+        $data = Customer::orderby('card_name','asc')->where('is_active',1)->limit(50);
+        if($search != ''){
+
+            $data->where(function($q) use ($search){
+                $q->orwhere('card_name', 'like', '%' .$search . '%');
+                $q->orwhere('card_code', 'like', '%' .$search . '%');
+            });
         }
+
+        $data = $data->get();
 
         $response = array();
         foreach($data as $value){
             $response[] = array(
                 "id" => $value->id,
-                "text" => $value->card_name,
+                "text" => $value->card_name.' (Code: '.$value->card_code. (@$value->user->email ? ', Email: '.@$value->user->email : ""). ')',
                 "sap_connection_id" => $value->sap_connection_id
             );
         }

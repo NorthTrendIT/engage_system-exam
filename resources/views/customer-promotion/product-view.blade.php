@@ -208,13 +208,4 @@
 
 @push('js')
 
-<!--begin::Page Custom Javascript(used by this page)-->
-<script src="{{ asset('assets') }}/assets/js/popper.min.js"></script>
-<script src="{{ asset('assets') }}/assets/js/bootstrap.js"></script>
-<!--end::Page Custom Javascript-->
-
-
-<script>
-
-</script>
 @endpush

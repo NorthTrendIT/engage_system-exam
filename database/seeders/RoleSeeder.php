@@ -46,6 +46,10 @@ class RoleSeeder extends Seeder
                     ),
                     array(
                         'role_id' => 4,
+                        'department_id' => 3,
+                    ),
+                    array(
+                        'role_id' => 2,
                         'department_id' => 2,
                     ),
                 );

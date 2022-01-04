@@ -68,7 +68,7 @@
                               <td>{{ @$data->parent->first_name ?? "" }} {{ @$data->parent->last_name ?? "" }}</td>
                             </tr>
 
-                            @if(!is_null($data->password_text))
+                            @if(!is_null($data->password_text) && userrole() == 1)
                             <tr>
                               <th> <b>Password:</b> </th>
                               <td>{{ @$data->password_text ?? "" }}</td>
