@@ -112,7 +112,7 @@ class SAPCustomerPromotion
 
                 foreach($quo_items as $item){
                     $fields = array(
-                        'order_id' => $obj->id,
+                        'quotation_id' => $obj->id,
                         'line_num' => @$item['LineNum'],
                         'item_code' => @$item['ItemCode'],
                         'item_description' => @$item['ItemDescription'],
@@ -136,7 +136,7 @@ class SAPCustomerPromotion
                     );
 
                     $item_obj = QuotationItem::updateOrCreate([
-                                    'order_id' => $fields['order_id'],
+                                    'quotation_id' => $fields['quotation_id'],
                                     'item_code' => $item['ItemCode'],
                                 ],
                                 $fields

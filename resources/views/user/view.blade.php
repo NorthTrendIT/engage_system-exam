@@ -68,6 +68,13 @@
                               <td>{{ @$data->parent->first_name ?? "" }} {{ @$data->parent->last_name ?? "" }}</td>
                             </tr>
 
+                            @if(!is_null($data->password_text))
+                            <tr>
+                              <th> <b>Password:</b> </th>
+                              <td>{{ @$data->password_text ?? "" }}</td>
+                            </tr>
+                            @endif
+
                             @if(!is_null($data->created_by))
                             <tr>
                               <th> <b>Created By:</b> </th>
