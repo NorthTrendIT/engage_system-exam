@@ -67,4 +67,13 @@ class Customer extends Model
     {
         return $this->belongsTo(Territory::class,'territory','territory_id');
     }
+
+    public function territory()
+    {
+        return $this->hasOne(Territory::class,'id','territory');
+    }
+
+    public function classes(){
+        return $this->hasOne(Classes::class, 'id', 'class_id');
+    }
 }

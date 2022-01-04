@@ -73,6 +73,7 @@ class NewsAndAnnouncementController extends Controller
             $notification->title = $input['title'];
             $notification->module = $input['module'];
             $notification->message = $input['message'];
+            $notification->message = $input['is_important'];
             $notification->user_id = Auth::user()->id;
             $notification->save();
 
@@ -122,8 +123,8 @@ class NewsAndAnnouncementController extends Controller
                         $connection->save();
                     }
 
-                    if($input['module'] == 'customer_class'){
-                        $customer = Customer::where('territory', $record_id)->get();
+                    if($input['module'] == 'territory'){
+                        $data = Customer::where('territory', $record_id)->get();
                         foreach($data as $customer){
                             $user = User::where('customer_id', $customer->id)->firstOrFail();
                             $connection = new NotificationConnection();
@@ -270,8 +271,13 @@ class NewsAndAnnouncementController extends Controller
     }
 
     public function getAll(Request $request){
-
-        $data = Notification::with(['user', 'documents']);
+        if(@Auth::user()->role_id == 1){
+            $data = Notification::with(['user']);
+        } else {
+            $data = Notification::whereHas('connections', function($q){
+                $q->where('user_id', '=', @Auth::user()->id);
+            });
+        }
 
         if($request->filter_type!= ""){
             $data->where('type',$request->filter_type);
@@ -293,7 +299,7 @@ class NewsAndAnnouncementController extends Controller
                                 return $row->title;
                             })
                             ->addColumn('user_name', function($row) {
-                                return $row->user->first_name;
+                                return $row->user->first_name.' '.$row->user->last_name;
                             })
                             ->addColumn('type', function($row) {
                                 if($row->type == 'A'){
@@ -304,11 +310,16 @@ class NewsAndAnnouncementController extends Controller
                                 }
                             })
                             ->addColumn('is_important', function($row) {
-                                if($row->is_important){
-                                    return "Yes";
-                                } else {
-                                    return "No";
+                                if($row->is_important == 0){
+                                    return '<button type="button" class="btn btn-info btn-sm">Normal</button>';
                                 }
+                                if($row->is_important == 1){
+                                    return '<button type="button" class="btn btn-warning btn-sm">Medium</button>';
+                                }
+                                if($row->is_important == 2){
+                                    return '<button type="button" class="btn btn-danger btn-sm">Important</button>';
+                                }
+                                return "-";
                             })
                             ->orderColumn('title', function ($query, $order) {
                                 $query->orderBy('company_name', $order);
@@ -317,16 +328,17 @@ class NewsAndAnnouncementController extends Controller
                                 $query->orderBy('user_name', $order);
                             })
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('news-and-announcement.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm mr-10">
+                                $btn = '<a href="' . route('news-and-announcement.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm mr-10" title="View">
                                   <i class="fa fa-eye"></i>
                                 </a>';
-
-                                $btn .= '<a href="javascript:"  data-url="' . route('news-and-announcement.destroy',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10 delete">
-                                    <i class="fa fa-trash"></i>
-                                  </a>';
+                                if(@Auth::user()->role_id == 1){
+                                    $btn .= '<a href="javascript:"  data-url="' . route('news-and-announcement.destroy',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10 delete">
+                                        <i class="fa fa-trash"></i>
+                                      </a>';
+                                }
                                 return $btn;
                             })
-                            ->rawColumns(['action'])
+                            ->rawColumns(['action', 'is_important'])
                             ->make(true);
     }
 
@@ -421,6 +433,232 @@ class NewsAndAnnouncementController extends Controller
 
         $data = $data->limit(50)->get();
 
-        return response()->json($data);
+        $response = array();
+        foreach($data as $value){
+            $response[] = array(
+                "id"=>$value->id,
+                "text"=>$value->description,
+            );
+        }
+
+        return response()->json($response);
+    }
+
+    public function getAllRole(Request $request){
+
+        $data = NotificationConnection::with(['user.role'])->where('notification_id', $request->notification_id);
+
+        if($request->filter_type!= ""){
+            $data->where('type',$request->filter_type);
+        }
+
+        if($request->filter_search != ""){
+            $data->where(function($q) use ($request) {
+                $q->orwhere('title','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('id', 'desc');
+        });
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('user_name', function($row) {
+                                if($row->user->role_id == 2){
+                                    return $row->user->sales_specialist_name;
+                                }
+                                if($row->user->role_id == 4){
+                                    return $row->user->first_name.' '.$row->user->last_name;
+                                }
+                                return '-';
+                            })
+                            ->addColumn('role', function($row) {
+                                return $row->user->role->name;
+                            })
+                            ->addColumn('is_seen', function($row) {
+                                if($row->is_seen){
+                                    return '<span class="label label-lg label-light-success label-inline">Yes</span>';
+                                } else {
+                                    return '<span class="label label-lg label-light-danger label-inline">No</span>';
+                                }
+                            })
+                            ->rawColumns(['is_seen'])
+                            ->make(true);
+    }
+
+    public function getAllCustomer(Request $request){
+
+        $data = NotificationConnection::with(['user.customer'])->where('notification_id', $request->notification_id);
+
+        if($request->filter_type!= ""){
+            $data->where('type',$request->filter_type);
+        }
+
+        if($request->filter_search != ""){
+            $data->where(function($q) use ($request) {
+                $q->orwhere('title','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('id', 'desc');
+        });
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('user_name', function($row) {
+                                if($row->user->role_id == 2){
+                                    return $row->user->sales_specialist_name;
+                                }
+                                if($row->user->role_id == 4){
+                                    return $row->user->first_name.' '.$row->user->last_name;
+                                }
+                                return '-';
+                            })
+                            ->addColumn('role', function($row) {
+                                return $row->user->role->name;
+                            })
+                            ->addColumn('is_seen', function($row) {
+                                if($row->is_seen){
+                                    return '<span class="label label-lg label-light-success label-inline">Yes</span>';
+                                } else {
+                                    return '<span class="label label-lg label-light-danger label-inline">No</span>';
+                                }
+                            })
+                            ->rawColumns(['is_seen'])
+                            ->make(true);
+    }
+
+    public function getAllSalesSpecialist(Request $request){
+
+        $data = NotificationConnection::with(['user.customer'])->where('notification_id', $request->notification_id);
+
+        if($request->filter_type!= ""){
+            $data->where('type',$request->filter_type);
+        }
+
+        if($request->filter_search != ""){
+            $data->where(function($q) use ($request) {
+                $q->orwhere('title','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('id', 'desc');
+        });
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('user_name', function($row) {
+                                if($row->user->role_id == 2){
+                                    return $row->user->sales_specialist_name;
+                                }
+                                if($row->user->role_id == 4){
+                                    return $row->user->first_name.' '.$row->user->last_name;
+                                }
+                                return '-';
+                            })
+                            ->addColumn('role', function($row) {
+                                return $row->user->role->name;
+                            })
+                            ->addColumn('is_seen', function($row) {
+                                if($row->is_seen){
+                                    return '<span class="label label-lg label-light-success label-inline">Yes</span>';
+                                } else {
+                                    return '<span class="label label-lg label-light-danger label-inline">No</span>';
+                                }
+                            })
+                            ->rawColumns(['is_seen'])
+                            ->make(true);
+    }
+
+    public function getAllCustomerClass(Request $request){
+
+        $data = NotificationConnection::with(['user.customer.classes'])->where('notification_id', $request->notification_id);
+        // dd($data->get());
+
+        if($request->filter_type!= ""){
+            $data->where('type',$request->filter_type);
+        }
+
+        if($request->filter_search != ""){
+            $data->where(function($q) use ($request) {
+                $q->orwhere('title','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('id', 'desc');
+        });
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('user_name', function($row) {
+                                if($row->user->role_id == 2){
+                                    return $row->user->sales_specialist_name;
+                                }
+                                if($row->user->role_id == 4){
+                                    return $row->user->first_name.' '.$row->user->last_name;
+                                }
+                                return '-';
+                            })
+                            ->addColumn('class_name', function($row) {
+                                return $row->user->customer->classes->name;
+                            })
+                            ->addColumn('is_seen', function($row) {
+                                if($row->is_seen){
+                                    return '<span class="label label-lg label-light-success label-inline">Yes</span>';
+                                } else {
+                                    return '<span class="label label-lg label-light-danger label-inline">No</span>';
+                                }
+                            })
+                            ->rawColumns(['is_seen'])
+                            ->make(true);
+    }
+
+    public function getAllTerritory(Request $request){
+
+        $data = NotificationConnection::with(['user.customer.territory'])->where('notification_id', $request->notification_id);
+        // dd($data->get());
+
+        if($request->filter_type!= ""){
+            $data->where('type',$request->filter_type);
+        }
+
+        if($request->filter_search != ""){
+            $data->where(function($q) use ($request) {
+                $q->orwhere('title','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('id', 'desc');
+        });
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('user_name', function($row) {
+                                if($row->user->role_id == 2){
+                                    return $row->user->sales_specialist_name;
+                                }
+                                if($row->user->role_id == 4){
+                                    return $row->user->first_name.' '.$row->user->last_name;
+                                }
+                                return '-';
+                            })
+                            ->addColumn('territory', function($row) {
+                                return @$row->user->customer->territory->description;
+                                return '-';
+                            })
+                            ->addColumn('is_seen', function($row) {
+                                if($row->is_seen){
+                                    return '<span class="label label-lg label-light-success label-inline">Yes</span>';
+                                } else {
+                                    return '<span class="label label-lg label-light-danger label-inline">No</span>';
+                                }
+                            })
+                            ->rawColumns(['is_seen'])
+                            ->make(true);
     }
 }

@@ -10,13 +10,9 @@
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Notification</h1>
       </div>
 
-      <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
-        <!--begin::Button-->
         <a href="{{ route('news-and-announcement.index') }}" class="btn btn-sm btn-primary sync-products">Back</a>
-        <!--end::Button-->
       </div>
-      <!--end::Actions-->
 
     </div>
   </div>
@@ -45,20 +41,35 @@
                                     <th> <b>Title</b> </th>
                                     <td>{{ @$data->title ?? "" }}</td>
                                     </tr>
+                                    @if(@Auth::user()->role_id == 1)
                                     <tr>
-                                    <th> <b>Notification Type:</b> </th>
-                                    <td>{{ @$data->type ?? "" }}</td>
+                                    <th> <b>Priority</b> </th>
+                                    @if($data->is_important == 0)
+                                    <td><button type="button" class="btn btn-info btn-sm">Normal</button></td>
+                                    @elseif($data->is_important == 1)
+                                    <td><button type="button" class="btn btn-warning btn-sm">Medium</button></td>
+                                    @elseif($data->is_important == 2)
+                                    <td><button type="button" class="btn btn-danger btn-sm">Important</button></td>
+                                    @endif
+                                    </tr>
+                                    @endif
+
+                                    <tr>
+                                    <th> <b>Notification Type</b> </th>
+                                    <td>{{ !empty($data->type) && $data->type == 'A' ? "Announcement" : "News" }}</td>
                                     </tr>
 
                                     <tr>
-                                    <th> <b>Message:</b> </th>
+                                    <th> <b>Message</b> </th>
                                     <td>{!! @$data->message ?? "" !!}</td>
                                     </tr>
+
+                                    @if(@Auth::user()->role_id == 1)
                                     <tr>
                                     <th> <b>Module:</b> </th>
-
                                     <td>{{ ucwords(str_replace("_"," ",@$data->module)) ?? "" }}</td>
                                     </tr>
+                                    @endif
 
                                 </thead>
                                 <!--end::Table head-->
@@ -81,13 +92,13 @@
             </div>
             </div>
         </div>
-
+        @if(@auth::user()->role_id == 1)
         <div class="row gy-5 g-xl-8">
             <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
                 <div class="card card-xl-stretch mb-5 mb-xl-8">
 
                     <div class="card-header border-0 pt-5 min-0">
-                        <h5>Notification Details</h5>
+                        <h5>Users</h5>
                     </div>
 
                     <div class="card-body">
@@ -97,7 +108,7 @@
                                     <table class="table table-bordered" id="myDataTable">
                                         <thead>
                                             <th>No.</th>
-                                            @if(@$data->module == 'customer')
+                                            @if(@$data->module == 'customer' || @$data->module == 'customer_class' || @$data->module == 'territory')
                                             <th>Customer Name</th>
                                             @endif
                                             @if(@$data->module == 'sales_specialist')
@@ -105,10 +116,17 @@
                                             @endif
                                             @if(@$data->module == 'role')
                                             <th>User Name</th>
+                                            @endif
+                                            @if(@$data->module == 'customer' || @$data->module == 'sales_specialist' || @$data->module == 'role')
                                             <th>Role</th>
                                             @endif
+                                            @if(@$data->module == 'customer_class')
+                                            <th>Customer Class</th>
+                                            @endif
+                                            @if(@$data->module == 'territory')
+                                            <th>Territory</th>
+                                            @endif
                                             <th>Is Seen</th>
-                                            <th>
                                         </thead>
                                         <tbody>
 
@@ -122,14 +140,97 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>
   </div>
 </div>
 @endsection
-@push('css')
 
+@push('css')
+<link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 @endpush
 
 @push('js')
+@if(@Auth::user()->role_id == 1)
+<script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+<script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
+<script>
+$(document).ready(function() {
+    render_table();
 
+    function render_table(){
+      var table = $("#myDataTable");
+      table.DataTable().destroy();
+
+      $filter_search = $('[name="filter_search"]').val();
+      $filter_type = $('[name="filter_type"]').find('option:selected').val();
+
+      table.DataTable({
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          order: [],
+          ajax: {
+              @if(@$data->module == 'role')
+              'url': "{{ route('news-and-announcement.getAllRole') }}",
+              @endif
+              @if(@$data->module == 'customer')
+              'url': "{{ route('news-and-announcement.getAllCustomer') }}",
+              @endif
+              @if(@$data->module == 'sales_specialist')
+              'url': "{{ route('news-and-announcement.getAllSalesSpecialist') }}",
+              @endif
+              @if(@$data->module == 'customer_class')
+              'url': "{{ route('news-and-announcement.getAllCustomerClass') }}",
+              @endif
+              @if(@$data->module == 'territory')
+              'url': "{{ route('news-and-announcement.getAllTerritory') }}",
+              @endif
+              'type': 'POST',
+              headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+              },
+              data:{
+                filter_search : $filter_search,
+                filter_type : $filter_type,
+                notification_id : "{{@$data->id}}",
+              }
+          },
+          columns: [
+              {data: 'DT_RowIndex'},
+              {data: 'user_name', name: 'user_name', orderable: false},
+              @if(@$data->module == 'customer' && @$data->module == 'role' && @$data->module == 'sales_specialist')
+              {data: 'role', name: 'role', orderable: false},
+              @endif
+              @if(@$data->module == 'customer_class')
+              {data: 'class_name', name: 'class_name', orderable: false},
+              @endif
+              @if(@$data->module == 'territory')
+              {data: 'territory', name: 'territory', orderable: false},
+              @endif
+              {data: 'is_seen', name: 'is_seen', orderable: false},
+          ],
+          drawCallback:function(){
+              $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+                $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+              })
+          },
+          initComplete: function () {
+          }
+        });
+    }
+
+    $(document).on('click', '.search', function(event) {
+      render_table();
+    });
+
+    $(document).on('click', '.clear-search', function(event) {
+      $('[name="filter_search"]').val('');
+      $('[name="filter_status"]').val('').trigger('change');
+      render_table();
+    });
+});
+</script>
+@endif
 @endpush

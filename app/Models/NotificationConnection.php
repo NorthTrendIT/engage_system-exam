@@ -15,6 +15,10 @@ class NotificationConnection extends Model
         'record_id',
     ];
 
+    public function user(){
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
     public function role(){
         return $this->hasOne(Role::class, 'id', 'record_id');
     }
@@ -33,24 +37,5 @@ class NotificationConnection extends Model
 
     public function territory(){
         return $this->hasOne(Territory::class, 'id', 'record_id');
-    }
-
-    public function scopeModule($query){
-        return $query
-                ->when($this->module === 'role',function($q){
-                    return $q->with('role');
-                })
-                ->when($this->module === 'customer',function($q){
-                    return $q->with('customer');
-                })
-                ->when($this->module === 'customer_class',function($q){
-                    return $q->with('customer_class');
-                })
-                ->when($this->module === 'sales_specialist',function($q){
-                    return $q->with('sales_specialist');
-                })
-                ->when($this->module === 'territory',function($q){
-                    return $q->with('territory');
-                });
     }
 }

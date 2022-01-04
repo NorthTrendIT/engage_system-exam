@@ -540,7 +540,7 @@
             </div>
             @endif
 
-            @if(Auth::user()->role_id == 1)
+            {{-- @if(Auth::user()->role_id == 1) --}}
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['news-and-announcement.index', 'news-and-announcement.edit', 'news-and-announcement.create'])) ? 'active' : '' }}" href="{{ route('news-and-announcement.index') }}">
                   <span class="menu-icon">
@@ -556,7 +556,7 @@
                   <span class="menu-title">News & Announcement</span>
                </a>
             </div>
-            @endif
+            {{-- @endif --}}
 
          </div>
          <!--end::Menu-->

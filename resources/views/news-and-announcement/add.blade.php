@@ -125,6 +125,19 @@
                     </div>
                 </div>
 
+                <div class="row mb-5 mt-10">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Select Priority<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="is_important">
+                                <option value="">Select Priority</option>
+                                <option value="0" @if(isset($edit) && $edit->is_important == 0) selected @endif>Normal</option>
+                                <option value="1" @if(isset($edit) && $edit->is_important == 1) selected @endif>Medium</option>
+                                <option value="2" @if(isset($edit) && $edit->is_important == 2) selected @endif>Important</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="row mb-5 mt-10">
                   <div class="col-md-12">
