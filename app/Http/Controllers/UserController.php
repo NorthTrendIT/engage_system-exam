@@ -381,7 +381,7 @@ class UserController extends Controller
                             ->addColumn('status', function($row) {
 
                                 $btn = "";
-                                if($row->is_active){
+                                if($row->is_active == 1){
                                     $btn .= '<a href="javascript:"  data-url="' . route('user.status',$row->id) . '" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
                                 }else{
                                     $btn .= '<a href="javascript:"  data-url="' . route('user.status',$row->id) . '" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';

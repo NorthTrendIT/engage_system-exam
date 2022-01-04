@@ -283,7 +283,7 @@ class CustomersSalesSpecialistsController extends Controller
 
             $data = User::where('sap_connection_id',$request->sap_connection_id)
                             ->where('role_id',2)
-                            ->where('is_active',true)
+                            ->where('is_active',1)
                             ->orderby('sales_specialist_name','asc')
                             ->select('id','sales_specialist_name')
                             ->limit(50);
