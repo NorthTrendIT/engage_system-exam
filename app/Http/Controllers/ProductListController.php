@@ -23,17 +23,31 @@ class ProductListController extends Controller
             
             $where = array('is_active' => true);
 
+            $products = Product::where($where)->orderBy('id', 'DESC')->limit(12);
             if ($request->id > 0) {
-                $products = Product::where('id', '<', $request->id)->where($where)->orderBy('id', 'DESC')->limit(12)->get();
-            } else {
-                $products = Product::where($where)->orderBy('id', 'DESC')->limit(12)->get();
+                $products->where('id', '<', $request->id);
             }
+
+            if($request->filter_search != ""){
+                $products->where(function($q) use ($request) {
+                    $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
+                });
+            }
+
+            $products = $products->get();
 
             $output = "";
             $button = "";
             $last_id = "";
 
-            $last = Product::where($where)->select('id')->first();
+            $last = Product::where($where)->select('id');
+            if($request->filter_search != ""){
+                $last->where(function($q) use ($request) {
+                    $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
+                });
+            }
+
+            $last = $last->first();
 
             if (!$products->isEmpty()) {
 
@@ -51,6 +65,10 @@ class ProductListController extends Controller
 
                 $button = '';
 
+            }
+
+            if($output == $button){
+                $output = "<div class='text-center mt-5'><h2>Result Not Found !</h2></div>";
             }
 
             return response()->json(['output' => $output, 'button' => $button]);

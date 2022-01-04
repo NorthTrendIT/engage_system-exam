@@ -26,13 +26,13 @@
 			<input class="form-control form-control-lg form-control-solid" type="email" name="email" autocomplete="off" />
 		</div>
 		<div class="fv-row mb-10">
-			<div class="d-flex flex-stack mb-2">
-				<label class="form-label fw-bolder text-dark fs-6 mb-0">Password</label>
-				<a href="{{ route('forgot-password.index') }}" class="link-primary fs-6 fw-bolder">Forgot Password ?</a>
-			</div>
+			<label class="form-label fs-6 fw-bolder text-dark">Password</label>
 			<input class="form-control form-control-lg form-control-solid" type="password" name="password" autocomplete="off" />
 		</div>
 		<!--end::Input group-->
+		<div class="fv-row mb-10 text-left">
+			<a href="{{ route('forgot-password.index') }}" class="link-primary fs-6 fw-bolder">Forgot Password ?</a>
+		</div>
 		<!--begin::Actions-->
 		<div class="text-center">
 			<!--begin::Submit button-->

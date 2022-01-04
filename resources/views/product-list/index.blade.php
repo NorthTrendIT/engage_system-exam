@@ -23,6 +23,24 @@
             </div> --}}
             <div class="card-body">
 
+              <div class="row mb-6">
+                <div class="col-md-7">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
+                    <span>
+                      <i class="flaticon2-search-1 text-muted"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
+                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
+                </div>
+              </div>
+
+              <hr>
+
               <div class="row mb-5">
                 <div class="col-md-12">
                   <div class="form-group">
@@ -61,12 +79,16 @@ $(document).ready(function() {
 
   function getProductList($id = ""){
     $('#view_more_btn').remove();
+
+    $filter_search = $('[name="filter_search"]').val();
+
     $.ajax({
       url: '{{ route('product-list.get-all') }}',
       type: 'POST',
       dataType:'json',
       data: {
               id: $id,
+              filter_search : $filter_search,
               _token:'{{ csrf_token() }}',
             },
     })
@@ -79,14 +101,24 @@ $(document).ready(function() {
     });
   }
 
-
-
   $(document).on('click', '#view_more_btn', function(event) {
     event.preventDefault();
     $id = $(this).attr('data-id');
     getProductList($id);
   });
 
+  $(document).on('click', '.search', function(event) {
+    $('#product_list_row').html("");
+    getProductList();
+  });
+
+  $(document).on('click', '.clear-search', function(event) {
+    $('#product_list_row').html("");
+    $('[name="filter_search"]').val('');
+    getProductList();
+  })
+
+  @if(userdepartment() != 1)
     $(document).on('click', '.addToCart', function(event) {
       event.preventDefault();
       $url = $(this).attr('data-url');
@@ -111,6 +143,7 @@ $(document).ready(function() {
                 toast_error("error");
             });
     });
+  @endif
 });
 </script>
 @endpush

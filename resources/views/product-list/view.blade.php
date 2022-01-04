@@ -47,7 +47,7 @@
                                   @endif
                                 @endforeach
                               @else
-                                <img src="{{ asset('assets') }}/assets/media/img-1.jpg"/>
+                                <div class="tab-pane active" id="pic"><img src="{{ asset('assets') }}/assets/media/img-1.jpg" /></div>
                               @endif
                            </div>
                            <ul class="preview-thumbnail nav nav-tabs">
@@ -60,6 +60,8 @@
                                    <li class="{{ $key == 0 ? "active" : "" }}"><a data-target="#pic-{{ $key }}" data-toggle="tab"><img src="{{ asset('assets') }}/assets/media/img-1.jpg" /></a></li>
                                   @endif
                                  @endforeach
+                              @else
+                                <li class="active"><a data-target="#pic" data-toggle="tab"><img src="{{ asset('assets') }}/assets/media/img-1.jpg" /></a></li>
                               @endif
 
                            </ul>
@@ -68,23 +70,6 @@
                       <div class="col-md-6">
 
                          <h5>{{ @$product->item_name ?? "" }}</h5>
-                         <ul class="rating">
-                            <li>
-                            <i class="fas fa-star fa-sm text-primary"></i>
-                            </li>
-                            <li>
-                            <i class="fas fa-star fa-sm text-primary"></i>
-                            </li>
-                            <li>
-                            <i class="fas fa-star fa-sm text-primary"></i>
-                            </li>
-                            <li>
-                            <i class="fas fa-star fa-sm text-primary"></i>
-                            </li>
-                            <li>
-                            <i class="far fa-star fa-sm text-primary"></i>
-                            </li>
-                         </ul>
                          <p><span class="mr-1 price"><strong>₱ {{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num) }}</strong></span></p>
                          <p class="pt-1">{!! @$product->technical_specifications ?? "" !!}</p>
                          <div class="table-responsive">
@@ -123,16 +108,18 @@
                             </tbody>
                             </table>
                          </div> -->
-                         <button type="button" class="btn btn-primary btn-md mr-1 mb-2">Buy now</button>
-                         @if(is_in_cart(@$product->id) == 1)
-                         <a class="btn btn-light btn-md mr-1 mb-2" href="{{ route('cart.index') }}">
-                             <i class="fas fa-shopping-cart pr-2"></i>Go to cart
-                         </a>
-                         @else
-                         <button type="button" class="btn btn-light btn-md mr-1 mb-2 addToCart" data-url="{{ route('cart.add',@$product->id) }}">
-                             <i class="fas fa-shopping-cart pr-2"></i>Add to cart
-                         </button>
-                         @endif
+                         @if(userdepartment() != 1)
+                             <button type="button" class="btn btn-primary btn-md mr-1 mb-2">Buy now</button>
+                             @if(is_in_cart(@$product->id) == 1)
+                             <a class="btn btn-light btn-md mr-1 mb-2" href="{{ route('cart.index') }}">
+                                 <i class="fas fa-shopping-cart pr-2"></i>Go to cart
+                             </a>
+                             @else
+                             <button type="button" class="btn btn-light btn-md mr-1 mb-2 addToCart" data-url="{{ route('cart.add',@$product->id) }}">
+                                 <i class="fas fa-shopping-cart pr-2"></i>Add to cart
+                             </button>
+                             @endif
+                        @endif
                       </div>
                       </div>
 
@@ -200,12 +187,6 @@
 @endpush
 
 @push('js')
-
-<!--begin::Page Custom Javascript(used by this page)-->
-<script src="{{ asset('assets') }}/assets/js/popper.min.js"></script>
-<script src="{{ asset('assets') }}/assets/js/bootstrap.js"></script>
-<!--end::Page Custom Javascript-->
-
 
 <script>
 $(document).ready(function() {
