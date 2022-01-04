@@ -130,11 +130,7 @@ $(document).ready(function() {
               }
           },
           columns: [
-<<<<<<< HEAD
-              {data: 'DT_RowIndex', orderable: false},
-=======
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
->>>>>>> 9704ae1282438a7e447986b05b3f061063e910c2
               {data: 'title', name: 'title'},
               {data: 'type', name: 'type'},
               @if(@Auth::user()->role_id == 1)
