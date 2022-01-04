@@ -22,7 +22,14 @@ class UserController extends Controller
      */
     public function index()
     {
-        $roles = Role::where('id','!=',1)->get();
+
+        // If not admin then show only its
+        if(userrole() != 1){
+            $roles = Role::where('user_id',Auth::id())->get();
+        }else{
+            $roles = Role::where('id','!=',1)->whereNull('user_id')->get();
+        }
+
         return view('user.index',compact('roles'));
     }
 
@@ -35,7 +42,14 @@ class UserController extends Controller
     {
         $roles = Role::where('id','!=',1)->get();
         $provinces = Location::whereNull('parent_id')->where('is_active',true)->get();
-        $departments = Department::where('is_active',true)->get();
+
+        // If not admin then show only its
+        if(userrole() != 1){
+            $departments = Department::where('user_id',Auth::id())->where('is_active',true)->get();
+        }else{
+            $departments = Department::whereNull('user_id')->where('is_active',true)->get();
+        }
+
         return view('user.add',compact('roles','provinces','departments'));
     }
 
@@ -85,6 +99,10 @@ class UserController extends Controller
                 $user = new User();
                 $message = "New User created successfully.";
                 $input['password'] = Hash::make($input['confirm_password']);
+
+                if(userrole() != 1){
+                    $input['created_by'] = Auth::id();
+                }
             }
 
             $old_profile = file_exists(public_path('sitebucket/users/') . "/" . $user->profile);
@@ -140,7 +158,12 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $data = User::where('id','!=',1)->where('id',$id)->firstOrFail();
+        // If not admin then show only its
+        if(userrole() != 1){
+            $data = User::where('id','!=',1)->where('id',$id)->where('created_by',Auth::id())->firstOrFail();
+        }else{
+            $data = User::where('id','!=',1)->where('id',$id)->firstOrFail();
+        }
 
         $tree = json_encode($this->getUserTreeData($id));
 
@@ -155,10 +178,23 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $edit = User::where('id','!=',1)->where('id',$id)->firstOrFail();
+        // If not admin then show only its
+        if(userrole() != 1){
+            $edit = User::where('id','!=',1)->where('id',$id)->where('created_by',Auth::id())->firstOrFail();
+        }else{
+            $edit = User::where('id','!=',1)->where('id',$id)->firstOrFail();
+        }
+
         $provinces = Location::whereNull('parent_id')->where('is_active',true)->get();
-        $departments = Department::where('is_active',true)->get();
         $parents = User::where('id','!=',1)->where('parent_id',$edit->parent_id)->get();
+        
+        // If not admin then show only its
+        if(userrole() != 1){
+            $departments = Department::where('user_id',Auth::id())->where('is_active',true)->get();
+        }else{
+            $departments = Department::whereNull('user_id')->where('is_active',true)->get();
+        }
+
 
         $cities = collect();
         if($edit->province_id){
@@ -188,7 +224,14 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $data = User::find($id);
+        $data = User::where('id', $id);
+        // If not admin then show only its
+        if(userrole() != 1){
+            $data->where('created_by',Auth::id());
+        }
+        $data = $data->first();
+
+
         if(!is_null($data)){
             $data->delete();
 
@@ -204,7 +247,13 @@ class UserController extends Controller
 
     public function updateStatus($id)
     {
-        $data = User::find($id);
+        $data = User::where('id', $id);
+        // If not admin then show only its
+        if(userrole() != 1){
+            $data->where('created_by',Auth::id());
+        }
+        $data = $data->first();
+
         if(!is_null($data)){
             $data->is_active = !$data->is_active;
             $data->save();
@@ -289,6 +338,10 @@ class UserController extends Controller
             });
         }
 
+        if(userrole() != 1){
+            $data->where('created_by',Auth::id());
+        }
+
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
         });
@@ -296,9 +349,14 @@ class UserController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('user.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
-                                    <i class="fa fa-pencil"></i>
-                                  </a>';
+                                $btn = "";
+
+                                if( (is_null($row->created_by) && userrole() == 1) || (!is_null($row->created_by) && $row->created_by == Auth::id()) ){
+                                    $btn .= '<a href="' . route('user.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                        <i class="fa fa-pencil"></i>
+                                      </a>';
+                                }
+
                                 $btn .= ' <a href="javascript:void(0)" data-url="' . route('user.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
                                     <i class="fa fa-trash"></i>
                                   </a>';
@@ -323,7 +381,7 @@ class UserController extends Controller
                             ->addColumn('status', function($row) {
 
                                 $btn = "";
-                                if($row->is_active){
+                                if($row->is_active == 1){
                                     $btn .= '<a href="javascript:"  data-url="' . route('user.status',$row->id) . '" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
                                 }else{
                                     $btn .= '<a href="javascript:"  data-url="' . route('user.status',$row->id) . '" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';

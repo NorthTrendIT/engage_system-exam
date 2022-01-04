@@ -96,7 +96,7 @@
                 <div class="row mb-5 mt-10">
                   <div class="col-md-12">
                     <div class="form-group">
-                      <label>Upload Product Image</label>
+                      <label>Upload Product Image<span class="asterisk">*</span></label>
                     </div>
                   </div>
                 </div>
@@ -110,7 +110,7 @@
 
                         <div class="col-md-6">
                           <div class="form-group">
-                            <input type="hidden" name="image" value="{{$image->image}}">
+                            <input type="hidden" name="image" value="{{$image->image}}" class="product_images_value">
                             <input type="file" class="dropify form-control form-control-solid product_images_image" name="image" accept="image/*" data-allowed-file-extensions="jpeg jpg png eps bmp tif tiff webp" data-max-file-size-preview="10M">
                           </div>
                         </div>
@@ -227,7 +227,13 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.href = '{{ route('product.index') }}';
+
+                @if(isset($edit->id))
+                  window.location.reload(); 
+                @else
+                  window.location.href = '{{ route('product.index') }}';
+                @endif
+                
               },500)
             } else {
               toast_error(data.message);
@@ -255,8 +261,16 @@
       });
 
       $('.product_images_image').each(function() {
+        var pre_image = $(this).prev('.product_images_value').val();
+
         $(this).rules('add', {
-          required:false,
+          required: function () {
+                      if(!pre_image){
+                          return true;
+                      }else{
+                          return false;
+                      }
+                  },
           messages: {
             accept : "Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp files."
           }
@@ -270,6 +284,7 @@
       initEmpty: false,
       show: function () {
         // $(this).find('input[type="file"]').dropify();
+        $(this).find('.product_images_value').remove();
         $(this).find('.image_preview').remove();
         $(this).slideDown();
       },

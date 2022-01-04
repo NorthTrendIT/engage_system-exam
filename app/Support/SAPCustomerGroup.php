@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\CustomerGroup;
+use App\Models\SapConnection;
 
 class SAPCustomerGroup
 {
@@ -17,13 +18,15 @@ class SAPCustomerGroup
 
 	protected $database;
 	protected $username;
-	protected $password;
+    protected $password;
+	protected $log_id;
 
-    public function __construct($database, $username, $password)
+    public function __construct($database, $username, $password, $log_id = false)
     {
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
+        $this->log_id = $log_id;
 
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
@@ -55,6 +58,13 @@ class SAPCustomerGroup
             }
             
         } catch (\Exception $e) {
+
+            add_sap_log([
+                            'status' => "error",
+                            'error_data' => $e->getMessage(),
+                        ], $this->log_id);
+
+
             return array(
                                 'status' => false,
                                 'data' => []
@@ -71,6 +81,13 @@ class SAPCustomerGroup
             $response = $this->getCustomerGroupData();
         }
 
+        $where = array(
+                    'db_name' => $this->database,
+                    'user_name' => $this->username,
+                );
+
+        $sap_connection = SapConnection::where($where)->first();
+
         if($response['status']){
             $data = $response['data'];
 
@@ -78,15 +95,21 @@ class SAPCustomerGroup
 
                 foreach ($data['value'] as $value) {
                     
+                    if(@$value['Type'] != "bbpgt_CustomerGroup"){
+                        continue;
+                    }
+                
                     $insert = array(
                                     'code' => @$value['Code'],
                                     'name' => @$value['Name'],
                                     'type' => @$value['Type'],
+                                    'sap_connection_id' => @$sap_connection->id,
                                 );
 
                     $obj = CustomerGroup::updateOrCreate(
                                             [
                                                 'code' => @$value['Code'],
+                                                'sap_connection_id' => @$sap_connection->id,
                                             ],
                                             $insert
                                         );
@@ -95,6 +118,10 @@ class SAPCustomerGroup
                 // Store Data of Customer Group in database
                 if(isset($data['odata.nextLink'])){
                     $this->addCustomerGroupDataInDatabase($data['odata.nextLink']);
+                }else{
+                    add_sap_log([
+                            'status' => "completed",
+                        ], $this->log_id);
                 }
             }
         }

@@ -196,7 +196,13 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.href = '{{ route('help-desk.index') }}';
+
+                @if(isset($edit->id))
+                  window.location.reload(); 
+                @else
+                  window.location.href = '{{ route('help-desk.index') }}';
+                @endif
+
               },500)
             } else {
               toast_error(data.message);

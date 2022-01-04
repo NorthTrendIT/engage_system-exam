@@ -65,6 +65,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                              <th>No.</th>
                               <th>Title</th>
                               <th>Status</th>
                               <th>Action</th>
@@ -131,6 +132,7 @@
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'title', name: 'title'},
               {data: 'status', name: 'status'},
               {data: 'action', name: 'action'},

@@ -35,6 +35,61 @@ class CheckRoleModuleAccess
                 $status = true;
 
                 // User Module
+                if(in_array($request->route()->getName(), ['role.index','role.get-all','role.show'])){
+
+                    if(@$access['view-role'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for role module.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['role.create'])){
+
+                    if(@$access['add-role'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for create role.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['role.store'])){
+
+                    if(isset($request->id)){
+                        if(@$access['edit-role'] != 1){
+
+                            $status = false;
+                            $message = "Oops ! you have not access for edit role.";
+
+                        }
+                    }else{
+                        if(@$access['add-role'] != 1){
+
+                            $status = false;
+                            $message = "Oops ! you have not access for create role.";
+
+                        }
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['role.edit','role.status'])){
+
+                    if(@$access['edit-role'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for edit role.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['role.destroy'])){
+                    if(@$access['delete-role'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for delete role.";
+
+                    }
+                }
+
+                // User Module
                 if(in_array($request->route()->getName(), ['user.index','user.get-all','user.show'])){
 
                     if(@$access['view-user'] != 1){
@@ -378,8 +433,26 @@ class CheckRoleModuleAccess
                     }
                 }
 
-            }
+                // Product Group Module
+                if(in_array($request->route()->getName(), ['product-group.index','product-group.get-all'])){
 
+                    if(@$access['view-product-group'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for product group module.";
+
+                    }
+                }elseif(in_array($request->route()->getName(), ['product-group.sync-product-groups'])){
+                    if(@$access['add-product-group'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for sync product groups.";
+
+                    }
+                }
+
+            }
+            
             if(!$status){
                 if($request->ajax()){
                     $response = array('status' => $status, "message" => $message);

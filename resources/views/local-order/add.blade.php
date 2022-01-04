@@ -34,7 +34,7 @@
                                         <div class="col-xl-4 col-lg-4 col-md-4 col-12">
                                             <div class="form-group">
                                                 <label class="col-form-label text-right">Select Customers<span class="asterisk">*</span></label>
-                                                <select class="form-select form-select-solid" id='selectCustomers' data-control="select2" data-hide-search="false" name="customer_id">
+                                                <select class="form-select form-select-solid" id='selectCustomers' data-control="select2" data-hide-search="false" name="customer_id" @if(isset($edit)) disabled="disabled" @endif>
                                                     @if(isset($edit))
                                                     <option value="{{ $edit->customer_id }}" selected>{{ $edit->customer->card_name }}</option>
                                                     @else
@@ -46,7 +46,7 @@
                                         <div class="col-xl-4 col-lg-4 col-md-4 col-12">
                                             <div class="form-group">
                                                 <label class="col-form-label text-right">Select Address<span class="asterisk">*</span></label>
-                                                <select class="form-select form-select-solid" id='selectAddress' data-control="select2" data-hide-search="false" name="address_id" disabled="disabled">
+                                                <select class="form-select form-select-solid" id='selectAddress' data-control="select2" data-hide-search="false" name="address_id" @if(!isset($edit)) disabled="disabled" @endif>
                                                     @if(isset($edit))
                                                         <option value="{{ $edit->address->id }}" selected>{{$edit->address->address}}</option>
                                                     @else
@@ -87,8 +87,8 @@
 
                                                     <th class="min-w-150px">Product</th>
                                                     <th class="min-w-80px">Quantity</th>
-                                                    <th class="min-w-80px">Price</th>
-                                                    <th class="min-w-80px">Amount</th>
+                                                    <th class="min-w-80px" style="text-align:right">Price</th>
+                                                    <th class="min-w-80px" style="text-align:right">Amount</th>
                                                     <th class="min-w-80px"></th>
                                                     </tr>
                                                 </thead>
@@ -97,7 +97,7 @@
                                                 <tbody data-repeater-list="products">
                                                     @if(isset($edit))
                                                         @foreach($edit->items as $value)
-                                                        <tr data-repeater-item>
+                                                        <tr data-repeater-item name="items">
                                                             <td>
                                                                 <div class="form-group">
                                                                     <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
@@ -106,13 +106,13 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <input type="number" class="form-control quantity" name="quantity" placeholder="Enter quantity" value="{{ $value->quantity }}">
+                                                                <input type="number" class="form-control quantity" name="quantity" data-price="{{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}" placeholder="Enter quantity" value="{{ $value->quantity }}">
                                                             </td>
-                                                            <td>
-                                                                <input type="number" class="form-control" placeholder="Price" value="0.00" disabled="disabled">
+                                                            <td style="text-align:right">
+                                                                <span class="price text-primary">₱ {{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}</span>
                                                             </td>
-                                                            <td>
-                                                                <input type="number" class="form-control" placeholder="Price" value="0.00" disabled="disabled">
+                                                            <td style="text-align:right">
+                                                                <span class="amount text-primary" style="font-weight: bold">₱ {{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity }}</span>
                                                             </td>
                                                             <td>
                                                                 <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
@@ -120,7 +120,7 @@
                                                         </tr>
                                                         @endforeach
                                                     @else
-                                                    <tr data-repeater-item>
+                                                    <tr data-repeater-item name="items">
                                                         <td>
                                                             <div class="form-group">
                                                                 <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
@@ -129,13 +129,13 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="number" class="form-control quantity" name="quantity" placeholder="Enter quantity">
+                                                            <input type="number" class="form-control quantity" name="quantity" data-price="0" placeholder="Enter quantity" value="">
                                                         </td>
-                                                        <td>
-                                                            <input type="number" class="form-control" placeholder="Price" value="0.00" disabled="disabled">
+                                                        <td style="text-align:right">
+                                                            <span class="price text-primary">₱ 0</span>
                                                         </td>
-                                                        <td>
-                                                            <input type="number" class="form-control" placeholder="Price" value="0.00" disabled="disabled">
+                                                        <td style="text-align:right">
+                                                            <span class="amount text-primary" style="font-weight: bold">₱ 0</span>
                                                         </td>
                                                         <td>
                                                             <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
@@ -176,7 +176,7 @@
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">sub total</span>
                                             </div>
                                             <div class="col-md-6 mb-3 ">
-                                                <span style="text-align: right; width: 100%;" class="d-block">0.00</span>
+                                                <span style="text-align: right; width: 100%;" class="d-block text-primary price subTotal">@if(isset($edit)) ₱ {{ $total }} @else ₱ 0.00 @endif</span>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">discount</span>
@@ -190,7 +190,7 @@
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">total</span>
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <span style="text-align: right; width: 100%;" class="d-block">0.00</span>
+                                                <span style="text-align: right; width: 100%;" class="d-block text-primary price grandTotal">@if(isset($edit)) ₱ {{ $total }} @else ₱ 0.00 @endif</span>
                                             </div>
                                         </div>
                                     </div>
@@ -205,9 +205,7 @@
                         <div class="col-xl-12">
                             <div class="d-flex flex-wrap pt-2 text-center justify-content-center">
                                 <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Save to Draft">
-                                @if(isset($edit))
-                                    <input type="button" class="btn btn-lg btn-primary placeOrder" value="Place Order">
-                                @endif
+                                <input type="button" class="btn btn-lg btn-primary placeOrder" value="Save & Place Order">
                             </div>
                         </div>
                     </div>
@@ -229,7 +227,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" ></script>
-<script src="{{ asset('assets')}}/assets/js/custom/bootstrap-datepicker.js"/></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.repeater/1.2.1/jquery.repeater.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -243,7 +240,8 @@
                 data: function (params) {
                     return {
                         _token: "{{ csrf_token() }}",
-                        search: params.term
+                        search: params.term,
+                        customer_id: $('[name="customer_id"]').val(),
                     };
                 },
                 processResults: function (response) {
@@ -253,7 +251,7 @@
                 },
                 cache: true
             },
-            placeholder: 'Select Products.',
+            placeholder: 'Select Product',
             // minimumInputLength: 1,
             multiple: false,
             // data: $initialOptions
@@ -273,7 +271,8 @@
                         data: function (params) {
                             return {
                                 _token: "{{ csrf_token() }}",
-                                search: params.term
+                                search: params.term,
+                                customer_id: $('[name="customer_id"]').val(),
                             };
                         },
                         processResults: function (response) {
@@ -283,7 +282,7 @@
                         },
                         cache: true
                     },
-                    placeholder: 'Select Products.',
+                    placeholder: 'Select Product',
                     // minimumInputLength: 1,
                     multiple: false,
                     // data: $initialOptions
@@ -329,6 +328,66 @@
             } else {
                 $('#selectAddress').prop('disabled', 'disabled');
             }
+
+            if($customer){
+                $.ajax({
+                    url: "{{route('sales-specialist-orders.get-customer-schedule')}}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        customer_id: $('[name="customer_id"]').val(),
+                    },
+                    success: function (data) {
+                        if (data.status) {
+                            $dates = JSON.parse(data.dates);
+
+                            function formatDate(d) {
+                                var day = String(d.getDate())
+                                //add leading zero if day is is single digit
+                                if (day.length == 1)
+                                    day = '0' + day
+                                var month = String((d.getMonth()+1))
+                                //add leading zero if month is is single digit
+                                if (month.length == 1)
+                                    month = '0' + month
+                                return day + "/" + month + "/" + d.getFullYear()
+                            }
+
+                            if($dates.length > 0){
+                                $('[name="due_date"]').datepicker({
+                                    format: 'dd/mm/yyyy',
+                                    todayHighlight: true,
+                                    orientation: "bottom left",
+                                    startDate: "+3d",
+                                    autoclose: true,
+                                    beforeShowDay: function(date){
+                                        if ($dates.indexOf(formatDate(date)) < 0)
+                                        return {
+                                            enabled: false
+                                        }
+                                        else
+                                        return {
+                                            enabled: true
+                                        }
+                                    },
+                                });
+                            } else {
+                                $('[name="due_date"]').datepicker({
+                                    format: 'dd/mm/yyyy',
+                                    todayHighlight: true,
+                                    orientation: "bottom left",
+                                    startDate: "+3d",
+                                    autoclose: true,
+                                });
+                            }
+
+                        }
+                    },
+                    error: function () {
+                        toast_error("Something went to wrong !");
+                    },
+                });
+            }
         });
 
         $("#selectAddress").select2({
@@ -364,6 +423,7 @@
             if (validator.form() != false) {
                 $('[type="submit"]').prop('disabled', true);
                 $('[name="address_id"]').removeAttr('disabled');
+                $('[name="customer_id"]').removeAttr('disabled');
                 $.ajax({
                     url: "{{route('sales-specialist-orders.store')}}",
                     type: "POST",
@@ -380,11 +440,13 @@
                         } else {
                             toast_error(data.message);
                             $('[type="submit"]').prop('disabled', false);
+                            $('[name="customer_id"]').prop('disabled', false);
                         }
                     },
                     error: function () {
                         toast_error("Something went to wrong !");
                         $('[type="submit"]').prop('disabled', false);
+                        $('[name="customer_id"]').prop('disabled', false);
                     },
                 });
             }
@@ -486,6 +548,70 @@
             });
             return validator;
         }
+
+        $(document).on('change', '.selectProducts',function(event){
+            $self = $(this);
+            $customer_id = $('[name="customer_id"]').val();
+            if($customer_id){
+                $.ajax({
+                    url: "{{route('sales-specialist-orders.get-price')}}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        product_id: $(this).val(),
+                        customer_id: $('[name="customer_id"]').val(),
+                    },
+                    success: function (data) {
+                        if (data.status) {
+                            $self.parent().parent().parent().find('.price').html('₱'+ data.price);
+                            $self.parent().parent().parent().find('.quantity').attr('data-price', data.price);
+                            $self.parent().parent().parent().find(".quantity").val(1).trigger('keyup');
+                        } else {
+                            toast_error(data.message);
+                        }
+                    },
+                    error: function () {
+                        toast_error("Something went to wrong !");
+                    },
+                });
+            } else {
+                $product_id = $(this).val();
+                if($product_id){
+                    Swal.fire({
+                        title: 'Please select Customer.',
+                        // text: result.message,
+                        icon: 'warning',
+                        showCancelButton: false,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ok'
+                    }).then((result) => {
+                        $(this).val(null).trigger('change');
+                    });
+                }
+            }
+        });
+
+        $(document).on('keyup', "input[type=number]",function(event){
+            $price = parseFloat($(this).attr('data-price'));
+            $qty = parseFloat($(this).val());
+            $amount = $price * $qty;
+            if(isNaN($qty) || $qty <= 0){
+                $(this).val(1);
+                $amount = $price;
+            }
+            $(this).parent().parent().find('td .amount').html('₱ '+$amount.toFixed(2));
+
+            $grandTotal = 0;
+            $("tr[name='items']").each(function(){
+                $subPrice = parseFloat($(this).find('.quantity').data('price'));
+                $subQty = parseFloat($(this).find('.quantity').val());
+                $grandTotal += $subPrice * $subQty;
+            });
+
+            $('.subTotal').html('₱ '+$grandTotal.toFixed(2));
+            $('.grandTotal').html('₱ '+$grandTotal.toFixed(2));
+        });
     });
 </script>
 @endpush

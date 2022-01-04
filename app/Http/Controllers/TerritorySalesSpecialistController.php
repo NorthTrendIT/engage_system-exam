@@ -186,6 +186,7 @@ class TerritorySalesSpecialistController extends Controller
 
 
         return DataTables::of($data)
+                            ->addIndexColumn()
                             ->addColumn('territory', function($row) {
 
                                 $descriptions = array_map( function ( $t ) {

@@ -34,6 +34,10 @@ class User extends Authenticatable
         'territory_id',
         'customer_id',
         'first_login',
+        'sap_connection_id',
+        'sales_employee_code',
+        'created_by',
+        'password_text',
     ];
 
     /**
@@ -68,6 +72,11 @@ class User extends Authenticatable
     public function parent()
     {
         return $this->belongsTo(User::class,'parent_id');
+    }
+
+    public function created_by_user()
+    {
+        return $this->belongsTo(User::class,'created_by');
     }
 
     public function province()

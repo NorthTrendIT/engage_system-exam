@@ -4,6 +4,7 @@ use App\Models\RoleModuleAccess;
 use App\Models\ActivityLog;
 use App\Models\ActivityMaster;
 use App\Models\Module;
+use App\Models\Cart;
 use Auth as Auth;
 
 function add_login_log(){
@@ -53,6 +54,8 @@ function add_log($activity_id, $data = NULL){
     $log->activity_id = $activity_id;
     $log->user_id = \Auth::id();
     $log->data = json_encode($data);
+    $log->type = "O";
+    $log->status = null;
     $log->save();
 }
 
@@ -123,4 +126,41 @@ function ordinal($number) {
         return $number. 'th';
     else
         return $number. $ends[$number % 10];
+}
+
+function is_in_cart($id){
+    $cart = Cart::where(['product_id' => $id, 'customer_id' => @Auth::user()->customer_id])->get();
+    if(count($cart)){
+        return 1;
+    }
+    return 0;
+}
+
+function add_sap_log($data, $id = false){
+
+    if($id){
+        $log = ActivityLog::find($id);
+    }else{
+        $log = new ActivityLog();
+    }
+    $log->fill($data)->save();
+
+    return @$log->id;
+}
+
+function userid(){
+    return @Auth::user()->id;
+}
+
+function userip(){
+    return \Request::ip();
+}
+
+function get_random_password($length = 8){
+
+    $password = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ') , 0 , 1);
+
+    $password .= substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-=~!@#$%^&*()_+,./<>?;:[]{}\|') , 0 , $length - 1 );
+
+    return $password;
 }

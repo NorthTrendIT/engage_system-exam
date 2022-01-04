@@ -58,10 +58,15 @@ class PromotionsController extends Controller
                     'territories_ids'=> 'required_if:promotion_scope,==,T',
                     'class_ids'=> 'required_if:promotion_scope,==,CL',
                     'sales_specialist_ids'=> 'required_if:promotion_scope,==,SS',
+                    'promo_image'=> 'required|max:5000|mimes:jpeg,png,jpg,eps,bmp,tif,tiff,webp',
                 );
 
         if($input['promotion_for'] == "All"){
             $input['promotion_scope'] = null;
+        }
+
+        if(isset($input['id'])){
+            unset($rules['promo_image']);
         }
 
         if(request()->hasFile('promo_image')){
@@ -130,10 +135,10 @@ class PromotionsController extends Controller
                 $message = "Promotion created successfully.";
             }
 
-            $old_promo_image = file_exists(public_path('sitebucket/promotion/') . "/" . $promotion->promo_image);
-            if(request()->hasFile('promo_image') && $promotion->promo_image && $old_promo_image){
+            $old_promo_image = file_exists(public_path('sitebucket/promotion/') . "/" . @$promotion->promo_image);
+            if(request()->hasFile('promo_image') && @$promotion->promo_image && $old_promo_image){
                 unlink(public_path('sitebucket/promotion/') . "/" . $promotion->promo_image);
-                $input['promo_image'] = null;
+                $promotion->promo_image = null;
             }
 
             /*Upload Image*/
@@ -141,7 +146,7 @@ class PromotionsController extends Controller
                 $file = $request->file('promo_image');
                 $name = date("YmdHis") . $file->getClientOriginalName();
                 request()->file('promo_image')->move(public_path() . '/sitebucket/promotion/', $name);
-                $input['promo_image'] = $name;
+                $promotion->promo_image = $name;
             }
 
             $promotion->promotion_type_id = $input['promotion_type_id'];
@@ -150,7 +155,7 @@ class PromotionsController extends Controller
             // $promotion->discount_percentage = $input['discount_percentage'];
             $promotion->promotion_for = $input['promotion_for'];
             $promotion->promotion_scope = $input['promotion_scope'];
-            $promotion->promo_image = !empty($input['promo_image']) && $input['promo_image'] ? $input['promo_image'] : null;
+            // $promotion->promo_image = !empty($input['promo_image']) && $input['promo_image'] ? $input['promo_image'] : null;
             $promotion->promotion_start_date = date('Y-m-d',strtotime($input['promotion_start_date']));
             $promotion->promotion_end_date = date('Y-m-d',strtotime($input['promotion_end_date']));
             $promotion->save();
@@ -540,7 +545,7 @@ class PromotionsController extends Controller
         return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('customer', function($row) {
-                    return @$row->customer->sales_specialist_name ?? "-";
+                    return @$row->user->sales_specialist_name ?? "-";
                 })
                 ->addColumn('is_interested', function($row) {
                     return $row->is_interested ? "Yes" : "No";

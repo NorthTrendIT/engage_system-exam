@@ -29,7 +29,7 @@
             <div class="card-header border-0 pt-5 min-0">
               <h5>View Details</h5>
 
-              <a href="{{ route('customer-promotion.order.create',$data->id) }}" class="btn btn-success">Claim Now</a>
+              <a href="javascript:" data-href="{{ route('customer-promotion.order.create',$data->id) }}" class="btn btn-success claim-now-btn" @if(userrole() != 4) style="display:none;" @endif>Claim Now</a>
             </div>
             <div class="card-body">
               
@@ -131,6 +131,19 @@
             </div>
             <div class="card-body">
 
+              @if(userrole() != 4) {{-- If its not a customer --}}
+                <div class="row mb-5">
+                  <div class="col-md-8">
+                    <div class="form-group">
+                      <label>Customer<span class="asterisk">*</span></label>
+                      <select class="form-control form-control-lg form-control-solid" name="customer_id" data-control="select2" data-hide-search="false" data-placeholder="Select Customer" data-allow-clear="false">
+                        <option value=""></option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              @endif
+
               <div class="row mb-5 mt-10" id="product_list_row">
                 
               </div>
@@ -143,7 +156,7 @@
               
               <div class="row mt-5">
                 <div class="col-md-12 d-flex justify-content-center">
-                  <a href="{{ route('customer-promotion.order.create',$data->id) }}" class="btn btn-success">Claim Now</a>
+                  <a href="javascript:" data-href="{{ route('customer-promotion.order.create',$data->id) }}" class="btn btn-success claim-now-btn" @if(userrole() != 4) style="display:none;" @endif>Claim Now</a>
                 </div>
               </div>
 
@@ -163,7 +176,10 @@
 @push('js')
 <script>
 $(document).ready(function() {
+  
+  @if(userrole() == 4) // If its a customer
   getProductList();
+  @endif
 
   function getProductList($id = ""){
     $('#view_more_btn').remove();
@@ -176,6 +192,10 @@ $(document).ready(function() {
               promotion_id: '{{ @$data->id }}',
               id: $id,
               _token:'{{ csrf_token() }}',
+              
+              @if(userrole() != 4) // If its a customer
+              customer_id:$('[name="customer_id"]').val(),
+              @endif
             },
     })
     .done(function(data) {
@@ -187,13 +207,67 @@ $(document).ready(function() {
     });
   }
 
-
-
   $(document).on('click', '#view_more_btn', function(event) {
     event.preventDefault();
     $id = $(this).attr('data-id');
     getProductList($id);
   });
+
+  $('[name="customer_id"]').select2({
+    ajax: {
+      url: "{{route('customer-promotion.get-customer')}}",
+      type: "post",
+      dataType: 'json',
+      delay: 250,
+      data: function (params) {
+          return {
+              _token: "{{ csrf_token() }}",
+              search: params.term
+          };
+      },
+      processResults: function (response) {
+        return {
+          results:  $.map(response, function (item) {
+                        return {
+                          text: item.card_name,
+                          id: item.id
+                        }
+                    })
+        };
+      },
+      cache: true,
+    },
+  });
+
+  $(document).on('change', '[name="customer_id"]', function(event) {
+    event.preventDefault();
+    $('#product_list_row').html("");
+    $('.claim-now-btn').show();
+    getProductList();
+  });
+
+  $(document).on('click', '.view-product-a', function(event) {
+    event.preventDefault();
+    var url = $(this).data('href');
+
+    @if(userrole() != 4) // If its not a customer
+      url += "/" + $('[name="customer_id"]').val(); 
+    @endif
+
+    window.open(url, '_blank');
+  });
+
+
+  $(document).on('click', '.claim-now-btn', function(event) {
+    event.preventDefault();
+    var url = $(this).data('href');
+
+    @if(userrole() != 4) // If its not a customer
+      url += "/" + $('[name="customer_id"]').val(); 
+    @endif
+    window.location.href = url;
+  });
+
 });
 </script>
 @endpush

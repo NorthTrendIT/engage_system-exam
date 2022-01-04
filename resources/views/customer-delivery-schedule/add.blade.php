@@ -116,7 +116,13 @@ $(document).ready(function() {
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.href = '{{ route('customer-delivery-schedule.index') }}';
+
+                @if(isset($edit->id))
+                  window.location.reload(); 
+                @else
+                  window.location.href = '{{ route('customer-delivery-schedule.index') }}';
+                @endif
+
               },1500)
             } else {
               toast_error(data.message);
@@ -184,6 +190,7 @@ $(document).ready(function() {
       @endif
       placeholder: 'Select Customers',
       allowClear: true,
+      // minimumInputLength: 2,
       multiple: true,
       @if(isset($edit))
       data:[{

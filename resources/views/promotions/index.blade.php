@@ -69,6 +69,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                              <th>No.</th>
                               <th>Title</th>
                               <th>Promotion For</th>
                               <th>Scope</th>
@@ -141,6 +142,7 @@
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'title', name: 'title'},
               {data: 'promotion_for', name: 'promotion_for'},
               {data: 'scope', name: 'scope'},

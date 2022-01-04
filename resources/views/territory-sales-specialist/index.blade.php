@@ -56,6 +56,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                              <th>No.</th>
                               <th>Sales Specialist</th>
                               <th>Territory</th>
                               <th>Action</th>
@@ -120,6 +121,7 @@
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'sales_specialist', name: 'sales_specialist'},
               {data: 'territory', name: 'territory'},
               {data: 'action', name: 'action', orderable:false},

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Support\SAPSalesPersons;
 use App\Jobs\SyncSalesPersons;
 use App\Models\SalesPerson;
+use App\Models\SapConnection;
 use DataTables;
 
 class SalesPersonsController extends Controller
@@ -92,12 +93,28 @@ class SalesPersonsController extends Controller
     public function syncSalesPersons(){
         try {
 
-            // Save Data of sales persons in database
-            SyncSalesPersons::dispatch('TEST-APBW', 'manager', 'test');
+            // // Save Data of sales persons in database
+            // SyncSalesPersons::dispatch('TEST-APBW', 'manager', 'test');
+
+            $sap_connections = SapConnection::all();
+            foreach ($sap_connections as $value) {
+
+                $log_id = add_sap_log([
+                                'ip_address' => userip(),
+                                'activity_id' => 33,
+                                'user_id' => userid(),
+                                'data' => null,
+                                'type' => "S",
+                                'status' => "in progress",
+                                'sap_connection_id' => $value->id,
+                            ]);
+
+                // Save Data of sales persons in database
+                SyncSalesPersons::dispatch($value->db_name, $value->user_name , $value->password, $log_id);
+            }
 
             $response = ['status' => true, 'message' => 'Sync Sales Persons successfully !'];
         } catch (\Exception $e) {
-            dd($e);
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
         return $response;

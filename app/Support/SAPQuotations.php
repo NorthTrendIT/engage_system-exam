@@ -74,30 +74,12 @@ class SAPQuotations
             if($data['value']){
 
                 foreach ($data['value'] as $value) {
-                    $status = '';
-
-                    if($value['Cancelled'] == "tYES" ){
-                        $status = "Cancelled";
-                    } else {
-                        if($value['DocumentStatus'] == 'bost_Open') {
-                            $status = 'On Process';
-                        }
-                        if($value['DocumentStatus'] == 'bost_Open' && $value['U_SOSTAT'] == 'For Delivery'){
-                            $status = 'For Delivery';
-                        }
-                        if($value['DocumentStatus'] == 'bost_Open' && $value['U_SOSTAT'] == 'Delivered'){
-                            $status = 'Delivered';
-                        }
-                        if($value['DocumentStatus'] == 'bost_Open' && $value['U_SOSTAT'] == 'Confirmed'){
-                            $status = 'Complated';
-                        }
-                    }
 
                     $insert = array(
                                 'doc_entry' => $value['DocEntry'],
                                 'doc_num' => $value['DocNum'],
                                 'doc_type' => $value['DocType'],
-                                'document_status' => $status,
+                                'document_status' => $value['DocumentStatus'],
                                 'doc_date' => $value['DocDate'],
                                 'doc_due_date' => $value['DocDueDate'],
                                 'card_code' => $value['CardCode'],
@@ -132,7 +114,7 @@ class SAPQuotations
 
                         foreach($quo_items as $item){
                             $fields = array(
-                                'order_id' => $obj->id,
+                                'quotation_id' => $obj->id,
                                 'line_num' => @$item['LineNum'],
                                 'item_code' => @$item['ItemCode'],
                                 'item_description' => @$item['ItemDescription'],
@@ -156,8 +138,7 @@ class SAPQuotations
                             );
 
                             $item_obj = QuotationItem::updateOrCreate([
-                                            'order_id' => $obj->id,
-                                            'item_code' => $item['ItemCode'],
+                                            'quotation_id' => $obj->id,
                                         ],
                                         $fields
                                     );

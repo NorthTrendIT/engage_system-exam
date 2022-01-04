@@ -51,7 +51,7 @@
             </div>
 
             @if(Auth::user()->role_id == 1 || ( (isset($access['view-customer-group']) && $access['view-customer-group'] == 1) || (isset($access['view-customer']) && $access['view-customer'] == 1) || (isset($access['view-class']) && $access['view-class'] == 1) ) )
-            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['customer.index','customer.show','customer-group.index','class.index','class.show', 'customers-sales-specialist.index', 'customers-sales-specialist.create', 'customers-sales-specialist.edit','customer-delivery-schedule.index', 'customer-delivery-schedule.create', 'customer-delivery-schedule.edit', 'customer-delivery-schedule.show'])) ? 'hover show' : '' }}">
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['customer.index','customer.show','customer-group.index','class.index','class.show', 'customers-sales-specialist.index', 'customers-sales-specialist.create', 'customers-sales-specialist.edit', 'customers-sales-specialist.show', 'customer-delivery-schedule.index', 'customer-delivery-schedule.create', 'customer-delivery-schedule.edit', 'customer-delivery-schedule.show'])) ? 'hover show' : '' }}">
                <span class="menu-link">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/layouts/lay010.svg-->
@@ -147,7 +147,7 @@
 
             @if(Auth::user()->role_id == 1 || (isset($access['view-order']) && $access['view-order'] == 1))
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['orders.index'])) ? 'active' : '' }}" href="{{ route('orders.index') }}">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['orders.index','orders.show'])) ? 'active' : '' }}" href="{{ route('orders.index') }}">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
@@ -165,6 +165,7 @@
             </div>
             @endif
 
+            {{--
             @if(Auth::user()->role_id == 1 || (isset($access['view-quotation']) && $access['view-quotation'] == 1))
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['quotation.index'])) ? 'active' : '' }}" href="{{ route('quotation.index') }}">
@@ -204,8 +205,9 @@
                </a>
             </div>
             @endif
+            --}}
 
-            @if(Auth::user()->role_id == 1 || ( (isset($access['view-location']) && $access['view-location'] == 1) || (isset($access['view-department']) && $access['view-department'] == 1) || (isset($access['view-user']) && $access['view-user'] == 1)))
+            @if(Auth::user()->role_id == 1 || ( (isset($access['view-role']) && $access['view-role'] == 1) || (isset($access['view-location']) && $access['view-location'] == 1) || (isset($access['view-department']) && $access['view-department'] == 1) || (isset($access['view-user']) && $access['view-user'] == 1) ) )
             <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['location.index','location.create','location.edit','role.index','role.create','role.edit','department.index','department.create','department.edit','user.index','user.create','user.edit','user.show','organisation.index','role.chart','department.show', 'territory.index','territory-sales-specialist.index','territory-sales-specialist.create','territory-sales-specialist.edit'])) ? 'hover show' : '' }}">
 
                <span class="menu-link">
@@ -223,7 +225,7 @@
                   <span class="menu-arrow"></span>
                </span>
                <div class="menu-sub menu-sub-accordion">
-                  @if(Auth::user()->role_id == 1 || (isset($access['view-location']) && $access['view-location'] == 1))
+                  {{-- @if(Auth::user()->role_id == 1 || (isset($access['view-location']) && $access['view-location'] == 1))
                   <div class="menu-item">
                      <a class="menu-link {{ (in_array(request()->route()->getName(), ['location.index','location.create','location.edit'])) ? 'active' : '' }}" href="{{ route('location.index') }}" >
                         <span class="menu-bullet">
@@ -232,9 +234,9 @@
                         <span class="menu-title">Locations</span>
                      </a>
                   </div>
-                  @endif
+                  @endif --}}
 
-                  @if(Auth::user()->role_id == 1)
+                  @if(Auth::user()->role_id == 1 || (isset($access['view-role']) && $access['view-role'] == 1))
                   <div class="menu-item">
                      <a class="menu-link {{ (in_array(request()->route()->getName(), ['role.index','role.create','role.edit','role.chart'])) ? 'active' : '' }}" href="{{ route('role.index') }}">
                         <span class="menu-bullet">
@@ -305,24 +307,51 @@
             @endif
 
 
-            @if(Auth::user()->role_id == 1 || (isset($access['view-product']) && $access['view-product'] == 1))
-            <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['product.index','product.edit','product.show'])) ? 'active' : '' }}" href="{{ route('product.index') }}">
+            @if(Auth::user()->role_id == 1 || (isset($access['view-product']) && $access['view-product'] == 1) || (isset($access['view-product-group']) && $access['view-product-group'] == 1))
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['product-group.index','product-group.create','product-group.edit','product-group.show','product.index','product.create','product.edit','product.show'])) ? 'hover show' : '' }}">
+
+               <span class="menu-link">
                   <span class="menu-icon">
-                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
+                     <!--begin::Svg Icon | path: icons/duotune/layouts/lay010.svg-->
                      <span class="svg-icon svg-icon-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
+                           <path opacity="0.3" d="M20 21H3C2.4 21 2 20.6 2 20V10C2 9.4 2.4 9 3 9H20C20.6 9 21 9.4 21 10V20C21 20.6 20.6 21 20 21Z" fill="black"></path>
+                           <path d="M20 7H3C2.4 7 2 6.6 2 6V3C2 2.4 2.4 2 3 2H20C20.6 2 21 2.4 21 3V6C21 6.6 20.6 7 20 7Z" fill="black"></path>
                         </svg>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
-                  <span class="menu-title">Product</span>
-               </a>
+                  <span class="menu-title">Product Management</span>
+                  <span class="menu-arrow"></span>
+               </span>
+               <div class="menu-sub menu-sub-accordion">
+
+                  @if(Auth::user()->role_id == 1 || (isset($access['view-product']) && $access['view-product'] == 1))
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['product-group.index','product-group.create','product-group.edit','product-group.show'])) ? 'active' : '' }}" href="{{ route('product-group.index') }}" >
+                        <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Product Brand</span>
+                     </a>
+                  </div>
+                  @endif
+
+                  @if(Auth::user()->role_id == 1 || (isset($access['view-product-group']) && $access['view-product-group'] == 1))
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['product.index','product.create','product.edit','product.show'])) ? 'active' : '' }}" href="{{ route('product.index') }}">
+                        <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Product</span>
+                     </a>
+                  </div>
+                  @endif
+
+               </div>
             </div>
+
+
             @endif
 
             @if((isset($access['view-product-list']) && $access['view-product-list'] == 1))
@@ -407,7 +436,7 @@
 
             @if((isset($access['view-my-promotions']) && $access['view-my-promotions'] == 1))
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer-promotion.index','customer-promotion.show','customer-promotion.order.index','customer-promotion.order.create','customer-promotion.order.show','customer-promotion.order.edit'])) ? 'active' : '' }}" href="{{ route('customer-promotion.index') }}">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer-promotion.index','customer-promotion.show','customer-promotion.order.index','customer-promotion.order.create','customer-promotion.order.show','customer-promotion.order.edit','customer-promotion.get-interest', 'customer-promotion.product-detail'])) ? 'active' : '' }}" href="{{ route('customer-promotion.index') }}">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
@@ -425,7 +454,7 @@
             </div>
             @endif
 
-            @if(Auth::user()->role_id == 1)
+            @if(Auth::user()->role_id == 2)
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['sales-specialist-orders.index','sales-specialist-orders.create','sales-specialist-orders.edit'])) ? 'active' : '' }}" href="{{ route('sales-specialist-orders.index') }}">
                   <span class="menu-icon">
@@ -443,7 +472,9 @@
                   <span class="menu-title">Place Order For Customer</span>
                </a>
             </div>
+            @endif
 
+            @if(Auth::user()->role_id == 1)
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer-promotion.order.index','customer-promotion.order.create','customer-promotion.order.show'])) ? 'active' : '' }}" href="{{ route('customer-promotion.order.index') }}">
                   <span class="menu-icon">
@@ -461,7 +492,6 @@
                   <span class="menu-title">Claimed Promotions </span>
                </a>
             </div>
-
             @endif
 
             @if(Auth::user()->role_id == 4)

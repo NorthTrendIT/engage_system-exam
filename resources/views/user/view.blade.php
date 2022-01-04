@@ -62,19 +62,41 @@
                               <th> <b>Role Name:</b> </th>
                               <td>{{ @$data->role->name ?? "" }}</td>
                             </tr>
+                            
                             <tr>
                               <th> <b>Parent User Name:</b> </th>
                               <td>{{ @$data->parent->first_name ?? "" }} {{ @$data->parent->last_name ?? "" }}</td>
                             </tr>
 
+                            @if(!is_null($data->password_text))
                             <tr>
+                              <th> <b>Password:</b> </th>
+                              <td>{{ @$data->password_text ?? "" }}</td>
+                            </tr>
+                            @endif
+
+                            @if(!is_null($data->created_by))
+                            <tr>
+                              <th> <b>Created By:</b> </th>
+                              <td>{{ @$data->created_by_user->first_name ?? "" }} {{ @$data->created_by_user->last_name ?? "" }}</td>
+                            </tr>
+                            @endif
+
+                            {{-- <tr>
                               <th> <b>Province:</b> </th>
                               <td>{{ @$data->province->name ?? "" }}</td>
                             </tr>
                             <tr>
                               <th> <b>City:</b> </th>
                               <td>{{ @$data->city->name ?? "" }}</td>
+                            </tr> --}}
+
+                            @if(@$data->role_id == 2)
+                            <tr>
+                              <th> <b>Sales Employee Code:</b> </th>
+                              <td>{{ @$data->sales_employee_code ?? "" }}</td>
                             </tr>
+                            @endif
 
                             <tr>
                               <th> <b>Created Date:</b> </th>

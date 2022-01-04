@@ -471,8 +471,13 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                // window.location.reload();
-                window.location.href = '{{ route('promotion-type.index') }}';
+                
+                @if(isset($edit->id))
+                  window.location.reload(); 
+                @else
+                  window.location.href = '{{ route('promotion-type.index') }}';
+                @endif
+
               },500)
             } else {
               toast_error(data.message);

@@ -51,6 +51,12 @@ Route::middleware(['auth'])->group(function(){
 
     Route::middleware('check-access')->group(function(){
 
+        // Role
+        Route::resource('role','App\Http\Controllers\RoleController')->except(['show']);
+        Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all');
+        Route::get('role/chart', 'App\Http\Controllers\RoleController@getRoleChart')->name('role.chart')->middleware('super-admin');
+
+        // Customer
 		Route::resource('customer','App\Http\Controllers\CustomerController');
 	    Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');
 	    Route::post('customer/sync-customers', 'App\Http\Controllers\CustomerController@syncCustomers')->name('customer.sync-customers');
@@ -77,14 +83,26 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('sales-persons/get-all', 'App\Http\Controllers\SalesPersonsController@getAll')->name('sales-persons.get-all');
 	    Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
 
+        // Product
 	    Route::resource('product','App\Http\Controllers\ProductController');
 	    Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
 	    Route::post('product/sync-products', 'App\Http\Controllers\ProductController@syncProducts')->name('product.sync-products');
+
+        // Product Group
+        Route::resource('product-group','App\Http\Controllers\ProductGroupController');
+        Route::post('product-group/get-all', 'App\Http\Controllers\ProductGroupController@getAll')->name('product-group.get-all');
+        Route::post('product-group/sync-product-groups', 'App\Http\Controllers\ProductGroupController@syncProductGroups')->name('product-group.sync-product-groups');
 
         // Orders
         Route::resource('orders','App\Http\Controllers\OrdersController');
 	    Route::post('orders/get-all', 'App\Http\Controllers\OrdersController@getAll')->name('orders.get-all');
 	    Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
+        Route::get('pending-orders', 'App\Http\Controllers\OrdersController@pendingOrder')->name('orders.panding-orders');
+        Route::get('pending-orders/{id}', 'App\Http\Controllers\OrdersController@pendingOrderView')->name('orders.panding-orders.view');
+        Route::post('pending-orders/get-all', 'App\Http\Controllers\OrdersController@getAllPendingOrder')->name('orders.get-all-pending-orders');
+        Route::get('pending-promotion', 'App\Http\Controllers\OrdersController@pendingPromotion')->name('orders.pending-promotion');
+        Route::get('pending-promotion/{id}', 'App\Http\Controllers\OrdersController@pendingPromotionView')->name('orders.pending-promotion.view');
+        Route::post('pending-promotion/get-all', 'App\Http\Controllers\OrdersController@getAllPendingPromotion')->name('orders.get-all-pending-promotion');
 
         // Invoices
         Route::resource('invoices','App\Http\Controllers\InvoicesController');
@@ -103,9 +121,9 @@ Route::middleware(['auth'])->group(function(){
         Route::post('promotion/get-sales-specialist/','App\Http\Controllers\PromotionsController@getSalesSpecialist')->name('promotion.getSalesSpecialist');
         Route::post('promotion/get-promotion-interest-data/','App\Http\Controllers\PromotionsController@getPromotionInterestData')->name('promotion.get-promotion-interest-data');
 
-        Route::resource('location','App\Http\Controllers\LocationController');
-	    Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');
-	    Route::post('location/status/{id}', 'App\Http\Controllers\LocationController@updateStatus')->name('location.status');
+     //    Route::resource('location','App\Http\Controllers\LocationController');
+	    // Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');
+	    // Route::post('location/status/{id}', 'App\Http\Controllers\LocationController@updateStatus')->name('location.status');
 
 	    Route::resource('department','App\Http\Controllers\DepartmentController');
 	    Route::post('department/get-all', 'App\Http\Controllers\DepartmentController@getAll')->name('department.get-all');
@@ -126,6 +144,7 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('territory/get-all', 'App\Http\Controllers\TerritoriesController@getAll')->name('territory.get-all');
 	    Route::post('territory/sync-territory', 'App\Http\Controllers\TerritoriesController@syncTerritories')->name('territory.sync-territory');
 
+        // Customer Groups
 	    Route::resource('customer-group','App\Http\Controllers\CustomerGroupController');
 	    Route::post('customer-group/get-all', 'App\Http\Controllers\CustomerGroupController@getAll')->name('customer-group.get-all');
 	    Route::post('customer-group/sync-customer-groups', 'App\Http\Controllers\CustomerGroupController@syncCustomerGroups')->name('customer-group.sync-customer-groups');
@@ -136,6 +155,10 @@ Route::middleware(['auth'])->group(function(){
 	    Route::post('customers-sales-specialist/status/{id}', 'App\Http\Controllers\CustomersSalesSpecialistsController@updateStatus')->name('customers-sales-specialist.status');
         Route::post('customers-sales-specialist/get-customers/','App\Http\Controllers\CustomersSalesSpecialistsController@getCustomers')->name('customers-sales-specialist.getCustomers');
         Route::post('customers-sales-specialist/get-salse-specialist/','App\Http\Controllers\CustomersSalesSpecialistsController@getSalseSpecialist')->name('customers-sales-specialist.getSalseSpecialist');
+
+        Route::post('customers-sales-specialist/get-product-brand/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductBrand')->name('customers-sales-specialist.get-product-brand');
+        Route::post('customers-sales-specialist/get-product-line/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductLine')->name('customers-sales-specialist.get-product-line');
+        Route::post('customers-sales-specialist/get-product-category/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductCategory')->name('customers-sales-specialist.get-product-category');
 
 	    Route::resource('class','App\Http\Controllers\ClassController');
 	    Route::post('class/get-all', 'App\Http\Controllers\ClassController@getAll')->name('class.get-all');
@@ -152,6 +175,8 @@ Route::middleware(['auth'])->group(function(){
         Route::post('cart/remove/{id}','App\Http\Controllers\CartController@removeFromCart')->name('cart.remove');
         Route::post('cart/update-qty/{id}','App\Http\Controllers\CartController@updateQty')->name('cart.update-qty');
         Route::post('cart/placeOrder','App\Http\Controllers\CartController@placeOrder')->name('cart.placeOrder');
+        Route::post('cart/qty-plus/{id}','App\Http\Controllers\CartController@qtyPlus')->name('cart.qty-plus');
+        Route::post('cart/qty-minus/{id}','App\Http\Controllers\CartController@qtyMinus')->name('cart.qty-minus');
 
         // Local Orders
         Route::resource('sales-specialist-orders','App\Http\Controllers\LocalOrderController', [
@@ -167,24 +192,29 @@ Route::middleware(['auth'])->group(function(){
         Route::post('sales-specialist-orders/get-products/','App\Http\Controllers\LocalOrderController@getProducts')->name('sales-specialist-orders.getProducts');
         Route::post('sales-specialist-orders/get-address/','App\Http\Controllers\LocalOrderController@getAddress')->name('sales-specialist-orders.getAddress');
         Route::post('sales-specialist-orders/place-order/','App\Http\Controllers\LocalOrderController@placeOrder')->name('sales-specialist-orders.placeOrder');
+        Route::post('sales-specialist-orders/get-price/','App\Http\Controllers\LocalOrderController@getPrice')->name('sales-specialist-orders.get-price');
+        Route::post('sales-specialist-orders/get-customer-schedule/','App\Http\Controllers\LocalOrderController@getCustomerSchedule')->name('sales-specialist-orders.get-customer-schedule');
 
         Route::get('customer-promotion/', 'App\Http\Controllers\CustomerPromotionController@index')->name('customer-promotion.index')/*->middleware('not-super-admin')*/;
         Route::post('customer-promotion/get-all', 'App\Http\Controllers\CustomerPromotionController@getAll')->name('customer-promotion.get-all');
         Route::get('customer-promotion/show/{id}', 'App\Http\Controllers\CustomerPromotionController@show')->name('customer-promotion.show');
         Route::post('customer-promotion/get-all-product-list', 'App\Http\Controllers\CustomerPromotionController@getAllProductList')->name('customer-promotion.get-all-product-list');
         Route::post('customer-promotion/store-interest', 'App\Http\Controllers\CustomerPromotionController@storeInterest')->name('customer-promotion.store-interest');
-        Route::get('customer-promotion/product-detail/{id}/{promotion_id}', 'App\Http\Controllers\CustomerPromotionController@productDetail')->name('customer-promotion.product-detail');
+        Route::get('customer-promotion/get-interest', 'App\Http\Controllers\CustomerPromotionController@getInterest')->name('customer-promotion.get-interest');
+        Route::get('customer-promotion/product-detail/{id}/{promotion_id}/{customer_id?}', 'App\Http\Controllers\CustomerPromotionController@productDetail')->name('customer-promotion.product-detail');
+        Route::post('customer-promotion/get-customer', 'App\Http\Controllers\CustomerPromotionController@getCustomer')->name('customer-promotion.get-customer');
 
 
         Route::get('customer-promotion/order/', 'App\Http\Controllers\CustomerPromotionController@orderIndex')->name('customer-promotion.order.index');
-        Route::get('customer-promotion/order/{id}', 'App\Http\Controllers\CustomerPromotionController@orderCreate')->name('customer-promotion.order.create');
+        Route::get('customer-promotion/order/create/{id}/{customer_id?}', 'App\Http\Controllers\CustomerPromotionController@orderCreate')->name('customer-promotion.order.create');
+        Route::get('customer-promotion/order/edit/{id}/{customer_id?}', 'App\Http\Controllers\CustomerPromotionController@orderEdit')->name('customer-promotion.order.edit');
         Route::post('customer-promotion/order/store', 'App\Http\Controllers\CustomerPromotionController@orderStore')->name('customer-promotion.order.store');
         Route::post('customer-promotion/order/get-all', 'App\Http\Controllers\CustomerPromotionController@orderGetAll')->name('customer-promotion.order.get-all');
         Route::get('customer-promotion/order/show/{id}', 'App\Http\Controllers\CustomerPromotionController@orderShow')->name('customer-promotion.order.show');
         Route::post('customer-promotion/order/get-customer-address', 'App\Http\Controllers\CustomerPromotionController@getCustomerAddress')->name('customer-promotion.order.get-customer-address');
         Route::post('customer-promotion/order/status', 'App\Http\Controllers\CustomerPromotionController@orderStatus')->name('customer-promotion.order.status');
-        Route::get('customer-promotion/order/edit/{id}', 'App\Http\Controllers\CustomerPromotionController@orderEdit')->name('customer-promotion.order.edit');
         Route::post('customer-promotion/order/push-in-sap', 'App\Http\Controllers\CustomerPromotionController@orderPushInSap')->name('customer-promotion.order.push-in-sap');
+        Route::post('customer-promotion/order/approved', 'App\Http\Controllers\CustomerPromotionController@orderApproved')->name('customer-promotion.order.approved');
 
 
         // Quotations
@@ -217,6 +247,7 @@ Route::middleware(['auth'])->group(function(){
         Route::post('news-and-announcement/get-all-customer-class', 'App\Http\Controllers\NewsAndAnnouncementController@getAllCustomerClass')->name('news-and-announcement.getAllCustomerClass');
         Route::post('news-and-announcement/get-all-territory', 'App\Http\Controllers\NewsAndAnnouncementController@getAllTerritory')->name('news-and-announcement.getAllTerritory');
 
+
     });
 
     // Customer Orders
@@ -229,15 +260,11 @@ Route::middleware(['auth'])->group(function(){
     Route::post('draft-order/get-products/','App\Http\Controllers\DraftOrderController@getProducts')->name('draft-order.getProducts');
     Route::post('draft-order/get-address/','App\Http\Controllers\DraftOrderController@getAddress')->name('draft-order.getAddress');
     Route::post('draft-order/place-order/','App\Http\Controllers\DraftOrderController@placeOrder')->name('draft-order.placeOrder');
+    Route::post('draft-order/get-price/','App\Http\Controllers\DraftOrderController@getPrice')->name('draft-order.get-price');
 
 
     // Super Admin Routes
     Route::middleware('super-admin')->group(function(){
-
-        // Role
-        Route::resource('role','App\Http\Controllers\RoleController')->except(['show']);
-        Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all');
-        Route::get('role/chart', 'App\Http\Controllers\RoleController@getRoleChart')->name('role.chart');
 
         // Pramotion Type
         Route::resource('promotion-type','App\Http\Controllers\PromotionTypeController');

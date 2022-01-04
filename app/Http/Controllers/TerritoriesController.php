@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Support\SAPTerritory;
 use App\Jobs\SyncTerritories;
 use App\Models\Territory;
+use App\Models\SapConnection;
 use DataTables;
 
 class TerritoriesController extends Controller
@@ -92,13 +93,28 @@ class TerritoriesController extends Controller
     public function syncTerritories(){
         try {
             // Add Sync Territories data log.
-            add_log(22, null);
+            // add_log(22, null);
 
-            // Save Data of Territories in database
-            SyncTerritories::dispatch('TEST-APBW', 'manager', 'test');
-            // SyncTerritories::dispatch('TEST-NTMC', 'manager', 'test');
-            // SyncTerritories::dispatch('TEST-PHILCREST', 'manager', 'test');
-            // SyncTerritories::dispatch('TEST-PHILSYN', 'manager', 'test');
+            $sap_connection = SapConnection::first();
+
+            if(!is_null($sap_connection)){
+                
+                $log_id = add_sap_log([
+                                    'ip_address' => userip(),
+                                    'activity_id' => 22,
+                                    'user_id' => userid(),
+                                    'data' => null,
+                                    'type' => "S",
+                                    'status' => "in progress",
+                                    'sap_connection_id' => $sap_connection->id,
+                                ]);
+
+                // Save Data of Territories in database
+                SyncTerritories::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $log_id);
+                // SyncTerritories::dispatch('TEST-NTMC', 'manager', 'test');
+                // SyncTerritories::dispatch('TEST-PHILCREST', 'manager', 'test');
+                // SyncTerritories::dispatch('TEST-PHILSYN', 'manager', 'test');
+            }
 
             $response = ['status' => true, 'message' => 'Sync Territories successfully !'];
         } catch (\Exception $e) {

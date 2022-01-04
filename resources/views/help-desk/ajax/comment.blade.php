@@ -27,7 +27,7 @@
 				<!--begin::Text-->
 				<div class="fs-5 fw-bolder">
 					<a href="javascript:" class="text-gray-700 text-hover-primary">{{ @$comment->user->first_name ?? "" }} {{ @$comment->user->last_name ?? "" }}</a>
-					<span class="text-muted">on {{ date('M d, Y h:i A',strtotime(@$comment->created_at)) }}</span>
+					<small class="text-muted">on {{ date('M d, Y h:i A',strtotime(@$comment->created_at)) }}</small>
 				</div>
 				<!--end::Text-->
 			</div>

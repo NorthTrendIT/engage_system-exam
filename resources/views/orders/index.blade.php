@@ -65,11 +65,13 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>Type</th>
-                              <th>Name</th>
+                              <th>No</th>
+                              <th>Customer Name</th>
+                              <th>Status</th>
                               <th>Total</th>
                               <th>Date</th>
                               <th>Due Date</th>
+                              <th>Action</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -133,11 +135,13 @@
               }
           },
           columns: [
-              {data: 'type', name: 'type'},
+              {data: 'DT_RowIndex'},
               {data: 'name', name: 'name'},
+              {data: 'status', name: 'status'},
               {data: 'total', name: 'total'},
               {data: 'date', name: 'date'},
               {data: 'due_date', name: 'due_date'},
+              {data: 'action', name: 'action'},
           ],
           drawCallback:function(){
               $(function () {

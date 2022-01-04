@@ -77,6 +77,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                              <th>No.</th>
                               <th>Ticket No.</th>
                               <th>Subject</th>
                               <th>Date</th>
@@ -148,6 +149,7 @@
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'ticket_number', name: 'ticket_number'},
               {data: 'subject', name: 'subject'},
               {data: 'created_at', name: 'created_at'},

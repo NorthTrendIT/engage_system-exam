@@ -69,31 +69,11 @@ class SAPCustomerPromotion
     public function pushOrderDetailsInDatabase($data)
     {
         if($data){
-
-            $status = '';
-
-            if($data['Cancelled'] == "tYES" ){
-                $status = "Cancelled";
-            } else {
-                if($data['DocumentStatus'] == 'bost_Open') {
-                    $status = 'On Process';
-                }
-                if($data['DocumentStatus'] == 'bost_Open' && $data['U_SOSTAT'] == 'For Delivery'){
-                    $status = 'For Delivery';
-                }
-                if($data['DocumentStatus'] == 'bost_Open' && $data['U_SOSTAT'] == 'Delivered'){
-                    $status = 'Delivered';
-                }
-                if($data['DocumentStatus'] == 'bost_Open' && $data['U_SOSTAT'] == 'Confirmed'){
-                    $status = 'Complated';
-                }
-            }
-
             $insert = array(
                         'doc_entry' => $data['DocEntry'],
                         'doc_num' => $data['DocNum'],
                         'doc_type' => $data['DocType'],
-                        'document_status' => $status,
+                        'document_status' => $data['DocumentStatus'],
                         'doc_date' => $data['DocDate'],
                         'doc_due_date' => $data['DocDueDate'],
                         'card_code' => $data['CardCode'],
@@ -114,10 +94,10 @@ class SAPCustomerPromotion
                         'created_at' => $data['CreationDate'],
                         'updated_at' => $data['UpdateDate'],
                         //'response' => json_encode($order),
-                        
+
                         'sap_connection_id' => $this->sap_connection_id,
                         'customer_promotion_id' => $this->customer_promotion_id,
-                        
+
                     );
 
             $obj = Quotation::updateOrCreate([
@@ -126,14 +106,13 @@ class SAPCustomerPromotion
                                     ],
                                     $insert
                                 );
-
             if(!empty($data['DocumentLines'])){
 
                 $quo_items = $data['DocumentLines'];
 
                 foreach($quo_items as $item){
                     $fields = array(
-                        'order_id' => $obj->id,
+                        'quotation_id' => $obj->id,
                         'line_num' => @$item['LineNum'],
                         'item_code' => @$item['ItemCode'],
                         'item_description' => @$item['ItemDescription'],
@@ -157,11 +136,12 @@ class SAPCustomerPromotion
                     );
 
                     $item_obj = QuotationItem::updateOrCreate([
-                                    'order_id' => $obj->id,
+                                    'quotation_id' => $fields['quotation_id'],
                                     'item_code' => $item['ItemCode'],
                                 ],
                                 $fields
                             );
+
                 }
             }
         }
@@ -175,7 +155,7 @@ class SAPCustomerPromotion
 
         if(!empty($body)){
             $response = $this->requestSapApi('/b1s/v1/Quotations', "POST", $body);
-            
+
             $status = $response['status'];
             $data = $response['data'];
 
@@ -199,7 +179,7 @@ class SAPCustomerPromotion
 
         if(!empty($body)){
             $response = $this->requestSapApi('/b1s/v1/Quotations('.$doc_entry.')', "PUT", $body);
-            
+
             $status = $response['status'];
             $data = $response['data'];
 
@@ -225,7 +205,7 @@ class SAPCustomerPromotion
                         );
 
         if(!empty($doc_entry)){
-            
+
             try {
                 $response = $this->httpClient->request(
                     "POST",
@@ -261,7 +241,7 @@ class SAPCustomerPromotion
                 }
 
             } catch (\Exception $e) {
-                
+
             }
 
         }
@@ -279,22 +259,27 @@ class SAPCustomerPromotion
         if(!is_null($customer_promotion)){
 
             if(@$customer_promotion->user->customer->card_code){
-                
+
                 $this->sap_connection_id = @$customer_promotion->sap_connection_id;
 
                 $response['CardCode'] = @$customer_promotion->user->customer->card_code;
                 $response['CardName'] = @$customer_promotion->user->customer->card_name;
                 $response['DocTotal'] = @$customer_promotion->total_amount;
                 $response['Address'] = @$customer_promotion->customer_bp_address->address;
+
+                if(@$customer_promotion->sales_specialist->sales_employee_code && @$customer_promotion->sales_specialist->is_active){
+                    $response['SalesPersonCode'] = @$customer_promotion->sales_specialist->sales_employee_code;
+                }
+
                 $response['DocCurrency'] = "PHP";
                 $response['DocumentLines'] = [];
 
                 if(@$customer_promotion->products){
 
                     foreach (@$customer_promotion->products as $p) {
-                            
+
                         foreach (@$p->deliveries as $d) {
-                            
+
                             $temp = array(
 
                                         'ItemCode' => @$p->product->item_code,

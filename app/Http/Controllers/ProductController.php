@@ -7,6 +7,7 @@ use App\Jobs\SyncProducts;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\SapConnection;
+use App\Models\ProductGroup;
 use DataTables;
 use Validator;
 use Auth;
@@ -20,7 +21,8 @@ class ProductController extends Controller
    */
   public function index()
   {
-      return view('product.index');
+    $product_groups = ProductGroup::all();
+    return view('product.index',compact('product_groups'));
   }
 
   /**
@@ -164,16 +166,27 @@ class ProductController extends Controller
   public function syncProducts(){
     try {
 
-      // Add sync Product data log.
-      add_log(18, null);
+      // // Add sync Product data log.
+      // add_log(18, null);
 
       // // Save Data of Product in database
       // SyncProducts::dispatch('TEST-APBW', 'manager', 'test');
 
       $sap_connections = SapConnection::all();
       foreach ($sap_connections as $value) {
+
+        $log_id = add_sap_log([
+                                'ip_address' => userip(),
+                                'activity_id' => 18,
+                                'user_id' => userid(),
+                                'data' => null,
+                                'type' => "S",
+                                'status' => "in progress",
+                                'sap_connection_id' => $value->id,
+                            ]);
+
         // Save Data of Product in database
-        SyncProducts::dispatch($value->db_name, $value->user_name , $value->password);
+        SyncProducts::dispatch($value->db_name, $value->user_name , $value->password, $log_id);
       }
 
       $response = ['status' => true, 'message' => 'Sync Product successfully !'];
@@ -188,18 +201,22 @@ class ProductController extends Controller
     $data = Product::query();
 
     if($request->filter_status != ""){
-        $data->where('is_active',$request->filter_status);
+      $data->where('is_active',$request->filter_status);
+    }
+
+    if($request->filter_brand != ""){
+      $data->where('items_group_code',$request->filter_brand);
     }
 
     if($request->filter_search != ""){
-        $data->where(function($q) use ($request) {
-            $q->orwhere('item_code','LIKE',"%".$request->filter_search."%");
-            $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
-        });
+      $data->where(function($q) use ($request) {
+        $q->orwhere('item_code','LIKE',"%".$request->filter_search."%");
+        $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
+      });
     }
 
     $data->when(!isset($request->order), function ($q) {
-        $q->orderBy('id', 'desc');
+      $q->orderBy('id', 'desc');
     });
 
     return DataTables::of($data)
@@ -209,6 +226,9 @@ class ProductController extends Controller
                           })
                           ->addColumn('item_code', function($row) {
                               return @$row->item_code ?? "";
+                          })
+                          ->addColumn('brand', function($row) {
+                              return @$row->group->group_name ?? "";
                           })
                           ->addColumn('status', function($row) {
                               $btn = "";
@@ -249,6 +269,15 @@ class ProductController extends Controller
                           })
                           ->orderColumn('status', function ($query, $order) {
                               $query->orderBy('is_active', $order);
+                          })
+                          ->orderColumn('brand', function ($query, $order) {
+                              // $query->join('product_groups', 'products.items_group_code', '=', 'product_groups.number')
+                              //       ->orderBy('product_groups.group_name', $order);
+
+                              $query->join("product_groups",function($join){
+                                  $join->on("products.items_group_code","=","product_groups.number")
+                                      ->on("products.sap_connection_id","=","product_groups.sap_connection_id");
+                              })->orderBy('product_groups.group_name', $order);
                           })
                           ->rawColumns(['status','action'])
                           ->make(true);

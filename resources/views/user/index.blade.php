@@ -74,6 +74,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                              <th>No.</th>
                               <th>Role</th>
                               <th>First Name</th>
                               <th>Last Name</th>
@@ -146,6 +147,7 @@
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'role', name: 'role'},
               {data: 'first_name', name: 'first_name'},
               {data: 'last_name', name: 'last_name'},
@@ -161,11 +163,11 @@
                 
                 $role = $('[name="filter_role"]').find('option:selected').val();
                 if($role == 2){
-                  $("#myTable").DataTable().column(4).visible(true);
-                  $("#myTable").DataTable().column(0).visible(false);
+                  $("#myTable").DataTable().column(5).visible(true);
+                  $("#myTable").DataTable().column(1).visible(false);
                 } else {
-                  $("#myTable").DataTable().column(0).visible(true);
-                  $("#myTable").DataTable().column(4).visible(false);
+                  $("#myTable").DataTable().column(1).visible(true);
+                  $("#myTable").DataTable().column(5).visible(false);
                 }
               })
           },
@@ -190,13 +192,13 @@
         if($role == 2){
           $('.sync-sales-persons').show();
           $('.create-btn').hide();
-          $("#myTable").DataTable().column(4).visible(true);
-          $("#myTable").DataTable().column(0).visible(false);
+          $("#myTable").DataTable().column(5).visible(true);
+          $("#myTable").DataTable().column(1).visible(false);
         } else {
           $('.sync-sales-persons').hide();
           $('.create-btn').show();
-          $("#myTable").DataTable().column(0).visible(true);
-          $("#myTable").DataTable().column(4).visible(false);
+          $("#myTable").DataTable().column(1).visible(true);
+          $("#myTable").DataTable().column(5).visible(false);
         }
     });
 

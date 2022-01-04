@@ -9,6 +9,8 @@ use App\Models\PromotionTypes;
 use App\Models\PromotionTypeProduct;
 use App\Models\PromotionInterest;
 use App\Models\Product;
+use App\Models\User;
+use App\Models\Customer;
 use App\Models\CustomerPromotion;
 use App\Models\CustomerPromotionProduct;
 use App\Models\CustomerPromotionProductDelivery;
@@ -181,8 +183,14 @@ class CustomerPromotionController extends Controller
                     $product = $value->product;
                     $promotion_type_product = $value;
 
+                    if(isset($request->customer_id)){
+                        $customer = Customer::find($request->customer_id);
+                    }else{
+                        $customer = @Auth::user()->customer;
+                    }
+
                     if(!is_null($product)){
-                        $output .= view('customer-promotion.ajax.product',compact('product','promotion_type_product','promotion_id'))->render();
+                        $output .= view('customer-promotion.ajax.product',compact('product','promotion_type_product','promotion_id','customer'))->render();
                     }
                 }
 
@@ -202,45 +210,7 @@ class CustomerPromotionController extends Controller
         }
     }
 
-    public function storeInterest(Request $request){
-        $input = $request->all();
-
-        $rules = array(
-                    'promotion_id' => 'required|nullable|exists:promotions,id',
-                    'is_interested' => 'nullable|required',
-                );
-
-        $validator = Validator::make($input, $rules);
-
-        if ($validator->fails()) {
-            $response = ['status'=>false,'message'=>$validator->errors()->first()];
-        }else{
-
-            $input['user_id'] = Auth::id();
-
-            $obj = PromotionInterest::firstOrNew([
-                                        'promotion_id' => $input['promotion_id'],
-                                        'user_id' => $input['user_id'],
-                                    ]);
-
-            if($input['is_interested'] == true){
-                $message = "Promotion interest added successfully.";
-            }else{
-                $message = "Promotion interest removed successfully.";
-            }
-
-            $obj->fill($input)->save();
-
-            // Add Log.
-            add_log(29, $input);
-
-            $response = ['status'=>true,'message'=>$message];
-        }
-
-        return $response;
-    }
-
-    public function productDetail($id,$promotion_id){
+    public function productDetail($id, $promotion_id, $customer_id = false){
         $data = PromotionTypeProduct::where('id',$id)->firstOrFail();
         
         $product = $data->product;
@@ -253,10 +223,16 @@ class CustomerPromotionController extends Controller
             return abort(404);
         }
 
-        return view('customer-promotion.product-view',compact('product','data','promotion'));
+        if($customer_id){
+            $customer = Customer::find($customer_id);
+        }else{
+            $customer = @Auth::user()->customer;
+        }
+
+        return view('customer-promotion.product-view',compact('product','data','promotion','customer'));
     }
 
-    public function orderCreate($id){
+    public function orderCreate($id, $customer_id = false){
 
         $promotion = Promotions::findOrFail($id);
 
@@ -266,26 +242,56 @@ class CustomerPromotionController extends Controller
             return abort(404);
         }
 
-        return view('customer-promotion.order_add',compact('promotion'));
+        if($customer_id){
+            $customer_user = User::where('customer_id', $customer_id)->firstOrFail();
+        }else{
+
+            if(is_null(@Auth::user()->customer_id)){ // If customer refernce id not get
+                return abort(404);
+            }
+            $customer_user = @Auth::user();
+        }
+
+        return view('customer-promotion.order_add',compact('promotion','customer_user'));
     }
 
     public function orderStore(Request $request){
 
-        if(!@Auth::user()->customer->sap_connection_id){
-            return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
+        $input = $request->all();
+
+        $rules = [];
+        if(userrole() != 4){ // If its not a customer
+            $rules['customer_id'] = 'required|exists:customers,id,sap_connection_id,'.@Auth::user()->sap_connection_id;
+
+            $messages = array(
+                        'customer_id.exists' => "Oops! Customer not found.",
+                    );
+
+            $validator = Validator::make($input, $rules, $messages);
+
+            if ($validator->fails()) {
+                return $response = ['status'=>false,'message'=>$validator->errors()->first()];
+            }
+            
+            $customer_user = User::where('customer_id', $input['customer_id'])->firstOrFail();
+        }else{
+            $customer_user = @Auth::user();
         }
 
-        $input = $request->all();
+        if(!$customer_user->customer->sap_connection_id){
+            return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
+        }
 
         $rules = array(
                     'promotion_id' => 'required|exists:promotions,id',
                     'customer_bp_address_id' => 'required|exists:customer_bp_addresses,id',
                     'products' => 'required|array',
-                    'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@Auth::user()->customer->sap_connection_id,
+                    'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@$customer_user->customer->sap_connection_id,
                 );
 
         $messages = array(
                         'products.*.product_id.exists' => "Oops! Customer or Items can not be located in the DataBase.",
+                        'customer_id.exists' => "Oops! Customer not found.",
                     );
 
         $validator = Validator::make($input, $rules, $messages);
@@ -331,10 +337,25 @@ class CustomerPromotionController extends Controller
 
                 $customer_promotion->promotion_id = $input['promotion_id'];
                 $customer_promotion->customer_bp_address_id = $input['customer_bp_address_id'];
-                $customer_promotion->user_id = Auth::id();
                 $customer_promotion->status = 'pending';
                 $customer_promotion->is_sap_pushed = false;
-                $customer_promotion->sap_connection_id = @Auth::user()->customer->sap_connection_id;
+                $customer_promotion->is_approved = true;
+                $customer_promotion->sap_connection_id = @$customer_user->customer->sap_connection_id;
+                
+                //$customer_promotion->user_id = Auth::id();
+
+                if(in_array(userrole(),[2])){ // its a ss
+                    $customer_promotion->sales_specialist_id = Auth::id();
+                    $customer_promotion->user_id = $customer_user->id;
+                    $customer_promotion->is_approved = false;
+                }else{
+                    
+                    if(!isset($input['id'])){
+                        $customer_promotion->sales_specialist_id = null;
+                    }
+                    $customer_promotion->user_id = Auth::id();
+                }
+
 
                 if(isset($input['id'])){
                     $customer_promotion->updated_by = Auth::id();
@@ -406,8 +427,8 @@ class CustomerPromotionController extends Controller
                                     }
 
 
-                                    $price = get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num);
-                                    $amount = $discount = get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num,$discount_percentage,@$discount_fix_amount);
+                                    $price = get_product_customer_price(@$product->item_prices,@$customer_user->customer->price_list_num);
+                                    $amount = $discount = get_product_customer_price(@$product->item_prices,@$customer_user->customer->price_list_num,$discount_percentage,@$discount_fix_amount);
 
                                     $discount = $price - $discount;
 
@@ -468,7 +489,9 @@ class CustomerPromotionController extends Controller
 
         $data = CustomerPromotion::query();
 
-        if(Auth::id() != 1){
+        if(in_array(userrole(),[2])){ // its a ss
+            $data->where('customer_promotions.sales_specialist_id',Auth::id());
+        }else if(Auth::id() != 1){
             $data->where('customer_promotions.user_id',Auth::id());
         }
 
@@ -502,8 +525,14 @@ class CustomerPromotionController extends Controller
 
                                 $btn = "";
                                 
-                                if($row->status != 'canceled' && Auth::id() == $row->user_id){
-                                    $btn .= '<a href="' . route('customer-promotion.order.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
+                                if($row->status != 'canceled' && (Auth::id() == $row->user_id || Auth::id() == $row->sales_specialist_id)){
+
+                                    $url = route('customer-promotion.order.edit', $row->id);
+                                    if(userrole() != 4){
+                                        $url .= "/".$row->user->customer_id;
+                                    }
+
+                                    $btn .= '<a href="' . $url. '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                         <i class="fa fa-pencil"></i>
                                       </a>';
                                 }
@@ -552,7 +581,9 @@ class CustomerPromotionController extends Controller
 
         $data = CustomerPromotion::where('id',$id);
 
-        if(Auth::id() != 1){
+        if(in_array(userrole(),[2])){ // its a ss
+            $data->where('sales_specialist_id', Auth::id());
+        }else if(Auth::id() != 1){
             $data->where('user_id',Auth::id());
         }
 
@@ -560,7 +591,6 @@ class CustomerPromotionController extends Controller
         
         return view('customer-promotion.order_view',compact('data'));
     }
-
 
     public function orderStatus(Request $request){
         $input = $request->all();
@@ -654,42 +684,38 @@ class CustomerPromotionController extends Controller
         return $response;
     }
 
+    public function orderEdit($id, $customer_id = false){
+        $edit = CustomerPromotion::where('id',$id)->where('status','!=','canceled');
 
-    public function getCustomerAddress(Request $request){
-        $search = $request->search;
-
-        $data = CustomerBpAddress::where('customer_id',@Auth::user()->customer->id)->orderBy('order','asc');
-
-        if($search != ''){
-            $data->where('address', 'like', '%' .$search . '%');
+        if(in_array(userrole(),[2])){ // its a ss
+            $edit->where('sales_specialist_id', Auth::id());
+        }else if(Auth::id() != 1){
+            $edit->where('user_id', Auth::id());
         }
-
-        $data = $data->limit(50)->get();
-
-        return response()->json($data);
-    }
-
-
-    public function orderEdit($id){
-        $edit = CustomerPromotion::where('id',$id)->where('user_id',Auth::id())->where('status','!=','canceled')->firstOrFail();
+        $edit = $edit->firstOrFail();
 
         $promotion = Promotions::findOrFail($edit->promotion_id);
 
         $edit_products = $edit_deliveries = array();
 
         if(isset($edit->products) && count($edit->products)){
-            // $edit_products = $edit->products->toArray();
-
-            // $edit_products = array_combine(array_column($edit_products, 'product_id'), array_values($edit_products));
-
             foreach($edit->products as $p){
                 $edit_products[$p->product_id] = $p->toArray();
                 $edit_deliveries[$p->product_id] = $p->deliveries->toArray();
             }
-
         }
 
-        return view('customer-promotion.order_add',compact('promotion','edit','edit_products','edit_deliveries'));
+        if($customer_id){
+            $customer_user = User::where('customer_id', $customer_id)->firstOrFail();
+        }else{
+
+            if(is_null(@Auth::user()->customer_id)){ // If customer refernce id not get
+                return abort(404);
+            }
+            $customer_user = @Auth::user();
+        }
+
+        return view('customer-promotion.order_add',compact('promotion','edit','edit_products','edit_deliveries','customer_user'));
     }
 
     public function orderPushInSap(Request $request){
@@ -765,5 +791,140 @@ class CustomerPromotionController extends Controller
         }
 
         return $response;
+    }
+
+    public function orderApproved(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'id' => 'required|exists:customer_promotions,id,user_id,'.@Auth::id(),
+                );
+
+        $messages = array(
+                        'id.exists' => 'Record not found!'
+                    );
+
+        $validator = Validator::make($input, $rules, $messages);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+            CustomerPromotion::where('id', $request->id)->update(['is_approved' => true]);
+            
+            $message = "Approved successfully.";
+            $response = ['status'=>true,'message'=>$message];
+        }
+
+        return $response;
+    }
+
+    public function storeInterest(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'promotion_id' => 'required|nullable|exists:promotions,id',
+                    'is_interested' => 'nullable|required',
+                );
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+            $input['user_id'] = Auth::id();
+
+            $obj = PromotionInterest::firstOrNew([
+                                        'promotion_id' => $input['promotion_id'],
+                                        'user_id' => $input['user_id'],
+                                    ]);
+
+            if($input['is_interested'] == true){
+                $message = "Promotion interest added successfully.";
+            }else{
+                $message = "Promotion interest removed successfully.";
+            }
+
+            $obj->fill($input)->save();
+
+            // Add Log.
+            add_log(29, $input);
+
+            $response = ['status'=>true,'message'=>$message];
+        }
+
+        return $response;
+    }
+
+    public function getInterest(Request $request){
+        
+        if($request->ajax()){
+            $data = PromotionInterest::where('user_id', @Auth::id())->latest()->get();
+
+            return DataTables::of($data)
+                    ->addIndexColumn()
+                    ->addColumn('promotion', function($row) {
+                        return @$row->promotion->title ?? "-";
+                    })
+                    ->addColumn('is_interested', function($row) {
+                        return $row->is_interested ? "Yes" : "No";
+                    })
+                    ->addColumn('action', function($row) {
+                        $btn = "";
+                        if($row->is_interested){
+                            $btn .= '<a href="javascript:" class="btn btn-sm btn-danger btn-inline btn_interest" data-value="0" data-id="'.$row->promotion_id.'">Mark as Not Interested</a>';
+                        }else{
+                            $btn .= '<a href="javascript:" class="btn btn-sm btn-success btn-inline btn_interest" data-value="1" data-id="'.$row->promotion_id.'">Mark as Interested</a>';
+                        }
+
+                        return $btn;
+                    })
+                    ->rawColumns(['action'])
+                    ->make(true);
+        }
+
+        return view('customer-promotion.interest_index');
+    }
+
+
+    public function getCustomerAddress(Request $request){
+        $search = $request->search;
+
+        $customer_id = @Auth::user()->customer->id;
+        if(isset($request->customer_id)){
+            $customer_id = $request->customer_id;
+        }
+
+        $data = CustomerBpAddress::where('customer_id', $customer_id)->orderBy('order','asc');
+
+        if($search != ''){
+            $data->where('address', 'like', '%' .$search . '%');
+        }
+
+        $data = $data->limit(50)->get();
+
+        return response()->json($data);
+    }
+
+    public function getCustomer(Request $request){
+        $search = $request->search;
+
+        $data = Customer::has('user')->with('user')->orderBy('card_name','asc');
+
+        // Sales specialist can see only assigned customer
+        if(in_array(userrole(),[2])){
+            $data->whereHas('sales_specialist', function($q) {
+                return $q->where('ss_id', Auth::id());
+            });
+        }
+
+        if($search != ''){
+            $data->where('card_name', 'like', '%' .$search . '%');
+        }
+
+        $data = $data->limit(50)->get();
+
+        return response()->json($data);
     }
 }

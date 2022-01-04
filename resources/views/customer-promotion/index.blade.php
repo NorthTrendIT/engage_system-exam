@@ -13,6 +13,10 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
+        @if(!in_array(userrole(), [2]))
+          <a href="{{ route('customer-promotion.get-interest') }}" class="btn btn-sm btn-primary mr-10">Interested Promotions</a>
+        @endif
+
         <a href="{{ route('customer-promotion.order.index') }}" class="btn btn-sm btn-primary mr-10">Claimed Promotions</a>
         <!--end::Button-->
       </div>
@@ -98,16 +102,16 @@
       $value = $(this).attr('data-value');
       $this = $(this);
 
-      Swal.fire({
-        title: 'Are you sure want to do this ?',
-        //text: "Once deleted, you will not be able to recover this record!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
+      // Swal.fire({
+      //   title: 'Are you sure want to do this ?',
+      //   //text: "Once deleted, you will not be able to recover this record!",
+      //   icon: 'warning',
+      //   showCancelButton: true,
+      //   confirmButtonColor: '#3085d6',
+      //   cancelButtonColor: '#d33',
+      //   confirmButtonText: 'Yes, do it!'
+      // }).then((result) => {
+      //   if (result.isConfirmed) {
           $.ajax({
             url: '{{ route('customer-promotion.store-interest') }}',
             method: "POST",
@@ -123,6 +127,8 @@
             }else{
 
               if($value == 1){
+                $($this).closest('.product-grid').find(".interested_text_a").show();
+                $($this).closest('.product-grid').find(".btn_interest").remove();
                 $($this).remove();
               }else{
                 $($this).closest('.product-grid-outer').remove();
@@ -134,8 +140,8 @@
           .fail(function() {
             toast_error("error");
           });
-        }
-      })
+      //   }
+      // })
     });
   
   });

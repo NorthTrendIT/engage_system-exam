@@ -209,6 +209,7 @@ class CustomerDeliveryScheduleController extends Controller
 
                             //     return implode(" | ", $dates);
                             // })
+                            ->addIndexColumn()
                             ->addColumn('customer', function($row) {
                                 return @$row->first()->user->sales_specialist_name ?? "-";
                             })

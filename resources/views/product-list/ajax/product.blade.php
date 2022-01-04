@@ -22,11 +22,11 @@
 
       </a>
       <ul class="product-links">
-        <li>
+        {{-- <li>
           <a href="{{ route('product-list.show',@$product->id) }}" data-tip="Add to Wishlist">
             <i class="fas fa-heart"></i>
           </a>
-        </li>
+        </li> --}}
         <li>
           <a href="{{ route('product-list.show',@$product->id) }}" data-tip="Quick View">
             <i class="fa fa-search"></i>
@@ -36,20 +36,16 @@
     </div>
 
     <div class="product-content">
-      <ul class="rating">
-        <li class="fas fa-star"></li>
-        <li class="fas fa-star"></li>
-        <li class="fas fa-star"></li>
-        <li class="far fa-star"></li>
-        <li class="far fa-star"></li>
-      </ul>
-
       <h3 class="title">
         <a href="{{ route('product-list.show',@$product->id) }}">{{ @$product->item_name ?? "-" }}</a>
       </h3>
 
-      <div class="price">$66.00</div>
-      <a class="add-to-cart" data-url="{{ route('cart.add',@$product->id) }}">add to cart</a>
-    </div>
+      <div class="price">₱ {{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num) }}</div>
+        @if(is_in_cart(@$product->id) == 1)
+            <a class="add-to-cart" href="{{ route('cart.index') }}">Go to cart</a>
+        @else
+            <a href="javascript:;" class="add-to-cart addToCart" data-url="{{ route('cart.add',@$product->id) }}">add to cart</a>
+        @endif
+      </div>
   </div>
 </div>

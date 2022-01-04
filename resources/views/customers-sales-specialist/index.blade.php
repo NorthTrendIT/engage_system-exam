@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title','Assign sales Specialist')
+@section('title','Customers Sales Specialist')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
@@ -56,8 +56,8 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>Custumer</th>
-                              <th>Sales Specialist</th>
+                              <th>No.</th>
+                              <th>Customer</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -120,8 +120,8 @@
               // }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'customer', name: 'customer'},
-              {data: 'sales_specialist', name: 'sales_specialist'},
               {data: 'action', name: 'action'},
           ],
           drawCallback:function(){

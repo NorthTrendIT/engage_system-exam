@@ -13,6 +13,8 @@ class Department extends Model
     protected $fillable = [
     	'name',
     	'is_active',
+        'user_id',
+        
     ];
 
     public function roles()

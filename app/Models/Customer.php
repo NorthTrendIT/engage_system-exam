@@ -76,4 +76,21 @@ class Customer extends Model
     public function classes(){
         return $this->hasOne(Classes::class, 'id', 'class_id');
     }
+
+    public function product_groups(){
+        return $this->hasMany(CustomerProductGroup::class, 'customer_id');
+    }
+
+    public function product_item_lines(){
+        return $this->hasMany(CustomerProductItemLine::class, 'customer_id');
+    }
+
+    public function product_tires_categories(){
+        return $this->hasMany(CustomerProductTiresCategory::class, 'customer_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'id','customer_id');
+    }
 }

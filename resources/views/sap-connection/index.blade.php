@@ -53,6 +53,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                                <th>No.</th>
                                 <th>Company Name</th>
                                 <th>User Name</th>
                                 <th>DB Name</th>
@@ -121,6 +122,7 @@
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'company_name', name: 'company_name'},
               {data: 'user_name', name: 'user_name'},
               {data: 'db_name', name: 'db_name'},
@@ -158,9 +160,26 @@
         })
         .done(function(result) {
             if(result.status){
-                toast_success(result.message);
+                Swal.fire({
+                    title: 'API working!',
+                    // text: result.message,
+                    icon: 'success',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ok'
+                });
+                // toast_success(result.message);
             }else{
-                toast_error(result.message);
+                Swal.fire({
+                    title: 'API not working!',
+                    text: result.message,
+                    icon: 'warning',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ok'
+                });
             }
         })
         .fail(function() {

@@ -56,6 +56,7 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                              <th>No.</th>
                               <th>Customer</th>
                               {{-- <th>Schedule Dates</th> --}}
                               <th>Action</th>
@@ -120,6 +121,7 @@
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'customer', name: 'customer'},
               // {data: 'date', name: 'date', orderable:false},
               {data: 'action', name: 'action', orderable:false},

@@ -13,5 +13,15 @@ class PromotionInterest extends Model
         'promotion_id',
         'user_id',
         'is_interested',
-      ];
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
+
+    public function promotion()
+    {
+        return $this->belongsTo(Promotions::class,'promotion_id');
+    }
 }

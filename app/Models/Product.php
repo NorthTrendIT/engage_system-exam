@@ -50,7 +50,6 @@ class Product extends Model
         return $this->hasMany(ProductImage::class,'product_id');
     }
 
-
     public function product_item_line()
     {
         return $this->belongsTo(ProductItemLine::class,'u_item_line','u_item_line')->where('sap_connection_id', $this->sap_connection_id);
@@ -59,5 +58,10 @@ class Product extends Model
     public function product_tires_category()
     {
         return $this->belongsTo(ProductTiresCategory::class,'u_tires','u_tires')->where('sap_connection_id', $this->sap_connection_id);
+    }
+
+    public function group()
+    {
+        return $this->belongsTo(ProductGroup::class,'items_group_code','number')->where('sap_connection_id', $this->sap_connection_id);
     }
 }

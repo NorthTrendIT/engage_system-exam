@@ -57,7 +57,7 @@
                                         </div>
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-12">
                                             <label class="col-form-label text-right">Due Date<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control" placeholder="Invoice Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('m/d/Y',strtotime($edit->due_date))}}" @endif>
+                                            <input type="text" class="form-control" placeholder="Invoice Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('d/m/Y',strtotime($edit->due_date))}}" @endif>
                                         </div>
                                     </div>
                                 </div>
@@ -87,37 +87,37 @@
 
                                                     <th class="min-w-150px">Product</th>
                                                     <th class="min-w-80px">Quantity</th>
-                                                    <th class="min-w-80px">Price</th>
-                                                    <th class="min-w-80px">Amount</th>
+                                                    <th class="min-w-80px" style="text-align:right">Price</th>
+                                                    <th class="min-w-80px" style="text-align:right">Amount</th>
                                                     <th class="min-w-80px"></th>
                                                     </tr>
                                                 </thead>
                                                 <!--end::Table head-->
                                                 <!--begin::Table body-->
-                                                <tbody data-repeater-list="products">
+                                                <tbody data-repeater-list="products" id="myTableBody">
                                                     @if(isset($edit))
                                                         @foreach($edit->items as $value)
-                                                        <tr data-repeater-item>
-                                                            <td>
-                                                                <div class="form-group">
-                                                                    <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
-                                                                        <option value="{{ $value->product->id }}" selected>{{ $value->product->item_name }}</option>
-                                                                    </select>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <input type="number" class="form-control quantity" name="quantity" placeholder="Enter quantity" value="{{ $value->quantity }}">
-                                                            </td>
-                                                            <td>
-                                                                <input type="number" class="form-control" placeholder="Price" value="0.00" disabled="disabled">
-                                                            </td>
-                                                            <td>
-                                                                <input type="number" class="form-control" placeholder="Price" value="0.00" disabled="disabled">
-                                                            </td>
-                                                            <td>
-                                                                <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
-                                                            </td>
-                                                        </tr>
+                                                            <tr data-repeater-item name="items">
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
+                                                                            <option value="{{ $value->product->id }}" selected>{{ $value->product->item_name }}</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" class="form-control quantity" name="quantity" data-price="{{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}" placeholder="Enter quantity" value="{{ $value->quantity }}">
+                                                                </td>
+                                                                <td style="text-align:right">
+                                                                    <span class="price text-primary">₱ {{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}</span>
+                                                                </td>
+                                                                <td style="text-align:right">
+                                                                    <span class="amount text-primary" style="font-weight: bold">₱ {{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity }}</span>
+                                                                </td>
+                                                                <td>
+                                                                    <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
+                                                                </td>
+                                                            </tr>
                                                         @endforeach
                                                     @else
                                                     <tr data-repeater-item>
@@ -129,7 +129,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="number" class="form-control quantity" name="quantity" placeholder="Enter quantity">
+                                                            <input type="number" class="form-control quantity" name="quantity" data-price="" placeholder="Enter quantity">
                                                         </td>
                                                         <td>
                                                             <input type="number" class="form-control" placeholder="Price" value="0.00" disabled="disabled">
@@ -164,7 +164,6 @@
                     </div>
 
                     <div class="total-box-section">
-
                         <div class="row gy-5 g-xl-8">
                             <div class="col-md-4 col-12"></div>
                             <div class="col-md-4 col-12"></div>
@@ -176,7 +175,7 @@
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">sub total</span>
                                             </div>
                                             <div class="col-md-6 mb-3 ">
-                                                <span style="text-align: right; width: 100%;" class="d-block">0.00</span>
+                                                <span style="text-align: right; width: 100%;" class="d-block price subTotal text-primary">₱ {{ $total }}</span>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">discount</span>
@@ -190,7 +189,7 @@
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">total</span>
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <span style="text-align: right; width: 100%;" class="d-block">0.00</span>
+                                                <span style="text-align: right; width: 100%;" class="d-block price grandTotal text-primary">₱ {{ $total }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -198,7 +197,6 @@
                             </div>
 
                         </div>
-
                     </div>
 
                     <div class="row gy-5 g-xl-8">
@@ -227,10 +225,54 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" ></script>
-<script src="{{ asset('assets')}}/assets/js/custom/bootstrap-datepicker.js"/></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.repeater/1.2.1/jquery.repeater.min.js"></script>
 <script>
     $(document).ready(function() {
+        @php
+            $dates = @Auth::user()->customer_delivery_schedules->where('date','>',date("Y-m-d"));
+            if(count($dates)){
+                $dates = array_map( function ( $t ) {
+                    return date('d/m/Y',strtotime($t));
+                }, array_column( $dates->toArray(), 'date' ) );
+            }
+        @endphp
+        @if(count($dates))
+            var enableDays = {!! json_encode($dates) !!};
+        @endif
+
+        function formatDate(d) {
+            var day = String(d.getDate())
+            //add leading zero if day is is single digit
+            if (day.length == 1)
+                day = '0' + day
+            var month = String((d.getMonth()+1))
+            //add leading zero if month is is single digit
+            if (month.length == 1)
+                month = '0' + month
+            return day + "/" + month + "/" + d.getFullYear()
+        }
+
+        $('[name="due_date"]').datepicker({
+            format: 'dd/mm/yyyy',
+            todayHighlight: true,
+            orientation: "bottom left",
+            startDate: "+3d",
+            autoclose: true,
+
+            @if(count($dates))
+            beforeShowDay: function(date){
+                if (enableDays.indexOf(formatDate(date)) < 0)
+                return {
+                    enabled: false
+                }
+                else
+                return {
+                    enabled: true
+                }
+            },
+            @endif
+        });
+
         var form = $('#myForm');
         form.find('select').select2({
             ajax: {
@@ -260,6 +302,9 @@
         form.repeater({
             initEmpty: false,
             show: function () {
+                $(this).find('td .quantity').attr('data-price', '0');
+                $(this).find('td .price').html('');
+                $(this).find('td .amount').html('');
                 $(this).slideDown();
                 form.find('select').next('.select2-container').remove();
                 form.find('select').select2({
@@ -335,7 +380,7 @@
             var validator = validate_form();
 
             if (validator.form() != false) {
-                $('[type="submit"]').prop('disabled', true);
+                // $('[type="submit"]').prop('disabled', true);
                 // $('[name="address_id"]').removeAttr('disabled');
                 $.ajax({
                     url: "{{route('draft-order.store')}}",
@@ -352,12 +397,12 @@
                             },1500)
                         } else {
                             toast_error(data.message);
-                            $('[type="submit"]').prop('disabled', false);
+                            // $('[type="submit"]').prop('disabled', false);
                         }
                     },
                     error: function () {
                         toast_error("Something went to wrong !");
-                        $('[type="submit"]').prop('disabled', false);
+                        // $('[type="submit"]').prop('disabled', false);
                     },
                 });
             }
@@ -453,6 +498,53 @@
             });
             return validator;
         }
+
+        $(document).on('keyup', "input[type=number]",function(event){
+            $price = parseFloat($(this).attr('data-price'));
+            $qty = parseFloat($(this).val());
+            $amount = $price * $qty;
+            if(isNaN($qty) || $qty <= 0){
+                $(this).val(1);
+                $amount = $price;
+            }
+            $(this).parent().parent().find('td .amount').html('₱ '+$amount.toFixed(2));
+
+            $grandTotal = 0;
+            $("tr[name='items']").each(function(){
+                $subPrice = parseFloat($(this).find('.quantity').data('price'));
+                $subQty = parseFloat($(this).find('.quantity').val());
+                $grandTotal += $subPrice * $subQty;
+            });
+
+            $('.subTotal').html('₱ '+$grandTotal.toFixed(2));
+            $('.grandTotal').html('₱ '+$grandTotal.toFixed(2));
+        });
+
+        $(document).on('change', '.selectProducts',function(event){
+            $self = $(this);
+            $.ajax({
+                url: "{{route('draft-order.get-price')}}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    product_id: $(this).val(),
+                    price_list_num: "{{@Auth::user()->customer->price_list_num}}"
+                },
+                success: function (data) {
+                    if (data.status) {
+                        $self.parent().parent().parent().find('.price').html('₱'+ data.price);
+                        $self.parent().parent().parent().find('.quantity').attr('data-price', data.price);
+                        $self.parent().parent().parent().find(".quantity").val(1).trigger('keyup');
+                    } else {
+                        toast_error(data.message);
+                    }
+                },
+                error: function () {
+                    toast_error("Something went to wrong !");
+                },
+            });
+        });
+
     });
 </script>
 @endpush

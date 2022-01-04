@@ -41,6 +41,7 @@ class PostOrder
                     'headers' => $this->headers,
                     'verify' => false,
                     'body' => json_encode($body),
+                    'timeout' => 15,
                 ]
             );
 
@@ -50,17 +51,29 @@ class PostOrder
                             'status' => true,
                             'data' => $response
                         );
+            } else {
+                // $statusCode = $response->getStatusCode();
+                return array(
+                    'status' => false,
+                    'data' => $response->getStatusCode(),
+                );
             }
 
         } catch (\Exception $e) {
-            $message = "API Error:";
-            $statusCode = !empty($e->getResponse()->getStatusCode()) ? $e->getResponse()->getStatusCode() : NULL;
-            $responsePhrase = !empty($e->getResponse()->getReasonPhrase()) ? $e->getResponse()->getReasonPhrase() : NULL;
-            if($statusCode == 401){
-                $message = $message.' Username and password do not match.';
+            $code = $e->getCode();
+            if($code){
+                $message = "API Error:";
+                $statusCode = !empty($e->getResponse()->getStatusCode()) ? $e->getResponse()->getStatusCode() : NULL;
+                $responsePhrase = !empty($e->getResponse()->getReasonPhrase()) ? $e->getResponse()->getReasonPhrase() : NULL;
+                if($statusCode == 401){
+                    $message = $message.' Username and password do not match.';
+                } else {
+                    $message = $message.' '.$statusCode.' '.$responsePhrase;
+                }
             } else {
-                $message = $message.' '.$statusCode.' '.$responsePhrase;
+                $message = $message." API is Down.";
             }
+
             return array(
                         'status' => false,
                         'data' => $message
@@ -78,31 +91,11 @@ class PostOrder
             $data = $response['data'];
 
             if($data){
-
-                $status = '';
-
-                if($data['Cancelled'] == "tYES" ){
-                    $status = "Cancelled";
-                } else {
-                    if($data['DocumentStatus'] == 'bost_Open') {
-                        $status = 'On Process';
-                    }
-                    if($data['DocumentStatus'] == 'bost_Open' && $data['U_SOSTAT'] == 'For Delivery'){
-                        $status = 'For Delivery';
-                    }
-                    if($data['DocumentStatus'] == 'bost_Open' && $data['U_SOSTAT'] == 'Delivered'){
-                        $status = 'Delivered';
-                    }
-                    if($data['DocumentStatus'] == 'bost_Open' && $data['U_SOSTAT'] == 'Confirmed'){
-                        $status = 'Complated';
-                    }
-                }
-
                 $insert = array(
                             'doc_entry' => $data['DocEntry'],
                             'doc_num' => $data['DocNum'],
                             'doc_type' => $data['DocType'],
-                            'document_status' => $status,
+                            'document_status' => $data['DocumentStatus'],
                             'doc_date' => $data['DocDate'],
                             'doc_due_date' => $data['DocDueDate'],
                             'card_code' => $data['CardCode'],
@@ -170,8 +163,12 @@ class PostOrder
 
                 }
             }
-        }
-
+        } // else {
+        //     $data = $response['data'];
+        //     // dd($data->getBody());
+        //     $message = 'API Error: '.$data->getStatusCode();
+        //     return ['status' => $response['status'], 'message' => $message];
+        // }
         return ['status' => $response['status'], 'message' => $response['data']];
     }
 }

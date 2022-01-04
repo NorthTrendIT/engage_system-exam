@@ -101,7 +101,7 @@
 
                 </div>
 
-                <div class="row mb-5">
+                {{-- <div class="row mb-5">
                   
                   <div class="col-md-6">
                     <div class="form-group">
@@ -129,7 +129,7 @@
                     </div>
                   </div>
 
-                </div>
+                </div> --}}
 
 
                 @if(!isset($edit))
@@ -232,7 +232,13 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.href = '{{ route('user.index') }}';
+
+                @if(isset($edit->id))
+                  window.location.reload(); 
+                @else
+                  window.location.href = '{{ route('user.index') }}';
+                @endif
+                
               },1500)
             } else {
               toast_error(data.message);

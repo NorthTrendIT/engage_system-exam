@@ -11,6 +11,7 @@ class QuotationItem extends Model
 
     protected $fillable = [
         'order_id',
+        'quotation_id',
         'line_num',
         'item_code',
         'item_description',
@@ -32,4 +33,8 @@ class QuotationItem extends Model
         'ship_to_description',
         'response',
     ];
+
+    public function product(){
+        return $this->hasOne(Product::class, 'item_code', 'item_code');
+    }
 }
