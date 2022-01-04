@@ -67,7 +67,7 @@
                             <tr>
                               <th>No.</th>
                               <th>Promotion</th>
-                              @if(Auth::id() == 1)
+                              @if(in_array(userrole(),[1,2]))
                               <th>Customer</th>
                               @endif
                               <th>Date Time</th>
@@ -138,7 +138,7 @@
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'promotion', name: 'promotion'},
-              @if(Auth::id() == 1)
+              @if(in_array(userrole(),[1,2]))
               {data: 'user', name: 'user'},
               @endif
               {data: 'created_at', name: 'created_at'},

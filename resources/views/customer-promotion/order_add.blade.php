@@ -13,7 +13,7 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('customer-promotion.show',$promotion->id) }}" class="btn btn-sm btn-primary">Back</a>
+        <a href="{{ (isset($edit)) ? route('customer-promotion.order.index') : route('customer-promotion.show',$promotion->id) }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -46,6 +46,19 @@
                     </div>
                   </div>
                 </div>
+
+                @if(userrole() != 4) {{-- If its not a customer --}}
+                  <div class="row mb-5">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>Customer</label>
+                        <input type="text" class="form-control form-control-solid" value="{{ @$customer_user->customer->card_name }}" readonly="" disabled="">
+                      </div>
+                    </div>
+                  </div>
+
+                  <input type="hidden" name="customer_id" value="{{ @$customer_user->customer->id }}">
+                @endif
 
                 @if(@$promotion->promotion_type->is_total_fixed_quantity)
                 <div class="row mb-5">
@@ -94,8 +107,8 @@
                           }
                         }
 
-                        $amount = get_product_customer_price(@$p->product->item_prices,@Auth::user()->customer->price_list_num);
-                        $total_amount = $discount_amount = get_product_customer_price(@$p->product->item_prices,@Auth::user()->customer->price_list_num,$discount_percentage,@$discount_fix_amount);
+                        $amount = get_product_customer_price(@$p->product->item_prices,@$customer_user->customer->price_list_num);
+                        $total_amount = $discount_amount = get_product_customer_price(@$p->product->item_prices,@$customer_user->customer->price_list_num,$discount_percentage,@$discount_fix_amount);
 
                         $discount_amount = $amount - $discount_amount;
 
@@ -324,13 +337,17 @@
   $(document).ready(function() {
 
     @php
-      $dates = @Auth::user()->customer_delivery_schedules->where('date','>',date("Y-m-d"));
-      if(count($dates)){
-        $dates = array_map( function ( $t ) {
-                           return date('d/m/Y',strtotime($t));
-                        }, array_column( $dates->toArray(), 'date' ) );
+      $dates = [];
+      if(!is_null(@$customer_user->customer_delivery_schedules)){
+        $dates = @$customer_user->customer_delivery_schedules->where('date','>',date("Y-m-d"));
+        if(count($dates)){
+          $dates = array_map( function ( $t ) {
+                             return date('d/m/Y',strtotime($t));
+                          }, array_column( $dates->toArray(), 'date' ) );
+        }
       }
     @endphp
+
     @if(count($dates))
       var enableDays = {!! json_encode($dates) !!};
     @endif
@@ -590,7 +607,10 @@
           data: function (params) {
               return {
                   _token: "{{ csrf_token() }}",
-                  search: params.term
+                  search: params.term,
+                  @if(userrole() != 4) {{-- If its not a customer --}}
+                  customer_id: '{{ @$customer_user->customer->id }}',
+                  @endif
               };
           },
           processResults: function (response) {
