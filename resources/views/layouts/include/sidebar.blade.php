@@ -494,7 +494,7 @@
             </div>
             @endif
 
-            @if(Auth::user()->role_id == 4)
+            {{-- @if(Auth::user()->role_id == 4)
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer-order.index','customer-order.edit'])) ? 'active' : '' }}" href="{{ route('customer-order.index') }}">
                   <span class="menu-icon">
@@ -512,7 +512,7 @@
                   <span class="menu-title">Orders</span>
                </a>
             </div>
-            @endif
+            @endif --}}
 
             @if(Auth::user()->role_id == 4)
             <div class="menu-item">

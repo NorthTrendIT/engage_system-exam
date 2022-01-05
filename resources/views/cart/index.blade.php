@@ -188,8 +188,8 @@
             </form>
             @else
                 <div class="row gy-5 g-xl-8 mt-5">
-                    <div class="col-xl-12 text-align-center">
-                        <span>Cart is empty.</span>
+                    <div class="col-xl-12 text-center">
+                        <h2>Whoops! your cart is empty. <a href="{{ route('product-list.index') }}">Add products</a></h2>
                     </div>
                 </div>
             @endif
@@ -501,7 +501,7 @@ $(document).ready(function() {
                         required: "Please select address.",
                     },
                     due_date:{
-                        required: "Please select due date.",
+                        required: "Please select delivery date.",
                     },
                     product_id:{
                         required: "Please select product.",

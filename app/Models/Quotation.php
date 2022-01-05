@@ -31,6 +31,7 @@ class Quotation extends Model
         'u_posono',
         'u_posodate',
         'u_posotime',
+        'u_remarks',
         'response',
         'created_at',
         'updated_at',
@@ -44,5 +45,9 @@ class Quotation extends Model
 
     public function customer(){
         return $this->hasOne(Customer::class, 'card_code', 'card_code');
+    }
+
+    public function sales_specialist(){
+        return $this->belongsTo(User::class, 'sales_person_code','sales_employee_code');
     }
 }

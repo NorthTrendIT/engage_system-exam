@@ -97,6 +97,7 @@ class SAPQuotations
                                 'u_posono' => $value['U_POSONO'],
                                 'u_posodate' => $value['U_POSODATE'],
                                 'u_posotime' => $value['U_POSOTIME'],
+                                'u_remarks' => $value['U_REMARKS'],
                                 'created_at' => $value['CreationDate'],
                                 'updated_at' => $value['UpdateDate'],
                                 //'response' => json_encode($order),

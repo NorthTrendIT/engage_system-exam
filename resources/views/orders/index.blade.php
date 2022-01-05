@@ -10,6 +10,7 @@
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Orders</h1>
       </div>
 
+      @if(userrole() != 4)
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
@@ -17,6 +18,7 @@
         <!--end::Button-->
       </div>
       <!--end::Actions-->
+      @endif
 
     </div>
   </div>
@@ -66,11 +68,13 @@
                           <thead>
                             <tr>
                               <th>No</th>
+                              <th>Order #</th>
+                              @if(userrole() != 4)
                               <th>Customer Name</th>
-                              <th>Status</th>
+                              @endif
                               <th>Total</th>
-                              <th>Date</th>
-                              <th>Due Date</th>
+                              <th>Created Date</th>
+                              <th>Status</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -136,11 +140,13 @@
           },
           columns: [
               {data: 'DT_RowIndex'},
+              @if(userrole() != 4)
               {data: 'name', name: 'name'},
-              {data: 'status', name: 'status'},
+              @endif
+              {data: 'doc_entry', name: 'doc_entry'},
               {data: 'total', name: 'total'},
               {data: 'date', name: 'date'},
-              {data: 'due_date', name: 'due_date'},
+              {data: 'status', name: 'status'},
               {data: 'action', name: 'action'},
           ],
           drawCallback:function(){

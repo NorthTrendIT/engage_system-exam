@@ -201,6 +201,7 @@ class CartController extends Controller
 
         $messages = array(
                 'products.*.product_id.exists' => "Oops! Customer or Items can not be located in the DataBase.",
+                'due_date.required' => "Please select delivery date.",
             );
 
         $validator = Validator::make($data, $rules, $messages);
