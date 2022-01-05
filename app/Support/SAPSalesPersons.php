@@ -111,6 +111,7 @@ class SAPSalesPersons
                                     'email' => $email,
                                     //'response' => json_encode($value),
                                     'sap_connection_id' => @$sap_connection->id,
+                                    'first_login' => true,
                                 );
 
                     $obj = User::updateOrCreate(

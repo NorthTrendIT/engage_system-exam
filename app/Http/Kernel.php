@@ -58,6 +58,7 @@ class Kernel extends HttpKernel
         'super-admin' => \App\Http\Middleware\SuperAdmin::class,
         'not-super-admin' => \App\Http\Middleware\NotSuperAdmin::class,
         'check-access' => \App\Http\Middleware\CheckRoleModuleAccess::class,
+        'check-login' => \App\Http\Middleware\CheckUserLogin::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,

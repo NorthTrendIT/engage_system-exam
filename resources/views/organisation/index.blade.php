@@ -46,7 +46,9 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/orgchart/2.1.3/css/jquery.orgchart.min.css" rel="stylesheet" />
 <style>
   .orgchart {
-    width: 100% !important;
+    /*width: 100% !important;
+    min-width: 300px;
+    overflow: scroll !important;*/
   }
 </style>
 @endpush
@@ -56,11 +58,20 @@
 
 <script>
   var orgchart = $('#chart-container').orgchart({
-    'data': {!! $tree !!},
+    ajaxURL: '{{ route('organisation.index') }}',
     'nodeContent': 'title',
-    'direction': 't2b'
+    'direction': 't2b',
+    'collapsed': true,
+    'pan': true,
+    zoom:true,
+    // verticalLevel:10,
+    toggleSiblingsResp:true,
   });
 
-  $('#chart-container').append(orgchart);
+  oc.$chartContainer.on('touchmove', function(event) {
+    event.preventDefault();
+  });
+  
+  //$('#chart-container').append(orgchart);
 </script>
 @endpush

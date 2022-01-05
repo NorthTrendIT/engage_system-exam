@@ -11,7 +11,22 @@
       </div>
     </div>
   </div>
-  
+
+  @if(Session::has('error_message') || Auth::user()->first_login == 1)
+  <div class="post d-flex flex-column-fluid" id="kt_post">
+    <div id="kt_content_container" class="container-xxl">
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="alert alert-custom alert-danger" role="alert">
+            <div class="alert-text">You have to change your temporary email address to your actual email address in order to access the system.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  @endif
+
+
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
