@@ -160,7 +160,8 @@ class StoreCustomers implements ShouldQueue
                     if(is_null($check_customer)){
 
                         $name = explode(" ", $obj->card_name, 2);
-
+                        $password = get_random_password();
+                        
                         $insert_user =  array(
                                             'department_id' => 3,
                                             'role_id' => 4,
@@ -169,7 +170,9 @@ class StoreCustomers implements ShouldQueue
                                             'first_name' => !empty($name[0]) ? $name[0] : null,
                                             'last_name' => !empty($name[1]) ? $name[1] : null,
                                             'is_active' => $obj->is_active,
-                                            'password' => Hash::make(@$obj->card_code),
+                                            //'password' => Hash::make(@$obj->card_code),
+                                            'password' => Hash::make($password),
+                                            'password_text' => $password,
                                             'email' => strtolower(@$obj->card_code)."-".$this->sap_connection_id.'@mailinator.com',
                                             'first_login' => true,
                                         );

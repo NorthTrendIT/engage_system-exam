@@ -12,46 +12,50 @@ class OrganisationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $result = $children = array();
-        $result['children'] = array();
-        $user = User::find(1);
+        if($request->ajax()){
+            $result = $children = array();
+            $result['children'] = array();
+            $user = User::find(1);
 
-        if($user){
-            $temp = array(
-                            'title' => @$user->first_name." ".@$user->last_name,
-                            'name' => @$user->role->name,
-                        );
-            $result = array_merge($result,$temp);
-
-            $parent_users = User::where('id','!=',1)->whereNull('parent_id')->get();
-            if(count($parent_users)){
-
-                foreach ($parent_users as $key => $value) {
-                    $temp = array(
-                                'title' => @$value->first_name." ".@$value->last_name,
-                                'name' => @$value->role->name,
+            if($user){
+                $temp = array(
+                                'title' => @$user->first_name." ".@$user->last_name,
+                                'name' => @$user->role->name,
                             );
+                $result = array_merge($result,$temp);
+
+                $parent_users = User::where('id','!=',1)->whereNull('parent_id')->get();
+                if(count($parent_users)){
+
+                    foreach ($parent_users as $key => $value) {
+                        $temp = array(
+                                    'title' => @$value->first_name." ".@$value->last_name,
+                                    'name' => @$value->role->name,
+                                );
 
 
-                    $child = app(UserController::class)->getUserChildData($value->id);
+                        $child = app(UserController::class)->getUserChildData($value->id);
 
-                    if(count($child)){
-                        $temp['children'] = $child;
+                        if(count($child)){
+                            $temp['children'] = $child;
+                        }
+
+                        $children[$key] = $temp;
                     }
 
-                    $children[$key] = $temp;
                 }
-
+                
+                $result['children'] = array_merge($result['children'],$children);
             }
-            
-            $result['children'] = array_merge($result['children'],$children);
+
+            $tree = json_encode($result);
+
+            return $tree;
         }
 
-        $tree = json_encode($result);
-
-        return view('organisation.index',compact('tree'));
+        return view('organisation.index');
     }
 
     /**

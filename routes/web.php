@@ -34,7 +34,7 @@ Route::middleware('guest')->group(function(){
 //Route::get('/get-users','App\Http\Controllers\SapApiController@index');
 
 Route::middleware(['auth'])->group(function(){
-	Route::get('/home','App\Http\Controllers\HomeController@index')->name('home');
+	Route::get('/home','App\Http\Controllers\HomeController@index')->name('home')->middleware('check-login');
 
 	Route::get('/logout', function () {
         // Add Logout log
@@ -49,218 +49,220 @@ Route::middleware(['auth'])->group(function(){
     Route::post('profile/change-password', 'App\Http\Controllers\ProfileController@changePasswordStore')->name('profile.change-password.store');
 
 
-    Route::middleware('check-access')->group(function(){
+    Route::middleware('check-login')->group(function(){
 
-        // Role
-        Route::resource('role','App\Http\Controllers\RoleController')->except(['show']);
-        Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all');
-        Route::get('role/chart', 'App\Http\Controllers\RoleController@getRoleChart')->name('role.chart')->middleware('super-admin');
+        Route::middleware('check-access')->group(function(){
 
-        // Customer
-		Route::resource('customer','App\Http\Controllers\CustomerController');
-	    Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');
-	    Route::post('customer/sync-customers', 'App\Http\Controllers\CustomerController@syncCustomers')->name('customer.sync-customers');
+            // Role
+            Route::resource('role','App\Http\Controllers\RoleController')->except(['show']);
+            Route::post('role/get-all', 'App\Http\Controllers\RoleController@getAll')->name('role.get-all');
+            Route::get('role/chart', 'App\Http\Controllers\RoleController@getRoleChart')->name('role.chart')->middleware('super-admin');
 
-	    Route::resource('user','App\Http\Controllers\UserController');
-	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
-	    Route::post('user/status/{id}', 'App\Http\Controllers\UserController@updateStatus')->name('user.status');
-	    Route::post('user/get-city', 'App\Http\Controllers\UserController@getCity')->name('user.get-city');
-	    Route::post('user/get-roles', 'App\Http\Controllers\UserController@getRoles')->name('user.get-roles');
-	    Route::post('user/get-parents', 'App\Http\Controllers\UserController@getParents')->name('user.get-parents');
+            // Customer
+    		Route::resource('customer','App\Http\Controllers\CustomerController');
+    	    Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');
+    	    Route::post('customer/sync-customers', 'App\Http\Controllers\CustomerController@syncCustomers')->name('customer.sync-customers');
 
-
-		Route::resource('productfeatures','App\Http\Controllers\ProductFeaturesController')->middleware('super-admin');
-	    Route::post('productfeatures/get-all', 'App\Http\Controllers\ProductFeaturesController@getAll')->name('productfeatures.get-all')->middleware('super-admin');
-
-		Route::resource('productbenefits','App\Http\Controllers\ProductBenefitsController')->middleware('super-admin');
-	    Route::post('productbenefits/get-all', 'App\Http\Controllers\ProductBenefitsController@getAll')->name('productbenefits.get-all')->middleware('super-admin');
-
-		Route::resource('productsellsheets','App\Http\Controllers\ProductSellSheetsController')->middleware('super-admin');
-	    Route::post('productsellsheets/get-all', 'App\Http\Controllers\ProductSellSheetsController@getAll')->name('productsellsheets.get-all')->middleware('super-admin');
-
-        // Sales Persons
-        Route::resource('sales-persons','App\Http\Controllers\SalesPersonsController');
-	    Route::post('sales-persons/get-all', 'App\Http\Controllers\SalesPersonsController@getAll')->name('sales-persons.get-all');
-	    Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
-
-        // Product
-	    Route::resource('product','App\Http\Controllers\ProductController');
-	    Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
-	    Route::post('product/sync-products', 'App\Http\Controllers\ProductController@syncProducts')->name('product.sync-products');
-
-        // Product Group
-        Route::resource('product-group','App\Http\Controllers\ProductGroupController');
-        Route::post('product-group/get-all', 'App\Http\Controllers\ProductGroupController@getAll')->name('product-group.get-all');
-        Route::post('product-group/sync-product-groups', 'App\Http\Controllers\ProductGroupController@syncProductGroups')->name('product-group.sync-product-groups');
-
-        // Orders
-        Route::resource('orders','App\Http\Controllers\OrdersController');
-	    Route::post('orders/get-all', 'App\Http\Controllers\OrdersController@getAll')->name('orders.get-all');
-	    Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
-        Route::get('pending-orders', 'App\Http\Controllers\OrdersController@pendingOrder')->name('orders.panding-orders');
-        Route::get('pending-orders/{id}', 'App\Http\Controllers\OrdersController@pendingOrderView')->name('orders.panding-orders.view');
-        Route::post('pending-orders/get-all', 'App\Http\Controllers\OrdersController@getAllPendingOrder')->name('orders.get-all-pending-orders');
-        Route::get('pending-promotion', 'App\Http\Controllers\OrdersController@pendingPromotion')->name('orders.pending-promotion');
-        Route::get('pending-promotion/{id}', 'App\Http\Controllers\OrdersController@pendingPromotionView')->name('orders.pending-promotion.view');
-        Route::post('pending-promotion/get-all', 'App\Http\Controllers\OrdersController@getAllPendingPromotion')->name('orders.get-all-pending-promotion');
-
-        // Invoices
-        Route::resource('invoices','App\Http\Controllers\InvoicesController');
-	    Route::post('invoices/get-all', 'App\Http\Controllers\InvoicesController@getAll')->name('invoices.get-all');
-	    Route::post('invoices/sync-orders', 'App\Http\Controllers\InvoicesController@syncInvoices')->name('invoices.sync-invoices');
-
-        // Pramotions
-        Route::resource('promotion','App\Http\Controllers\PromotionsController');
-	    Route::post('promotion/get-all', 'App\Http\Controllers\PromotionsController@getAll')->name('promotion.get-all');
-        Route::post('promotion/status/{id}', 'App\Http\Controllers\PromotionsController@updateStatus')->name('promotion.status');
-        Route::post('promotion/get-customers/','App\Http\Controllers\PromotionsController@getCustomers')->name('promotion.getCustomers');
-        Route::post('promotion/get-products/','App\Http\Controllers\PromotionsController@getProducts')->name('promotion.getProducts');
-        Route::post('promotion/get-promotion-data', 'App\Http\Controllers\PromotionsController@getPromotionData')->name('promotion.get-promotion-data');
-        Route::post('promotion/get-territories/','App\Http\Controllers\PromotionsController@getTerritories')->name('promotion.getTerritories');
-        Route::post('promotion/get-classes/','App\Http\Controllers\PromotionsController@getClasses')->name('promotion.getClasses');
-        Route::post('promotion/get-sales-specialist/','App\Http\Controllers\PromotionsController@getSalesSpecialist')->name('promotion.getSalesSpecialist');
-        Route::post('promotion/get-promotion-interest-data/','App\Http\Controllers\PromotionsController@getPromotionInterestData')->name('promotion.get-promotion-interest-data');
-
-     //    Route::resource('location','App\Http\Controllers\LocationController');
-	    // Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');
-	    // Route::post('location/status/{id}', 'App\Http\Controllers\LocationController@updateStatus')->name('location.status');
-
-	    Route::resource('department','App\Http\Controllers\DepartmentController');
-	    Route::post('department/get-all', 'App\Http\Controllers\DepartmentController@getAll')->name('department.get-all');
-	    Route::post('department/status/{id}', 'App\Http\Controllers\DepartmentController@updateStatus')->name('department.status');
-
-	    Route::resource('organisation','App\Http\Controllers\OrganisationController');
-
-        // Activity Log
-        Route::resource('activitylog','App\Http\Controllers\ActivityLogController');
-	    Route::post('activitylog/get-all', 'App\Http\Controllers\ActivityLogController@getAll')->name('activitylog.get-all');
-
-	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index')->middleware('not-super-admin');
-	    Route::get('product-list/{id}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show')->middleware('not-super-admin');
-	    Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all')->middleware('not-super-admin');
-
-        // Territories
-        Route::resource('territory','App\Http\Controllers\TerritoriesController');
-	    Route::post('territory/get-all', 'App\Http\Controllers\TerritoriesController@getAll')->name('territory.get-all');
-	    Route::post('territory/sync-territory', 'App\Http\Controllers\TerritoriesController@syncTerritories')->name('territory.sync-territory');
-
-        // Customer Groups
-	    Route::resource('customer-group','App\Http\Controllers\CustomerGroupController');
-	    Route::post('customer-group/get-all', 'App\Http\Controllers\CustomerGroupController@getAll')->name('customer-group.get-all');
-	    Route::post('customer-group/sync-customer-groups', 'App\Http\Controllers\CustomerGroupController@syncCustomerGroups')->name('customer-group.sync-customer-groups');
-
-        // Sales Specialist Assignment
-        Route::resource('customers-sales-specialist','App\Http\Controllers\CustomersSalesSpecialistsController');
-	    Route::post('customers-sales-specialist/get-all', 'App\Http\Controllers\CustomersSalesSpecialistsController@getAll')->name('customers-sales-specialist.get-all');
-	    Route::post('customers-sales-specialist/status/{id}', 'App\Http\Controllers\CustomersSalesSpecialistsController@updateStatus')->name('customers-sales-specialist.status');
-        Route::post('customers-sales-specialist/get-customers/','App\Http\Controllers\CustomersSalesSpecialistsController@getCustomers')->name('customers-sales-specialist.getCustomers');
-        Route::post('customers-sales-specialist/get-salse-specialist/','App\Http\Controllers\CustomersSalesSpecialistsController@getSalseSpecialist')->name('customers-sales-specialist.getSalseSpecialist');
-
-        Route::post('customers-sales-specialist/get-product-brand/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductBrand')->name('customers-sales-specialist.get-product-brand');
-        Route::post('customers-sales-specialist/get-product-line/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductLine')->name('customers-sales-specialist.get-product-line');
-        Route::post('customers-sales-specialist/get-product-category/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductCategory')->name('customers-sales-specialist.get-product-category');
-
-	    Route::resource('class','App\Http\Controllers\ClassController');
-	    Route::post('class/get-all', 'App\Http\Controllers\ClassController@getAll')->name('class.get-all');
-
-	    // Territory Sales Specialist
-        Route::resource('territory-sales-specialist','App\Http\Controllers\TerritorySalesSpecialistController');
-	    Route::post('territory-sales-specialist/get-all', 'App\Http\Controllers\TerritorySalesSpecialistController@getAll')->name('territory-sales-specialist.get-all');
-        Route::post('territory-sales-specialist/get-territory/','App\Http\Controllers\TerritorySalesSpecialistController@getTerritory')->name('territory-sales-specialist.get-territory');
-        Route::post('territory-sales-specialist/get-sales-specialist/','App\Http\Controllers\TerritorySalesSpecialistController@getSalesSpecialist')->name('territory-sales-specialist.get-sales-specialist');
-
-        // Cart
-        Route::resource('cart','App\Http\Controllers\CartController');
-        Route::post('cart/add/{id}','App\Http\Controllers\CartController@addToCart')->name('cart.add');
-        Route::post('cart/remove/{id}','App\Http\Controllers\CartController@removeFromCart')->name('cart.remove');
-        Route::post('cart/update-qty/{id}','App\Http\Controllers\CartController@updateQty')->name('cart.update-qty');
-        Route::post('cart/placeOrder','App\Http\Controllers\CartController@placeOrder')->name('cart.placeOrder');
-        Route::post('cart/qty-plus/{id}','App\Http\Controllers\CartController@qtyPlus')->name('cart.qty-plus');
-        Route::post('cart/qty-minus/{id}','App\Http\Controllers\CartController@qtyMinus')->name('cart.qty-minus');
-
-        // Local Orders
-        Route::resource('sales-specialist-orders','App\Http\Controllers\LocalOrderController', [
-            'names' => [
-                'index' => 'sales-specialist-orders.index',
-                'create' => 'sales-specialist-orders.create',
-                'store' => 'sales-specialist-orders.store',
-                'edit' => 'sales-specialist-orders.edit',
-            ]
-        ]);
-        Route::post('sales-specialist-orders/get-all', 'App\Http\Controllers\LocalOrderController@getAll')->name('sales-specialist-orders.get-all');
-        Route::post('sales-specialist-orders/get-customers/','App\Http\Controllers\LocalOrderController@getCustomers')->name('sales-specialist-orders.getCustomers');
-        Route::post('sales-specialist-orders/get-products/','App\Http\Controllers\LocalOrderController@getProducts')->name('sales-specialist-orders.getProducts');
-        Route::post('sales-specialist-orders/get-address/','App\Http\Controllers\LocalOrderController@getAddress')->name('sales-specialist-orders.getAddress');
-        Route::post('sales-specialist-orders/place-order/','App\Http\Controllers\LocalOrderController@placeOrder')->name('sales-specialist-orders.placeOrder');
-        Route::post('sales-specialist-orders/get-price/','App\Http\Controllers\LocalOrderController@getPrice')->name('sales-specialist-orders.get-price');
-        Route::post('sales-specialist-orders/get-customer-schedule/','App\Http\Controllers\LocalOrderController@getCustomerSchedule')->name('sales-specialist-orders.get-customer-schedule');
-
-        Route::get('customer-promotion/', 'App\Http\Controllers\CustomerPromotionController@index')->name('customer-promotion.index')/*->middleware('not-super-admin')*/;
-        Route::post('customer-promotion/get-all', 'App\Http\Controllers\CustomerPromotionController@getAll')->name('customer-promotion.get-all');
-        Route::get('customer-promotion/show/{id}', 'App\Http\Controllers\CustomerPromotionController@show')->name('customer-promotion.show');
-        Route::post('customer-promotion/get-all-product-list', 'App\Http\Controllers\CustomerPromotionController@getAllProductList')->name('customer-promotion.get-all-product-list');
-        Route::post('customer-promotion/store-interest', 'App\Http\Controllers\CustomerPromotionController@storeInterest')->name('customer-promotion.store-interest');
-        Route::get('customer-promotion/get-interest', 'App\Http\Controllers\CustomerPromotionController@getInterest')->name('customer-promotion.get-interest');
-        Route::get('customer-promotion/product-detail/{id}/{promotion_id}/{customer_id?}', 'App\Http\Controllers\CustomerPromotionController@productDetail')->name('customer-promotion.product-detail');
-        Route::post('customer-promotion/get-customer', 'App\Http\Controllers\CustomerPromotionController@getCustomer')->name('customer-promotion.get-customer');
+    	    Route::resource('user','App\Http\Controllers\UserController');
+    	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
+    	    Route::post('user/status/{id}', 'App\Http\Controllers\UserController@updateStatus')->name('user.status');
+    	    Route::post('user/get-city', 'App\Http\Controllers\UserController@getCity')->name('user.get-city');
+    	    Route::post('user/get-roles', 'App\Http\Controllers\UserController@getRoles')->name('user.get-roles');
+    	    Route::post('user/get-parents', 'App\Http\Controllers\UserController@getParents')->name('user.get-parents');
 
 
-        Route::get('customer-promotion/order/', 'App\Http\Controllers\CustomerPromotionController@orderIndex')->name('customer-promotion.order.index');
-        Route::get('customer-promotion/order/create/{id}/{customer_id?}', 'App\Http\Controllers\CustomerPromotionController@orderCreate')->name('customer-promotion.order.create');
-        Route::get('customer-promotion/order/edit/{id}/{customer_id?}', 'App\Http\Controllers\CustomerPromotionController@orderEdit')->name('customer-promotion.order.edit');
-        Route::post('customer-promotion/order/store', 'App\Http\Controllers\CustomerPromotionController@orderStore')->name('customer-promotion.order.store');
-        Route::post('customer-promotion/order/get-all', 'App\Http\Controllers\CustomerPromotionController@orderGetAll')->name('customer-promotion.order.get-all');
-        Route::get('customer-promotion/order/show/{id}', 'App\Http\Controllers\CustomerPromotionController@orderShow')->name('customer-promotion.order.show');
-        Route::post('customer-promotion/order/get-customer-address', 'App\Http\Controllers\CustomerPromotionController@getCustomerAddress')->name('customer-promotion.order.get-customer-address');
-        Route::post('customer-promotion/order/status', 'App\Http\Controllers\CustomerPromotionController@orderStatus')->name('customer-promotion.order.status');
-        Route::post('customer-promotion/order/push-in-sap', 'App\Http\Controllers\CustomerPromotionController@orderPushInSap')->name('customer-promotion.order.push-in-sap');
-        Route::post('customer-promotion/order/approved', 'App\Http\Controllers\CustomerPromotionController@orderApproved')->name('customer-promotion.order.approved');
+    		Route::resource('productfeatures','App\Http\Controllers\ProductFeaturesController')->middleware('super-admin');
+    	    Route::post('productfeatures/get-all', 'App\Http\Controllers\ProductFeaturesController@getAll')->name('productfeatures.get-all')->middleware('super-admin');
+
+    		Route::resource('productbenefits','App\Http\Controllers\ProductBenefitsController')->middleware('super-admin');
+    	    Route::post('productbenefits/get-all', 'App\Http\Controllers\ProductBenefitsController@getAll')->name('productbenefits.get-all')->middleware('super-admin');
+
+    		Route::resource('productsellsheets','App\Http\Controllers\ProductSellSheetsController')->middleware('super-admin');
+    	    Route::post('productsellsheets/get-all', 'App\Http\Controllers\ProductSellSheetsController@getAll')->name('productsellsheets.get-all')->middleware('super-admin');
+
+            // Sales Persons
+            Route::resource('sales-persons','App\Http\Controllers\SalesPersonsController');
+    	    Route::post('sales-persons/get-all', 'App\Http\Controllers\SalesPersonsController@getAll')->name('sales-persons.get-all');
+    	    Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
+
+            // Product
+    	    Route::resource('product','App\Http\Controllers\ProductController');
+    	    Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
+    	    Route::post('product/sync-products', 'App\Http\Controllers\ProductController@syncProducts')->name('product.sync-products');
+
+            // Product Group
+            Route::resource('product-group','App\Http\Controllers\ProductGroupController');
+            Route::post('product-group/get-all', 'App\Http\Controllers\ProductGroupController@getAll')->name('product-group.get-all');
+            Route::post('product-group/sync-product-groups', 'App\Http\Controllers\ProductGroupController@syncProductGroups')->name('product-group.sync-product-groups');
+
+            // Orders
+            Route::resource('orders','App\Http\Controllers\OrdersController');
+    	    Route::post('orders/get-all', 'App\Http\Controllers\OrdersController@getAll')->name('orders.get-all');
+    	    Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
+            Route::get('pending-orders', 'App\Http\Controllers\OrdersController@pendingOrder')->name('orders.panding-orders');
+            Route::get('pending-orders/{id}', 'App\Http\Controllers\OrdersController@pendingOrderView')->name('orders.panding-orders.view');
+            Route::post('pending-orders/get-all', 'App\Http\Controllers\OrdersController@getAllPendingOrder')->name('orders.get-all-pending-orders');
+            Route::get('pending-promotion', 'App\Http\Controllers\OrdersController@pendingPromotion')->name('orders.pending-promotion');
+            Route::get('pending-promotion/{id}', 'App\Http\Controllers\OrdersController@pendingPromotionView')->name('orders.pending-promotion.view');
+            Route::post('pending-promotion/get-all', 'App\Http\Controllers\OrdersController@getAllPendingPromotion')->name('orders.get-all-pending-promotion');
+
+            // Invoices
+            Route::resource('invoices','App\Http\Controllers\InvoicesController');
+    	    Route::post('invoices/get-all', 'App\Http\Controllers\InvoicesController@getAll')->name('invoices.get-all');
+    	    Route::post('invoices/sync-orders', 'App\Http\Controllers\InvoicesController@syncInvoices')->name('invoices.sync-invoices');
+
+            // Pramotions
+            Route::resource('promotion','App\Http\Controllers\PromotionsController');
+    	    Route::post('promotion/get-all', 'App\Http\Controllers\PromotionsController@getAll')->name('promotion.get-all');
+            Route::post('promotion/status/{id}', 'App\Http\Controllers\PromotionsController@updateStatus')->name('promotion.status');
+            Route::post('promotion/get-customers/','App\Http\Controllers\PromotionsController@getCustomers')->name('promotion.getCustomers');
+            Route::post('promotion/get-products/','App\Http\Controllers\PromotionsController@getProducts')->name('promotion.getProducts');
+            Route::post('promotion/get-promotion-data', 'App\Http\Controllers\PromotionsController@getPromotionData')->name('promotion.get-promotion-data');
+            Route::post('promotion/get-territories/','App\Http\Controllers\PromotionsController@getTerritories')->name('promotion.getTerritories');
+            Route::post('promotion/get-classes/','App\Http\Controllers\PromotionsController@getClasses')->name('promotion.getClasses');
+            Route::post('promotion/get-sales-specialist/','App\Http\Controllers\PromotionsController@getSalesSpecialist')->name('promotion.getSalesSpecialist');
+            Route::post('promotion/get-promotion-interest-data/','App\Http\Controllers\PromotionsController@getPromotionInterestData')->name('promotion.get-promotion-interest-data');
+
+            // Route::resource('location','App\Http\Controllers\LocationController');
+    	    // Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');
+    	    // Route::post('location/status/{id}', 'App\Http\Controllers\LocationController@updateStatus')->name('location.status');
+
+    	    Route::resource('department','App\Http\Controllers\DepartmentController');
+    	    Route::post('department/get-all', 'App\Http\Controllers\DepartmentController@getAll')->name('department.get-all');
+    	    Route::post('department/status/{id}', 'App\Http\Controllers\DepartmentController@updateStatus')->name('department.status');
+
+    	    Route::resource('organisation','App\Http\Controllers\OrganisationController');
+
+            // Activity Log
+            Route::resource('activitylog','App\Http\Controllers\ActivityLogController');
+    	    Route::post('activitylog/get-all', 'App\Http\Controllers\ActivityLogController@getAll')->name('activitylog.get-all');
+
+    	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index')->middleware('not-super-admin');
+    	    Route::get('product-list/{id}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show')->middleware('not-super-admin');
+    	    Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all')->middleware('not-super-admin');
+
+            // Territories
+            Route::resource('territory','App\Http\Controllers\TerritoriesController');
+    	    Route::post('territory/get-all', 'App\Http\Controllers\TerritoriesController@getAll')->name('territory.get-all');
+    	    Route::post('territory/sync-territory', 'App\Http\Controllers\TerritoriesController@syncTerritories')->name('territory.sync-territory');
+
+            // Customer Groups
+    	    Route::resource('customer-group','App\Http\Controllers\CustomerGroupController');
+    	    Route::post('customer-group/get-all', 'App\Http\Controllers\CustomerGroupController@getAll')->name('customer-group.get-all');
+    	    Route::post('customer-group/sync-customer-groups', 'App\Http\Controllers\CustomerGroupController@syncCustomerGroups')->name('customer-group.sync-customer-groups');
+
+            // Sales Specialist Assignment
+            Route::resource('customers-sales-specialist','App\Http\Controllers\CustomersSalesSpecialistsController');
+    	    Route::post('customers-sales-specialist/get-all', 'App\Http\Controllers\CustomersSalesSpecialistsController@getAll')->name('customers-sales-specialist.get-all');
+    	    Route::post('customers-sales-specialist/status/{id}', 'App\Http\Controllers\CustomersSalesSpecialistsController@updateStatus')->name('customers-sales-specialist.status');
+            Route::post('customers-sales-specialist/get-customers/','App\Http\Controllers\CustomersSalesSpecialistsController@getCustomers')->name('customers-sales-specialist.getCustomers');
+            Route::post('customers-sales-specialist/get-salse-specialist/','App\Http\Controllers\CustomersSalesSpecialistsController@getSalseSpecialist')->name('customers-sales-specialist.getSalseSpecialist');
+
+            Route::post('customers-sales-specialist/get-product-brand/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductBrand')->name('customers-sales-specialist.get-product-brand');
+            Route::post('customers-sales-specialist/get-product-line/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductLine')->name('customers-sales-specialist.get-product-line');
+            Route::post('customers-sales-specialist/get-product-category/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductCategory')->name('customers-sales-specialist.get-product-category');
+
+    	    Route::resource('class','App\Http\Controllers\ClassController');
+    	    Route::post('class/get-all', 'App\Http\Controllers\ClassController@getAll')->name('class.get-all');
+
+    	    // Territory Sales Specialist
+            Route::resource('territory-sales-specialist','App\Http\Controllers\TerritorySalesSpecialistController');
+    	    Route::post('territory-sales-specialist/get-all', 'App\Http\Controllers\TerritorySalesSpecialistController@getAll')->name('territory-sales-specialist.get-all');
+            Route::post('territory-sales-specialist/get-territory/','App\Http\Controllers\TerritorySalesSpecialistController@getTerritory')->name('territory-sales-specialist.get-territory');
+            Route::post('territory-sales-specialist/get-sales-specialist/','App\Http\Controllers\TerritorySalesSpecialistController@getSalesSpecialist')->name('territory-sales-specialist.get-sales-specialist');
+
+            // Cart
+            Route::resource('cart','App\Http\Controllers\CartController');
+            Route::post('cart/add/{id}','App\Http\Controllers\CartController@addToCart')->name('cart.add');
+            Route::post('cart/remove/{id}','App\Http\Controllers\CartController@removeFromCart')->name('cart.remove');
+            Route::post('cart/update-qty/{id}','App\Http\Controllers\CartController@updateQty')->name('cart.update-qty');
+            Route::post('cart/placeOrder','App\Http\Controllers\CartController@placeOrder')->name('cart.placeOrder');
+            Route::post('cart/qty-plus/{id}','App\Http\Controllers\CartController@qtyPlus')->name('cart.qty-plus');
+            Route::post('cart/qty-minus/{id}','App\Http\Controllers\CartController@qtyMinus')->name('cart.qty-minus');
+
+            // Local Orders
+            Route::resource('sales-specialist-orders','App\Http\Controllers\LocalOrderController', [
+                'names' => [
+                    'index' => 'sales-specialist-orders.index',
+                    'create' => 'sales-specialist-orders.create',
+                    'store' => 'sales-specialist-orders.store',
+                    'edit' => 'sales-specialist-orders.edit',
+                ]
+            ]);
+            Route::post('sales-specialist-orders/get-all', 'App\Http\Controllers\LocalOrderController@getAll')->name('sales-specialist-orders.get-all');
+            Route::post('sales-specialist-orders/get-customers/','App\Http\Controllers\LocalOrderController@getCustomers')->name('sales-specialist-orders.getCustomers');
+            Route::post('sales-specialist-orders/get-products/','App\Http\Controllers\LocalOrderController@getProducts')->name('sales-specialist-orders.getProducts');
+            Route::post('sales-specialist-orders/get-address/','App\Http\Controllers\LocalOrderController@getAddress')->name('sales-specialist-orders.getAddress');
+            Route::post('sales-specialist-orders/place-order/','App\Http\Controllers\LocalOrderController@placeOrder')->name('sales-specialist-orders.placeOrder');
+            Route::post('sales-specialist-orders/get-price/','App\Http\Controllers\LocalOrderController@getPrice')->name('sales-specialist-orders.get-price');
+            Route::post('sales-specialist-orders/get-customer-schedule/','App\Http\Controllers\LocalOrderController@getCustomerSchedule')->name('sales-specialist-orders.get-customer-schedule');
+
+            Route::get('customer-promotion/', 'App\Http\Controllers\CustomerPromotionController@index')->name('customer-promotion.index')/*->middleware('not-super-admin')*/;
+            Route::post('customer-promotion/get-all', 'App\Http\Controllers\CustomerPromotionController@getAll')->name('customer-promotion.get-all');
+            Route::get('customer-promotion/show/{id}', 'App\Http\Controllers\CustomerPromotionController@show')->name('customer-promotion.show');
+            Route::post('customer-promotion/get-all-product-list', 'App\Http\Controllers\CustomerPromotionController@getAllProductList')->name('customer-promotion.get-all-product-list');
+            Route::post('customer-promotion/store-interest', 'App\Http\Controllers\CustomerPromotionController@storeInterest')->name('customer-promotion.store-interest');
+            Route::get('customer-promotion/get-interest', 'App\Http\Controllers\CustomerPromotionController@getInterest')->name('customer-promotion.get-interest');
+            Route::get('customer-promotion/product-detail/{id}/{promotion_id}/{customer_id?}', 'App\Http\Controllers\CustomerPromotionController@productDetail')->name('customer-promotion.product-detail');
+            Route::post('customer-promotion/get-customer', 'App\Http\Controllers\CustomerPromotionController@getCustomer')->name('customer-promotion.get-customer');
 
 
-        // Quotations
-        Route::resource('quotation','App\Http\Controllers\QuotationController');
-	    Route::post('quotation/get-all', 'App\Http\Controllers\QuotationController@getAll')->name('quotation.get-all');
-	    Route::post('quotation/sync-quotation', 'App\Http\Controllers\QuotationController@syncQuotations')->name('quotation.sync-quotation');
+            Route::get('customer-promotion/order/', 'App\Http\Controllers\CustomerPromotionController@orderIndex')->name('customer-promotion.order.index');
+            Route::get('customer-promotion/order/create/{id}/{customer_id?}', 'App\Http\Controllers\CustomerPromotionController@orderCreate')->name('customer-promotion.order.create');
+            Route::get('customer-promotion/order/edit/{id}/{customer_id?}', 'App\Http\Controllers\CustomerPromotionController@orderEdit')->name('customer-promotion.order.edit');
+            Route::post('customer-promotion/order/store', 'App\Http\Controllers\CustomerPromotionController@orderStore')->name('customer-promotion.order.store');
+            Route::post('customer-promotion/order/get-all', 'App\Http\Controllers\CustomerPromotionController@orderGetAll')->name('customer-promotion.order.get-all');
+            Route::get('customer-promotion/order/show/{id}', 'App\Http\Controllers\CustomerPromotionController@orderShow')->name('customer-promotion.order.show');
+            Route::post('customer-promotion/order/get-customer-address', 'App\Http\Controllers\CustomerPromotionController@getCustomerAddress')->name('customer-promotion.order.get-customer-address');
+            Route::post('customer-promotion/order/status', 'App\Http\Controllers\CustomerPromotionController@orderStatus')->name('customer-promotion.order.status');
+            Route::post('customer-promotion/order/push-in-sap', 'App\Http\Controllers\CustomerPromotionController@orderPushInSap')->name('customer-promotion.order.push-in-sap');
+            Route::post('customer-promotion/order/approved', 'App\Http\Controllers\CustomerPromotionController@orderApproved')->name('customer-promotion.order.approved');
 
-        // Company
-        Route::resource('sap-connection','App\Http\Controllers\SapConnectionController', [
-            'names' => [
-                'index' => 'sap-connection.index',
-                'store' => 'sap-connection.store',
-                'edit' => 'sap-connection.edit',
-            ]
-        ]);
-        Route::post('sap-connection/get-all', 'App\Http\Controllers\SapConnectionController@getAll')->name('sap-connection.get-all');
-        Route::get('sap-connection/test/{id}','App\Http\Controllers\SapConnectionController@testAPI')->name('sap-connection.test');
 
-        // News and Announcement
-        Route::resource('news-and-announcement','App\Http\Controllers\NewsAndAnnouncementController');
-        Route::post('news-and-announcement/get-all', 'App\Http\Controllers\NewsAndAnnouncementController@getAll')->name('news-and-announcement.get-all');
-        Route::post('news-and-announcement/get-roles/','App\Http\Controllers\NewsAndAnnouncementController@getRoles')->name('news-and-announcement.getRoles');
-        Route::post('news-and-announcement/get-customer', 'App\Http\Controllers\NewsAndAnnouncementController@getCustomer')->name('news-and-announcement.getCustomer');
-        Route::post('news-and-announcement/get-customer-class', 'App\Http\Controllers\NewsAndAnnouncementController@getCustomerClass')->name('news-and-announcement.getCustomerClass');
-        Route::post('news-and-announcement/get-sales-specialist', 'App\Http\Controllers\NewsAndAnnouncementController@getSalesSpecialist')->name('news-and-announcement.getSalesSpecialist');
-        Route::post('news-and-announcement/get-territory', 'App\Http\Controllers\NewsAndAnnouncementController@getTerritory')->name('news-and-announcement.getTerritory');
-        Route::post('news-and-announcement/get-all-role', 'App\Http\Controllers\NewsAndAnnouncementController@getAllRole')->name('news-and-announcement.getAllRole');
-        Route::post('news-and-announcement/get-all-customer', 'App\Http\Controllers\NewsAndAnnouncementController@getAllCustomer')->name('news-and-announcement.getAllCustomer');
-        Route::post('news-and-announcement/get-all-sales-specialist', 'App\Http\Controllers\NewsAndAnnouncementController@getAllSalesSpecialist')->name('news-and-announcement.getAllSalesSpecialist');
-        Route::post('news-and-announcement/get-all-customer-class', 'App\Http\Controllers\NewsAndAnnouncementController@getAllCustomerClass')->name('news-and-announcement.getAllCustomerClass');
-        Route::post('news-and-announcement/get-all-territory', 'App\Http\Controllers\NewsAndAnnouncementController@getAllTerritory')->name('news-and-announcement.getAllTerritory');
+            // Quotations
+            Route::resource('quotation','App\Http\Controllers\QuotationController');
+    	    Route::post('quotation/get-all', 'App\Http\Controllers\QuotationController@getAll')->name('quotation.get-all');
+    	    Route::post('quotation/sync-quotation', 'App\Http\Controllers\QuotationController@syncQuotations')->name('quotation.sync-quotation');
 
+            // Company
+            Route::resource('sap-connection','App\Http\Controllers\SapConnectionController', [
+                'names' => [
+                    'index' => 'sap-connection.index',
+                    'store' => 'sap-connection.store',
+                    'edit' => 'sap-connection.edit',
+                ]
+            ]);
+            Route::post('sap-connection/get-all', 'App\Http\Controllers\SapConnectionController@getAll')->name('sap-connection.get-all');
+            Route::get('sap-connection/test/{id}','App\Http\Controllers\SapConnectionController@testAPI')->name('sap-connection.test');
+
+            // News and Announcement
+            Route::resource('news-and-announcement','App\Http\Controllers\NewsAndAnnouncementController');
+            Route::post('news-and-announcement/get-all', 'App\Http\Controllers\NewsAndAnnouncementController@getAll')->name('news-and-announcement.get-all');
+            Route::post('news-and-announcement/get-roles/','App\Http\Controllers\NewsAndAnnouncementController@getRoles')->name('news-and-announcement.getRoles');
+            Route::post('news-and-announcement/get-customer', 'App\Http\Controllers\NewsAndAnnouncementController@getCustomer')->name('news-and-announcement.getCustomer');
+            Route::post('news-and-announcement/get-customer-class', 'App\Http\Controllers\NewsAndAnnouncementController@getCustomerClass')->name('news-and-announcement.getCustomerClass');
+            Route::post('news-and-announcement/get-sales-specialist', 'App\Http\Controllers\NewsAndAnnouncementController@getSalesSpecialist')->name('news-and-announcement.getSalesSpecialist');
+            Route::post('news-and-announcement/get-territory', 'App\Http\Controllers\NewsAndAnnouncementController@getTerritory')->name('news-and-announcement.getTerritory');
+            Route::post('news-and-announcement/get-all-role', 'App\Http\Controllers\NewsAndAnnouncementController@getAllRole')->name('news-and-announcement.getAllRole');
+            Route::post('news-and-announcement/get-all-customer', 'App\Http\Controllers\NewsAndAnnouncementController@getAllCustomer')->name('news-and-announcement.getAllCustomer');
+            Route::post('news-and-announcement/get-all-sales-specialist', 'App\Http\Controllers\NewsAndAnnouncementController@getAllSalesSpecialist')->name('news-and-announcement.getAllSalesSpecialist');
+            Route::post('news-and-announcement/get-all-customer-class', 'App\Http\Controllers\NewsAndAnnouncementController@getAllCustomerClass')->name('news-and-announcement.getAllCustomerClass');
+            Route::post('news-and-announcement/get-all-territory', 'App\Http\Controllers\NewsAndAnnouncementController@getAllTerritory')->name('news-and-announcement.getAllTerritory');
+        });
+
+        // Customer Orders
+        Route::resource('customer-order','App\Http\Controllers\CustomerOrderController');
+        Route::post('customer-order/get-all', 'App\Http\Controllers\CustomerOrderController@getAll')->name('customer-order.get-all');
+
+        // DraftOrder
+        Route::resource('draft-order','App\Http\Controllers\DraftOrderController');
+        Route::post('draft-order/get-all', 'App\Http\Controllers\DraftOrderController@getAll')->name('draft-order.get-all');
+        Route::post('draft-order/get-products/','App\Http\Controllers\DraftOrderController@getProducts')->name('draft-order.getProducts');
+        Route::post('draft-order/get-address/','App\Http\Controllers\DraftOrderController@getAddress')->name('draft-order.getAddress');
+        Route::post('draft-order/place-order/','App\Http\Controllers\DraftOrderController@placeOrder')->name('draft-order.placeOrder');
+        Route::post('draft-order/get-price/','App\Http\Controllers\DraftOrderController@getPrice')->name('draft-order.get-price');
 
     });
-
-    // Customer Orders
-    Route::resource('customer-order','App\Http\Controllers\CustomerOrderController');
-    Route::post('customer-order/get-all', 'App\Http\Controllers\CustomerOrderController@getAll')->name('customer-order.get-all');
-
-    // DraftOrder
-    Route::resource('draft-order','App\Http\Controllers\DraftOrderController');
-    Route::post('draft-order/get-all', 'App\Http\Controllers\DraftOrderController@getAll')->name('draft-order.get-all');
-    Route::post('draft-order/get-products/','App\Http\Controllers\DraftOrderController@getProducts')->name('draft-order.getProducts');
-    Route::post('draft-order/get-address/','App\Http\Controllers\DraftOrderController@getAddress')->name('draft-order.getAddress');
-    Route::post('draft-order/place-order/','App\Http\Controllers\DraftOrderController@placeOrder')->name('draft-order.placeOrder');
-    Route::post('draft-order/get-price/','App\Http\Controllers\DraftOrderController@getPrice')->name('draft-order.get-price');
 
 
     // Super Admin Routes
