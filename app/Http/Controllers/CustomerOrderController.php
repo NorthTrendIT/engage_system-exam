@@ -95,11 +95,11 @@ class CustomerOrderController extends Controller
     }
 
     public function getAll(Request $request){
-        $id = Auth::user()->customer_id;
+        // $id = Auth::user()->customer_id;
 
-        $customer = Customer::where('id', $id)->first();
+        // $customer = Customer::where('id', $id)->first();
 
-        $data = Quotation::where('card_code', $customer->card_code);
+        $data = Quotation::where('card_code', @Auth::user()->customer->card_code);
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {

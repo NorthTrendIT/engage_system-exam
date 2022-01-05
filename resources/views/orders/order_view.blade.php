@@ -48,18 +48,54 @@
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
-                            <div class="col-sm-4">
+                            <div class="col-sm-6">
                               <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Name</div>
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Name:</div>
                               <!--end::Label-->
                               <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->card_name ?? '-' }}</div>
+                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->card_name ?? '-' }} (Code: {{ $data->customer->card_code ?? '-' }})</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+
+
+                            <!--end::Col-->
+                            <div class="col-sm-6">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Delivery Address:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->address ?? '-' }}</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+                          </div>
+
+                          <div class="row g-5 mb-11">
+                            <!--end::Col-->
+                            <div class="col-sm-5">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Sales Specialist:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->sales_specialist->sales_specialist_name ?? "-" }}</div>
                               <!--end::Text-->
                             </div>
                             <!--end::Col-->
 
                             <!--end::Col-->
-                            <div class="col-sm-4">
+                            <div class="col-sm-2">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Order #:</div>
+                              <!--end::Label-->
+                              <!--end::Col-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->doc_entry ?? "-"  }}</div>
+                              <!--end::Col-->
+                            </div>
+                            <!--end::Col-->
+
+                            <!--end::Col-->
+                            <div class="col-sm-3">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Order Date:</div>
                               <!--end::Label-->
@@ -70,7 +106,7 @@
                             <!--end::Col-->
 
                             <!--end::Col-->
-                            <div class="col-sm-4">
+                            <div class="col-sm-2">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
                               <!--end::Label-->
@@ -83,17 +119,33 @@
                             <!--end::Col-->
                           </div>
                           <!--end::Row-->
+
+                          <div class="row g-5 mb-11">
+                            <!--end::Col-->
+                            <div class="col-sm-12">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Remarks:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->u_remarks ?? "-" }}</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+                          </div>
+
+                          <hr>
+
                           <!--begin::Content-->
-                          <div class="flex-grow-1">
+                          <div class="flex-grow-1 mt-10">
                             <!--begin::Table-->
                             <div class="table-responsive border-bottom mb-9">
                               <table class="table mb-3">
                                 <thead>
                                   <tr class="border-bottom fs-6 fw-bolder text-muted">
                                     <th class="min-w-175px pb-2">Product</th>
+                                    <th class="min-w-80px text-end pb-2">Delivery Date</th>
                                     <th class="min-w-70px text-end pb-2">Quantity</th>
                                     <th class="min-w-80px text-end pb-2">Price</th>
-                                    <th class="min-w-80px text-end pb-2">Discount</th>
                                     <th class="min-w-100px text-end pb-2">Amount</th>
                                   </tr>
                                 </thead>
@@ -101,9 +153,9 @@
                                     @foreach($data->items as $value)
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}</td>
+                                        <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
                                         <td class="pt-6">₱ {{ $value->gross_price }}</td>
-                                        <td class="pt-6">₱ {{ $value->discount_percent }}</td>
                                         <td class="pt-6 text-dark fw-boldest">₱ {{ $value->gross_total }}</td>
                                     </tr>
                                     @endforeach
@@ -115,13 +167,13 @@
                             <div class="d-flex justify-content-end">
                               <!--begin::Section-->
                               <div class="mw-300px">
-                                <!--begin::Item-->
+                                {{-- <!--begin::Item-->
                                 <div class="d-flex flex-stack mb-3">
                                   <!--begin::Accountname-->
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ $total }}</div>
+                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ @$data->doc_total }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -134,7 +186,7 @@
                                   <div class="text-end fw-bolder fs-6 text-gray-700">- ₱ 0.00</div>
                                   <!--end::Label-->
                                 </div>
-                                <!--end::Item-->
+                                <!--end::Item--> --}}
 
                                 <!--begin::Item-->
                                 <div class="d-flex flex-stack">
@@ -142,7 +194,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
                                   <!--end::Code-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ $total }}</div>
+                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ @$data->doc_total }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->

@@ -58,11 +58,18 @@ class OrdersController extends Controller
     public function show($id)
     {
         $total = 0;
-        $data = Quotation::with(['items.product', 'customer'])->where('id', $id)->first();
-        foreach($data->items as $item){
-            $total += $item->gross_total;
+        $data = Quotation::with(['items.product', 'customer'])->where('id', $id);
+        if(userrole() == 4){
+            $data->where('card_code', @Auth::user()->customer->card_code);
+        }elseif(userrole() == 2){
+            $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(userrole() != 1){
+            return abort(404);
         }
-        return view('orders.order_view', compact('data', 'total'));
+
+        $data = $data->firstOrFail();
+
+        return view('orders.order_view', compact('data'));
     }
 
     /**
@@ -119,6 +126,14 @@ class OrdersController extends Controller
 
         $data = Quotation::query();
 
+        if(userrole() == 4){
+            $data->where('card_code', @Auth::user()->customer->card_code);
+        }elseif(userrole() == 2){
+            $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(userrole() != 1){
+            return abort(404);
+        }
+
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
                 $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
@@ -139,8 +154,11 @@ class OrdersController extends Controller
                             ->addColumn('status', function($row) {
                                 return $row->document_status;
                             })
+                            ->addColumn('doc_entry', function($row) {
+                                return $row->doc_entry;
+                            })
                             ->addColumn('total', function($row) {
-                                return $row->doc_total;
+                                return '₱ '. $row->doc_total;
                             })
                             ->addColumn('date', function($row) {
                                 return date('M d, Y',strtotime($row->doc_date));
@@ -150,6 +168,9 @@ class OrdersController extends Controller
                             })
                             ->orderColumn('name', function ($query, $order) {
                                 $query->orderBy('card_name', $order);
+                            })
+                            ->orderColumn('doc_entry', function ($query, $order) {
+                                $query->orderBy('doc_entry', $order);
                             })
                             ->orderColumn('total', function ($query, $order) {
                                 $query->orderBy('doc_total', $order);
