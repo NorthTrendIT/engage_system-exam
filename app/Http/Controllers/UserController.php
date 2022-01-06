@@ -100,6 +100,7 @@ class UserController extends Controller
                 $message = "New User created successfully.";
                 $input['password'] = Hash::make($input['confirm_password']);
 
+                $input['is_sap_user'] = true;
                 if(userrole() != 1){
                     $input['created_by'] = Auth::id();
                 }
