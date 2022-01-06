@@ -140,10 +140,10 @@
           },
           columns: [
               {data: 'DT_RowIndex'},
+              {data: 'doc_entry', name: 'doc_entry'},
               @if(userrole() != 4)
               {data: 'name', name: 'name'},
               @endif
-              {data: 'doc_entry', name: 'doc_entry'},
               {data: 'total', name: 'total'},
               {data: 'date', name: 'date'},
               {data: 'status', name: 'status'},
