@@ -151,6 +151,18 @@ class ActivityMasterSeeder extends Seeder
                         'id' => 33,
                         'name' => 'Sync Sales Specialist Data'
                     ),
+                    array(
+                        'id' => 34,
+                        'name' => 'Sync Orders Data'
+                    ),
+                    array(
+                        'id' => 35,
+                        'name' => 'Sync Quotations Data'
+                    ),
+                    array(
+                        'id' => 36,
+                        'name' => 'Sync Invoices Data'
+                    ),
 
         		);
         ActivityMaster::insert($data);
