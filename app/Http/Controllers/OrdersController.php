@@ -10,6 +10,7 @@ use App\Models\Quotation;
 use App\Models\Invoice;
 use App\Models\LocalOrder;
 use App\Models\CustomerPromotion;
+use App\Models\SapConnection;
 use DataTables;
 use Auth;
 
@@ -109,11 +110,41 @@ class OrdersController extends Controller
     public function syncOrders(){
         try {
 
-            // Add Sync Order data log.
-            add_log(16, null);
+            $sap_connections = SapConnection::all();
+            foreach ($sap_connections as $value) {
 
-            // Save Data of orders in database
-            SyncOrders::dispatch('TEST-APBW', 'manager', 'test');
+                $order_log_id = add_sap_log([
+                                        'ip_address' => userip(),
+                                        'activity_id' => 34,
+                                        'user_id' => userid(),
+                                        'data' => null,
+                                        'type' => "S",
+                                        'status' => "in progress",
+                                        'sap_connection_id' => $value->id,
+                                    ]);
+                $quotation_log_id = add_sap_log([
+                                        'ip_address' => userip(),
+                                        'activity_id' => 35,
+                                        'user_id' => userid(),
+                                        'data' => null,
+                                        'type' => "S",
+                                        'status' => "in progress",
+                                        'sap_connection_id' => $value->id,
+                                    ]);
+                $invoice_log_id = add_sap_log([
+                                        'ip_address' => userip(),
+                                        'activity_id' => 36,
+                                        'user_id' => userid(),
+                                        'data' => null,
+                                        'type' => "S",
+                                        'status' => "in progress",
+                                        'sap_connection_id' => $value->id,
+                                    ]);
+
+                SyncOrders::dispatch($value->db_name, $value->user_name , $value->password, $order_log_id);
+                SyncQuotationtions::dispatch($value->db_name, $value->user_name , $value->password, $quotation_log_id);
+                SyncInvoices::dispatch($value->db_name, $value->user_name , $value->password, $invoice_log_id);
+            }
 
             $response = ['status' => true, 'message' => 'Sync Orders successfully !'];
         } catch (\Exception $e) {

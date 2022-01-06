@@ -239,9 +239,9 @@ class LocalOrderController extends Controller
             $customer_id = $request->customer_id;
             $customer = Customer::findOrFail($customer_id);
             if($search == ''){
-                $data = Product::where(['is_active'=> 1, 'sap_connection_id' => $customer->sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
+                $data = Product::where('is_active', 1)->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
             }else{
-                $data = Product::where(['is_active'=> 1, 'sap_connection_id' => $customer->sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
+                $data = Product::where('is_active', 1)->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
             }
         } else {
             $data = Product::where('is_active', 1)->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();

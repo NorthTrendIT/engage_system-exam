@@ -5,6 +5,9 @@ use App\Models\ActivityLog;
 use App\Models\ActivityMaster;
 use App\Models\Module;
 use App\Models\Cart;
+use App\Models\Quotation;
+use App\Models\Order;
+use App\Models\Invoice;
 use Auth as Auth;
 
 function add_login_log(){
@@ -163,4 +166,8 @@ function get_random_password($length = 8){
     $password .= substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-=~!@#$%^&*()_+,./<>?;:[]{}\|') , 0 , $length - 1 );
 
     return $password;
+}
+
+function getOrderStatus($id){
+    return $id." - Status";
 }
