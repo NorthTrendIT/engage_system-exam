@@ -45,6 +45,10 @@
                               <td>{{ @$data->card_code ?? "" }}</td>
                             </tr>
                             <tr>
+                              <th> <b>Universal Card Code:</b> </th>
+                              <td>{{ @$data->u_card_code ?? "" }}</td>
+                            </tr>
+                            <tr>
                               <th> <b>Card Name:</b> </th>
                               <td>{{ @$data->card_name ?? "" }}</td>
                             </tr>

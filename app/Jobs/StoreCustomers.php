@@ -175,6 +175,7 @@ class StoreCustomers implements ShouldQueue
                                             'password_text' => $password,
                                             'email' => strtolower(@$obj->card_code)."-".$this->sap_connection_id.'@mailinator.com',
                                             'first_login' => true,
+                                            'sap_connection_id' => $this->sap_connection_id,
                                         );
 
                         User::create($insert_user);
