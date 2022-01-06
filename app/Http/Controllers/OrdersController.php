@@ -8,7 +8,7 @@ use App\Support\SAPInvoices;
 use App\Support\SAPQuotations;
 use App\Jobs\SyncOrders;
 use App\Jobs\SyncInvoices;
-use APp\Jobs\SyncQuotations;
+use App\Jobs\SyncQuotations;
 use App\Models\Order;
 use App\Models\Quotation;
 use App\Models\Invoice;
