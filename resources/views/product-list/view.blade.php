@@ -41,13 +41,13 @@
                               @if(isset($product->product_images) && count($product->product_images) > 0)
                                 @foreach($product->product_images as $key => $image)
                                   @if($image->image && get_valid_file_url('sitebucket/products',$image->image))
-                                    <div class="tab-pane {{ $key == 0 ? "active" : "" }}" id="pic-{{ $key }}"><img src="{{ get_valid_file_url('sitebucket/products',$image->image) }}" /></div>
+                                    <div class="tab-pane {{ $key == 0 ? "active" : "" }}" id="pic-{{ $key }}"><img class="product-detail-image" src="{{ get_valid_file_url('sitebucket/products',$image->image) }}" /></div>
                                   @else
-                                   <div class="tab-pane {{ $key == 0 ? "active" : "" }}" id="pic-{{ $key }}"><img src="{{ asset('assets') }}/assets/media/product_default.jpg" /></div>
+                                   <div class="tab-pane {{ $key == 0 ? "active" : "" }}" id="pic-{{ $key }}"><img class="product-detail-image" src="{{ asset('assets') }}/assets/media/product_default.jpg" /></div>
                                   @endif
                                 @endforeach
                               @else
-                                <div class="tab-pane active" id="pic"><img src="{{ asset('assets') }}/assets/media/product_default.jpg" /></div>
+                                <div class="tab-pane active" id="pic"><img class="product-detail-image" src="{{ asset('assets') }}/assets/media/product_default.jpg" /></div>
                               @endif
                            </div>
                            <ul class="preview-thumbnail nav nav-tabs">
