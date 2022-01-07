@@ -215,12 +215,20 @@ class LocalOrderController extends Controller
 
     function getCustomers(Request $request){
         $search = $request->search;
+        // return @Auth::user()->id;
+        $data = Customer::select('id','card_name')->whereHas('sales_specialist', function($q){
+            $q->where('ss_id', @Auth::user()->id);
+        });
 
-        if($search == ''){
-            $data = Customer::where(['card_type' => 'cCustomer', 'is_active' => 1])->whereNotNull('sap_connection_id')->orderby('card_name','asc')->select('id','card_name')->limit(50)->get();
-        }else{
-            $data = Customer::where(['card_type' => 'cCustomer', 'is_active' => 1])->whereNotNull('sap_connection_id')->orderby('card_name','asc')->select('id','card_name')->where('card_name', 'like', '%' .$search . '%')->limit(50)->get();
+        // dd($data);
+
+        if($search != ''){
+            $data = $data->where('card_name', 'like', '%' .$search . '%');
         }
+
+        $data = $data->orderby('card_name','asc')->limit(50)->get();
+
+        // dd($data);
 
         $response = array();
         foreach($data as $value){
@@ -265,11 +273,28 @@ class LocalOrderController extends Controller
             $data = CustomerBpAddress::where('customer_id', '=', $customer_id)->orderby('id','asc')->get();
         }
 
+        // street, zip, city,country, state
         $response = array();
         foreach($data as $value){
+            $address = $value->address;
+            if(!empty($value->street)){
+                $address .= ', '.$value->street;
+            }
+            if(!empty($value->zip_code)){
+                $address .= ', '.$value->zip_code;
+            }
+            if(!empty($value->city)){
+                $address .= ', '.$value->city;
+            }
+            if(!empty($value->state)){
+                $address .= ', '.$value->state;
+            }
+            if(!empty($value->country)){
+                $address .= ', '.$value->country;
+            }
             $response[] = array(
                 "id"=>$value->id,
-                "text"=>$value->address
+                "text"=>$address,
             );
         }
 

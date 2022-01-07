@@ -161,7 +161,7 @@ class DraftOrderController extends Controller
 
     public function getAll(Request $request){
         $customer_id = Auth::user()->customer_id;
-        $data = LocalOrder::with('sales_specialist')->where(['customer_id' => $customer_id, 'confirmation_status' => 'P']);
+        $data = LocalOrder::with('sales_specialist')->where('customer_id', $customer_id);
 
         if($request->filter_search != ""){
             $data->whereHas('sales_specialist', function($q) use ($request) {
@@ -181,11 +181,11 @@ class DraftOrderController extends Controller
                                 return "";
                             })
                             ->addColumn('confirmation_status', function($row) {
-                                if($row->confirmation_status == 'P'){
+                                if($row->confirmation_status == 'P' || $row->confirmation_status == 'ERR'){
                                     return "Pending";
                                 }
                                 if($row->confirmation_status == 'C'){
-                                    return "Confirm";
+                                    return "Confirmed";
                                 }
                             })
                             ->addColumn('due_date', function($row) {

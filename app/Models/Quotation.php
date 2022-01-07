@@ -50,4 +50,12 @@ class Quotation extends Model
     public function sales_specialist(){
         return $this->belongsTo(User::class, 'sales_person_code','sales_employee_code');
     }
+
+    public function order(){
+        return $this->hasOne(Order::class, 'doc_num', 'doc_entry');
+    }
+
+    public function invoice(){
+        return $this->hasOne(Invoice::class, 'doc_num', 'doc_entry');
+    }
 }

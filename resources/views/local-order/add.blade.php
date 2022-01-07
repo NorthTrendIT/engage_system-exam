@@ -56,8 +56,8 @@
                                             </div>
                                         </div>
                                         <div class="col-xl-4 col-lg-4 col-md-4 col-12">
-                                            <label class="col-form-label text-right">Due Date<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control" placeholder="Due Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('m/d/Y',strtotime($edit->due_date))}}" @endif>
+                                            <label class="col-form-label text-right">Delivery Date<span class="asterisk">*</span></label>
+                                            <input type="text" class="form-control" placeholder="Delivery Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('m/d/Y',strtotime($edit->due_date))}}" @endif>
                                         </div>
                                     </div>
                                 </div>
@@ -204,7 +204,7 @@
                     <div class="row gy-5 g-xl-8">
                         <div class="col-xl-12">
                             <div class="d-flex flex-wrap pt-2 text-center justify-content-center">
-                                <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Save to Draft">
+                                <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Save As Draft">
                                 <input type="button" class="btn btn-lg btn-primary placeOrder" value="Save & Place Order">
                             </div>
                         </div>
@@ -592,7 +592,7 @@
             }
         });
 
-        $(document).on('keyup', "input[type=number]",function(event){
+        $(document).on('change', "input[type=number]",function(event){
             $price = parseFloat($(this).attr('data-price'));
             $qty = parseFloat($(this).val());
             $amount = $price * $qty;
