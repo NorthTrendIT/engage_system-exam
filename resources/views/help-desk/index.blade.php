@@ -32,8 +32,8 @@
               <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
             </div> --}}
             <div class="card-body">
-              <div class="row mt-5">
-                <div class="col-md-3">
+              <div class="row">
+                <div class="col-md-6 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -43,7 +43,7 @@
                 </div>
 
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select a status" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($status as $s)
@@ -52,7 +52,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_urgency" data-control="select2" data-hide-search="true" data-placeholder="Select a urgency" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($urgencies as $u)
@@ -61,7 +61,15 @@
                   </select>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -128,6 +136,7 @@
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_search"]').val();
+      $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
       $filter_urgency = $('[name="filter_urgency"]').find('option:selected').val();
 
@@ -144,6 +153,7 @@
               },
               data:{
                 filter_search : $filter_search,
+                filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
                 filter_urgency : $filter_urgency,
               }
@@ -174,6 +184,7 @@
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
+      $('[name="filter_date_range"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
       $('[name="filter_urgency"]').val('').trigger('change');
       render_table();

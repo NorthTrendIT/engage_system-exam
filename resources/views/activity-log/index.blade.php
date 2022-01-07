@@ -18,8 +18,8 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-body">
-              <div class="row mt-5">
-                <div class="col-md-3">
+              <div class="row">
+                <div class="col-md-5 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -28,7 +28,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid filter_company" name="filter_company" data-control="select2" data-hide-search="false" data-placeholder="Select company" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($company as $c)
@@ -37,7 +37,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-2 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select status" data-allow-clear="true">
                     <option value=""></option>
                     <option value="in progress">In progress</option>
@@ -46,7 +46,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-2 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_type" data-control="select2" data-hide-search="true" data-placeholder="Select type" data-allow-clear="true">
                     <option value=""></option>
                     <option value="O">OMS</option>
@@ -54,7 +54,15 @@
                   </select>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-4 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -167,6 +175,7 @@
 
 
   $(document).ready(function() {
+
     render_table();
 
     function render_table(){
@@ -174,6 +183,7 @@
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_search"]').val();
+      $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
       $filter_type = $('[name="filter_type"]').find('option:selected').val();
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
@@ -193,6 +203,7 @@
               },
               data:{
                 filter_search : $filter_search,
+                filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
                 filter_type : $filter_type,
                 filter_company : $filter_company,
@@ -225,6 +236,7 @@
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
+      $('[name="filter_date_range"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
       $('[name="filter_type"]').val('').trigger('change');
       $('[name="filter_company"]').val('').trigger('change');

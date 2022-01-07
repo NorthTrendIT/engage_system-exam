@@ -215,8 +215,18 @@ class ProductController extends Controller
       });
     }
 
+    if($request->filter_date_range != ""){
+      $date = explode(" - ", $request->filter_date_range);
+      $start = date("Y-m-d", strtotime($date[0]));
+      $end = date("Y-m-d", strtotime($date[1]));
+
+      $data->whereDate('created_date', '>=' , $start);
+      $data->whereDate('created_date', '<=' , $end);
+    }
+
+
     $data->when(!isset($request->order), function ($q) {
-      $q->orderBy('id', 'desc');
+      $q->orderBy('created_date', 'desc');
     });
 
     return DataTables::of($data)

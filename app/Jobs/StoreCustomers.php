@@ -69,7 +69,7 @@ class StoreCustomers implements ShouldQueue
                                 'contact_person' => @$value['ContactPerson'],
                                 'email' => @$value['EmailAddress'],
                                 'city' => @$value['City'],
-                                //'created_date' => @$value['CreateDate']." ".@$value['CreateTime'],
+                                'created_date' => @$value['CreateDate']." ".@$value['CreateTime'],
                                 'is_active' => @$value['Valid'] == "tYES" ? true : false,
                                 //'response' => json_encode($value),
 
