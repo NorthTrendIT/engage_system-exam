@@ -31,11 +31,28 @@
             </div> --}}
             <div class="card-body">
               <div class="row">
+
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
                       <i class="flaticon2-search-1 text-muted"></i>
+                    </span>
+                  </div>
+                </div>
+
+                @if(in_array(userrole(),[1,2]))
+                <div class="col-md-4 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-placeholder="Select customer" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+                @endif
+
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
                     </span>
                   </div>
                 </div>
@@ -47,14 +64,6 @@
                     <option value="approved">Approved</option>
                     <option value="canceled">Canceled</option>
                   </select>
-                </div>
-
-                <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
-                    <span>
-                    </span>
-                  </div>
                 </div>
 
                 <div class="col-md-3 mt-5">
@@ -127,6 +136,7 @@
       $filter_search = $('[name="filter_search"]').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -143,6 +153,7 @@
                 filter_search : $filter_search,
                 filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
+                filter_customer : $filter_customer,
               }
           },
           columns: [
@@ -174,8 +185,36 @@
       $('[name="filter_search"]').val('');
       $('[name="filter_date_range"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
+      $('[name="filter_customer"]').val('').trigger('change');
       render_table();
     })
+
+
+    $('[name="filter_customer"]').select2({
+      ajax: {
+          url: "{{route('customer-promotion.get-customer')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term
+              };
+          },
+          processResults: function (response) {
+            return {
+              results:  $.map(response, function (item) {
+                            return {
+                              text: item.card_name + " (Code: " + item.card_code + ")",
+                              id: item.user.id
+                            }
+                        })
+            };
+          },
+          cache: true
+      },
+    });
 
   })
 </script>
