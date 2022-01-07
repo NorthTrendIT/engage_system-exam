@@ -46,15 +46,7 @@
                             </tr>
                             <tr>
                               <th> <b>Criteria:</b> </th>
-                              <td>
-                                @if($data->scope == "P")
-                                  Discount in Percentage
-                                @elseif($data->scope == "R")
-                                  Discount Percentage Range
-                                @elseif($data->scope == "U")
-                                  Percentage discount + Up to amount limit
-                                @endif
-                              </td>
+                              <td>{{ get_promotion_type_criteria($data->scope) }}</td>
                             </tr>
 
                             @if(isset($data) && ($data->scope == "P" || $data->scope == "U"))

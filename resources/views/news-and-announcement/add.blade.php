@@ -132,7 +132,7 @@
                             <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="is_important">
                                 <option value="">Select Priority</option>
                                 <option value="0" @if(isset($edit) && $edit->is_important == 0) selected @endif>Normal</option>
-                                <option value="1" @if(isset($edit) && $edit->is_important == 1) selected @endif>Medium</option>
+                                {{-- <option value="1" @if(isset($edit) && $edit->is_important == 1) selected @endif>Medium</option> --}}
                                 <option value="2" @if(isset($edit) && $edit->is_important == 2) selected @endif>Important</option>
                             </select>
                         </div>

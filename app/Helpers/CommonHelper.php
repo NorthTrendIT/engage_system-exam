@@ -167,3 +167,18 @@ function get_random_password($length = 8){
 
     return $password;
 }
+
+function get_promotion_type_criteria($scope){
+    $value = "";
+    if($scope == "P"){
+      $value = "Discount in Percentage";
+    }
+    elseif($scope == "R"){
+      $value = "Discount Percentage Range";
+    }
+    elseif($scope == "U"){
+      $value = "Percentage discount + Up to amount limit";
+    }
+
+    return $value;
+}

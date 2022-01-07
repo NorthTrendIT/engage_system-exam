@@ -23,8 +23,9 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-body">
-              <div class="row mt-5">
-                <div class="col-md-3">
+              <div class="row">
+
+                <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -33,16 +34,35 @@
                   </div>
                 </div>
 
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_module" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select module">
+                    <option value=""></option>
+                    <option value="role" >Role</option>
+                    <option value="customer" >Customer</option>
+                    <option value="customer_class" >Customer Class</option>
+                    <option value="sales_specialist" >Sales Specialist</option>
+                    <option value="territory" >Territory</option>
 
-                <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_type" data-control="select2" data-hide-search="true">
-                    <option value="">Select Type</option>
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_priority" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select priority">
+                    <option value=""></option>
+                    <option value="0">Normal</option>
+                    <option value="2">Important</option>
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_type" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select type">
+                    <option value=""></option>
                     <option value="A">Announcement</option>
                     <option value="N">News</option>
                   </select>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -61,10 +81,11 @@
                                 <th>No</th>
                                 <th>Title</th>
                                 <th>Type</th>
+                                <th>Module</th>
+                                <th>Priority</th>
                                 @if(@Auth::user()->role_id == 1)
                                 <th>User Name</th>
                                 @endif
-                                <th>Is Important</th>
                                 <th>Action</th>
                             </tr>
                           </thead>
@@ -112,6 +133,8 @@ $(document).ready(function() {
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_type = $('[name="filter_type"]').find('option:selected').val();
+      $filter_module = $('[name="filter_module"]').find('option:selected').val();
+      $filter_priority = $('[name="filter_priority"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -127,16 +150,19 @@ $(document).ready(function() {
               data:{
                 filter_search : $filter_search,
                 filter_type : $filter_type,
+                filter_module : $filter_module,
+                filter_priority : $filter_priority,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'title', name: 'title'},
               {data: 'type', name: 'type'},
+              {data: 'module', name: 'module'},
+              {data: 'is_important', name: 'is_important', orderable: false},
               @if(@Auth::user()->role_id == 1)
               {data: 'user_name', name: 'user_name'},
               @endif
-              {data: 'is_important', name: 'is_important', orderable: false},
               {data: 'action', name: 'action', orderable: false},
           ],
           drawCallback:function(){
@@ -157,6 +183,8 @@ $(document).ready(function() {
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
       $('[name="filter_type"]').val('').trigger('change');
+      $('[name="filter_module"]').val('').trigger('change');
+      $('[name="filter_priority"]').val('').trigger('change');
       render_table();
     });
 
