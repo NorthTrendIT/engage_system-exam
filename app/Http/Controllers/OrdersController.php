@@ -146,12 +146,13 @@ class OrdersController extends Controller
                                     ]);
 
                 SyncOrders::dispatch($value->db_name, $value->user_name , $value->password, $order_log_id);
-                SyncQuotationtions::dispatch($value->db_name, $value->user_name , $value->password, $quotation_log_id);
+                SyncQuotation::dispatch($value->db_name, $value->user_name , $value->password, $quotation_log_id);
                 SyncInvoices::dispatch($value->db_name, $value->user_name , $value->password, $invoice_log_id);
             }
 
             $response = ['status' => true, 'message' => 'Sync Orders successfully !'];
         } catch (\Exception $e) {
+            dd($e);
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
         return $response;

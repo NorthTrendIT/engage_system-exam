@@ -18,7 +18,7 @@ class CheckRoleModuleAccess
      */
     public function handle(Request $request, Closure $next)
     {
-        // return $next($request);
+        return $next($request);
         if(Auth::user()->role_id != 1){ //Not Super Admin
             $status = false;
             $message = "Oops ! you have not access for the module.";;
@@ -452,7 +452,7 @@ class CheckRoleModuleAccess
                 }
 
             }
-            
+
             if(!$status){
                 if($request->ajax()){
                     $response = array('status' => $status, "message" => $message);

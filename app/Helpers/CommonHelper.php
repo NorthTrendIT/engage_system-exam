@@ -167,7 +167,3 @@ function get_random_password($length = 8){
 
     return $password;
 }
-
-function getOrderStatus($id){
-    return $id." - Status";
-}
