@@ -122,6 +122,8 @@ $(document).ready(function() {
     $(document).on('click', '.addToCart', function(event) {
       event.preventDefault();
       $url = $(this).attr('data-url');
+      $addToCartBtn = $(this);
+      $goToCartBtn = $(this).parent().find('.goToCart');
         $.ajax({
             url: $url,
             method: "POST",
@@ -133,10 +135,12 @@ $(document).ready(function() {
                 if(result.status == false){
                     toast_error(result.message);
                 }else{
+                    $addToCartBtn.hide();
+                    $goToCartBtn.show();
                     toast_success(result.message);
-                    setTimeout(function(){
-                        window.location.reload();
-                    },1500)
+                    // setTimeout(function(){
+                    //     window.location.reload();
+                    // },1500)
                 }
             })
             .fail(function() {

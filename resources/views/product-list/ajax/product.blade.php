@@ -45,7 +45,8 @@
           @if(is_in_cart(@$product->id) == 1)
             <a class="add-to-cart" href="{{ route('cart.index') }}">Go to cart</a>
           @else
-            <a href="javascript:;" class="add-to-cart addToCart" data-url="{{ route('cart.add',@$product->id) }}">add to cart</a>
+            <a href="javascript:;" class="add-to-cart addToCart" data-url="{{ route('cart.add',@$product->id) }}">Add to Cart</a>
+            <a class="add-to-cart goToCart" href="{{ route('cart.index') }}" style="display:none">Go to cart</a>
           @endif
         @endif
       </div>

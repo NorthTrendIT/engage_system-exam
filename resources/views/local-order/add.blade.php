@@ -231,6 +231,7 @@
 <script>
     $(document).ready(function() {
         var form = $('#myForm');
+
         form.find('select').select2({
             ajax: {
                 url: "{{route('sales-specialist-orders.getProducts')}}",
@@ -246,8 +247,13 @@
                 },
                 processResults: function (response) {
                     return {
-                        results: response
-                    };
+                        results:  $.map(response, function (item) {
+                                    return {
+                                        text: item.item_name,
+                                        id: item.id
+                                    }
+                                })
+                        };
                 },
                 cache: true
             },
@@ -261,6 +267,12 @@
             initEmpty: false,
             show: function () {
                 $(this).slideDown();
+                var product_ids = [];
+                $('.selectProducts').each(function(){
+                    if(this.value){
+                        product_ids.push(this.value);
+                    }
+                });
                 form.find('select').next('.select2-container').remove();
                 form.find('select').select2({
                     ajax: {
@@ -273,12 +285,18 @@
                                 _token: "{{ csrf_token() }}",
                                 search: params.term,
                                 customer_id: $('[name="customer_id"]').val(),
+                                product_ids: product_ids,
                             };
                         },
                         processResults: function (response) {
                             return {
-                                results: response
-                            };
+                                results:  $.map(response, function (item) {
+                                            return {
+                                                text: item.item_name,
+                                                id: item.id
+                                            }
+                                        })
+                                };
                         },
                         cache: true
                     },

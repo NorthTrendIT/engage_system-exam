@@ -241,29 +241,23 @@ class LocalOrderController extends Controller
         return response()->json($response);
     }
 
-    function getProducts(Request $request){
+    public function getProducts(Request $request)
+    {
         $search = $request->search;
-        if(isset($request->customer_id)){
-            $customer_id = $request->customer_id;
-            $customer = Customer::findOrFail($customer_id);
-            if($search == ''){
-                $data = Product::where('is_active', 1)->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
-            }else{
-                $data = Product::where('is_active', 1)->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
-            }
-        } else {
-            $data = Product::where('is_active', 1)->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
+
+        $data = Product::orderby('item_name','asc')->where('is_active',true);
+
+        if($search != ''){
+            $data->where('item_name', 'like', '%' .$search . '%');
         }
 
-        $response = array();
-        foreach($data as $value){
-            $response[] = array(
-                "id"=>$value->id,
-                "text"=>$value->item_name
-            );
+        if(isset($request->product_ids) && count($request->product_ids)){
+            $data->whereNotIn('id', $request->product_ids);
         }
 
-        return response()->json($response);
+        $data = $data->limit(50)->get();
+
+        return $data;
     }
 
     function getAddress(Request $request){
@@ -311,15 +305,22 @@ class LocalOrderController extends Controller
             $order = LocalOrder::where('id', $id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
             $obj['CardCode'] = $order->customer->card_code;
+            $obj['CardName'] = @$order->customer->card_name;
             $obj['DocDueDate'] = $order->due_date;
+            $obj['DocCurrency'] = 'PHP';
+            $obj['Address'] = @$order->address->address;
+            $obj['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
 
             $products = array();
             foreach($order->items as $item){
                 $products[] = array(
                     'ItemCode' => $item->product->item_code,
+                    'ItemDescription' => $item->product->item_name,
                     'Quantity' => $item->quantity,
                     'TaxCode' => $order->address->tax_code,
-                    'UnitPrice' => '30',
+                    'Price' => get_product_customer_price(@$item->product->item_prices, @$order->customer->price_list_num),
+                    'UnitPrice' => get_product_customer_price(@$item->product->item_prices, @$order->customer->price_list_num),
+                    'ShipDate' => @$order->due_date,
                 );
 
             }

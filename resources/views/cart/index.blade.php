@@ -22,11 +22,11 @@
                             <!--begin::Header-->
                             <div class="card-header border-0 pt-5">
                                 <h3 class="card-title align-items-start flex-column">
-                                    <span class="card-label fw-bolder text-dark">Products ({{ count($data) }})</span>
+                                    <span class="card-label fw-bolder text-dark productCount">Products ({{ count($data) }})</span>
                                 </h3>
                             </div>
                             @foreach($data as $value)
-                            <div class="card-body pt-5">
+                            <div class="card-body pt-5 productSection">
                                 <div class="d-flex align-items-sm-center mb-7">
                                     <!--begin::Section-->
                                     <div class="d-flex align-items-center flex-row-fluid flex-wrap">
@@ -82,7 +82,7 @@
                                             <span class="text-gray-800 fs-6 fw-bolder">Price</span>
                                         </div>
 
-                                        <span class="fw-bolder my-2">₱ {{ $total}}</span>
+                                        <span class="fw-bolder my-2 totalPrice">₱ {{ $total}}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>
@@ -120,7 +120,7 @@
                                         <div class="flex-grow-1 me-2">
                                             <h3 class="text-gray-800 fs-6 fw-bolder">Total Amount</h3>
                                         </div>
-                                        <span class="fw-bolder my-2">₱ {{ $total }}</span>
+                                        <span class="fw-bolder my-2 totalAmount">₱ {{ $total }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>
@@ -193,6 +193,11 @@
                     </div>
                 </div>
             @endif
+            <div class="row gy-5 g-xl-8 mt-5 emptyCart" style="display:none">
+                <div class="col-xl-12 text-center">
+                    <h2>Whoops! your cart is empty. <a href="{{ route('product-list.index') }}">Add products</a></h2>
+                </div>
+            </div>
         </div>
     </div>
     <!--begin::Profile Personal Information-->
@@ -350,6 +355,7 @@ $(document).ready(function() {
     $(document).on('click', '.remove-from-cart', function(event) {
         event.preventDefault();
         $url = $(this).attr('data-url');
+        $self = $(this);
 
         Swal.fire({
             title: 'Are you sure want to Remove this product?',
@@ -370,15 +376,27 @@ $(document).ready(function() {
                 .done(function(result) {
                     if(result.status == false){
                         toast_error(result.message);
+                        hide_loader();
                     }else{
                         toast_success(result.message);
-                        setTimeout(function(){
-                            window.location.reload();
-                        },1500)
+                        $self.closest('.productSection').remove();
+                        if(result.count > 0){
+                            $('.totalAmount').html('₱ '+result.total);
+                            $('.totalPrice').html('₱ '+result.total);
+                            $('.productCount').html('Products ('+result.count+')');
+                        } else {
+                            $('.emptyCart').show();
+                            $('#myForm').remove();
+                        }
+                        hide_loader();
+                        // setTimeout(function(){
+                        //     window.location.reload();
+                        // },1500)
                     }
                 })
                 .fail(function() {
                     toast_error("error");
+                    hide_loader();
                 });
             }
         })
@@ -400,9 +418,11 @@ $(document).ready(function() {
                 toast_error(result.message);
             }else{
                 toast_success(result.message);
-                setTimeout(function(){
-                    window.location.reload();
-                },1500)
+                $('.totalAmount').html('₱ '+result.total);
+                $('.totalPrice').html('₱ '+result.total);
+                // setTimeout(function(){
+                //     window.location.reload();
+                // },1500)
             }
         })
         .fail(function() {
@@ -413,6 +433,7 @@ $(document).ready(function() {
     $(document).on('click', '.qtyMinus', function(event) {
         $url = $(this).attr('data-url');
         $qty = parseInt($(this).parent().find('.qty').val());
+        $self = $(this);
         $(this).parent().find('.qty').val($qty - 1);
         $.ajax({
             url: $url,
@@ -426,9 +447,20 @@ $(document).ready(function() {
                 toast_error(result.message);
             }else{
                 toast_success(result.message);
-                setTimeout(function(){
-                    window.location.reload();
-                },1500)
+                if(parseInt($self.parent().find('.qty').val()) <= 0){
+                    $self.closest('.productSection').remove();
+                }
+                if(result.count > 0){
+                    $('.totalAmount').html('₱ '+result.total);
+                    $('.totalPrice').html('₱ '+result.total);
+                    $('.productCount').html('Products ('+result.count+')');
+                } else {
+                    $('.emptyCart').show();
+                    $('#myForm').remove();
+                }
+                // setTimeout(function(){
+                //     window.location.reload();
+                // },1500)
             }
         })
         .fail(function() {
