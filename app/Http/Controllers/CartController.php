@@ -155,7 +155,16 @@ class CartController extends Controller
             $cart->qty = $cart->qty + 1;
             $cart->save();
 
-            return $response = ['status'=>true,'message'=>"Product quantity updated successfully."];
+            $customer_id = @Auth::user()->customer_id;
+            $total = 0;
+            $data = Cart::with('product')->where('customer_id', $customer_id)->get();
+
+            foreach($data as $item){
+                $subTotal = get_product_customer_price(@$item->product->item_prices,@Auth::user()->customer->price_list_num) * $item->qty;
+                $total += $subTotal;
+            }
+
+            return $response = ['status'=>true,'message'=>"Product quantity updated successfully.", 'total' => $total];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];
@@ -167,11 +176,21 @@ class CartController extends Controller
             $cart->qty = $cart->qty - 1;
             if($cart->qty <= 0){
                 $cart->delete();
+                $message = "Product removed from cart.";
             } else {
                 $cart->save();
+                $message = "Product quantity updated successfully.";
+            }
+            $customer_id = @Auth::user()->customer_id;
+            $total = 0;
+            $data = Cart::with('product')->where('customer_id', $customer_id)->get();
+
+            foreach($data as $item){
+                $subTotal = get_product_customer_price(@$item->product->item_prices,@Auth::user()->customer->price_list_num) * $item->qty;
+                $total += $subTotal;
             }
 
-            return $response = ['status'=>true,'message'=>"Product quantity updated successfully."];
+            return $response = ['status'=>true,'message'=> $message, 'total' => $total, 'count' => count($data)];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];
@@ -180,9 +199,18 @@ class CartController extends Controller
     public function removeFromCart($id){
         if(isset($id)){
             Cart::where('id', $id)->delete();
+            $customer_id = @Auth::user()->customer_id;
+            $total = 0;
+            $data = Cart::with('product')->where('customer_id', $customer_id)->get();
 
-            return $response = ['status'=>true,'message'=>"Product removed from cart."];
+            foreach($data as $item){
+                $subTotal = get_product_customer_price(@$item->product->item_prices,@Auth::user()->customer->price_list_num) * $item->qty;
+                $total += $subTotal;
+            }
+
+            return $response = ['status'=>true,'message'=>"Product removed from cart.", 'total' => $total, 'count' => count($data)];
         }
+
 
         return $response = ['status'=>false,'message'=>"Something went wrong please try again."];
     }

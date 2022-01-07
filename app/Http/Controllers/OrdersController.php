@@ -146,7 +146,7 @@ class OrdersController extends Controller
                                     ]);
 
                 SyncOrders::dispatch($value->db_name, $value->user_name , $value->password, $order_log_id);
-                SyncQuotation::dispatch($value->db_name, $value->user_name , $value->password, $quotation_log_id);
+                SyncQuotations::dispatch($value->db_name, $value->user_name , $value->password, $quotation_log_id);
                 SyncInvoices::dispatch($value->db_name, $value->user_name , $value->password, $invoice_log_id);
             }
 
