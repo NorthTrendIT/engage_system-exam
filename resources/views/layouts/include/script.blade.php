@@ -36,6 +36,22 @@
 	$(document).ajaxStop(function() {
 	  	hide_loader();
 	});
+
+
+	$('#kt_daterangepicker_1').daterangepicker({
+      autoUpdateInput: false,
+      locale: {
+        cancelLabel: 'Clear'
+      }
+    });
+
+    $('#kt_daterangepicker_1').on('apply.daterangepicker', function(ev, picker) {
+      $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+    });
+
+    $('#kt_daterangepicker_1').on('cancel.daterangepicker', function(ev, picker) {
+      $(this).val('');
+    });
 		
 </script>
 @stack('js')

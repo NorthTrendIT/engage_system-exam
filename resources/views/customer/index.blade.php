@@ -30,8 +30,8 @@
               <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
             </div> --}}
             <div class="card-body">
-              <div class="row mt-5">
-                <div class="col-md-3">
+              <div class="row">
+                <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -40,7 +40,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-2 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_customer_group" data-control="select2" data-hide-search="false">
                     <option value="">Select group</option>
                     @foreach($customer_groups as $customer_group)
@@ -49,7 +49,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-2 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_class" data-control="select2" data-hide-search="false">
                     <option value="">Select class</option>
                     @foreach($classes as $class)
@@ -58,7 +58,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-2 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
                     <option value="">Select status</option>
                     <option value="1">Active</option>
@@ -66,7 +66,15 @@
                   </select>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -137,6 +145,7 @@
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_search"]').val();
+      $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
       $filter_class = $('[name="filter_class"]').find('option:selected').val();
       $filter_customer_group = $('[name="filter_customer_group"]').find('option:selected').val();
@@ -154,6 +163,7 @@
               },
               data:{
                 filter_search : $filter_search,
+                filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
                 filter_class : $filter_class,
                 filter_customer_group : $filter_customer_group,
@@ -189,6 +199,7 @@
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
+      $('[name="filter_date_range"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
       $('[name="filter_class"]').val('').trigger('change');
       $('[name="filter_customer_group"]').val('').trigger('change');
