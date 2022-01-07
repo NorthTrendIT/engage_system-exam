@@ -495,6 +495,10 @@ class CustomerPromotionController extends Controller
             $data->where('customer_promotions.user_id',Auth::id());
         }
 
+        if($request->filter_customer != ""){
+            $data->where('customer_promotions.user_id',$request->filter_customer);
+        }
+
         if($request->filter_status != ""){
             $data->where('customer_promotions.status',$request->filter_status);
         }
@@ -930,7 +934,10 @@ class CustomerPromotionController extends Controller
         }
 
         if($search != ''){
-            $data->where('card_name', 'like', '%' .$search . '%');
+            $data->where(function($q) use ($search){
+                $q->orwhere('card_name', 'like', '%' .$search . '%');
+                $q->orwhere('card_code', 'like', '%' .$search . '%');
+            });
         }
 
         $data = $data->limit(50)->get();

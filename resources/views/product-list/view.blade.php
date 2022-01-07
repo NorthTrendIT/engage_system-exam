@@ -43,11 +43,11 @@
                                   @if($image->image && get_valid_file_url('sitebucket/products',$image->image))
                                     <div class="tab-pane {{ $key == 0 ? "active" : "" }}" id="pic-{{ $key }}"><img src="{{ get_valid_file_url('sitebucket/products',$image->image) }}" /></div>
                                   @else
-                                   <div class="tab-pane {{ $key == 0 ? "active" : "" }}" id="pic-{{ $key }}"><img src="{{ asset('assets') }}/assets/media/img-1.jpg" /></div>
+                                   <div class="tab-pane {{ $key == 0 ? "active" : "" }}" id="pic-{{ $key }}"><img src="{{ asset('assets') }}/assets/media/product_default.jpg" /></div>
                                   @endif
                                 @endforeach
                               @else
-                                <div class="tab-pane active" id="pic"><img src="{{ asset('assets') }}/assets/media/img-1.jpg" /></div>
+                                <div class="tab-pane active" id="pic"><img src="{{ asset('assets') }}/assets/media/product_default.jpg" /></div>
                               @endif
                            </div>
                            <ul class="preview-thumbnail nav nav-tabs">
@@ -57,11 +57,11 @@
                                   @if($image->image && get_valid_file_url('sitebucket/products',$image->image))
                                     <li class="{{ $key == 0 ? "active" : "" }}"><a data-target="#pic-{{ $key }}" data-toggle="tab"><img src="{{ get_valid_file_url('sitebucket/products',$image->image) }}" /></a></li>
                                   @else
-                                   <li class="{{ $key == 0 ? "active" : "" }}"><a data-target="#pic-{{ $key }}" data-toggle="tab"><img src="{{ asset('assets') }}/assets/media/img-1.jpg" /></a></li>
+                                   <li class="{{ $key == 0 ? "active" : "" }}"><a data-target="#pic-{{ $key }}" data-toggle="tab"><img src="{{ asset('assets') }}/assets/media/product_default.jpg" /></a></li>
                                   @endif
                                  @endforeach
                               @else
-                                <li class="active"><a data-target="#pic" data-toggle="tab"><img src="{{ asset('assets') }}/assets/media/img-1.jpg" /></a></li>
+                                <li class="active"><a data-target="#pic" data-toggle="tab"><img src="{{ asset('assets') }}/assets/media/product_default.jpg" /></a></li>
                               @endif
 
                            </ul>
