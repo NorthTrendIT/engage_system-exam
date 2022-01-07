@@ -419,3 +419,8 @@ td.disabled.day {
     text-align: center;
     border: 0.5px solid #d3c4c4;
 }
+
+.product-detail-image{
+    object-fit: cover;
+    min-width: 500px;
+}
