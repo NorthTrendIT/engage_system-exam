@@ -114,6 +114,15 @@ class ActivityLogController extends Controller
             });
         }
 
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('created_at', '>=' , $start);
+            $data->whereDate('created_at', '<=' , $end);
+        }
+
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
         });
