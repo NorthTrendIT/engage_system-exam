@@ -122,6 +122,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('promotion/get-classes/','App\Http\Controllers\PromotionsController@getClasses')->name('promotion.getClasses');
             Route::post('promotion/get-sales-specialist/','App\Http\Controllers\PromotionsController@getSalesSpecialist')->name('promotion.getSalesSpecialist');
             Route::post('promotion/get-promotion-interest-data/','App\Http\Controllers\PromotionsController@getPromotionInterestData')->name('promotion.get-promotion-interest-data');
+            Route::post('promotion/get-promotion-type/','App\Http\Controllers\PromotionsController@getPromotionType')->name('promotion.get-promotion-type');
 
             // Route::resource('location','App\Http\Controllers\LocationController');
     	    // Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');

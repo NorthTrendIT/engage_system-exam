@@ -24,8 +24,8 @@
           <div class="card card-xl-stretch mb-5 mb-xl-8">
 
             <div class="card-body">
-              <div class="row mt-5">
-                <div class="col-md-3">
+              <div class="row">
+                <div class="col-md-4 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -34,8 +34,13 @@
                   </div>
                 </div>
 
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_promotion_type" data-control="select2" data-hide-search="false" data-placeholder="Select promotion type" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
                     <option value="">Select status</option>
                     <option value="1">Active</option>
@@ -43,9 +48,9 @@
                   </select>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_scope" data-control="select2" data-hide-search="true">
-                    <option value="">Select Promotion Scope</option>
+                    <option value="">Select promotion scope</option>
                     <option value="C">Customers</option>
                     <option value="CL">Class</option>
                     <option value="T">Territories</option>
@@ -53,7 +58,15 @@
                   </select>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -121,8 +134,10 @@
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_search"]').val();
+      $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
       $filter_scope = $('[name="filter_scope"]').find('option:selected').val();
+      $filter_promotion_type = $('[name="filter_promotion_type"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -139,6 +154,8 @@
                 filter_search : $filter_search,
                 filter_status : $filter_status,
                 filter_scope : $filter_scope,
+                filter_date_range : $filter_date_range,
+                filter_promotion_type : $filter_promotion_type,
               }
           },
           columns: [
@@ -168,8 +185,10 @@
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
+      $('[name="filter_date_range"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
       $('[name="filter_scope"]').val('').trigger('change');
+      $('[name="filter_promotion_type"]').val('').trigger('change');
       render_table();
     })
 
@@ -277,6 +296,32 @@
           });
         }
       })
+    });
+
+    $('[name="filter_promotion_type"]').select2({
+      ajax: {
+          url: "{{route('promotion.get-promotion-type')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term
+              };
+          },
+          processResults: function (response) {
+            return {
+              results:  $.map(response, function (item) {
+                            return {
+                              text: item.title,
+                              id: item.id
+                            }
+                        })
+            };
+          },
+          cache: true
+      },
     });
 
   })

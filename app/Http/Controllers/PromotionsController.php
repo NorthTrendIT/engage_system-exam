@@ -36,7 +36,7 @@ class PromotionsController extends Controller
      */
     public function create()
     {
-        $promotion_type = PromotionTypes::get();
+        $promotion_type = PromotionTypes::where('is_active',1)->get();
         return view('promotions.add', compact('promotion_type'));
     }
 
@@ -311,12 +311,26 @@ class PromotionsController extends Controller
           $data->where('promotion_scope',$request->filter_scope);
         }
 
+        if($request->filter_promotion_type != ""){
+          $data->where('promotion_type_id',$request->filter_promotion_type);
+        }
+
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
                 $q->orwhere('title','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('description','LIKE',"%".$request->filter_search."%");
             });
         }
+
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('promotion_start_date', '>=' , $start);
+            $data->whereDate('promotion_start_date', '<=' , $end);
+        }
+
 
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
@@ -551,5 +565,18 @@ class PromotionsController extends Controller
                     return $row->is_interested ? "Yes" : "No";
                 })
                 ->make(true);
+    }
+
+    public function getPromotionType(Request $request){
+        $search = $request->search;
+
+        $data = PromotionTypes::orderby('title','asc')->select('id','title')->limit(50);
+        if($search != ''){
+            $data->where('title', 'like', '%' .$search . '%');
+        }
+
+        $data = $data->get();
+
+        return response()->json($data);
     }
 }
