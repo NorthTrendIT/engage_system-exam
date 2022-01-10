@@ -167,3 +167,34 @@ function get_random_password($length = 8){
 
     return $password;
 }
+
+function getOrderStatus($id){
+    $data = Quotation::with(['order', 'invoice'])->where('id', $id)->firstOrFail();
+    $status = '';
+
+    if(!empty($data)){
+        if(!empty($data->order) && $data->order->cancelled != 'Yes'){
+            $status = 'Cancelled';
+        } else {
+            if(!empty($data->order) && $data->order->document_status == 'bost_open'){
+                $status = 'On Process';
+                if(!empty($data->invoice)){
+                    if($data->invoice == 'For Delivery')
+                        $status = 'For Delivery';
+
+                    if($data->invoice == 'Delivered')
+                        $status = 'Delivered';
+
+                    if($data->invoice == 'Delivered')
+                        $status = 'Delivered';
+                }
+            } else {
+                $status = 'Pending';
+            }
+        }
+    } else {
+        $status = 'Pending';
+    }
+
+    return $status;
+}

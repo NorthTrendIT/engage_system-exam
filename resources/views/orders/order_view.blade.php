@@ -112,7 +112,7 @@
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
-                                <span>{{ $data->document_status == 'bost_Open' ? 'Pending' : 'Cancelled' }}</span>
+                                <span>{{ getOrderStatus($data->id) }}</span>
                               </div>
                               <!--end::Text-->
                             </div>

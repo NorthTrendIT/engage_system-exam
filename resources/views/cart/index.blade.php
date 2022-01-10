@@ -486,7 +486,7 @@ $(document).ready(function() {
                     if (data.status) {
                         toast_success(data.message)
                         setTimeout(function(){
-                            window.location.href = "{{ route('customer-order.index') }}";
+                            window.location.href = "{{ route('orders.index') }}";
                         },1500)
                         hide_loader();
                     } else {
