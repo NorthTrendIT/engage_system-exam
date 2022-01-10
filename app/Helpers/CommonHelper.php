@@ -173,19 +173,19 @@ function getOrderStatus($id){
     $status = '';
 
     if(!empty($data)){
-        if(!empty($data->order) && $data->order->cancelled != 'Yes'){
+        if(!empty($data->order) && $data->order->cancelled == 'No'){
             $status = 'Cancelled';
         } else {
             if(!empty($data->order) && $data->order->document_status == 'bost_open'){
                 $status = 'On Process';
                 if(!empty($data->invoice)){
-                    if($data->invoice == 'For Delivery')
+                    if($data->invoice->u_sostat == 'For Delivery')
                         $status = 'For Delivery';
 
-                    if($data->invoice == 'Delivered')
+                    if($data->invoice->u_sostat == 'Delivered')
                         $status = 'Delivered';
 
-                    if($data->invoice == 'Delivered')
+                    if($data->invoice->u_sostat == 'Delivered')
                         $status = 'Delivered';
                 }
             } else {
