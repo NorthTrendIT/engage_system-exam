@@ -69,7 +69,7 @@ Route::middleware(['auth'])->group(function(){
     	    Route::post('user/get-city', 'App\Http\Controllers\UserController@getCity')->name('user.get-city');
     	    Route::post('user/get-roles', 'App\Http\Controllers\UserController@getRoles')->name('user.get-roles');
     	    Route::post('user/get-parents', 'App\Http\Controllers\UserController@getParents')->name('user.get-parents');
-
+            Route::post('user/change-password', 'App\Http\Controllers\UserController@changePasswordStore')->name('user.change-password.store');
 
     		Route::resource('productfeatures','App\Http\Controllers\ProductFeaturesController')->middleware('super-admin');
     	    Route::post('productfeatures/get-all', 'App\Http\Controllers\ProductFeaturesController@getAll')->name('productfeatures.get-all')->middleware('super-admin');

@@ -84,7 +84,9 @@
                       <label>Role<span class="asterisk">*</span></label>
                       <select class="form-control form-control-solid" name="role_id">
                         <option value=""></option>
-                        
+                        @if(isset($edit) && $edit->role_id == 4)
+                          <option value="4" selected>Customer</option>
+                        @endif
                       </select>
                     </div>
                   </div>
@@ -177,6 +179,52 @@
           </div>
         </div>
       </div>
+
+
+      @if(isset($edit))
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-bottom pt-5">
+              <h1 class="text-dark fw-bolder fs-3 my-1">Update Password</h1>
+            </div>
+            <div class="card-body">
+              <form method="post" id="myPasswordForm">
+                @csrf
+                <input type="hidden" name="id" value="{{ $edit->id }}">
+
+                <div class="row mb-5">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>New Password<span class="asterisk">*</span></label>
+                      <input type="password" class="form-control form-control-solid" placeholder="Enter new password" name="new_password" id="new_password">
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Confirm Password<span class="asterisk">*</span></label>
+                      <input type="password" class="form-control form-control-solid" placeholder="Enter confirm password" name="confirm_password">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <input type="submit" value="{{ isset($edit) ? "Update" : "Save" }}" class="btn btn-primary">
+                    </div>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      @endif
+
+
     </div>
   </div>
 </div>
@@ -220,7 +268,7 @@
       var validator = validate_form();
       
       if (validator.form() != false) {
-        $('[type="submit"]').prop('disabled', true);
+        $(this).find('[type="submit"]').prop('disabled', true);
         $.ajax({
           url: "{{route('user.store')}}",
           type: "POST",
@@ -242,12 +290,12 @@
               },1500)
             } else {
               toast_error(data.message);
-              $('[type="submit"]').prop('disabled', false);
+              $(this).find('[type="submit"]').prop('disabled', false);
             }
           },
           error: function () {
             toast_error("Something went to wrong !");
-            $('[type="submit"]').prop('disabled', false);
+            $(this).find('[type="submit"]').prop('disabled', false);
           },
         });
       }
@@ -269,7 +317,9 @@
     });
 
     @if(isset($edit))
+      @if($edit->role_id != 4)
       getRoles('{{ $edit->role_id }}');
+      @endif
       setTimeout(function(){ getParents('{{ $edit->parent_id }}'); }, 1000);
     @endif
 
@@ -440,6 +490,70 @@
 
       return validator;
     }
+
+
+    function validate_password_form(){
+      var validator = $("#myPasswordForm").validate({
+          errorClass: "is-invalid",
+          validClass: "is-valid",
+          rules: {
+            new_password:{
+              required:true,
+              minlength:8,
+            },
+            confirm_password:{
+              required:true,
+              minlength:8,
+              equalTo : "#new_password"
+            }
+          },
+          messages: {
+            new_password:{
+              required:'Please enter new password.',
+              minlength:'Please enter new password greater than 8 digits',
+            },
+            confirm_password:{
+              required:'Please enter confirm password.',
+              minlength:'Please enter confirm password greater than 8 digits',
+              equalTo : "Enter confirm password same as new password !"
+            }
+          },
+      });
+
+      return validator;
+    }
+
+    $('body').on("submit", "#myPasswordForm", function (e) {
+      e.preventDefault();
+      var validator = validate_password_form();
+      
+      if (validator.form() != false) {
+        $(this).find('[type="submit"]').prop('disabled', true);
+        $.ajax({
+          url: "{{route('user.change-password.store')}}",
+          type: "POST",
+          data: new FormData($("#myPasswordForm")[0]),
+          async: false,
+          processData: false,
+          contentType: false,
+          success: function (data) {
+            if (data.status) {
+              toast_success(data.message)
+              setTimeout(function(){
+                window.location.reload(); 
+              },1500)
+            } else {
+              toast_error(data.message);
+              $(this).find('[type="submit"]').prop('disabled', false);
+            }
+          },
+          error: function () {
+            toast_error("Something went to wrong !");
+            $(this).find('[type="submit"]').prop('disabled', false);
+          },
+        });
+      }
+    });
   
   });
 </script>
