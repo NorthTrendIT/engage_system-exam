@@ -277,7 +277,7 @@ class CartController extends Controller
             $obj['DocDueDate'] = $order->due_date;
             $obj['DocCurrency'] = 'PHP';
             $obj['Address'] = @$order->address->address;
-            $obj['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
+            // $obj['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
 
             $products = array();
             foreach($order->items as $item){
@@ -285,7 +285,7 @@ class CartController extends Controller
                     'ItemCode' => $item->product->item_code,
                     'ItemDescription' => $item->product->item_name,
                     'Quantity' => $item->quantity,
-                    'TaxCode' => $order->address->tax_code,
+                    // 'TaxCode' => $order->address->tax_code,
                     'Price' => get_product_customer_price(@$item->product->item_prices, @$order->customer->price_list_num),
                     'UnitPrice' => get_product_customer_price(@$item->product->item_prices, @$order->customer->price_list_num),
                     'ShipDate' => @$order->due_date,
@@ -303,7 +303,7 @@ class CartController extends Controller
             $address['BillToAddressType'] = $order->address->address_type;
 
             $obj['AddressExtension'] = $address;
-
+            // dd($obj);
             try {
                 $sap_connection = SapConnection::where('id', @Auth::user()->customer->sap_connection_id)->first();
                 $post = new PostOrder($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
@@ -322,7 +322,9 @@ class CartController extends Controller
                 $order->save();
 
                 $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
+                // dd($post);
             } catch (\Exception $e) {
+                // dd($e);
                 if(!empty($e->getStatusCode)){
                     $order->confirmation_status = "ERR";
                     $order->message = "API Error.";
