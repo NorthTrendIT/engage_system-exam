@@ -40,7 +40,7 @@
         <a href="{{ route('product-list.show',@$product->id) }}">{{ @$product->item_name ?? "-" }}</a>
       </h3>
 
-      <div class="price">₱ {{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num) }}</div>
+      <div class="price">₱ {{ get_product_customer_price(@$product->item_prices,@$customer->price_list_num) }}</div>
         @if(userdepartment() != 1)
           @if(is_in_cart(@$product->id) == 1)
             <a class="add-to-cart" href="{{ route('cart.index') }}">Go to cart</a>

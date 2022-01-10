@@ -13,6 +13,7 @@ class PromotionInterest extends Model
         'promotion_id',
         'user_id',
         'is_interested',
+        'created_by',
     ];
 
     public function user()

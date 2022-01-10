@@ -107,7 +107,20 @@
                               <!--end::Col-->
                             @endif
 
-                            @if(userrole() != 4)
+                            @if($data->customer_user_id && $data->customer_user_id != Auth::id())
+                              <!--end::Col-->
+                              <div class="col-sm-3">
+                                <!--end::Label-->
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Claimed By:</div>
+                                <!--end::Label-->
+                                <!--end::Col-->
+                                <div class="fw-bolder fs-6 text-gray-800">{{ @$data->customer_user->sales_specialist_name ?? "" }}</div>
+                                <!--end::Col-->
+                              </div>
+                              <!--end::Col-->
+                            @endif
+
+                            @if(userrole() == 2)
                               <!--end::Col-->
                               <div class="col-sm-2">
                                 <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Approval:</div>

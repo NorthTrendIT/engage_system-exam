@@ -70,7 +70,7 @@
                       <div class="col-md-6">
 
                          <h5>{{ @$product->item_name ?? "" }}</h5>
-                         <p><span class="mr-1 price"><strong>₱ {{ get_product_customer_price(@$product->item_prices,@Auth::user()->customer->price_list_num) }}</strong></span></p>
+                         <p><span class="mr-1 price"><strong>₱ {{ get_product_customer_price(@$product->item_prices,@$customer->price_list_num) }}</strong></span></p>
                          <p class="pt-1">{!! @$product->technical_specifications ?? "" !!}</p>
                          <div class="table-responsive">
                             <table class="table table-sm table-borderless mb-0">
