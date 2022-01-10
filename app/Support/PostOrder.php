@@ -154,7 +154,7 @@ class PostOrder
                         );
 
                         $item_obj = QuotationItem::updateOrCreate([
-                                        'order_id' => $obj->id,
+                                        'quotation_id' => $obj->id,
                                         'item_code' => $item['ItemCode'],
                                     ],
                                     $fields
