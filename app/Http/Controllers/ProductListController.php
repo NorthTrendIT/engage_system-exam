@@ -18,8 +18,18 @@ class ProductListController extends Controller
 
   	public function show($id){
   		$product = Product::where('is_active',true)->where('id',$id)->firstOrFail();
-  		
-      	return view('product-list.view',compact('product'));
+
+        $customer = collect();
+  		if(userrole() == 4){
+            $customer = @Auth::user()->customer;
+        }elseif (!is_null(@Auth::user()->created_by)) {
+            $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
+            if(!is_null($customer)){
+                $customer = @$customer->customer;
+            }
+        }
+
+      	return view('product-list.view',compact('product','customer'));
   	}
 
 
@@ -47,15 +57,18 @@ class ProductListController extends Controller
             
 
             $customer_id = null;
+            $customer = collect();
             $sap_connection_id = null;
 
             if(userrole() == 4){
                 $customer_id = @Auth::user()->customer_id;
+                $customer = @Auth::user()->customer;
                 $sap_connection_id = @Auth::user()->sap_connection_id;
             }elseif (!is_null(@Auth::user()->created_by)) {
                 $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
                 if(!is_null($customer)){
                     $customer_id = @$customer->customer_id;
+                    $customer = @$customer->customer;
                     $sap_connection_id = @$customer->sap_connection_id;
                 }
             }
@@ -141,7 +154,7 @@ class ProductListController extends Controller
             if (!$products->isEmpty()) {
                 $output = "";
                 foreach ($products as $product) {
-                    $output .= view('product-list.ajax.product',compact('product'))->render();
+                    $output .= view('product-list.ajax.product',compact('product','customer'))->render();
                 }
 
                 $last_id = $products->last()->id;

@@ -261,7 +261,11 @@ class CustomerPromotionController extends Controller
 
         $rules = [];
         if(userrole() != 4){ // If its not a customer
-            $rules['customer_id'] = 'required|exists:customers,id,sap_connection_id,'.@Auth::user()->sap_connection_id;
+            if(!is_null(Auth::user()->created_by)){
+                $rules['customer_id'] = 'required|exists:customers,id,sap_connection_id,'.@Auth::user()->created_by_user->customer_id;
+            }else{
+                $rules['customer_id'] = 'required|exists:customers,id,sap_connection_id,'.@Auth::user()->sap_connection_id;
+            }
 
             $messages = array(
                         'customer_id.exists' => "Oops! Customer not found.",
@@ -346,8 +350,11 @@ class CustomerPromotionController extends Controller
 
                 if(in_array(userrole(),[2])){ // its a ss
                     $customer_promotion->sales_specialist_id = Auth::id();
-                    $customer_promotion->user_id = $customer_user->id;
                     $customer_promotion->is_approved = false;
+                }else if(!is_null(Auth::user()->created_by)){
+                    $customer_promotion->sales_specialist_id = null;
+                    $customer_promotion->user_id = $customer_user->id;
+                    $customer_promotion->customer_user_id = Auth::id();
                 }else{
                     
                     if(!isset($input['id'])){
@@ -490,9 +497,11 @@ class CustomerPromotionController extends Controller
         $data = CustomerPromotion::query();
 
         if(in_array(userrole(),[2])){ // its a ss
-            $data->where('customer_promotions.sales_specialist_id',Auth::id());
+            $data->where('customer_promotions.sales_specialist_id', Auth::id());
+        }else if(!is_null(Auth::user()->created_by)){
+            $data->where('customer_promotions.customer_user_id', Auth::id());
         }else if(Auth::id() != 1){
-            $data->where('customer_promotions.user_id',Auth::id());
+            $data->where('customer_promotions.user_id', Auth::id());
         }
 
         if($request->filter_customer != ""){
@@ -539,7 +548,7 @@ class CustomerPromotionController extends Controller
 
                                 $btn = "";
                                 
-                                if($row->status != 'canceled' && (Auth::id() == $row->user_id || Auth::id() == $row->sales_specialist_id)){
+                                if($row->status != 'canceled' && in_array(Auth::id(),[$row->user_id, $row->sales_specialist_id, $row->customer_user_id]) ){
 
                                     $url = route('customer-promotion.order.edit', $row->id);
                                     if(userrole() != 4){
@@ -593,15 +602,11 @@ class CustomerPromotionController extends Controller
 
     public function orderShow($id){
 
-        $data = CustomerPromotion::where('id',$id);
+        $data = CustomerPromotion::where('id',$id)->firstOrFail();
 
-        if(in_array(userrole(),[2])){ // its a ss
-            $data->where('sales_specialist_id', Auth::id());
-        }else if(Auth::id() != 1){
-            $data->where('user_id',Auth::id());
+        if(userrole() != 1 && !in_array(Auth::id(),[$data->user_id, $data->sales_specialist_id, $data->customer_user_id])){
+            return abort(404);
         }
-
-        $data = $data->firstOrFail();
         
         return view('customer-promotion.order_view',compact('data'));
     }
@@ -699,14 +704,11 @@ class CustomerPromotionController extends Controller
     }
 
     public function orderEdit($id, $customer_id = false){
-        $edit = CustomerPromotion::where('id',$id)->where('status','!=','canceled');
+        $edit = CustomerPromotion::where('id',$id)->where('status','!=','canceled')->firstOrFail();
 
-        if(in_array(userrole(),[2])){ // its a ss
-            $edit->where('sales_specialist_id', Auth::id());
-        }else if(Auth::id() != 1){
-            $edit->where('user_id', Auth::id());
+        if(userrole() != 1 && !in_array(Auth::id(),[$edit->user_id, $edit->sales_specialist_id, $edit->customer_user_id])){
+            return abort(404);
         }
-        $edit = $edit->firstOrFail();
 
         $promotion = Promotions::findOrFail($edit->promotion_id);
 
@@ -931,6 +933,13 @@ class CustomerPromotionController extends Controller
             $data->whereHas('sales_specialist', function($q) {
                 return $q->where('ss_id', Auth::id());
             });
+        }elseif (!is_null(@Auth::user()->created_by)) {
+            $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
+            if(!is_null($customer)){
+                $data->where('id', @$customer->customer_id);
+            }
+        }else{
+            $data = collect();
         }
 
         if($search != ''){

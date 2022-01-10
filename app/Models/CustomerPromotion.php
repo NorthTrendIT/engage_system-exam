@@ -30,6 +30,7 @@ class CustomerPromotion extends Model
         'sap_connection_id',
         'sales_specialist_id',
         'is_approved',
+        'customer_user_id',
     ];
 
     public function promotion()
@@ -55,5 +56,10 @@ class CustomerPromotion extends Model
     public function sales_specialist()
     {
         return $this->belongsTo(User::class,'sales_specialist_id');
+    }
+
+    public function customer_user()
+    {
+        return $this->belongsTo(User::class,'customer_user_id');
     }
 }
