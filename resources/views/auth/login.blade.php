@@ -12,11 +12,11 @@
 		<!--begin::Heading-->
 		<div class="text-center mb-10">
 			<!--begin::Title-->
-			<h1 class="text-dark mb-3">Log In to B2B CRM</h1>
+			<h1 class="text-dark mb-3">Exceltrend</h1>
 			<!--end::Title-->
 			<!--begin::Link-->
-			<div class="text-gray-400 fw-bold fs-4">
-				Customer Order Managment
+			<div class="fw-bold fs-4">
+				Ordering Management System
 			</div>
 			<!--end::Link-->
 		</div>
