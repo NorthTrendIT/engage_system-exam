@@ -938,6 +938,8 @@ class CustomerPromotionController extends Controller
             if(!is_null($customer)){
                 $data->where('id', @$customer->customer_id);
             }
+        }else{
+            $data = collect();
         }
 
         if($search != ''){
