@@ -309,7 +309,6 @@ class CartController extends Controller
                 $post = new PostOrder($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
 
                 $post = $post->pushOrder($obj);
-                dd($post);
                 $order = LocalOrder::where('id', $order->id)->first();
                 if($post['status']){
                     $orderData = $post['message'];
@@ -325,7 +324,7 @@ class CartController extends Controller
                 $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
                 // dd($post);
             } catch (\Exception $e) {
-                dd($e);
+                // dd($e);
                 if(!empty($e->getStatusCode)){
                     $order->confirmation_status = "ERR";
                     $order->message = "API Error.";
