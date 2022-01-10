@@ -108,6 +108,7 @@ class SAPInvoices
                                 'u_posono' => $invoice['U_POSONO'],
                                 'u_posodate' => $invoice['U_POSODATE'],
                                 'u_posotime' => $invoice['U_POSOTIME'],
+                                'u_sostat' => $invoice['U_SOSTAT'],
                                 'created_at' => $invoice['CreationDate'],
                                 'updated_at' => $invoice['UpdateDate'],
                                 //'response' => json_encode($invoice),

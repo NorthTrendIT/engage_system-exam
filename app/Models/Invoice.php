@@ -31,6 +31,7 @@ class Invoice extends Model
         'u_posono',
         'u_posodate',
         'u_posotime',
+        'u_sostat',
         'response',
         'created_at',
         'updated_at',
