@@ -188,7 +188,7 @@ class OrdersController extends Controller
                                 return $row->card_name;
                             })
                             ->addColumn('status', function($row) {
-                                return $row->document_status;
+                                return getOrderStatus($row->id);
                             })
                             ->addColumn('doc_entry', function($row) {
                                 return $row->doc_entry;
