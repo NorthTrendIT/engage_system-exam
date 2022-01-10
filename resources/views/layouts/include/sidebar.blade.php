@@ -8,7 +8,8 @@
    <div class="aside-logo flex-column-auto" id="kt_aside_logo">
       <!--begin::Logo-->
       <a href="{{ route('home') }}">
-      <img alt="Logo" src="{{ asset('assets') }}/assets/media/logo-full.png" class="h-25px logo">
+      {{-- <img alt="Logo" src="{{ asset('assets') }}/assets/media/logo-full.png" class="h-25px logo"> --}}
+      <span class="text-white logo" style="font-size: 20px;">Exceltrend OMS</span>
       </a>
       <!--end::Logo-->
       <!--begin::Aside toggler-->

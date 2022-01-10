@@ -6,7 +6,7 @@ style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: 
 <head>
 <meta name="viewport" content="width=device-width"/>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<title>B2B OMS</title>
+<title>Exceltrend Ordering Management System</title>
 
 </head>
 
@@ -38,7 +38,7 @@ bgcolor="#f6f6f6">
                            style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                         <tr>
                             <td style="text-align: center">
-                                <h3>B2B OMS</h3>    
+                                <h3>Exceltrend Ordering Management System</h3>    
                                 <br/>
                             </td>
                         </tr>
