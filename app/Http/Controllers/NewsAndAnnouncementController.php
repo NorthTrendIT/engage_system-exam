@@ -73,7 +73,7 @@ class NewsAndAnnouncementController extends Controller
             $notification->title = $input['title'];
             $notification->module = $input['module'];
             $notification->message = $input['message'];
-            $notification->message = $input['is_important'];
+            $notification->is_important = $input['is_important'];
             $notification->user_id = Auth::user()->id;
             $notification->save();
 
@@ -279,8 +279,17 @@ class NewsAndAnnouncementController extends Controller
             });
         }
 
-        if($request->filter_type!= ""){
+        if($request->filter_type != ""){
             $data->where('type',$request->filter_type);
+        }
+
+
+        if($request->filter_module != ""){
+            $data->where('module',$request->filter_module);
+        }
+
+        if($request->filter_priority != ""){
+            $data->where('is_important',$request->filter_priority);
         }
 
         if($request->filter_search != ""){
@@ -309,14 +318,15 @@ class NewsAndAnnouncementController extends Controller
                                     return 'News';
                                 }
                             })
+                            ->addColumn('module', function($row) {
+                                return ucwords(str_replace('_','',$row->module));
+                            })
                             ->addColumn('is_important', function($row) {
                                 if($row->is_important == 0){
                                     return '<button type="button" class="btn btn-info btn-sm">Normal</button>';
-                                }
-                                if($row->is_important == 1){
+                                }elseif($row->is_important == 1){
                                     return '<button type="button" class="btn btn-warning btn-sm">Medium</button>';
-                                }
-                                if($row->is_important == 2){
+                                }elseif($row->is_important == 2){
                                     return '<button type="button" class="btn btn-danger btn-sm">Important</button>';
                                 }
                                 return "-";
@@ -326,6 +336,9 @@ class NewsAndAnnouncementController extends Controller
                             })
                             ->orderColumn('user_name', function ($query, $order) {
                                 $query->orderBy('user_name', $order);
+                            })
+                            ->orderColumn('module', function ($query, $order) {
+                                $query->orderBy('module', $order);
                             })
                             ->addColumn('action', function($row) {
                                 $btn = '<a href="' . route('news-and-announcement.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm mr-10" title="View">

@@ -12,12 +12,12 @@
           @if($image->image && get_valid_file_url('sitebucket/products',$image->image))
             <img class="pic-1" src="{{ get_valid_file_url('sitebucket/products',$image->image) }}">
           @else
-           <img class="pic-1" src="{{ asset('assets') }}/assets/media/img-1.jpg">
+           <img class="pic-1" src="{{ asset('assets') }}/assets/media/product_default.jpg">
           @endif
 
         @else
 
-          <img class="pic-1" src="{{ asset('assets') }}/assets/media/img-1.jpg">
+          <img class="pic-1" src="{{ asset('assets') }}/assets/media/product_default.jpg">
 
         @endif
 

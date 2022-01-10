@@ -310,6 +310,14 @@ class PromotionTypeController extends Controller
             $data->where('is_active',$request->filter_status);
         }
 
+        if($request->filter_fixed_quantity != ""){
+            $data->where('is_fixed_quantity',$request->filter_fixed_quantity);
+        }
+
+        if($request->filter_criteria != ""){
+            $data->where('scope',$request->filter_criteria);
+        }
+
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
                 $q->orwhere('title','LIKE',"%".$request->filter_search."%");
@@ -339,6 +347,12 @@ class PromotionTypeController extends Controller
                             ->addColumn('title', function($row) {
                                 return @$row->title ?? "-";
                             })
+                            ->addColumn('is_fixed_quantity', function($row) {
+                                return @$row->is_fixed_quantity ? "Yes" : "No";
+                            })
+                            ->addColumn('scope', function($row) {
+                                return get_promotion_type_criteria($row->scope);
+                            })
                             ->addColumn('status', function($row) {
 
                                 $btn = "";
@@ -355,6 +369,12 @@ class PromotionTypeController extends Controller
                             })
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('is_active', $order);
+                            })
+                            ->orderColumn('scope', function ($query, $order) {
+                                $query->orderBy('scope', $order);
+                            })
+                            ->orderColumn('is_fixed_quantity', function ($query, $order) {
+                                $query->orderBy('is_fixed_quantity', $order);
                             })
                             ->rawColumns(['action','status'])
                             ->make(true);

@@ -30,8 +30,8 @@
               <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
             </div> --}}
             <div class="card-body">
-              <div class="row mt-5">
-                <div class="col-md-3">
+              <div class="row">
+                <div class="col-md-4 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -40,16 +40,32 @@
                   </div>
                 </div>
 
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_criteria" data-control="select2" data-hide-search="true" data-placeholder="Select criteria" data-allow-clear="true">
+                    <option value=""></option>
+                    <option value="P">Discount in Percentage</option>
+                    <option value="R">Discount Percentage Range</option>
+                    <option value="U">Percentage discount + Up to amount limit</option>
+                  </select>
+                </div>
 
-                <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select a status" data-allow-clear="true">
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_fixed_quantity" data-control="select2" data-hide-search="true" data-placeholder="Select fixed quantity" data-allow-clear="true">
+                    <option value=""></option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+                </div>
+
+                <div class="col-md-2 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select status" data-allow-clear="true">
                     <option value=""></option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
                   </select>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -67,6 +83,8 @@
                             <tr>
                               <th>No.</th>
                               <th>Title</th>
+                              <th>Criteria</th>
+                              <th>Fixed Quantity</th>
                               <th>Status</th>
                               <th>Action</th>
                             </tr>
@@ -113,6 +131,8 @@
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_search"]').val();
+      $filter_criteria = $('[name="filter_criteria"]').find('option:selected').val();
+      $filter_fixed_quantity = $('[name="filter_fixed_quantity"]').find('option:selected').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
 
       table.DataTable({
@@ -128,12 +148,16 @@
               },
               data:{
                 filter_search : $filter_search,
+                filter_criteria : $filter_criteria,
+                filter_fixed_quantity : $filter_fixed_quantity,
                 filter_status : $filter_status,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'title', name: 'title'},
+              {data: 'scope', name: 'scope'},
+              {data: 'is_fixed_quantity', name: 'is_fixed_quantity'},
               {data: 'status', name: 'status'},
               {data: 'action', name: 'action'},
           ],
@@ -154,6 +178,8 @@
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
+      $('[name="filter_criteria"]').val('').trigger('change');
+      $('[name="filter_fixed_quantity"]').val('').trigger('change');
       $('[name="filter_status"]').val('').trigger('change');
       render_table();
     })
