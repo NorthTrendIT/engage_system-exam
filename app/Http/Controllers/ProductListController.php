@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\CustomerProductGroup;
 use App\Models\CustomerProductItemLine;
 use App\Models\CustomerProductTiresCategory;
+use App\Models\User;
 use Auth;
 
 class ProductListController extends Controller
@@ -44,13 +45,26 @@ class ProductListController extends Controller
                 });
             }
             
-            $products->where('sap_connection_id', @Auth::user()->sap_connection_id);
+
+            $customer_id = null;
+            $sap_connection_id = null;
+
+            if(userrole() == 4){
+                $customer_id = @Auth::user()->customer_id;
+                $sap_connection_id = @Auth::user()->sap_connection_id;
+            }elseif (!is_null(@Auth::user()->created_by)) {
+                $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
+                if(!is_null($customer)){
+                    $customer_id = @$customer->customer_id;
+                    $sap_connection_id = @$customer->sap_connection_id;
+                }
+            }
 
             // Is Customer
-            if(userrole() == 4){
+            if($customer_id){
 
                 // Product Group
-                $c_product_group = CustomerProductGroup::with('product_group')->where('customer_id',@Auth::user()->customer_id)->get();
+                $c_product_group = CustomerProductGroup::with('product_group')->where('customer_id', $customer_id)->get();
 
                 $c_product_group = array_map( function ( $ar ) {
                    return $ar['number'];
@@ -58,7 +72,7 @@ class ProductListController extends Controller
 
 
                 // Product Item Line
-                $c_product_item_line = CustomerProductItemLine::with('product_item_line')->where('customer_id',@Auth::user()->customer_id)->get();
+                $c_product_item_line = CustomerProductItemLine::with('product_item_line')->where('customer_id', $customer_id)->get();
 
                 $c_product_item_line = array_map( function ( $ar ) {
                    return $ar['u_item_line'];
@@ -66,7 +80,7 @@ class ProductListController extends Controller
 
 
                 // Product Tires Category
-                $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->where('customer_id',@Auth::user()->customer_id)->get();
+                $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->where('customer_id', $customer_id)->get();
 
                 $c_product_tires_category = array_map( function ( $ar ) {
                    return $ar['u_tires'];
@@ -74,8 +88,7 @@ class ProductListController extends Controller
             }
 
 
-
-            if(userrole() == 4 && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
+            if($customer_id && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
                 return response()->json(['output' => $output, 'button' => $button]);
             }
 
@@ -95,8 +108,9 @@ class ProductListController extends Controller
                 }
             });
 
+            $products->where('sap_connection_id', $sap_connection_id);
+
             $products = $products->get();
-            
 
             $last = Product::where($where)->select('id');
             if($request->filter_search != ""){
@@ -119,6 +133,8 @@ class ProductListController extends Controller
                     $q->orWhereIn('u_item_line', $c_product_item_line);
                 }
             });
+
+            $last->where('sap_connection_id', $sap_connection_id);
 
             $last = $last->first();
 

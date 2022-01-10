@@ -100,7 +100,7 @@ class UserController extends Controller
                 $message = "New User created successfully.";
                 $input['password'] = Hash::make($input['confirm_password']);
 
-                $input['is_sap_user'] = true;
+                $input['is_sap_user'] = false;
                 if(userrole() != 1){
                     $input['created_by'] = Auth::id();
                 }
@@ -284,7 +284,7 @@ class UserController extends Controller
             $department = Department::where('id',$id)->where('is_active',true)->first();
 
             if(@$department->roles){
-                $roles = $department->roles()->with('role')->get();
+                $roles = $department->roles()->whereNotIn('role_id',['4'])->with('role')->get();
             }
         }
 
@@ -417,6 +417,39 @@ class UserController extends Controller
                             })
                             ->rawColumns(['action', 'role','status','territory'])
                             ->make(true);
+    }
+
+    public function changePasswordStore(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'id' => 'required|exists:users,id',
+                    'new_password' => 'required|string|min:8',
+                    'confirm_password' => 'required|string|min:8|same:new_password',
+                );
+        if(userrole() != 1){
+            $rules['id'] = "required|exists:users,id,created_by,".userid();
+        }
+
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+            $user = User::find($input['id']);
+
+            if($user){
+                $user->password_text = $input['confirm_password'];
+                $user->password = Hash::make($input['confirm_password']);
+                $user->save();
+
+                $response = ['status'=>true,'message'=>'Password changed successfully !'];
+            }else{
+                $response = ['status'=>false,'message'=>'User not found !'];
+            }
+            
+        }
+
+        return $response;
     }
 
     public function getUserTreeData($user_id){

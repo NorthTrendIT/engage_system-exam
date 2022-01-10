@@ -26,7 +26,7 @@ class OrganisationController extends Controller
                             );
                 $result = array_merge($result,$temp);
 
-                $parent_users = User::where('id','!=',1)->whereNull('parent_id')->where('is_sap_user',1)->whereNull('created_by')->get();
+                $parent_users = User::where('id','!=',1)->whereNull('parent_id')->where('is_sap_user',0)->whereNull('created_by')->get();
                 if(count($parent_users)){
 
                     foreach ($parent_users as $key => $value) {
