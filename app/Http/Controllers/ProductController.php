@@ -8,6 +8,8 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\SapConnection;
 use App\Models\ProductGroup;
+use App\Models\ProductItemLine;
+use App\Models\ProductTiresCategory;
 use DataTables;
 use Validator;
 use Auth;
@@ -22,7 +24,10 @@ class ProductController extends Controller
   public function index()
   {
     $product_groups = ProductGroup::all();
-    return view('product.index',compact('product_groups'));
+    $product_line = ProductItemLine::get()->groupBy('u_item_line');
+    $product_category = ProductTiresCategory::get()->groupBy('u_tires');
+
+    return view('product.index',compact('product_groups','product_line','product_category'));
   }
 
   /**
@@ -208,6 +213,14 @@ class ProductController extends Controller
       $data->where('items_group_code',$request->filter_brand);
     }
 
+    if($request->filter_product_category != ""){
+      $data->where('u_tires',$request->filter_product_category);
+    }
+
+    if($request->filter_product_line != ""){
+      $data->where('u_item_line',$request->filter_product_line);
+    }
+
     if($request->filter_search != ""){
       $data->where(function($q) use ($request) {
         $q->orwhere('item_code','LIKE',"%".$request->filter_search."%");
@@ -225,6 +238,14 @@ class ProductController extends Controller
     }
 
 
+    if(userrole() != 1){
+      $data->where('is_active', true);
+
+      if(@Auth::user()->sap_connection_id){
+        $data->where('sap_connection_id', @Auth::user()->sap_connection_id);
+      }
+    }
+
     $data->when(!isset($request->order), function ($q) {
       $q->orderBy('created_date', 'desc');
     });
@@ -239,6 +260,12 @@ class ProductController extends Controller
                           })
                           ->addColumn('brand', function($row) {
                               return @$row->group->group_name ?? "";
+                          })
+                          ->addColumn('u_item_line', function($row) {
+                              return @$row->u_item_line ?? "-";
+                          })
+                          ->addColumn('u_tires', function($row) {
+                              return @$row->u_tires ?? "-";
                           })
                           ->addColumn('status', function($row) {
                               $btn = "";
@@ -273,6 +300,12 @@ class ProductController extends Controller
                           })
                           ->orderColumn('item_code', function ($query, $order) {
                               $query->orderBy('item_code', $order);
+                          })
+                          ->orderColumn('u_tires', function ($query, $order) {
+                              $query->orderBy('u_tires', $order);
+                          })
+                          ->orderColumn('u_item_line', function ($query, $order) {
+                              $query->orderBy('u_item_line', $order);
                           })
                           ->orderColumn('created_date', function ($query, $order) {
                               $query->orderBy('created_date', $order);

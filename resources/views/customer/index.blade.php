@@ -40,7 +40,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-2 mt-5">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_customer_group" data-control="select2" data-hide-search="false">
                     <option value="">Select group</option>
                     @foreach($customer_groups as $customer_group)
@@ -49,7 +49,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-2 mt-5">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_class" data-control="select2" data-hide-search="false">
                     <option value="">Select class</option>
                     @foreach($classes as $class)
@@ -58,13 +58,13 @@
                   </select>
                 </div>
 
-                <div class="col-md-2 mt-5">
+                {{-- <div class="col-md-2 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
                     <option value="">Select status</option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
                   </select>
-                </div>
+                </div> --}}
 
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
@@ -99,7 +99,7 @@
                               <th>City</th>
                               <th>Date</th>
                               <th>Class</th>
-                              <th>Status</th>
+                              {{-- <th>Status</th> --}}
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -179,7 +179,7 @@
               {data: 'city', name: 'city'},
               {data: 'created_at', name: 'created_at'},
               {data: 'class', name: 'class'},
-              {data: 'status', name: 'status'},
+              // {data: 'status', name: 'status'},
               {data: 'action', name: 'action'},
           ],
           drawCallback:function(){

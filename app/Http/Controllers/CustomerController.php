@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\Classes;
 use App\Models\CustomerGroup;
 use App\Models\SapConnection;
+use App\Models\CustomerBpAddress;
 use DataTables;
 use Auth;
 
@@ -277,6 +278,26 @@ class CustomerController extends Controller
                                     ->orderBy('customer_groups.name', $order);
                             })
                             ->rawColumns(['name', 'role','status','action','credit_limit','group','class'])
+                            ->make(true);
+    }
+
+
+    public function getAllBpAddress(Request $request){
+
+        $data = CustomerBpAddress::where('customer_id', $request->customer_id)->orderBy('order', 'ASC')->get();
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('address_type', function($row) {
+                                if($row->address_type == "bo_BillTo"){
+                                    return "Billing";
+                                }elseif($row->address_type == "bo_ShipTo"){
+                                    return "Shipping";
+                                }else{
+                                    return "-";
+                                }
+                            })
+                            ->rawColumns(['action'])
                             ->make(true);
     }
 }

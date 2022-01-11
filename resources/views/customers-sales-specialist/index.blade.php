@@ -41,6 +41,15 @@
                 </div>
 
                 <div class="col-md-3">
+                  <select class="form-control form-control-lg form-control-solid filter_company" name="filter_company" data-control="select2" data-hide-search="false" data-placeholder="Select company" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($company as $c)
+                    <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -57,6 +66,7 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>Company</th>
                               <th>Customer</th>
                               <th>Action</th>
                             </tr>
@@ -102,7 +112,7 @@
       var table = $("#myTable");
       table.DataTable().destroy();
 
-      // $filter_search = $('[name="filter_search"]').val();
+      $filter_company = $('[name="filter_company"]').val();
 
       table.DataTable({
           processing: true,
@@ -115,12 +125,13 @@
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
-              // data:{
-              //   filter_search : $filter_search,
-              // }
+              data:{
+                filter_company : $filter_company,
+              }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'company', name: 'company'},
               {data: 'customer', name: 'customer'},
               {data: 'action', name: 'action'},
           ],
@@ -142,6 +153,7 @@
 
     $(document).on('click', '.clear-search', function(event) {
       $('#myTable').dataTable().fnFilter('');
+      $('[name="filter_company"]').val('').trigger('change');
       $('[name="filter_search"]').val('');
       render_table();
     })

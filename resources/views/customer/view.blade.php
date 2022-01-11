@@ -37,7 +37,7 @@
                     <!--begin::Table container-->
                     <div class="table-responsive">
                        <!--begin::Table-->
-                       <table class="table table-bordered" id="myTable">
+                       <table class="table table-bordered">
                           <!--begin::Table head-->
                           <thead>
                             <tr>
@@ -129,15 +129,105 @@
           </div>
         </div>
       </div>
+
+
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5">
+              <h5>Customer's Address Details</h5>
+            </div>
+            <div class="card-body">
+              
+              <div class="row mb-5 mt-5">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <!--begin::Table container-->
+                    <div class="table-responsive">
+                       <!--begin::Table-->
+                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                          <!--begin::Table head-->
+                          <thead>
+                            <tr>
+                              <th>No.</th>
+                              <th>Type</th>
+                              <th>Address</th>
+                              <th>Street</th>
+                            </tr>
+                          </thead>
+                          <!--end::Table head-->
+                          <!--begin::Table body-->
+                          <tbody>
+
+                          </tbody>
+                          <!--end::Table body-->
+                       </table>
+                       <!--end::Table-->
+                    </div>
+                    <!--end::Table container-->
+
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 @endsection
 
 @push('css')
-
+<link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 @endpush
 
 @push('js')
+<script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+<script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
+<script>
+  $(document).ready(function() {
 
+    render_table();
+
+    function render_table(){
+      var table = $("#myTable");
+      table.DataTable().destroy();
+
+      table.DataTable({
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          order: [],
+          ajax: {
+              'url': "{{ route('customer.get-all-bp-address') }}",
+              'type': 'POST',
+              headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+              },
+              data:{
+                customer_id : '{{ @$data->id }}',
+              }
+          },
+          columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'address_type', name: 'address_type'},
+              {data: 'address', name: 'address'},
+              {data: 'street', name: 'street'},
+          ],
+          drawCallback:function(){
+              $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+                $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+              })
+          },
+          initComplete: function () {
+          }
+        });
+    }
+
+  })
+</script>
 @endpush
