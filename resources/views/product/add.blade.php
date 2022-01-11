@@ -118,7 +118,7 @@
                         @if($image->image && get_valid_file_url('sitebucket/products',$image->image))
                           <div class="col-md-3 image_preview">
                             <div class="form-group">
-                              <img src="{{ get_valid_file_url('sitebucket/products',$image->image) }}" height="100" width="100" class="">
+                              <a href="{{ get_valid_file_url('sitebucket/products',$image->image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/products',$image->image) }}" height="100" width="100" class=""></a>
                             </div>
                           </div>
                         @endif

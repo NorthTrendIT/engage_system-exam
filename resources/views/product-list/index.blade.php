@@ -118,6 +118,12 @@ $(document).ready(function() {
     getProductList();
   })
 
+  $('input[name=filter_search]').on('keydown', function(e) {
+    if (e.which == 13) {
+      $('.search').trigger('click')
+    }
+  });
+
   @if(userdepartment() != 1)
     $(document).on('click', '.addToCart', function(event) {
       event.preventDefault();

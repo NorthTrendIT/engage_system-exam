@@ -50,12 +50,32 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_product_category" data-control="select2" data-hide-search="false" data-placeholder="Select product category" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($product_category as $key => $c)
+                    <option value="{{ $key }}">{{ $key }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_product_line" data-control="select2" data-hide-search="false" data-placeholder="Select product line" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($product_line as $key => $l)
+                    <option value="{{ $key }}">{{ $key }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                @if(userrole() == 1)
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
                     <option value="">Select status</option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
                   </select>
                 </div>
+                @endif
 
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
@@ -85,8 +105,12 @@
                               <th>Name</th>
                               <th>Brand</th>
                               <th>Code</th>
+                              <th>Product Line</th>
+                              <th>Product Category</th>
                               <th>Date</th>
+                              @if(userrole() == 1)
                               <th>Status</th>
+                              @endif
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -135,6 +159,8 @@
       $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+      $filter_product_category = $('[name="filter_product_category"]').find('option:selected').val();
+      $filter_product_line = $('[name="filter_product_line"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -152,6 +178,8 @@
                 filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
                 filter_brand : $filter_brand,
+                filter_product_category : $filter_product_category,
+                filter_product_line : $filter_product_line,
               }
           },
           columns: [
@@ -159,8 +187,12 @@
               {data: 'item_name', name: 'item_name'},
               {data: 'brand', name: 'brand'},
               {data: 'item_code', name: 'item_code'},
+              {data: 'u_item_line', name: 'u_item_line'},
+              {data: 'u_tires', name: 'u_tires'},
               {data: 'created_date', name: 'created_date'},
+              @if(userrole() == 1)
               {data: 'status', name: 'status'},
+              @endif
               {data: 'action', name: 'action'},
           ],
           drawCallback:function(){
@@ -183,6 +215,8 @@
       $('[name="filter_date_range"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
       $('[name="filter_brand"]').val('').trigger('change');
+      $('[name="filter_product_category"]').val('').trigger('change');
+      $('[name="filter_product_line"]').val('').trigger('change');
       render_table();
     })
 

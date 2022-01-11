@@ -93,4 +93,9 @@ class Customer extends Model
     {
         return $this->belongsTo(User::class,'id','customer_id');
     }
+
+    public function sap_connection()
+    {
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
+    }
 }

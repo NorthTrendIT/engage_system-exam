@@ -78,7 +78,7 @@
                   <div class="row mt-10 mb-10">
                     <div class="col-md-12">
                       <div class="form-group">
-                        <img src="{{ get_login_user_profile() }}" height="100" width="100">
+                        <a href="{{ get_login_user_profile() }}" class="fancybox"><img src="{{ get_login_user_profile() }}" height="100" width="100"></a>
                       </div>
                     </div>
                   </div>

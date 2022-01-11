@@ -8,6 +8,8 @@
 <!--end::Page Custom Javascript-->
 <!--end::Javascript-->
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js" ></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-loading-overlay/2.1.7/loadingoverlay.min.js"></script>
@@ -16,6 +18,8 @@
 
 <script>
 	
+	$(".fancybox").fancybox();
+
 	@if(Session::has('role_access_error_message'))
     toast_error("{{Session::get('role_access_error_message')}}")
     @endif
@@ -30,28 +34,28 @@
 		$.LoadingOverlay("hide",true);
 	}
 	$(document).ajaxStart(function() {
-	    show_loader();
+	  show_loader();
 	});
 	
 	$(document).ajaxStop(function() {
-	  	hide_loader();
+	  hide_loader();
 	});
 
 
 	$('#kt_daterangepicker_1').daterangepicker({
-      autoUpdateInput: false,
-      locale: {
-        cancelLabel: 'Clear'
-      }
-    });
+    autoUpdateInput: false,
+    locale: {
+      cancelLabel: 'Clear'
+    }
+  });
 
-    $('#kt_daterangepicker_1').on('apply.daterangepicker', function(ev, picker) {
-      $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
-    });
+  $('#kt_daterangepicker_1').on('apply.daterangepicker', function(ev, picker) {
+    $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+  });
 
-    $('#kt_daterangepicker_1').on('cancel.daterangepicker', function(ev, picker) {
-      $(this).val('');
-    });
+  $('#kt_daterangepicker_1').on('cancel.daterangepicker', function(ev, picker) {
+    $(this).val('');
+  });
 		
 </script>
 @stack('js')

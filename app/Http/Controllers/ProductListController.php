@@ -17,7 +17,7 @@ class ProductListController extends Controller
   	}
 
   	public function show($id){
-  		$product = Product::where('is_active',true)->where('id',$id)->firstOrFail();
+  		$product = Product::where('is_active',1)->where('id',$id)->firstOrFail();
 
         $customer = collect();
   		if(userrole() == 4){
@@ -42,7 +42,7 @@ class ProductListController extends Controller
             $button = "";
             $last_id = "";
 
-            $where = array('is_active' => true);
+            $where = array('is_active' => 1);
 
             $products = Product::where($where)->orderBy('id', 'DESC')->limit(12);
             if ($request->id > 0) {
