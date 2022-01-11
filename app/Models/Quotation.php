@@ -15,6 +15,7 @@ class Quotation extends Model
         'doc_type',
         'document_status',
         'doc_date',
+        'doc_time',
         'doc_due_date',
         'card_code',
         'card_name',

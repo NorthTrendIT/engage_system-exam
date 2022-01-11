@@ -172,9 +172,23 @@ class OrdersController extends Controller
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
-                $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
+                // $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_type','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");
             });
+        }
+
+        if($request->filter_customer != ""){
+            $data->where('card_code',$request->filter_customer);
+        }
+
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('doc_date', '>=' , $start);
+            $data->whereDate('doc_date', '<=' , $end);
         }
 
         $data->when(!isset($request->order), function ($q) {
@@ -185,10 +199,10 @@ class OrdersController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('name', function($row) {
-                                return $row->card_name;
+                                return  @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('status', function($row) {
-                                return getOrderStatus($row->id);
+                                return getOrderStatus($row);
                             })
                             ->addColumn('doc_entry', function($row) {
                                 return $row->doc_entry;
@@ -203,7 +217,10 @@ class OrdersController extends Controller
                                 return date('M d, Y',strtotime($row->doc_due_date));
                             })
                             ->orderColumn('name', function ($query, $order) {
-                                $query->orderBy('card_name', $order);
+                                //$query->orderBy('card_name', $order);
+
+                                $query->select('quotations.*')->join('customers', 'quotations.card_code', '=', 'customers.card_code')
+                                    ->orderBy('customers.card_name', $order);
                             })
                             ->orderColumn('doc_entry', function ($query, $order) {
                                 $query->orderBy('doc_entry', $order);
@@ -413,6 +430,10 @@ class OrdersController extends Controller
     public function pushAllOrder(Request $request){
         $data = $request->all();
         dd($data);
+    }
+
+    public function getCustomer(Request $request){
+        return app(CustomerPromotionController::class)->getCustomer($request);
     }
 
 }
