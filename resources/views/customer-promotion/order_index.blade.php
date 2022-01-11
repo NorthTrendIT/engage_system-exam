@@ -189,32 +189,33 @@
       render_table();
     })
 
-
-    $('[name="filter_customer"]').select2({
-      ajax: {
-          url: "{{route('customer-promotion.get-customer')}}",
-          type: "post",
-          dataType: 'json',
-          delay: 250,
-          data: function (params) {
+    @if(in_array(userrole(),[1,2]))
+      $('[name="filter_customer"]').select2({
+        ajax: {
+            url: "{{route('customer-promotion.get-customer')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term
+                };
+            },
+            processResults: function (response) {
               return {
-                  _token: "{{ csrf_token() }}",
-                  search: params.term
+                results:  $.map(response, function (item) {
+                              return {
+                                text: item.card_name + " (Code: " + item.card_code + ")",
+                                id: item.user.id
+                              }
+                          })
               };
-          },
-          processResults: function (response) {
-            return {
-              results:  $.map(response, function (item) {
-                            return {
-                              text: item.card_name + " (Code: " + item.card_code + ")",
-                              id: item.user.id
-                            }
-                        })
-            };
-          },
-          cache: true
-      },
-    });
+            },
+            cache: true
+        },
+      });
+    @endif
 
   })
 </script>

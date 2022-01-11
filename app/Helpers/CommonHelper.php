@@ -168,8 +168,8 @@ function get_random_password($length = 8){
     return $password;
 }
 
-function getOrderStatus($id){
-    $data = Quotation::with(['order', 'invoice'])->where('id', $id)->firstOrFail();
+function getOrderStatus($data){
+    // $data = Quotation::with(['order', 'invoice'])->where('id', $id)->firstOrFail();
     $status = '';
 
     if(!empty($data)){
@@ -185,8 +185,9 @@ function getOrderStatus($id){
                     if($data->invoice->u_sostat == 'Delivered')
                         $status = 'Delivered';
 
-                    if($data->invoice->u_sostat == 'Delivered')
-                        $status = 'Delivered';
+                    if($data->invoice->u_sostat == 'Confirmed')
+                        $status = 'Completed';
+                    
                 }
             } else {
                 $status = 'Pending';
