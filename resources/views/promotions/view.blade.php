@@ -26,14 +26,6 @@
 
                         <div class="card-body">
 
-                            @if(isset($data->promo_image))
-                                <div class="row mb-5">
-                                    <div class="col-md-12">
-                                        <img src="{{ get_valid_file_url('sitebucket/promotion',$data->promo_image) }}" height="300">
-                                    </div>
-                                </div>
-                            @endif
-
                             <div class="row mb-5">
                                 <!-- Title -->
                                 <div class="col-md-6">
@@ -67,7 +59,6 @@
                             </div>
 
                             <div class="row mb-5">
-                                
                                 <!-- Promotion For -->
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -77,11 +68,12 @@
                                 </div>
                             </div>
 
+                            @if($data->promotion_scope)
                             <div class="row mb-5">
                                 <!-- Promotion Scope -->
                                 <div class="col-md-6" id="scope_block">
                                     <div class="form-group">
-                                        <label>Select Promotion Scope<span class="asterisk">*</span></label>
+                                        <label>Promotion Scope</label>
                                         @if($data->promotion_scope == 'C')
                                             <input type="text" class="form-control form-control-solid" value="Customers" disabled="disabled">
                                         @endif()
@@ -106,6 +98,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
 
                             <div class="row mb-5">
                                 <!-- Promotion Start Date -->
@@ -124,6 +117,14 @@
                                     </div>
                                 </div>
                             </div>
+
+                             @if(isset($data->promo_image))
+                                <div class="row mb-5">
+                                    <div class="col-md-12">
+                                        <a href="{{ get_valid_file_url('sitebucket/promotion',$data->promo_image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/promotion',$data->promo_image) }}" height="100" width="100"></a>
+                                    </div>
+                                </div>
+                            @endif
 
 
                             @if($data->promotion_for != "All")
