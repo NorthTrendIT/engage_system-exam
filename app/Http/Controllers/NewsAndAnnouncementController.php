@@ -135,13 +135,6 @@ class NewsAndAnnouncementController extends Controller
                         }
                     }
                 }
-                // foreach($records as $value){
-                //     $connection = new NotificationConnection();
-                //     $connection->notification_id = $notification->id;
-                //     $connection->user_id = '';
-                //     $connection->record_id = $value;
-                //     $connection->save();
-                // }
             }
 
             // Start Notification Document
