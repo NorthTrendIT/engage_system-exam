@@ -12,7 +12,7 @@
 
       <!--begin::Actions-->
       <div class="d-flex align-items-right py-1">
-        <a href="javascript:;" class="btn btn-sm btn-info">Push All</a>
+        <a href="javascript:;" class="btn btn-sm btn-info push-all-promotion">Push All</a>
       </div>
       <!--end::Actions-->
 
@@ -163,6 +163,81 @@
       $('[name="filter_status"]').val('').trigger('change');
       render_table();
     })
+
+    $(document).on('click', '.push-in-sap', function(event) {
+      event.preventDefault();
+      var id = $(this).data('id');
+      Swal.fire({
+        title: 'Are you sure want to do this?',
+        //text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('customer-promotion.order.push-in-sap') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                    id: id,
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              setTimeout(function(){
+                window.location.reload();
+              },500)
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
+    $(document).on('click', '.push-all-promotion', function(event) {
+      event.preventDefault();
+      var id = $(this).data('id');
+      Swal.fire({
+        title: 'Are you sure want to push all promotion?',
+        //text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('orders.push-all-promotion') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+            //   setTimeout(function(){
+            //     window.location.reload();
+            //   },500)
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
 
   })
 </script>

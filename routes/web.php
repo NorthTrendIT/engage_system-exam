@@ -108,6 +108,9 @@ Route::middleware(['auth'])->group(function(){
             Route::get('pending-promotion', 'App\Http\Controllers\OrdersController@pendingPromotion')->name('orders.pending-promotion');
             Route::get('pending-promotion/{id}', 'App\Http\Controllers\OrdersController@pendingPromotionView')->name('orders.pending-promotion.view');
             Route::post('pending-promotion/get-all', 'App\Http\Controllers\OrdersController@getAllPendingPromotion')->name('orders.get-all-pending-promotion');
+            Route::post('pending-orders/push-order', 'App\Http\Controllers\OrdersController@pushSingleOrder')->name('orders.push-order');
+            Route::post('pending-orders/push-all', 'App\Http\Controllers\OrdersController@pushAllOrder')->name('orders.push-all-order');
+            Route::post('pending-promotion/push-all', 'App\Http\Controllers\OrdersController@pushAllPromotion')->name('orders.push-all-promotion');
 
             // Invoices
             Route::resource('invoices','App\Http\Controllers\InvoicesController');
