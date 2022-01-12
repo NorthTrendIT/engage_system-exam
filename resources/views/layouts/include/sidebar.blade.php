@@ -190,7 +190,7 @@
 
             {{-- Customer Management --}}
             @if(Auth::user()->role_id == 1 || ( (isset($access['view-customer-group']) && $access['view-customer-group'] == 1) || (isset($access['view-customer']) && $access['view-customer'] == 1) || (isset($access['view-class']) && $access['view-class'] == 1) ) )
-            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['customer.index','customer.show','customer-group.index','class.index','class.show', 'customers-sales-specialist.index', 'customers-sales-specialist.create', 'customers-sales-specialist.edit', 'customers-sales-specialist.show', 'customer-delivery-schedule.index', 'customer-delivery-schedule.create', 'customer-delivery-schedule.edit', 'customer-delivery-schedule.show'])) ? 'hover show' : '' }}">
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['customer.index','customer.show','customer-group.index','class.index','class.show', 'customers-sales-specialist.index', 'customers-sales-specialist.create', 'customers-sales-specialist.edit', 'customers-sales-specialist.show', 'customer-delivery-schedule.index', 'customer-delivery-schedule.create', 'customer-delivery-schedule.edit', 'customer-delivery-schedule.show', 'customers-sales-specialist.import.index'])) ? 'hover show' : '' }}">
                <span class="menu-link">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/layouts/lay010.svg-->
@@ -252,7 +252,7 @@
                   </div>
 
                   <div class="menu-item">
-                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['customers-sales-specialist.index', 'customers-sales-specialist.create', 'customers-sales-specialist.edit', 'customers-sales-specialist.show'])) ? 'active' : '' }}" href="{{ route('customers-sales-specialist.index') }}">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['customers-sales-specialist.index', 'customers-sales-specialist.create', 'customers-sales-specialist.edit', 'customers-sales-specialist.show', 'customers-sales-specialist.import.index'])) ? 'active' : '' }}" href="{{ route('customers-sales-specialist.index') }}">
                         <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                         </span>
