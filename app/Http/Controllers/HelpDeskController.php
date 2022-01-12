@@ -90,7 +90,7 @@ class HelpDeskController extends Controller
                                 );
 
             // Start  Images
-            $help_images_ids = array();
+            /*$help_images_ids = array();
             if(isset($input['help_images'])){
                 foreach ($input['help_images'] as $key => $value) {
                     $value['help_desk_id'] = $ticket->id;
@@ -115,7 +115,35 @@ class HelpDeskController extends Controller
                         $file_obj->fill($value)->save();
                     }
                 }
+            }*/
+
+            $insert = array();
+            if(isset($input['images'])){
+                foreach ($input['images'] as $key => $value) {
+                    $insert['help_desk_id'] = $ticket->id;
+
+                    if(isset($value) && is_object($value)){
+                        $file = $value;
+
+                        if(!in_array($file->extension(),['jpeg','jpg','png'])){
+                          continue;
+                        }
+
+                        if($file->getSize() <= 10 * 1024 * 1024){ //10MB
+                            $name = date("YmdHis") . $file->getClientOriginalName() ;
+                            $file->move(public_path() . '/sitebucket/help-desk/', $name);
+                            $insert['filename'] = $name;
+                        }
+                    }
+
+                    if($insert['filename']){
+                        $file_obj = new HelpDeskFiles();
+
+                        $file_obj->fill($insert)->save();
+                    }
+                }
             }
+
             // End  Images
 
             $response = ['status'=>true,'message'=>$message];

@@ -93,6 +93,7 @@ class SAPQuotations
                                 'doc_type' => $value['DocType'],
                                 'document_status' => $value['DocumentStatus'],
                                 'doc_date' => $value['DocDate'],
+                                'doc_time' => $data['DocTime'],
                                 'doc_due_date' => $value['DocDueDate'],
                                 'card_code' => $value['CardCode'],
                                 'card_name' => $value['CardName'],

@@ -48,7 +48,7 @@
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
-                            <div class="col-sm-6">
+                            <div class="col-sm-5">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Name:</div>
                               <!--end::Label-->
@@ -58,9 +58,19 @@
                             </div>
                             <!--end::Col-->
 
+                            <!--end::Col-->
+                            <div class="col-sm-2">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Branch:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->group->name ?? '-' }}</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
 
                             <!--end::Col-->
-                            <div class="col-sm-6">
+                            <div class="col-sm-5">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Delivery Address:</div>
                               <!--end::Label-->
@@ -100,7 +110,7 @@
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Order Date:</div>
                               <!--end::Label-->
                               <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{  date('F d, Y',strtotime($data->doc_date))  }}</div>
+                              <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime($data->doc_date)) }} {{ $data->doc_time ? date('H:i A',strtotime($data->doc_time)) : "" }}</div>
                               <!--end::Col-->
                             </div>
                             <!--end::Col-->

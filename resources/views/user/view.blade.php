@@ -112,7 +112,7 @@
                               
                               <td>
                                 @if($data->profile && get_valid_file_url('sitebucket/users',$data->profile))
-                                  <img src="{{ get_valid_file_url('sitebucket/users',$data->profile) }}" height="100" width="100" class="mr-10">
+                                  <a href="{{ get_valid_file_url('sitebucket/users',$data->profile) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/users',$data->profile) }}" height="100" width="100" class="mr-10"></a>
                                 @endif
                               </td>
                             </tr>

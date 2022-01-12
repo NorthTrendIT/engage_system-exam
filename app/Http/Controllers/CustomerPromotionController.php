@@ -938,8 +938,9 @@ class CustomerPromotionController extends Controller
             if(!is_null($customer)){
                 $data->where('id', @$customer->customer_id);
             }
-        }else{
+        }else if(userrole() != 1){
             $data = collect();
+            return response()->json($data);
         }
 
         if($search != ''){

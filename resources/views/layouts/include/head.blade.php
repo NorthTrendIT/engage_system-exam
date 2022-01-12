@@ -10,6 +10,8 @@
 <link href="{{ asset('assets') }}/assets/css/custom.css" rel="stylesheet" type="text/css" />
 <!--end::Global Stylesheets Bundle-->
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" />
+
 <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.css" />

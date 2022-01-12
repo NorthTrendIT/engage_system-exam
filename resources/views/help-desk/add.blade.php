@@ -108,14 +108,15 @@
                 </div>
 
                 <div class="row mb-5 mt-10">
-                  <div class="col-md-12">
+                  <div class="col-md-6">
                     <div class="form-group">
                       <label>Upload Image</label>
+                      <input type="file" class="dropify form-control form-control-solid" name="images[]" accept="image/*" multiple>
                     </div>
                   </div>
                 </div>
 
-                <div data-repeater-list="help_images">
+                {{-- <div data-repeater-list="help_images">
                   <div class="row mb-5" data-repeater-item>
                     <div class="col-md-6">
                       <div class="form-group">
@@ -139,7 +140,7 @@
                     </div>
                   </div>
 
-                </div>
+                </div> --}}
 
                 <div class="row mb-5 mt-10">
                   <div class="col-md-12">

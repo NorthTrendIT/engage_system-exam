@@ -12,6 +12,8 @@ use App\Models\ProductTiresCategory;
 use App\Models\CustomerProductItemLine;
 use App\Models\CustomerProductGroup;
 use App\Models\CustomerProductTiresCategory;
+use App\Models\SapConnection;
+use App\Models\CustomerBpAddress;
 use Validator;
 use DataTables;
 
@@ -24,7 +26,8 @@ class CustomersSalesSpecialistsController extends Controller
      */
     public function index()
     {
-        return view('customers-sales-specialist.index');
+        $company = SapConnection::all();
+        return view('customers-sales-specialist.index', compact('company'));
     }
 
     /**
@@ -237,10 +240,16 @@ class CustomersSalesSpecialistsController extends Controller
                                             ->has('customer')
                                             ->has('sales_person')
                                             ->select('ss_id','customer_id')
-                                            ->orderBy('id', 'desc')
-                                            ->get()
-                                            ->groupBy('customer_id');
+                                            ->orderBy('id', 'desc');
+        
+        if($request->filter_company != ""){
 
+            $data->whereHas('customer', function($q) use ($request){
+                $q->where('sap_connection_id',$request->filter_company);
+            });
+        }
+
+        $data = $data->get()->groupBy('customer_id');
 
         return DataTables::of($data)
                             ->addIndexColumn()
@@ -254,6 +263,9 @@ class CustomersSalesSpecialistsController extends Controller
                             })
                             ->addColumn('customer', function($row) {
                                 return @$row->first()->customer->card_name ?? "-";
+                            })
+                            ->addColumn('company', function($row) {
+                                return @$row->first()->customer->sap_connection->company_name;
                             })
                             ->addColumn('action', function($row) {
                                 $btn = '<a href="' . route('customers-sales-specialist.edit',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
@@ -305,7 +317,7 @@ class CustomersSalesSpecialistsController extends Controller
         return response()->json($response);
     }
 
-    function getCustomers(Request $request){
+    public function getCustomers(Request $request){
         $search = $request->search;
 
         $data = Customer::orderby('card_name','asc')->where('is_active',1)->limit(50);
@@ -415,4 +427,5 @@ class CustomersSalesSpecialistsController extends Controller
 
         return response()->json($response);
     }
+
 }

@@ -85,7 +85,7 @@
                                   @foreach($data->product_images as $key => $image)
 
                                     @if($image->image && get_valid_file_url('sitebucket/products',$image->image))
-                                      <img src="{{ get_valid_file_url('sitebucket/products',$image->image) }}" height="100" width="100" class="mr-10">
+                                      <a href="{{ get_valid_file_url('sitebucket/products',$image->image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/products',$image->image) }}" height="100" width="100" class="mr-10"></a>
                                     @endif
 
                                   @endforeach
