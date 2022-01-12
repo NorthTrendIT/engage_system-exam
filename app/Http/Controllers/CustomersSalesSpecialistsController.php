@@ -14,6 +14,11 @@ use App\Models\CustomerProductGroup;
 use App\Models\CustomerProductTiresCategory;
 use App\Models\SapConnection;
 use App\Models\CustomerBpAddress;
+use App\Jobs\ImportCustomerSalesSpecialistAssign;
+
+use App\Imports\CustomerSalesSpecialistAssignImport;
+use Excel;
+
 use Validator;
 use DataTables;
 
@@ -286,6 +291,50 @@ class CustomersSalesSpecialistsController extends Controller
                             ->make(true);
     }
 
+    public function importIndex(){
+        return view('customers-sales-specialist.import');
+    }
+
+    public function importStore(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'file' => 'required|mimes:xlsx,xls,csv',
+                );
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+
+            $log_id = add_sap_log([
+                            'ip_address' => userip(),
+                            'activity_id' => 37,
+                            'user_id' => userid(),
+                            'data' => null,
+                            'type' => "O",
+                            'status' => "in progress",
+                            'sap_connection_id' => null,
+                        ]);
+
+            /*Upload Image*/
+            if (request()->hasFile('file')) {
+                $file = $request->file('file');
+                $name = date("YmdHis") . $file->getClientOriginalName();
+                request()->file('file')->move(public_path() . '/sitebucket/files/', $name);
+            }
+
+            ImportCustomerSalesSpecialistAssign::dispatch($name, $log_id);
+
+            // Excel::import(new CustomerSalesSpecialistAssignImport,$request->file);
+
+            $response = ['status'=>true,'message'=>"Excel file uploaded successfully !"];
+        }
+
+        return $response;
+    }
 
     public function getSalseSpecialist(Request $request){
 
