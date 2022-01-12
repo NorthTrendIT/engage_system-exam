@@ -86,7 +86,7 @@ $(document).ready(function() {
 
         Swal.fire({
           title: 'Are you sure you want to upload excel?',
-          text: "Upload excel will run in background and it may take some time to add Data.",
+          text: "Upload excel will run in background and it may take some time to add data in case of large data in excel file.",
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
@@ -106,9 +106,9 @@ $(document).ready(function() {
               success: function (data) {
                 if (data.status) {
                   toast_success(data.message)
-                  // setTimeout(function(){
-                  //   window.location.href = '{{ route('customers-sales-specialist.index') }}';
-                  // },1500)
+                  setTimeout(function(){
+                    window.location.href = '{{ route('customers-sales-specialist.index') }}';
+                  },1500)
                 } else {
                   toast_error(data.message);
                   $('[type="submit"]').prop('disabled', false);

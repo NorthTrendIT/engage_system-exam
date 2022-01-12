@@ -163,6 +163,10 @@ class ActivityMasterSeeder extends Seeder
                         'id' => 36,
                         'name' => 'Sync Invoices Data'
                     ),
+                    array(
+                        'id' => 37,
+                        'name' => 'Upload Sales Specialist Assignment'
+                    ),
 
         		);
         ActivityMaster::insert($data);
