@@ -13,6 +13,8 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
+        <a href="{{ route('customers-sales-specialist.import.index') }}" class="btn btn-sm btn-primary mr-10">Upload Assignment</a>
+
         <a href="{{ route('customers-sales-specialist.create') }}" class="btn btn-sm btn-primary">New Assignment</a>
         <!--end::Button-->
       </div>

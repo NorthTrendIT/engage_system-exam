@@ -14,6 +14,8 @@ use App\Models\CustomerProductGroup;
 use App\Models\CustomerProductTiresCategory;
 use App\Models\SapConnection;
 use App\Models\CustomerBpAddress;
+use App\Imports\CustomerSalesSpecialistAssignImport;
+use Excel;
 use Validator;
 use DataTables;
 
@@ -286,6 +288,30 @@ class CustomersSalesSpecialistsController extends Controller
                             ->make(true);
     }
 
+    public function importIndex(){
+        return view('customers-sales-specialist.import');
+    }
+
+    public function importStore(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'file' => 'required|mimes:xlsx,xls,csv',
+                );
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+            Excel::import(new CustomerSalesSpecialistAssignImport,$request->file);
+
+            $response = ['status'=>true,'message'=>"Excel file uploaded successfully !"];
+        }
+
+        return $response;
+    }
 
     public function getSalseSpecialist(Request $request){
 
