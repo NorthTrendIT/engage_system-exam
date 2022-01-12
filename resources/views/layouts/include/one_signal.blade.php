@@ -80,11 +80,11 @@ OneSignal.push(function() {
     OneSignal.push(function() {
 
       // first remove any tags if there are any
-      OneSignal.getTags().then(function(tags) {
-        $.each( tags, function( key, value ) {
-          OneSignal.deleteTag(key);
-        });
-      });
+    //   OneSignal.getTags().then(function(tags) {
+    //     $.each( tags, function( key, value ) {
+    //       OneSignal.deleteTag(key);
+    //     });
+    //   });
 
       var tags = {
           "user": "user_"+"{{ @Auth::user()->id }}",
