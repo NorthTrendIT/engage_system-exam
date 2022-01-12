@@ -33,7 +33,7 @@ class CustomerPromotionController extends Controller
 
     public function getAll(Request $request){
   		if ($request->ajax()) {
-            
+
             $where = array('is_active' => true);
 
             $now = date("Y-m-d");
@@ -48,7 +48,7 @@ class CustomerPromotionController extends Controller
             if ($request->id > 0) {
                 $promotions->where('id', '<', $request->id);
             }
-            
+
             $promotions = $promotions->get();
 
             $output = "";
@@ -70,8 +70,8 @@ class CustomerPromotionController extends Controller
                 	if($promotion->promotion_for == "Limited"){
 
             			if(!is_null($promotion->promotion_data)){
-	                		
-	                		if($promotion->promotion_scope == "C"){ //Customer 
+
+	                		if($promotion->promotion_scope == "C"){ //Customer
 
 	                			$check = $promotion->promotion_data->firstWhere('customer_id',@Auth::user()->customer_id);
 
@@ -79,7 +79,7 @@ class CustomerPromotionController extends Controller
 	                				$is_continue = true;
 	                			}
 
-	                		}elseif($promotion->promotion_scope == "CL"){ //Class 
+	                		}elseif($promotion->promotion_scope == "CL"){ //Class
 
 	                			$check = $promotion->promotion_data->firstWhere('class_id',@Auth::user()->customer->class_id);
 
@@ -87,7 +87,7 @@ class CustomerPromotionController extends Controller
 	                				$is_continue = true;
 	                			}
 
-	                		}elseif($promotion->promotion_scope == "SS"){ //Sales Specialists 
+	                		}elseif($promotion->promotion_scope == "SS"){ //Sales Specialists
 
                                 $check = $promotion->promotion_data->firstWhere('sales_specialist',@Auth::id());
 
@@ -95,7 +95,7 @@ class CustomerPromotionController extends Controller
                                     $is_continue = true;
                                 }
 
-                            }elseif($promotion->promotion_scope == "T"){ //Territory 
+                            }elseif($promotion->promotion_scope == "T"){ //Territory
 
                                 $check = $promotion->promotion_data->firstWhere('territory_id',@Auth::user()->customer->territories->id);
 
@@ -104,7 +104,7 @@ class CustomerPromotionController extends Controller
                                 }
                             }
 
-            				
+
             			}else{
             				$is_continue = true;
             			}
@@ -152,21 +152,21 @@ class CustomerPromotionController extends Controller
 
         // Add Log.
         add_log(26, array('id' => $data->id));
-        
+
         return view('customer-promotion.view',compact('data'));
     }
 
     public function getAllProductList(Request $request){
         if ($request->ajax()) {
-            
+
             $where = array('promotion_type_id' => $request->promotion_type_id);
 
             $products = PromotionTypeProduct::where($where)->orderBy('id', 'DESC')->limit(12);
-            
+
             if ($request->id > 0) {
                 $products->where('id', '<', $request->id);
             }
-            
+
             $products = $products->get();
 
             $output = "";
@@ -212,7 +212,7 @@ class CustomerPromotionController extends Controller
 
     public function productDetail($id, $promotion_id, $customer_id = false){
         $data = PromotionTypeProduct::where('id',$id)->firstOrFail();
-        
+
         $product = $data->product;
 
         $promotion = Promotions::findOrFail($promotion_id);
@@ -276,7 +276,7 @@ class CustomerPromotionController extends Controller
             if ($validator->fails()) {
                 return $response = ['status'=>false,'message'=>$validator->errors()->first()];
             }
-            
+
             $customer_user = User::where('customer_id', $input['customer_id'])->firstOrFail();
         }else{
             $customer_user = @Auth::user();
@@ -304,7 +304,7 @@ class CustomerPromotionController extends Controller
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
 
-            // Edit time check its canceled or not 
+            // Edit time check its canceled or not
             if(isset($input['id'])){
                 $check = CustomerPromotion::where('id',$input['id'])->where('status','canceled')->first();
 
@@ -345,7 +345,7 @@ class CustomerPromotionController extends Controller
                 $customer_promotion->is_sap_pushed = false;
                 $customer_promotion->is_approved = true;
                 $customer_promotion->sap_connection_id = @$customer_user->customer->sap_connection_id;
-                
+
                 //$customer_promotion->user_id = Auth::id();
 
                 if(in_array(userrole(),[2])){ // its a ss
@@ -356,7 +356,7 @@ class CustomerPromotionController extends Controller
                     $customer_promotion->user_id = $customer_user->id;
                     $customer_promotion->customer_user_id = Auth::id();
                 }else{
-                    
+
                     if(!isset($input['id'])){
                         $customer_promotion->sales_specialist_id = null;
                     }
@@ -389,7 +389,7 @@ class CustomerPromotionController extends Controller
 
                                 $p_product = PromotionTypeProduct::where($where)->first();
 
-                                $customer_promotion_product = CustomerPromotionProduct::firstOrNew(['id'=>@$value['id']]); 
+                                $customer_promotion_product = CustomerPromotionProduct::firstOrNew(['id'=>@$value['id']]);
                                 if(@$customer_promotion_product->id != null){
                                     $customer_promotion_product->last_data = $customer_promotion_product->toArray();
                                 }
@@ -397,7 +397,7 @@ class CustomerPromotionController extends Controller
                                 $customer_promotion_product->customer_promotion_id = @$customer_promotion->id;
                                 $customer_promotion_product->product_id = $key;
                                 $customer_promotion_product->save();
-                                
+
                                 if(@$customer_promotion_product->id){
 
                                     foreach ($value['delivery_date'] as $d_key => $d_value) {
@@ -406,8 +406,8 @@ class CustomerPromotionController extends Controller
 
                                             $quantity += $value['delivery_quantity'][$d_key];
 
-                                            $c_p_p_d = CustomerPromotionProductDelivery::firstOrNew(['id'=>@$value['delivery_id'][$d_key]]);  
-                                            
+                                            $c_p_p_d = CustomerPromotionProductDelivery::firstOrNew(['id'=>@$value['delivery_id'][$d_key]]);
+
                                             if(@$c_p_p_d->id != null){
                                                 $c_p_p_d->last_data = $c_p_p_d->toArray();
                                             }
@@ -468,12 +468,12 @@ class CustomerPromotionController extends Controller
 
                     if(isset($input['id'])){
                         $response = ['status'=>true,'message'=> "Promotion claim details updated successfully !"];
-                        
+
                         // Add Log.
                         add_log(30, $input);
                     }else{
                         $response = ['status'=>true,'message'=> "Promotion claim successfully !"];
-                        
+
                         // Add Log.
                         add_log(27, $input);
                     }
@@ -530,7 +530,7 @@ class CustomerPromotionController extends Controller
             $data->whereDate('created_at', '>=' , $start);
             $data->whereDate('created_at', '<=' , $end);
         }
-        
+
 
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('customer_promotions.id', 'desc');
@@ -547,7 +547,7 @@ class CustomerPromotionController extends Controller
                             ->addColumn('action', function($row) {
 
                                 $btn = "";
-                                
+
                                 if($row->status != 'canceled' && in_array(Auth::id(),[$row->user_id, $row->sales_specialist_id, $row->customer_user_id]) ){
 
                                     $url = route('customer-promotion.order.edit', $row->id);
@@ -607,7 +607,7 @@ class CustomerPromotionController extends Controller
         if(userrole() != 1 && !in_array(Auth::id(),[$data->user_id, $data->sales_specialist_id, $data->customer_user_id])){
             return abort(404);
         }
-        
+
         return view('customer-promotion.order_view',compact('data'));
     }
 
@@ -665,8 +665,8 @@ class CustomerPromotionController extends Controller
 
                     if(!is_null($sap_connection)){
                         $sap_obj = new SAPCustomerPromotion($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
-                
-                        if($obj->doc_entry){ 
+
+                        if($obj->doc_entry){
 
                             // Cancel Old Order
                             $cancel = $sap_obj->cancelOrder($input['id'], $obj->doc_entry);
@@ -679,19 +679,19 @@ class CustomerPromotionController extends Controller
                             // // Update Order
                             // $sap_obj->updateOrder($input['id'], $obj->doc_entry);
 
-                        }else{ 
+                        }else{
                             // Create Order
                             $sap_obj->createOrder($input['id']);
                         }
                     }
 
                 } catch (\Exception $e) {
-                    
+
                 }
             }
 
             $obj->fill($input)->save();
-            
+
             $message = "Status updated successfully.";
 
             $response = ['status'=>true,'message'=>$message];
@@ -753,18 +753,18 @@ class CustomerPromotionController extends Controller
             if(!is_null($obj)){
                 /*try {
                     $sap_obj = new SAPCustomerPromotion('TEST-APBW', 'manager', 'test');
-            
-                    if($obj->doc_entry){ 
+
+                    if($obj->doc_entry){
                         // Update Order
                         $sap_obj->updateOrder($input['id'], $obj->doc_entry);
 
-                    }else{ 
+                    }else{
                         // Create Order
                         $sap_obj->createOrder($input['id']);
                     }
 
                     $response = ['status'=>true,'message'=>"Order pushed in SAP successfully."];
-                
+
                 } catch (\Exception $e) {
                     $response = ['status'=>false,'message'=>$e->getMessage()];
                 }*/
@@ -776,8 +776,8 @@ class CustomerPromotionController extends Controller
 
                     if(!is_null($sap_connection)){
                         $sap_obj = new SAPCustomerPromotion($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
-                
-                        if($obj->doc_entry){ 
+
+                        if($obj->doc_entry){
 
                             // Cancel Old Order
                             $cancel = $sap_obj->cancelOrder($input['id'], $obj->doc_entry);
@@ -790,7 +790,7 @@ class CustomerPromotionController extends Controller
                             // // Update Order
                             // $sap_obj->updateOrder($input['id'], $obj->doc_entry);
 
-                        }else{ 
+                        }else{
                             // Create Order
                             $sap_obj->createOrder($input['id']);
                         }
@@ -827,7 +827,7 @@ class CustomerPromotionController extends Controller
         }else{
 
             CustomerPromotion::where('id', $request->id)->update(['is_approved' => true]);
-            
+
             $message = "Approved successfully.";
             $response = ['status'=>true,'message'=>$message];
         }
@@ -874,7 +874,7 @@ class CustomerPromotionController extends Controller
     }
 
     public function getInterest(Request $request){
-        
+
         if($request->ajax()){
             $data = PromotionInterest::where('user_id', @Auth::id())->latest()->get();
 

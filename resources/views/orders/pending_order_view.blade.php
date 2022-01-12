@@ -88,7 +88,7 @@
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800" style="text-align:end">
-                                <a href="javascript:;" class="btn btn-light-info btn-sm">Push</a>
+                                <a href="javascript:;" class="btn btn-light-info btn-sm push-order">Push</a>
                               </div>
                               <!--end::Text-->
                             </div>
@@ -205,7 +205,7 @@
 
   $(document).ready(function() {
 
-    $(document).on('click', '.push-in-sap', function(event) {
+    $(document).on('click', '.push-order', function(event) {
       event.preventDefault();
 
       Swal.fire({
@@ -219,11 +219,11 @@
       }).then((result) => {
         if (result.isConfirmed) {
           $.ajax({
-            url: '{{ route('customer-promotion.order.push-in-sap') }}',
+            url: '{{ route('orders.push-order') }}',
             method: "POST",
             data: {
                     _token:'{{ csrf_token() }}',
-                    id:'',
+                    id: '{{ @$data->id }}',
                   }
           })
           .done(function(result) {
@@ -231,9 +231,7 @@
               toast_error(result.message);
             }else{
               toast_success(result.message);
-              setTimeout(function(){
-                window.location.reload();
-              },500)
+              window.location.href = "{{ route('orders.panding-orders') }}";
             }
           })
           .fail(function() {
