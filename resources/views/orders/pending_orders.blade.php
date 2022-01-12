@@ -13,7 +13,7 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="javascript:;" class="btn btn-sm btn-info">Push All</a>
+        <a href="javascript:;" class="btn btn-sm btn-info push-all-order">Push All</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -39,7 +39,6 @@
                     </span>
                   </div>
                 </div>
-
 
                 <!-- <div class="col-md-3">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
@@ -106,7 +105,7 @@
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script>
-  $(document).ready(function() {
+$(document).ready(function() {
 
     render_table();
 
@@ -157,10 +156,86 @@
     });
 
     $(document).on('click', '.clear-search', function(event) {
-      $('[name="filter_search"]').val('');
-      $('[name="filter_status"]').val('').trigger('change');
-      render_table();
+        $('[name="filter_search"]').val('');
+        $('[name="filter_status"]').val('').trigger('change');
+        render_table();
     })
-  })
+
+    $(document).on('click', '.push-all-order', function(event) {
+      event.preventDefault();
+
+      Swal.fire({
+        title: 'Are you sure want to push all pending orders?',
+        //text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('orders.push-all-order') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              setTimeout(function(){
+                window.location.reload();
+              },500)
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
+    $(document).on('click', '.pushOrder', function(event) {
+      event.preventDefault();
+      var id = $(this).data('id');
+      Swal.fire({
+        title: 'Are you sure want to push this order?',
+        //text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('orders.push-order') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                    id: id,
+                }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              render_table();
+            //   setTimeout(function(){
+            //     window.location.reload();
+            //   },500)
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+});
 </script>
 @endpush

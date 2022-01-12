@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use App\Support\PostOrder;
+use App\Support\SAPOrderPost;
 use App\Models\Cart;
 use App\Models\CustomerBpAddress;
 use App\Models\Customer;
@@ -267,73 +268,21 @@ class CartController extends Controller
             }
         }
 
-        if($order->id){
-            $obj = array();
+        try{
+            $sap_connection = SapConnection::find(@Auth::user()->customer->sap_connection_id);
             Cart::where('customer_id', $customer_id)->delete();
-            $order = LocalOrder::where('id', $order->id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
-            $obj['CardCode'] = $order->customer->card_code;
-            $obj['CardName'] = @$order->customer->card_name;
-            $obj['DocDueDate'] = $order->due_date;
-            $obj['DocCurrency'] = 'PHP';
-            $obj['Address'] = @$order->address->address;
-            // $obj['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
+            if(!is_null($sap_connection)){
+                $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
 
-            $products = array();
-            foreach($order->items as $item){
-                $products[] = array(
-                    'ItemCode' => $item->product->item_code,
-                    'ItemDescription' => $item->product->item_name,
-                    'Quantity' => $item->quantity,
-                    // 'TaxCode' => $order->address->tax_code,
-                    'Price' => get_product_customer_price(@$item->product->item_prices, @$order->customer->price_list_num),
-                    'UnitPrice' => get_product_customer_price(@$item->product->item_prices, @$order->customer->price_list_num),
-                    'ShipDate' => @$order->due_date,
-                );
-
-            }
-            $obj['DocumentLines'] = $products;
-
-            $address = array();
-            $address['ShipToStreet'] = $order->address->street;
-            $address['ShipToZipCode'] = $order->address->zip_code;
-            $address['ShipToCity'] = $order->address->city;
-            $address['ShipToCountry'] = $order->address->country;
-            $address['ShipToState'] = $order->address->state;
-            $address['BillToAddressType'] = $order->address->address_type;
-
-            $obj['AddressExtension'] = $address;
-            // dd($obj);
-            try {
-                $sap_connection = SapConnection::where('id', @Auth::user()->customer->sap_connection_id)->first();
-                $post = new PostOrder($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
-
-                $post = $post->pushOrder($obj);
-                $order = LocalOrder::where('id', $order->id)->first();
-                if($post['status']){
-                    $orderData = $post['message'];
-                    $order->confirmation_status = 'C';
-                    $order->doc_entry = $orderData['DocEntry'];
-                    $order->doc_num = $orderData['DocNum'];
-                } else {
-                    $order->confirmation_status = 'ERR';
-                    $order->message = $post['message'];
+                if($order->id){
+                    $sap->pushOrder($order->id);
                 }
-                $order->save();
-
-                $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
-                // dd($post);
-            } catch (\Exception $e) {
-                // dd($e);
-                if(!empty($e->getStatusCode)){
-                    $order->confirmation_status = "ERR";
-                    $order->message = "API Error.";
-                    $order->save();
-                }
-                $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
             }
+        } catch (\Exception $e) {
+
         }
 
-        return $response;
+        return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
     }
 }

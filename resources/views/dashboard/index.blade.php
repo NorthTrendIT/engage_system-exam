@@ -534,9 +534,9 @@
                             <div class="d-flex mb-8">
                                 <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
                                     <div class="d-flex pt-2">
-                                        <a href="{{ route('orders.panding-orders') }}" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm">View All</a>
                                         @if(count($local_order) > 0)
-                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5">Push All</a>
+                                        <a href="{{ route('orders.panding-orders') }}" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm">View All</a>
+                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5 push-all-order">Push All</a>
                                         @endif
                                     </div>
                                 </div>
@@ -567,9 +567,9 @@
                             <div class="d-flex mb-8">
                                 <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
                                     <div class="d-flex pt-2">
-                                        <a href="{{ route('orders.pending-promotion') }}" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm">View All</a>
                                         @if(count($promotion) > 0)
-                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5">Push All</a>
+                                        <a href="{{ route('orders.pending-promotion') }}" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm">View All</a>
+                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5 push-all-promotion">Push All</a>
                                         @endif
                                     </div>
                                 </div>
@@ -1686,3 +1686,83 @@
 </div>
 <!--end::Content-->
 @endsection
+
+@push('js')
+@if(@Auth::user()->role_id == 1)
+<script>
+    $(document).on('click', '.push-all-order', function(event) {
+      event.preventDefault();
+
+      Swal.fire({
+        title: 'Are you sure want to push all pending orders?',
+        //text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('orders.push-all-order') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              setTimeout(function(){
+                window.location.reload();
+              },500)
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
+    $(document).on('click', '.push-all-promotion', function(event) {
+      event.preventDefault();
+      var id = $(this).data('id');
+      Swal.fire({
+        title: 'Are you sure want to push all promotion?',
+        //text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('orders.push-all-promotion') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              setTimeout(function(){
+                window.location.reload();
+              },500)
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+</script>
+@endif
+@endpush

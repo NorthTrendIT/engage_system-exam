@@ -9,6 +9,8 @@ use App\Support\SAPQuotations;
 use App\Jobs\SyncOrders;
 use App\Jobs\SyncInvoices;
 use App\Jobs\SyncQuotations;
+use App\Jobs\SAPAllOrderPost;
+use App\Jobs\SAPCustomerPromotionPost;
 use App\Models\Order;
 use App\Models\Quotation;
 use App\Models\Invoice;
@@ -295,7 +297,7 @@ class OrdersController extends Controller
                             $btn = '<a href="' . route('orders.panding-orders.view',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                 <i class="fa fa-eye"></i>
                                 </a>';
-                            $btn .= '<a href="' . route('orders.panding-orders.view',$row->id). '" class="btn btn-bg-light btn-light-info btn-sm m-2">
+                            $btn .= '<a href="javascript:;" data-id="'.$row->id.'" class="btn btn-bg-light btn-light-info btn-sm m-2 pushOrder">
                                 Push
                             </a>';
 
@@ -363,7 +365,7 @@ class OrdersController extends Controller
                                     <i class="fa fa-eye"></i>
                                   </a>';
 
-                                $btn .= '<a href="javascript:;" class="btn btn-sm btn-light-info btn-inline m-2">
+                                $btn .= '<a href="javascript:;" class="btn btn-sm btn-light-info btn-inline m-2 push-in-sap" data-id="'.$row->id.'">
                                   Push
                                 </a>';
 
@@ -406,13 +408,55 @@ class OrdersController extends Controller
 
     // Push Orders to SAP
     public function pushSingleOrder(Request $request){
-        $data = $request->all();
-        dd($data);
+        $order_id = $request->id;
+
+        $data = LocalOrder::with('customer')->find($order_id);
+
+        if(!empty($data)){
+            $sap_connection = SapConnection::find(@$data->customer->sap_connection_id);
+
+            if(!is_null($sap_connection)){
+                SAPAllOrderPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $order_id);
+            }
+
+            return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
+        } else {
+            return $response = ['status' => false, 'message' => 'Something went wrong!'];
+        }
     }
 
     public function pushAllOrder(Request $request){
-        $data = $request->all();
-        dd($data);
+        $data = LocalOrder::with(['customer'])->where('confirmation_status', 'ERR')->get();
+
+        if(!empty($data)){
+            foreach($data as $order){
+                $sap_connection = SapConnection::find(@$order->customer->sap_connection_id);
+
+                if(!is_null($sap_connection)){
+                    SAPAllOrderPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, @$order->id);
+                }
+            }
+            return $response = ['status' => true, 'message' => 'All Order Placed Successfully!'];
+        } else {
+            return $response = ['status' => false, 'message' => 'Something went wrong!'];
+        }
+    }
+
+    public function pushAllPromotion(Request $request){
+        $data = CustomerPromotion::where(['is_sap_pushed' => 0, 'status' => 'approved'])->get();
+        // dd($data);
+        if(!empty($data)){
+            foreach($data as $item){
+                $sap_connection = SapConnection::find(@$item->sap_connection_id);
+
+                if(!is_null($sap_connection)){
+                    SAPCustomerPromotionPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, @$item->id);
+                }
+            }
+            return $response = ['status' => true, 'message' => 'All Promotion Pushed Successfully!'];
+        } else {
+            return $response = ['status' => false, 'message' => 'Something went wrong!'];
+        }
     }
 
 }
