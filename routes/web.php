@@ -304,6 +304,7 @@ Route::middleware(['auth'])->group(function(){
     // Conversation
     Route::resource('conversation','App\Http\Controllers\ConversationController')->except('show');
     Route::post('conversation/search-new-user','App\Http\Controllers\ConversationController@searchNewUser')->name('conversation.search-new-user');
+    Route::post('conversation/send-message','App\Http\Controllers\ConversationController@sendMessage')->name('conversation.send-message');
 });
 
 Route::get('clear-cache', function () {

@@ -43,7 +43,7 @@ class ConversationController extends Controller
         $input = $request->all();
 
         $rules = array(
-                    'user_id' => 'nullable|exists:users,id,deleted_at,NULL,is_active,1',
+                    'user_id' => 'required|exists:users,id,deleted_at,NULL,is_active,1',
                 );
 
         $validator = Validator::make($input, $rules);
@@ -65,21 +65,15 @@ class ConversationController extends Controller
             if(is_null($conversation)){
                 $conversation = new Conversation();
                 $conversation->fill([ 'sender_id' => userid(), 'receiver_id' => $input['user_id'] ])->save();
-            }
-
             
-            if(!empty($conversation->id)){
+            }else if(!empty($conversation->id)){
                 $conversation->receiver_delete = false;
                 $conversation->sender_delete = false;
-                $conversation->timestamps = false;
-                $conversation->updated_at = date("Y-m-d H:i:s");
                 $conversation->save();
             }
             
             $response = ['status'=>true, 'message'=> 'Conversation created successfully'];
         }
-
-
         return $response;
     }
 
@@ -126,6 +120,31 @@ class ConversationController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+
+    public function sendMessage(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'user_id' => 'required|exists:users,id,deleted_at,NULL,is_active,1',
+                    'conversation_id' => 'required|exists:conversations,id,deleted_at,NULL',
+                    'message' => 'required',
+                );
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+            $input['user_id'] = userid();
+            
+            $message = new ConversationMessage();
+            $message->fill($input)->save();
+
+            $response = ['status'=>true, 'message'=> ''];
+        }
+        return $response;
     }
 
     public function searchNewUser(Request $request){
