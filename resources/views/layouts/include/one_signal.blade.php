@@ -8,15 +8,12 @@ OneSignal.push(function() {
     OneSignal.push(function() {
         // initialize
         OneSignal.init({
-            //   appId: "e6878a06-25dc-4014-bfad-e9cce643c62a",
-            //   safari_web_id: "web.onesignal.auto.20000090-ae08-4d2f-988d-291912c8a9bf",
-                appId: "30e5f976-c842-453f-b668-6220474a8054",
-                safari_web_id: "web.onesignal.auto.37bbdda8-1be5-416a-8d2a-3d51b0669a43",
+                appId: "e6878a06-25dc-4014-bfad-e9cce643c62a",
+                safari_web_id: "web.onesignal.auto.20000090-ae08-4d2f-988d-291912c8a9bf",
                 notifyButton: {
                 enable: false,
             },
-            //subdomainName: "b2b-nt-crm",
-            subdomainName: "b2b-krt",
+            subdomainName: "b2b-nt-crm",
             allowLocalhostAsSecureOrigin: true, // enable localhost for testing
             autoRegister: false,    // auto register false
             promptOptions: {
