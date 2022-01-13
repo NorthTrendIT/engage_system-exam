@@ -300,6 +300,10 @@ Route::middleware(['auth'])->group(function(){
     Route::post('help-desk/comment/store', 'App\Http\Controllers\HelpDeskController@storeComment')->name('help-desk.comment.store');
     Route::post('help-desk/comment/get-all', 'App\Http\Controllers\HelpDeskController@getAllComment')->name('help-desk.comment.get-all');
 
+
+    // Conversation
+    Route::resource('conversation','App\Http\Controllers\ConversationController')->except('show');
+    Route::post('conversation/search-new-user','App\Http\Controllers\ConversationController@searchNewUser')->name('conversation.search-new-user');
 });
 
 Route::get('clear-cache', function () {
