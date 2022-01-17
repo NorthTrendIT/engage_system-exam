@@ -16,7 +16,7 @@
     <!--end::Avatar-->
     <!--begin::Details-->
     <div class="ms-5">
-      <a href="javascript:" class="fs-5 fw-bolder text-gray-900 text-hover-primary mb-2">{{ $user->sales_specialist_name ?? "" }}</a>
+      <a href="javascript:" class="fs-5 fw-bolder text-gray-900 text-hover-primary mb-2 create_conversation" data-id="{{ $user->id }}" title="Send message" >{{ $user->sales_specialist_name ?? "" }}</a>
       <div class="fw-bold text-muted">{{ $user->email ?? "" }}</div>
     </div>
     <!--end::Details-->
@@ -24,7 +24,7 @@
   <!--end::Details-->
   <!--begin::Lat seen-->
   <div class="d-flex flex-column align-items-end ms-2">
-    <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-info btn-sm create_conversation" data-id="{{ $user->id }}">
+    <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-info btn-sm create_conversation" data-id="{{ $user->id }}" title="Send message">
       <i class="fa fa-paper-plane"></i>
     </a>
   </div>

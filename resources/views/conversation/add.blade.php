@@ -132,7 +132,6 @@
         success: function (data) {
           if (data.html) {
             $('#search_user_list_div').html(data.html);
-            $('#search_user_list_div').html(data.html);
           }
         },
         error: function () {

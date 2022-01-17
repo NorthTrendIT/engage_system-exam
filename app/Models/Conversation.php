@@ -17,4 +17,16 @@ class Conversation extends Model
         'receiver_delete',
         'updated_at',
     ];
+
+    public function messages() {
+        return $this->hasMany(ConversationMessage::class, 'conversation_id', 'id');
+    }
+
+    public function sender() {
+        return $this->belongsTo(User::class, 'sender_id', 'id');
+    }
+
+    public function receiver() {
+        return $this->belongsTo(User::class, 'receiver_id', 'id');
+    }
 }

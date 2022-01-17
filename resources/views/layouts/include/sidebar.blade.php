@@ -486,7 +486,7 @@
                      </span>
                      <!--end::Svg Icon-->
                   </span>
-                  <span class="menu-title">Conversation</span>
+                  <span class="menu-title">Live Chat</span>
                </a>
             </div>
 

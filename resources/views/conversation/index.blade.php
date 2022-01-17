@@ -3,6 +3,16 @@
 @section('title','Conversation')
 
 @section('content')
+
+
+@push('css')
+  <style>
+    .conversation_list.active{
+      background-color: #f1f1f1;
+    }
+  </style>
+@endpush
+
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
@@ -46,7 +56,7 @@
                 <!--end::Svg Icon-->
                 <!--end::Icon-->
                 <!--begin::Input-->
-                <input type="text" class="form-control form-control-solid px-15" name="search" value="" placeholder="Search by username or email..." />
+                <input type="text" class="form-control form-control-solid px-15" id="conversation_search" name="conversation_search" value="" placeholder="Search by name ..." />
                 <!--end::Input-->
               </form>
               <!--end::Form-->
@@ -55,63 +65,9 @@
             <!--begin::Card body-->
             <div class="card-body pt-5" id="kt_chat_contacts_body">
               <!--begin::List-->
-              <div class="scroll-y me-n5 pe-5 h-200px h-lg-auto" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_header, #kt_toolbar, #kt_footer, #kt_chat_contacts_header" data-kt-scroll-wrappers="#kt_content, #kt_chat_contacts_body" data-kt-scroll-offset="0px">
+              <div class="scroll-y me-n5 pe-5 h-200px h-lg-auto" id="conversation_list_div">
 
-                <!--begin::User-->
-                <div class="d-flex flex-stack py-4">
-                  <!--begin::Details-->
-                  <div class="d-flex align-items-center">
-                    <!--begin::Avatar-->
-                    <div class="symbol symbol-45px symbol-circle">
-                      <span class="symbol-label bg-light-danger text-danger fs-6 fw-bolder">M</span>
-                      <div class="symbol-badge bg-success start-100 top-100 border-4 h-15px w-15px ms-n2 mt-n2"></div>
-                    </div>
-                    <!--end::Avatar-->
-                    <!--begin::Details-->
-                    <div class="ms-5">
-                      <a href="#" class="fs-5 fw-bolder text-gray-900 text-hover-primary mb-2">Melody Macy</a>
-                      <div class="fw-bold text-muted">melody@altbox.com</div>
-                    </div>
-                    <!--end::Details-->
-                  </div>
-                  <!--end::Details-->
-                  <!--begin::Lat seen-->
-                  <div class="d-flex flex-column align-items-end ms-2">
-                    <span class="text-muted fs-7 mb-1">1 day</span>
-                    <span class="badge badge-sm badge-circle badge-light-success">2</span>
-                  </div>
-                  <!--end::Lat seen-->
-                </div>
-                <!--end::User-->
-                <!--begin::Separator-->
-                <div class="separator separator-dashed d-none"></div>
-                <!--end::Separator-->
-                <!--begin::User-->
-                <div class="d-flex flex-stack py-4">
-                  <!--begin::Details-->
-                  <div class="d-flex align-items-center">
-                    <!--begin::Avatar-->
-                    <div class="symbol symbol-45px symbol-circle">
-                      <img alt="Pic" src="{{ asset('assets') }}/assets/media/avatars/150-26.jpg" />
-                      <div class="symbol-badge bg-success start-100 top-100 border-4 h-15px w-15px ms-n2 mt-n2"></div>
-                    </div>
-                    <!--end::Avatar-->
-                    <!--begin::Details-->
-                    <div class="ms-5">
-                      <a href="#" class="fs-5 fw-bolder text-gray-900 text-hover-primary mb-2">Max Smith</a>
-                      <div class="fw-bold text-muted">max@kt.com</div>
-                    </div>
-                    <!--end::Details-->
-                  </div>
-                  <!--end::Details-->
-                  <!--begin::Lat seen-->
-                  <div class="d-flex flex-column align-items-end ms-2">
-                    <span class="text-muted fs-7 mb-1">1 week</span>
-                    <span class="badge badge-sm badge-circle badge-light-success">6</span>
-                  </div>
-                  <!--end::Lat seen-->
-                </div>
-                <!--end::User-->
+                
                 
               </div>
               <!--end::List-->
@@ -124,14 +80,14 @@
         <!--begin::Content-->
         <div class="flex-lg-row-fluid ms-lg-7 ms-xl-10">
           <!--begin::Messenger-->
-          <div class="card" id="kt_chat_messenger">
+          <div class="card" id="conversation_message_div" style="display:none;">
             <!--begin::Card header-->
             <div class="card-header" id="kt_chat_messenger_header">
               <!--begin::Title-->
               <div class="card-title">
                 <!--begin::User-->
                 <div class="d-flex justify-content-center flex-column me-3">
-                  <a href="#" class="fs-4 fw-bolder text-gray-900 text-hover-primary me-1 mb-2 lh-1">Brian Cox</a>
+                  <a href="javascript:" class="fs-4 fw-bolder text-gray-900 text-hover-primary me-1 mb-2 lh-1 conversation_user_name">-</a>
                   <!--begin::Info-->
                   <div class="mb-0 lh-1">
                     <span class="badge badge-success badge-circle w-10px h-10px me-1"></span>
@@ -146,7 +102,7 @@
               <div class="card-toolbar">
                 <!--begin::Menu-->
                 <div class="me-n3">
-                  <button class="btn btn-sm btn-icon btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                  <button class="btn btn-sm btn-icon btn-active-light-primary conversation_delete" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" style="display: none;">
                     <i class="fa fa-trash" style="font-size: 20px;"></i>
                   </button>
                   
@@ -157,244 +113,17 @@
             </div>
             <!--end::Card header-->
             <!--begin::Card body-->
-            <div class="card-body" id="kt_chat_messenger_body">
+            <div class="card-body">
               <!--begin::Messages-->
-              <div class="scroll-y me-n5 pe-5 h-300px h-lg-auto" data-kt-element="messages" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_header, #kt_toolbar, #kt_footer, #kt_chat_messenger_header, #kt_chat_messenger_footer" data-kt-scroll-wrappers="#kt_content, #kt_chat_messenger_body" data-kt-scroll-offset="-2px">
-                <!--begin::Message(in)-->
-                <div class="d-flex justify-content-start mb-10">
-                  <!--begin::Wrapper-->
-                  <div class="d-flex flex-column align-items-start">
-                    <!--begin::User-->
-                    <div class="d-flex align-items-center mb-2">
-                      <!--begin::Avatar-->
-                      <div class="symbol symbol-35px symbol-circle">
-                        <img alt="Pic" src="{{ asset('assets') }}/assets/media/avatars/150-15.jpg" />
-                      </div>
-                      <!--end::Avatar-->
-                      <!--begin::Details-->
-                      <div class="ms-3">
-                        <a href="#" class="fs-5 fw-bolder text-gray-900 text-hover-primary me-1">Brian Cox</a>
-                        <span class="text-muted fs-7 mb-1">2 mins</span>
-                      </div>
-                      <!--end::Details-->
-                    </div>
-                    <!--end::User-->
-                    <!--begin::Text-->
-                    <div class="p-5 rounded bg-light-info text-dark fw-bold mw-lg-400px text-start" data-kt-element="message-text">How likely are you to recommend our company to your friends and family ?</div>
-                    <!--end::Text-->
-                  </div>
-                  <!--end::Wrapper-->
-                </div>
-                <!--end::Message(in)-->
-                <!--begin::Message(out)-->
-                <div class="d-flex justify-content-end mb-10">
-                  <!--begin::Wrapper-->
-                  <div class="d-flex flex-column align-items-end">
-                    <!--begin::User-->
-                    <div class="d-flex align-items-center mb-2">
-                      <!--begin::Details-->
-                      <div class="me-3">
-                        <span class="text-muted fs-7 mb-1">5 mins</span>
-                        <a href="#" class="fs-5 fw-bolder text-gray-900 text-hover-primary ms-1">You</a>
-                      </div>
-                      <!--end::Details-->
-                      <!--begin::Avatar-->
-                      <div class="symbol symbol-35px symbol-circle">
-                        <img alt="Pic" src="{{ asset('assets') }}/assets/media/avatars/150-26.jpg" />
-                      </div>
-                      <!--end::Avatar-->
-                    </div>
-                    <!--end::User-->
-                    <!--begin::Text-->
-                    <div class="p-5 rounded bg-light-primary text-dark fw-bold mw-lg-400px text-end" data-kt-element="message-text">Hey there, we’re just writing to let you know that you’ve been subscribed to a repository on GitHub.</div>
-                    <!--end::Text-->
-                  </div>
-                  <!--end::Wrapper-->
-                </div>
-                <!--end::Message(out)-->
-                <!--begin::Message(in)-->
-                <div class="d-flex justify-content-start mb-10">
-                  <!--begin::Wrapper-->
-                  <div class="d-flex flex-column align-items-start">
-                    <!--begin::User-->
-                    <div class="d-flex align-items-center mb-2">
-                      <!--begin::Avatar-->
-                      <div class="symbol symbol-35px symbol-circle">
-                        <img alt="Pic" src="{{ asset('assets') }}/assets/media/avatars/150-15.jpg" />
-                      </div>
-                      <!--end::Avatar-->
-                      <!--begin::Details-->
-                      <div class="ms-3">
-                        <a href="#" class="fs-5 fw-bolder text-gray-900 text-hover-primary me-1">Brian Cox</a>
-                        <span class="text-muted fs-7 mb-1">1 Hour</span>
-                      </div>
-                      <!--end::Details-->
-                    </div>
-                    <!--end::User-->
-                    <!--begin::Text-->
-                    <div class="p-5 rounded bg-light-info text-dark fw-bold mw-lg-400px text-start" data-kt-element="message-text">Ok, Understood!</div>
-                    <!--end::Text-->
-                  </div>
-                  <!--end::Wrapper-->
-                </div>
-                <!--end::Message(in)-->
-                <!--begin::Message(out)-->
-                <div class="d-flex justify-content-end mb-10">
-                  <!--begin::Wrapper-->
-                  <div class="d-flex flex-column align-items-end">
-                    <!--begin::User-->
-                    <div class="d-flex align-items-center mb-2">
-                      <!--begin::Details-->
-                      <div class="me-3">
-                        <span class="text-muted fs-7 mb-1">2 Hours</span>
-                        <a href="#" class="fs-5 fw-bolder text-gray-900 text-hover-primary ms-1">You</a>
-                      </div>
-                      <!--end::Details-->
-                      <!--begin::Avatar-->
-                      <div class="symbol symbol-35px symbol-circle">
-                        <img alt="Pic" src="{{ asset('assets') }}/assets/media/avatars/150-26.jpg" />
-                      </div>
-                      <!--end::Avatar-->
-                    </div>
-                    <!--end::User-->
-                    <!--begin::Text-->
-                    <div class="p-5 rounded bg-light-primary text-dark fw-bold mw-lg-400px text-end" data-kt-element="message-text">You’ll receive notifications for all issues, pull requests!</div>
-                    <!--end::Text-->
-                  </div>
-                  <!--end::Wrapper-->
-                </div>
-                <!--end::Message(out)-->
-                <!--begin::Message(in)-->
-                <div class="d-flex justify-content-start mb-10">
-                  <!--begin::Wrapper-->
-                  <div class="d-flex flex-column align-items-start">
-                    <!--begin::User-->
-                    <div class="d-flex align-items-center mb-2">
-                      <!--begin::Avatar-->
-                      <div class="symbol symbol-35px symbol-circle">
-                        <img alt="Pic" src="{{ asset('assets') }}/assets/media/avatars/150-15.jpg" />
-                      </div>
-                      <!--end::Avatar-->
-                      <!--begin::Details-->
-                      <div class="ms-3">
-                        <a href="#" class="fs-5 fw-bolder text-gray-900 text-hover-primary me-1">Brian Cox</a>
-                        <span class="text-muted fs-7 mb-1">3 Hours</span>
-                      </div>
-                      <!--end::Details-->
-                    </div>
-                    <!--end::User-->
-                    <!--begin::Text-->
-                    <div class="p-5 rounded bg-light-info text-dark fw-bold mw-lg-400px text-start" data-kt-element="message-text">You can unwatch this repository immediately by clicking here:
-                    <a href="https://keenthemes.com">Keenthemes.com</a></div>
-                    <!--end::Text-->
-                  </div>
-                  <!--end::Wrapper-->
-                </div>
-                <!--end::Message(in)-->
-                <!--begin::Message(out)-->
-                <div class="d-flex justify-content-end mb-10">
-                  <!--begin::Wrapper-->
-                  <div class="d-flex flex-column align-items-end">
-                    <!--begin::User-->
-                    <div class="d-flex align-items-center mb-2">
-                      <!--begin::Details-->
-                      <div class="me-3">
-                        <span class="text-muted fs-7 mb-1">4 Hours</span>
-                        <a href="#" class="fs-5 fw-bolder text-gray-900 text-hover-primary ms-1">You</a>
-                      </div>
-                      <!--end::Details-->
-                      <!--begin::Avatar-->
-                      <div class="symbol symbol-35px symbol-circle">
-                        <img alt="Pic" src="{{ asset('assets') }}/assets/media/avatars/150-26.jpg" />
-                      </div>
-                      <!--end::Avatar-->
-                    </div>
-                    <!--end::User-->
-                    <!--begin::Text-->
-                    <div class="p-5 rounded bg-light-primary text-dark fw-bold mw-lg-400px text-end" data-kt-element="message-text">Most purchased Business courses during this sale!</div>
-                    <!--end::Text-->
-                  </div>
-                  <!--end::Wrapper-->
-                </div>
-                <!--end::Message(out)-->
-                <!--begin::Message(in)-->
-                <div class="d-flex justify-content-start mb-10">
-                  <!--begin::Wrapper-->
-                  <div class="d-flex flex-column align-items-start">
-                    <!--begin::User-->
-                    <div class="d-flex align-items-center mb-2">
-                      <!--begin::Avatar-->
-                      <div class="symbol symbol-35px symbol-circle">
-                        <img alt="Pic" src="{{ asset('assets') }}/assets/media/avatars/150-15.jpg" />
-                      </div>
-                      <!--end::Avatar-->
-                      <!--begin::Details-->
-                      <div class="ms-3">
-                        <a href="#" class="fs-5 fw-bolder text-gray-900 text-hover-primary me-1">Brian Cox</a>
-                        <span class="text-muted fs-7 mb-1">5 Hours</span>
-                      </div>
-                      <!--end::Details-->
-                    </div>
-                    <!--end::User-->
-                    <!--begin::Text-->
-                    <div class="p-5 rounded bg-light-info text-dark fw-bold mw-lg-400px text-start" data-kt-element="message-text">Company BBQ to celebrate the last quater achievements and goals. Food and drinks provided</div>
-                    <!--end::Text-->
-                  </div>
-                  <!--end::Wrapper-->
-                </div>
-                <!--end::Message(in)-->
-                <!--begin::Message(template for out)-->
-                <div class="d-flex justify-content-end mb-10 d-none" data-kt-element="template-out">
-                  <!--begin::Wrapper-->
-                  <div class="d-flex flex-column align-items-end">
-                    <!--begin::User-->
-                    <div class="d-flex align-items-center mb-2">
-                      <!--begin::Details-->
-                      <div class="me-3">
-                        <span class="text-muted fs-7 mb-1">Just now</span>
-                        <a href="#" class="fs-5 fw-bolder text-gray-900 text-hover-primary ms-1">You</a>
-                      </div>
-                      <!--end::Details-->
-                      <!--begin::Avatar-->
-                      <div class="symbol symbol-35px symbol-circle">
-                        <img alt="Pic" src="{{ asset('assets') }}/assets/media/avatars/150-26.jpg" />
-                      </div>
-                      <!--end::Avatar-->
-                    </div>
-                    <!--end::User-->
-                    <!--begin::Text-->
-                    <div class="p-5 rounded bg-light-primary text-dark fw-bold mw-lg-400px text-end" data-kt-element="message-text"></div>
-                    <!--end::Text-->
-                  </div>
-                  <!--end::Wrapper-->
-                </div>
-                <!--end::Message(template for out)-->
-                <!--begin::Message(template for in)-->
-                <div class="d-flex justify-content-start mb-10 d-none" data-kt-element="template-in">
-                  <!--begin::Wrapper-->
-                  <div class="d-flex flex-column align-items-start">
-                    <!--begin::User-->
-                    <div class="d-flex align-items-center mb-2">
-                      <!--begin::Avatar-->
-                      <div class="symbol symbol-35px symbol-circle">
-                        <img alt="Pic" src="{{ asset('assets') }}/assets/media/avatars/150-15.jpg" />
-                      </div>
-                      <!--end::Avatar-->
-                      <!--begin::Details-->
-                      <div class="ms-3">
-                        <a href="#" class="fs-5 fw-bolder text-gray-900 text-hover-primary me-1">Brian Cox</a>
-                        <span class="text-muted fs-7 mb-1">Just now</span>
-                      </div>
-                      <!--end::Details-->
-                    </div>
-                    <!--end::User-->
-                    <!--begin::Text-->
-                    <div class="p-5 rounded bg-light-info text-dark fw-bold mw-lg-400px text-start" data-kt-element="message-text">Right before vacation season we have the next Big Deal for you.</div>
-                    <!--end::Text-->
-                  </div>
-                  <!--end::Wrapper-->
-                </div>
-                <!--end::Message(template for in)-->
+
+              <div id="view_more_message_div">
+                
+              </div>
+
+              <div class="scroll-y me-n5 pe-5 h-300px h-lg-auto"  id="conversation_message_list_div">
+              
+
+                
               </div>
               <!--end::Messages-->
             </div>
@@ -407,8 +136,6 @@
               </div>
               
               <button class="btn btn-primary" type="button" data-kt-element="send">Send</button>
-
-
             </div>
             <!--end::Card footer-->
           </div>
@@ -427,10 +154,167 @@
 </div>
 @endsection
 
-@push('css')
-
-@endpush
 
 @push('js')
+<script>
+  
+  $(document).ready(function() {
 
+    var active_conversation = "";
+
+    get_conversation_list();
+
+    function get_conversation_list() {
+      $('#conversation_list_div').html("");
+
+      $search = $('#conversation_search').val();
+
+      $.ajax({
+        url: "{{route('conversation.get-conversation-list')}}",
+        type: "POST",
+        headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        data:{
+          search : $search,
+        },
+        async: false,
+        success: function (data) {
+          if (data.html) {
+            $('#conversation_list_div').html(data.html);
+          }
+        },
+        error: function () {
+          toast_error("Something went to wrong !");
+        },
+      });
+    }
+
+    $(document).on('change keyup', '#conversation_search', function(event) {
+      event.preventDefault();
+      get_conversation_list();
+    });
+
+
+    $(document).on('click', '.conversation_list', function(event) {
+      event.preventDefault();
+      var id = $(this).data('id');
+      get_conversation_messages(id);
+    });
+
+
+    function get_conversation_messages(conversation_id, id = ""){
+      $('.conversation_list').removeClass('active');
+      $('.conversation_list[data-id="'+conversation_id+'"]').addClass('active');
+      $('.conversation_delete').removeAttr('data-id');
+      $('#conversation_message_div').show();
+
+      active_conversation = conversation_id;
+
+      $('#view_more_message_div').html("");
+      if(id == ""){
+        $('#conversation_message_list_div').html("");
+      }
+
+      $.ajax({
+        url: "{{route('conversation.get-conversation-message-list')}}",
+        type: "POST",
+        headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        data:{
+          conversation_id : conversation_id,
+          id : id,
+        },
+        async: false,
+        success: function (data) {
+          // if (data.html) {
+          //   $('#conversation_message_list_div').html(data.html);
+          // }
+
+          $('#conversation_message_list_div').prepend(data.html);
+
+          if(id == ""){
+            $("#conversation_message_list_div").scrollTop(9999999);
+          }else{
+            $('#conversation_message_list_div').scrollTop($("#conversation_message_list_item"+id).position().top);
+          }
+
+          if (data.button) {
+            $('#view_more_message_div').html(data.button);
+          }
+
+          if(data.user){
+            $('.conversation_delete').attr('data-id', conversation_id);
+            $('.conversation_user_name').text(data.user.sales_specialist_name);
+            $('.conversation_delete').show();
+          }
+
+        },
+        error: function () {
+          toast_error("Something went to wrong !");
+        }
+      });
+    }
+
+    $(document).on('click', '.view_more_message', function(event) {
+      event.preventDefault();
+      var id = $(this).attr('data-id');
+      get_conversation_messages(active_conversation, id);
+    });
+
+
+    function reset_conversation(){
+      active_conversation = "";
+      $('.conversation_list').removeClass('active');
+      $('.conversation_delete').removeAttr('data-id');
+      $('#view_more_message_div').html("");
+      $('#conversation_message_list_div').html("");
+      $('#conversation_message_div').hide();
+      get_conversation_list();
+    }
+
+    $(document).on('click', '.conversation_delete', function(event) {
+      event.preventDefault();
+
+      url = '{{ route('conversation.destroy',[':id']) }}';
+      id = $(this).attr('data-id');
+
+      url = url.replace(':id', id);
+
+      Swal.fire({
+        title: 'Are you sure want to delete conversation?',
+        //text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: url,
+            method: "DELETE",
+            data: {
+                    _token:'{{ csrf_token() }}'
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              reset_conversation();
+              toast_success(result.message);
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
+  });
+
+</script>
 @endpush

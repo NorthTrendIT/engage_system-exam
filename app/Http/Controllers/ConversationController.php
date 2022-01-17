@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\CustomersSalesSpecialist;
 use App\Models\Conversation;
+use App\Models\ConversationMessage;
 
 use Auth;
 use Validator;
@@ -53,14 +54,12 @@ class ConversationController extends Controller
         }else{
 
 
-            $conversation = Conversation::query();
+            $conversation = Conversation::where(['sender_id' => $input['user_id'], 'receiver_id' => userid()])->first();
 
-            $conversation->where(function($q) use ($input) {
-                $q->orwhere(['sender_id' => $input['user_id'], 'receiver_id' => userid()]);
-                $q->orwhere(['sender_id' => userid(), 'receiver_id' => $input['user_id']]);
-            });
+            if(is_null($conversation)){
+                $conversation = Conversation::where(['sender_id' => userid(), 'receiver_id' => $input['user_id']])->first();
+            }
 
-            $conversation = $conversation->first();
 
             if(is_null($conversation)){
                 $conversation = new Conversation();
@@ -119,7 +118,33 @@ class ConversationController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $conversation = Conversation::find($id);
+        if($conversation){            
+            if($conversation->sender_id == userid()){
+                $set = ['sender_delete'=>true];
+                $conversation->sender_delete = true;
+
+            }else if($conversation->receiver_id == userid()){
+
+                $set = ['receiver_delete'=>true];
+                $conversation->receiver_delete = true;
+            }else{
+                return $response = ['status'=>false,'message'=>"Conversation not found"];
+            }
+
+            $conversation->timestamps = false;
+            if($conversation->save()){
+                ConversationMessage::where('conversation_id',$id)->update($set);
+
+                $response = ['status'=>true,'message'=>"Conversation deleted successfully !"];
+            }else{
+                $response = ['status'=>false,'message'=>"Something went to wrong"];
+            }
+        }else{
+            $response = ['status'=>false,'message'=>"Conversation not found"];
+        }
+
+        return $response;
     }
 
 
@@ -146,6 +171,119 @@ class ConversationController extends Controller
         }
         return $response;
     }
+
+    public function getConversationList(Request $request){
+
+        $idr = Conversation::where('receiver_id', userid())->where('receiver_delete',false);
+        if($request->search != ""){
+            $idr->whereHas('sender', function($q) use ($request) {
+                $q->where('first_name','LIKE',"%".$request->search."%");
+                $q->orwhere('last_name','LIKE',"%".$request->search."%");
+                $q->orwhere('email','LIKE',"%".$request->search."%");
+                $q->orwhere('sales_specialist_name','LIKE',"%".$request->search."%");
+            });
+        }
+        $idr = $idr->pluck('id')->toArray();
+
+
+        $ids = Conversation::where('sender_id', userid())->where('sender_delete',false);
+        if($request->search != ""){
+            $ids->whereHas('receiver', function($q) use ($request) {
+                $q->where('first_name','LIKE',"%".$request->search."%");
+                $q->orwhere('last_name','LIKE',"%".$request->search."%");
+                $q->orwhere('email','LIKE',"%".$request->search."%");
+                $q->orwhere('sales_specialist_name','LIKE',"%".$request->search."%");
+            });
+        }
+        $ids = $ids->pluck('id')->toArray();
+
+
+        $ids = array_merge($ids,$idr);
+
+        $data = Conversation::with('sender','receiver')
+                            ->whereIn('id', $ids)
+                            ->orderBy('updated_at','DESC')
+                            ->get();
+
+        $html = "";     
+        if(count($data)){
+            $html .= view('conversation.ajax.list', compact('data'))->render();
+        }else{
+            $html = "<div class='text-center'><h2>Result Not Found !</h2></div>";
+        }
+
+        return $response = [ 'html' => $html ];
+    }
+
+    public function getConversationMessageList(Request $request){
+        if ($request->ajax()) {
+
+            $user = false;
+            $conversation = Conversation::find($request->conversation_id);
+            if(!is_null($conversation)){
+                if($conversation->sender_id == userid()){
+                    $user = $conversation->receiver;
+                }else if($conversation->receiver_id == userid()){
+                    $user = $conversation->sender;
+                }  
+            }
+
+            if($conversation && $user){
+
+                $where = array('conversation_id' => $conversation->id);
+                
+                ConversationMessage::where($where)->where('user_id','<>', userid())->update(['is_read'=>true]);
+
+
+                if ($request->id > 0) {
+                    $data = ConversationMessage::has('user')->where('id', '<', $request->id)->where($where)->orderBy('id', 'DESC')->limit(1)->get();
+                } else {
+                    $data = ConversationMessage::has('user')->where($where)->orderBy('id', 'DESC')->limit(1)->get();
+                }
+
+
+
+                $html = "";
+                $button = "";
+                $last_id = "";
+
+                $last = ConversationMessage::has('user')->where($where)->select('id')->first();
+                if (!$data->isEmpty()) {
+
+
+                    foreach ($data->reverse() as $message) {
+                        if($conversation->sender_id == userid()){
+                            $is_deleted = $message->sender_delete;
+                        }else{
+                            $is_deleted = $message->receiver_delete;
+                        }
+
+                        if(!$is_deleted){
+                            $html .= view('conversation.ajax.message_list',compact('message'))->render();
+                        }
+                    }
+
+
+                    $last_id = $data->last()->id;
+
+                    if ($last_id != $last->id) {
+                        $button = '<div class="d-flex flex-center pb-1">
+                                       <a href="javascript:" class="btn btn-info font-weight-bolder font-size-sm py-1 px-3 view_more_message" data-id="' . $last_id . '">View More</a>
+                                    </div>';
+                    }
+
+
+                } else {
+                    $button = '';
+                }
+
+                return response()->json(['html' => $html, 'button' => $button, 'user' => $user]);
+            }else{
+                return response()->json(['html' => "", 'button' => "", 'user' => ""]);
+            }
+        }
+    }
+
 
     public function searchNewUser(Request $request){
         
