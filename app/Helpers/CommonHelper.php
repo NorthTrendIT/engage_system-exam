@@ -8,6 +8,7 @@ use App\Models\Cart;
 use App\Models\Quotation;
 use App\Models\Order;
 use App\Models\Invoice;
+use App\Models\Notification;
 use Auth as Auth;
 
 function add_login_log(){
@@ -187,7 +188,7 @@ function getOrderStatus($data){
 
                     if($data->invoice->u_sostat == 'Confirmed')
                         $status = 'Completed';
-                    
+
                 }
             } else {
                 $status = 'Pending';
@@ -269,4 +270,27 @@ function date_difference($tCreatedDate)
     return date('F d',strtotime($tCreatedDate));
 }
 
+function getMyNotifications(){
+    $data = Notification::whereHas('connections', function($q){
+            $q->where('user_id', '=', @Auth::user()->id)
+              ->where('is_seen', '=', 0);
+        })->orderBy('id', 'desc')->take(5)->get();
 
+    return $data;
+}
+
+function getNotificationType($type){
+    if(!empty($type)){
+        if($type == 'A' || $type == 'a'){
+            return 'Announcement';
+        } else if($type == 'N' || $type == 'n'){
+            return 'News';
+        } else if($type == 'OU' || $type == 'ou'){
+            return 'Order Update';
+        } else {
+            return '-';
+        }
+    } else {
+        return '-';
+    }
+}

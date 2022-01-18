@@ -17,8 +17,13 @@ use App\Models\Invoice;
 use App\Models\LocalOrder;
 use App\Models\CustomerPromotion;
 use App\Models\SapConnection;
+use App\Models\User;
+use App\Models\Notification;
+use App\Models\NotificationConnection;
+use Mail;
 use DataTables;
 use Auth;
+use OneSignal;
 
 class OrdersController extends Controller
 {
@@ -240,10 +245,59 @@ class OrdersController extends Controller
                                 $btn = '<a href="' . route('orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary">
                                             <i class="fa fa-eye"></i>
                                         </a>';
+                                if(userrole() == 1){
+                                    $btn .= '<a href="javascript:;" data-url="'. route('orders.notify-customer').'" data-order="'.$row->id.'" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary m-5 notifyCustomer" title="Notify Customer">
+                                            <i class="fa fa-bell"></i>
+                                        </a>';
+                                }
                                 return $btn;
                             })
                             ->rawColumns(['action'])
                             ->make(true);
+    }
+
+    // Notify Customer
+    public function notifyCustomer(Request $request){
+        $q_id = $request->order_id;
+        $quotation = Quotation::with('customer')->find($q_id);
+
+        if(!empty($quotation)){
+            $link = route('orders.show', $q_id);
+            $user = User::where('customer_id' ,'=', $quotation->customer->id)->firstOrFail();
+            // return view('emails.order_update',array('link'=>$link, 'order_no'=>$quotation->doc_entry));
+
+            // Send Mail.
+            Mail::send('emails.order_update', array('link'=>$link, 'order_no'=>$quotation->doc_entry), function($message) use($user) {
+                $message->to($user->email, $user->name)
+                        ->subject('Order Status Update');
+            });
+
+            // Create Local Notification
+            $notification = new Notification();
+            $notification->type = 'OU';
+            $notification->title = 'Order Status Updated';
+            $notification->module = 'customer';
+            $notification->message = 'Your order <a href="'.$link.'"><b>#'.$quotation->doc_entry.'</b></a> status has been updated to <b>[STATUS]</b>.';
+            $notification->user_id = @Auth::user()->id;
+            $notification->save();
+
+            if($notification->id){
+                $connection = new NotificationConnection();
+                $connection->notification_id = $notification->id;
+                $connection->user_id = $user->id;
+                $connection->record_id = $user->customer_id;
+                $connection->save();
+            }
+
+            // Send One Signal Notification.
+            $fields['filters'] = array(array("field" => "tag", "key" => "customer", "relation"=> "=", "value"=> ".$user->customer_id."));
+            $message = $notification->title;
+
+            $push = OneSignal::sendPush($fields, $message);
+        }
+
+        $response = ['status' => true, 'message' => 'Status update Email and notification has been send successfully!'];
+        return $response;
     }
 
     /* Pending Orders */
