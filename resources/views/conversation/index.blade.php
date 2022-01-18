@@ -65,7 +65,7 @@
             <!--begin::Card body-->
             <div class="card-body pt-5" id="kt_chat_contacts_body">
               <!--begin::List-->
-              <div class="scroll-y me-n5 pe-5 h-200px h-lg-auto" id="conversation_list_div">
+              <div class="scroll-y me-n5 pe-5 h-lg-auto" id="conversation_list_div" style="height: 320px !important;">
 
                 
                 
@@ -87,11 +87,15 @@
               <div class="card-title">
                 <!--begin::User-->
                 <div class="d-flex justify-content-center flex-column me-3">
-                  <a href="javascript:" class="fs-4 fw-bolder text-gray-900 text-hover-primary me-1 mb-2 lh-1 conversation_user_name">-</a>
+                  <span href="javascript:" class="fs-4 fw-bolder text-gray-900 me-1 mb-2 lh-1 conversation_user_name">-</span>
                   <!--begin::Info-->
-                  <div class="mb-0 lh-1">
+                  <div class="mb-0 lh-1 conversation_user_status" data-value="active" style="display: none;">
                     <span class="badge badge-success badge-circle w-10px h-10px me-1"></span>
                     <span class="fs-7 fw-bold text-muted">Active</span>
+                  </div>
+                  <div class="mb-0 lh-1 conversation_user_status" data-value="inactive" style="display: none;">
+                    <span class="badge badge-danger badge-circle w-10px h-10px me-1"></span>
+                    <span class="fs-7 fw-bold text-muted">Inactive</span>
                   </div>
                   <!--end::Info-->
                 </div>
@@ -120,7 +124,7 @@
                 
               </div>
 
-              <div class="scroll-y me-n5 pe-5 h-300px h-lg-auto"  id="conversation_message_list_div">
+              <div class="scroll-y me-n5 pe-5 h-lg-auto"  id="conversation_message_list_div" style="height: 280px!important;">
               
 
                 
@@ -132,10 +136,10 @@
             <div class="card-footer pt-4" id="kt_chat_messenger_footer">
               
               <div class="">
-                <textarea class="form-control form-control-flush mb-3" rows="1" data-kt-element="input" placeholder="Type a message"></textarea>
+                <textarea class="form-control form-control-flush mb-3 message" rows="1" data-kt-element="input" placeholder="Type a message"></textarea>
               </div>
               
-              <button class="btn btn-primary" type="button" data-kt-element="send">Send</button>
+              <button class="btn btn-primary send_message_btn" type="button" data-kt-element="send">Send</button>
             </div>
             <!--end::Card footer-->
           </div>
@@ -160,35 +164,10 @@
   
   $(document).ready(function() {
 
-    var active_conversation = "";
+    var active_conversation_id = "";
+    var active_user_id = "";
 
     get_conversation_list();
-
-    function get_conversation_list() {
-      $('#conversation_list_div').html("");
-
-      $search = $('#conversation_search').val();
-
-      $.ajax({
-        url: "{{route('conversation.get-conversation-list')}}",
-        type: "POST",
-        headers: {
-          'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        data:{
-          search : $search,
-        },
-        async: false,
-        success: function (data) {
-          if (data.html) {
-            $('#conversation_list_div').html(data.html);
-          }
-        },
-        error: function () {
-          toast_error("Something went to wrong !");
-        },
-      });
-    }
 
     $(document).on('change keyup', '#conversation_search', function(event) {
       event.preventDefault();
@@ -203,76 +182,12 @@
     });
 
 
-    function get_conversation_messages(conversation_id, id = ""){
-      $('.conversation_list').removeClass('active');
-      $('.conversation_list[data-id="'+conversation_id+'"]').addClass('active');
-      $('.conversation_delete').removeAttr('data-id');
-      $('#conversation_message_div').show();
-
-      active_conversation = conversation_id;
-
-      $('#view_more_message_div').html("");
-      if(id == ""){
-        $('#conversation_message_list_div').html("");
-      }
-
-      $.ajax({
-        url: "{{route('conversation.get-conversation-message-list')}}",
-        type: "POST",
-        headers: {
-          'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        data:{
-          conversation_id : conversation_id,
-          id : id,
-        },
-        async: false,
-        success: function (data) {
-          // if (data.html) {
-          //   $('#conversation_message_list_div').html(data.html);
-          // }
-
-          $('#conversation_message_list_div').prepend(data.html);
-
-          if(id == ""){
-            $("#conversation_message_list_div").scrollTop(9999999);
-          }else{
-            $('#conversation_message_list_div').scrollTop($("#conversation_message_list_item"+id).position().top);
-          }
-
-          if (data.button) {
-            $('#view_more_message_div').html(data.button);
-          }
-
-          if(data.user){
-            $('.conversation_delete').attr('data-id', conversation_id);
-            $('.conversation_user_name').text(data.user.sales_specialist_name);
-            $('.conversation_delete').show();
-          }
-
-        },
-        error: function () {
-          toast_error("Something went to wrong !");
-        }
-      });
-    }
-
     $(document).on('click', '.view_more_message', function(event) {
       event.preventDefault();
       var id = $(this).attr('data-id');
-      get_conversation_messages(active_conversation, id);
+      get_conversation_messages(active_conversation_id, id);
     });
 
-
-    function reset_conversation(){
-      active_conversation = "";
-      $('.conversation_list').removeClass('active');
-      $('.conversation_delete').removeAttr('data-id');
-      $('#view_more_message_div').html("");
-      $('#conversation_message_list_div').html("");
-      $('#conversation_message_div').hide();
-      get_conversation_list();
-    }
 
     $(document).on('click', '.conversation_delete', function(event) {
       event.preventDefault();
@@ -313,6 +228,233 @@
         }
       })
     });
+
+    $(document).on('click', '.send_message_btn', function(event) {
+      event.preventDefault();
+
+      show_loader();
+
+      var $message = $('.message').val();
+
+      if($message == "" && active_conversation_id && active_user_id){
+        toast_error("Please enter message text");
+      }else{
+
+        var $send = {
+                      'to': active_user_id, 
+                      'conversation_id': active_conversation_id, 
+                      'user_id': '{{ userid() }}', 
+                      'message': $message, 
+                    };
+
+        store_message_response = storeMessage($send);          
+        if(store_message_response){
+          store_message_response = JSON.parse(store_message_response);
+
+          $('.message').val("");
+
+          $('#conversation_message_list_div').append(store_message_response.html);
+
+          $("#conversation_message_list_div").scrollTop(9999999);
+          
+          get_conversation_list(active_conversation_id);
+
+          socket.emit('sendMessage',$send);
+
+        }
+      }
+      
+      hide_loader();
+    });
+
+
+
+    // Get User Active or Not Response
+    socket.on('receiveIsActive', data => {
+      $('.conversation_user_status').hide();
+      if(data.is_active){
+        $('.conversation_user_status[data-value="active"]').show();
+      }else{
+        $('.conversation_user_status[data-value="inactive"]').show();
+      }
+    });
+
+
+    // Receive Message Response
+    socket.on('receiveMessage', data => {
+      if(data.conversation_id == active_conversation_id){
+        update_message_response = updateMessage(active_conversation_id);          
+        if(update_message_response){
+          update_message_response = JSON.parse(update_message_response);
+
+          $('#conversation_message_list_div').append(update_message_response.html);
+
+          $("#conversation_message_list_div").scrollTop(9999999);
+
+          get_conversation_list(active_conversation_id);
+        }
+        
+      }else{
+        get_conversation_list(active_conversation_id);
+      }
+    });
+
+
+
+
+    function get_conversation_list(conversation_id = "") {
+      $('#conversation_list_div').html("");
+
+      $search = $('#conversation_search').val();
+
+      $.ajax({
+        url: "{{route('conversation.get-conversation-list')}}",
+        type: "POST",
+        headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        data:{
+          search : $search,
+        },
+        async: false,
+        success: function (data) {
+          if (data.html) {
+            $('#conversation_list_div').html(data.html);
+
+            if(conversation_id){
+              $('.conversation_list[data-id="'+conversation_id+'"]').trigger('click');
+            }
+
+          }
+        },
+        error: function () {
+          toast_error("Something went to wrong !");
+        },
+      });
+    }
+
+    // Store Message
+    function storeMessage(insert_data){
+      var result = $.ajax({
+                    url: '{{ route("conversation.store-message") }}',
+                    type: 'POST',
+                    data: insert_data,
+                    async : false,
+                    headers: {
+                      'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(data) {
+                      if (data.status == false) {
+                        toast_error("Something went to wrong !");
+                        return false;
+                      }else{
+                        return data;
+                      }
+                    },
+                    error: function () {
+                      toast_error("Something went to wrong !");
+                      return false;
+                    }
+                  }).responseText;
+      return result;
+    }
+
+    // Update Message
+    function updateMessage(conversation_id){
+      var result = $.ajax({
+                    url: '{{ route("conversation.update-message") }}',
+                    type: 'POST',
+                    data: {
+                      conversation_id: conversation_id
+                    },
+                    async : false,
+                    headers: {
+                      'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(data) {
+                      if (data.status == false) {
+                        toast_error("Something went to wrong !");
+                        return false;
+                      }else{
+                        return data;
+                      }
+                    },
+                    error: function () {
+                      toast_error("Something went to wrong !");
+                      return false;
+                    }
+                  }).responseText;
+      return result;
+    }
+
+    function get_conversation_messages(conversation_id, id = ""){
+      $('.conversation_user_status').hide();
+      $('.conversation_list').removeClass('active');
+      $('.conversation_list[data-id="'+conversation_id+'"]').addClass('active');
+      $('.conversation_list[data-id="'+conversation_id+'"]').find('.unread_message_count').remove();
+      $('.conversation_delete').removeAttr('data-id');
+      $('#conversation_message_div').show();
+
+      active_conversation_id = conversation_id;
+
+      $('.view_more_message').remove();
+      if(id == ""){
+        $('#conversation_message_list_div').html("");
+      }
+
+      $.ajax({
+        url: "{{route('conversation.get-conversation-message-list')}}",
+        type: "POST",
+        headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        data:{
+          conversation_id : conversation_id,
+          id : id,
+        },
+        async: false,
+        success: function (data) {
+
+          $('#conversation_message_list_div').prepend(data.html);
+
+          if(id == ""){
+            $("#conversation_message_list_div").scrollTop(9999999);
+          }else{
+            $('#conversation_message_list_div').scrollTop($("#conversation_message_list_item"+id).position().top);
+          }
+
+          if (data.button) {
+            $('.conversation_message_list_item:eq(0)').before(data.button);
+            // $('#view_more_message_div').html(data.button);
+          }
+
+          if(data.user){
+            active_user_id = data.user.id;
+
+            // Sent user id to socket for check user status
+            socket.emit('sendIsActive', active_user_id);
+
+            $('.conversation_delete').attr('data-id', conversation_id);
+            $('.conversation_user_name').text(data.user.sales_specialist_name);
+            $('.conversation_delete').show();
+          }
+
+        },
+        error: function () {
+          toast_error("Something went to wrong !");
+        }
+      });
+    }
+    
+    function reset_conversation(){
+      active_conversation_id = "";
+      $('.conversation_list').removeClass('active');
+      $('.conversation_delete').removeAttr('data-id');
+      $('#view_more_message_div').html("");
+      $('#conversation_message_list_div').html("");
+      $('#conversation_message_div').hide();
+      get_conversation_list();
+    }
 
   });
 

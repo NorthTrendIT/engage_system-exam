@@ -304,7 +304,8 @@ Route::middleware(['auth'])->group(function(){
     // Conversation
     Route::resource('conversation','App\Http\Controllers\ConversationController')->except('show');
     Route::post('conversation/search-new-user','App\Http\Controllers\ConversationController@searchNewUser')->name('conversation.search-new-user');
-    Route::post('conversation/send-message','App\Http\Controllers\ConversationController@sendMessage')->name('conversation.send-message');
+    Route::post('conversation/store-message','App\Http\Controllers\ConversationController@storeMessage')->name('conversation.store-message');
+    Route::post('conversation/update-message','App\Http\Controllers\ConversationController@updateMessage')->name('conversation.update-message');
     Route::post('conversation/get-conversation-list','App\Http\Controllers\ConversationController@getConversationList')->name('conversation.get-conversation-list');
     Route::post('conversation/get-conversation-message-list','App\Http\Controllers\ConversationController@getConversationMessageList')->name('conversation.get-conversation-message-list');
 });

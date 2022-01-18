@@ -33,13 +33,16 @@
 	function hide_loader() {
 		$.LoadingOverlay("hide",true);
 	}
-	$(document).ajaxStart(function() {
-	  show_loader();
-	});
-	
-	$(document).ajaxStop(function() {
-	  hide_loader();
-	});
+
+	@if(!in_array(request()->route()->getName(), ['conversation.index']))
+		$(document).ajaxStart(function() {
+		  show_loader();
+		});
+		
+		$(document).ajaxStop(function() {
+		  hide_loader();
+		});
+	@endif
 
 
 	$('#kt_daterangepicker_1').daterangepicker({
@@ -61,12 +64,12 @@
 
 {{-- Socket Chat --}}
 
-{{-- <script src="http://127.0.0.1:3031/socket.io/socket.io.js"></script>
+<script src="http://127.0.0.1:3031/socket.io/socket.io.js"></script>
 
 <script>
 	const socket = io('http://127.0.0.1:3031')
 	// Add User
 	socket.emit('adduser','{{ Auth::id() }}')
 	
-</script> --}}
+</script>
 @stack('js')

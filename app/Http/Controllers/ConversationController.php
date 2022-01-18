@@ -148,7 +148,7 @@ class ConversationController extends Controller
     }
 
 
-    public function sendMessage(Request $request){
+    public function storeMessage(Request $request){
         $input = $request->all();
 
         $rules = array(
@@ -162,12 +162,57 @@ class ConversationController extends Controller
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
+            $conversation = Conversation::find($request->conversation_id);
+            if(!is_null($conversation)){
+                if( !($conversation->sender_id == userid() || $conversation->receiver_id == userid() )){
+                    return $response = ['status'=>false, 'message'=> '', 'html' => ""];
+                }
+
+                $conversation->updated_at = date("Y-m-d H:i:s");
+                $conversation->save();
+
+            }
+
             $input['user_id'] = userid();
             
             $message = new ConversationMessage();
             $message->fill($input)->save();
 
-            $response = ['status'=>true, 'message'=> ''];
+            $html = view('conversation.ajax.message_list',compact('message'))->render();
+
+            $response = ['status'=>true, 'message'=> '', 'html' => $html];
+        }
+        return $response;
+    }
+
+    public function updateMessage(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'conversation_id' => 'required|exists:conversations,id,deleted_at,NULL',
+                );
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+
+            $conversation = Conversation::find($request->conversation_id);
+            if(!is_null($conversation)){
+                if( !($conversation->sender_id == userid() || $conversation->receiver_id == userid() )){
+                    return $response = ['status'=>false, 'message'=> '', 'html' => ""];
+                }  
+            }
+
+            $where = array('conversation_id' => $conversation->id);
+            ConversationMessage::where($where)->where('user_id','<>', userid())->update(['is_read'=>true]);
+
+            $message = ConversationMessage::where($where)->where('user_id','<>', userid())->orderby('id','desc')->first();
+
+            $html = view('conversation.ajax.message_list',compact('message'))->render();
+
+            $response = ['status'=>true, 'message'=> '', 'html' => $html];
         }
         return $response;
     }
@@ -236,9 +281,9 @@ class ConversationController extends Controller
 
 
                 if ($request->id > 0) {
-                    $data = ConversationMessage::has('user')->where('id', '<', $request->id)->where($where)->orderBy('id', 'DESC')->limit(1)->get();
+                    $data = ConversationMessage::has('user')->where('id', '<', $request->id)->where($where)->orderBy('id', 'DESC')->limit(5)->get();
                 } else {
-                    $data = ConversationMessage::has('user')->where($where)->orderBy('id', 'DESC')->limit(1)->get();
+                    $data = ConversationMessage::has('user')->where($where)->orderBy('id', 'DESC')->limit(5)->get();
                 }
 
 

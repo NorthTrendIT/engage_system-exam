@@ -35,7 +35,7 @@ io.on('connection', socket => {
     // update the list of users in chat, client-side
     //io.sockets.emit('updateusers', usernames);
 
-    // console.log(usernames);
+    console.log(usernames);
     //console.log(get_key(socket.id));
   });
 
@@ -52,9 +52,30 @@ io.on('connection', socket => {
 
   socket.on('sendMessage', function(data) {
     // io.emit('receiveMessage', data);
+    const responseSocket = io.sockets.connected[usernames[data.to]];
+    if(responseSocket) {
+      responseSocket.emit('receiveMessage', data);
+    }
+    
+  });
 
-    if(data.to){
-      io(usernames[data.to]).emit('receiveMessage', data);
+  socket.on('sendIsActive', function(user_id) {
+
+    const user = usernames[user_id];
+    const socketId = socket.id;
+    let response;
+
+    if(user) {
+      // User is active
+      response = {is_active: true};
+    } else {
+      // User is not active
+      response = {is_active: false};
+    }
+
+    const responseSocket = io.sockets.connected[socketId];
+    if(responseSocket) {
+      responseSocket.emit('receiveIsActive', response);
     }
     
   });

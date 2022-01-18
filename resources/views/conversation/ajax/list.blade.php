@@ -1,9 +1,9 @@
 @foreach(@$data as $key)
    @php
       if($key->sender_id == userid()){
-         $user = $key->receiver;
+        $user = $key->receiver;
       }else{
-         $user = $key->sender;
+        $user = $key->sender;
       }
    @endphp
 
@@ -20,7 +20,7 @@
             @else
               <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" />
             @endif
-            <div class="symbol-badge bg-success start-100 top-100 border-4 h-15px w-15px ms-n2 mt-n2"></div>
+            {{-- <div class="symbol-badge bg-success start-100 top-100 border-4 h-15px w-15px ms-n2 mt-n2"></div> --}}
         </div>
         <!--end::Avatar-->
         <!--begin::Details-->
@@ -34,7 +34,15 @@
       <!--begin::Lat seen-->
       <div class="d-flex flex-column align-items-end ms-2">
         <span class="text-muted fs-7 mb-1">{{ date_difference($key->updated_at) }}</span>
-        {{-- <span class="badge badge-sm badge-circle badge-light-success">2</span> --}}
+
+        @php
+          $unread_message_count = @$key->messages()->where('user_id','!=',userid())->where('is_read',false)->count();
+        @endphp
+
+        @if($unread_message_count > 0)
+        <span class="badge badge-sm badge-circle badge-light-success unread_message_count">{{ $unread_message_count  }}</span>
+        @endif
+
       </div>
       <!--end::Lat seen-->
    </div>

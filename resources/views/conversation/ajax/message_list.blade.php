@@ -1,16 +1,18 @@
 @if(@$message)
   
-  @if($message->user_id == userid())
+  @if($message->user_id != userid())
     <!--begin::Message(in)-->
-    <div class="d-flex justify-content-start mb-10" id="conversation_message_list_item{{ $message->id }}">
+    <div class="d-flex justify-content-start mb-10 conversation_message_list_item" id="conversation_message_list_item{{ $message->id }}">
       <!--begin::Wrapper-->
       <div class="d-flex flex-column align-items-start">
         <!--begin::User-->
         <div class="d-flex align-items-center mb-2">
           <!--begin::Avatar-->
           <div class="symbol symbol-35px symbol-circle">
-            @if(get_login_user_profile())
-              <img src="{{ get_login_user_profile() }}" alt="user" />
+            @if($message->user->profile && get_valid_file_url('sitebucket/users',$message->user->profile))
+              <a href="{{ get_valid_file_url('sitebucket/users',$message->user->profile) }}" class="fancybox">
+                <img alt="user" src="{{ get_valid_file_url('sitebucket/users',$message->user->profile) }}" />
+              </a>
             @else
               <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" />
             @endif
@@ -35,7 +37,7 @@
   @else
 
     <!--begin::Message(out)-->
-    <div class="d-flex justify-content-end mb-10" id="conversation_message_list_item{{ $message->id }}">
+    <div class="d-flex justify-content-end mb-10 conversation_message_list_item" id="conversation_message_list_item{{ $message->id }}">
       <!--begin::Wrapper-->
       <div class="d-flex flex-column align-items-end">
         <!--begin::User-->
@@ -48,14 +50,11 @@
           <!--end::Details-->
           <!--begin::Avatar-->
           <div class="symbol symbol-35px symbol-circle">
-            @if($message->user->profile && get_valid_file_url('sitebucket/users',$message->user->profile))
-              <a href="{{ get_valid_file_url('sitebucket/users',$message->user->profile) }}" class="fancybox">
-                <img alt="user" src="{{ get_valid_file_url('sitebucket/users',$message->user->profile) }}" />
-              </a>
+            @if(get_login_user_profile())
+              <img src="{{ get_login_user_profile() }}" alt="user" />
             @else
               <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" />
             @endif
-
           </div>
           <!--end::Avatar-->
         </div>
