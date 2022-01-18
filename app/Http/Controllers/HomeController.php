@@ -17,6 +17,12 @@ class HomeController extends Controller
             $promotion =  CustomerPromotion::where(['is_sap_pushed' => 0, 'status' => 'approved'])->get();
             return view('dashboard.index', compact('local_order', 'promotion'));
         }
+
+        if(Auth::user()->role_id != 1){
+            $notification = getMyNotifications();
+            // dd($notification);
+            return view('dashboard.index', compact('notification'));
+        }
     	return view('dashboard.index');
     }
 }

@@ -213,8 +213,13 @@ class NewsAndAnnouncementController extends Controller
      */
     public function show($id)
     {
+        if(Auth::user()->role_id != 1){
+            $connection = NotificationConnection::where('user_id', '=', @Auth::user()->id)
+                ->where('notification_id', '=', $id)->first();
+            $connection->is_seen = 1;
+            $connection->save();
+        }
         $data = Notification::with(['user', 'documents', 'connections'])->where('id', $id)->firstOrFail();
-        // dd($data);
         return view('news-and-announcement.view', compact('data'));
     }
 
@@ -304,12 +309,7 @@ class NewsAndAnnouncementController extends Controller
                                 return $row->user->first_name.' '.$row->user->last_name;
                             })
                             ->addColumn('type', function($row) {
-                                if($row->type == 'A'){
-                                    return 'Announcement';
-                                }
-                                if($row->type == 'N'){
-                                    return 'News';
-                                }
+                                return getNotificationType($row->type);
                             })
                             ->addColumn('module', function($row) {
                                 return ucwords(str_replace('_','',$row->module));
@@ -318,8 +318,6 @@ class NewsAndAnnouncementController extends Controller
                                 if($row->is_important == 0){
                                     return '<button type="button" class="btn btn-info btn-sm">Normal</button>';
                                 }elseif($row->is_important == 1){
-                                    return '<button type="button" class="btn btn-warning btn-sm">Medium</button>';
-                                }elseif($row->is_important == 2){
                                     return '<button type="button" class="btn btn-danger btn-sm">Important</button>';
                                 }
                                 return "-";
