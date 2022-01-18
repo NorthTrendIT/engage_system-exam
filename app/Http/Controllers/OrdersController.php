@@ -23,6 +23,7 @@ use App\Models\NotificationConnection;
 use Mail;
 use DataTables;
 use Auth;
+use OneSignal;
 
 class OrdersController extends Controller
 {
