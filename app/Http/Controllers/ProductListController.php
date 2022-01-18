@@ -35,7 +35,7 @@ class ProductListController extends Controller
 
   	public function getAll(Request $request){
   		if ($request->ajax()) {
-            
+
             $c_product_tires_category = $c_product_item_line = $c_product_group = array();
 
             $output = "<div class='text-center mt-5'><h2>Result Not Found !</h2></div>";
@@ -54,7 +54,7 @@ class ProductListController extends Controller
                     $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
                 });
             }
-            
+
 
             $customer_id = null;
             $customer = collect();
@@ -154,7 +154,8 @@ class ProductListController extends Controller
             if (!$products->isEmpty()) {
                 $output = "";
                 foreach ($products as $product) {
-                    $output .= view('product-list.ajax.product',compact('product','customer'))->render();
+                    // $output .= view('product-list.ajax.product',compact('product','customer'))->render();
+                    $output .= view('product-list.ajax.product-list-view',compact('product','customer'))->render();
                 }
 
                 $last_id = $products->last()->id;
