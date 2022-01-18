@@ -253,6 +253,44 @@
         },
       });
     @endif
+
+    @if(userrole() == 1)
+    $(document).on('click', '.notifyCustomer', function(event) {
+      event.preventDefault();
+      var order_id = $(this).data('order');
+      Swal.fire({
+        title: 'Are you sure want to Order status update Email and notification to Customer?',
+        // text: "Syncing process will run in background and it may take some time to sync all Data.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('orders.notify-customer') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                    order_id: order_id,
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+            //   render_table();
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+    @endif
   })
 </script>
 @endpush

@@ -47,8 +47,6 @@
                                     @if($data->is_important == 0)
                                     <td><button type="button" class="btn btn-info btn-sm">Normal</button></td>
                                     @elseif($data->is_important == 1)
-                                    <td><button type="button" class="btn btn-warning btn-sm">Medium</button></td>
-                                    @elseif($data->is_important == 2)
                                     <td><button type="button" class="btn btn-danger btn-sm">Important</button></td>
                                     @endif
                                     </tr>
@@ -56,7 +54,7 @@
 
                                     <tr>
                                     <th> <b>Notification Type</b> </th>
-                                    <td>{{ !empty($data->type) && $data->type == 'A' ? "Announcement" : "News" }}</td>
+                                    <td>{{ getNotificationType($data->type) }}</td>
                                     </tr>
 
                                     <tr>
