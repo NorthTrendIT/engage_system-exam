@@ -71,7 +71,9 @@ io.on('connection', socket => {
     } else {
       // User is not active
       response = {is_active: false};
-    }
+    } 
+
+    // console.log(response);
 
     const responseSocket = io.sockets.connected[socketId];
     if(responseSocket) {

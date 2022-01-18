@@ -472,6 +472,7 @@
                </a>
             </div>
 
+            @if(Auth::user()->role_id != 1)
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['conversation.index','conversation.create','conversation.show'])) ? 'active' : '' }}" href="{{ route('conversation.index') }}">
                   <span class="menu-icon">
@@ -487,9 +488,11 @@
                      <!--end::Svg Icon-->
                   </span>
                   <span class="menu-title">Live Chat</span>
+
+                  <i class="fa fa-circle new-message text-primary" aria-hidden="true" style="display: none;"></i>
                </a>
             </div>
-
+            @endif
 
             {{-- SAP API Connection --}}
             @if(Auth::user()->role_id == 1)

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\CustomersSalesSpecialist;
 use App\Models\Conversation;
 use App\Models\ConversationMessage;
+use App\Models\Department;
 
 use Auth;
 use Validator;
@@ -30,7 +31,8 @@ class ConversationController extends Controller
      */
     public function create()
     {
-        return view('conversation.add');
+        $departments = Department::where('id','!=',1)->where('is_active',true)->orderby('name','ASC')->get();
+        return view('conversation.add', compact('departments'));
     }
 
     /**
@@ -281,9 +283,9 @@ class ConversationController extends Controller
 
 
                 if ($request->id > 0) {
-                    $data = ConversationMessage::has('user')->where('id', '<', $request->id)->where($where)->orderBy('id', 'DESC')->limit(5)->get();
+                    $data = ConversationMessage::has('user')->where('id', '<', $request->id)->where($where)->orderBy('id', 'DESC')->limit(20)->get();
                 } else {
-                    $data = ConversationMessage::has('user')->where($where)->orderBy('id', 'DESC')->limit(5)->get();
+                    $data = ConversationMessage::has('user')->where($where)->orderBy('id', 'DESC')->limit(20)->get();
                 }
 
 
@@ -385,6 +387,9 @@ class ConversationController extends Controller
 
         if(!empty($user_ids)){
             $users->whereIn('id', $user_ids);
+        }else{
+            $html = "<div class='text-center'><h2>Result Not Found !</h2></div>";
+            return $response = [ 'html' => $html ];
         }
 
         if(@$request->search != ""){
@@ -394,6 +399,10 @@ class ConversationController extends Controller
                 $q->orwhere('email','LIKE',"%".$request->search."%");
                 $q->orwhere('sales_specialist_name','LIKE',"%".$request->search."%");
             });
+        }
+
+        if(@$request->department != ""){
+            $users->where('department_id', $request->department);
         }
 
         $users = $users->get();

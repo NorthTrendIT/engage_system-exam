@@ -85,6 +85,10 @@
             <div class="card-header" id="kt_chat_messenger_header">
               <!--begin::Title-->
               <div class="card-title">
+                <!--begin::Avatar-->
+                {{-- <div class="symbol symbol-45px symbol-circle mr-10">
+                  <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" />
+                </div> --}}
                 <!--begin::User-->
                 <div class="d-flex justify-content-center flex-column me-3">
                   <span href="javascript:" class="fs-4 fw-bolder text-gray-900 me-1 mb-2 lh-1 conversation_user_name">-</span>
@@ -259,12 +263,13 @@
           
           get_conversation_list(active_conversation_id);
 
+          hide_loader();
+
           socket.emit('sendMessage',$send);
 
         }
       }
-      
-      hide_loader();
+
     });
 
 
@@ -431,12 +436,12 @@
           if(data.user){
             active_user_id = data.user.id;
 
-            // Sent user id to socket for check user status
-            socket.emit('sendIsActive', active_user_id);
-
             $('.conversation_delete').attr('data-id', conversation_id);
             $('.conversation_user_name').text(data.user.sales_specialist_name);
             $('.conversation_delete').show();
+
+            // Sent user id to socket for check user status
+            socket.emit('sendIsActive', active_user_id);
           }
 
         },

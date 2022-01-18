@@ -10,9 +10,7 @@
           <!--begin::Avatar-->
           <div class="symbol symbol-35px symbol-circle">
             @if($message->user->profile && get_valid_file_url('sitebucket/users',$message->user->profile))
-              <a href="{{ get_valid_file_url('sitebucket/users',$message->user->profile) }}" class="fancybox">
-                <img alt="user" src="{{ get_valid_file_url('sitebucket/users',$message->user->profile) }}" />
-              </a>
+              <img alt="user" src="{{ get_valid_file_url('sitebucket/users',$message->user->profile) }}" />
             @else
               <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" />
             @endif

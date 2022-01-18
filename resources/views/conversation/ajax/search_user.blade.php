@@ -5,13 +5,11 @@
     <!--begin::Avatar-->
     <div class="symbol symbol-45px symbol-circle">
       @if($user->profile && get_valid_file_url('sitebucket/users',$user->profile))
-        <a href="{{ get_valid_file_url('sitebucket/users',$user->profile) }}" class="fancybox">
-          <img alt="user" src="{{ get_valid_file_url('sitebucket/users',$user->profile) }}" />
-        </a>
+        <img alt="user" src="{{ get_valid_file_url('sitebucket/users',$user->profile) }}" />
       @else
         <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" />
       @endif
-      <div class="symbol-badge bg-success start-100 top-100 border-4 h-15px w-15px ms-n2 mt-n2"></div>
+      {{-- <div class="symbol-badge bg-success start-100 top-100 border-4 h-15px w-15px ms-n2 mt-n2"></div> --}}
     </div>
     <!--end::Avatar-->
     <!--begin::Details-->

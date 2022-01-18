@@ -32,36 +32,51 @@
               <form method="post" id="myForm">
                 @csrf
                 <div class="row mb-5 d-flex justify-content-between">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Search by department:</label>
+                      <select class="form-control form-control-lg form-control-solid" name="department" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select department">
+                        <option value=""></option>
+
+                        @foreach($departments as $d)
+                          <option value="{{ $d->id }}">{{ $d->name }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                  </div>
                   <div class="col-md-8">
                     <div class="form-group">
                       <label>Search by:</label>
                       <input type="text" class="form-control form-control-solid" placeholder="Search by name or email..." name="search">
                     </div>
                   </div>
-                  <div class="col-md-4">
+                  
+                </div>
+
+                <div class="row mb-10 mt-5">
+                  <div class="col-md-12">
                     <div class="form-group">
                       <label>Search by category:</label>
-                      <select class="form-control form-control-lg form-control-solid" name="category" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select category">
-                        <option value="">All</option>
+                        <input type="hidden" name="category" value="">
                         @if(userrole() == 4)
                           {{-- Is Customer --}}
-                          <option value="self-users">Self Users</option>
-                          <option value="sales-specialist">Sales Specialist</option>
+                          <a href="javascript:" class="btn btn-dark btn-sm category_btn" data-value="self-users">Self Users</a>
+                          <a href="javascript:" class="btn btn-dark btn-sm category_btn" data-value="sales-specialist">Sales Specialist</a>
 
                         @elseif(userrole() == 2)
                           {{-- Is SS --}}
-                          <option value="customers">Customers</option>
-                          <option value="parent-users">Parent Users</option>
+                          <a href="javascript:" class="btn btn-dark btn-sm category_btn" data-value="customers">Customers</a>
+                          <a href="javascript:" class="btn btn-dark btn-sm category_btn" data-value="parent-users">Parent Users</a>
 
                         @elseif(@Auth::user()->created_by && @Auth::user()->created_by_user->customer_id)
                           {{-- Is Customer User --}}
-                          <option value="sales-specialist">Sales Specialist</option>
-                          <option value="parent-customer">Parent Customer</option>
-                          <option value="parent-user">Parent User</option>
+                          <a href="javascript:" class="btn btn-dark btn-sm category_btn" data-value="sales-specialist">Sales Specialist</a>
+                          <a href="javascript:" class="btn btn-dark btn-sm category_btn" data-value="parent-customer">Parent Customer</a>
+                          <a href="javascript:" class="btn btn-dark btn-sm category_btn" data-value="parent-user">Parent User</a>
 
                         @else
                           {{-- Other User --}}
-                          <option value="parent-user">Parent User</option>
+                          <a href="javascript:" class="btn btn-dark btn-sm category_btn" data-value="parent-user">Parent User</a>
 
                         @endif
                       </select>
@@ -117,6 +132,44 @@
 <script>
   $(document).ready(function() {
     
+    $(document).on('click', '.category_btn', function(event) {
+      var $this = $(this);
+      $('[name="category"]').val("");
+      $('.category_btn').removeClass('btn-info');
+      $('.category_btn').addClass('btn-dark');
+
+      // For Active Class
+      if($($this).hasClass('active')){
+        $($this).removeClass('active');
+      }else{
+        $('.category_btn').removeClass('active');
+        $($this).addClass('active');
+        $('[name="category"]').val($(this).data('value'));
+      }
+
+      // For Button Class
+      if($($this).hasClass('active')){
+        $($this).removeClass('btn-dark');
+        $($this).addClass('btn-info');
+      }else{
+        $($this).removeClass('btn-info');
+        $($this).addClass('btn-dark');
+      }
+    })
+
+    $(document).on('click', '.clear-search', function(event) {
+      $('[name="search"]').val('');
+      $('[name="category"]').val('').trigger('change');
+      $('[name="department"]').val('').trigger('change');
+
+      $('[name="category"]').val("");
+      $('.category_btn').removeClass('btn-info');
+      $('.category_btn').addClass('btn-dark');
+
+      $('#search_result_div').hide();
+      $('#search_user_list_div').html("");
+    })
+
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
       
@@ -140,16 +193,6 @@
       });
 
     });
-    
-
-    $(document).on('click', '.clear-search', function(event) {
-      $('[name="search"]').val('');
-      $('[name="category"]').val('').trigger('change');
-
-      $('#search_result_div').hide();
-      $('#search_user_list_div').html("");
-    })
-
 
     $(document).on('click', '.create_conversation', function(event) {
       event.preventDefault();
