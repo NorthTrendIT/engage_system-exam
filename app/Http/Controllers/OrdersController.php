@@ -285,7 +285,7 @@ class OrdersController extends Controller
                 $connection = new NotificationConnection();
                 $connection->notification_id = $notification->id;
                 $connection->user_id = $user->id;
-                $connection->record_id = $quotation->customer->id;
+                $connection->record_id = $user->customer_id;
                 $connection->save();
             }
 
