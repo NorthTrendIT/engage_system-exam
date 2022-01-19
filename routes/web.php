@@ -301,6 +301,14 @@ Route::middleware(['auth'])->group(function(){
     Route::post('help-desk/comment/store', 'App\Http\Controllers\HelpDeskController@storeComment')->name('help-desk.comment.store');
     Route::post('help-desk/comment/get-all', 'App\Http\Controllers\HelpDeskController@getAllComment')->name('help-desk.comment.get-all');
 
+
+    // Conversation
+    Route::resource('conversation','App\Http\Controllers\ConversationController')->except('show');
+    Route::post('conversation/search-new-user','App\Http\Controllers\ConversationController@searchNewUser')->name('conversation.search-new-user');
+    Route::post('conversation/store-message','App\Http\Controllers\ConversationController@storeMessage')->name('conversation.store-message');
+    Route::post('conversation/update-message','App\Http\Controllers\ConversationController@updateMessage')->name('conversation.update-message');
+    Route::post('conversation/get-conversation-list','App\Http\Controllers\ConversationController@getConversationList')->name('conversation.get-conversation-list');
+    Route::post('conversation/get-conversation-message-list','App\Http\Controllers\ConversationController@getConversationMessageList')->name('conversation.get-conversation-message-list');
 });
 
 Route::get('clear-cache', function () {
