@@ -171,7 +171,14 @@
     var active_conversation_id = "";
     var active_user_id = "";
 
-    get_conversation_list();
+    // get_conversation_list();
+
+    @if(isset($_GET['id']))
+      get_conversation_list({{$_GET['id']}});
+      get_conversation_messages({{$_GET['id']}});
+    @else
+      get_conversation_list();
+    @endif
 
     $(document).on('change keyup', '#conversation_search', function(event) {
       event.preventDefault();

@@ -73,7 +73,7 @@ class ConversationController extends Controller
                 $conversation->save();
             }
             
-            $response = ['status'=>true, 'message'=> 'Conversation created successfully'];
+            $response = ['status'=>true, 'message'=> 'Conversation created successfully', 'id' => $conversation->id];
         }
         return $response;
     }
@@ -334,7 +334,7 @@ class ConversationController extends Controller
 
     public function searchNewUser(Request $request){
         
-        $user_ids = $self_user_ids = $ss_ids = $customer_ids = [];
+        $user_ids = $self_user_ids = $ss_ids = $customer_ids = $parent_user_ids = [];
         if(userrole() == 4){
             //Is Customer
 
@@ -354,7 +354,17 @@ class ConversationController extends Controller
                 $customer_ids = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
             }
 
-            $user_ids = array_merge($customer_ids);
+            if(in_array(@$request->category,['', 'parent-users'])){
+                
+                if(Auth::user()->parent_id){
+                    $parent_users = $this->getParentUser(Auth::user()->parent_id);
+
+                    $parent_user_ids = array_value_recursive('parent', $parent_users);
+                }
+            }
+
+
+            $user_ids = array_merge($user_ids,$parent_user_ids);
 
 
         }elseif(@Auth::user()->created_by && @Auth::user()->created_by_user->customer_id){
@@ -385,8 +395,21 @@ class ConversationController extends Controller
 
         $users = User::where('is_active', true)->orderby('first_name', 'ASC');
 
-        if(!empty($user_ids)){
-            $users->whereIn('id', $user_ids);
+
+        if(!empty($user_ids) || !empty($customer_ids)){
+            
+            if(!empty($user_ids)){
+                $users->whereIn('id', $user_ids);
+            }
+            
+            if(!empty($customer_ids) && !empty($user_ids)){
+                $users->orwhere(function($q) use ($customer_ids) {
+                    $q->whereIn('customer_id', $customer_ids);
+                });
+            }elseif(!empty($customer_ids)){
+                $users->whereIn('customer_id', $customer_ids);
+            }
+
         }else{
             $html = "<div class='text-center'><h2>Result Not Found !</h2></div>";
             return $response = [ 'html' => $html ];
@@ -417,5 +440,19 @@ class ConversationController extends Controller
         }
 
         return $response = [ 'html' => $html ];
+    }
+
+    public function getParentUser($id){
+        $result = array();
+        $user = User::where('id',$id)->first();
+        if(!is_null($user)){
+            $result = array_merge($result, ['parent'=>$user->id]);
+
+            if($user->parent_id){
+                $ids = $this->getParentUser($user->parent_id);
+                $result = array_merge($result, ['up-parent'=>$ids]);
+            }
+        }
+        return $result;
     }
 }

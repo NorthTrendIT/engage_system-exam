@@ -164,6 +164,7 @@
 
       $('[name="category"]').val("");
       $('.category_btn').removeClass('btn-info');
+      $('.category_btn').removeClass('active');
       $('.category_btn').addClass('btn-dark');
 
       $('#search_result_div').hide();
@@ -222,7 +223,7 @@
             }else{
               toast_success(result.message);
               setTimeout(function(){
-                window.location.href = '{{ route('conversation.index') }}';
+                window.location.href = '{{ route('conversation.index') }}?id='+result.id;
               },1500)
             }
           })
