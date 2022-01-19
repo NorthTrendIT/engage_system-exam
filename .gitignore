@@ -15,3 +15,5 @@ yarn-error.log
 /.idea
 /.vscode
 composer.lock
+/node_socket/node_modules
+/node_socket/package-lock.json
