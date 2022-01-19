@@ -267,22 +267,12 @@ class ProductController extends Controller
                           ->addColumn('u_tires', function($row) {
                               return @$row->u_tires ?? "-";
                           })
-                          ->addColumn('status', function($row) {
-                              $btn = "";
-                              if($row->is_active){
-                                  $btn .= '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
-                              }else{
-                                  $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
-                              }
-
-                              return $btn;
-                          })
                           ->addColumn('action', function($row) {
                               $btn = '<a href="' . route('product.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                   <i class="fa fa-pencil"></i>
                                 </a>';
 
-                              $btn .= '<a href="' . route('product.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                              $btn .= '<a href="' . route('product.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm" title="View Details">
                                   <i class="fa fa-eye"></i>
                                 </a>';
 

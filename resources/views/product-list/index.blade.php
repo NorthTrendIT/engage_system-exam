@@ -18,6 +18,64 @@
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
+           {{--  <div class="card-header border-0 pt-5">
+              <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
+            </div> --}}
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
+                    <span>
+                      <i class="flaticon2-search-1 text-muted"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
+                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
+                </div>
+
+              </div>
+              <div class="row mb-5 mt-5">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <div class="table-responsive">
+                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                          <thead>
+                            <tr>
+                              <th style="width:24px !important">No.</th>
+                              <th>Name</th>
+                              <!-- <th>Brand</th>
+                              <th>Code</th> -->
+                              <th>Price</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+
+                          </tbody>
+                       </table>
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="post d-flex flex-column-fluid" id="kt_post">
+    <div id="kt_content_container" class="container-xxl">
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
             {{-- <div class="card-header border-0 pt-5 min-0">
               <h5>View Details</h5>
             </div> --}}
@@ -45,7 +103,6 @@
                 <div class="col-md-12">
                   <div class="form-group">
 
-                    <!-- product list -->
                     <div class="row" id="product_list_row">
 
                     </div>
@@ -64,65 +121,117 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </div>
 @endsection
 
 @push('css')
-
+<link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 @endpush
 
 @push('js')
+<script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+<script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script>
 $(document).ready(function() {
-  getProductList();
+    render_table();
 
-  function getProductList($id = ""){
-    $('#view_more_btn').remove();
+    function render_table(){
+      var table = $("#myTable");
+      table.DataTable().destroy();
 
-    $filter_search = $('[name="filter_search"]').val();
+      $filter_search = $('[name="filter_search"]').val();
 
-    $.ajax({
-      url: '{{ route('product-list.get-all') }}',
-      type: 'POST',
-      dataType:'json',
-      data: {
-              id: $id,
-              filter_search : $filter_search,
-              _token:'{{ csrf_token() }}',
-            },
-    })
-    .done(function(data) {
-      $('#product_list_row').append(data.output);
-      $('#view_more_col').html(data.button);
-    })
-    .fail(function() {
-      toast_error("error");
-    });
-  }
-
-  $(document).on('click', '#view_more_btn', function(event) {
-    event.preventDefault();
-    $id = $(this).attr('data-id');
-    getProductList($id);
-  });
-
-  $(document).on('click', '.search', function(event) {
-    $('#product_list_row').html("");
-    getProductList();
-  });
-
-  $(document).on('click', '.clear-search', function(event) {
-    $('#product_list_row').html("");
-    $('[name="filter_search"]').val('');
-    getProductList();
-  })
-
-  $('input[name=filter_search]').on('keydown', function(e) {
-    if (e.which == 13) {
-      $('.search').trigger('click')
+      table.DataTable({
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          order: [],
+          ajax: {
+              'url': "{{ route('product-list.get-all') }}",
+              'type': 'POST',
+              headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+              },
+              data:{
+                filter_search : $filter_search,
+              }
+          },
+          columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'item_name', name: 'item_name'},
+            //   {data: 'brand', name: 'brand'},
+            //   {data: 'item_code', name: 'item_code'},
+              {data: 'price', name: 'price'},
+              {data: 'action', name: 'action'},
+          ],
+          drawCallback:function(){
+              $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+                $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+              })
+          },
+          initComplete: function () {
+          }
+        });
     }
-  });
+
+    $(document).on('click', '.search', function(event) {
+      render_table();
+    });
+
+    $(document).on('click', '.clear-search', function(event) {
+      $('[name="filter_search"]').val('');
+      render_table();
+    })
+//   getProductList();
+
+//   function getProductList($id = ""){
+//     $('#view_more_btn').remove();
+
+//     $filter_search = $('[name="filter_search"]').val();
+
+//     $.ajax({
+//       url: '{{ route('product-list.get-all') }}',
+//       type: 'POST',
+//       dataType:'json',
+//       data: {
+//               id: $id,
+//               filter_search : $filter_search,
+//               _token:'{{ csrf_token() }}',
+//             },
+//     })
+//     .done(function(data) {
+//       $('#product_list_row').append(data.output);
+//       $('#view_more_col').html(data.button);
+//     })
+//     .fail(function() {
+//       toast_error("error");
+//     });
+//   }
+
+//   $(document).on('click', '#view_more_btn', function(event) {
+//     event.preventDefault();
+//     $id = $(this).attr('data-id');
+//     getProductList($id);
+//   });
+
+//   $(document).on('click', '.search', function(event) {
+//     $('#product_list_row').html("");
+//     getProductList();
+//   });
+
+//   $(document).on('click', '.clear-search', function(event) {
+//     $('#product_list_row').html("");
+//     $('[name="filter_search"]').val('');
+//     getProductList();
+//   })
+
+//   $('input[name=filter_search]').on('keydown', function(e) {
+//     if (e.which == 13) {
+//       $('.search').trigger('click')
+//     }
+//   });
 
   @if(userdepartment() != 1)
     $(document).on('click', '.addToCart', function(event) {
