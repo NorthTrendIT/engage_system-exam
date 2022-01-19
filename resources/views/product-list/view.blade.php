@@ -115,7 +115,7 @@
                                  <i class="fas fa-shopping-cart pr-2"></i>Go to cart
                              </a>
                              @else
-                             <button type="button" class="btn btn-light btn-md mr-1 mb-2 addToCart" data-url="{{ route('cart.add',@$product->id) }}">
+                             <button type="button" class="btn btn-light btn-md mr-1 mb-2 add_to_cart" data-url="{{ route('cart.add',@$product->id) }}">
                                  <i class="fas fa-shopping-cart pr-2"></i>Add to cart
                              </button>
                              @endif
@@ -131,7 +131,7 @@
                          <li class="nav-item">
                             <a class="nav-link active show" id="info-tab" data-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="false">Information</a>
                          </li>
-                         
+
                          </ul>
                          <div class="tab-content" id="advancedTabContent">
 
@@ -161,7 +161,7 @@
                                </tbody>
                             </table>
                          </div>
-                         
+
                          </div>
 
                       </div>
@@ -176,6 +176,105 @@
           <!--end::Tables Widget 9-->
 
         </div>
+
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+            <div class="card card-xl-stretch mb-5 mb-xl-8">
+                <div class="card-header border-0 pt-5">
+                    <h5>Recommended Products</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row tns tns-default" id="product_list_row">
+                        @php $products = getRecommendedProducts(); @endphp
+                        @if(!empty($products) && count($products) > 0)
+                        <div class="tns-outer my-slider"
+                            data-tns="true"
+                            data-tns-loop="true"
+                            data-tns-swipe-angle="false"
+                            data-tns-speed="500"
+                            data-tns-autoplay="true"
+                            data-tsn-autowidth="false"
+                            data-tns-autoplay-timeout="18000"
+                            data-tns-controls="true"
+                            data-tns-nav="false"
+                            data-tns-items="3"
+                            data-tns-center="false"
+                            data-tns-dots="false"
+                            data-tns-prev-button="#kt_team_slider_prev1"
+                            data-tns-next-button="#kt_team_slider_next1">
+                        @foreach($products as $item)
+                            <div class="product-grid-outer px-5 py-5">
+                                <div class="product-grid">
+                                    <div class="product-image">
+                                        <a href="{{ route('product-list.show',@$item->product->id) }}" class="image">
+                                            @if(@$item->product->product_images && count(@$item->product->product_images))
+
+                                            @php
+                                                $image = @$item->product->product_images->first();
+                                            @endphp
+
+                                            @if($image->image && get_valid_file_url('sitebucket/products',$image->image))
+                                                <img class="pic-1" src="{{ get_valid_file_url('sitebucket/products',$image->image) }}" >
+                                            @else
+                                            <img class="pic-1" src="{{ asset('assets') }}/assets/media/product_default.jpg">
+                                            @endif
+
+                                            @else
+
+                                            <img class="pic-1" src="{{ asset('assets') }}/assets/media/product_default.jpg">
+
+                                            @endif
+
+                                        </a>
+                                        <ul class="product-links">
+                                            <li>
+                                            <a href="{{ route('product-list.show',@$item->product->id) }}" data-tip="Quick View">
+                                                <i class="fa fa-search"></i>
+                                            </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="product-content">
+                                        <h3 class="title">
+                                            <a href="{{ route('product-list.show',@$item->product->id) }}">{{ @$item->product->item_name ?? "-" }}</a>
+                                        </h3>
+
+                                        <div class="price">₱ {{ get_product_customer_price(@$item->product->item_prices,@$customer->price_list_num) }}</div>
+                                        @if(userdepartment() != 1)
+                                        @if(is_in_cart(@$item->product->id) == 1)
+                                            <a class="add-to-cart" href="{{ route('cart.index') }}">Go to cart</a>
+                                        @else
+                                            <a href="javascript:;" class="add-to-cart addToCart" data-url="{{ route('cart.add',@$item->product->id) }}">Add to Cart</a>
+                                            <a class="add-to-cart goToCart" href="{{ route('cart.index') }}" style="display:none">Go to cart</a>
+                                        @endif
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                        </div>
+                        <button class="btn btn-icon btn-active-color-primary" id="kt_team_slider_prev1">
+                            <span class="svg-icon svg-icon-3x">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M11.2657 11.4343L15.45 7.25C15.8642 6.83579 15.8642 6.16421 15.45 5.75C15.0358 5.33579 14.3642 5.33579 13.95 5.75L8.40712 11.2929C8.01659 11.6834 8.01659 12.3166 8.40712 12.7071L13.95 18.25C14.3642 18.6642 15.0358 18.6642 15.45 18.25C15.8642 17.8358 15.8642 17.1642 15.45 16.75L11.2657 12.5657C10.9533 12.2533 10.9533 11.7467 11.2657 11.4343Z" fill="black"></path>
+                                </svg>
+                            </span>
+                        </button>
+
+                        <button class="btn btn-icon btn-active-color-primary" id="kt_team_slider_next1">
+                            <span class="svg-icon svg-icon-3x">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12.6343 12.5657L8.45001 16.75C8.0358 17.1642 8.0358 17.8358 8.45001 18.25C8.86423 18.6642 9.5358 18.6642 9.95001 18.25L15.4929 12.7071C15.8834 12.3166 15.8834 11.6834 15.4929 11.2929L9.95001 5.75C9.5358 5.33579 8.86423 5.33579 8.45001 5.75C8.0358 6.16421 8.0358 6.83579 8.45001 7.25L12.6343 11.4343C12.9467 11.7467 12.9467 12.2533 12.6343 12.5657Z" fill="black"></path>
+                                </svg>
+                            </span>
+                        </button>
+                        @else
+                        <div class='text-center mt-5'><h2>Products Not Found !</h2></div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
       </div>
     </div>
   </div>
@@ -183,14 +282,17 @@
 @endsection
 
 @push('css')
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/tiny-slider.css">
+<!--[if (lt IE 9)]><script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.helper.ie8.js"></script><![endif]-->
 @endpush
 
 @push('js')
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"></script>
 <script>
 $(document).ready(function() {
-    $(document).on('click', '.addToCart', function(event) {
+
+
+    $(document).on('click', '.add_to_cart', function(event) {
         event.preventDefault();
         $url = $(this).attr('data-url');
         $.ajax({
@@ -213,6 +315,35 @@ $(document).ready(function() {
         .fail(function() {
             toast_error("error");
         });
+    });
+
+    $(document).on('click', '.addToCart', function(event) {
+      event.preventDefault();
+      $url = $(this).attr('data-url');
+      $addToCartBtn = $(this);
+      $goToCartBtn = $(this).parent().find('.goToCart');
+        $.ajax({
+            url: $url,
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}'
+                    }
+            })
+            .done(function(result) {
+                if(result.status == false){
+                    toast_error(result.message);
+                }else{
+                    $addToCartBtn.hide();
+                    $goToCartBtn.show();
+                    toast_success(result.message);
+                    // setTimeout(function(){
+                    //     window.location.reload();
+                    // },1500)
+                }
+            })
+            .fail(function() {
+                toast_error("error");
+            });
     });
 });
 </script>
