@@ -10,6 +10,7 @@ use App\Models\Classes;
 use App\Models\CustomerGroup;
 use App\Models\SapConnection;
 use App\Models\CustomerBpAddress;
+use App\Models\Territory;
 use DataTables;
 use Auth;
 
@@ -25,7 +26,7 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customer_groups = CustomerGroup::all();
+        $customer_groups = CustomerGroup::where('name','!=','EMPLOYEE')->get();
         $classes = Classes::all();
         return view('customer.index',compact('customer_groups','classes'));
     }
@@ -144,7 +145,9 @@ class CustomerController extends Controller
 
     public function getAll(Request $request){
 
-        $data = Customer::query();
+        $data = Customer::whereHas('group',function($q){
+                            $q->where('name','!=','EMPLOYEE');
+                        });
 
         if($request->filter_status != ""){
             $data->where('is_active',$request->filter_status);
@@ -152,6 +155,10 @@ class CustomerController extends Controller
 
         if($request->filter_customer_group != ""){
             $data->where('group_code',$request->filter_customer_group);
+        }
+
+        if($request->filter_territory != ""){
+            $data->where('territory',$request->filter_territory);
         }
 
         if($request->filter_class != ""){
@@ -219,8 +226,8 @@ class CustomerController extends Controller
 
                                 $html .= "Code: ".$row->card_code;
 
-                                if($row->email != null){
-                                    $html .= " | Email: ".$row->email;
+                                if(@$row->user->email){
+                                    $html .= " | Email: ".$row->user->email;
                                 }
 
                                 $html .= '</span>
@@ -252,6 +259,12 @@ class CustomerController extends Controller
                             ->addColumn('group', function($row) {
                                 return @$row->group->name ?? "-";
                             })
+                            ->addColumn('u_card_code', function($row) {
+                                return @$row->u_card_code ?? "-";
+                            })
+                            ->addColumn('territory', function($row) {
+                                return @$row->territories->description ?? "-";
+                            })
                             ->addColumn('created_at', function($row) {
                                 return date('M d, Y',strtotime($row->created_date));
                             })
@@ -261,8 +274,8 @@ class CustomerController extends Controller
                             ->orderColumn('created_at', function ($query, $order) {
                                 $query->orderBy('created_at', $order);
                             })
-                            ->orderColumn('city', function ($query, $order) {
-                                $query->orderBy('city', $order);
+                            ->orderColumn('u_card_code', function ($query, $order) {
+                                $query->orderBy('u_card_code', $order);
                             })
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('is_active', $order);
@@ -274,8 +287,10 @@ class CustomerController extends Controller
                                 $query->orderBy('u_class', $order);
                             })
                             ->orderColumn('group', function ($query, $order) {
-                                $query->join('customer_groups', 'customers.group_code', '=', 'customer_groups.code')
-                                    ->orderBy('customer_groups.name', $order);
+                                $query->join('customer_groups', 'customers.group_code', '=', 'customer_groups.code')->orderBy('customer_groups.name', $order);
+                            })
+                            ->orderColumn('territory', function ($query, $order) {
+                                $query->join('territories', 'customers.territory', '=', 'territories.id')->orderBy('territories.description', $order);
                             })
                             ->rawColumns(['name', 'role','status','action','credit_limit','group','class'])
                             ->make(true);
@@ -299,5 +314,29 @@ class CustomerController extends Controller
                             })
                             ->rawColumns(['action'])
                             ->make(true);
+    }
+
+
+    public function getTerritory(Request $request){
+
+        $response = array();
+        $search = $request->search;
+
+        $data = Territory::orderby('description','asc')->select('territory_id','description')->limit(50);
+
+        if($search != ''){
+            $data->where('description', 'like', '%' .$search . '%');
+        }
+
+        $data = $data->get();
+
+        foreach($data as $value){
+            $response[] = array(
+                "id" => $value->territory_id,
+                "text" => $value->description
+            );
+        }
+
+        return response()->json($response);
     }
 }
