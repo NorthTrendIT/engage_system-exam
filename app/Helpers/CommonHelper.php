@@ -302,6 +302,7 @@ function array_value_recursive($key, array $arr){
         if ($k == $key) array_push($val, $v);
     });
     return count($val) > 1 ? $val : array_pop($val);
+}
 
 function getRecommendedProducts(){
     $customer = collect();
