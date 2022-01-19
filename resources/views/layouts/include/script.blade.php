@@ -65,9 +65,9 @@
 @stack('js')
 
 {{-- Socket Chat --}}
-<script src="http://127.0.0.1:3031/socket.io/socket.io.js"></script>
+<script src="http://{{ request()->getHttpHost() }}:3031/socket.io/socket.io.js"></script>
 <script>
-	const socket = io('http://127.0.0.1:3031')
+	const socket = io('http://{{ request()->getHttpHost() }}:3031')
 	// Add User
 	socket.emit('adduser','{{ userid() }}')
 
