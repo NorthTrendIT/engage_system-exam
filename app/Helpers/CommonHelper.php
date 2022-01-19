@@ -9,6 +9,7 @@ use App\Models\Quotation;
 use App\Models\Order;
 use App\Models\Invoice;
 use App\Models\Notification;
+use App\Models\LocalOrderItem;
 use Auth as Auth;
 
 function add_login_log(){
@@ -301,4 +302,25 @@ function array_value_recursive($key, array $arr){
         if ($k == $key) array_push($val, $v);
     });
     return count($val) > 1 ? $val : array_pop($val);
+
+function getRecommendedProducts(){
+    $customer = collect();
+    if(userrole() == 4){
+        $customer = @Auth::user()->customer;
+    }elseif (!is_null(@Auth::user()->created_by)) {
+        $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
+        if(!is_null($customer)){
+            $customer = @$customer->customer;
+        }
+    }
+
+    $data = LocalOrderItem::with('product')->whereHas('order', function($q) use ($customer){
+            $q->where('customer_id' ,'=', $customer->id);
+        })->orderBy('id', 'desc')->get()->take(10);
+        // ->groupBy('local_order_items.product_id')
+
+    // dd($data);
+
+    return $data;
+
 }
