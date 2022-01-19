@@ -35,7 +35,7 @@ io.on('connection', socket => {
     // update the list of users in chat, client-side
     //io.sockets.emit('updateusers', usernames);
 
-    console.log(usernames);
+    // console.log(usernames);
     //console.log(get_key(socket.id));
   });
 
