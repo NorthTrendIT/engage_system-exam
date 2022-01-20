@@ -182,92 +182,9 @@ class ProductListController extends Controller
   	}
 
     public function getAll(Request $request){
-        $c_product_tires_category = $c_product_item_line = $c_product_group = array();
-
-        $where = array('is_active' => 1);
-
-        $products = Product::where($where)->orderBy('id', 'DESC');
-
-        if($request->filter_search != ""){
-            $products->where(function($q) use ($request) {
-                $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
-            });
-        }
-
-        $customer_id = null;
-        $customer = collect();
-        $sap_connection_id = null;
-        $customer_price_list_no = null;
-
-        if(userrole() == 4){
-            $customer_id = @Auth::user()->customer_id;
-            $customer = @Auth::user()->customer;
-            $sap_connection_id = @Auth::user()->sap_connection_id;
-            $customer_price_list_no = @Auth::user()->customer->price_list_num;
-
-        }elseif (!is_null(@Auth::user()->created_by)) {
-            $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
-            if(!is_null($customer)){
-                $customer_id = @$customer->customer_id;
-                $customer = @$customer->customer;
-                $sap_connection_id = @$customer->sap_connection_id;
-                $customer_price_list_no = @$customer->price_list_num;
-            }
-        }
-
-        // Is Customer
-        if($customer_id){
-
-            // Product Group
-            $c_product_group = CustomerProductGroup::with('product_group')->where('customer_id', $customer_id)->get();
-
-            $c_product_group = array_map( function ( $ar ) {
-                return $ar['number'];
-            }, array_column( $c_product_group->toArray(), 'product_group' ) );
-
-
-            // Product Item Line
-            $c_product_item_line = CustomerProductItemLine::with('product_item_line')->where('customer_id', $customer_id)->get();
-
-            $c_product_item_line = array_map( function ( $ar ) {
-                return $ar['u_item_line'];
-            }, array_column( $c_product_item_line->toArray(), 'product_item_line' ) );
-
-
-            // Product Tires Category
-            $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->where('customer_id', $customer_id)->get();
-
-            $c_product_tires_category = array_map( function ( $ar ) {
-                return $ar['u_tires'];
-            }, array_column( $c_product_tires_category->toArray(), 'product_tires_category' ) );
-        }
-
-        $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
-
-            if(!empty($c_product_group)){
-                $q->orWhereIn('items_group_code', $c_product_group);
-            }
-
-            if(!empty($c_product_tires_category)){
-                $q->orWhereIn('u_tires', $c_product_tires_category);
-            }
-
-            if(!empty($c_product_item_line)){
-                $q->orWhereIn('u_item_line', $c_product_item_line);
-            }
-        });
-
-        $products->where('sap_connection_id', $sap_connection_id);
-
-        if($customer_id && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
-            $products = collect([]);
-            return DataTables::of($products)->make(true);
-        }
-
-        $products->when(!isset($request->order), function ($q) {
-          $q->orderBy('item_name', 'asc');
-        });
-
+        $data = $this->getProductData($request);
+        $products = $data['products'];
+        $customer_price_list_no = $data['customer_price_list_no'];
         // $products = $products->get();
         // dd($customer_price_list_no);
 
@@ -399,4 +316,102 @@ class ProductListController extends Controller
                           ->make(true);
     }
 
+    public function getProducts(Request $request)
+    {
+        $data = $this->getProductData($request);
+        $products = $data['products']->get();
+
+        return response()->json($products);
+    }
+
+    public function getProductData($request){
+        $c_product_tires_category = $c_product_item_line = $c_product_group = array();
+
+        $where = array('is_active' => 1);
+
+        $products = Product::where($where)->orderBy('id', 'DESC');
+
+        if($request->filter_search != ""){
+            $products->where(function($q) use ($request) {
+                $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        $customer_id = null;
+        $customer = collect();
+        $sap_connection_id = null;
+        $customer_price_list_no = null;
+
+        if(userrole() == 4){
+            $customer_id = @Auth::user()->customer_id;
+            $customer = @Auth::user()->customer;
+            $sap_connection_id = @Auth::user()->sap_connection_id;
+            $customer_price_list_no = @Auth::user()->customer->price_list_num;
+
+        }elseif (!is_null(@Auth::user()->created_by)) {
+            $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
+            if(!is_null($customer)){
+                $customer_id = @$customer->customer_id;
+                $customer = @$customer->customer;
+                $sap_connection_id = @$customer->sap_connection_id;
+                $customer_price_list_no = @$customer->price_list_num;
+            }
+        }
+
+        // Is Customer
+        if($customer_id){
+
+            // Product Group
+            $c_product_group = CustomerProductGroup::with('product_group')->where('customer_id', $customer_id)->get();
+
+            $c_product_group = array_map( function ( $ar ) {
+                return $ar['number'];
+            }, array_column( $c_product_group->toArray(), 'product_group' ) );
+
+
+            // Product Item Line
+            $c_product_item_line = CustomerProductItemLine::with('product_item_line')->where('customer_id', $customer_id)->get();
+
+            $c_product_item_line = array_map( function ( $ar ) {
+                return $ar['u_item_line'];
+            }, array_column( $c_product_item_line->toArray(), 'product_item_line' ) );
+
+
+            // Product Tires Category
+            $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->where('customer_id', $customer_id)->get();
+
+            $c_product_tires_category = array_map( function ( $ar ) {
+                return $ar['u_tires'];
+            }, array_column( $c_product_tires_category->toArray(), 'product_tires_category' ) );
+        }
+
+        $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
+
+            if(!empty($c_product_group)){
+                $q->orWhereIn('items_group_code', $c_product_group);
+            }
+
+            if(!empty($c_product_tires_category)){
+                $q->orWhereIn('u_tires', $c_product_tires_category);
+            }
+
+            if(!empty($c_product_item_line)){
+                $q->orWhereIn('u_item_line', $c_product_item_line);
+            }
+        });
+
+        $products->where('sap_connection_id', $sap_connection_id);
+
+        if($customer_id && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
+            $products = collect([]);
+            return DataTables::of($products)->make(true);
+        }
+
+        $products->when(!isset($request->order), function ($q) {
+          $q->orderBy('item_name', 'asc');
+        });
+
+
+        return [ 'products' => $products, 'customer_price_list_no' => $customer_price_list_no];
+    }
 }
