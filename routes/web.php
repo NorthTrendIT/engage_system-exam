@@ -34,7 +34,8 @@ Route::middleware('guest')->group(function(){
 //Route::get('/get-users','App\Http\Controllers\SapApiController@index');
 
 Route::middleware(['auth'])->group(function(){
-	Route::get('/home','App\Http\Controllers\HomeController@index')->name('home')->middleware('check-login');
+    Route::get('/home','App\Http\Controllers\HomeController@index')->name('home')->middleware('check-login');
+	Route::post('/ckeditor-image-upload','App\Http\Controllers\HomeController@ckeditorImageUpload')->name('ckeditor-image-upload');
 
 	Route::get('/logout', function () {
         // Add Logout log

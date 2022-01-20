@@ -406,6 +406,15 @@ $(document).ready(function() {
       @endif
     });
 
+
+    $(document).on('change', '[name="customer_id"]', function(event) {
+      event.preventDefault();
+      $('#selectSalseSpecialist').val('').trigger('change');
+      $('#selectProductBrand').val('').trigger('change');
+      $('#selectProductLine').val('').trigger('change');
+      $('#selectProductCategory').val('').trigger('change');
+    });
+
 });
 </script>
 @endpush

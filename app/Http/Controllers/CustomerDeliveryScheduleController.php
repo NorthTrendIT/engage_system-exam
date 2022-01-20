@@ -214,6 +214,9 @@ class CustomerDeliveryScheduleController extends Controller
                             ->addColumn('customer', function($row) {
                                 return @$row->first()->user->sales_specialist_name ?? "-";
                             })
+                            ->addColumn('territory', function($row) {
+                                return @$row->first()->user->customer->territories->description ?? "-";
+                            })
                             ->addColumn('action', function($row) {
                                 $btn = '<a href="' . route('customer-delivery-schedule.edit',$row->first()->user_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                     <i class="fa fa-pencil"></i>
