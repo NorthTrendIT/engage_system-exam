@@ -1,19 +1,13 @@
 @extends('layouts.master')
 
-@section('title','Product List')
+@section('title','Recommended Products')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Product List</h1>
-      </div>
-
-      <div class="d-flex align-items-center py-1">
-        <!--begin::Button-->
-        <a href="{{ route('product-list.recommended-products') }}" class="btn btn-sm btn-primary create-btn">Recommended Products</a>
-        <!--end::Button-->
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Recommended Products</h1>
       </div>
 
     </div>
@@ -154,7 +148,7 @@ $(document).ready(function() {
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('product-list.get-all') }}",
+              'url': "{{ route('product-list.recommended-products.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -165,11 +159,11 @@ $(document).ready(function() {
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
-              {data: 'item_name', name: 'item_name'},
+              {data: 'item_name', name: 'item_name', orderable:false},
             //   {data: 'brand', name: 'brand'},
             //   {data: 'item_code', name: 'item_code'},
-              {data: 'price', name: 'price'},
-              {data: 'action', name: 'action'},
+              {data: 'price', name: 'price', orderable:false,searchable:false},
+              {data: 'action', name: 'action', orderable:false,searchable:false},
           ],
           drawCallback:function(){
               $(function () {
