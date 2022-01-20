@@ -38,7 +38,15 @@
 
                 <div class="row mb-5">
                   
-                  <div class="col-md-6">
+                  <div class="col-md-6 mt-5">
+                    <div class="form-group">
+                      <label>Territory<span class="asterisk">*</span></label>
+                      <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="territory" data-placeholder = 'Select Territory'>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-12 mt-5">
                     <div class="form-group">
                       <label>Customers<span class="asterisk">*</span></label>
                       <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="customer_id[]" multiple="" data-placeholder = 'Select Customers'>
@@ -46,7 +54,7 @@
                     </div>
                   </div>
 
-                  <div class="col-md-6">
+                  <div class="col-md-12 mt-5">
                     <div class="form-group">
                       <label>Schedule Dates<span class="asterisk">*</span></label>
                       <input type="text" class="form-select form-select-solid dates" name="date" readonly placeholder="Schedule Dates" @if(isset($edit)) value="{{ @$dates }}" @endif>
@@ -147,6 +155,9 @@ $(document).ready(function() {
             },
             'date':{
               required: true
+            },
+            'territory':{
+              required: true
             }
           },
           messages: {
@@ -155,6 +166,9 @@ $(document).ready(function() {
             },
             'date':{
               required: "Please select schedule dates.",
+            },
+            'territory':{
+              required: "Please select territory.",
             }
           },
       });
@@ -172,7 +186,8 @@ $(document).ready(function() {
           data: function (params) {
               return {
                   _token: "{{ csrf_token() }}",
-                  search: params.term
+                  search: params.term,
+                  territory: $('[name="territory"]').find('option:selected').val(),
               };
           },
           processResults: function (response) {
@@ -199,6 +214,47 @@ $(document).ready(function() {
             selected: true
           }],
       @endif
+    });
+
+    $('[name="territory"]').select2({
+      @if(!isset($edit))
+      ajax: {
+          url: "{{route('customer-delivery-schedule.get-territory')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term,
+              };
+          },
+          processResults: function (response) {
+            return {
+              results:  $.map(response, function (item) {
+                            return {
+                              id: item.territory_id,
+                              text: item.description,
+                            }
+                        })
+            };
+          },
+          cache: true
+      },
+      @endif
+      @if(isset($edit))
+      data:[{
+            id: {{ @$edit->customer->territory }},
+            text: `{!! @$edit->customer->territories->description !!}`,
+            selected: true
+          }],
+      @endif
+    });
+
+
+    $(document).on('change', '[name="territory"]', function(event) {
+      event.preventDefault();
+      $('[name="customer_id[]"]').val('').trigger('change');
     });
 
 });

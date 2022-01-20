@@ -226,7 +226,9 @@
     $(document).on('focus', '[name="comment"]', function(event) {
       event.preventDefault();
       CKEDITOR.replace( 'comment',{
-        removePlugins: ['image', 'uploadimage'],
+        filebrowserUploadUrl: "{{route('ckeditor-image-upload', ['_token' => csrf_token() ])}}",
+        filebrowserUploadMethod: 'form',
+        // removePlugins: ['image', 'uploadimage'],
       });
     });
 

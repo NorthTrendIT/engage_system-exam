@@ -34,7 +34,8 @@ Route::middleware('guest')->group(function(){
 //Route::get('/get-users','App\Http\Controllers\SapApiController@index');
 
 Route::middleware(['auth'])->group(function(){
-	Route::get('/home','App\Http\Controllers\HomeController@index')->name('home')->middleware('check-login');
+    Route::get('/home','App\Http\Controllers\HomeController@index')->name('home')->middleware('check-login');
+	Route::post('/ckeditor-image-upload','App\Http\Controllers\HomeController@ckeditorImageUpload')->name('ckeditor-image-upload');
 
 	Route::get('/logout', function () {
         // Add Logout log
@@ -63,6 +64,7 @@ Route::middleware(['auth'])->group(function(){
     	    Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');
     	    Route::post('customer/sync-customers', 'App\Http\Controllers\CustomerController@syncCustomers')->name('customer.sync-customers');
             Route::post('customer/get-all-bp-address', 'App\Http\Controllers\CustomerController@getAllBpAddress')->name('customer.get-all-bp-address');
+            Route::post('customer/get-territory', 'App\Http\Controllers\CustomerController@getTerritory')->name('customer.get-territory');
 
     	    Route::resource('user','App\Http\Controllers\UserController');
     	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
@@ -292,6 +294,7 @@ Route::middleware(['auth'])->group(function(){
         Route::resource('customer-delivery-schedule','App\Http\Controllers\CustomerDeliveryScheduleController');
         Route::post('customer-delivery-schedule/get-all', 'App\Http\Controllers\CustomerDeliveryScheduleController@getAll')->name('customer-delivery-schedule.get-all');
         Route::post('customer-delivery-schedule/get-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getCustomerList')->name('customer-delivery-schedule.get-customer-list');
+        Route::post('customer-delivery-schedule/get-territory/','App\Http\Controllers\CustomerDeliveryScheduleController@getTerritory')->name('customer-delivery-schedule.get-territory');
     });
 
 

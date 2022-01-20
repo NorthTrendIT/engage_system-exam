@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\CustomerDeliverySchedule;
 use App\Models\User;
+use App\Models\Territory;
 use Validator;
 use DataTables;
 
@@ -213,6 +214,9 @@ class CustomerDeliveryScheduleController extends Controller
                             ->addColumn('customer', function($row) {
                                 return @$row->first()->user->sales_specialist_name ?? "-";
                             })
+                            ->addColumn('territory', function($row) {
+                                return @$row->first()->user->customer->territories->description ?? "-";
+                            })
                             ->addColumn('action', function($row) {
                                 $btn = '<a href="' . route('customer-delivery-schedule.edit',$row->first()->user_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                     <i class="fa fa-pencil"></i>
@@ -234,14 +238,47 @@ class CustomerDeliveryScheduleController extends Controller
 
     public function getCustomerList(Request $request){
         $search = $request->search;
+        $territory = $request->territory;
 
-        $data = User::where('role_id',4)->where('is_active',true)->orderBy('sales_specialist_name','asc');
+        if($territory != ''){
+            $data = User::where('role_id',4)->where('is_active',true)->orderBy('sales_specialist_name','asc');
 
-        if($search != ''){
-            $data->where('sales_specialist_name', 'like', '%' .$search . '%');
+            if($search != ''){
+                $data->where('sales_specialist_name', 'like', '%' .$search . '%');
+            }
+
+            $data->whereHas('customer', function($q) use ($territory){
+                $q->where('territory', $territory);
+            });
+            
+            $data = $data->limit(50)->get();
+
+        }else{
+            $data = collect();
         }
 
-        $data = $data->limit(50)->get();
+
+        return response()->json($data);
+    }
+
+
+    public function getTerritory(Request $request){
+        $search = $request->search;
+
+        $data = Territory::orderby('description','asc')->select('territory_id','description')->limit(50);
+
+        if($search != ''){
+            $data->where('description', 'like', '%' .$search . '%');
+        }
+
+        $data = $data->get();
+
+        // foreach($data as $value){
+        //     $response[] = array(
+        //         "id" => $value->territory_id,
+        //         "text" => $value->description
+        //     );
+        // }
 
         return response()->json($data);
     }

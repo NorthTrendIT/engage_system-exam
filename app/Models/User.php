@@ -31,7 +31,7 @@ class User extends Authenticatable
         'department_id',
         'parent_id',
         'sales_specialist_name',
-        'territory_id',
+        // 'territory_id',
         'customer_id',
         'first_login',
         'sap_connection_id',

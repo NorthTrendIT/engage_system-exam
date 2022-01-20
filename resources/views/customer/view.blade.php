@@ -59,9 +59,15 @@
                             </tr>
 
                             <tr>
+                              <th> <b>OMS Email:</b> </th>
+                              <td>{{ @$data->user->email ?? "" }}</td>
+                            </tr>
+
+                            <tr>
                               <th> <b>Email:</b> </th>
                               <td>{{ @$data->email ?? "" }}</td>
                             </tr>
+
                             <tr>
                               <th> <b>Contact Person Name:</b> </th>
                               <td>{{ @$data->contact_person ?? "" }}</td>
@@ -75,6 +81,11 @@
                             <tr>
                               <th> <b>Address:</b> </th>
                               <td>{{ @$data->address ?? "" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Territory:</b> </th>
+                              <td>{{ @$data->territories->description ?? "" }}</td>
                             </tr>
                             
                             @if(userrole() == 1)

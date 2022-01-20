@@ -41,8 +41,8 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_customer_group" data-control="select2" data-hide-search="false">
-                    <option value="">Select group</option>
+                  <select class="form-control form-control-lg form-control-solid" name="filter_customer_group" data-control="select2" data-hide-search="false" data-placeholder="Select group" data-allow-clear="true">
+                    <option value=""></option>
                     @foreach($customer_groups as $customer_group)
                     <option value="{{ $customer_group->code }}">{{ $customer_group->name }}</option>
                     @endforeach
@@ -50,8 +50,14 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_class" data-control="select2" data-hide-search="false">
-                    <option value="">Select class</option>
+                  <select class="form-control form-control-lg form-control-solid" name="filter_territory" data-control="select2" data-hide-search="false" data-placeholder="Select territory" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_class" data-control="select2" data-hide-search="false" data-placeholder="Select class" data-allow-clear="true">
+                    <option value=""></option>
                     @foreach($classes as $class)
                     <option value="{{ $class->name }}">{{ $class->name }}</option>
                     @endforeach
@@ -92,11 +98,12 @@
                             <tr>
                               <th>No.</th>
                               <th>Name</th>
+                              <th>Universal Card Code</th>
                               @if(userrole() == 1)
                               <th>Credit Limit</th>
                               @endif
                               <th>Group</th>
-                              <th>City</th>
+                              <th>Territory</th>
                               <th>Date</th>
                               <th>Class</th>
                               {{-- <th>Status</th> --}}
@@ -149,6 +156,7 @@
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
       $filter_class = $('[name="filter_class"]').find('option:selected').val();
       $filter_customer_group = $('[name="filter_customer_group"]').find('option:selected').val();
+      $filter_territory = $('[name="filter_territory"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -167,16 +175,18 @@
                 filter_status : $filter_status,
                 filter_class : $filter_class,
                 filter_customer_group : $filter_customer_group,
+                filter_territory : $filter_territory,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'name', name: 'name'},
+              {data: 'u_card_code', name: 'u_card_code'},
               @if(userrole() == 1)
               {data: 'credit_limit', name: 'credit_limit'},
               @endif
               {data: 'group', name: 'group'},
-              {data: 'city', name: 'city'},
+              {data: 'territory', name: 'territory'},
               {data: 'created_at', name: 'created_at'},
               {data: 'class', name: 'class'},
               // {data: 'status', name: 'status'},
@@ -203,6 +213,7 @@
       $('[name="filter_status"]').val('').trigger('change');
       $('[name="filter_class"]').val('').trigger('change');
       $('[name="filter_customer_group"]').val('').trigger('change');
+      $('[name="filter_territory"]').val('').trigger('change');
       render_table();
     })
 
@@ -240,6 +251,29 @@
         }
       })
     });
+
+
+    $('[name="filter_territory"]').select2({
+      ajax: {
+          url: "{{route('customer.get-territory')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
   })
 </script>
 @endpush
