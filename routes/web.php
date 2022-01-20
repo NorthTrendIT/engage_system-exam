@@ -20,7 +20,8 @@ Route::get('/', function () {
 
 
 Route::middleware('guest')->group(function(){
-	Route::get('/login','App\Http\Controllers\LoginController@index')->name('login');
+    Route::get('/login','App\Http\Controllers\LoginController@index')->name('login');
+	Route::get('/login-by-link/{hash?}','App\Http\Controllers\LoginController@loginByLink')->name('login-by-link');
 	Route::post('/login','App\Http\Controllers\LoginController@checkLogin')->name('check-login');
 
 	// Forgot Password
