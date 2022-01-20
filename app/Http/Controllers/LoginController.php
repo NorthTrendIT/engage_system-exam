@@ -74,7 +74,7 @@ class LoginController extends Controller
     		$time = @$hash[1];
 
     		if($id && $time){
-    			$expiry = strtotime('+48 hours', $time);
+    			$expiry = strtotime('+24 hours', $time);
     			
     			if($time <= $expiry){
 		    		$user = User::where('is_active',true)->where('id', $id)->first();
