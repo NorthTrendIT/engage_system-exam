@@ -153,6 +153,7 @@ Route::middleware(['auth'])->group(function(){
     	    Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all')->middleware('not-super-admin');
             Route::get('recommended-products', 'App\Http\Controllers\ProductListController@RecommendedProducts')->name('product-list.recommended-products')->middleware('not-super-admin');
             Route::post('recommended-products/get-all', 'App\Http\Controllers\ProductListController@getAllRecommendedProducts')->name('product-list.recommended-products.get-all')->middleware('not-super-admin');
+            Route::post('product-list/get-products', 'App\Http\Controllers\ProductListController@getProducts')->name('product-list.get-products')->middleware('not-super-admin');
 
 
             // Territories

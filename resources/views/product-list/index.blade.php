@@ -29,13 +29,19 @@
             </div> --}}
             <div class="card-body">
               <div class="row">
-                <div class="col-md-6 mt-5">
+                {{-- <div class="col-md-6 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
                   </div>
+                </div> --}}
+
+                <div class="col-md-6 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_product" data-hide-search="false" data-placeholder="Search product" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
                 </div>
 
                 <div class="col-md-3 mt-5">
@@ -146,7 +152,7 @@ $(document).ready(function() {
       var table = $("#myTable");
       table.DataTable().destroy();
 
-      $filter_search = $('[name="filter_search"]').val();
+      $filter_search = $('[name="filter_product"]').val();
 
       table.DataTable({
           processing: true,
@@ -269,6 +275,35 @@ $(document).ready(function() {
             });
     });
   @endif
+
+  $('[name="filter_product"]').select2({
+    ajax: {
+      url: "{{route('product-list.get-products')}}",
+      type: "post",
+      dataType: 'json',
+      delay: 250,
+      
+      data: function (params) {
+          return {
+              _token: "{{ csrf_token() }}",
+              filter_search: params.term
+          };
+      },
+      processResults: function (response) {
+        return {
+          results:  $.map(response, function (item) {
+                        return {
+                          text: item.item_name,
+                          id: item.item_name
+                        }
+                    })
+        };
+      },
+      cache: true
+    },
+    tags: true,
+    minimumInputLength: 2,
+  });
 });
 </script>
 @endpush
