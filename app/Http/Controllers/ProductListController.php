@@ -259,10 +259,14 @@ class ProductListController extends Controller
 
         $products->where('sap_connection_id', $sap_connection_id);
 
-        // if($customer_id && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
-        //     $products = null;
-        //     $products = collect();
-        // }
+        if($customer_id && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
+            $products = collect([]);
+            return DataTables::of($products)->make(true);
+        }
+
+        $products->when(!isset($request->order), function ($q) {
+          $q->orderBy('item_name', 'asc');
+        });
 
         // $products = $products->get();
         // dd($customer_price_list_no);
