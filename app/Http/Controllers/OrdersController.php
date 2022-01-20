@@ -166,19 +166,18 @@ class OrdersController extends Controller
     }
 
     public function getAll(Request $request){
-
         $data = Quotation::query();
 
         if(userrole() == 4){
-            if (!is_null(@Auth::user()->created_by)) {
-                $data->where('card_code', @Auth::user()->created_by_user->customer->card_code);
-            } else {
-                $data->where('card_code', @Auth::user()->customer->card_code);
-            }
+            $data->where('card_code', @Auth::user()->customer->card_code);
         }elseif(userrole() == 2){
             $data->where('sales_person_code', @Auth::user()->sales_employee_code);
         }elseif(userrole() != 1){
-            return abort(404);
+            if (!is_null(@Auth::user()->created_by)) {
+                $data->where('card_code', @Auth::user()->created_by_user->customer->card_code);
+            } else {
+                return DataTables::of(collect())->make(true);;
+            }
         }
 
         if($request->filter_search != ""){
