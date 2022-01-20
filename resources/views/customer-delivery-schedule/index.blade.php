@@ -30,8 +30,8 @@
               <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
             </div> --}}
             <div class="card-body">
-              <div class="row mt-5">
-                <div class="col-md-4">
+              <div class="row">
+                <div class="col-md-4 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -40,7 +40,13 @@
                   </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_territory" data-control="select2" data-hide-search="false" data-placeholder="Select territory" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <div class="col-md-4  mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -58,6 +64,7 @@
                             <tr>
                               <th>No.</th>
                               <th>Customer</th>
+                              <th>Territory</th>
                               {{-- <th>Schedule Dates</th> --}}
                               <th>Action</th>
                             </tr>
@@ -104,6 +111,7 @@
       table.DataTable().destroy();
 
       // $filter_search = $('[name="filter_search"]').val();
+      // $filter_territory = $('[name="filter_territory"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -118,11 +126,13 @@
               },
               data:{
                 // filter_search : $filter_search
+                // filter_territory : $filter_territory
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'customer', name: 'customer'},
+              {data: 'territory', name: 'territory'},
               // {data: 'date', name: 'date', orderable:false},
               {data: 'action', name: 'action', orderable:false},
           ],
@@ -138,15 +148,25 @@
     }
 
     $(document).on('click', '.search', function(event) {
-      render_table();
+      // render_table();
       $('#myTable').DataTable().search($('[name="filter_search"]').val()).draw();
+
+      if($('[name="filter_territory"]').val() != ""){
+        $('#myTable').DataTable().column(2).search($('[name="filter_territory"]').val()).draw();
+      }
     });
 
     $(document).on('click', '.clear-search', function(event) {
       $('#myTable').dataTable().fnFilter('');
       $('[name="filter_search"]').val('');
+      $('[name="filter_territory"]').val('').trigger('change');
       render_table();
     })
+
+    // $(document).on('change', '[name="filter_territory"]', function(event) {
+    //   event.preventDefault();
+    //   $('#myTable').DataTable().column(2).search($(this).val()).draw();
+    // });
 
     $(document).on('click', '.delete', function(event) {
       event.preventDefault();
@@ -182,6 +202,32 @@
           });
         }
       })
+    });
+
+    $('[name="filter_territory"]').select2({
+      ajax: {
+        url: "{{route('customer-delivery-schedule.get-territory')}}",
+        type: "post",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+            return {
+                _token: "{{ csrf_token() }}",
+                search: params.term
+            };
+        },
+        processResults: function (response) {
+          return {
+            results: $.map(response, function (item) {
+                            return {
+                              id: item.description,
+                              text: item.description,
+                            }
+                        })
+          };
+        },
+        cache: true
+      },
     });
 
   })
