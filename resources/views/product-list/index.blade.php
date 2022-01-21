@@ -45,6 +45,33 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($c_product_groups as $key)
+                    <option value="{{ $key->product_group->number }}">{{ $key->product_group->group_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_product_category" data-control="select2" data-hide-search="false" data-placeholder="Select product category" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($c_product_category as $key => $c)
+                    <option value="{{ $c }}">{{ $c }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_product_line" data-control="select2" data-hide-search="false" data-placeholder="Select product line" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($c_product_line as $key => $l)
+                    <option value="{{ $l }}">{{ $l }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -59,8 +86,9 @@
                             <tr>
                               <th style="width:24px !important">No.</th>
                               <th>Name</th>
-                              <!-- <th>Brand</th>
-                              <th>Code</th> -->
+                              <th>Brand</th>
+                              <th>Product Line</th>
+                              <th>Product Category</th>
                               <th>Price</th>
                               <th>Action</th>
                             </tr>
@@ -153,6 +181,9 @@ $(document).ready(function() {
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_product"]').val();
+      $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+      $filter_product_category = $('[name="filter_product_category"]').find('option:selected').val();
+      $filter_product_line = $('[name="filter_product_line"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -167,15 +198,19 @@ $(document).ready(function() {
               },
               data:{
                 filter_search : $filter_search,
+                filter_brand : $filter_brand,
+                filter_product_category : $filter_product_category,
+                filter_product_line : $filter_product_line,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'item_name', name: 'item_name'},
-            //   {data: 'brand', name: 'brand'},
-            //   {data: 'item_code', name: 'item_code'},
-              {data: 'price', name: 'price'},
-              {data: 'action', name: 'action'},
+              {data: 'brand', name: 'brand'},
+              {data: 'u_item_line', name: 'u_item_line'},
+              {data: 'u_tires', name: 'u_tires'},
+              {data: 'price', name: 'price', orderable:false,searchable:false},
+              {data: 'action', name: 'action', orderable:false,searchable:false},
           ],
           drawCallback:function(){
               $(function () {
@@ -194,6 +229,9 @@ $(document).ready(function() {
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
+      $('[name="filter_brand"]').val('').trigger('change');
+      $('[name="filter_product_category"]').val('').trigger('change');
+      $('[name="filter_product_line"]').val('').trigger('change');
       render_table();
     })
 //   getProductList();

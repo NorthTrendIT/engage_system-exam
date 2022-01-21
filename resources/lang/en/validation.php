@@ -154,7 +154,8 @@ return [
     */
 
     'attributes' => [
-        'promo_image' => 'Promotion Image'
+        'promo_image' => 'promotion image',
+        'db_name' => 'database name',
     ],
 
 ];

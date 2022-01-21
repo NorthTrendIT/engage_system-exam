@@ -9,6 +9,16 @@
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">SAP Connections</h1>
       </div>
+
+      <!--begin::Actions-->
+      <div class="d-flex align-items-center py-1">
+        <!--begin::Button-->
+
+        <a href="{{ route('sap-connection.create') }}" class="btn btn-sm btn-primary">Create</a>
+        <!--end::Button-->
+      </div>
+      <!--end::Actions-->
+      
     </div>
   </div>
 
@@ -55,8 +65,8 @@
                             <tr>
                                 <th>No.</th>
                                 <th>Company Name</th>
+                                <th>Database Name</th>
                                 <th>User Name</th>
-                                <th>DB Name</th>
                                 <th>Connection</th>
                                 <th>Action</th>
                             </tr>
@@ -124,8 +134,8 @@
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'company_name', name: 'company_name'},
-              {data: 'user_name', name: 'user_name'},
               {data: 'db_name', name: 'db_name'},
+              {data: 'user_name', name: 'user_name'},
               {data: 'connection', name: 'connection'},
               {data: 'action', name: 'action'},
           ],

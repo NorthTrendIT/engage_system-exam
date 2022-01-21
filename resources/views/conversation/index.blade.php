@@ -110,9 +110,9 @@
               <div class="card-toolbar">
                 <!--begin::Menu-->
                 <div class="me-n3">
-                  <button class="btn btn-sm btn-icon btn-active-light-primary conversation_delete" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" style="display: none;">
+                  {{-- <button class="btn btn-sm btn-icon btn-active-light-primary conversation_delete" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" style="display: none;">
                     <i class="fa fa-trash" style="font-size: 20px;"></i>
-                  </button>
+                  </button> --}}
                   
                 </div>
                 <!--end::Menu-->
