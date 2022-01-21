@@ -46,20 +46,23 @@
 
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>User Name<span class="asterisk">*</span></label>
-                      <input type="text" class="form-control form-control-solid" placeholder="Enter user name" name="user_name" @if(isset($edit)) value="{{ $edit->user_name }}" @endif>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row mb-5">
-                  <div class="col-md-6">
-                    <div class="form-group">
                       <label>Database Name<span class="asterisk">*</span></label>
                       <input type="text" class="form-control form-control-solid" placeholder="Enter database name" name="db_name" @if(isset($edit)) value="{{ $edit->db_name }}" @endif>
                     </div>
                   </div>
 
+                  
+                </div>
+
+                <div class="row mb-5">
+                  
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>User Name<span class="asterisk">*</span></label>
+                      <input type="text" class="form-control form-control-solid" placeholder="Enter user name" name="user_name" @if(isset($edit)) value="{{ $edit->user_name }}" @endif>
+                    </div>
+                  </div>
+                  
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Password<span class="asterisk">*</span></label>
@@ -151,23 +154,24 @@
             },
             password:{
               required:true,
+              maxlength: 185,
             },
           },
           messages: {
-            first_name:{
+            company_name:{
               required: "Please enter company name.",
               maxlength:'Please enter company name less than 185 character',
             },
-            last_name:{
+            user_name:{
               required: "Please enter user name.",
               maxlength:'Please enter user name less than 185 character',
             },
-            email:{
+            db_name:{
               required:"Please enter database name.",
               maxlength:'Please enter database name less than 185 character',
             },
-            email:{
-              required:"Please select password.",
+            password:{
+              required:"Please enter password.",
               maxlength:'Please enter password less than 185 character',
             },
           },
