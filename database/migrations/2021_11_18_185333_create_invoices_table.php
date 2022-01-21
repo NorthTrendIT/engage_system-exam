@@ -22,7 +22,7 @@ class CreateInvoicesTable extends Migration
             $table->date('doc_due_date')->nullable();
             $table->string('card_code');
             $table->string('card_name');
-            $table->string('address');
+            $table->string('address')->nullable();
             $table->double('doc_total', 10, 3)->default(0.0);
             $table->string('doc_currency')->nullable();
             $table->string('journal_memo')->nullable();
@@ -31,7 +31,7 @@ class CreateInvoicesTable extends Migration
             $table->string('u_brand')->nullable();
             $table->string('u_branch')->nullable();
             $table->string('u_commitment')->nullable();
-            $table->string('u_time');
+            $table->string('u_time')->nullable();
             $table->string('u_posono')->nullable();
             $table->date('u_posodate')->nullable();
             $table->time('u_posotime')->nullable();
