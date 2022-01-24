@@ -37,5 +37,6 @@ class Order extends Model
         'response',
         'created_at',
         'updated_at',
+        'sap_connection_id',
     ];
 }
