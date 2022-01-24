@@ -88,10 +88,10 @@
                               <th>Name</th>
                               <!-- <th>Brand</th>
                               <th>Code</th> -->
-                              @if(userrole() != 2)
                               <th>Brand</th>
                               <th>Product Line</th>
                               <th>Product Category</th>
+                              @if(userrole() != 2)
                               <th>Price</th>
                               @endif
                               <th>Action</th>
