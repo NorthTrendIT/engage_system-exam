@@ -423,6 +423,7 @@ class RecommendedProductController extends Controller
     }
 
     public function saveToDraft(Request $request){
+        // dd($request->all());
         $data = $request->all();
 
         $customer_id = $data['customer_id'];
@@ -475,8 +476,9 @@ class RecommendedProductController extends Controller
                     }
                 }
             }
+            $response = ['status'=>true,'message'=> 'Order saved to customer draft Successfully.'];
         }
 
-        $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        return $response;
     }
 }
