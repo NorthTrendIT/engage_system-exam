@@ -88,10 +88,10 @@
                               <th>Name</th>
                               <!-- <th>Brand</th>
                               <th>Code</th> -->
-                              @if(userrole() != 2)
                               <th>Brand</th>
                               <th>Product Line</th>
                               <th>Product Category</th>
+                              @if(userrole() != 2)
                               <th>Price</th>
                               @endif
                               <th>Action</th>
@@ -212,14 +212,12 @@ $(document).ready(function() {
               {data: 'item_name', name: 'item_name'},
             //   {data: 'brand', name: 'brand'},
             //   {data: 'item_code', name: 'item_code'},
-              @if(userrole() != 2)
-              {data: 'price', name: 'price'},
-              {data: 'action', name: 'action'},
-              @endif
               {data: 'brand', name: 'brand'},
               {data: 'u_item_line', name: 'u_item_line'},
               {data: 'u_tires', name: 'u_tires'},
+              @if(userrole() != 2)
               {data: 'price', name: 'price', orderable:false,searchable:false},
+              @endif
               {data: 'action', name: 'action', orderable:false,searchable:false},
           ],
           drawCallback:function(){
