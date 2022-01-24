@@ -87,20 +87,25 @@ class LocalOrderController extends Controller
                     $products = $input['products'];
                     LocalOrderItem::where('local_order_id', $order->id)->delete();
                     foreach($products as $value){
-                        // dd($value);
                         $item = new LocalOrderItem();
                         $item->local_order_id = $order->id;
                         $item->product_id = @$value['product_id'];
                         $item->quantity = @$value['quantity'];
+                        $item->price = get_product_customer_price(@$value->product->item_prices,@$order->customer->price_list_num);
+                        $item->total = $item->price * $item->quantity;
                         $item->save();
                     }
                 }
+
+                $response = ['status'=>true,'message'=>$message, 'id' => $order->id];
             } else {
                 $message = "Something went wrong! Please try again later.";
+                $response = ['status'=>false,'message'=>$message];
             }
 
-            return $response = ['status'=>true,'message'=>$message];
         }
+
+        return $response;
     }
 
     /**
@@ -182,6 +187,7 @@ class LocalOrderController extends Controller
         });
 
         return DataTables::of($data)
+                        ->addIndexColumn()
                         ->addColumn('customer_name', function($row) {
                             return $row->customer->card_name;
                         })
@@ -243,7 +249,7 @@ class LocalOrderController extends Controller
 
     public function getProducts(Request $request)
     {
-        $search = $request->search;
+        /*$search = $request->search;
 
         $data = Product::orderby('item_name','asc')->where('is_active',true);
 
@@ -255,9 +261,18 @@ class LocalOrderController extends Controller
             $data->whereNotIn('id', $request->product_ids);
         }
 
-        $data = $data->limit(50)->get();
+        $data = $data->limit(50)->get();*/
 
-        return $data;
+        $data = app(ProductListController::class)->getProductData($request);
+        $products = $data['products']->limit(50);
+
+        if(isset($request->product_ids) && count($request->product_ids)){
+            $products->whereNotIn('id', $request->product_ids);
+        }
+
+        $products = $products->get();
+
+        return $products;
     }
 
     function getAddress(Request $request){
@@ -297,12 +312,11 @@ class LocalOrderController extends Controller
 
     public function placeOrder(Request $request){
         $data = $request->all();
-        $id = $data['id'];
         $obj = array();
 
         $update = $this->store($request);
         if($update['status']){
-            $order = LocalOrder::where('id', $id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
+            $order = LocalOrder::where('id', $update['id'])->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
             $obj['CardCode'] = $order->customer->card_code;
             $obj['CardName'] = @$order->customer->card_name;
@@ -336,6 +350,8 @@ class LocalOrderController extends Controller
 
             $obj['AddressExtension'] = $address;
         }
+
+
         try {
             $message = "";
             $post = new PostOrder('TEST-APBW', 'manager', 'test');
@@ -355,7 +371,6 @@ class LocalOrderController extends Controller
 
             $response = ['status' => true, 'message' => $message];
         } catch (\Exception $e) {
-            dd($e);
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
         return $response;
@@ -365,7 +380,6 @@ class LocalOrderController extends Controller
         $input = $request->all();
         if($input['customer_id'] && $input['product_id']){
             $customer = Customer::findOrFail($input['customer_id']);
-            // dd($customer);
             $product = Product::findOrFail($input['product_id']);
             $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
             return $response = ['status' => true, 'price' => $price];

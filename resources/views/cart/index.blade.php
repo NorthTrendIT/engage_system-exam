@@ -105,7 +105,7 @@
                                     <!--begin::Section-->
                                     <div class="d-flex align-items-center flex-row-fluid flex-wrap">
                                         <div class="flex-grow-1 me-2">
-                                            <span class="text-gray-800 fs-6 fw-bolder">Delivery Charrges</span>
+                                            <span class="text-gray-800 fs-6 fw-bolder">Delivery Charges</span>
                                         </div>
                                         <span class="fw-bolder my-2">FREE</span>
                                     </div>

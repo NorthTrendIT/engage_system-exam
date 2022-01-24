@@ -241,7 +241,7 @@
                 data: function (params) {
                     return {
                         _token: "{{ csrf_token() }}",
-                        search: params.term,
+                        filter_search: params.term,
                         customer_id: $('[name="customer_id"]').val(),
                     };
                 },
@@ -283,7 +283,7 @@
                         data: function (params) {
                             return {
                                 _token: "{{ csrf_token() }}",
-                                search: params.term,
+                                filter_search: params.term,
                                 customer_id: $('[name="customer_id"]').val(),
                                 product_ids: product_ids,
                             };
@@ -358,7 +358,7 @@
                     success: function (data) {
                         if (data.status) {
                             $dates = JSON.parse(data.dates);
-
+                            
                             function formatDate(d) {
                                 var day = String(d.getDate())
                                 //add leading zero if day is is single digit
@@ -399,6 +399,14 @@
                                 });
                             }
 
+                        }else{
+                            $('[name="due_date"]').datepicker({
+                                format: 'dd/mm/yyyy',
+                                todayHighlight: true,
+                                orientation: "bottom left",
+                                startDate: "+3d",
+                                autoclose: true,
+                            });
                         }
                     },
                     error: function () {

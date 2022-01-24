@@ -484,7 +484,7 @@ class ProductListController extends Controller
     public function getProducts(Request $request)
     {
         $data = $this->getProductData($request);
-        $products = $data['products']->get();
+        $products = $data['products']->limit(50)->get();
 
         return response()->json($products);
     }
@@ -492,7 +492,7 @@ class ProductListController extends Controller
     public function getProductData($request){
         $c_product_tires_category = $c_product_item_line = $c_product_group = array();
 
-        $where = array('is_active' => 1);
+        $where = array('is_active' => true);
 
         $products = Product::where($where);
 
@@ -513,8 +513,19 @@ class ProductListController extends Controller
             $sap_connection_id = @Auth::user()->sap_connection_id;
             $customer_price_list_no = @Auth::user()->customer->price_list_num;
 
-        }elseif (!is_null(@Auth::user()->created_by)) {
-            $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
+        }elseif (!is_null(@Auth::user()->created_by) || isset($request->customer_id)) {
+
+            if(@$request->customer_id){
+                $where = array(
+                            'customer_id' => @$request->customer_id,
+                        );
+            }else{
+                $where = array(
+                            'id' => @Auth::user()->created_by,
+                        );
+            }
+            
+            $customer = User::where('role_id', 4)->where($where)->first();
             if(!is_null($customer)){
                 $customer_id = @$customer->customer_id;
                 $customer = @$customer->customer;
@@ -522,7 +533,6 @@ class ProductListController extends Controller
                 $customer_price_list_no = @$customer->price_list_num;
             }
         }
-
         // Is Customer
         if($customer_id){
 
@@ -569,12 +579,11 @@ class ProductListController extends Controller
 
         if($customer_id && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
             $products = collect([]);
-            return DataTables::of($products)->make(true);
+        }else{
+            $products->when(!isset($request->order), function ($q) {
+              $q->orderBy('item_name', 'asc');
+            });
         }
-
-        $products->when(!isset($request->order), function ($q) {
-          $q->orderBy('item_name', 'asc');
-        });
 
 
         return [ 'products' => $products, 'customer_price_list_no' => $customer_price_list_no];
