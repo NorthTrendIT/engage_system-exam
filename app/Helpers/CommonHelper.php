@@ -133,8 +133,12 @@ function ordinal($number) {
         return $number. $ends[$number % 10];
 }
 
-function is_in_cart($id){
-    $cart = Cart::where(['product_id' => $id, 'customer_id' => @Auth::user()->customer_id])->get();
+function is_in_cart($product_id, $customer_id = null){
+    if($customer_id == null){
+        $cart = Cart::where(['product_id' => $product_id, 'customer_id' => @Auth::user()->customer_id])->get();
+    } else {
+        $cart = Cart::where(['product_id' => $product_id, 'customer_id' => $customer_id])->get();
+    }
     if(count($cart)){
         return 1;
     }
@@ -223,7 +227,7 @@ function date_difference($tCreatedDate)
     $date = date('Y-m-d H:i:s');
 
     $delta = strtotime($date) - strtotime($tCreatedDate);
-    
+
     if (!defined("SECOND")) define("SECOND", 1);
     if (!defined("MINUTE")) define("MINUTE", 60 * SECOND);
     if (!defined("HOUR")) define("HOUR", 60 * MINUTE);

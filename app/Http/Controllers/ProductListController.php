@@ -8,6 +8,7 @@ use App\Models\CustomerProductGroup;
 use App\Models\CustomerProductItemLine;
 use App\Models\CustomerProductTiresCategory;
 use App\Models\User;
+use App\Models\Customer;
 use App\Models\LocalOrderItem;
 use Auth;
 use DataTables;
@@ -325,74 +326,4 @@ class ProductListController extends Controller
                           ->rawColumns(['status','action'])
                           ->make(true);
     }
-
-    public function RecommendedProducts(){
-        return view('product-list.recommended-product-index');
-    }
-
-    public function getAllRecommendedProducts(Request $request){
-        $customer = collect();
-        $customer_price_list_no = null;
-
-        if(userrole() == 4){
-            $customer = @Auth::user()->customer;
-            $customer_price_list_no = @Auth::user()->customer->price_list_num;
-        }elseif (!is_null(@Auth::user()->created_by)) {
-            $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
-            if(!is_null($customer)){
-                $customer = @$customer->customer;
-                $customer_price_list_no = @$customer->price_list_num;
-            }
-        }
-
-        $products = LocalOrderItem::orderBy('id', 'DESC');
-
-        $products->whereHas('order', function($q) use ($customer){
-            $q->where('customer_id' ,'=', $customer->id);
-        });
-
-        if($request->filter_search != ""){
-            $products->whereHas('product', function($q) use ($request) {
-                $q->where('item_name','LIKE',"%".$request->filter_search."%");
-            });
-        } else {
-            $products->with('product');
-        }
-
-        $products->groupBy('product_id');
-
-        return DataTables::of($products)
-                          ->addIndexColumn()
-                          ->addColumn('item_name', function($row) {
-                              return @$row->product->item_name ?? "";
-                          })
-                          ->addColumn('item_code', function($row) {
-                              return @$row->product->item_code ?? "";
-                          })
-                          ->addColumn('price', function($row) use ($customer_price_list_no) {
-                              return "₱ ".get_product_customer_price(@$row->product->item_prices,$customer_price_list_no);
-                          })
-                          ->addColumn('action', function($row) {
-                            if(is_in_cart(@$row->product->id) == 1){
-                                $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
-                            }else{
-                                $btn = '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm addToCart" data-url="'.route('cart.add',@$row->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>
-                                <a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
-                            }
-
-                            $btn .= '<a href="' . route('product-list.show',@$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm m-3">
-                                    <i class="fa fa-eye"></i>
-                                </a>';
-
-                            return $btn;
-                          })
-                          ->orderColumn('item_name', function ($query, $order) {
-                            $query->join("products",function($join){
-                                $join->on("products.id","=","product_id");
-                            })->orderBy('product_groups.group_name', $order);
-                          })
-                          ->rawColumns(['action'])
-                          ->make(true);
-    }
-
 }

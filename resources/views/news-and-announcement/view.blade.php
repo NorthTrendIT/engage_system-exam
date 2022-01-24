@@ -197,7 +197,7 @@ $(document).ready(function() {
           columns: [
               {data: 'DT_RowIndex'},
               {data: 'user_name', name: 'user_name', orderable: false},
-              @if(@$data->module == 'customer' && @$data->module == 'role' && @$data->module == 'sales_specialist')
+              @if(@$data->module == 'customer' || @$data->module == 'role' || @$data->module == 'sales_specialist')
               {data: 'role', name: 'role', orderable: false},
               @endif
               @if(@$data->module == 'customer_class')
@@ -210,7 +210,7 @@ $(document).ready(function() {
           ],
           drawCallback:function(){
               $(function () {
-                $('[data-toggle="tooltip"]').tooltip()
+                $('[data-toggle="tooltip"]').tooltip();
                 $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
               })
           },

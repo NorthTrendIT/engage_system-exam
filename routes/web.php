@@ -150,8 +150,18 @@ Route::middleware(['auth'])->group(function(){
     	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index')->middleware('not-super-admin');
     	    Route::get('product-list/{id}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show')->middleware('not-super-admin');
     	    Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all')->middleware('not-super-admin');
-            Route::get('recommended-products', 'App\Http\Controllers\ProductListController@RecommendedProducts')->name('product-list.recommended-products')->middleware('not-super-admin');
-            Route::post('recommended-products/get-all', 'App\Http\Controllers\ProductListController@getAllRecommendedProducts')->name('product-list.recommended-products.get-all')->middleware('not-super-admin');
+
+            Route::resource('recommended-products', 'App\Http\Controllers\RecommendedProductController')->middleware('not-super-admin');
+            Route::post('recommended-products/get-all', 'App\Http\Controllers\RecommendedProductController@getAll')->name('recommended-products.get-all')->middleware('not-super-admin');
+            Route::post('recommended-products/get-customers/','App\Http\Controllers\RecommendedProductController@getCustomers')->name('recommended-products.getCustomers')->middleware('not-super-admin');
+            Route::get('recommended-products/customer-cart/{id}','App\Http\Controllers\RecommendedProductController@customerCart')->name('recommended-products.goToCart')->middleware('not-super-admin');
+            Route::post('recommended-products/customer-cart/add/{id}','App\Http\Controllers\RecommendedProductController@addToCart')->name('recommended-products.cart.add')->middleware('not-super-admin');
+            Route::post('recommended-products/customer-cart/remove/{id}','App\Http\Controllers\RecommendedProductController@removeFromCart')->name('recommended-products.cart.remove')->middleware('not-super-admin');
+            Route::post('recommended-products/customer-cart/update-qty/{id}','App\Http\Controllers\RecommendedProductController@updateQty')->name('recommended-products.cart.update-qty')->middleware('not-super-admin');
+            Route::post('recommended-products/customer-cart/qty-plus/{id}','App\Http\Controllers\RecommendedProductController@qtyPlus')->name('recommended-products.cart.qty-plus')->middleware('not-super-admin');
+            Route::post('recommended-products/customer-cart/qty-minus/{id}','App\Http\Controllers\RecommendedProductController@qtyMinus')->name('recommended-products.cart.qty-minus')->middleware('not-super-admin');
+            Route::post('recommended-products/customer-cart/placeOrder','App\Http\Controllers\RecommendedProductController@placeOrder')->name('recommended-products.cart.placeOrder')->middleware('not-super-admin');
+            Route::post('recommended-products/customer-cart/saveToDraft','App\Http\Controllers\RecommendedProductController@saveToDraft')->name('recommended-products.cart.saveToDraft')->middleware('not-super-admin');
 
 
             // Territories

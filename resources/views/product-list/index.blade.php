@@ -12,7 +12,7 @@
 
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('product-list.recommended-products') }}" class="btn btn-sm btn-primary create-btn">Recommended Products</a>
+        <a href="{{ route('recommended-products.index') }}" class="btn btn-sm btn-primary create-btn">Recommended Products</a>
         <!--end::Button-->
       </div>
 
@@ -55,7 +55,9 @@
                               <th>Name</th>
                               <!-- <th>Brand</th>
                               <th>Code</th> -->
+                              @if(userrole() != 2)
                               <th>Price</th>
+                              @endif
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -168,8 +170,10 @@ $(document).ready(function() {
               {data: 'item_name', name: 'item_name'},
             //   {data: 'brand', name: 'brand'},
             //   {data: 'item_code', name: 'item_code'},
+              @if(userrole() != 2)
               {data: 'price', name: 'price'},
               {data: 'action', name: 'action'},
+              @endif
           ],
           drawCallback:function(){
               $(function () {
