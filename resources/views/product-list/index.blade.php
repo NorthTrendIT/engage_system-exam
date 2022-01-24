@@ -86,15 +86,12 @@
                             <tr>
                               <th style="width:24px !important">No.</th>
                               <th>Name</th>
-<<<<<<< HEAD
                               <!-- <th>Brand</th>
                               <th>Code</th> -->
                               @if(userrole() != 2)
-=======
                               <th>Brand</th>
                               <th>Product Line</th>
                               <th>Product Category</th>
->>>>>>> 7ae80c7d088851b1318ad3f7ee011940ff05acfd
                               <th>Price</th>
                               @endif
                               <th>Action</th>
