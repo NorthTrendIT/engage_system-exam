@@ -25,7 +25,7 @@ class CartController extends Controller
      */
     public function index()
     {
-        $customer_id = Auth::user()->customer_id;
+        $customer_id = @Auth::user()->customer_id;
         $total = 0;
         $data = Cart::with(['product', 'customer'])->where('customer_id', $customer_id)->get();
         $address = CustomerBpAddress::where('customer_id', $customer_id)->get();
