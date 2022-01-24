@@ -17,7 +17,7 @@ class ProductListController extends Controller
 {
     public function index(){
 
-        $product_groups = $product_line = $product_category = collect();
+        $c_product_groups = $c_product_line = $c_product_category = collect();
 
         $customer_id = null;
 
