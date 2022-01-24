@@ -7,6 +7,10 @@ use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\Quotation;
 use App\Models\QuotationItem;
+use App\Models\SapConnection;
+
+use App\Jobs\StoreQuotations;
+use App\Jobs\SyncNextQuotations;
 
 class SAPQuotations
 {
@@ -85,7 +89,7 @@ class SAPQuotations
 
             if($data['value']){
 
-                foreach ($data['value'] as $value) {
+                /*foreach ($data['value'] as $value) {
 
                     $insert = array(
                                 'doc_entry' => $value['DocEntry'],
@@ -159,10 +163,23 @@ class SAPQuotations
                         }
 
                     }
-                }
+                }*/
+
+                $where = array(
+                            'db_name' => $this->database,
+                            'user_name' => $this->username,
+                        );
+
+                $sap_connection = SapConnection::where($where)->first();
+
+                // Store Data of Quotations in database
+                StoreQuotations::dispatch($data['value'],@$sap_connection->id);
 
                 if(!empty($data['odata.nextLink'])){
-                    $this->addQuotationsDataInDatabase($data['odata.nextLink']);
+
+                    SyncNextQuotations::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
+                    
+                    //$this->addQuotationsDataInDatabase($data['odata.nextLink']);
                 } else {
                     add_sap_log([
                         'status' => "completed",

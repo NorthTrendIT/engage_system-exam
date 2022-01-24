@@ -28,7 +28,7 @@ class SapConnectionController extends Controller
      */
     public function create()
     {
-        //
+        return view('sap-connection.add');
     }
 
     /**
@@ -44,9 +44,13 @@ class SapConnectionController extends Controller
         $rules = array(
                     'company_name' => 'required|string|max:185',
                     'user_name' => 'required|string|max:185',
-                    'db_name' => 'required|string|max:185',
+                    'db_name' => 'required|string|max:185|unique:sap_connections,db_name',
                     'password' => 'required|string|max:185',
                 );
+
+        if(isset($input['id'])){
+            $rules['db_name'] = 'required|string|max:185|unique:sap_connections,db_name,'.$input['id'].',id';
+        }
 
         $validator = Validator::make($input, $rules);
 

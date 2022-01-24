@@ -29,13 +29,46 @@
             </div> --}}
             <div class="card-body">
               <div class="row">
-                <div class="col-md-6 mt-5">
+                {{-- <div class="col-md-6 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
                   </div>
+                </div> --}}
+
+                <div class="col-md-6 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_product" data-hide-search="false" data-placeholder="Search product" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($c_product_groups as $key)
+                    <option value="{{ $key->product_group->number }}">{{ $key->product_group->group_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_product_category" data-control="select2" data-hide-search="false" data-placeholder="Select product category" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($c_product_category as $key => $c)
+                    <option value="{{ $c }}">{{ $c }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_product_line" data-control="select2" data-hide-search="false" data-placeholder="Select product line" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($c_product_line as $key => $l)
+                    <option value="{{ $l }}">{{ $l }}</option>
+                    @endforeach
+                  </select>
                 </div>
 
                 <div class="col-md-3 mt-5">
@@ -53,9 +86,15 @@
                             <tr>
                               <th style="width:24px !important">No.</th>
                               <th>Name</th>
+<<<<<<< HEAD
                               <!-- <th>Brand</th>
                               <th>Code</th> -->
                               @if(userrole() != 2)
+=======
+                              <th>Brand</th>
+                              <th>Product Line</th>
+                              <th>Product Category</th>
+>>>>>>> 7ae80c7d088851b1318ad3f7ee011940ff05acfd
                               <th>Price</th>
                               @endif
                               <th>Action</th>
@@ -148,7 +187,10 @@ $(document).ready(function() {
       var table = $("#myTable");
       table.DataTable().destroy();
 
-      $filter_search = $('[name="filter_search"]').val();
+      $filter_search = $('[name="filter_product"]').val();
+      $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+      $filter_product_category = $('[name="filter_product_category"]').find('option:selected').val();
+      $filter_product_line = $('[name="filter_product_line"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -163,6 +205,9 @@ $(document).ready(function() {
               },
               data:{
                 filter_search : $filter_search,
+                filter_brand : $filter_brand,
+                filter_product_category : $filter_product_category,
+                filter_product_line : $filter_product_line,
               }
           },
           columns: [
@@ -174,6 +219,11 @@ $(document).ready(function() {
               {data: 'price', name: 'price'},
               {data: 'action', name: 'action'},
               @endif
+              {data: 'brand', name: 'brand'},
+              {data: 'u_item_line', name: 'u_item_line'},
+              {data: 'u_tires', name: 'u_tires'},
+              {data: 'price', name: 'price', orderable:false,searchable:false},
+              {data: 'action', name: 'action', orderable:false,searchable:false},
           ],
           drawCallback:function(){
               $(function () {
@@ -192,6 +242,9 @@ $(document).ready(function() {
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
+      $('[name="filter_brand"]').val('').trigger('change');
+      $('[name="filter_product_category"]').val('').trigger('change');
+      $('[name="filter_product_line"]').val('').trigger('change');
       render_table();
     })
 //   getProductList();
@@ -273,6 +326,35 @@ $(document).ready(function() {
             });
     });
   @endif
+
+  $('[name="filter_product"]').select2({
+    ajax: {
+      url: "{{route('product-list.get-products')}}",
+      type: "post",
+      dataType: 'json',
+      delay: 250,
+
+      data: function (params) {
+          return {
+              _token: "{{ csrf_token() }}",
+              filter_search: params.term
+          };
+      },
+      processResults: function (response) {
+        return {
+          results:  $.map(response, function (item) {
+                        return {
+                          text: item.item_name,
+                          id: item.item_name
+                        }
+                    })
+        };
+      },
+      cache: true
+    },
+    tags: true,
+    minimumInputLength: 2,
+  });
 });
 </script>
 @endpush

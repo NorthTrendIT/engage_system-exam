@@ -7,6 +7,9 @@ use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\SapConnection;
+use App\Jobs\StoreOrders;
+use App\Jobs\SyncNextOrders;
 
 class SAPOrders
 {
@@ -85,7 +88,7 @@ class SAPOrders
 
             if($data['value']){
 
-                foreach ($data['value'] as $order) {
+                /*foreach ($data['value'] as $order) {
 
                     $insert = array(
                                 'doc_entry' => $order['DocEntry'],
@@ -160,10 +163,23 @@ class SAPOrders
                         }
 
                     }
-                }
+                }*/
 
-                if($data['odata.nextLink']){
-                    $this->addOrdersDataInDatabase($data['odata.nextLink']);
+                $where = array(
+                            'db_name' => $this->database,
+                            'user_name' => $this->username,
+                        );
+
+                $sap_connection = SapConnection::where($where)->first();
+
+                // Store Data of Order in database
+                StoreOrders::dispatch($data['value'], @$sap_connection->id);
+
+                if(isset($data['odata.nextLink'])){
+
+                    SyncNextOrders::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
+
+                    //$this->addOrdersDataInDatabase($data['odata.nextLink']);
                 } else {
                     add_sap_log([
                         'status' => "completed",

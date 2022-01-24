@@ -27,7 +27,16 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
-              <h5>View Details</h5>
+              <div class="card-title">
+                <h5>View Details</h5>
+              </div>
+              <div class="card-toolbar">
+
+                @if( (is_null($data->created_by) && userrole() == 1) || (!is_null($data->created_by) && $data->created_by == Auth::id()) )
+                  <a href="javascript:" data-href="{{ route('login-by-link', encryptValue($data->id."-".time())) }}" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm copy_login_link" title="Copy Login Link"><i class="fa fa-link"></i></a>
+                @endif
+
+              </div>
             </div>
             <div class="card-body">
               
@@ -175,5 +184,29 @@
   });
 
   $('#chart-container').append(orgchart);
+
+  $(document).on('click', '.copy_login_link', function(event) {
+    event.preventDefault();
+
+    // Create a "hidden" input
+    var aux = document.createElement("input");
+
+    // Assign it the value of the specified element
+    aux.setAttribute("value", $(this).attr('data-href'));
+
+    // Append it to the body
+    document.body.appendChild(aux);
+
+    // Highlight its content
+    aux.select();
+
+    // Copy the highlighted text
+    document.execCommand("copy");
+
+    // Remove it from the body
+    document.body.removeChild(aux);
+
+    toast_success("Link copied successfully !");
+  });
 </script>
 @endpush

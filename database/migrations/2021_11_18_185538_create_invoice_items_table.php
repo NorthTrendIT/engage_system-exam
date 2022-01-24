@@ -17,7 +17,7 @@ class CreateInvoiceItemsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('invoice_id');
             $table->integer('line_num');
-            $table->string('item_code');
+            $table->string('item_code')->nullable();
             $table->string('item_description')->nullable();
             $table->double('quantity', 10, 3);
             $table->date('ship_date')->nullable();

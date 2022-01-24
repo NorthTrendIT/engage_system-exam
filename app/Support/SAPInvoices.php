@@ -7,6 +7,9 @@ use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Jobs\StoreInvoices;
+use App\Jobs\SyncNextInvoices;
+use App\Models\SapConnection;
 
 class SAPInvoices
 {
@@ -85,7 +88,7 @@ class SAPInvoices
 
             if($data['value']){
 
-                foreach ($data['value'] as $invoice) {
+                /*foreach ($data['value'] as $invoice) {
 
                     $insert = array(
                                 'doc_entry' => $invoice['DocEntry'],
@@ -158,10 +161,23 @@ class SAPInvoices
                         }
 
                     }
-                }
+                }*/
 
-                if($data['odata.nextLink']){
-                    $this->addInvoicesDataInDatabase($data['odata.nextLink']);
+                $where = array(
+                            'db_name' => $this->database,
+                            'user_name' => $this->username,
+                        );
+
+                $sap_connection = SapConnection::where($where)->first();
+
+                // Store Data of Invoices in database
+                StoreInvoices::dispatch($data['value'],@$sap_connection->id);
+
+                if(isset($data['odata.nextLink'])){
+
+                    SyncNextInvoices::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
+
+                    //$this->addInvoicesDataInDatabase($data['odata.nextLink']);
                 } else {
                     add_sap_log([
                         'status' => "completed",

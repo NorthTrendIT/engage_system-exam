@@ -20,7 +20,7 @@ class SyncInvoices implements ShouldQueue
      * @return void
      */
 
-    protected $sap_customer;
+    protected $sap_invoices;
 
     protected $database;
     protected $username;
@@ -42,9 +42,9 @@ class SyncInvoices implements ShouldQueue
      */
     public function handle()
     {
-        $sap_order = new SAPInvoices($this->database, $this->username, $this->password, $this->log_id);
+        $sap_invoices = new SAPInvoices($this->database, $this->username, $this->password, $this->log_id);
 
-        // Save Data of order in database
-        $sap_order->addInvoicesDataInDatabase();
+        // Save Data of invoices in database
+        $sap_invoices->addInvoicesDataInDatabase();
     }
 }

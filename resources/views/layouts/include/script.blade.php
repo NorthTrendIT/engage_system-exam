@@ -21,8 +21,12 @@
 	$(".fancybox").fancybox();
 
 	@if(Session::has('role_access_error_message'))
-    toast_error("{{Session::get('role_access_error_message')}}")
-    @endif
+  toast_error("{{Session::get('role_access_error_message')}}")
+  @endif
+
+  @if(Session::has('login_success_message'))
+  toast_success("{{Session::get('login_success_message')}}")
+  @endif
     
 	function show_loader() {
 		$.LoadingOverlay("show",{

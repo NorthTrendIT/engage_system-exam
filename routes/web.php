@@ -20,7 +20,8 @@ Route::get('/', function () {
 
 
 Route::middleware('guest')->group(function(){
-	Route::get('/login','App\Http\Controllers\LoginController@index')->name('login');
+    Route::get('/login','App\Http\Controllers\LoginController@index')->name('login');
+	Route::get('/login-by-link/{hash?}','App\Http\Controllers\LoginController@loginByLink')->name('login-by-link');
 	Route::post('/login','App\Http\Controllers\LoginController@checkLogin')->name('check-login');
 
 	// Forgot Password
@@ -150,7 +151,7 @@ Route::middleware(['auth'])->group(function(){
     	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index')->middleware('not-super-admin');
     	    Route::get('product-list/{id}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show')->middleware('not-super-admin');
     	    Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all')->middleware('not-super-admin');
-
+            Route::post('product-list/get-products', 'App\Http\Controllers\ProductListController@getProducts')->name('product-list.get-products')->middleware('not-super-admin');
             Route::resource('recommended-products', 'App\Http\Controllers\RecommendedProductController')->middleware('not-super-admin');
             Route::post('recommended-products/get-all', 'App\Http\Controllers\RecommendedProductController@getAll')->name('recommended-products.get-all')->middleware('not-super-admin');
             Route::post('recommended-products/get-customers/','App\Http\Controllers\RecommendedProductController@getCustomers')->name('recommended-products.getCustomers')->middleware('not-super-admin');
@@ -162,6 +163,8 @@ Route::middleware(['auth'])->group(function(){
             Route::post('recommended-products/customer-cart/qty-minus/{id}','App\Http\Controllers\RecommendedProductController@qtyMinus')->name('recommended-products.cart.qty-minus')->middleware('not-super-admin');
             Route::post('recommended-products/customer-cart/placeOrder','App\Http\Controllers\RecommendedProductController@placeOrder')->name('recommended-products.cart.placeOrder')->middleware('not-super-admin');
             Route::post('recommended-products/customer-cart/saveToDraft','App\Http\Controllers\RecommendedProductController@saveToDraft')->name('recommended-products.cart.saveToDraft')->middleware('not-super-admin');
+
+
 
 
             // Territories

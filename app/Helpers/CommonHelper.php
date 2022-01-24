@@ -329,3 +329,21 @@ function getRecommendedProducts(){
     return $data;
 
 }
+
+function encryptValue($value){
+    if($value){
+        return \Crypt::encryptString($value);
+    }
+    return "";
+}
+
+function decryptValue($value){
+    if($value){
+        try {
+            return \Crypt::decryptString($value);
+        } catch (\Exception $e) {
+            abort(404);
+        }
+    }
+    return "";
+}

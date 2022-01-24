@@ -128,7 +128,8 @@ class UserController extends Controller
                 $mail_data = array(
                                 'name' => $input['first_name'] . " ". $input['last_name'],
                                 'email' => $input['email'],
-                                'password' => $request->password,
+                                // 'password' => $request->password,
+                                'link' => route('login-by-link', encryptValue($user->id."-".time())),
                             );
 
                 Mail::send('emails.user_welcome', $mail_data, function($message) use($mail_data) {
@@ -353,18 +354,25 @@ class UserController extends Controller
                                 $btn = "";
 
                                 if( (is_null($row->created_by) && userrole() == 1) || (!is_null($row->created_by) && $row->created_by == Auth::id()) ){
-                                    $btn .= '<a href="' . route('user.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                    $btn .= '<a href="' . route('user.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10" title="Edit">
                                         <i class="fa fa-pencil"></i>
                                       </a>';
                                 }
 
-                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('user.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
+                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('user.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete mr-10" title="Delete">
                                     <i class="fa fa-trash"></i>
                                   </a>';
 
-                                $btn .= ' <a href="' . route('user.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                $btn .= ' <a href="' . route('user.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm mr-10" title="View">
                                     <i class="fa fa-eye"></i>
                                   </a>';
+
+
+                                if( (is_null($row->created_by) && userrole() == 1) || (!is_null($row->created_by) && $row->created_by == Auth::id()) ){
+                                    $btn .= '<a href="javascript:" data-href="' . route('login-by-link', encryptValue($row->id."-".time())). '" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm copy_login_link" title="Copy Login Link">
+                                        <i class="fa fa-link"></i>
+                                      </a>';
+                                }
 
                                 return $btn;
                             })

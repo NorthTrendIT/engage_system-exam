@@ -63,4 +63,39 @@ class LoginController extends Controller
 
     	return $response;
     }
+
+    public function loginByLink($hash = ""){
+
+    	if($hash){
+    		$hash = decryptValue($hash);
+    		
+    		$hash = explode("-", $hash);
+    		$id = @$hash[0];
+    		$time = @$hash[1];
+
+    		if($id && $time){
+    			$expiry = strtotime('+24 hours', $time);
+    			
+    			if($time <= $expiry){
+		    		$user = User::where('is_active',true)->where('id', $id)->first();
+
+		    		if($user){
+
+		                if(!is_null($user->role)){
+			                Auth::loginUsingId($id);
+
+			                \Session::flash('login_success_message', "Login successfully !");
+			                return redirect()->route('home');
+		                }
+		    			
+		    		}
+    			}
+
+    		}
+
+    	}
+
+    	return abort(404);
+    	
+    }
 }

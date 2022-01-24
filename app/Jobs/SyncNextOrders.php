@@ -8,9 +8,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Support\SAPQuotations;
+use App\Support\SAPOrders;
 
-class SyncQuotations implements ShouldQueue
+class SyncNextOrders implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -19,20 +19,23 @@ class SyncQuotations implements ShouldQueue
      *
      * @return void
      */
-
-    protected $sap_customer;
+    protected $sap_orders;
+    
+    protected $next_url;
 
     protected $database;
     protected $username;
     protected $password;
     protected $log_id;
 
-    public function __construct($database, $username, $password, $log_id)
+    public function __construct($database, $username, $password, $next_url, $log_id = false)
     {
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
-        $this->$log_id  = $log_id;
+        $this->log_id = $log_id;
+
+        $this->next_url = $next_url;
     }
 
     /**
@@ -42,9 +45,9 @@ class SyncQuotations implements ShouldQueue
      */
     public function handle()
     {
-        $sap_order = new SAPQuotations($this->database, $this->username, $this->password, $this->log_id);
-
-        // Save Data of order in database
-        $sap_order->addQuotationsDataInDatabase();
+        $sap_orders = new SAPOrders($this->database, $this->username, $this->password, $this->log_id);
+        
+        // Save Data of orders in database
+        $sap_orders->addOrdersDataInDatabase($this->next_url);
     }
 }
