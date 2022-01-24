@@ -40,8 +40,26 @@
 
                   <div class="col-md-12">
                     <div class="form-group">
+                      <label>Company<span class="asterisk">*</span></label>
+                      <select class="form-select form-select-solid" id='selectCompany' data-control="select2" data-hide-search="false" name="company_id" data-allow-clear="true" data-placeholder="Select company">
+                        <option value=""></option>
+
+                        @foreach($company as $c)
+                          <option value="{{ $c->id }}" @if(isset($edit) && $c->id == $edit->sap_connection_id ) selected @endif>{{ $c->company_name }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                  </div>
+
+                </div>
+
+
+                <div class="row mb-5">
+
+                  <div class="col-md-12">
+                    <div class="form-group">
                       <label>Customer<span class="asterisk">*</span></label>
-                      <select class="form-select form-select-solid" id='selectCustomer' data-control="select2" data-hide-search="false" name="customer_id">
+                      <select class="form-select form-select-solid" id='selectCustomer' data-control="select2" data-hide-search="false" name="customer_ids[]">
                       </select>
                     </div>
                   </div>
@@ -158,7 +176,10 @@ $(document).ready(function() {
           errorClass: "is-invalid",
           validClass: "is-valid",
           rules: {
-            customer_id:{
+            company_id:{
+              required: true
+            },
+            "customer_ids[]":{
               required: true
             },
             "ss_ids[]":{
@@ -166,10 +187,12 @@ $(document).ready(function() {
             }
           },
           messages: {
-            name:{
-              required: "Please enter name.",
-              maxlength:'Please enter name less than 185 character',
-            }
+            "customer_ids[]":{
+              required: "Please select customers.",
+            },
+            "ss_ids[]":{
+              required: "Please select sales specialist.",
+            },
           },
       });
 
@@ -247,7 +270,8 @@ $(document).ready(function() {
             data: function (params) {
                 return {
                     _token: "{{ csrf_token() }}",
-                    search: params.term
+                    search: params.term,
+                    sap_connection_id: $('[name="company_id"]').val()
                 };
             },
             processResults: function (response) {
@@ -259,20 +283,11 @@ $(document).ready(function() {
         },
         @endif
         placeholder: 'Select Customer',
-        multiple: false,
+        multiple: true,
         @if(isset($edit))
         data: $initialCustomer,
         @endif
     });
-
-    /*$(document).on("change", "#selectCustomer", function (e) {
-      e.preventDefault();
-      var selected_customer_data = $("#selectCustomer").select2('data')[0];
-
-      console.log(data);
-
-    });*/
-
 
     $("#selectSalseSpecialist").select2({
       ajax: {
@@ -281,16 +296,16 @@ $(document).ready(function() {
           dataType: 'json',
           delay: 250,
           data: function (params) {
-            var customer_data = $("#selectCustomer").select2('data')[0];
+            /*var customer_data = $("#selectCustomer").select2('data')[0];
             sap_connection_id = null;
             if(customer_data != undefined){
               sap_connection_id = customer_data.sap_connection_id;
-            }
+            }*/
 
             return {
               _token: "{{ csrf_token() }}",
               search: params.term,
-              sap_connection_id: sap_connection_id
+              sap_connection_id: $('[name="company_id"]').val()
             };
           },
           processResults: function (response) {
@@ -314,16 +329,11 @@ $(document).ready(function() {
           dataType: 'json',
           delay: 250,
           data: function (params) {
-            var customer_data = $("#selectCustomer").select2('data')[0];
-            sap_connection_id = null;
-            if(customer_data != undefined){
-              sap_connection_id = customer_data.sap_connection_id;
-            }
-
+            
             return {
               _token: "{{ csrf_token() }}",
               search: params.term,
-              sap_connection_id: sap_connection_id
+              sap_connection_id: $('[name="company_id"]').val()
             };
           },
           processResults: function (response) {
@@ -347,16 +357,11 @@ $(document).ready(function() {
           dataType: 'json',
           delay: 250,
           data: function (params) {
-            var customer_data = $("#selectCustomer").select2('data')[0];
-            sap_connection_id = null;
-            if(customer_data != undefined){
-              sap_connection_id = customer_data.sap_connection_id;
-            }
-
+            
             return {
               _token: "{{ csrf_token() }}",
               search: params.term,
-              sap_connection_id: sap_connection_id
+              sap_connection_id: $('[name="company_id"]').val()
             };
           },
           processResults: function (response) {
@@ -380,16 +385,11 @@ $(document).ready(function() {
           dataType: 'json',
           delay: 250,
           data: function (params) {
-            var customer_data = $("#selectCustomer").select2('data')[0];
-            sap_connection_id = null;
-            if(customer_data != undefined){
-              sap_connection_id = customer_data.sap_connection_id;
-            }
-
+            
             return {
               _token: "{{ csrf_token() }}",
               search: params.term,
-              sap_connection_id: sap_connection_id
+              sap_connection_id: $('[name="company_id"]').val()
             };
           },
           processResults: function (response) {
@@ -407,8 +407,9 @@ $(document).ready(function() {
     });
 
 
-    $(document).on('change', '[name="customer_id"]', function(event) {
+    $(document).on('change', '[name="company_id"]', function(event) {
       event.preventDefault();
+      $('#selectCustomer').val('').trigger('change');
       $('#selectSalseSpecialist').val('').trigger('change');
       $('#selectProductBrand').val('').trigger('change');
       $('#selectProductLine').val('').trigger('change');
