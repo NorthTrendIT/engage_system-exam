@@ -12,7 +12,7 @@
 
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('product-list.recommended-products') }}" class="btn btn-sm btn-primary create-btn">Recommended Products</a>
+        <a href="{{ route('recommended-products.index') }}" class="btn btn-sm btn-primary create-btn">Recommended Products</a>
         <!--end::Button-->
       </div>
 
@@ -86,10 +86,14 @@
                             <tr>
                               <th style="width:24px !important">No.</th>
                               <th>Name</th>
+                              <!-- <th>Brand</th>
+                              <th>Code</th> -->
+                              @if(userrole() != 2)
                               <th>Brand</th>
                               <th>Product Line</th>
                               <th>Product Category</th>
                               <th>Price</th>
+                              @endif
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -206,6 +210,12 @@ $(document).ready(function() {
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'item_name', name: 'item_name'},
+            //   {data: 'brand', name: 'brand'},
+            //   {data: 'item_code', name: 'item_code'},
+              @if(userrole() != 2)
+              {data: 'price', name: 'price'},
+              {data: 'action', name: 'action'},
+              @endif
               {data: 'brand', name: 'brand'},
               {data: 'u_item_line', name: 'u_item_line'},
               {data: 'u_tires', name: 'u_tires'},
@@ -320,7 +330,7 @@ $(document).ready(function() {
       type: "post",
       dataType: 'json',
       delay: 250,
-      
+
       data: function (params) {
           return {
               _token: "{{ csrf_token() }}",

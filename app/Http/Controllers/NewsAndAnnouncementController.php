@@ -509,6 +509,8 @@ class NewsAndAnnouncementController extends Controller
             $q->orderBy('id', 'desc');
         });
 
+        // dd($data->get());
+
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('user_name', function($row) {
@@ -521,7 +523,7 @@ class NewsAndAnnouncementController extends Controller
                                 return '-';
                             })
                             ->addColumn('role', function($row) {
-                                return $row->user->role->name;
+                                return 'Customer';
                             })
                             ->addColumn('is_seen', function($row) {
                                 if($row->is_seen){

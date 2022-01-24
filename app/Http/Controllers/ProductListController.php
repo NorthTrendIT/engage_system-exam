@@ -8,6 +8,7 @@ use App\Models\CustomerProductGroup;
 use App\Models\CustomerProductItemLine;
 use App\Models\CustomerProductTiresCategory;
 use App\Models\User;
+use App\Models\Customer;
 use App\Models\LocalOrderItem;
 use Auth;
 use DataTables;
@@ -63,7 +64,7 @@ class ProductListController extends Controller
             $brand_product = Product::where('is_active', true)->whereIn('items_group_code', $product_groups)->get()->toArray();
             $c_product_line = array_unique(
                                         array_filter(
-                                                array_merge($c_product_line, 
+                                                array_merge($c_product_line,
                                                     array_column($brand_product, 'u_item_line')
                                                 )
                                             )
@@ -72,13 +73,13 @@ class ProductListController extends Controller
 
             $c_product_category = array_unique(
                                         array_filter(
-                                                array_merge($c_product_category, 
+                                                array_merge($c_product_category,
                                                     array_column($brand_product, 'u_tires')
                                                 )
                                             )
                                     );
             asort($c_product_category);
-           
+
         }
 
       	return view('product-list.index',compact('c_product_groups','c_product_line','c_product_category'));
