@@ -42,7 +42,8 @@ class CustomersSalesSpecialistsController extends Controller
      */
     public function create()
     {
-        return view('customers-sales-specialist.add');
+        $company = SapConnection::all();
+        return view('customers-sales-specialist.add', compact('company'));
     }
 
     /**
@@ -54,25 +55,30 @@ class CustomersSalesSpecialistsController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
+        // dd($input);
 
         $rules = array(
-                    'customer_id' => 'required|exists:customers,id',
+
+                    'company_id' => 'required|exists:sap_connections,id',
+
+                    'customer_ids' => 'required',
+                    'customer_ids.*' => 'required|exists:customers,id,sap_connection_id,'.$input['company_id'],
                     
                     'ss_ids' => 'required',
-                    'ss_ids.*' => 'required|exists:users,id',
+                    'ss_ids.*' => 'required|exists:users,id,sap_connection_id,'.$input['company_id'],
 
                     'product_group_id' => 'nullable|array',
-                    'product_group_id.*' => 'exists:product_groups,id',
+                    'product_group_id.*' => 'exists:product_groups,id,sap_connection_id,'.$input['company_id'],
 
                     'product_tires_category_id' => 'nullable|array',
-                    'product_tires_category_id.*' => 'exists:product_tires_categories,id',
+                    'product_tires_category_id.*' => 'exists:product_tires_categories,id,sap_connection_id,'.$input['company_id'],
 
                     'product_item_line_id' => 'nullable|array',
-                    'product_item_line_id.*' => 'exists:product_item_lines,id',
+                    'product_item_line_id.*' => 'exists:product_item_lines,id,sap_connection_id,'.$input['company_id'],
                 );
 
         $message = array(
-                        'customer_id.required' => 'Please select customer.',
+                        // 'customer_id.required' => 'Please select customer.',
                         'ss_ids.required' => 'Please select sales specialists.',
                     );
 
@@ -83,13 +89,13 @@ class CustomersSalesSpecialistsController extends Controller
         }else{
 
             // Create Time
-            if(!isset($input['id'])){
-                $count = CustomersSalesSpecialist::where('customer_id', $input['customer_id'])->count();
+            // if(!isset($input['id'])){
+            //     $count = CustomersSalesSpecialist::where('customer_id', $input['customer_id'])->count();
 
-                if($count > 0){
-                    return $response = ['status' => false,'message' => "The selected customer is already used."];
-                }
-            }
+            //     if($count > 0){
+            //         return $response = ['status' => false,'message' => "The selected customer is already used."];
+            //     }
+            // }
 
 
             if(isset($input['id'])){
@@ -98,43 +104,46 @@ class CustomersSalesSpecialistsController extends Controller
                 $message = "Created successfully.";
             }
 
-            CustomersSalesSpecialist::where('customer_id', $input['customer_id'])->delete();
-            if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
-                foreach($input['ss_ids'] as $value){
-                    $ss = new CustomersSalesSpecialist();
-                    $ss->customer_id = $input['customer_id'];
-                    $ss->ss_id = $value;
-                    $ss->save();
-                }
-            }
 
-            CustomerProductGroup::where('customer_id', $input['customer_id'])->delete();
-            if(isset($input['product_group_id']) && !empty($input['product_group_id'])){
-                foreach($input['product_group_id'] as $value){
-                    $ss = new CustomerProductGroup();
-                    $ss->customer_id = $input['customer_id'];
-                    $ss->product_group_id = $value;
-                    $ss->save();
+            foreach($input['customer_ids'] as $key => $customer){
+                CustomersSalesSpecialist::where('customer_id', $customer)->delete();
+                if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
+                    foreach($input['ss_ids'] as $value){
+                        $ss = new CustomersSalesSpecialist();
+                        $ss->customer_id = $customer;
+                        $ss->ss_id = $value;
+                        $ss->save();
+                    }
                 }
-            }
 
-            CustomerProductItemLine::where('customer_id', $input['customer_id'])->delete();
-            if(isset($input['product_item_line_id']) && !empty($input['product_item_line_id'])){
-                foreach($input['product_item_line_id'] as $value){
-                    $ss = new CustomerProductItemLine();
-                    $ss->customer_id = $input['customer_id'];
-                    $ss->product_item_line_id = $value;
-                    $ss->save();
+                CustomerProductGroup::where('customer_id', $customer)->delete();
+                if(isset($input['product_group_id']) && !empty($input['product_group_id'])){
+                    foreach($input['product_group_id'] as $value){
+                        $ss = new CustomerProductGroup();
+                        $ss->customer_id = $customer;
+                        $ss->product_group_id = $value;
+                        $ss->save();
+                    }
                 }
-            }
 
-            CustomerProductTiresCategory::where('customer_id', $input['customer_id'])->delete();
-            if(isset($input['product_tires_category_id']) && !empty($input['product_tires_category_id'])){
-                foreach($input['product_tires_category_id'] as $value){
-                    $ss = new CustomerProductTiresCategory();
-                    $ss->customer_id = $input['customer_id'];
-                    $ss->product_tires_category_id = $value;
-                    $ss->save();
+                CustomerProductItemLine::where('customer_id', $customer)->delete();
+                if(isset($input['product_item_line_id']) && !empty($input['product_item_line_id'])){
+                    foreach($input['product_item_line_id'] as $value){
+                        $ss = new CustomerProductItemLine();
+                        $ss->customer_id = $customer;
+                        $ss->product_item_line_id = $value;
+                        $ss->save();
+                    }
+                }
+
+                CustomerProductTiresCategory::where('customer_id', $customer)->delete();
+                if(isset($input['product_tires_category_id']) && !empty($input['product_tires_category_id'])){
+                    foreach($input['product_tires_category_id'] as $value){
+                        $ss = new CustomerProductTiresCategory();
+                        $ss->customer_id = $customer;
+                        $ss->product_tires_category_id = $value;
+                        $ss->save();
+                    }
                 }
             }
 
@@ -166,8 +175,9 @@ class CustomersSalesSpecialistsController extends Controller
     public function edit($id)
     {
         $edit = Customer::has('sales_specialist')->findOrFail($id);
+        $company = SapConnection::where('id', $edit->sap_connection_id)->get();
 
-        return view('customers-sales-specialist.add',compact('edit'));
+        return view('customers-sales-specialist.add',compact('edit', 'company'));
     }
 
     /**
@@ -369,24 +379,30 @@ class CustomersSalesSpecialistsController extends Controller
     public function getCustomers(Request $request){
         $search = $request->search;
 
-        $data = Customer::orderby('card_name','asc')->where('is_active',1)->limit(50);
-        if($search != ''){
-
-            $data->where(function($q) use ($search){
-                $q->orwhere('card_name', 'like', '%' .$search . '%');
-                $q->orwhere('card_code', 'like', '%' .$search . '%');
-            });
-        }
-
-        $data = $data->get();
-
         $response = array();
-        foreach($data as $value){
-            $response[] = array(
-                "id" => $value->id,
-                "text" => $value->card_name.' (Code: '.$value->card_code. (@$value->user->email ? ', Email: '.@$value->user->email : ""). ')',
-                "sap_connection_id" => $value->sap_connection_id
-            );
+        if($request->sap_connection_id){
+            $data = Customer::doesnthave('sales_specialist')->orderby('card_name','asc')->where('sap_connection_id',$request->sap_connection_id)->where('is_active',1)->limit(50);
+            if($search != ''){
+
+                $data->where(function($q) use ($search){
+                    $q->orwhere('card_name', 'like', '%' .$search . '%');
+                    $q->orwhere('card_code', 'like', '%' .$search . '%');
+
+                    $q->orwherehas('user', function($q1) use ($search){
+                        $q1->where('email', 'like', '%' .$search . '%');
+                    });
+                });
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+                $response[] = array(
+                    "id" => $value->id,
+                    "text" => $value->card_name.' (Code: '.$value->card_code. (@$value->user->email ? ', Email: '.@$value->user->email : ""). ')',
+                    // "sap_connection_id" => $value->sap_connection_id
+                );
+            }
         }
 
         return response()->json($response);
