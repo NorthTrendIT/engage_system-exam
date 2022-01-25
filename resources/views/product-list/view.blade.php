@@ -70,7 +70,10 @@
                       <div class="col-md-6">
 
                          <h5>{{ @$product->item_name ?? "" }}</h5>
+
+                         @if($customer)
                          <p><span class="mr-1 price"><strong>₱ {{ get_product_customer_price(@$product->item_prices,@$customer->price_list_num) }}</strong></span></p>
+                         @endif
                          <p class="pt-1">{!! @$product->technical_specifications ?? "" !!}</p>
                          <div class="table-responsive">
                             <table class="table table-sm table-borderless mb-0">
@@ -108,7 +111,7 @@
                             </tbody>
                             </table>
                          </div> -->
-                         @if(userdepartment() != 1)
+                         @if(userdepartment() != 1 && $customer)
                              <button type="button" class="btn btn-primary btn-md mr-1 mb-2">Buy now</button>
                              @if(is_in_cart(@$product->id) == 1)
                              <a class="btn btn-light btn-md mr-1 mb-2" href="{{ route('cart.index') }}">
@@ -177,6 +180,7 @@
 
         </div>
 
+        @if($customer)
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
             <div class="card card-xl-stretch mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-5">
@@ -238,7 +242,7 @@
                                         <h3 class="title">
                                             <a href="{{ route('product-list.show',@$item->product->id) }}">{{ @$item->product->item_name ?? "-" }}</a>
                                         </h3>
-
+                                        
                                         <div class="price">₱ {{ get_product_customer_price(@$item->product->item_prices,@$customer->price_list_num) }}</div>
                                         @if(userdepartment() != 1)
                                         @if(is_in_cart(@$item->product->id) == 1)
@@ -275,6 +279,7 @@
                 </div>
             </div>
         </div>
+        @endif
       </div>
     </div>
   </div>

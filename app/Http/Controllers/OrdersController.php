@@ -20,6 +20,7 @@ use App\Models\SapConnection;
 use App\Models\User;
 use App\Models\Notification;
 use App\Models\NotificationConnection;
+use App\Support\SAPOrderPost;
 use Mail;
 use DataTables;
 use Auth;
@@ -311,9 +312,6 @@ class OrdersController extends Controller
     public function pendingOrderView($id){
         $total = 0;
         $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id', $id)->firstOrFail();
-        foreach($data->items as $item){
-            $total += $item->gross_price;
-        }
         return view('orders.pending_order_view', compact('data', 'total'));
     }
 
@@ -491,6 +489,11 @@ class OrdersController extends Controller
 
             if(!is_null($sap_connection)){
                 SAPAllOrderPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $order_id);
+
+                // $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
+
+                // $sap->pushOrder($order_id);
+
             }
 
             return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];

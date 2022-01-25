@@ -14,6 +14,10 @@
         <div class="d-flex align-items-center py-1">
             <a href="javascript:" class="btn btn-sm btn-primary goToCart" style="display:none">Go to cart</a>
         </div>
+        @else
+        <div class="d-flex align-items-center py-1">
+            <a href="{{ route('product-list.index') }}" class="btn btn-sm btn-primary">Back</a>
+        </div>
         @endif
 
     </div>

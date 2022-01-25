@@ -212,8 +212,8 @@ class SAPOrderPost
                 'ItemCode' => @$item->product->item_code,
                 'ItemDescription' => @$item->product->item_name,
                 'Quantity' => @$item->quantity,
-                'Price' => get_product_customer_price(@$item->product->item_prices, @$order->customer->price_list_num),
-                'UnitPrice' => get_product_customer_price(@$item->product->item_prices, @$order->customer->price_list_num),
+                'Price' => @$item->price,
+                'UnitPrice' => @$item->price,
                 'ShipDate' => @$order->due_date,
             );
             array_push($response['DocumentLines'], $temp);

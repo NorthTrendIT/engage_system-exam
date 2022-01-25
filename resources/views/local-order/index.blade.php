@@ -59,6 +59,7 @@
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <thead>
                             <tr>
+                              <th>No.</th>
                               <th>Customer Name</th>
                               <th>Confirmation Status</th>
                               <th>Due Date</th>
@@ -120,6 +121,7 @@ $(document).ready(function() {
               }
           },
           columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'customer_name', name: 'customer_name'},
               {data: 'confirmation_status', name: 'confirmation_status'},
               {data: 'due_date', name: 'due_date'},

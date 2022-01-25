@@ -241,7 +241,7 @@
                 data: function (params) {
                     return {
                         _token: "{{ csrf_token() }}",
-                        search: params.term,
+                        filter_search: params.term,
                         customer_id: $('[name="customer_id"]').val(),
                     };
                 },
@@ -283,7 +283,7 @@
                         data: function (params) {
                             return {
                                 _token: "{{ csrf_token() }}",
-                                search: params.term,
+                                filter_search: params.term,
                                 customer_id: $('[name="customer_id"]').val(),
                                 product_ids: product_ids,
                             };
@@ -399,6 +399,14 @@
                                 });
                             }
 
+                        }else{
+                            $('[name="due_date"]').datepicker({
+                                format: 'dd/mm/yyyy',
+                                todayHighlight: true,
+                                orientation: "bottom left",
+                                startDate: "+3d",
+                                autoclose: true,
+                            });
                         }
                     },
                     error: function () {
@@ -583,7 +591,12 @@
                         if (data.status) {
                             $self.parent().parent().parent().find('.price').html('₱'+ data.price);
                             $self.parent().parent().parent().find('.quantity').attr('data-price', data.price);
-                            $self.parent().parent().parent().find(".quantity").val(1).trigger('keyup');
+                            $qty = $self.parent().parent().parent().find(".quantity").val();
+                            if($qty == ""){
+                                $self.parent().parent().parent().find(".quantity").val(1).trigger('keyup');
+                            } else{
+                                $self.parent().parent().parent().find(".quantity").trigger('change');
+                            }
                         } else {
                             toast_error(data.message);
                         }
@@ -592,29 +605,15 @@
                         toast_error("Something went to wrong !");
                     },
                 });
-            } else {
-                $product_id = $(this).val();
-                if($product_id){
-                    Swal.fire({
-                        title: 'Please select Customer.',
-                        // text: result.message,
-                        icon: 'warning',
-                        showCancelButton: false,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Ok'
-                    }).then((result) => {
-                        $(this).val(null).trigger('change');
-                    });
-                }
             }
+            // $(this).trigger('keyup');
         });
 
-        $(document).on('change', "input[type=number]",function(event){
+        $(document).on('keyup', "input[type=number]",function(event){
             $price = parseFloat($(this).attr('data-price'));
             $qty = parseFloat($(this).val());
             $amount = $price * $qty;
-            if(isNaN($qty) || $qty <= 0){
+            if($qty == "" || $qty <= 0){
                 $(this).val(1);
                 $amount = $price;
             }
@@ -624,7 +623,9 @@
             $("tr[name='items']").each(function(){
                 $subPrice = parseFloat($(this).find('.quantity').data('price'));
                 $subQty = parseFloat($(this).find('.quantity').val());
-                $grandTotal += $subPrice * $subQty;
+                if($subQty != "" || $subQty > 0){
+                    $grandTotal += $subPrice * $subQty;
+                }
             });
 
             $('.subTotal').html('₱ '+$grandTotal.toFixed(2));

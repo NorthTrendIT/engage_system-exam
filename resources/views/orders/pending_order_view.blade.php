@@ -114,9 +114,9 @@
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}</td>
                                         <td class="pt-6">{{ $value->quantity ?? '-' }}</td>
-                                        <td class="pt-6">₱ {{ $value->gross_price ?? '-' }}</td>
-                                        <td class="pt-6">₱ {{ $value->discount_percent ?? '-' }}</td>
-                                        <td class="pt-6 text-dark fw-boldest">₱ {{ $value->gross_total ?? '-' }}</td>
+                                        <td class="pt-6">₱ {{ $value->price ?? '-' }}</td>
+                                        <td class="pt-6">₱ 0.00 </td>
+                                        <td class="pt-6 text-dark fw-boldest">₱ {{ $value->total ?? '-' }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -133,7 +133,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ $total ?? '-' }}</div>
+                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ $data->items()->sum('total'); }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -154,7 +154,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
                                   <!--end::Code-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ $total    ?? '-' }}</div>
+                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ $data->items()->sum('total'); }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
