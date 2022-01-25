@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\CustomerProductGroup;
 use App\Models\CustomerProductItemLine;
 use App\Models\CustomerProductTiresCategory;
+use App\Models\CustomersSalesSpecialist;
 use App\Models\User;
 use App\Models\Customer;
 use App\Models\LocalOrderItem;
@@ -22,12 +23,18 @@ class ProductListController extends Controller
         $customer_id = null;
 
         if(userrole() == 4){
-            $customer_id = @Auth::user()->customer_id;
+
+            $customer_id = array( @Auth::user()->customer_id );
+
+        }elseif(userrole() == 2){
+
+            $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
 
         }elseif (!is_null(@Auth::user()->created_by)) {
+
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
             if(!is_null($customer)){
-                $customer_id = @$customer->customer_id;
+                $customer_id = array( @$customer->customer_id );
             }
         }
 
@@ -35,16 +42,15 @@ class ProductListController extends Controller
         if($customer_id){
 
             // Product Group
-            $c_product_groups = CustomerProductGroup::with('product_group')->where('customer_id', $customer_id)->get();
+            $c_product_groups = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get()->unique('product_group_id');
 
             $product_groups = array_map( function ( $ar ) {
                 return $ar['number'];
             }, array_column( $c_product_groups->toArray(), 'product_group' ) );
 
 
-
             // Product Item Line
-            $c_product_line = CustomerProductItemLine::with('product_item_line')->where('customer_id', $customer_id)->get();
+            $c_product_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
 
             $c_product_line = array_map( function ( $ar ) {
                 return $ar['u_item_line'];
@@ -53,7 +59,7 @@ class ProductListController extends Controller
 
 
             // Product Tires Category
-            $c_product_category = CustomerProductTiresCategory::with('product_tires_category')->where('customer_id', $customer_id)->get();
+            $c_product_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
 
             $c_product_category = array_map( function ( $ar ) {
                 return $ar['u_tires'];
@@ -88,7 +94,7 @@ class ProductListController extends Controller
   	public function show($id){
   		$product = Product::where('is_active',1)->where('id',$id)->firstOrFail();
 
-        $customer = collect();
+        $customer = null;
   		if(userrole() == 4){
             $customer = @Auth::user()->customer;
         }elseif (!is_null(@Auth::user()->created_by)) {
@@ -267,26 +273,33 @@ class ProductListController extends Controller
         $customer_price_list_no = null;
 
         if(userrole() == 4){
-            $customer_id = @Auth::user()->customer_id;
+
+            $customer_id = array( @Auth::user()->customer_id );
             $customer = @Auth::user()->customer;
             $sap_connection_id = @Auth::user()->sap_connection_id;
             $customer_price_list_no = @Auth::user()->customer->price_list_num;
 
         }elseif (!is_null(@Auth::user()->created_by)) {
+
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
             if(!is_null($customer)){
-                $customer_id = @$customer->customer_id;
+                $customer_id = array( @$customer->customer_id );
                 $customer = @$customer->customer;
                 $sap_connection_id = @$customer->sap_connection_id;
                 $customer_price_list_no = @$customer->price_list_num;
             }
+        }elseif(userrole() == 2){
+
+            $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
+            $sap_connection_id = @Auth::user()->sap_connection_id;
+
         }
 
         // Is Customer
         if($customer_id){
 
             // Product Group
-            $c_product_group = CustomerProductGroup::with('product_group')->where('customer_id', $customer_id)->get();
+            $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
 
             $c_product_group = array_map( function ( $ar ) {
                 return $ar['number'];
@@ -294,7 +307,7 @@ class ProductListController extends Controller
 
 
             // Product Item Line
-            $c_product_item_line = CustomerProductItemLine::with('product_item_line')->where('customer_id', $customer_id)->get();
+            $c_product_item_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
 
             $c_product_item_line = array_map( function ( $ar ) {
                 return $ar['u_item_line'];
@@ -302,7 +315,7 @@ class ProductListController extends Controller
 
 
             // Product Tires Category
-            $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->where('customer_id', $customer_id)->get();
+            $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
 
             $c_product_tires_category = array_map( function ( $ar ) {
                 return $ar['u_tires'];
@@ -421,14 +434,18 @@ class ProductListController extends Controller
         $customer_price_list_no = null;
 
         if(userrole() == 4){
+
             $customer = @Auth::user()->customer;
             $customer_price_list_no = @Auth::user()->customer->price_list_num;
+
         }elseif (!is_null(@Auth::user()->created_by)) {
+
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
             if(!is_null($customer)){
                 $customer = @$customer->customer;
                 $customer_price_list_no = @$customer->price_list_num;
             }
+
         }
 
         $products = LocalOrderItem::orderBy('id', 'DESC');
@@ -508,7 +525,8 @@ class ProductListController extends Controller
         $customer_price_list_no = null;
 
         if(userrole() == 4){
-            $customer_id = @Auth::user()->customer_id;
+
+            $customer_id = array( @Auth::user()->customer_id );
             $customer = @Auth::user()->customer;
             $sap_connection_id = @Auth::user()->sap_connection_id;
             $customer_price_list_no = @Auth::user()->customer->price_list_num;
@@ -524,20 +542,27 @@ class ProductListController extends Controller
                             'id' => @Auth::user()->created_by,
                         );
             }
-            
+
             $customer = User::where('role_id', 4)->where($where)->first();
             if(!is_null($customer)){
-                $customer_id = @$customer->customer_id;
+                $customer_id = array( @$customer->customer_id );
                 $customer = @$customer->customer;
                 $sap_connection_id = @$customer->sap_connection_id;
                 $customer_price_list_no = @$customer->price_list_num;
             }
+
+        }elseif(userrole() == 2){
+
+            $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
+            $sap_connection_id = @Auth::user()->sap_connection_id;
+
         }
+
         // Is Customer
         if($customer_id){
 
             // Product Group
-            $c_product_group = CustomerProductGroup::with('product_group')->where('customer_id', $customer_id)->get();
+            $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
 
             $c_product_group = array_map( function ( $ar ) {
                 return $ar['number'];
@@ -545,7 +570,7 @@ class ProductListController extends Controller
 
 
             // Product Item Line
-            $c_product_item_line = CustomerProductItemLine::with('product_item_line')->where('customer_id', $customer_id)->get();
+            $c_product_item_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
 
             $c_product_item_line = array_map( function ( $ar ) {
                 return $ar['u_item_line'];
@@ -553,7 +578,7 @@ class ProductListController extends Controller
 
 
             // Product Tires Category
-            $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->where('customer_id', $customer_id)->get();
+            $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
 
             $c_product_tires_category = array_map( function ( $ar ) {
                 return $ar['u_tires'];
