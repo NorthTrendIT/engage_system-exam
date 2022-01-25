@@ -330,7 +330,7 @@ class DraftOrderController extends Controller
 
             $response = ['status' => true, 'message' => 'Order Placed successfully !'];
         } catch (\Exception $e) {
-            dd($e);
+            // dd($e);
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
         return $response;

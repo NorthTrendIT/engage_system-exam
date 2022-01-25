@@ -355,7 +355,6 @@ class RecommendedProductController extends Controller
         $customer_id = $data['customer_id'];
         $customer = Customer::find($customer_id);
         if(!@$customer->sap_connection_id){
-            dd($customer);
             return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
         }
 
@@ -429,7 +428,6 @@ class RecommendedProductController extends Controller
         $customer_id = $data['customer_id'];
         $customer = Customer::find($customer_id);
         if(!@$customer->sap_connection_id){
-            dd($customer);
             return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
         }
 

@@ -262,26 +262,30 @@ class CartController extends Controller
                         $item->local_order_id = $order->id;
                         $item->product_id = @$value['product_id'];
                         $item->quantity = @$value['qty'];
+                        $item->price = get_product_customer_price(@$value->product->item_prices,@$order->customer->price_list_num);
+                        $item->total = $item->price * $item->quantity;
                         $item->save();
                     }
                 }
             }
-        }
-
-        try{
-            $sap_connection = SapConnection::find(@Auth::user()->customer->sap_connection_id);
+            
             Cart::where('customer_id', $customer_id)->delete();
+            
+            try{
+                $sap_connection = SapConnection::find(@Auth::user()->customer->sap_connection_id);
 
-            if(!is_null($sap_connection)){
-                $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
+                if(!is_null($sap_connection)){
+                    $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
 
-                if($order->id){
-                    $sap->pushOrder($order->id);
+                    if($order->id){
+                        $sap->pushOrder($order->id);
+                    }
                 }
-            }
-        } catch (\Exception $e) {
+            } catch (\Exception $e) {
 
+            }
         }
+
 
         return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
     }
