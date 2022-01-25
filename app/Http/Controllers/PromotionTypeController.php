@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PromotionTypes;
 use App\Models\Product;
+use App\Models\ProductGroup;
 use App\Models\PromotionTypeProduct;
 use App\Models\CustomerPromotion;
 use App\Models\Promotions;
+use App\Models\SapConnection;
 use DataTables;
 use Validator;
 use Auth;
@@ -21,7 +23,8 @@ class PromotionTypeController extends Controller
      */
     public function index()
     {
-        return view('promotion-type.index');
+        $company = SapConnection::all();
+        return view('promotion-type.index', compact('company'));
     }
 
     /**
@@ -31,7 +34,8 @@ class PromotionTypeController extends Controller
      */
     public function create()
     {
-        return view('promotion-type.add');
+        $company = SapConnection::all();
+        return view('promotion-type.add', compact('company'));
     }
 
     /**
@@ -55,11 +59,17 @@ class PromotionTypeController extends Controller
                         'min_percentage' => 'required_if:scope,R',
                         'percentage' => 'required_if:scope,P,U',
                         'fixed_price' => 'required_if:scope,U',
-                        'product_list' => 'required|array',
-                        'product_list.*.product_id' => 'distinct',
-
+                        
                         'is_total_fixed_quantity' => 'required_if:is_fixed_quantity,1',
                         'total_fixed_quantity' => 'required_if:is_total_fixed_quantity,1',
+
+                        'sap_connection_id' => 'required|exists:sap_connections,id',
+
+                        'product_list' => 'required|array',
+                        'product_list.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.$input['sap_connection_id'],
+
+                        'product_list.*.brand_id' => 'required|exists:product_groups,id,sap_connection_id,'.$input['sap_connection_id'],
+
                   );
 
         if(isset($input['id'])){
@@ -128,33 +138,6 @@ class PromotionTypeController extends Controller
 
                 $product_ids = [];
 
-                // if(in_array($input['scope'], ['P','U'])){
-
-                //     if(@$input['products']){
-
-                //         foreach ($input['products'] as $key => $value) {
-                //             $product_ids[] = $value;
-
-                //             PromotionTypeProduct::updateOrCreate(
-                //                         [
-                //                             'promotion_type_id' => $obj->id,
-                //                             'product_id' => $value,
-                //                         ],
-                //                         [
-                //                             'promotion_type_id' => $obj->id,
-                //                             'product_id' => $value,
-                //                             'discount_percentage' => NULL,
-                //                         ],
-                //                     );
-                //         }
-
-                //         $removeProduct = PromotionTypeProduct::where('promotion_type_id',$obj->id);
-                //         $removeProduct->whereNotIn('product_id',$product_ids);
-                //         $removeProduct->delete();
-
-                //     }
-                // }elseif(in_array($input['scope'], ['R'])){
-                // }
                 if(@$input['product_list']){
 
                     foreach ($input['product_list'] as $key => $value) {
@@ -162,6 +145,7 @@ class PromotionTypeController extends Controller
 
                         $insert = [
                                         'promotion_type_id' => $obj->id,
+                                        'brand_id' => $value['brand_id'],
                                         'product_id' => $value['product_id'],
                                         'fixed_quantity' => $value['fixed_quantity'],
                                         'discount_percentage' => $value['discount_percentage'],
@@ -230,8 +214,9 @@ class PromotionTypeController extends Controller
     public function edit($id)
     {
         $edit = PromotionTypes::findOrFail($id);
+        $company = SapConnection::all();
 
-        return view('promotion-type.add',compact('edit'));
+        return view('promotion-type.add',compact('edit', 'company'));
     }
 
     /**
@@ -282,26 +267,6 @@ class PromotionTypeController extends Controller
         return $response;
     }
 
-    public function getProducts(Request $request)
-    {
-        $search = $request->search;
-
-        $data = Product::orderby('item_name','asc')->where('is_active',true);
-        
-        if($search != ''){
-            $data->where('item_name', 'like', '%' .$search . '%');
-        }
-
-        if(isset($request->product_ids) && count($request->product_ids)){
-            $data->whereNotIn('id', $request->product_ids);
-        }
-
-        $data = $data->limit(50)->get();
-
-        return $data;
-    }
-
-
     public function getAll(Request $request){
 
         $data = PromotionTypes::query();
@@ -318,9 +283,14 @@ class PromotionTypeController extends Controller
             $data->where('scope',$request->filter_criteria);
         }
 
+        if($request->filter_company != ""){
+            $data->where('sap_connection_id',$request->filter_company);
+        }
+
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
                 $q->orwhere('title','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('description','LIKE',"%".$request->filter_search."%");
             });
         }
 
@@ -353,6 +323,9 @@ class PromotionTypeController extends Controller
                             ->addColumn('scope', function($row) {
                                 return get_promotion_type_criteria($row->scope);
                             })
+                            ->addColumn('company', function($row) {
+                                return  @$row->sap_connection->company_name ?? "-";
+                            })
                             ->addColumn('status', function($row) {
 
                                 $btn = "";
@@ -376,7 +349,60 @@ class PromotionTypeController extends Controller
                             ->orderColumn('is_fixed_quantity', function ($query, $order) {
                                 $query->orderBy('is_fixed_quantity', $order);
                             })
+                            ->orderColumn('company', function ($query, $order) {
+                                $query->join('sap_connections', 'promotion_types.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
+                            })
                             ->rawColumns(['action','status'])
                             ->make(true);
+    }
+
+    public function getProducts(Request $request)
+    {
+        $search = $request->search;
+
+        $data = collect();
+
+        $brand = ProductGroup::find($request->brand_id);
+
+        if(@$request->sap_connection_id && @$brand){
+            $where = array(
+                            'sap_connection_id' => $request->sap_connection_id,
+                            'items_group_code' => $brand->number,
+                            'is_active' => true,
+                        );
+
+            $data = Product::orderby('item_name','asc')->where($where);
+            
+            if($search != ''){
+                $data->where('item_name', 'like', '%' .$search . '%');
+            }
+
+            if(isset($request->product_ids) && count($request->product_ids)){
+                $data->whereNotIn('id', $request->product_ids);
+            }
+
+            $data = $data->limit(50)->get();
+        }
+
+        return $data;
+    }
+
+    public function getBrands(Request $request)
+    {
+        $search = $request->search;
+
+        $data = collect();
+
+        if(@$request->sap_connection_id){
+            $data = ProductGroup::orderby('group_name','asc')->where('sap_connection_id',$request->sap_connection_id);
+            
+            if($search != ''){
+                $data->where('group_name', 'like', '%' .$search . '%');
+            }
+
+            $data = $data->limit(50)->get();
+        }
+
+        return $data;
     }
 }

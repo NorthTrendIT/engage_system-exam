@@ -99,6 +99,15 @@
                 </div>
 
                 <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Description</label>
+                      <textarea class="form-control form-control-solid" name="description" placeholder="Enter description">@if(isset($edit)){{ $edit->description }}@endif</textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-5">
                   
                   {{-- <div class="col-md-6">
                     <div class="form-group">
@@ -148,22 +157,25 @@
 
                 </div>
 
+                <div class="row mb-5 mt-10">
 
-                {{-- <div class="row mb-5 only_products_div" style="display: none;">
-                  
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Products<span class="asterisk">*</span></label>
-                      <select class="form-control form-control-lg form-control-solid" id="products" name="products[]" multiple="">
+                      <label>Company<span class="asterisk">*</span></label>
+                      <select class="form-select form-select-solid" id='selectCompany' data-control="select2" data-hide-search="false" name="sap_connection_id" data-allow-clear="true" data-placeholder="Select company">
                         <option value=""></option>
+
+                        @foreach($company as $c)
+                          <option value="{{ $c->id }}" @if(isset($edit) && $c->id == $edit->sap_connection_id ) selected @endif>{{ $c->company_name }}</option>
+                        @endforeach
                       </select>
                     </div>
                   </div>
 
-                </div> --}}
+                </div>
 
 
-                <div class="mt-15 multi_product_div" >
+                <div class="mt-5 multi_product_div" >
 
                   <div data-repeater-list="product_list">
 
@@ -171,8 +183,18 @@
 
                       @foreach($edit->products as $key => $p)
 
-                        <div class="row mb-5" data-repeater-item>
-                          <div class="col-md-3">
+                        <div class="row" data-repeater-item>
+                          <div class="col-md-3 mt-5">
+                            <div class="form-group">
+                              <label>Brand<span class="asterisk">*</span></label>
+                              <select class="form-control form-control-lg form-control-solid brand_id" name="brand_id">
+                                <option value=""></option>
+                                <option value="{{ @$p->brand->id }}" selected="">{{ @$p->brand->group_name }}</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="col-md-3 mt-5">
                             <div class="form-group">
                               <label>Product<span class="asterisk">*</span></label>
                               <select class="form-control form-control-lg form-control-solid product_id" name="product_id">
@@ -182,21 +204,21 @@
                             </div>
                           </div>
 
-                          <div class="col-md-3 product_fixed_quantity_div">
+                          <div class="col-md-3 mt-5 product_fixed_quantity_div">
                             <div class="form-group">
                               <label>Fixed Quantity<span class="asterisk">*</span></label>
                               <input type="number" class="form-control form-control-solid fixed_quantity" placeholder="Enter fixed quantity" name="fixed_quantity" value="{{ $p->fixed_quantity }}">
                             </div>
                           </div>
 
-                          <div class="col-md-3 product_discount_div" style="display: none;">
+                          <div class="col-md-3 mt-5 product_discount_div" style="display: none;">
                             <div class="form-group">
                               <label>Discount Percentage<span class="asterisk">*</span></label>
                               <input type="number" step=".01" class="form-control form-control-solid discount_percentage" placeholder="Enter discount percentage" name="discount_percentage" value="{{ $p->discount_percentage }}">
                             </div>
                           </div>
 
-                          <div class="col-md-3 delete_btn_div" @if($key == 0) style="display: none;" @endif>
+                          <div class="col-md-3 mt-5 delete_btn_div" @if($key == 0) style="display: none;" @endif>
                             <div class="form-group">
                               <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-md btn-color-danger mt-6 " data-repeater-delete ><i class="fa fa-trash"></i></a>
                             </div>
@@ -207,8 +229,17 @@
                       @endforeach
 
                     @else
-                      <div class="row mb-5" data-repeater-item>
-                        <div class="col-md-3">
+                      <div class="row" data-repeater-item>
+                        <div class="col-md-3 mt-5">
+                          <div class="form-group">
+                            <label>Brand<span class="asterisk">*</span></label>
+                            <select class="form-control form-control-lg form-control-solid brand_id" name="brand_id">
+                              <option value=""></option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="col-md-3 mt-5">
                           <div class="form-group">
                             <label>Product<span class="asterisk">*</span></label>
                             <select class="form-control form-control-lg form-control-solid product_id" name="product_id">
@@ -217,21 +248,21 @@
                           </div>
                         </div>
 
-                        <div class="col-md-3 product_fixed_quantity_div">
+                        <div class="col-md-3 mt-5 product_fixed_quantity_div">
                           <div class="form-group">
                             <label>Fixed Quantity<span class="asterisk">*</span></label>
                             <input type="number" class="form-control form-control-solid fixed_quantity" placeholder="Enter fixed quantity" name="fixed_quantity">
                           </div>
                         </div>
 
-                        <div class="col-md-3 product_discount_div" style="display: none;">
+                        <div class="col-md-3 mt-5 product_discount_div" style="display: none;">
                           <div class="form-group">
                             <label>Discount Percentage<span class="asterisk">*</span></label>
                             <input type="number" step=".01" class="form-control form-control-solid discount_percentage" placeholder="Enter discount percentage" name="discount_percentage">
                           </div>
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-md-3 mt-5">
                           <div class="form-group">
                             <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-md btn-color-danger mt-6" data-repeater-delete><i class="fa fa-trash"></i></a>
                           </div>
@@ -241,7 +272,7 @@
 
                   </div>
                   
-                  <div class="row mb-5">
+                  <div class="row mb-5 mt-5">
                     <div class="col-md-6">
                       <div class="form-group">
                         <a href="javascript:" class="btn btn-success btn-sm" data-repeater-create >Add more</a>
@@ -285,40 +316,47 @@
 <script>
   $(document).ready(function() {
 
-    @if(isset($edit) && $edit->scope == "P")
-      $('.scope_p_div').show();
-      //$('.only_products_div').show();
-      $('.product_discount_div').hide();
+    @if(isset($edit))
+      show_loader();
+
+      @if($edit->scope == "P")
+        $('.scope_p_div').show();
+        //$('.only_products_div').show();
+        $('.product_discount_div').hide();
+      @endif
+
+      @if($edit->scope == "R")
+        $('.scope_r_div').show();
+        //$('.multi_product_div').show();
+        $('.product_discount_div').show();
+      @endif
+
+      @if($edit->scope == "U")
+        $('.scope_p_div').show();
+        $('.scope_u_div').show();
+        //$('.only_products_div').show();
+        $('.product_discount_div').hide();
+      @endif
+
+      @if($edit->is_total_fixed_quantity == "1")
+        $('.product_fixed_quantity_div').hide();
+        $('.total_fixed_quantity_div').show();
+      @endif
+
+      @if($edit->is_total_fixed_quantity == "0" && $edit->is_fixed_quantity == "1")
+        $('.product_fixed_quantity_div').show();
+        $('.total_fixed_quantity_div').hide();
+      @endif
+      
+      @if($edit->is_fixed_quantity == "0")
+        $('.product_fixed_quantity_div').hide();
+        $('.is_total_fixed_quantity_div').hide();
+        $('.total_fixed_quantity_div').hide();
+      @endif
+
+      hide_loader();
     @endif
 
-    @if(isset($edit) && $edit->scope == "R")
-      $('.scope_r_div').show();
-      //$('.multi_product_div').show();
-      $('.product_discount_div').show();
-    @endif
-
-    @if(isset($edit) && $edit->scope == "U")
-      $('.scope_p_div').show();
-      $('.scope_u_div').show();
-      //$('.only_products_div').show();
-      $('.product_discount_div').hide();
-    @endif
-
-    @if(isset($edit) && $edit->is_total_fixed_quantity == "1")
-      $('.product_fixed_quantity_div').hide();
-      $('.total_fixed_quantity_div').show();
-    @endif
-
-    @if(isset($edit) && $edit->is_total_fixed_quantity == "0" && $edit->is_fixed_quantity == "1")
-      $('.product_fixed_quantity_div').show();
-      $('.total_fixed_quantity_div').hide();
-    @endif
-    
-    @if(isset($edit) && $edit->is_fixed_quantity == "0")
-      $('.product_fixed_quantity_div').hide();
-      $('.is_total_fixed_quantity_div').hide();
-      $('.total_fixed_quantity_div').hide();
-    @endif
 
 
 
@@ -378,38 +416,25 @@
 
     });
 
-    {{-- $initialProducts = [];
 
-    @if(isset($edit) && $edit->scope != "R")
-        @foreach ($edit->products as $p)
-          @if (@$p->product->id)
-            var initialOption = {
-                id: {{ $p->product->id }},
-                text: '{!! $p->product->item_name !!}',
-                selected: true
-            }
-            $initialProducts.push(initialOption);
-          @endif
-        @endforeach
-    @endif
-
-    $('#products').select2({
+    $('.brand_id').select2({
       ajax: {
-        url: "{{route('promotion-type.get-products')}}",
+        url: "{{route('promotion-type.get-brands')}}",
         type: "post",
         dataType: 'json',
         delay: 250,
         data: function (params) {
             return {
                 _token: "{{ csrf_token() }}",
-                search: params.term
+                search: params.term,
+                sap_connection_id: $('[name="sap_connection_id"]').val()
             };
         },
         processResults: function (response) {
           return {
             results:  $.map(response, function (item) {
                           return {
-                            text: item.item_name,
+                            text: item.group_name,
                             id: item.id
                           }
                       })
@@ -417,13 +442,10 @@
         },
         cache: true
       },
-      placeholder: 'Select products',
+      placeholder: 'Select a brand',
       allowClear: true,
-      multiple: true,
-      @if(isset($edit))
-      data:$initialProducts,
-      @endif
-    });--}}
+      multiple: false,
+    });
 
     $('.product_id').select2({
       ajax: {
@@ -434,7 +456,9 @@
         data: function (params) {
             return {
                 _token: "{{ csrf_token() }}",
-                search: params.term
+                search: params.term,
+                sap_connection_id: $('[name="sap_connection_id"]').val(),
+                brand_id: $(this).closest('.row').find('.brand_id').val(),
             };
         },
         processResults: function (response) {
@@ -582,6 +606,9 @@
             },
             is_fixed_quantity:{
               required:true
+            },
+            sap_connection_id:{
+              required:true
             }
           },
           messages: {
@@ -590,6 +617,12 @@
       });
 
       $('.product_id').each(function() {
+        $(this).rules('add', {
+          required:true,
+        });
+      });
+
+      $('.brand_id').each(function() {
         $(this).rules('add', {
           required:true,
         });
@@ -633,16 +666,47 @@
           $('.product_fixed_quantity_div').show();
         }
 
+
+        $('.multi_product_div').find('.select2-container').remove();
+
+
+        $('.brand_id').select2({
+          ajax: {
+            url: "{{route('promotion-type.get-brands')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="sap_connection_id"]').val()
+                };
+            },
+            processResults: function (response) {
+              return {
+                results:  $.map(response, function (item) {
+                              return {
+                                text: item.group_name,
+                                id: item.id
+                              }
+                          })
+              };
+            },
+            cache: true
+          },
+          placeholder: 'Select a brand',
+          allowClear: true,
+          multiple: false,
+        });
+
         var product_ids = [];
-
         $('.product_id').each(function(){
-
           if(this.value){
             product_ids.push(this.value);
           }
         });
 
-        $('.multi_product_div').find('.select2-container').remove();
 
         $('.product_id').select2({
           ajax: {
@@ -654,6 +718,8 @@
                 return {
                     _token: "{{ csrf_token() }}",
                     search: params.term,
+                    sap_connection_id: $('[name="sap_connection_id"]').val(),
+                    brand_id: $(this).closest('.row').find('.brand_id').val(),
                     product_ids: product_ids,
                 };
             },
@@ -689,9 +755,7 @@
       event.preventDefault();
       
       var value = $(this).val();
-
       var $this = $(this);
-
 
       $(".product_id").each(function () {
         if (this.value == value) {
@@ -699,9 +763,20 @@
           $(this).val("");
         }
       });
-
       $this.val(value);
 
+    });
+
+
+    $(document).on('change', '.brand_id', function(event) {
+      event.preventDefault();
+      $(this).closest('.row').find('.product_id').val('').trigger('change');
+    });
+
+    $(document).on('change', '[name="sap_connection_id"]', function(event) {
+      event.preventDefault();
+      $('.product_id').val('').trigger('change');
+      $('.brand_id').val('').trigger('change');
     });
   
   });

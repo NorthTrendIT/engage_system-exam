@@ -44,6 +44,12 @@
                               <th> <b>Title:</b> </th>
                               <td>{{ @$data->title ?? "" }}</td>
                             </tr>
+
+                            <tr>
+                              <th> <b>Description:</b> </th>
+                              <td>{{ @$data->description ?? "-" }}</td>
+                            </tr>
+                            
                             <tr>
                               <th> <b>Criteria:</b> </th>
                               <td>{{ get_promotion_type_criteria($data->scope) }}</td>
@@ -109,13 +115,58 @@
                               <td><b class="{{ @$data->is_active ? "text-success" : "text-danger" }}">{{ @$data->is_active == true ? "Active" : "Inactive" }}</b></td>
                             </tr>
 
+                            <tr>
+                              <th> <b>Company:</b> </th>
+                              <td>{{ @$data->sap_connection->company_name ?? "" }}</td>
+                            </tr>
+
+                          </thead>
+                          <!--end::Table head-->
+                          <!--begin::Table body-->
+                          <tbody>
+                            
+                          </tbody>
+                          <!--end::Table body-->
+                       </table>
+                       <!--end::Table-->
+                    </div>
+                    <!--end::Table container-->
+
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5 min-0">
+              <h5>List Of Product</h5>
+            </div>
+            <div class="card-body">
+              
+              <div class="row mb-5">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <!--begin::Table container-->
+                    <div class="table-responsive">
+                       <!--begin::Table-->
+                       <table class="table table-bordered" id="myTable">
+                          <!--begin::Table head-->
+                          <thead>
+                            
+
                             @if(isset($data) && count($data->products) > 0)
-                              <tr class="text-center">
-                                <th colspan="3"> <h4>List Of Product</h4> </th>
-                              </tr>
 
                               <tr>
-                                <th @if($data->is_fixed_quantity != "1" && $data->is_total_fixed_quantity == "0" && $data->scope !="R") colspan="3" @endif > <b>Product</b> </th>
+                                <th> <b>Brand</b> </th>
+                                
+                                <th> <b>Product</b> </th>
 
                                 @if($data->is_fixed_quantity == "1" && $data->is_total_fixed_quantity == "0")
                                 <th> <b>Fixed Quantity </b> </th>
@@ -129,7 +180,9 @@
 
                               @foreach($data->products as $p)
                                 <tr>
-                                  <td @if($data->is_fixed_quantity != "1" && $data->is_total_fixed_quantity == "0" && $data->scope !="R") colspan="3" @endif >{{ @$p->product->item_name }}</td>
+                                  <td>{{ @$p->brand->group_name }}</td>
+
+                                  <td>{{ @$p->product->item_name }}</td>
 
                                   @if($data->is_fixed_quantity == "1" && $data->is_total_fixed_quantity == "0")
                                   <td>{{ @$p->fixed_quantity }}</td>

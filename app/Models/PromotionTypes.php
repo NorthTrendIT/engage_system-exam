@@ -12,6 +12,7 @@ class PromotionTypes extends Model
 
     protected $fillable = [
 		'title',
+		'description',
 		'scope',
 		'percentage',
 		'min_percentage',
@@ -23,10 +24,15 @@ class PromotionTypes extends Model
 		'is_fixed_quantity',
 		'is_total_fixed_quantity',
 		'total_fixed_quantity',
+		'sap_connection_id',
 	];
 
 	public function products()
     {
         return $this->hasMany(PromotionTypeProduct::class,'promotion_type_id','id');
+    }
+
+    public function sap_connection(){
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
     }
 }

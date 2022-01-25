@@ -12,6 +12,7 @@ class PromotionTypeProduct extends Model
     protected $fillable = [
 		'promotion_type_id',
 		'product_id',
+        'brand_id',
         'fixed_quantity',
 		'discount_percentage',
 	];
@@ -24,5 +25,10 @@ class PromotionTypeProduct extends Model
     public function promotion_type()
     {
         return $this->belongsTo(PromotionTypes::class);
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo(ProductGroup::class,'brand_id');
     }
 }
