@@ -210,10 +210,12 @@ class LocalOrderController extends Controller
                             $query->orderBy('confirmation_status', $order);
                         })
                         ->addColumn('action', function($row) {
-                            $btn = '<a href="' . route('sales-specialist-orders.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
-                                <i class="fa fa-pencil"></i>
-                                </a>';
-
+                            $btn = null;
+                            if($row->confirmation_status == 'P'){
+                                $btn = '<a href="' . route('sales-specialist-orders.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                    <i class="fa fa-pencil"></i>
+                                    </a>';
+                            }
                             return $btn;
                         })
                         ->rawColumns(['action'])

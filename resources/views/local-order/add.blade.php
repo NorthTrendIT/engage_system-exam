@@ -623,7 +623,7 @@
             $("tr[name='items']").each(function(){
                 $subPrice = parseFloat($(this).find('.quantity').data('price'));
                 $subQty = parseFloat($(this).find('.quantity').val());
-                if($subQty != "" || $subQty > 0){
+                if(!isNaN($subQty) && $subQty != "" && $subQty > 0){
                     $grandTotal += $subPrice * $subQty;
                 }
             });
