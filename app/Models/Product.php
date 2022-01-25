@@ -64,4 +64,8 @@ class Product extends Model
     {
         return $this->belongsTo(ProductGroup::class,'items_group_code','number')->where('sap_connection_id', $this->sap_connection_id);
     }
+
+    public function sap_connection(){
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
+    }
 }
