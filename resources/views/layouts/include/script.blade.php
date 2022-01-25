@@ -17,7 +17,7 @@
 <script src="{{ asset('assets') }}/assets/js/common/common_function.js"></script>
 
 <script>
-	
+
 	$(".fancybox").fancybox();
 
 	@if(Session::has('role_access_error_message'))
@@ -27,22 +27,26 @@
   @if(Session::has('login_success_message'))
   toast_success("{{Session::get('login_success_message')}}")
   @endif
-    
+
 	function show_loader() {
 		$.LoadingOverlay("show",{
 		    // image       : "{{ asset('assets/logo_icon.png') }}",
-		    // imageAnimation : "1500ms rotate_right" 
+		    // imageAnimation : "1500ms rotate_right"
 		});
 	}
 	function hide_loader() {
 		$.LoadingOverlay("hide",true);
 	}
 
+    function number_format(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
 	@if(!in_array(Route::currentRouteName(), ['conversation.index']))
 		$(document).ajaxStart(function() {
 		  show_loader();
 		});
-		
+
 		$(document).ajaxStop(function() {
 		  hide_loader();
 		});
@@ -63,7 +67,7 @@
   $('#kt_daterangepicker_1').on('cancel.daterangepicker', function(ev, picker) {
     $(this).val('');
   });
-		
+
 </script>
 
 @stack('js')
@@ -87,10 +91,10 @@
 
 	@if(!in_array( Route::currentRouteName(), ['conversation.index']))
 
-		{{-- @if(getUserLastMessage(userid()) > 0) 
+		{{-- @if(getUserLastMessage(userid()) > 0)
 			//$('.new-message').show();
 		@endif--}}
-		
+
 		// Receive Message
 		socket.on('receiveMessage', data => {
 			if(data.to == '{{ userid() }}'){
