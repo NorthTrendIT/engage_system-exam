@@ -11,6 +11,7 @@ use App\Models\CustomerBpAddress;
 use App\Models\User;
 use App\Models\CustomerDeliverySchedule;
 use App\Support\PostOrder;
+use App\Support\SAPOrderPost;
 use Validator;
 use Auth;
 use DataTables;
@@ -318,60 +319,23 @@ class LocalOrderController extends Controller
         if($update['status']){
             $order = LocalOrder::where('id', $update['id'])->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
-            $obj['CardCode'] = $order->customer->card_code;
-            $obj['CardName'] = @$order->customer->card_name;
-            $obj['DocDueDate'] = $order->due_date;
-            $obj['DocCurrency'] = 'PHP';
-            $obj['Address'] = @$order->address->address;
-            $obj['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
+            try{
+                $sap_connection = SapConnection::find(@$order->customer->sap_connection_id);
 
-            $products = array();
-            foreach($order->items as $item){
-                $products[] = array(
-                    'ItemCode' => $item->product->item_code,
-                    'ItemDescription' => $item->product->item_name,
-                    'Quantity' => $item->quantity,
-                    'TaxCode' => $order->address->tax_code,
-                    'Price' => get_product_customer_price(@$item->product->item_prices, @$order->customer->price_list_num),
-                    'UnitPrice' => get_product_customer_price(@$item->product->item_prices, @$order->customer->price_list_num),
-                    'ShipDate' => @$order->due_date,
-                );
+                if(!is_null($sap_connection)){
+                    $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
+
+                    if($update['id']){
+                        $sap->pushOrder($order->id);
+                    }
+                }
+            } catch (\Exception $e) {
 
             }
-            $obj['DocumentLines'] = $products;
 
-            $address = array();
-            $address['ShipToStreet'] = $order->address->street;
-            $address['ShipToZipCode'] = $order->address->zip_code;
-            $address['ShipToCity'] = $order->address->city;
-            $address['ShipToCountry'] = $order->address->country;
-            $address['ShipToState'] = $order->address->state;
-            $address['BillToAddressType'] = $order->address->address_type;
-
-            $obj['AddressExtension'] = $address;
-        }
-
-
-        try {
-            $message = "";
-            $post = new PostOrder('TEST-APBW', 'manager', 'test');
-
-            $post = $post->pushOrder($obj);
-
-            $order = LocalOrder::where('id', $order->id)->first();
-            if($post['status']){
-                $order->confirmation_status = 'C';
-                $message = 'Order Placed successfully !';
-            } else {
-                $order->confirmation_status = 'ERR';
-                $order->message = $post['message'];
-                $message = $post['massage'];
-            }
-            $order->save();
-
-            $response = ['status' => true, 'message' => $message];
-        } catch (\Exception $e) {
             $response = ['status' => false, 'message' => 'Something went wrong !'];
+        } else {
+            return $update;
         }
         return $response;
     }

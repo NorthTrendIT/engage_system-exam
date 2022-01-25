@@ -32,11 +32,11 @@ class SapApiController extends Controller
 
 	        if(in_array($response->getStatusCode(), [200,201])){
 	        	$response = json_decode($response->getBody(),true);
-	        	dd($response);
+	        	// dd($response);
 	        }
-    		
+
     	} catch (\Exception $e) {
-    		dd($e->getCode());
+    		// dd($e->getCode());
     	}
 
     }
@@ -63,7 +63,7 @@ class SapApiController extends Controller
 	        					'data' => $response
 	        				);
 	        }
-    		
+
     	} catch (\Exception $e) {
     		//dd($e->getCode());
     		return array(
