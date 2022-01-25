@@ -53,6 +53,18 @@
                               <td>{{ @$data->item_code ?? "" }}</td>
                             </tr>
                             <tr>
+                              <th> <b>Company:</b> </th>
+                              <td>{{ @$data->sap_connection->company_name ?? "" }}</td>
+                            </tr>
+                            <tr>
+                              <th> <b>Product Line:</b> </th>
+                              <td>{{ @$data->u_item_line ?? "-" }}</td>
+                            </tr>
+                            <tr>
+                              <th> <b>Product Category:</b> </th>
+                              <td>{{ @$data->u_tires ?? "" }}</td>
+                            </tr>
+                            <tr>
                               <th> <b>Created Date:</b> </th>
                               <td>{{ date('M d, Y',strtotime(@$data->created_date)) }}</td>
                             </tr>

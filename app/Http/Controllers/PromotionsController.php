@@ -567,6 +567,30 @@ class PromotionsController extends Controller
                 ->make(true);
     }
 
+    public function getPromotionClaimedData(Request $request){
+
+        $data = CustomerPromotion::where('promotion_id', $request->id)->latest()->get();
+
+        return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('customer', function($row) {
+                    return @$row->user->sales_specialist_name ?? "-";
+                })
+                ->addColumn('date_time', function($row) {
+                    return date('M d, Y',strtotime($row->created_at));
+                })
+                ->addColumn('action', function($row) {
+
+                    $btn = '<a href="' . route('customer-promotion.order.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm" title="View" target="_blank">
+                        <i class="fa fa-eye"></i>
+                      </a>';
+
+                    return $btn;
+                })
+                ->rawColumns(['action','date_time'])
+                ->make(true);
+    }
+
     public function getPromotionType(Request $request){
         $search = $request->search;
 

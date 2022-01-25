@@ -41,6 +41,15 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select company">
+                    <option value=""></option>
+                    @foreach($company as $c)
+                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_criteria" data-control="select2" data-hide-search="true" data-placeholder="Select criteria" data-allow-clear="true">
                     <option value=""></option>
                     <option value="P">Discount in Percentage</option>
@@ -49,19 +58,20 @@
                   </select>
                 </div>
 
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_fixed_quantity" data-control="select2" data-hide-search="true" data-placeholder="Select fixed quantity" data-allow-clear="true">
-                    <option value=""></option>
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                  </select>
-                </div>
 
                 <div class="col-md-2 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select status" data-allow-clear="true">
                     <option value=""></option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
+                  </select>
+                </div>
+                
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_fixed_quantity" data-control="select2" data-hide-search="true" data-placeholder="Select fixed quantity" data-allow-clear="true">
+                    <option value=""></option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
                   </select>
                 </div>
 
@@ -82,6 +92,7 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>Company</th>
                               <th>Title</th>
                               <th>Criteria</th>
                               <th>Fixed Quantity</th>
@@ -134,6 +145,7 @@
       $filter_criteria = $('[name="filter_criteria"]').find('option:selected').val();
       $filter_fixed_quantity = $('[name="filter_fixed_quantity"]').find('option:selected').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_company = $('[name="filter_company"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -151,10 +163,12 @@
                 filter_criteria : $filter_criteria,
                 filter_fixed_quantity : $filter_fixed_quantity,
                 filter_status : $filter_status,
+                filter_company : $filter_company,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'company', name: 'company'},
               {data: 'title', name: 'title'},
               {data: 'scope', name: 'scope'},
               {data: 'is_fixed_quantity', name: 'is_fixed_quantity'},
@@ -181,6 +195,7 @@
       $('[name="filter_criteria"]').val('').trigger('change');
       $('[name="filter_fixed_quantity"]').val('').trigger('change');
       $('[name="filter_status"]').val('').trigger('change');
+      $('[name="filter_company"]').val('').trigger('change');
       render_table();
     })
 

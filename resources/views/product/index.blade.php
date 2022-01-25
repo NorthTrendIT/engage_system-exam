@@ -41,6 +41,15 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select company">
+                    <option value=""></option>
+                    @foreach($company as $c)
+                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($product_groups as $product_group)
@@ -102,6 +111,7 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>Company</th>
                               <th>Name</th>
                               <th>Brand</th>
                               <th>Code</th>
@@ -161,6 +171,7 @@
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_product_category = $('[name="filter_product_category"]').find('option:selected').val();
       $filter_product_line = $('[name="filter_product_line"]').find('option:selected').val();
+      $filter_company = $('[name="filter_company"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -180,10 +191,12 @@
                 filter_brand : $filter_brand,
                 filter_product_category : $filter_product_category,
                 filter_product_line : $filter_product_line,
+                filter_company : $filter_company,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'company', name: 'company'},
               {data: 'item_name', name: 'item_name'},
               {data: 'brand', name: 'brand'},
               {data: 'item_code', name: 'item_code'},
@@ -217,6 +230,7 @@
       $('[name="filter_brand"]').val('').trigger('change');
       $('[name="filter_product_category"]').val('').trigger('change');
       $('[name="filter_product_line"]').val('').trigger('change');
+      $('[name="filter_company"]').val('').trigger('change');
       render_table();
     })
 

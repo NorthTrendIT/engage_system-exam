@@ -156,6 +156,7 @@ return [
     'attributes' => [
         'promo_image' => 'promotion image',
         'db_name' => 'database name',
+        'sap_connection_id' => 'company'
     ],
 
 ];

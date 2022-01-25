@@ -26,8 +26,9 @@ class ProductController extends Controller
     $product_groups = ProductGroup::all();
     $product_line = ProductItemLine::get()->groupBy('u_item_line');
     $product_category = ProductTiresCategory::get()->groupBy('u_tires');
+    $company = SapConnection::all();
 
-    return view('product.index',compact('product_groups','product_line','product_category'));
+    return view('product.index',compact('product_groups','product_line','product_category','company'));
   }
 
   /**
@@ -209,6 +210,10 @@ class ProductController extends Controller
       $data->where('is_active',$request->filter_status);
     }
 
+    if($request->filter_company != ""){
+      $data->where('sap_connection_id',$request->filter_company);
+    }
+
     if($request->filter_brand != ""){
       $data->where('items_group_code',$request->filter_brand);
     }
@@ -294,6 +299,9 @@ class ProductController extends Controller
                           ->addColumn('created_date', function($row) {
                               return date('M d, Y',strtotime($row->created_date));
                           })
+                          ->addColumn('company', function($row) {
+                              return  @$row->sap_connection->company_name ?? "-";
+                          })
                           ->orderColumn('item_name', function ($query, $order) {
                               $query->orderBy('item_name', $order);
                           })
@@ -320,6 +328,9 @@ class ProductController extends Controller
                                   $join->on("products.items_group_code","=","product_groups.number")
                                       ->on("products.sap_connection_id","=","product_groups.sap_connection_id");
                               })->orderBy('product_groups.group_name', $order);
+                          })
+                          ->orderColumn('company', function ($query, $order) {
+                              $query->join('sap_connections', 'promotion_types.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                           })
                           ->rawColumns(['status','action'])
                           ->make(true);
