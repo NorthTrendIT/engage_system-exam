@@ -195,6 +195,51 @@
                 <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
                     <div class="card card-xl-stretch mb-5 mb-xl-8">
                         <div class="card-header border-0  pt-5">
+                            <h1 class="text-dark fw-bolder fs-3 my-1">Claimed Customer's </h1>
+                        </div>
+
+                        <div class="card-body">
+                          
+                          <div class="row mb-5">
+                            <div class="col-md-12">
+                              <div class="form-group">
+                                <!--begin::Table container-->
+                                <div class="table-responsive">
+                                   <!--begin::Table-->
+                                   <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTableClaimed">
+                                      <!--begin::Table head-->
+                                      <thead>
+                                        <tr>
+                                          <th>No.</th>
+                                          <th>Customer</th>
+                                          <th>Date Time</th>
+                                          <th>Action</th>
+                                        </tr>
+                                      </thead>
+                                      <!--end::Table head-->
+                                      <!--begin::Table body-->
+                                      <tbody>
+
+                                      </tbody>
+                                      <!--end::Table body-->
+                                   </table>
+                                   <!--end::Table-->
+                                </div>
+                                <!--end::Table container-->
+
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row gy-5 g-xl-8">
+                <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+                    <div class="card card-xl-stretch mb-5 mb-xl-8">
+                        <div class="card-header border-0  pt-5">
                             <h1 class="text-dark fw-bolder fs-3 my-1">Customer's Interest</h1>
                         </div>
 
@@ -210,6 +255,7 @@
                                       <!--begin::Table head-->
                                       <thead>
                                         <tr>
+                                          <th>No.</th>
                                           <th>Customer</th>
                                           <th>Is Interested ?</th>
                                         </tr>
@@ -311,8 +357,48 @@ $(document).ready(function() {
               }
           },
           columns: [
-              {data: 'customer', name: 'customer', orderable: false, searchable: false},
-              {data: 'is_interested', name: 'is_interested', orderable: false, searchable: false},
+                {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+                {data: 'customer', name: 'customer', orderable: false, searchable: false},
+                {data: 'is_interested', name: 'is_interested', orderable: false, searchable: false},
+          ],
+          drawCallback:function(){
+              $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+                $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+              })
+          },
+          initComplete: function () {
+          }
+        });
+    }
+
+
+    render_claimed_table();
+
+    function render_claimed_table(){
+      var table = $("#myTableClaimed");
+      table.DataTable().destroy();
+
+      table.DataTable({
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          order: [],
+          ajax: {
+              'url': "{{ route('promotion.get-promotion-claimed-data') }}",
+              'type': 'POST',
+              headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+              },
+              data:{
+                id : {{ $data->id }},
+              }
+          },
+          columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+                {data: 'customer', name: 'customer', orderable: false, searchable: false},
+                {data: 'date_time', name: 'date_time', orderable: false, searchable: false},
+                {data: 'action', name: 'action', orderable: false, searchable: false},
           ],
           drawCallback:function(){
               $(function () {
