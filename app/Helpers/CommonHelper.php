@@ -361,3 +361,35 @@ function getCartCount(){
     }
     return 0;
 }
+
+function getOrderStatusByDocEntry($id){
+    $data = Quotation::with(['order', 'invoice'])->where('doc_entry', $id)->firstOrFail();
+    $status = '';
+
+    if(!empty($data)){
+        if(!empty($data->order) && $data->order->cancelled == 'No'){
+            $status = 'Cancelled';
+        } else {
+            if(!empty($data->order) && $data->order->document_status == 'bost_open'){
+                $status = 'On Process';
+                if(!empty($data->invoice)){
+                    if($data->invoice->u_sostat == 'For Delivery')
+                        $status = 'For Delivery';
+
+                    if($data->invoice->u_sostat == 'Delivered')
+                        $status = 'Delivered';
+
+                    if($data->invoice->u_sostat == 'Confirmed')
+                        $status = 'Completed';
+
+                }
+            } else {
+                $status = 'Pending';
+            }
+        }
+    } else {
+        $status = 'Pending';
+    }
+
+    return $status;
+}
