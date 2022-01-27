@@ -5,9 +5,13 @@
 @section('content')
     <div class="toolbar" id="kt_toolbar">
         <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
-        <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-            <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">My Cart</h1>
-        </div>
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
+                <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">My Cart</h1>
+            </div>
+
+            <div class="d-flex align-items-center py-1">
+                <a href="{{ route('product-list.index') }}" class="btn btn-sm btn-primary">Back</a>
+            </div>
         </div>
     </div>
     <div class="post d-flex flex-column-fluid" id="kt_post">
@@ -454,9 +458,14 @@ $(document).ready(function() {
                     $('.totalAmount').html('₱ '+result.total);
                     $('.totalPrice').html('₱ '+result.total);
                     $('.productCount').html('Products ('+result.count+')');
+                    if(result.cart_count > 0){
+                        $('.cartCount').show();
+                        $('.cartCount').html(result.cart_count);
+                    }
                 } else {
                     $('.emptyCart').show();
                     $('#myForm').remove();
+                    $('.cartCount').hide();
                 }
                 // setTimeout(function(){
                 //     window.location.reload();

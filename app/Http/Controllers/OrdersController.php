@@ -219,7 +219,7 @@ class OrdersController extends Controller
                                 return $row->doc_entry;
                             })
                             ->addColumn('total', function($row) {
-                                return '₱ '. $row->doc_total;
+                                return '₱ '. number_format($row->doc_total);
                             })
                             ->addColumn('date', function($row) {
                                 return date('M d, Y',strtotime($row->doc_date));

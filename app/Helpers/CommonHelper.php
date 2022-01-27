@@ -347,3 +347,17 @@ function decryptValue($value){
     }
     return "";
 }
+
+function getCartCount(){
+    $customer_id = @Auth::user()->customer_id;
+    if($customer_id){
+        $cart = Cart::where('customer_id', $customer_id)->get();
+        // dd($cart);
+        if(count($cart)){
+            return count($cart);
+        } else {
+            return 0;
+        }
+    }
+    return 0;
+}

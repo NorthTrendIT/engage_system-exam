@@ -118,12 +118,14 @@ class CartController extends Controller
 
         if(isset($id)){
             $cart = new Cart();
-            $cart->customer_id = Auth::user()->customer_id;
+            $cart->customer_id = @Auth::user()->customer_id;
             $cart->product_id = $id;
             $cart->qty = 1;
             $cart->save();
 
-            return $response = ['status'=>true,'message'=>"Product added to cart successfully."];
+            $count = Cart::where('customer_id', @Auth::user()->customer_id)->count();
+
+            return $response = ['status'=>true,'message'=>"Product added to cart successfully.", 'count'=> $count];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong please try again."];
@@ -185,13 +187,14 @@ class CartController extends Controller
             $customer_id = @Auth::user()->customer_id;
             $total = 0;
             $data = Cart::with('product')->where('customer_id', $customer_id)->get();
+            $cartCount = Cart::where('customer_id', $customer_id)->count();
 
             foreach($data as $item){
                 $subTotal = get_product_customer_price(@$item->product->item_prices,@Auth::user()->customer->price_list_num) * $item->qty;
                 $total += $subTotal;
             }
 
-            return $response = ['status'=>true,'message'=> $message, 'total' => $total, 'count' => count($data)];
+            return $response = ['status'=>true,'message'=> $message, 'total' => $total, 'count' => count($data), 'cart_count' => $cartCount];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];
@@ -268,9 +271,9 @@ class CartController extends Controller
                     }
                 }
             }
-            
+
             Cart::where('customer_id', $customer_id)->delete();
-            
+
             try{
                 $sap_connection = SapConnection::find(@Auth::user()->customer->sap_connection_id);
 

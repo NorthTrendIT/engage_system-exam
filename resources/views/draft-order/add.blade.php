@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title','Place Order for Customer')
+@section('title','Draft Orders')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
@@ -11,7 +11,7 @@
                 <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">@if(isset($edit)) Update @else Create @endif Order for Customer</h1>
             </div>
             <div class="d-flex align-items-center py-1">
-                <a href="{{ route('sales-specialist-orders.index') }}" class="btn btn-sm btn-primary">Back</a>
+                <a href="{{ route('draft-order.index') }}" class="btn btn-sm btn-primary">Back</a>
             </div>
         </div>
     </div>
@@ -31,10 +31,10 @@
                             <div class="card-body py-3">
                                 <div class="top-items-wrapper mb-5">
                                     <div class="row">
-                                        <div class="col-xl-4 col-lg-4 col-md-4 col-12">
+                                        <!-- <div class="col-xl-4 col-lg-4 col-md-4 col-12">
                                             <div class="form-group">
                                                 <label class="col-form-label text-right">Select Customers<span class="asterisk">*</span></label>
-                                                <select class="form-select form-select-solid" id='selectCustomers' data-control="select2" data-hide-search="false" name="customer_id" @if(isset($edit)) disabled="disabled" @endif>
+                                                <select class="form-select form-select-solid" id='selectCustomers' data-control="select2" data-hide-search="false" name="customer_id">
                                                     @if(isset($edit))
                                                     <option value="{{ $edit->customer_id }}" selected>{{ $edit->customer->card_name }}</option>
                                                     @else
@@ -42,11 +42,11 @@
                                                     @endif
                                                 </select>
                                             </div>
-                                        </div>
-                                        <div class="col-xl-4 col-lg-4 col-md-4 col-12">
+                                        </div> -->
+                                        <div class="col-xl-6 col-lg-6 col-md-6 col-12">
                                             <div class="form-group">
                                                 <label class="col-form-label text-right">Select Address<span class="asterisk">*</span></label>
-                                                <select class="form-select form-select-solid selectAddress" id='selectAddress' data-control="select2" data-hide-search="false" name="address_id" @if(!isset($edit)) disabled="disabled" @endif>
+                                                <select class="form-select form-select-solid" id='selectAddress' data-control="select2" data-hide-search="false" name="address_id">
                                                     @if(isset($edit))
                                                         <option value="{{ $edit->address->id }}" selected>{{$edit->address->address}}</option>
                                                     @else
@@ -55,9 +55,9 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-xl-4 col-lg-4 col-md-4 col-12">
-                                            <label class="col-form-label text-right">Delivery Date<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control" placeholder="Delivery Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('m/d/Y',strtotime($edit->due_date))}}" @endif>
+                                        <div class="col-xl-6 col-lg-6 col-md-6 col-12">
+                                            <label class="col-form-label text-right">Due Date<span class="asterisk">*</span></label>
+                                            <input type="text" class="form-control" placeholder="Invoice Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('d/m/Y',strtotime($edit->due_date))}}" @endif>
                                         </div>
                                     </div>
                                 </div>
@@ -94,33 +94,33 @@
                                                 </thead>
                                                 <!--end::Table head-->
                                                 <!--begin::Table body-->
-                                                <tbody data-repeater-list="products">
+                                                <tbody data-repeater-list="products" id="myTableBody">
                                                     @if(isset($edit))
                                                         @foreach($edit->items as $value)
-                                                        <tr data-repeater-item name="items">
-                                                            <td>
-                                                                <div class="form-group">
-                                                                    <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
-                                                                        <option value="{{ $value->product->id }}" selected>{{ $value->product->item_name }}</option>
-                                                                    </select>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <input type="number" class="form-control quantity" name="quantity" data-price="{{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}" placeholder="Enter quantity" value="{{ $value->quantity }}">
-                                                            </td>
-                                                            <td style="text-align:right">
-                                                                <span class="price text-primary">₱ {{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}</span>
-                                                            </td>
-                                                            <td style="text-align:right">
-                                                                <span class="amount text-primary" style="font-weight: bold">₱ {{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity }}</span>
-                                                            </td>
-                                                            <td>
-                                                                <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
-                                                            </td>
-                                                        </tr>
+                                                            <tr data-repeater-item name="items">
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
+                                                                            <option value="{{ $value->product->id }}" selected>{{ $value->product->item_name }}</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" class="form-control quantity" name="quantity" data-price="{{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}" placeholder="Enter quantity" value="{{ $value->quantity }}">
+                                                                </td>
+                                                                <td style="text-align:right">
+                                                                    <span class="price text-primary">₱ {{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}</span>
+                                                                </td>
+                                                                <td style="text-align:right">
+                                                                    <span class="amount text-primary" style="font-weight: bold">₱ {{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity }}</span>
+                                                                </td>
+                                                                <td>
+                                                                    <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
+                                                                </td>
+                                                            </tr>
                                                         @endforeach
                                                     @else
-                                                    <tr data-repeater-item name="items">
+                                                    <tr data-repeater-item>
                                                         <td>
                                                             <div class="form-group">
                                                                 <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
@@ -129,13 +129,13 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="number" class="form-control quantity" name="quantity" data-price="0" placeholder="Enter quantity" value="">
+                                                            <input type="number" class="form-control quantity" name="quantity" data-price="" placeholder="Enter quantity">
                                                         </td>
-                                                        <td style="text-align:right">
-                                                            <span class="price text-primary">₱ 0</span>
+                                                        <td>
+                                                            <input type="number" class="form-control" placeholder="Price" value="0.00" disabled="disabled">
                                                         </td>
-                                                        <td style="text-align:right">
-                                                            <span class="amount text-primary" style="font-weight: bold">₱ 0</span>
+                                                        <td>
+                                                            <input type="number" class="form-control" placeholder="Price" value="0.00" disabled="disabled">
                                                         </td>
                                                         <td>
                                                             <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
@@ -164,7 +164,6 @@
                     </div>
 
                     <div class="total-box-section">
-
                         <div class="row gy-5 g-xl-8">
                             <div class="col-md-4 col-12"></div>
                             <div class="col-md-4 col-12"></div>
@@ -176,7 +175,7 @@
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">sub total</span>
                                             </div>
                                             <div class="col-md-6 mb-3 ">
-                                                <span style="text-align: right; width: 100%;" class="d-block text-primary price subTotal">@if(isset($edit)) ₱ {{ $total }} @else ₱ 0.00 @endif</span>
+                                                <span style="text-align: right; width: 100%;" class="d-block price subTotal text-primary">₱ {{ $total }}</span>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">discount</span>
@@ -190,7 +189,7 @@
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">total</span>
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <span style="text-align: right; width: 100%;" class="d-block text-primary price grandTotal">@if(isset($edit)) ₱ {{ $total }} @else ₱ 0.00 @endif</span>
+                                                <span style="text-align: right; width: 100%;" class="d-block price grandTotal text-primary">₱ {{ $total }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -198,14 +197,13 @@
                             </div>
 
                         </div>
-
                     </div>
 
                     <div class="row gy-5 g-xl-8">
                         <div class="col-xl-12">
                             <div class="d-flex flex-wrap pt-2 text-center justify-content-center">
-                                <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Save As Draft">
-                                <input type="button" class="btn btn-lg btn-primary placeOrder" value="Save & Place Order">
+                                <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Update">
+                                <input type="button" class="btn btn-lg btn-primary placeOrder" value="Update & Place Order">
                             </div>
                         </div>
                     </div>
@@ -230,91 +228,55 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.repeater/1.2.1/jquery.repeater.min.js"></script>
 <script>
     $(document).ready(function() {
+        @php
+            $dates = @Auth::user()->customer_delivery_schedules->where('date','>',date("Y-m-d"));
+            if(count($dates)){
+                $dates = array_map( function ( $t ) {
+                    return date('d/m/Y',strtotime($t));
+                }, array_column( $dates->toArray(), 'date' ) );
+            }
+        @endphp
+        @if(count($dates))
+            var enableDays = {!! json_encode($dates) !!};
+        @endif
+
+        function formatDate(d) {
+            var day = String(d.getDate())
+            //add leading zero if day is is single digit
+            if (day.length == 1)
+                day = '0' + day
+            var month = String((d.getMonth()+1))
+            //add leading zero if month is is single digit
+            if (month.length == 1)
+                month = '0' + month
+            return day + "/" + month + "/" + d.getFullYear()
+        }
+
+        $('[name="due_date"]').datepicker({
+            format: 'dd/mm/yyyy',
+            todayHighlight: true,
+            orientation: "bottom left",
+            startDate: "+3d",
+            autoclose: true,
+
+            @if(count($dates))
+            beforeShowDay: function(date){
+                if (enableDays.indexOf(formatDate(date)) < 0)
+                return {
+                    enabled: false
+                }
+                else
+                return {
+                    enabled: true
+                }
+            },
+            @endif
+        });
+
         var form = $('#myForm');
-
-        form.find('.selectProducts').select2({
+        form.find('select').select2({
             ajax: {
-                url: "{{route('sales-specialist-orders.getProducts')}}",
-                type: "post",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        _token: "{{ csrf_token() }}",
-                        filter_search: params.term,
-                        customer_id: $('[name="customer_id"]').val(),
-                    };
-                },
-                processResults: function (response) {
-                    return {
-                        results:  $.map(response, function (item) {
-                                    return {
-                                        text: item.item_name,
-                                        id: item.id
-                                    }
-                                })
-                        };
-                },
-                cache: true
-            },
-            placeholder: 'Select Product',
-            // minimumInputLength: 1,
-            multiple: false,
-            // data: $initialOptions
-        });
-
-        form.repeater({
-            initEmpty: false,
-            show: function () {
-                $(this).slideDown();
-                var product_ids = [];
-                $('.selectProducts').each(function(){
-                    if(this.value){
-                        product_ids.push(this.value);
-                    }
-                });
-                form.find('.selectProducts').next('.select2-container').remove();
-                form.find('.selectProducts').select2({
-                    ajax: {
-                        url: "{{route('sales-specialist-orders.getProducts')}}",
-                        type: "post",
-                        dataType: 'json',
-                        delay: 250,
-                        data: function (params) {
-                            return {
-                                _token: "{{ csrf_token() }}",
-                                filter_search: params.term,
-                                customer_id: $('[name="customer_id"]').val(),
-                                product_ids: product_ids,
-                            };
-                        },
-                        processResults: function (response) {
-                            return {
-                                results:  $.map(response, function (item) {
-                                            return {
-                                                text: item.item_name,
-                                                id: item.id
-                                            }
-                                        })
-                                };
-                        },
-                        cache: true
-                    },
-                    placeholder: 'Select Product',
-                    // minimumInputLength: 1,
-                    multiple: false,
-                    // data: $initialOptions
-                });
-            },
-            hide: function (deleteElement) {
-                $(this).slideUp(deleteElement);
-            },
-            isFirstItemUndeletable: true
-        });
-
-        $("#selectCustomers").select2({
-            ajax: {
-                url: "{{route('sales-specialist-orders.getCustomers')}}",
+                url: "{{route('draft-order.getProducts')}}",
                 type: "post",
                 dataType: 'json',
                 delay: 250,
@@ -331,10 +293,49 @@
                 },
                 cache: true
             },
-            placeholder: 'Select Customers',
+            placeholder: 'Select Products.',
             // minimumInputLength: 1,
             multiple: false,
             // data: $initialOptions
+        });
+
+        form.repeater({
+            initEmpty: false,
+            show: function () {
+                $(this).find('td .quantity').attr('data-price', '0');
+                $(this).find('td .price').html('');
+                $(this).find('td .amount').html('');
+                $(this).slideDown();
+                form.find('select').next('.select2-container').remove();
+                form.find('select').select2({
+                    ajax: {
+                        url: "{{route('draft-order.getProducts')}}",
+                        type: "post",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                _token: "{{ csrf_token() }}",
+                                search: params.term
+                            };
+                        },
+                        processResults: function (response) {
+                            return {
+                                results: response
+                            };
+                        },
+                        cache: true
+                    },
+                    placeholder: 'Select Products.',
+                    // minimumInputLength: 1,
+                    multiple: false,
+                    // data: $initialOptions
+                });
+            },
+            hide: function (deleteElement) {
+                $(this).slideUp(deleteElement);
+            },
+            isFirstItemUndeletable: true
         });
 
         $('body').on('change' ,'#selectCustomers', function(){
@@ -346,79 +347,11 @@
             } else {
                 $('#selectAddress').prop('disabled', 'disabled');
             }
-
-            if($customer){
-                $.ajax({
-                    url: "{{route('sales-specialist-orders.get-customer-schedule')}}",
-                    type: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        customer_id: $('[name="customer_id"]').val(),
-                    },
-                    success: function (data) {
-                        if (data.status) {
-                            $dates = JSON.parse(data.dates);
-
-                            function formatDate(d) {
-                                var day = String(d.getDate())
-                                //add leading zero if day is is single digit
-                                if (day.length == 1)
-                                    day = '0' + day
-                                var month = String((d.getMonth()+1))
-                                //add leading zero if month is is single digit
-                                if (month.length == 1)
-                                    month = '0' + month
-                                return day + "/" + month + "/" + d.getFullYear()
-                            }
-
-                            if($dates.length > 0){
-                                $('[name="due_date"]').datepicker({
-                                    format: 'dd/mm/yyyy',
-                                    todayHighlight: true,
-                                    orientation: "bottom left",
-                                    startDate: "+3d",
-                                    autoclose: true,
-                                    beforeShowDay: function(date){
-                                        if ($dates.indexOf(formatDate(date)) < 0)
-                                        return {
-                                            enabled: false
-                                        }
-                                        else
-                                        return {
-                                            enabled: true
-                                        }
-                                    },
-                                });
-                            } else {
-                                $('[name="due_date"]').datepicker({
-                                    format: 'dd/mm/yyyy',
-                                    todayHighlight: true,
-                                    orientation: "bottom left",
-                                    startDate: "+3d",
-                                    autoclose: true,
-                                });
-                            }
-
-                        }else{
-                            $('[name="due_date"]').datepicker({
-                                format: 'dd/mm/yyyy',
-                                todayHighlight: true,
-                                orientation: "bottom left",
-                                startDate: "+3d",
-                                autoclose: true,
-                            });
-                        }
-                    },
-                    error: function () {
-                        toast_error("Something went to wrong !");
-                    },
-                });
-            }
         });
 
         $("#selectAddress").select2({
             ajax: {
-                url: "{{route('sales-specialist-orders.getAddress')}}",
+                url: "{{route('draft-order.getAddress')}}",
                 type: "post",
                 dataType: 'json',
                 delay: 250,
@@ -426,7 +359,7 @@
                     return {
                         _token: "{{ csrf_token() }}",
                         search: params.term,
-                        customer_id: $('[name="customer_id"]').val(),
+                        customer_id: "{{ Auth::user()->customer_id }}",
                     };
                 },
                 processResults: function (response) {
@@ -447,11 +380,10 @@
             var validator = validate_form();
 
             if (validator.form() != false) {
-                $('[type="submit"]').prop('disabled', true);
-                $('[name="address_id"]').removeAttr('disabled');
-                $('[name="customer_id"]').removeAttr('disabled');
+                // $('[type="submit"]').prop('disabled', true);
+                // $('[name="address_id"]').removeAttr('disabled');
                 $.ajax({
-                    url: "{{route('sales-specialist-orders.store')}}",
+                    url: "{{route('draft-order.store')}}",
                     type: "POST",
                     data: new FormData($("#myForm")[0]),
                     async: false,
@@ -461,18 +393,16 @@
                         if (data.status) {
                             toast_success(data.message)
                             setTimeout(function(){
-                                window.location.href = '{{ route('sales-specialist-orders.index') }}';
+                                window.location.href = '{{ route('draft-order.index') }}';
                             },1500)
                         } else {
                             toast_error(data.message);
-                            $('[type="submit"]').prop('disabled', false);
-                            $('[name="customer_id"]').prop('disabled', false);
+                            // $('[type="submit"]').prop('disabled', false);
                         }
                     },
                     error: function () {
                         toast_error("Something went to wrong !");
-                        $('[type="submit"]').prop('disabled', false);
-                        $('[name="customer_id"]').prop('disabled', false);
+                        // $('[type="submit"]').prop('disabled', false);
                     },
                 });
             }
@@ -486,7 +416,7 @@
                 $('[type="submit"]').prop('disabled', true);
                 $('[name="address_id"]').removeAttr('disabled');
                 $.ajax({
-                    url: "{{route('sales-specialist-orders.placeOrder')}}",
+                    url: "{{route('draft-order.placeOrder')}}",
                     type: "POST",
                     data: new FormData($("#myForm")[0]),
                     async: false,
@@ -496,7 +426,7 @@
                         if (data.status) {
                             toast_success(data.message)
                             setTimeout(function(){
-                                window.location.href = '{{ route('sales-specialist-orders.index') }}';
+                                window.location.href = '{{ route('draft-order.index') }}';
                             },1500)
                         } else {
                             toast_error(data.message);
@@ -516,9 +446,6 @@
                 errorClass: "is-invalid",
                 validClass: "is-valid",
                 rules: {
-                    customer_id:{
-                        required: true,
-                    },
                     address_id:{
                         required: true,
                     },
@@ -534,9 +461,6 @@
                     }
                 },
                 messages: {
-                    customer_id:{
-                        required: "Please select customer.",
-                    },
                     address_id:{
                         required: "Please select address.",
                     },
@@ -575,62 +499,52 @@
             return validator;
         }
 
-        $(document).on('change', '.selectProducts',function(event){
-            $self = $(this);
-            $customer_id = $('[name="customer_id"]').val();
-            if($customer_id){
-                $.ajax({
-                    url: "{{route('sales-specialist-orders.get-price')}}",
-                    type: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        product_id: $(this).val(),
-                        customer_id: $('[name="customer_id"]').val(),
-                    },
-                    success: function (data) {
-                        if (data.status) {
-                            $self.parent().parent().parent().find('.price').html('₱'+ number_format(data.price));
-                            $self.parent().parent().parent().find('.quantity').attr('data-price', data.price);
-                            $qty = $self.parent().parent().parent().find(".quantity").val();
-                            if($qty == ""){
-                                $self.parent().parent().parent().find(".quantity").val(1).trigger('keyup');
-                            } else{
-                                $self.parent().parent().parent().find(".quantity").trigger('change');
-                            }
-                        } else {
-                            toast_error(data.message);
-                        }
-                    },
-                    error: function () {
-                        toast_error("Something went to wrong !");
-                    },
-                });
-            }
-            // $(this).trigger('keyup');
-        });
-
         $(document).on('keyup', "input[type=number]",function(event){
             $price = parseFloat($(this).attr('data-price'));
             $qty = parseFloat($(this).val());
             $amount = $price * $qty;
-            if($qty == "" || $qty <= 0){
+            if(isNaN($qty) || $qty <= 0){
                 $(this).val(1);
                 $amount = $price;
             }
-            $(this).parent().parent().find('td .amount').html('₱ '+ number_format($amount.toFixed(2)));
+            $(this).parent().parent().find('td .amount').html('₱ '+$amount.toFixed(2));
 
             $grandTotal = 0;
             $("tr[name='items']").each(function(){
                 $subPrice = parseFloat($(this).find('.quantity').data('price'));
                 $subQty = parseFloat($(this).find('.quantity').val());
-                if(!isNaN($subQty) && $subQty != "" && $subQty > 0){
-                    $grandTotal += $subPrice * $subQty;
-                }
+                $grandTotal += $subPrice * $subQty;
             });
 
-            $('.subTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
-            $('.grandTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
+            $('.subTotal').html('₱ '+$grandTotal.toFixed(2));
+            $('.grandTotal').html('₱ '+$grandTotal.toFixed(2));
         });
+
+        $(document).on('change', '.selectProducts',function(event){
+            $self = $(this);
+            $.ajax({
+                url: "{{route('draft-order.get-price')}}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    product_id: $(this).val(),
+                    price_list_num: "{{@Auth::user()->customer->price_list_num}}"
+                },
+                success: function (data) {
+                    if (data.status) {
+                        $self.parent().parent().parent().find('.price').html('₱'+ data.price);
+                        $self.parent().parent().parent().find('.quantity').attr('data-price', data.price);
+                        $self.parent().parent().parent().find(".quantity").val(1).trigger('keyup');
+                    } else {
+                        toast_error(data.message);
+                    }
+                },
+                error: function () {
+                    toast_error("Something went to wrong !");
+                },
+            });
+        });
+
     });
 </script>
 @endpush

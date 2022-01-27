@@ -43,6 +43,11 @@
                      <!--begin::Menu wrapper-->
                      <div class="cursor-pointer btn btn-icon btn-clean btn-lg mr-1" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
                         <i class="fa fa-bell" style="font-size: 20px"></i>
+                        @if(count($notification) > 0)
+                        <span class="top-0 start-0 translate-middle badge badge-circle badge-danger">{{ count($notification) }}</span>
+                        @elseif(count($notification) > 9)
+                        <span class="top-0 start-0 translate-middle badge badge-circle badge-danger">9+</span>
+                        @endif
                      </div>
                      <!--begin::Menu-->
                      <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px" data-kt-menu="true">
@@ -94,6 +99,13 @@
                   <div class="cursor-pointer btn btn-icon btn-clean btn-lg mr-1">
                         <a href="{{ route('cart.index') }}" class="btn btn-icon btn-clean btn-lg mr-1 btn-active-color-primary">
                            <i class="fa fa-shopping-cart" style="font-size: 20px;"></i>
+                            @if(getCartCount() > 0)
+                            <span class="top-0 start-0 translate-middle badge badge-circle badge-danger cartCount">{{ getCartCount() }}</span>
+                            @elseif(getCartCount() > 9)
+                            <span class="top-0 start-0 translate-middle badge badge-circle badge-danger cartCount">9+</span>
+                            @else
+                            <span class="top-0 start-0 translate-middle badge badge-circle badge-danger cartCount" style="display:none"></span>
+                            @endif
                         </a>
                   </div>
                </div>

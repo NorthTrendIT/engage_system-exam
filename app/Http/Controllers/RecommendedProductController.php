@@ -256,7 +256,9 @@ class RecommendedProductController extends Controller
             $cart->qty = 1;
             $cart->save();
 
-            return $response = ['status'=>true,'message'=>"Product added to cart successfully."];
+            $count = Cart::where('customer_id', $request->customer_id)->count();
+
+            return $response = ['status'=>true,'message'=>"Product added to cart successfully.", 'count' => $count];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong please try again."];

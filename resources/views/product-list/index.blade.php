@@ -310,6 +310,10 @@ $(document).ready(function() {
                 }else{
                     $addToCartBtn.hide();
                     $goToCartBtn.show();
+                    if(result.count > 0){
+                        $('.cartCount').show();
+                        $('.cartCount').html(result.count);
+                    }
                     toast_success(result.message);
                     // setTimeout(function(){
                     //     window.location.reload();

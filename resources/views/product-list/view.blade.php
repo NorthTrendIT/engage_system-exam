@@ -72,7 +72,7 @@
                          <h5>{{ @$product->item_name ?? "" }}</h5>
 
                          @if($customer)
-                         <p><span class="mr-1 price"><strong>₱ {{ get_product_customer_price(@$product->item_prices,@$customer->price_list_num) }}</strong></span></p>
+                         <p><span class="mr-1 price"><strong>₱ {{ number_format(get_product_customer_price(@$product->item_prices,@$customer->price_list_num)) }}</strong></span></p>
                          @endif
                          <p class="pt-1">{!! @$product->technical_specifications ?? "" !!}</p>
                          <div class="table-responsive">
@@ -242,8 +242,8 @@
                                         <h3 class="title">
                                             <a href="{{ route('product-list.show',@$item->product->id) }}">{{ @$item->product->item_name ?? "-" }}</a>
                                         </h3>
-                                        
-                                        <div class="price">₱ {{ get_product_customer_price(@$item->product->item_prices,@$customer->price_list_num) }}</div>
+
+                                        <div class="price">₱ {{ number_format(get_product_customer_price(@$item->product->item_prices,@$customer->price_list_num)) }}</div>
                                         @if(userdepartment() != 1)
                                         @if(is_in_cart(@$item->product->id) == 1)
                                             <a class="add-to-cart" href="{{ route('cart.index') }}">Go to cart</a>

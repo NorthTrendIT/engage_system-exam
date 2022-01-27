@@ -51,7 +51,7 @@
                </a>
             </div>
 
-            
+
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['news-and-announcement.index', 'news-and-announcement.edit', 'news-and-announcement.create'])) ? 'active' : '' }}" href="{{ route('news-and-announcement.index') }}">
                   <span class="menu-icon">
@@ -429,12 +429,12 @@
                </a>
             </div>
             @endif
-           
+
 
             {{-- Draft Orders --}}
             @if(Auth::user()->role_id == 4)
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['draft-order.index','draft-order.edit'])) ? 'active' : '' }}" href="{{ route('draft-order.index') }}">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['draft-order.index','draft-order.show', 'draft-order.edit'])) ? 'active' : '' }}" href="{{ route('draft-order.index') }}">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
@@ -514,7 +514,7 @@
             @endif
 
 
-            
+
             {{-- Activity Log --}}
             @if(Auth::user()->role_id == 1)
             <div class="menu-item">
