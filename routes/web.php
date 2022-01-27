@@ -295,7 +295,10 @@ Route::middleware(['auth'])->group(function(){
         Route::post('draft-order/get-price/','App\Http\Controllers\DraftOrderController@getPrice')->name('draft-order.get-price');
 
     });
-
+    
+    // For SS Only
+    Route::get('customer-delivery-schedule/ss-view', 'App\Http\Controllers\CustomerDeliveryScheduleController@ssView')->name('customer-delivery-schedule.ss-view');
+    Route::post('customer-delivery-schedule/get-ss-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getSsCustomerList')->name('customer-delivery-schedule.get-ss-customer-list');
 
     // Super Admin Routes
     Route::middleware('super-admin')->group(function(){
