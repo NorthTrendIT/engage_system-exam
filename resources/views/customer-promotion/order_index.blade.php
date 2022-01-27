@@ -49,14 +49,17 @@
                 </div>
                 @endif
 
+                @if(in_array(userrole(),[1]))
                 <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
-                    <span>
-                    </span>
-                  </div>
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select company">
+                    <option value=""></option>
+                    @foreach($company as $c)
+                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                    @endforeach
+                  </select>
                 </div>
-
+                @endif
+                
                 <div class="col-md-2 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select status" data-allow-clear="true">
                     <option value=""></option>
@@ -64,6 +67,14 @@
                     <option value="approved">Approved</option>
                     <option value="canceled">Canceled</option>
                   </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
+                    </span>
+                  </div>
                 </div>
 
                 <div class="col-md-3 mt-5">
@@ -83,6 +94,9 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              @if(in_array(userrole(),[1]))
+                              <th>Company</th>
+                              @endif
                               <th>Promotion</th>
                               @if(in_array(userrole(),[1,2]))
                               <th>Customer</th>
@@ -137,6 +151,7 @@
       $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
+      $filter_company = $('[name="filter_company"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -154,10 +169,14 @@
                 filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
                 filter_customer : $filter_customer,
+                filter_company : $filter_company,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              @if(in_array(userrole(),[1]))
+              {data: 'company', name: 'company'},
+              @endif
               {data: 'promotion', name: 'promotion'},
               @if(in_array(userrole(),[1,2]))
               {data: 'user', name: 'user'},
@@ -186,6 +205,7 @@
       $('[name="filter_date_range"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
       $('[name="filter_customer"]').val('').trigger('change');
+      $('[name="filter_company"]').val('').trigger('change');
       render_table();
     })
 

@@ -59,4 +59,8 @@ class Quotation extends Model
     public function invoice(){
         return $this->hasOne(Invoice::class, 'doc_num', 'doc_entry');
     }
+
+    public function sap_connection(){
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
+    }
 }

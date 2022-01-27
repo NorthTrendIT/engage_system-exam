@@ -489,7 +489,14 @@ class CustomerPromotionController extends Controller
     }
 
     public function orderIndex(){
-        return view('customer-promotion.order_index');
+
+        if(userrole() == 1){
+            $company = SapConnection::all();
+        }else{
+            $company = collect();
+        }
+
+        return view('customer-promotion.order_index',compact('company'));
     }
 
     public function orderGetAll(Request $request){
@@ -510,6 +517,10 @@ class CustomerPromotionController extends Controller
 
         if($request->filter_status != ""){
             $data->where('customer_promotions.status',$request->filter_status);
+        }
+
+        if($request->filter_company != ""){
+            $data->where('sap_connection_id',$request->filter_company);
         }
 
         if($request->filter_search != ""){
@@ -569,6 +580,9 @@ class CustomerPromotionController extends Controller
                             ->addColumn('created_at', function($row) {
                                 return date('M d, Y',strtotime($row->created_at));
                             })
+                            ->addColumn('company', function($row) {
+                                return @$row->sap_connection->company_name ?? "-";
+                            })
                             ->addColumn('status', function($row) {
 
                                 $btn = "";
@@ -595,6 +609,9 @@ class CustomerPromotionController extends Controller
                             })
                             ->orderColumn('created_at', function ($query, $order) {
                                 $query->orderBy('created_at', $order);
+                            })
+                            ->orderColumn('company', function ($query, $order) {
+                                $query->join('sap_connections', 'customer_promotions.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
                             ->rawColumns(['action','status','created_at','user'])
                             ->make(true);
