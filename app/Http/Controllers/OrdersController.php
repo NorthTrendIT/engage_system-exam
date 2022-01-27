@@ -38,7 +38,11 @@ class OrdersController extends Controller
      */
     public function index()
     {
-        return view('orders.index');
+        $company = collect();
+        if(userrole() == 1){
+            $company = SapConnection::all();
+        }
+        return view('orders.index', compact('company'));
     }
 
     /**
@@ -193,6 +197,10 @@ class OrdersController extends Controller
             $data->where('card_code',$request->filter_customer);
         }
 
+        if($request->filter_company != ""){
+            $data->where('sap_connection_id',$request->filter_company);
+        }
+
         if($request->filter_date_range != ""){
             $date = explode(" - ", $request->filter_date_range);
             $start = date("Y-m-d", strtotime($date[0]));
@@ -227,6 +235,20 @@ class OrdersController extends Controller
                             ->addColumn('due_date', function($row) {
                                 return date('M d, Y',strtotime($row->doc_due_date));
                             })
+                            ->addColumn('company', function($row) {
+                                return @$row->sap_connection->company_name ?? "-";
+                            })
+                            ->addColumn('action', function($row){
+                                $btn = '<a href="' . route('orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary">
+                                            <i class="fa fa-eye"></i>
+                                        </a>';
+                                if(userrole() == 1){
+                                    $btn .= '<a href="javascript:;" data-url="'. route('orders.notify-customer').'" data-order="'.$row->id.'" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary m-5 notifyCustomer" title="Notify Customer">
+                                            <i class="fa fa-bell"></i>
+                                        </a>';
+                                }
+                                return $btn;
+                            })
                             ->orderColumn('name', function ($query, $order) {
                                 //$query->orderBy('card_name', $order);
 
@@ -245,16 +267,8 @@ class OrdersController extends Controller
                             ->orderColumn('due_date', function ($query, $order) {
                                 $query->orderBy('doc_due_date', $order);
                             })
-                            ->addColumn('action', function($row){
-                                $btn = '<a href="' . route('orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary">
-                                            <i class="fa fa-eye"></i>
-                                        </a>';
-                                if(userrole() == 1){
-                                    $btn .= '<a href="javascript:;" data-url="'. route('orders.notify-customer').'" data-order="'.$row->id.'" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary m-5 notifyCustomer" title="Notify Customer">
-                                            <i class="fa fa-bell"></i>
-                                        </a>';
-                                }
-                                return $btn;
+                            ->orderColumn('company', function ($query, $order) {
+                                $query->join('sap_connections', 'quotations.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
                             ->rawColumns(['action'])
                             ->make(true);

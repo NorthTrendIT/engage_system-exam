@@ -28,7 +28,13 @@ class CustomerController extends Controller
     {
         $customer_groups = CustomerGroup::where('name','!=','EMPLOYEE')->get();
         $classes = Classes::all();
-        return view('customer.index',compact('customer_groups','classes'));
+
+        $company = collect();
+        if(userrole() == 1){
+            $company = SapConnection::all();
+        }
+
+        return view('customer.index',compact('customer_groups','classes','company'));
     }
 
     /**
@@ -165,6 +171,10 @@ class CustomerController extends Controller
             $data->where('u_class',$request->filter_class);
         }
 
+        if($request->filter_company != ""){
+            $data->where('sap_connection_id',$request->filter_company);
+        }
+
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
                 $q->orwhere('card_code','LIKE',"%".$request->filter_search."%");
@@ -268,6 +278,9 @@ class CustomerController extends Controller
                             ->addColumn('created_at', function($row) {
                                 return date('M d, Y',strtotime($row->created_date));
                             })
+                            ->addColumn('company', function($row) {
+                                return @$row->sap_connection->company_name ?? "-";
+                            })
                             ->orderColumn('name', function ($query, $order) {
                                 $query->orderBy('card_name', $order);
                             })
@@ -291,6 +304,9 @@ class CustomerController extends Controller
                             })
                             ->orderColumn('territory', function ($query, $order) {
                                 $query->join('territories', 'customers.territory', '=', 'territories.id')->orderBy('territories.description', $order);
+                            })
+                            ->orderColumn('company', function ($query, $order) {
+                                $query->join('sap_connections', 'customers.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
                             ->rawColumns(['name', 'role','status','action','credit_limit','group','class'])
                             ->make(true);

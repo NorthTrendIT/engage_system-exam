@@ -218,7 +218,13 @@ class TerritorySalesSpecialistController extends Controller
         $data = User::where('sales_specialist_name','!=','-No Sales Employee-')->where('role_id',2)->where('is_active',true)->orderBy('sales_specialist_name','asc');
 
         if($search != ''){
-            $data->where('sales_specialist_name', 'like', '%' .$search . '%');
+            // $data->where('sales_specialist_name', 'like', '%' .$search . '%');
+
+            $data->where(function($q) use ($search) {
+                $q->orwhere('sales_specialist_name','LIKE',"%".$search."%");
+                // $q->orwhere('email','LIKE',"%".$search."%");
+                $q->orwhere('sales_employee_code','LIKE',"%".$search."%");
+            });
         }
 
         $data = $data->limit(50)->get();

@@ -209,7 +209,7 @@ $(document).ready(function() {
             return {
               results:  $.map(response, function (item) {
                             return {
-                              text: item.sales_specialist_name,
+                              text: item.sales_specialist_name + " (Code: "+item.sales_employee_code+")",
                               id: item.id
                             }
                         })
@@ -223,7 +223,7 @@ $(document).ready(function() {
       @if(isset($edit))
       data:[{
             id: {{ $edit->id }},
-            text: '{{ $edit->sales_specialist_name }}',
+            text: '{{ $edit->sales_specialist_name }}'+" (Code: {{ $edit->sales_employee_code }} )",
             selected: true
           }],
       @endif

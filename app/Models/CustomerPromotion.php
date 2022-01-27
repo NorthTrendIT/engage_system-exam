@@ -62,4 +62,8 @@ class CustomerPromotion extends Model
     {
         return $this->belongsTo(User::class,'customer_user_id');
     }
+
+    public function sap_connection(){
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
+    }
 }

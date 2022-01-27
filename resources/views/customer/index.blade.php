@@ -40,6 +40,17 @@
                   </div>
                 </div>
 
+                @if(in_array(userrole(),[1]))
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select company">
+                    <option value=""></option>
+                    @foreach($company as $c)
+                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                @endif
+
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_customer_group" data-control="select2" data-hide-search="false" data-placeholder="Select group" data-allow-clear="true">
                     <option value=""></option>
@@ -98,6 +109,9 @@
                             <tr>
                               <th>No.</th>
                               <th>Name</th>
+                              @if(in_array(userrole(),[1]))
+                              <th>Company</th>
+                              @endif
                               <th>Universal Card Code</th>
                               @if(userrole() == 1)
                               <th>Credit Limit</th>
@@ -157,6 +171,7 @@
       $filter_class = $('[name="filter_class"]').find('option:selected').val();
       $filter_customer_group = $('[name="filter_customer_group"]').find('option:selected').val();
       $filter_territory = $('[name="filter_territory"]').find('option:selected').val();
+      $filter_company = $('[name="filter_company"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -176,11 +191,15 @@
                 filter_class : $filter_class,
                 filter_customer_group : $filter_customer_group,
                 filter_territory : $filter_territory,
+                filter_company : $filter_company,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'name', name: 'name'},
+              @if(in_array(userrole(),[1]))
+              {data: 'company', name: 'company'},
+              @endif
               {data: 'u_card_code', name: 'u_card_code'},
               @if(userrole() == 1)
               {data: 'credit_limit', name: 'credit_limit'},
@@ -214,6 +233,7 @@
       $('[name="filter_class"]').val('').trigger('change');
       $('[name="filter_customer_group"]').val('').trigger('change');
       $('[name="filter_territory"]').val('').trigger('change');
+      $('[name="filter_company"]').val('').trigger('change');
       render_table();
     })
 
