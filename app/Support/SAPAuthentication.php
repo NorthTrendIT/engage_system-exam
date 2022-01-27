@@ -129,4 +129,46 @@ class SAPAuthentication
         $cookie .= "ROUTEID=.node0;";
         return $cookie;
     }
+
+    // Its use for command job
+    public function forceLogin()
+    {
+        try {
+            $response = $this->httpClient->request(
+                'POST',
+                env('SAP_API_URL').'/b1s/v1/Login',
+                [
+                    'verify' => false,
+                    'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'],
+                    'body' => json_encode([
+                        'CompanyDB' => $this->database,
+                        'Password' => $this->password,
+                        'UserName' => $this->username,
+                    ])
+                ]
+            );
+
+            if (in_array($response->getStatusCode(), [200,201])) {
+                $response = json_decode($response->getBody(), true);
+                
+                SapCompanySession::updateOrCreate(
+                                        [
+                                            'company_name' => $this->database,
+                                            'username' => $this->username,
+                                        ],
+                                        [
+                                            'company_name' => $this->database,
+                                            'username' => $this->username,
+                                            'session_id' => $response['SessionId'],
+                                            'expires_at' => Carbon::now()->addMinutes(55),
+                                        ]
+                                    );
+            }
+
+        } catch (\Exception $e) {
+            // return $e;
+            // abort(500);
+            // dd($e);
+        }
+    }
 }
