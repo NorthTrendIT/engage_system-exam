@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\CustomerBpAddress;
 use App\Support\PostOrder;
 use App\Models\SapConnection;
+use App\Models\Quotation;
 use Validator;
 use Auth;
 use DataTables;
@@ -113,16 +114,29 @@ class DraftOrderController extends Controller
      */
     public function show($id)
     {
-        $total = 0;
-        $edit = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id',$id)->firstOrFail();
-        $customer = Customer::findOrFail($edit->customer->id);
-        $customer_price_list_no = @$customer->price_list_num;
+        // $total = 0;
+        // $edit = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id',$id)->firstOrFail();
+        // $customer = Customer::findOrFail($edit->customer->id);
+        // $customer_price_list_no = @$customer->price_list_num;
 
-        foreach($edit->items as $value){
-            $total += get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity;
+        // foreach($edit->items as $value){
+        //     $total += get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity;
+        // }
+
+        // return view('draft-order.view',compact(['edit', 'customer_price_list_no', 'total']));
+        $local_order = LocalOrder::where('id',$id)->firstOrFail();
+        $data = Quotation::with(['items.product', 'customer'])->where('doc_entry', $local_order->doc_entry);
+        if(userrole() == 4){
+            $data->where('card_code', @Auth::user()->customer->card_code);
+        }elseif(userrole() == 2){
+            $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(userrole() != 1){
+            return abort(404);
         }
 
-        return view('draft-order.view',compact(['edit', 'customer_price_list_no', 'total']));
+        $data = $data->firstOrFail();
+
+        return view('draft-order.view', compact('data'));
     }
 
     /**

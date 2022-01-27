@@ -46,16 +46,20 @@ class LocalOrderController extends Controller
      */
     public function store(Request $request)
     {
-        if(!@Auth::user()->customer->sap_connection_id){
+        $input = $request->all();
+
+        $customer = Customer::find($input['customer_id']);
+        $address = CustomerBpAddress::find($input['address_id']);
+
+        if(!$customer->sap_connection_id){
             return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
         }
-
-        $input = $request->all();
         // dd($input);
         $rules = array(
                 'customer_id' => 'required',
                 'address_id' => 'required|string|max:185',
                 'due_date' => 'required|date',
+                'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@Auth::user()->customer->sap_connection_id,
             );
 
         $validator = Validator::make($input, $rules);
@@ -63,7 +67,7 @@ class LocalOrderController extends Controller
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
-            // dd($input);
+
             if(isset($input['id'])){
                 $order = LocalOrder::find($input['id']);
                 $message = "Order details updated successfully.";
@@ -71,9 +75,6 @@ class LocalOrderController extends Controller
                 $order = new LocalOrder();
                 $message = "Order created successfully.";
             }
-
-            $customer = Customer::find($input['customer_id']);
-            $address = CustomerBpAddress::find($input['address_id']);
 
             if(!empty($customer) && !empty($address)){
                 $order->customer_id = $input['customer_id'];
