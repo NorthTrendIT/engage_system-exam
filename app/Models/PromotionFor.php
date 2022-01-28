@@ -20,7 +20,9 @@ class PromotionFor extends Model
         'product_id',
         'territory_id',
         'sales_specialist_id',
-      ];
+        'brand_id',
+        'market_sector',
+    ];
 
     public function promotion(){
         return $this->belongsTo(Promotions::class);
@@ -44,5 +46,9 @@ class PromotionFor extends Model
 
     public function sales_specialist(){
         return $this->hasOne(User::class, 'id', 'sales_specialist_id');
+    }
+
+    public function brand(){
+        return $this->belongsTo(ProductGroup::class,'brand_id');
     }
 }
