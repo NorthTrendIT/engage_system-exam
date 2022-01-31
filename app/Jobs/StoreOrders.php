@@ -72,6 +72,10 @@ class StoreOrders implements ShouldQueue
                             'sap_connection_id' => $this->sap_connection_id,
                         );
 
+                if(!empty($order['DocumentLines'])){
+                    array_push($insert, array('base_entry' => $order['DocumentLines'][0]['BaseEntry']));
+                }
+
                 $obj = Order::updateOrCreate([
                                             'doc_entry' => $order['DocEntry'],
                                             'sap_connection_id' => $this->sap_connection_id,
