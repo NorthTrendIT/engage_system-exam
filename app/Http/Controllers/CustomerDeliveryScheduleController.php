@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\CustomerDeliverySchedule;
 use App\Models\User;
+use App\Models\Customer;
 use App\Models\Territory;
 use Validator;
 use DataTables;
@@ -281,5 +282,47 @@ class CustomerDeliveryScheduleController extends Controller
         // }
 
         return response()->json($data);
+    }
+
+    public function ssView(Request $request){
+
+        if($request->ajax()){
+            $data = User::where('customer_id', $request->customer_id)->where('role_id', 4)->first();
+            $dates = array();
+            if(@$data->customer_delivery_schedules){
+                foreach ($data->customer_delivery_schedules as $value) {
+                    $dates[] = array(
+                                        // 'allDay' => true,
+                                        // 'title' => "",
+                                        'start' => date("Y-m-d",strtotime($value->date)),
+                                        'end' => date("Y-m-d",strtotime($value->date)),
+                                        // 'className' => "calendar-event-enduring",
+                                        "display" => 'background'
+                                    );
+                }
+            }
+
+            return response()->json($dates);
+        }
+
+        return view('customer-delivery-schedule.ss_view');
+    }
+
+    public function getSsCustomerList(Request $request){
+
+        $customers = Customer::has('user')->whereHas('sales_specialist', function($q) {
+                    return $q->where('ss_id', userid());
+                });
+
+        if($request->filter_search != ""){
+            $data->where(function($q) use ($request) {
+                $q->orwhere('card_code','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        $customers = $customers->get();
+
+        return response()->json($customers);
     }
 }
