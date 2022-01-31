@@ -121,19 +121,7 @@ Route::middleware(['auth'])->group(function(){
     	    Route::post('invoices/get-all', 'App\Http\Controllers\InvoicesController@getAll')->name('invoices.get-all');
     	    Route::post('invoices/sync-orders', 'App\Http\Controllers\InvoicesController@syncInvoices')->name('invoices.sync-invoices');
 
-            // Pramotions
-            Route::resource('promotion','App\Http\Controllers\PromotionsController');
-    	    Route::post('promotion/get-all', 'App\Http\Controllers\PromotionsController@getAll')->name('promotion.get-all');
-            Route::post('promotion/status/{id}', 'App\Http\Controllers\PromotionsController@updateStatus')->name('promotion.status');
-            Route::post('promotion/get-customers/','App\Http\Controllers\PromotionsController@getCustomers')->name('promotion.getCustomers');
-            Route::post('promotion/get-products/','App\Http\Controllers\PromotionsController@getProducts')->name('promotion.getProducts');
-            Route::post('promotion/get-promotion-data', 'App\Http\Controllers\PromotionsController@getPromotionData')->name('promotion.get-promotion-data');
-            Route::post('promotion/get-territories/','App\Http\Controllers\PromotionsController@getTerritories')->name('promotion.getTerritories');
-            Route::post('promotion/get-classes/','App\Http\Controllers\PromotionsController@getClasses')->name('promotion.getClasses');
-            Route::post('promotion/get-sales-specialist/','App\Http\Controllers\PromotionsController@getSalesSpecialist')->name('promotion.getSalesSpecialist');
-            Route::post('promotion/get-promotion-interest-data/','App\Http\Controllers\PromotionsController@getPromotionInterestData')->name('promotion.get-promotion-interest-data');
-            Route::post('promotion/get-promotion-claimed-data/','App\Http\Controllers\PromotionsController@getPromotionClaimedData')->name('promotion.get-promotion-claimed-data');
-            Route::post('promotion/get-promotion-type/','App\Http\Controllers\PromotionsController@getPromotionType')->name('promotion.get-promotion-type');
+            
 
             // Route::resource('location','App\Http\Controllers\LocationController');
     	    // Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');
@@ -295,7 +283,10 @@ Route::middleware(['auth'])->group(function(){
         Route::post('draft-order/get-price/','App\Http\Controllers\DraftOrderController@getPrice')->name('draft-order.get-price');
 
     });
-
+    
+    // For SS Only
+    Route::get('customer-delivery-schedule/ss-view', 'App\Http\Controllers\CustomerDeliveryScheduleController@ssView')->name('customer-delivery-schedule.ss-view');
+    Route::post('customer-delivery-schedule/get-ss-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getSsCustomerList')->name('customer-delivery-schedule.get-ss-customer-list');
 
     // Super Admin Routes
     Route::middleware('super-admin')->group(function(){
@@ -307,6 +298,22 @@ Route::middleware(['auth'])->group(function(){
         Route::post('promotion-type/get-products/','App\Http\Controllers\PromotionTypeController@getProducts')->name('promotion-type.get-products');
         Route::post('promotion-type/get-brands/','App\Http\Controllers\PromotionTypeController@getBrands')->name('promotion-type.get-brands');
 
+
+        // Pramotions
+        Route::resource('promotion','App\Http\Controllers\PromotionsController');
+        Route::post('promotion/get-all', 'App\Http\Controllers\PromotionsController@getAll')->name('promotion.get-all');
+        Route::post('promotion/status/{id}', 'App\Http\Controllers\PromotionsController@updateStatus')->name('promotion.status');
+        Route::post('promotion/get-customers/','App\Http\Controllers\PromotionsController@getCustomers')->name('promotion.getCustomers');
+        Route::post('promotion/get-products/','App\Http\Controllers\PromotionsController@getProducts')->name('promotion.getProducts');
+        Route::post('promotion/get-promotion-data', 'App\Http\Controllers\PromotionsController@getPromotionData')->name('promotion.get-promotion-data');
+        Route::post('promotion/get-territories/','App\Http\Controllers\PromotionsController@getTerritories')->name('promotion.getTerritories');
+        Route::post('promotion/get-classes/','App\Http\Controllers\PromotionsController@getClasses')->name('promotion.getClasses');
+        Route::post('promotion/get-sales-specialist/','App\Http\Controllers\PromotionsController@getSalesSpecialist')->name('promotion.getSalesSpecialist');
+        Route::post('promotion/get-promotion-interest-data/','App\Http\Controllers\PromotionsController@getPromotionInterestData')->name('promotion.get-promotion-interest-data');
+        Route::post('promotion/get-promotion-claimed-data/','App\Http\Controllers\PromotionsController@getPromotionClaimedData')->name('promotion.get-promotion-claimed-data');
+        Route::post('promotion/get-promotion-type/','App\Http\Controllers\PromotionsController@getPromotionType')->name('promotion.get-promotion-type');
+        Route::post('promotion/get-brands/','App\Http\Controllers\PromotionsController@getBrands')->name('promotion.get-brands');
+        Route::post('promotion/get-market-sectors/','App\Http\Controllers\PromotionsController@getMarketSectors')->name('promotion.get-market-sectors');
 
         // Customer Delivery Schedule
         Route::resource('customer-delivery-schedule','App\Http\Controllers\CustomerDeliveryScheduleController');
