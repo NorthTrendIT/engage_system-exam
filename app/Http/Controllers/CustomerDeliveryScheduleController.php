@@ -123,16 +123,26 @@ class CustomerDeliveryScheduleController extends Controller
 
         $dates = array();
 
+        $dates = "[";
         foreach (@$data->customer_delivery_schedules as $value) {
-            $dates[] = array(
-                                // 'allDay' => true,
-                                // 'title' => "",
-                                'start' => date("Y-m-d",strtotime($value->date)),
-                                'end' => date("Y-m-d",strtotime($value->date)),
-                                // 'className' => "calendar-event-enduring",
-                                "display" => 'background'
-                            );
+            // $dates[] = array(
+            //                     // 'allDay' => true,
+            //                     // 'title' => "",
+            //                     'start' => date("Y-m-d",strtotime($value->date)),
+            //                     'end' => date("Y-m-d",strtotime($value->date)),
+            //                     // 'className' => "calendar-event-enduring",
+            //                     "display" => 'background'
+            //                 );
+
+            // $dates[] = array(
+            //                     'startDate' => 'new Date('. date("Y-m-d",strtotime($value->date)) .')',
+            //                     'endDate' => 'new Date('. date("Y-m-d",strtotime($value->date)) .')',
+            //                     "class" => 'active'
+            //                 );
+
+            $dates .= "{startDate: new Date('".date("Y-m-d",strtotime($value->date))."'), endDate: new Date('".date("Y-m-d",strtotime($value->date))."'),class:'active'},";
         }
+        $dates .= ']';
 
         return view('customer-delivery-schedule.view',compact('data','dates'));
     }
