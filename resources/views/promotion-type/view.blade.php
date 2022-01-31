@@ -116,7 +116,7 @@
                             </tr>
 
                             <tr>
-                              <th> <b>Company:</b> </th>
+                              <th> <b>Business Unit:</b> </th>
                               <td>{{ @$data->sap_connection->company_name ?? "" }}</td>
                             </tr>
 

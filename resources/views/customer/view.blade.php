@@ -41,6 +41,10 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
+                              <th> <b>Business Unit:</b> </th>
+                              <td>{{ @$data->sap_connection->company_name ?? "" }}</td>
+                            </tr>
+                            <tr>
                               <th> <b>Card Code:</b> </th>
                               <td>{{ @$data->card_code ?? "" }}</td>
                             </tr>

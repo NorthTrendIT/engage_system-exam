@@ -161,8 +161,8 @@
 
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Company<span class="asterisk">*</span></label>
-                      <select class="form-select form-select-solid" id='selectCompany' data-control="select2" data-hide-search="false" name="sap_connection_id" data-allow-clear="true" data-placeholder="Select company">
+                      <label>Business Unit<span class="asterisk">*</span></label>
+                      <select class="form-select form-select-solid" id='selectCompany' data-control="select2" data-hide-search="false" name="sap_connection_id" data-allow-clear="true" data-placeholder="Select business unit">
                         <option value=""></option>
 
                         @foreach($company as $c)
