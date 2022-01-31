@@ -73,6 +73,10 @@ class StoreQuotations implements ShouldQueue
                             'sap_connection_id' => $this->sap_connection_id,
                         );
 
+                if(!empty($value['DocumentLines'])){
+                    array_push($insert, array('base_entry' => $value['DocumentLines'][0]['BaseEntry']));
+                }
+
                 $obj = Quotation::updateOrCreate([
                                             'doc_entry' => $value['DocEntry'],
                                             'sap_connection_id' => $this->sap_connection_id,
