@@ -54,8 +54,8 @@
                                     <!-- Promotion Type -->
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Company<span class="asterisk">*</span></label>
-                                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="sap_connection_id" data-placeholder="Select Company">
+                                            <label>Business Unit<span class="asterisk">*</span></label>
+                                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="sap_connection_id" data-placeholder="Select Business Unit">
                                                 <option value=""></option>
                                                 @if(!empty($company))
                                                     @foreach($company as $value)
@@ -370,7 +370,7 @@
               required: "Please select promotion type.",
             },
             sap_connection_id:{
-              required: "Please select company.",
+              required: "Please select business unit.",
             },
             promotion_scope:{
               required: "Please select customers.",

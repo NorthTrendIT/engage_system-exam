@@ -43,7 +43,7 @@
                 </div>
 
                 <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid filter_company" name="filter_company" data-control="select2" data-hide-search="false" data-placeholder="Select company" data-allow-clear="true">
+                  <select class="form-control form-control-lg form-control-solid filter_company" name="filter_company" data-control="select2" data-hide-search="false" data-placeholder="Select business unit" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($company as $c)
                     <option value="{{ $c->id }}">{{ $c->company_name }}</option>
@@ -68,7 +68,7 @@
                           <thead>
                             <tr>
                               <th>No.</th>
-                              <th>Company</th>
+                              <th>Business Unit</th>
                               <th>Customer</th>
                               <th>Action</th>
                             </tr>

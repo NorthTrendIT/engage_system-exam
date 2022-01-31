@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid filter_company" name="filter_company" data-control="select2" data-hide-search="false" data-placeholder="Select company" data-allow-clear="true">
+                  <select class="form-control form-control-lg form-control-solid filter_company" name="filter_company" data-control="select2" data-hide-search="false" data-placeholder="Select business unit" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($company as $c)
                     <option value="{{ $c->id }}">{{ $c->company_name }}</option>
@@ -67,7 +67,7 @@
                             <tr>
                               <th>No.</th>
                               @if(in_array(userrole(),[1,2]))
-                              <th>Company</th>
+                              <th>Business Unit</th>
                               @endif
                               <th>Number</th>
                               <th>Name</th>
