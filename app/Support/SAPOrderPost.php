@@ -178,6 +178,7 @@ class SAPOrderPost
                 $order->confirmation_status = 'C';
                 $order->doc_entry = $data['DocEntry'];
                 $order->doc_num = $data['DocNum'];
+                $order->message = null;
 
                 $this->pushOrderDetailsInDatabase($data);
             } else {
@@ -201,9 +202,9 @@ class SAPOrderPost
         $response['DocCurrency'] = 'PHP';
         $response['Address'] = @$order->address->address;
 
-        // if(@$order->sales_specialist->sales_employee_code && @$order->sales_specialist->is_active){
-        //     $response['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
-        // }
+        if(@$order->sales_specialist->sales_employee_code && @$order->sales_specialist->is_active){
+            $response['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
+        }
 
         $response['DocumentLines'] = [];
 
