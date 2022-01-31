@@ -62,7 +62,12 @@ class LocalOrderController extends Controller
                 'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@Auth::user()->customer->sap_connection_id,
             );
 
-        $validator = Validator::make($input, $rules);
+        $messages = array(
+                'products.*.product_id.exists' => "Oops! Customer or Items can not be located in the DataBase.",
+                'customer_id.exists' => "Oops! Customer not found.",
+            );
+
+        $validator = Validator::make($input, $rules, $messages);
 
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
