@@ -38,7 +38,7 @@
                                             <span class="text-gray-800 fs-6 fw-bolder">{{ $value->product->item_name}}</span>
                                             <span class="text-muted fw-bold d-block fs-7">CODE: {{ $value->product->item_code }}</span>
                                         </div>
-                                        <span class="fw-bolder my-2 price">₱ {{ get_product_customer_price(@$value->product->item_prices,@Auth::user()->customer->price_list_num) * $value->qty }}</span>
+                                        <span class="fw-bolder my-2 price">₱ {{ number_format(get_product_customer_price(@$value->product->item_prices,@Auth::user()->customer->price_list_num) * $value->qty) }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>
@@ -86,7 +86,7 @@
                                             <span class="text-gray-800 fs-6 fw-bolder">Price</span>
                                         </div>
 
-                                        <span class="fw-bolder my-2 totalPrice">₱ {{ $total}}</span>
+                                        <span class="fw-bolder my-2 totalPrice">₱ {{ number_format($total) }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>
@@ -124,7 +124,7 @@
                                         <div class="flex-grow-1 me-2">
                                             <h3 class="text-gray-800 fs-6 fw-bolder">Total Amount</h3>
                                         </div>
-                                        <span class="fw-bolder my-2 totalAmount">₱ {{ $total }}</span>
+                                        <span class="fw-boldest fs-5 my-2 totalAmount">₱ {{ number_format($total) }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>
@@ -186,7 +186,7 @@
                     </div>
                     <!--end::Col-->
                     <div class="place-button">
-                        <a href="javascript:;" class="placeOrder" >PLACE ORDER</a>
+                        <button type="submit" href="javascript:;" class="placeOrder btn btn-dark" >PLACE ORDER</button>
                     </div>
                 </div>
             </form>
@@ -481,8 +481,7 @@ $(document).ready(function() {
         e.preventDefault();
         var validator = validate_form();
         if (validator.form() != false) {
-            show_loader();
-            // $('[type="submit"]').prop('disabled', true);
+            $('[type="submit"]').prop('disabled', true);
             // $('[name="address_id"]').removeAttr('disabled');
             $.ajax({
                 url: "{{route('cart.placeOrder')}}",
@@ -496,79 +495,76 @@ $(document).ready(function() {
                         toast_success(data.message)
                         setTimeout(function(){
                             window.location.href = "{{ route('orders.index') }}";
-                        },1500)
-                        hide_loader();
+                        },1500);
                     } else {
                         toast_error(data.message);
-                        // $('[type="submit"]').prop('disabled', false);
-                        hide_loader();
+                        $('[type="submit"]').prop('disabled', false);
                     }
                 },
                 error: function () {
                     toast_error("Something went to wrong !");
-                    // $('[type="submit"]').prop('disabled', false);
-                    hide_loader();
+                    $('[type="submit"]').prop('disabled', false);
                 },
             });
-        }
-
-        function validate_form(){
-            var validator = $("#myForm").validate({
-                errorClass: "is-invalid",
-                validClass: "is-valid",
-                rules: {
-                    customer_id:{
-                        required: true,
-                    },
-                    address_id:{
-                        required: true,
-                    },
-                    due_date:{
-                        required: true,
-                    },
-                    product_id:{
-                        required: true,
-                    },
-                    quantity:{
-                        required: true,
-                        min: 1
-                    }
-                },
-                messages: {
-                    customer_id:{
-                        required: "Please select customer.",
-                    },
-                    address_id:{
-                        required: "Please select address.",
-                    },
-                    due_date:{
-                        required: "Please select delivery date.",
-                    },
-                    product_id:{
-                        required: "Please select product.",
-                    },
-                    quantity:{
-                        required: "Please enter quantity.",
-                        min: "Quentity must be grater than Zero."
-                    }
-                }
-            });
-
-            $(".selectProducts").each(function() {
-                $(this).rules('add', {
-                    required: true,
-                });
-            });
-
-            $(".quantity").each(function() {
-                $(this).rules('add', {
-                    required: true,
-                    min: 1,
-                });
-            });
-            return validator;
         }
     });
+
+    function validate_form(){
+        var validator = $("#myForm").validate({
+            errorClass: "is-invalid",
+            validClass: "is-valid",
+            rules: {
+                customer_id:{
+                    required: true,
+                },
+                address_id:{
+                    required: true,
+                },
+                due_date:{
+                    required: true,
+                },
+                product_id:{
+                    required: true,
+                },
+                quantity:{
+                    required: true,
+                    min: 1
+                }
+            },
+            messages: {
+                customer_id:{
+                    required: "Please select customer.",
+                },
+                address_id:{
+                    required: "Please select address.",
+                },
+                due_date:{
+                    required: "Please select delivery date.",
+                },
+                product_id:{
+                    required: "Please select product.",
+                },
+                quantity:{
+                    required: "Please enter quantity.",
+                    min: "Quentity must be grater than Zero."
+                }
+            }
+        });
+
+        $(".selectProducts").each(function() {
+            $(this).rules('add', {
+                required: true,
+            });
+        });
+
+        $(".quantity").each(function() {
+            $(this).rules('add', {
+                required: true,
+                min: 1,
+            });
+        });
+        return validator;
+    }
 });
 </script>
 @endpush

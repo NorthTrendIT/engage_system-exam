@@ -10,6 +10,7 @@ class Quotation extends Model
     use HasFactory;
 
     protected $fillable = [
+        'base_entry',
         'doc_entry',
         'doc_num',
         'doc_type',
@@ -53,11 +54,7 @@ class Quotation extends Model
     }
 
     public function order(){
-        return $this->hasOne(Order::class, 'doc_num', 'doc_entry');
-    }
-
-    public function invoice(){
-        return $this->hasOne(Invoice::class, 'doc_num', 'doc_entry');
+        return $this->hasOne(Order::class, 'base_entry', 'doc_entry');
     }
 
     public function sap_connection(){
