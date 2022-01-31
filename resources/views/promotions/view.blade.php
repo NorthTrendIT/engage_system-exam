@@ -48,7 +48,7 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Company</label>
+                                        <label>Business Unit</label>
                                         <input type="text" class="form-control form-control-solid"  value="{{ @$data->sap_connection->company_name }}" disabled="disabled">
                                     </div>
                                 </div>

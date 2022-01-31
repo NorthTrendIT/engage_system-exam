@@ -44,7 +44,7 @@
 
                 @if(in_array(userrole(),[1]))
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select company">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                     <option value=""></option>
                     @foreach($company as $c)
                       <option value="{{ $c->id }}">{{ $c->company_name }}</option>
@@ -95,7 +95,7 @@
                             <tr>
                               <th>No</th>
                               @if(in_array(userrole(),[1]))
-                              <th>Company</th>
+                              <th>Business Unit</th>
                               @endif
                               <th>Order #</th>
                               @if(userrole() != 4)

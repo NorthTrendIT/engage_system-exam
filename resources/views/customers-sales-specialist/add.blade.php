@@ -40,8 +40,8 @@
 
                   <div class="col-md-12">
                     <div class="form-group">
-                      <label>Company<span class="asterisk">*</span></label>
-                      <select class="form-select form-select-solid" id='selectCompany' data-control="select2" data-hide-search="false" name="company_id" data-allow-clear="true" data-placeholder="Select company">
+                      <label>Business Unit<span class="asterisk">*</span></label>
+                      <select class="form-select form-select-solid" id='selectCompany' data-control="select2" data-hide-search="false" name="company_id" data-allow-clear="true" data-placeholder="Select business unit">
                         <option value=""></option>
 
                         @foreach($company as $c)
@@ -187,6 +187,9 @@ $(document).ready(function() {
             }
           },
           messages: {
+            company_id:{
+              required: "Please select business unit.",
+            },
             "customer_ids[]":{
               required: "Please select customers.",
             },
