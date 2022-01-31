@@ -70,6 +70,10 @@ class StoreInvoices implements ShouldQueue
                             'sap_connection_id' => $this->sap_connection_id,
                         );
 
+                if(!empty($invoice['DocumentLines'])){
+                    array_push($insert, array('base_entry' => $invoice['DocumentLines'][0]['BaseEntry']));
+                }
+
                 $obj = Invoice::updateOrCreate([
                                             'doc_entry' => @$invoice['DocEntry'],
                                             'sap_connection_id' => $this->sap_connection_id,

@@ -129,24 +129,24 @@ class OrdersController extends Controller
             $sap_connections = SapConnection::all();
             foreach ($sap_connections as $value) {
 
-                $order_log_id = add_sap_log([
-                                        'ip_address' => userip(),
-                                        'activity_id' => 34,
-                                        'user_id' => userid(),
-                                        'data' => null,
-                                        'type' => "S",
-                                        'status' => "in progress",
-                                        'sap_connection_id' => $value->id,
-                                    ]);
-                $quotation_log_id = add_sap_log([
-                                        'ip_address' => userip(),
-                                        'activity_id' => 35,
-                                        'user_id' => userid(),
-                                        'data' => null,
-                                        'type' => "S",
-                                        'status' => "in progress",
-                                        'sap_connection_id' => $value->id,
-                                    ]);
+                // $order_log_id = add_sap_log([
+                //                         'ip_address' => userip(),
+                //                         'activity_id' => 34,
+                //                         'user_id' => userid(),
+                //                         'data' => null,
+                //                         'type' => "S",
+                //                         'status' => "in progress",
+                //                         'sap_connection_id' => $value->id,
+                //                     ]);
+                // $quotation_log_id = add_sap_log([
+                //                         'ip_address' => userip(),
+                //                         'activity_id' => 35,
+                //                         'user_id' => userid(),
+                //                         'data' => null,
+                //                         'type' => "S",
+                //                         'status' => "in progress",
+                //                         'sap_connection_id' => $value->id,
+                //                     ]);
                 $invoice_log_id = add_sap_log([
                                         'ip_address' => userip(),
                                         'activity_id' => 36,
@@ -157,14 +157,14 @@ class OrdersController extends Controller
                                         'sap_connection_id' => $value->id,
                                     ]);
 
-                SyncOrders::dispatch($value->db_name, $value->user_name , $value->password, $order_log_id);
-                SyncQuotations::dispatch($value->db_name, $value->user_name , $value->password, $quotation_log_id);
+                // SyncOrders::dispatch($value->db_name, $value->user_name , $value->password, $order_log_id);
+                // SyncQuotations::dispatch($value->db_name, $value->user_name , $value->password, $quotation_log_id);
                 SyncInvoices::dispatch($value->db_name, $value->user_name , $value->password, $invoice_log_id);
             }
 
             $response = ['status' => true, 'message' => 'Sync Orders successfully !'];
         } catch (\Exception $e) {
-            // dd($e);
+            dd($e);
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
         return $response;

@@ -28,24 +28,10 @@
 
                             <div class="row mb-5">
                                 <!-- Title -->
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Title</label>
                                         <input type="text" class="form-control form-control-solid"  value="{{ $data->title }}" disabled="disabled">
-                                    </div>
-                                </div>
-
-                                <!-- Promotion Type -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Promotion Type</label>
-                                        @if(!empty($promotion_type))
-                                            @foreach($promotion_type as $type)
-                                                @if(isset($data) && $data->promotion_type_id == $type['id'])
-                                                    <input type="text" class="form-control form-control-solid"  value="{{ $type['title'] }}" disabled="disabled">
-                                                @endif
-                                            @endforeach
-                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -59,23 +45,31 @@
                             </div>
 
                             <div class="row mb-5">
-                                <!-- Promotion For -->
+
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Promotion For</label>
-                                        <input type="text" class="form-control form-control-solid" value="{{ $data->promotion_for }}" disabled="disabled">
+                                        <label>Business Unit</label>
+                                        <input type="text" class="form-control form-control-solid"  value="{{ @$data->sap_connection->company_name }}" disabled="disabled">
+                                    </div>
+                                </div>
+
+                                <!-- Promotion Type -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Promotion Type</label>
+                                        <input type="text" class="form-control form-control-solid"  value="{{ @$data->promotion_type->title }}" disabled="disabled">
                                     </div>
                                 </div>
                             </div>
+                            
 
-                            @if($data->promotion_scope)
                             <div class="row mb-5">
                                 <!-- Promotion Scope -->
                                 <div class="col-md-6" id="scope_block">
                                     <div class="form-group">
-                                        <label>Promotion Scope</label>
+                                        <label>Promotion Customers</label>
                                         @if($data->promotion_scope == 'C')
-                                            <input type="text" class="form-control form-control-solid" value="Customers" disabled="disabled">
+                                            <input type="text" class="form-control form-control-solid" value="Customer" disabled="disabled">
                                         @endif()
 
                                         @if($data->promotion_scope == 'CL')
@@ -83,22 +77,24 @@
                                         @endif
 
                                         @if($data->promotion_scope == 'T')
-                                            <input type="text" class="form-control form-control-solid" value="Territories" disabled="disabled">
-                                        @endif
-
-                                        @if($data->promotion_scope == 'P')
-                                            <input type="text" class="form-control form-control-solid" value="Products" disabled="disabled">
+                                            <input type="text" class="form-control form-control-solid" value="Territory" disabled="disabled">
                                         @endif
 
                                         @if($data->promotion_scope == 'SS')
-                                            <input type="text" class="form-control form-control-solid" value="Sales Specialists" disabled="disabled">
+                                            <input type="text" class="form-control form-control-solid" value="Sales Specialist" disabled="disabled">
+                                        @endif
+                                        
+                                        @if($data->promotion_scope == 'B')
+                                            <input type="text" class="form-control form-control-solid" value="Brand" disabled="disabled">
                                         @endif
 
+                                        @if($data->promotion_scope == 'MS')
+                                            <input type="text" class="form-control form-control-solid" value="Market Sector" disabled="disabled">
+                                        @endif
                                         
                                     </div>
                                 </div>
                             </div>
-                            @endif
 
                             <div class="row mb-5">
                                 <!-- Promotion Start Date -->
@@ -121,70 +117,82 @@
                              @if(isset($data->promo_image))
                                 <div class="row mb-5">
                                     <div class="col-md-12">
-                                        <a href="{{ get_valid_file_url('sitebucket/promotion',$data->promo_image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/promotion',$data->promo_image) }}" height="100" width="100"></a>
-                                    </div>
-                                </div>
-                            @endif
-
-
-                            @if($data->promotion_for != "All")
-                            <div class="row mb-5 mt-5">
-                                <div class="card card-xl-stretch mb-5 mb-xl-8">
-                                    <div class="card-header pt-5">
-                                    </div>
-
-                                    <div class="card-body">
-                                        <div class="col-md-12">
-                                            <h1 class="text-dark fs-3 my-1">
-                                            @if($data->promotion_scope == 'C')
-                                                Customers
-                                            @endif
-
-                                            @if($data->promotion_scope == 'CL')
-                                                Class
-                                            @endif
-
-                                            @if($data->promotion_scope == 'T')
-                                                Territories
-                                            @endif
-
-                                            @if($data->promotion_scope == 'P')
-                                                Products
-                                            @endif
-
-                                            @if($data->promotion_scope == 'SS')
-                                                Sales Specialists
-                                            @endif
-
-                                            </h1>
-                                            <div class="form-group">
-                                                <!--begin::Table container-->
-                                                <div class="table-responsive">
-                                                    <!--begin::Table-->
-                                                    <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
-                                                        <!--begin::Table head-->
-                                                        <thead>
-                                                            <tr>
-                                                                <th>No.</th>
-                                                                <th>Name</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <!--end::Table head-->
-                                                        <!--begin::Table body-->
-                                                        <tbody>
-                                                        </tbody>
-                                                        <!--end::Table body-->
-                                                    </table>
-                                                    <!--end::Table-->
-                                                </div>
-                                                <!--end::Table container-->
-                                            </div>
+                                        <div class="form-group">
+                                            <label>Promotion Image</label><br>
+                                            <a href="{{ get_valid_file_url('sitebucket/promotion',$data->promo_image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/promotion',$data->promo_image) }}" height="100" width="100"></a>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                             @endif
 
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row gy-5 g-xl-8">
+                <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+                    <div class="card card-xl-stretch mb-5 mb-xl-8">
+                        <div class="card-header border-0  pt-5">
+                            <h1 class="text-dark fw-bolder fs-3 my-1">
+                                @if($data->promotion_scope == 'C')
+                                    Customer
+                                @endif
+
+                                @if($data->promotion_scope == 'CL')
+                                    Class
+                                @endif
+
+                                @if($data->promotion_scope == 'T')
+                                    Territory
+                                @endif
+
+                                @if($data->promotion_scope == 'SS')
+                                    Sales Specialist
+                                @endif
+
+                                @if($data->promotion_scope == 'B')
+                                    Brand
+                                @endif
+
+                                @if($data->promotion_scope == 'MS')
+                                    Market Sector
+                                @endif List
+                            </h1>
+                        </div>
+
+                        <div class="card-body">
+                          
+                          <div class="row mb-5">
+                            <div class="col-md-12">
+                              <div class="form-group">
+                                <!--begin::Table container-->
+                                <div class="table-responsive">
+                                   <!--begin::Table-->
+                                   <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                                      <!--begin::Table head-->
+                                      <thead>
+                                        <tr>
+                                            <th>No.</th>
+                                           <th>Name</th>
+                                        </tr>
+                                      </thead>
+                                      <!--end::Table head-->
+                                      <!--begin::Table body-->
+                                      <tbody>
+
+                                      </tbody>
+                                      <!--end::Table body-->
+                                   </table>
+                                   <!--end::Table-->
+                                </div>
+                                <!--end::Table container-->
+
+                              </div>
+
+                            </div>
+                          </div>
                         </div>
                     </div>
                 </div>
@@ -293,47 +301,42 @@
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script>
 $(document).ready(function() {
-    @if($data->promotion_for != "All")
-    
-        render_table();
+    render_table();
 
-        function render_table(){
-          var table = $("#myTable");
-          table.DataTable().destroy();
+    function render_table(){
+      var table = $("#myTable");
+      table.DataTable().destroy();
 
-          table.DataTable({
-              processing: true,
-              serverSide: true,
-              scrollX: true,
-              order: [],
-              ajax: {
-                  'url': "{{ route('promotion.get-promotion-data') }}",
-                  'type': 'POST',
-                  headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                  },
-                  data:{
-                    id : {{ $data->id }},
-                    scope : "{{ $data->promotion_scope }}",
-                  }
+      table.DataTable({
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          order: [],
+          ajax: {
+              'url': "{{ route('promotion.get-promotion-data') }}",
+              'type': 'POST',
+              headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
-              columns: [
-                  {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-                  {data: 'name', name: 'name', orderable: false, searchable: false},
-              ],
-              drawCallback:function(){
-                  $(function () {
-                    $('[data-toggle="tooltip"]').tooltip()
-                    $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
-                  })
-              },
-              initComplete: function () {
+              data:{
+                id : {{ $data->id }},
+                scope : "{{ $data->promotion_scope }}",
               }
-            });
-        }
-
-    @endif
-
+          },
+          columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+              {data: 'name', name: 'name'},
+          ],
+          drawCallback:function(){
+              $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+                $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+              })
+          },
+          initComplete: function () {
+          }
+        });
+    }
 
     render_interested_table();
 

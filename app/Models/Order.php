@@ -11,6 +11,7 @@ class Order extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'base_entry',
         'doc_entry',
         'doc_num',
         'doc_type',
@@ -39,4 +40,8 @@ class Order extends Model
         'updated_at',
         'sap_connection_id',
     ];
+
+    public function invoice(){
+        return $this->hasOne(Invoice::class, 'base_entry', 'doc_entry');
+    }
 }

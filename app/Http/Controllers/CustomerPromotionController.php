@@ -67,48 +67,90 @@ class CustomerPromotionController extends Controller
 
                 	$is_continue = false;
 
-                	if($promotion->promotion_for == "Limited"){
+        			if(!is_null($promotion->promotion_data)){
 
-            			if(!is_null($promotion->promotion_data)){
+                        $customer = null;
+                        if(userrole() == 4){
+                            $customer = @Auth::user()->customer;
+                        }elseif(!is_null(Auth::user()->created_by)){
+                            $customer = @Auth::user()->created_by_user->customer;
+                        }
 
-	                		if($promotion->promotion_scope == "C"){ //Customer
+                		if($promotion->promotion_scope == "C"){ //Customer
 
-	                			$check = $promotion->promotion_data->firstWhere('customer_id',@Auth::user()->customer_id);
+                            if($customer){
+                    			$check = $promotion->promotion_data->firstWhere('customer_id',@Auth::user()->customer_id);
 
-	                			if(is_null($check)){
-	                				$is_continue = true;
-	                			}
-
-	                		}elseif($promotion->promotion_scope == "CL"){ //Class
-
-	                			$check = $promotion->promotion_data->firstWhere('class_id',@Auth::user()->customer->class_id);
-
-	                			if(is_null($check)){
-	                				$is_continue = true;
-	                			}
-
-	                		}elseif($promotion->promotion_scope == "SS"){ //Sales Specialists
-
-                                $check = $promotion->promotion_data->firstWhere('sales_specialist',@Auth::id());
-
-                                if(is_null($check)){
-                                    $is_continue = true;
-                                }
-
-                            }elseif($promotion->promotion_scope == "T"){ //Territory
-
-                                $check = $promotion->promotion_data->firstWhere('territory_id',@Auth::user()->customer->territories->id);
-
-                                if(is_null($check)){
-                                    $is_continue = true;
-                                }
+                    			if(is_null($check)){
+                    				$is_continue = true;
+                    			}
+                            }else{
+                                $is_continue = true;
                             }
 
+                		}elseif($promotion->promotion_scope == "CL"){ //Class
 
-            			}else{
-            				$is_continue = true;
-            			}
-                	}
+                            if($customer){
+                    			$check = $promotion->promotion_data->firstWhere('class_id',$customer->class_id);
+
+                    			if(is_null($check)){
+                    				$is_continue = true;
+                    			}
+                            }else{
+                                $is_continue = true;
+                            }
+
+                		}elseif($promotion->promotion_scope == "SS"){ //Sales Specialists
+
+                            $check = $promotion->promotion_data->firstWhere('sales_specialist',@Auth::id());
+
+                            if(is_null($check)){
+                                $is_continue = true;
+                            }
+
+                        }elseif($promotion->promotion_scope == "T"){ //Territory
+
+                            if($customer){
+                                $check = $promotion->promotion_data->firstWhere('territory_id',$customer->territories->id);
+
+                                if(is_null($check)){
+                                    $is_continue = true;
+                                }
+                            }else{
+                                $is_continue = true;
+                            }
+
+                        }else if($promotion->promotion_scope == "MS"){ //Market Sector
+
+                            if($customer){
+                                $check = $promotion->promotion_data->firstWhere('market_sector', $customer->u_msec);
+
+                                if(is_null($check)){
+                                    $is_continue = true;
+                                }
+                            }else{
+                                $is_continue = true;
+                            }
+
+                        }else if($promotion->promotion_scope == "B"){ //Market Sector
+     
+                            if($customer){
+                                $brands = $customer->product_groups()->pluck('product_group_id')->toArray();
+                                $check = $promotion->promotion_data()->whereIn('brand_id', $brands)->get();
+
+                                if(count($check) < 1 || count($brands) < 1){
+                                    $is_continue = true;
+                                }
+                            }else{
+                                $is_continue = true;
+                            }
+
+                        }
+
+
+        			}else{
+        				$is_continue = true;
+        			}
 
                     // Check into promotion interests
                     $interest = @$promotion->promotion_interests->firstWhere('user_id' , Auth::id());
