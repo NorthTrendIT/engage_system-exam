@@ -287,6 +287,7 @@ Route::middleware(['auth'])->group(function(){
     // For SS Only
     Route::get('customer-delivery-schedule/ss-view', 'App\Http\Controllers\CustomerDeliveryScheduleController@ssView')->name('customer-delivery-schedule.ss-view');
     Route::post('customer-delivery-schedule/get-ss-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getSsCustomerList')->name('customer-delivery-schedule.get-ss-customer-list');
+    
 
     // Super Admin Routes
     Route::middleware('super-admin')->group(function(){
@@ -315,7 +316,10 @@ Route::middleware(['auth'])->group(function(){
         Route::post('promotion/get-brands/','App\Http\Controllers\PromotionsController@getBrands')->name('promotion.get-brands');
         Route::post('promotion/get-market-sectors/','App\Http\Controllers\PromotionsController@getMarketSectors')->name('promotion.get-market-sectors');
 
+
         // Customer Delivery Schedule
+        Route::get('customer-delivery-schedule/all-view', 'App\Http\Controllers\CustomerDeliveryScheduleController@allView')->name('customer-delivery-schedule.all-view');
+
         Route::resource('customer-delivery-schedule','App\Http\Controllers\CustomerDeliveryScheduleController');
         Route::post('customer-delivery-schedule/get-all', 'App\Http\Controllers\CustomerDeliveryScheduleController@getAll')->name('customer-delivery-schedule.get-all');
         Route::post('customer-delivery-schedule/get-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getCustomerList')->name('customer-delivery-schedule.get-customer-list');

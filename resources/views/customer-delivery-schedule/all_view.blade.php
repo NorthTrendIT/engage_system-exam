@@ -10,6 +10,13 @@
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Customer Delivery Schedule</h1>
       </div>
 
+      <!--begin::Actions-->
+      <div class="d-flex align-items-center py-1">
+        <!--begin::Button-->
+        <a href="{{ route('customer-delivery-schedule.index') }}" class="btn btn-sm btn-primary">Back</a>
+        <!--end::Button-->
+      </div>
+      <!--end::Actions-->
       
     </div>
   </div>
@@ -41,7 +48,7 @@
         </div>
       </div>
 
-      <div class="row gy-5 g-xl-8 customer_row" style="display:none;">
+      <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5">
@@ -115,17 +122,14 @@
 @endsection
 
 @push('css')
-{{-- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css"> --}}
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css">
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css" href="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.css">
 @endpush
 
 @push('js')
-{{-- <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script> --}}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
-
-<script src="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.js"></script>
 
 <script>
   $(document).ready(function() {
@@ -207,45 +211,58 @@
 
     function render_calendar(response) {
 
-      // var calendarEl = document.getElementById('kt_calendar_app');
+      var calendarEl = document.getElementById('kt_calendar_app');
 
-      // var calendar = new FullCalendar.Calendar(calendarEl, {
-      //   headerToolbar: {
-      //     left: 'prev,next today',
-      //     center: 'title',
-      //     right: 'dayGridMonth,timeGridWeek'
-      //   },
-      //   navLinks: !0,
-      //   selectable: !0,
-      //   selectMirror: !0,
-      //   editable: !0,
-      //   dayMaxEvents: !0,
-      //   // timeZone: 'CST',
-      //   initialDate: '{{ date('Y-m-d') }}',
-      //   events: response,
-      // });
-
-      // calendar.render();
-
-      const currentYear = new Date().getFullYear();
-
-      new Calendar('#kt_calendar_app', {
-        dataSource: response,
-        // maxDate:new Date(),
-        style: 'custom',    
-        customDataSourceRenderer: function(element, date, events) {    
-            for (var i=0; i<events.length; i++) {                        
-              if(events[i].class == 'active') {                    
-                $(element).addClass('active');
-              }             
-            }
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek'
         },
-      })
+        navLinks: !0,
+        selectable: !0,
+        selectMirror: !0,
+        editable: !0,
+        dayMaxEvents: !0,
+        // timeZone: 'CST',
+        initialDate: '{{ date('Y-m-d') }}',
+        events: response,
+
+        eventMouseEnter: function (e) {
+            x = e.event;
+            /*console.log(x.start,x.end);
+            console.log(e.el);*/
+            const n = x.allDay ? moment(x.start).format("Do MMM, YYYY") : moment(x.start).format("Do MMM, YYYY - h:mm a"),
+                a = x.allDay ? moment(x.end).format("Do MMM, YYYY") : moment(x.end).format("Do MMM, YYYY - h:mm a");
+            var o = {
+                container: "body",
+                trigger: "hover",
+                boundary: "window",
+                placement: "left",
+                dismiss: !0,
+                html: !0,
+                title: "Summary",
+                content:
+                    '<div class="font-weight-bold mb-2"><b>Customer:</b> ' +
+                    x.title +
+                    '</div><div class="fs-7"><b>Date:</b> ' +
+                    n +
+                    '</div>',
+            };
+            $(e.el).popover(o);
+        },
+
+      });
+
+      calendar.render();
+
     }
+
+    render_calendar_data();
 
     function render_calendar_data(){
       $.ajax({
-        url: '{{route('customer-delivery-schedule.ss-view')}}',
+        url: '{{route('customer-delivery-schedule.all-view')}}',
         headers: {
           'X-CSRF-TOKEN': '{{ csrf_token() }}'
         },
@@ -254,15 +271,7 @@
         }
       })
       .done(function(response) {
-        var data = [];
-        $.each(response, function(index, val) {
-          data.push({
-              startDate: new Date(val.start),
-              endDate: new Date(val.end),
-              class : 'active'
-          });
-        });
-        render_calendar(data);
+        render_calendar(response);
       })
       .fail(function() {
         toast_error("error");
