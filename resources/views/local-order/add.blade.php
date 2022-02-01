@@ -485,6 +485,7 @@
             if (validator.form() != false) {
                 $('[type="submit"]').prop('disabled', true);
                 $('[name="address_id"]').removeAttr('disabled');
+                $('[name="customer_id"]').removeAttr('disabled');
                 $.ajax({
                     url: "{{route('sales-specialist-orders.placeOrder')}}",
                     type: "POST",
@@ -501,11 +502,15 @@
                         } else {
                             toast_error(data.message);
                             $('[type="submit"]').prop('disabled', false);
+                            $('[name="address_id"]').removeAttr('disabled', false);
+                            $('[name="customer_id"]').removeAttr('disabled', false);
                         }
                     },
                     error: function () {
                         toast_error("Something went to wrong !");
                         $('[type="submit"]').prop('disabled', false);
+                        $('[name="address_id"]').removeAttr('disabled', false);
+                        $('[name="customer_id"]').removeAttr('disabled', false);
                     },
                 });
             }
@@ -591,9 +596,9 @@
                         if (data.status) {
                             $self.parent().parent().parent().find('.price').html('₱'+ number_format(data.price));
                             $self.parent().parent().parent().find('.quantity').attr('data-price', data.price);
-                            $qty = $self.parent().parent().parent().find(".quantity").val();
-                            if($qty == ""){
-                                $self.parent().parent().parent().find(".quantity").val(1).trigger('keyup');
+                            $qty = parseFloat($self.parent().parent().parent().find(".quantity").val());
+                            if(isNaN($qty)){
+                                $self.parent().parent().parent().find(".quantity").val(1).trigger('change');
                             } else{
                                 $self.parent().parent().parent().find(".quantity").trigger('change');
                             }
@@ -609,11 +614,11 @@
             // $(this).trigger('keyup');
         });
 
-        $(document).on('keyup', "input[type=number]",function(event){
+        $(document).on('change', "input[type=number]",function(event){
             $price = parseFloat($(this).attr('data-price'));
             $qty = parseFloat($(this).val());
             $amount = $price * $qty;
-            if($qty == "" || $qty <= 0){
+            if(isNaN($qty) || $qty <= 0){
                 $(this).val(1);
                 $amount = $price;
             }

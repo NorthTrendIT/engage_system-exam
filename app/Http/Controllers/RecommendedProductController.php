@@ -410,7 +410,7 @@ class RecommendedProductController extends Controller
             Cart::where('customer_id', $customer_id)->delete();
 
             if(!is_null($sap_connection)){
-                $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
+                $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
 
                 if($order->id){
                     $sap->pushOrder($order->id);

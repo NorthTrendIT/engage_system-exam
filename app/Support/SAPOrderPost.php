@@ -23,7 +23,7 @@ class SAPOrderPost
 	protected $username;
 	protected $password;
 
-    public function __construct($database, $username, $password)
+    public function __construct($database, $username, $password, $sap_connection_id)
     {
         $this->headers = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
@@ -33,7 +33,7 @@ class SAPOrderPost
 
         $this->httpClient = new Client();
 
-        $this->sap_connection_id = $this->customer_promotion_id = null;
+        $this->sap_connection_id = $sap_connection_id;
     }
 
     public function requestSapApi($url = '/b1s/v1/Quotations', $method = "POST", $body = ""){
@@ -178,6 +178,7 @@ class SAPOrderPost
                 $order->confirmation_status = 'C';
                 $order->doc_entry = $data['DocEntry'];
                 $order->doc_num = $data['DocNum'];
+                $order->message = null;
 
                 $this->pushOrderDetailsInDatabase($data);
             } else {
