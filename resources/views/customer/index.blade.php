@@ -177,6 +177,7 @@
           processing: true,
           serverSide: true,
           scrollX: true,
+          responsive: true,
           order: [],
           ajax: {
               'url': "{{ route('customer.get-all') }}",
