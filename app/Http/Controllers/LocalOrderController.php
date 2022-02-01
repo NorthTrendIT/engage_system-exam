@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\CustomerDeliverySchedule;
 use App\Support\PostOrder;
 use App\Support\SAPOrderPost;
+use App\Models\SapConnection;
 use Validator;
 use Auth;
 use DataTables;
@@ -59,7 +60,7 @@ class LocalOrderController extends Controller
                 'customer_id' => 'required',
                 'address_id' => 'required|string|max:185',
                 'due_date' => 'required|date',
-                'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@Auth::user()->customer->sap_connection_id,
+                'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@$customer->sap_connection_id,
             );
 
         $messages = array(
@@ -94,11 +95,14 @@ class LocalOrderController extends Controller
                     $products = $input['products'];
                     LocalOrderItem::where('local_order_id', $order->id)->delete();
                     foreach($products as $value){
+                        // dd($value);
                         $item = new LocalOrderItem();
                         $item->local_order_id = $order->id;
                         $item->product_id = @$value['product_id'];
                         $item->quantity = @$value['quantity'];
-                        $item->price = get_product_customer_price(@$value->product->item_prices,@$order->customer->price_list_num);
+
+                        $productData = Product::find(@$value['product_id']);
+                        $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num);
                         $item->total = $item->price * $item->quantity;
                         $item->save();
                     }
@@ -322,8 +326,10 @@ class LocalOrderController extends Controller
     public function placeOrder(Request $request){
         $data = $request->all();
         $obj = array();
+        $response = null;
 
         $update = $this->store($request);
+
         if($update['status']){
             $order = LocalOrder::where('id', $update['id'])->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
@@ -331,17 +337,19 @@ class LocalOrderController extends Controller
                 $sap_connection = SapConnection::find(@$order->customer->sap_connection_id);
 
                 if(!is_null($sap_connection)){
-                    $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
+                    $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
 
                     if($update['id']){
-                        $sap->pushOrder($order->id);
+                        $sap_response = $sap->pushOrder($order->id);
+                        if($sap_response['status']){
+                            $response = ['status' => true, 'message' => 'Order placed successfully!'];
+                        }
                     }
                 }
             } catch (\Exception $e) {
-
+                $response = ['status' => false, 'message' => 'Something went wrong !'];
             }
 
-            $response = ['status' => false, 'message' => 'Something went wrong !'];
         } else {
             return $update;
         }

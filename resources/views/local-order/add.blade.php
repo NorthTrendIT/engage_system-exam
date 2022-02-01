@@ -485,6 +485,7 @@
             if (validator.form() != false) {
                 $('[type="submit"]').prop('disabled', true);
                 $('[name="address_id"]').removeAttr('disabled');
+                $('[name="customer_id"]').removeAttr('disabled');
                 $.ajax({
                     url: "{{route('sales-specialist-orders.placeOrder')}}",
                     type: "POST",
@@ -501,11 +502,15 @@
                         } else {
                             toast_error(data.message);
                             $('[type="submit"]').prop('disabled', false);
+                            $('[name="address_id"]').removeAttr('disabled', false);
+                            $('[name="customer_id"]').removeAttr('disabled', false);
                         }
                     },
                     error: function () {
                         toast_error("Something went to wrong !");
                         $('[type="submit"]').prop('disabled', false);
+                        $('[name="address_id"]').removeAttr('disabled', false);
+                        $('[name="customer_id"]').removeAttr('disabled', false);
                     },
                 });
             }
