@@ -28,7 +28,7 @@ class CartController extends Controller
         $customer_id = @Auth::user()->customer_id;
         $total = 0;
         $data = Cart::with(['product', 'customer'])->where('customer_id', $customer_id)->get();
-        $address = CustomerBpAddress::where('customer_id', $customer_id)->get();
+        $address = CustomerBpAddress::where('customer_id', $customer_id)->orderBy('order', 'ASC')->get();
 
         foreach($data as $item){
             $subTotal = get_product_customer_price(@$item->product->item_prices,@Auth::user()->customer->price_list_num) * $item->qty;
@@ -279,7 +279,7 @@ class CartController extends Controller
                 $sap_connection = SapConnection::find(@Auth::user()->customer->sap_connection_id);
 
                 if(!is_null($sap_connection)){
-                    $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
+                    $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
 
                     if($order->id){
                         $sap->pushOrder($order->id);

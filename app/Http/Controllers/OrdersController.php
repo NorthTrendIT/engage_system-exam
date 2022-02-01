@@ -502,7 +502,7 @@ class OrdersController extends Controller
             $sap_connection = SapConnection::find(@$data->customer->sap_connection_id);
 
             if(!is_null($sap_connection)){
-                SAPAllOrderPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $order_id);
+                SAPAllOrderPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id, $order_id);
 
                 // $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
 

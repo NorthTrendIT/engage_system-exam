@@ -23,7 +23,7 @@ class SAPOrderPost
 	protected $username;
 	protected $password;
 
-    public function __construct($database, $username, $password)
+    public function __construct($database, $username, $password, $sap_connection_id)
     {
         $this->headers = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
@@ -33,7 +33,7 @@ class SAPOrderPost
 
         $this->httpClient = new Client();
 
-        $this->sap_connection_id = $this->customer_promotion_id = null;
+        $this->sap_connection_id = $sap_connection_id;
     }
 
     public function requestSapApi($url = '/b1s/v1/Quotations', $method = "POST", $body = ""){
@@ -202,9 +202,9 @@ class SAPOrderPost
         $response['DocCurrency'] = 'PHP';
         $response['Address'] = @$order->address->address;
 
-        if(@$order->sales_specialist->sales_employee_code && @$order->sales_specialist->is_active){
-            $response['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
-        }
+        // if(@$order->sales_specialist->sales_employee_code && @$order->sales_specialist->is_active){
+        //     $response['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
+        // }
 
         $response['DocumentLines'] = [];
 

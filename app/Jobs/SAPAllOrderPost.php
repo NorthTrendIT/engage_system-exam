@@ -23,13 +23,15 @@ class SAPAllOrderPost implements ShouldQueue
     protected $username;
     protected $password;
     protected $order_id;
+    protected $sap_connection_id;
 
-    public function __construct($database, $username, $password, $order_id)
+    public function __construct($database, $username, $password, $sap_connection_id, $order_id)
     {
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
         $this->order_id = $order_id;
+        $this->sap_connection_id = $sap_connection_id;
     }
 
     /**
@@ -39,7 +41,7 @@ class SAPAllOrderPost implements ShouldQueue
      */
     public function handle()
     {
-        $sap = new SAPOrderPost($this->database, $this->username, $this->password);
+        $sap = new SAPOrderPost($this->database, $this->username, $this->password, $this->sap_connection_id);
 
         $sap->pushOrder($this->order_id);
     }
