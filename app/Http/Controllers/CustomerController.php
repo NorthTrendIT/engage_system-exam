@@ -14,6 +14,9 @@ use App\Models\Territory;
 use DataTables;
 use Auth;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\CustomerExport;
+
 class CustomerController extends Controller
 {
     public function __construct(){
@@ -354,5 +357,76 @@ class CustomerController extends Controller
         }
 
         return response()->json($response);
+    }
+
+
+    public function export(Request $request){
+        $data = Customer::whereHas('group',function($q){
+                            $q->where('name','!=','EMPLOYEE');
+                        })->orderBy('created_date', 'desc');
+
+        if($request->filter_status != ""){
+            $data->where('is_active',$request->filter_status);
+        }
+
+        if($request->filter_customer_group != ""){
+            $data->where('group_code',$request->filter_customer_group);
+        }
+
+        if($request->filter_territory != ""){
+            $data->where('territory',$request->filter_territory);
+        }
+
+        if($request->filter_class != ""){
+            $data->where('u_class',$request->filter_class);
+        }
+
+        if($request->filter_company != ""){
+            $data->where('sap_connection_id',$request->filter_company);
+        }
+
+        // Not a customer
+        if(userrole() != 4){
+            // Sales specialist can see only assigned customer
+            if(in_array(userrole(),[2])){
+                $data->whereHas('sales_specialist', function($q) {
+                    return $q->where('ss_id',Auth::id());
+                });
+            }
+        }
+
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('created_date', '>=' , $start);
+            $data->whereDate('created_date', '<=' , $end);
+        }
+
+        $data = $data->take(2)->get();
+
+        $records = array();
+        foreach($data as $key => $value){
+            $records[] = array(
+                                'no' => $key + 1,
+                                'company' => @$value->sap_connection->company_name,
+                                'card_code' => $value->card_code,
+                                'card_name' => $value->card_name,
+                                'email' => @$value->user->email,
+                                'u_card_code' => $value->u_card_code,
+                                'credit_limit' => $value->credit_limit,
+                                'group_name' => @$value->group->name,
+                                'territory' => @$value->territories->description,
+                                'class' => @$value->u_class,
+                                'created_at' => date('M d, Y',strtotime($value->created_date)),
+                            );
+        }
+
+        if(count($records)){
+            return Excel::download(new CustomerExport($records), 'Customer Report.xlsx');
+        }
+
+        return redirect()->back();
     }
 }

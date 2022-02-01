@@ -61,11 +61,14 @@ Route::middleware(['auth'])->group(function(){
             Route::get('role/chart', 'App\Http\Controllers\RoleController@getRoleChart')->name('role.chart')->middleware('super-admin');
 
             // Customer
+            Route::get('customer/export', 'App\Http\Controllers\CustomerController@export')->name('customer.export');
     		Route::resource('customer','App\Http\Controllers\CustomerController');
     	    Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');
     	    Route::post('customer/sync-customers', 'App\Http\Controllers\CustomerController@syncCustomers')->name('customer.sync-customers');
             Route::post('customer/get-all-bp-address', 'App\Http\Controllers\CustomerController@getAllBpAddress')->name('customer.get-all-bp-address');
             Route::post('customer/get-territory', 'App\Http\Controllers\CustomerController@getTerritory')->name('customer.get-territory');
+
+
 
     	    Route::resource('user','App\Http\Controllers\UserController');
     	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
