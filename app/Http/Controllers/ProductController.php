@@ -14,6 +14,9 @@ use DataTables;
 use Validator;
 use Auth;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ProductExport;
+
 class ProductController extends Controller
 {
   /**
@@ -334,5 +337,83 @@ class ProductController extends Controller
                           })
                           ->rawColumns(['status','action'])
                           ->make(true);
+  }
+
+
+  public function export(Request $request){
+    $filter = collect();
+    if(@$request->data){
+      $filter = json_decode(base64_decode($request->data));
+    }
+
+    $data = Product::orderBy('created_date', 'desc');
+
+    if(@$filter->filter_status != ""){
+      $data->where('is_active',$filter->filter_status);
+    }
+
+    if(@$filter->filter_company != ""){
+      $data->where('sap_connection_id',$filter->filter_company);
+    }
+
+    if(@$filter->filter_brand != ""){
+      $data->where('items_group_code',$filter->filter_brand);
+    }
+
+    if(@$filter->filter_product_category != ""){
+      $data->where('u_tires',$filter->filter_product_category);
+    }
+
+    if(@$filter->filter_product_line != ""){
+      $data->where('u_item_line',$filter->filter_product_line);
+    }
+
+    if(@$filter->filter_search != ""){
+      $data->where(function($q) use ($filter) {
+        $q->orwhere('item_code','LIKE',"%".$filter->filter_search."%");
+        $q->orwhere('item_name','LIKE',"%".$filter->filter_search."%");
+      });
+    }
+
+    if(@$filter->filter_date_range != ""){
+      $date = explode(" - ", $filter->filter_date_range);
+      $start = date("Y-m-d", strtotime($date[0]));
+      $end = date("Y-m-d", strtotime($date[1]));
+
+      $data->whereDate('created_date', '>=' , $start);
+      $data->whereDate('created_date', '<=' , $end);
+    }
+
+
+    if(userrole() != 1){
+      $data->where('is_active', true);
+
+      if(@Auth::user()->sap_connection_id){
+        $data->where('sap_connection_id', @Auth::user()->sap_connection_id);
+      }
+    }
+
+    $data = $data->get();
+
+    $records = array();
+    foreach($data as $key => $value){
+      $records[] = array(
+                        'no' => $key + 1,
+                        'company' => @$value->sap_connection->company_name,
+                        'item_name' => $value->item_name,
+                        'brand' => @$value->group->group_name ?? "",
+                        'item_code' => $value->item_code,
+                        'product_line' => $value->u_item_line,
+                        'product_category' => $value->u_tires,
+                        'created_at' => date('M d, Y',strtotime($value->created_date)),
+                        'status' => $value->is_active ? "Active" : "Inctive",
+                      );
+    }
+    if(count($records)){
+      return Excel::download(new ProductExport($records), 'Product Report.xlsx');
+    }
+
+    \Session::flash('error_message', common_error_msg('excel_download'));
+    return redirect()->back();
   }
 }

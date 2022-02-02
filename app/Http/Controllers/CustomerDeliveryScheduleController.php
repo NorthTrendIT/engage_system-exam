@@ -123,16 +123,26 @@ class CustomerDeliveryScheduleController extends Controller
 
         $dates = array();
 
+        $dates = "[";
         foreach (@$data->customer_delivery_schedules as $value) {
-            $dates[] = array(
-                                // 'allDay' => true,
-                                // 'title' => "",
-                                'start' => date("Y-m-d",strtotime($value->date)),
-                                'end' => date("Y-m-d",strtotime($value->date)),
-                                // 'className' => "calendar-event-enduring",
-                                "display" => 'background'
-                            );
+            // $dates[] = array(
+            //                     // 'allDay' => true,
+            //                     // 'title' => "",
+            //                     'start' => date("Y-m-d",strtotime($value->date)),
+            //                     'end' => date("Y-m-d",strtotime($value->date)),
+            //                     // 'className' => "calendar-event-enduring",
+            //                     "display" => 'background'
+            //                 );
+
+            // $dates[] = array(
+            //                     'startDate' => 'new Date('. date("Y-m-d",strtotime($value->date)) .')',
+            //                     'endDate' => 'new Date('. date("Y-m-d",strtotime($value->date)) .')',
+            //                     "class" => 'active'
+            //                 );
+
+            $dates .= "{startDate: new Date('".date("Y-m-d",strtotime($value->date))."'), endDate: new Date('".date("Y-m-d",strtotime($value->date))."'),class:'active'},";
         }
+        $dates .= ']';
 
         return view('customer-delivery-schedule.view',compact('data','dates'));
     }
@@ -309,13 +319,16 @@ class CustomerDeliveryScheduleController extends Controller
     }
 
     public function getSsCustomerList(Request $request){
-
-        $customers = Customer::has('user')->whereHas('sales_specialist', function($q) {
-                    return $q->where('ss_id', userid());
-                });
+        if(userrole() == 1){
+            $customers = Customer::has('user.customer_delivery_schedules');
+        }else{
+            $customers = Customer::has('user.customer_delivery_schedules')->whereHas('sales_specialist', function($q) {
+                        return $q->where('ss_id', userid());
+                    });
+        }
 
         if($request->filter_search != ""){
-            $data->where(function($q) use ($request) {
+            $customers->where(function($q) use ($request) {
                 $q->orwhere('card_code','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
             });
@@ -324,5 +337,39 @@ class CustomerDeliveryScheduleController extends Controller
         $customers = $customers->get();
 
         return response()->json($customers);
+    }
+
+
+    public function allView(Request $request){
+
+        if($request->ajax()){
+            $data = CustomerDeliverySchedule::query();
+
+            if($request->customer_id){
+                $data->whereHas('user', function($q) use ($request) {
+                        return $q->where('customer_id', $request->customer_id);
+                    });
+            }
+
+            $data = $data->get();
+            
+            $dates = array();
+            if(count($data)){
+                foreach ($data as $value) {
+                    $dates[] = array(
+                                        'allDay' => true,
+                                        'title' => @$value->user->customer->card_name." ".(@$value->user->customer->card_code ? "(Code: ".$value->user->customer->card_code.")" : ""),
+                                        'start' => date("Y-m-d",strtotime($value->date)),
+                                        'end' => date("Y-m-d",strtotime($value->date)),
+                                        'className' => "calendar-event-enduring",
+                                        // "display" => 'background'
+                                    );
+                }
+            }
+
+            return response()->json($dates);
+        }
+
+        return view('customer-delivery-schedule.all_view');
     }
 }

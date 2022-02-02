@@ -24,6 +24,10 @@
   toast_error("{{Session::get('role_access_error_message')}}")
   @endif
 
+  @if(Session::has('error_message'))
+  toast_error("{{Session::get('error_message')}}")
+  @endif
+
   @if(Session::has('login_success_message'))
   toast_success("{{Session::get('login_success_message')}}")
   @endif
@@ -38,9 +42,9 @@
 		$.LoadingOverlay("hide",true);
 	}
 
-    function number_format(num) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
+  function number_format(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
 
 	@if(!in_array(Route::currentRouteName(), ['conversation.index']))
 		$(document).ajaxStart(function() {

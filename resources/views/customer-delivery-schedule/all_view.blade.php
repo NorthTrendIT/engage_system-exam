@@ -17,7 +17,7 @@
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-
+      
     </div>
   </div>
 
@@ -28,27 +28,33 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             {{-- <div class="card-header border-0 pt-5">
-              <h5>Schedule Details</h5>
+              <h5>Select Customer</h5>
             </div> --}}
             <div class="card-body">
               
               <div class="row mb-5">
                 <div class="col-md-12">
                   <div class="form-group">
-                    <h4>Customer : {{ @$data->sales_specialist_name ?? "-" }}</h4>
+                    <h5>Select Customer</h5>
+                    <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-placeholder="Select customer" data-allow-clear="true">
+                      <option value=""></option>
+                    </select>
                   </div>
                 </div>
               </div>
 
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <div class="row mb-5">
-                <div class="col-md-12">
-                  <div class="form-group text-center">
-                    <h3>Schedule Details</h3>
-                    <hr>
-                  </div>
-                </div>
-              </div>
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5">
+              <h5>Schedule Details</h5>
+            </div>
+            <div class="card-body">
 
               <div class="row mb-5">
                 <div class="col-md-12">
@@ -65,7 +71,7 @@
         </div>
       </div>
 
-      <div class="row gy-5 g-xl-8">
+      <div class="row gy-5 g-xl-8 customer_row" style="display:none;">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5">
@@ -116,71 +122,56 @@
 @endsection
 
 @push('css')
-{{-- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css"> --}}
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css">
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css" href="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.css">
-
 @endpush
 
 @push('js')
-{{-- <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script> --}}
-<script src="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.js"></script>
-
-<script>
-  $(document).ready(function() {
-
-    function render_calendar(response) {
-      // var calendarEl = document.getElementById('kt_calendar_app');
-
-      // var calendar = new FullCalendar.Calendar(calendarEl, {
-      //   headerToolbar: {
-      //     left: 'prev,next today',
-      //     center: 'title',
-      //     right: 'dayGridMonth,timeGridWeek'
-      //   },
-      //   navLinks: !0,
-      //   selectable: !0,
-      //   selectMirror: !0,
-      //   editable: !0,
-      //   dayMaxEvents: !0,
-      //   // timeZone: 'CST',
-      //   initialDate: '{{ date('Y-m-d') }}',
-      //   events: response,
-      // });
-
-      // calendar.render();
-
-      // console.log(response);
-
-      const currentYear = new Date().getFullYear();
-
-      new Calendar('#kt_calendar_app', {
-        dataSource: response,
-        // maxDate:new Date(),
-        style: 'custom',    
-        customDataSourceRenderer: function(element, date, events) {    
-            for (var i=0; i<events.length; i++) {                        
-              if(events[i].class == 'active') {                    
-                $(element).addClass('active');
-              }             
-            }
-        },
-      })
-
-    }
-    
-    render_calendar({!! $dates !!});
-  })
-</script>
-
-
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 
 <script>
   $(document).ready(function() {
 
-    render_table();
+    $('[name="filter_customer"]').select2({
+      ajax: {
+        url: "{{route('customer-delivery-schedule.get-ss-customer-list')}}",
+        type: "post",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+            return {
+                _token: "{{ csrf_token() }}",
+                filter_search: params.term
+            };
+        },
+        processResults: function (response) {
+          return {
+            results: $.map(response, function (item) {
+                            return {
+                              id: item.id,
+                              text: item.card_name,
+                            }
+                        })
+          };
+        },
+        cache: true
+      },
+    });
+
+
+    $(document).on('change', '[name="filter_customer"]', function(event) {
+      event.preventDefault();
+
+      if($(this).val() != ""){
+        render_table();
+        render_calendar_data();
+        $('.customer_row').show();
+      }else{
+        $('.customer_row').hide();
+      }
+    });
 
     function render_table(){
       var table = $("#myTable");
@@ -198,7 +189,7 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
               data:{
-                customer_id : '{{ @$data->customer_id }}',
+                customer_id : $('[name="filter_customer"]').val(),
               }
           },
           columns: [
@@ -216,6 +207,76 @@
           initComplete: function () {
           }
         });
+    }
+
+    function render_calendar(response) {
+
+      var calendarEl = document.getElementById('kt_calendar_app');
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek'
+        },
+        navLinks: !0,
+        selectable: !0,
+        selectMirror: !0,
+        editable: !0,
+        dayMaxEvents: !0,
+        // timeZone: 'CST',
+        initialDate: '{{ date('Y-m-d') }}',
+        events: response,
+
+        eventMouseEnter: function (e) {
+            x = e.event;
+            /*console.log(x.start,x.end);
+            console.log(e.el);*/
+            const n = x.allDay ? moment(x.start).format("Do MMM, YYYY") : moment(x.start).format("Do MMM, YYYY - h:mm a"),
+                a = x.allDay ? moment(x.end).format("Do MMM, YYYY") : moment(x.end).format("Do MMM, YYYY - h:mm a");
+            var o = {
+                container: "body",
+                trigger: "hover",
+                boundary: "window",
+                placement: "left",
+                dismiss: !0,
+                html: !0,
+                title: "Summary",
+                content:
+                    '<div class="font-weight-bold mb-2"><b>Customer:</b> ' +
+                    x.title +
+                    '</div><div class="fs-7"><b>Date:</b> ' +
+                    n +
+                    '</div>',
+            };
+            $(e.el).popover(o);
+        },
+
+      });
+
+      calendar.render();
+
+    }
+
+    render_calendar_data();
+
+    function render_calendar_data(){
+      $.ajax({
+        url: '{{route('customer-delivery-schedule.all-view')}}',
+        headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        data:{
+          customer_id : $('[name="filter_customer"]').val(),
+        }
+      })
+      .done(function(response) {
+        render_calendar(response);
+      })
+      .fail(function() {
+        toast_error("error");
+      });
+      
     }
 
   })

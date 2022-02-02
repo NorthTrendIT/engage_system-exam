@@ -61,11 +61,14 @@ Route::middleware(['auth'])->group(function(){
             Route::get('role/chart', 'App\Http\Controllers\RoleController@getRoleChart')->name('role.chart')->middleware('super-admin');
 
             // Customer
+            Route::get('customer/export', 'App\Http\Controllers\CustomerController@export')->name('customer.export');
     		Route::resource('customer','App\Http\Controllers\CustomerController');
     	    Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');
     	    Route::post('customer/sync-customers', 'App\Http\Controllers\CustomerController@syncCustomers')->name('customer.sync-customers');
             Route::post('customer/get-all-bp-address', 'App\Http\Controllers\CustomerController@getAllBpAddress')->name('customer.get-all-bp-address');
             Route::post('customer/get-territory', 'App\Http\Controllers\CustomerController@getTerritory')->name('customer.get-territory');
+
+
 
     	    Route::resource('user','App\Http\Controllers\UserController');
     	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
@@ -90,8 +93,9 @@ Route::middleware(['auth'])->group(function(){
     	    Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
 
             // Product
+    	    Route::get('product/export', 'App\Http\Controllers\ProductController@export')->name('product.export');
     	    Route::resource('product','App\Http\Controllers\ProductController');
-    	    Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
+            Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
     	    Route::post('product/sync-products', 'App\Http\Controllers\ProductController@syncProducts')->name('product.sync-products');
 
             // Product Group
@@ -100,8 +104,9 @@ Route::middleware(['auth'])->group(function(){
             Route::post('product-group/sync-product-groups', 'App\Http\Controllers\ProductGroupController@syncProductGroups')->name('product-group.sync-product-groups');
 
             // Orders
+    	    Route::get('orders/export', 'App\Http\Controllers\OrdersController@export')->name('orders.export');
             Route::resource('orders','App\Http\Controllers\OrdersController');
-    	    Route::post('orders/get-all', 'App\Http\Controllers\OrdersController@getAll')->name('orders.get-all');
+            Route::post('orders/get-all', 'App\Http\Controllers\OrdersController@getAll')->name('orders.get-all');
     	    Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
             Route::post('orders/get-customer', 'App\Http\Controllers\OrdersController@getCustomer')->name('orders.get-customer');
             Route::post('orders/notify-customer', 'App\Http\Controllers\OrdersController@notifyCustomer')->name('orders.notify-customer');
@@ -237,6 +242,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('customer-promotion/order/status', 'App\Http\Controllers\CustomerPromotionController@orderStatus')->name('customer-promotion.order.status');
             Route::post('customer-promotion/order/push-in-sap', 'App\Http\Controllers\CustomerPromotionController@orderPushInSap')->name('customer-promotion.order.push-in-sap');
             Route::post('customer-promotion/order/approved', 'App\Http\Controllers\CustomerPromotionController@orderApproved')->name('customer-promotion.order.approved');
+            Route::get('customer-promotion/order/export', 'App\Http\Controllers\CustomerPromotionController@orderExport')->name('customer-promotion.order.export');
 
 
             // Quotations
@@ -291,6 +297,7 @@ Route::middleware(['auth'])->group(function(){
     // For SS Only
     Route::get('customer-delivery-schedule/ss-view', 'App\Http\Controllers\CustomerDeliveryScheduleController@ssView')->name('customer-delivery-schedule.ss-view');
     Route::post('customer-delivery-schedule/get-ss-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getSsCustomerList')->name('customer-delivery-schedule.get-ss-customer-list');
+    
 
     // Super Admin Routes
     Route::middleware('super-admin')->group(function(){
@@ -319,7 +326,10 @@ Route::middleware(['auth'])->group(function(){
         Route::post('promotion/get-brands/','App\Http\Controllers\PromotionsController@getBrands')->name('promotion.get-brands');
         Route::post('promotion/get-market-sectors/','App\Http\Controllers\PromotionsController@getMarketSectors')->name('promotion.get-market-sectors');
 
+
         // Customer Delivery Schedule
+        Route::get('customer-delivery-schedule/all-view', 'App\Http\Controllers\CustomerDeliveryScheduleController@allView')->name('customer-delivery-schedule.all-view');
+
         Route::resource('customer-delivery-schedule','App\Http\Controllers\CustomerDeliveryScheduleController');
         Route::post('customer-delivery-schedule/get-all', 'App\Http\Controllers\CustomerDeliveryScheduleController@getAll')->name('customer-delivery-schedule.get-all');
         Route::post('customer-delivery-schedule/get-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getCustomerList')->name('customer-delivery-schedule.get-customer-list');

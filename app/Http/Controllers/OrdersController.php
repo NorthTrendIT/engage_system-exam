@@ -26,6 +26,9 @@ use DataTables;
 use Auth;
 use OneSignal;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\OrderExport;
+
 class OrdersController extends Controller
 {
     public function __construct(){
@@ -502,7 +505,7 @@ class OrdersController extends Controller
             $sap_connection = SapConnection::find(@$data->customer->sap_connection_id);
 
             if(!is_null($sap_connection)){
-                SAPAllOrderPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $order_id);
+                SAPAllOrderPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id, $order_id);
 
                 // $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password);
 
@@ -552,6 +555,73 @@ class OrdersController extends Controller
 
     public function getCustomer(Request $request){
         return app(CustomerPromotionController::class)->getCustomer($request);
+    }
+
+
+    public function export(Request $request){
+        $filter = collect();
+        if(@$request->data){
+          $filter = json_decode(base64_decode($request->data));
+        }
+
+        $data = Quotation::orderBy('id', 'desc');
+
+        if(userrole() == 4){
+            $data->where('card_code', @Auth::user()->customer->card_code);
+        }elseif(userrole() == 2){
+            $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(userrole() != 1){
+            if (!is_null(@Auth::user()->created_by)) {
+                $data->where('card_code', @Auth::user()->created_by_user->customer->card_code);
+            } else {
+                return redirect()->back();
+            }
+        }
+
+        if(@$filter->filter_search != ""){
+            $data->where(function($q) use ($filter) {
+                $q->orwhere('doc_type','LIKE',"%".$filter->filter_search."%");
+                $q->orwhere('doc_entry','LIKE',"%".$filter->filter_search."%");
+            });
+        }
+
+        if(@$filter->filter_customer != ""){
+            $data->where('card_code',$filter->filter_customer);
+        }
+
+        if(@$filter->filter_company != ""){
+            $data->where('sap_connection_id',$filter->filter_company);
+        }
+
+        if(@$filter->filter_date_range != ""){
+            $date = explode(" - ", $filter->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('doc_date', '>=' , $start);
+            $data->whereDate('doc_date', '<=' , $end);
+        }
+
+        $data = $data->get();
+
+        $records = array();
+        foreach($data as $key => $value){
+            $records[] = array(
+                            'no' => $key + 1,
+                            'company' => @$value->sap_connection->company_name,
+                            'doc_entry' => $value->doc_entry,
+                            'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
+                            'doc_total' => number_format($value->doc_total),
+                            'created_at' => date('M d, Y',strtotime($value->created_date)),
+                            'status' => getOrderStatus($value),
+                          );
+        }
+        if(count($records)){
+            return Excel::download(new OrderExport($records), 'Order Report.xlsx');
+        }
+
+        \Session::flash('error_message', common_error_msg('excel_download'));
+        return redirect()->back();
     }
 
 }

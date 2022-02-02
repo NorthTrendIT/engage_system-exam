@@ -16,6 +16,9 @@ use App\Models\CustomerPromotionProduct;
 use App\Models\CustomerPromotionProductDelivery;
 use App\Models\CustomerBpAddress;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\CustomerPromotionExport;
+
 use App\Support\SAPCustomerPromotion;
 use App\Models\SapConnection;
 
@@ -1013,4 +1016,72 @@ class CustomerPromotionController extends Controller
 
         return response()->json($data);
     }
+
+    public function orderExport(Request $request){
+        $filter = collect();
+        if(@$request->data){
+          $filter = json_decode(base64_decode($request->data));
+        }
+
+        $data = CustomerPromotion::orderBy('id', 'desc');
+
+        if(in_array(userrole(),[2])){ // its a ss
+            $data->where('customer_promotions.sales_specialist_id', Auth::id());
+        }else if(!is_null(Auth::user()->created_by)){
+            $data->where('customer_promotions.customer_user_id', Auth::id());
+        }else if(Auth::id() != 1){
+            $data->where('customer_promotions.user_id', Auth::id());
+        }
+
+        if(@$filter->filter_customer != ""){
+            $data->where('customer_promotions.user_id',$filter->filter_customer);
+        }
+
+        if(@$filter->filter_status != ""){
+            $data->where('customer_promotions.status',$filter->filter_status);
+        }
+
+        if(@$filter->filter_company != ""){
+            $data->where('sap_connection_id',$filter->filter_company);
+        }
+
+        if(@$filter->filter_search != ""){
+            $data->where(function($query) use ($filter) {
+
+                $query->whereHas('promotion',function($q) use ($filter) {
+                    $q->where('title','LIKE',"%".$filter->filter_search."%");
+                });
+
+            });
+        }
+
+        if(@$filter->filter_date_range != ""){
+            $date = explode(" - ", $filter->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('created_at', '>=' , $start);
+            $data->whereDate('created_at', '<=' , $end);
+        }
+
+        $data = $data->get();
+
+        $records = array();
+        foreach($data as $key => $value){
+          $records[] = array(
+                            'no' => $key + 1,
+                            'company' => @$value->sap_connection->company_name,
+                            'promotion' => @$value->promotion->title ?? "-",
+                            'customer' => @$value->user->sales_specialist_name ?? "",
+                            'created_at' => date('M d, Y',strtotime($value->created_at)),
+                            'status' => $value->is_active ? "Active" : "Inctive",
+                          );
+        }
+        if(count($records)){
+          return Excel::download(new CustomerPromotionExport($records), 'Customer Promotion Report.xlsx');
+        }
+
+        \Session::flash('error_message', common_error_msg('excel_download'));
+        return redirect()->back();
+      }
 }

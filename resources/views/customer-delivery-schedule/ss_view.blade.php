@@ -115,15 +115,17 @@
 @endsection
 
 @push('css')
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css">
+{{-- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css"> --}}
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
-
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.css">
 @endpush
 
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
+{{-- <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script> --}}
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
+
+<script src="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.js"></script>
 
 <script>
   $(document).ready(function() {
@@ -137,7 +139,7 @@
         data: function (params) {
             return {
                 _token: "{{ csrf_token() }}",
-                search: params.term
+                filter_search: params.term
             };
         },
         processResults: function (response) {
@@ -205,25 +207,40 @@
 
     function render_calendar(response) {
 
-      var calendarEl = document.getElementById('kt_calendar_app');
+      // var calendarEl = document.getElementById('kt_calendar_app');
 
-      var calendar = new FullCalendar.Calendar(calendarEl, {
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek'
+      // var calendar = new FullCalendar.Calendar(calendarEl, {
+      //   headerToolbar: {
+      //     left: 'prev,next today',
+      //     center: 'title',
+      //     right: 'dayGridMonth,timeGridWeek'
+      //   },
+      //   navLinks: !0,
+      //   selectable: !0,
+      //   selectMirror: !0,
+      //   editable: !0,
+      //   dayMaxEvents: !0,
+      //   // timeZone: 'CST',
+      //   initialDate: '{{ date('Y-m-d') }}',
+      //   events: response,
+      // });
+
+      // calendar.render();
+
+      const currentYear = new Date().getFullYear();
+
+      new Calendar('#kt_calendar_app', {
+        dataSource: response,
+        // maxDate:new Date(),
+        style: 'custom',    
+        customDataSourceRenderer: function(element, date, events) {    
+            for (var i=0; i<events.length; i++) {                        
+              if(events[i].class == 'active') {                    
+                $(element).addClass('active');
+              }             
+            }
         },
-        navLinks: !0,
-        selectable: !0,
-        selectMirror: !0,
-        editable: !0,
-        dayMaxEvents: !0,
-        // timeZone: 'CST',
-        initialDate: '{{ date('Y-m-d') }}',
-        events: response,
-      });
-
-      calendar.render();
+      })
     }
 
     function render_calendar_data(){
@@ -237,7 +254,15 @@
         }
       })
       .done(function(response) {
-        render_calendar(response);
+        var data = [];
+        $.each(response, function(index, val) {
+          data.push({
+              startDate: new Date(val.start),
+              endDate: new Date(val.end),
+              class : 'active'
+          });
+        });
+        render_calendar(data);
       })
       .fail(function() {
         toast_error("error");

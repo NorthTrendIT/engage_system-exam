@@ -13,6 +13,10 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
+        @if(userrole() == 1)
+        <a href="{{ route('customer-delivery-schedule.all-view') }}" class="btn btn-sm btn-primary mr-10">View All Schedule</a>
+        @endif
+        
         <a href="{{ route('customer-delivery-schedule.create') }}" class="btn btn-sm btn-primary">New Schedule</a>
         <!--end::Button-->
       </div>
