@@ -19,7 +19,7 @@ class CheckUserLogin
     {
         if(userrole() != 1){ //Not Super Admin
             if(Auth::user()->first_login == 1){
-                \Session::flash('error_message', "");
+                \Session::flash('profile_error_message', "");
                 return redirect()->route('profile.index');
             }
         }

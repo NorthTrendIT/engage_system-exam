@@ -393,3 +393,11 @@ function getOrderStatusByDocEntry($id){
 
     return $status;
 }
+
+function common_error_msg($key = ""){
+    $array = array(
+        'excel_download' => "There is no data found so can't download the document.",
+    );
+
+    return @$array[$key] ?? "Error !";
+}

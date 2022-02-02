@@ -93,8 +93,9 @@ Route::middleware(['auth'])->group(function(){
     	    Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
 
             // Product
+    	    Route::get('product/export', 'App\Http\Controllers\ProductController@export')->name('product.export');
     	    Route::resource('product','App\Http\Controllers\ProductController');
-    	    Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
+            Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
     	    Route::post('product/sync-products', 'App\Http\Controllers\ProductController@syncProducts')->name('product.sync-products');
 
             // Product Group
@@ -240,6 +241,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('customer-promotion/order/status', 'App\Http\Controllers\CustomerPromotionController@orderStatus')->name('customer-promotion.order.status');
             Route::post('customer-promotion/order/push-in-sap', 'App\Http\Controllers\CustomerPromotionController@orderPushInSap')->name('customer-promotion.order.push-in-sap');
             Route::post('customer-promotion/order/approved', 'App\Http\Controllers\CustomerPromotionController@orderApproved')->name('customer-promotion.order.approved');
+            Route::get('customer-promotion/order/export', 'App\Http\Controllers\CustomerPromotionController@orderExport')->name('customer-promotion.order.export');
 
 
             // Quotations

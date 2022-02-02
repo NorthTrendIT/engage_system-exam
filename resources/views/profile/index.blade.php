@@ -12,7 +12,7 @@
     </div>
   </div>
 
-  @if(Session::has('error_message') || Auth::user()->first_login == 1)
+  @if(Session::has('profile_error_message') || Auth::user()->first_login == 1)
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">

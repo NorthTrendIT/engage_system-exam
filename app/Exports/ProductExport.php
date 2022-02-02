@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class CustomerExport implements FromCollection,WithHeadings,WithTitle,ShouldAutoSize
+class ProductExport implements FromCollection,WithHeadings,WithTitle,ShouldAutoSize
 {
     protected $records;
 
@@ -28,21 +28,18 @@ class CustomerExport implements FromCollection,WithHeadings,WithTitle,ShouldAuto
         return [
             'No.',
             'Business Unit',
-            'Card Code',
-            'Card Name',
-            'Email',
-            'Universal Card Code',
-            'Credit Limit',
-            'Group',
-            'Territory',
-            'Class',
+            'Product Name',
+            'Product Brand',
+            'Product Code',
+            'Product Line',
+            'Product Category',
             'Created Date',
-            // 'Status',
+            'Status',
         ];
     }
 
     public function title(): string
     {
-        return "Customer";
+        return "Product";
     }
 }

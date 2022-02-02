@@ -361,28 +361,45 @@ class CustomerController extends Controller
 
 
     public function export(Request $request){
+        $filter = collect();
+        if(@$request->data){
+            $filter = json_decode(base64_decode($request->data));
+        }
+
         $data = Customer::whereHas('group',function($q){
                             $q->where('name','!=','EMPLOYEE');
                         })->orderBy('created_date', 'desc');
 
-        if($request->filter_status != ""){
-            $data->where('is_active',$request->filter_status);
+        if(@$filter->filter_status != ""){
+            $data->where('is_active',$filter->filter_status);
         }
 
-        if($request->filter_customer_group != ""){
-            $data->where('group_code',$request->filter_customer_group);
+        if(@$filter->filter_customer_group != ""){
+            $data->where('group_code',$filter->filter_customer_group);
         }
 
-        if($request->filter_territory != ""){
-            $data->where('territory',$request->filter_territory);
+        if(@$filter->filter_territory != ""){
+            $data->where('territory',$filter->filter_territory);
         }
 
-        if($request->filter_class != ""){
-            $data->where('u_class',$request->filter_class);
+        if(@$filter->filter_class != ""){
+            $data->where('u_class',$filter->filter_class);
         }
 
-        if($request->filter_company != ""){
-            $data->where('sap_connection_id',$request->filter_company);
+        if(@$filter->filter_company != ""){
+            $data->where('sap_connection_id',$filter->filter_company);
+        }
+
+        if(@$filter->filter_search != ""){
+            $data->where(function($q) use ($filter) {
+                $q->orwhere('card_code','LIKE',"%".$filter->filter_search."%");
+                $q->orwhere('card_name','LIKE',"%".$filter->filter_search."%");
+                $q->orwhere('email','LIKE',"%".$filter->filter_search."%");
+
+                if(userrole() == 1){
+                    $q->orwhere('credit_limit','LIKE',"%".$filter->filter_search."%");
+                }
+            });
         }
 
         // Not a customer
@@ -395,8 +412,8 @@ class CustomerController extends Controller
             }
         }
 
-        if($request->filter_date_range != ""){
-            $date = explode(" - ", $request->filter_date_range);
+        if(@$filter->filter_date_range != ""){
+            $date = explode(" - ", $filter->filter_date_range);
             $start = date("Y-m-d", strtotime($date[0]));
             $end = date("Y-m-d", strtotime($date[1]));
 
@@ -404,7 +421,7 @@ class CustomerController extends Controller
             $data->whereDate('created_date', '<=' , $end);
         }
 
-        $data = $data->take(2)->get();
+        $data = $data->get();
 
         $records = array();
         foreach($data as $key => $value){
@@ -420,13 +437,14 @@ class CustomerController extends Controller
                                 'territory' => @$value->territories->description,
                                 'class' => @$value->u_class,
                                 'created_at' => date('M d, Y',strtotime($value->created_date)),
+                                // 'status' => $value->is_active ? "Active" : "Inctive",
                             );
         }
-
         if(count($records)){
             return Excel::download(new CustomerExport($records), 'Customer Report.xlsx');
         }
 
+        \Session::flash('error_message', common_error_msg('excel_download'));
         return redirect()->back();
     }
 }
