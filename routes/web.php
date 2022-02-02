@@ -61,11 +61,14 @@ Route::middleware(['auth'])->group(function(){
             Route::get('role/chart', 'App\Http\Controllers\RoleController@getRoleChart')->name('role.chart')->middleware('super-admin');
 
             // Customer
+            Route::get('customer/export', 'App\Http\Controllers\CustomerController@export')->name('customer.export');
     		Route::resource('customer','App\Http\Controllers\CustomerController');
     	    Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');
     	    Route::post('customer/sync-customers', 'App\Http\Controllers\CustomerController@syncCustomers')->name('customer.sync-customers');
             Route::post('customer/get-all-bp-address', 'App\Http\Controllers\CustomerController@getAllBpAddress')->name('customer.get-all-bp-address');
             Route::post('customer/get-territory', 'App\Http\Controllers\CustomerController@getTerritory')->name('customer.get-territory');
+
+
 
     	    Route::resource('user','App\Http\Controllers\UserController');
     	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
@@ -90,8 +93,9 @@ Route::middleware(['auth'])->group(function(){
     	    Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
 
             // Product
+    	    Route::get('product/export', 'App\Http\Controllers\ProductController@export')->name('product.export');
     	    Route::resource('product','App\Http\Controllers\ProductController');
-    	    Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
+            Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
     	    Route::post('product/sync-products', 'App\Http\Controllers\ProductController@syncProducts')->name('product.sync-products');
 
             // Product Group
@@ -237,6 +241,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('customer-promotion/order/status', 'App\Http\Controllers\CustomerPromotionController@orderStatus')->name('customer-promotion.order.status');
             Route::post('customer-promotion/order/push-in-sap', 'App\Http\Controllers\CustomerPromotionController@orderPushInSap')->name('customer-promotion.order.push-in-sap');
             Route::post('customer-promotion/order/approved', 'App\Http\Controllers\CustomerPromotionController@orderApproved')->name('customer-promotion.order.approved');
+            Route::get('customer-promotion/order/export', 'App\Http\Controllers\CustomerPromotionController@orderExport')->name('customer-promotion.order.export');
 
 
             // Quotations

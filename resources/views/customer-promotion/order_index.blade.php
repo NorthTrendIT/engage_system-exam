@@ -77,9 +77,12 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
-                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
+                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mr-10">Clear</a>
+                  @if(in_array(userrole(),[1]))
+                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Download Excel</a>
+                  @endif
                 </div>
 
               </div>
@@ -234,6 +237,26 @@
             },
             cache: true
         },
+      });
+    @endif
+
+
+    @if(in_array(userrole(),[1]))
+      $(document).on("click", ".download_excel", function(e) {
+        var url = "{{route('customer-promotion.order.export')}}";
+
+        var data = {};
+        data.filter_search = $('[name="filter_search"]').val();
+        data.filter_date_range = $('[name="filter_date_range"]').val();
+        data.filter_status = $('[name="filter_status"]').find('option:selected').val();
+        data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
+        data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+
+        // console.log((JSON.stringify(data)));
+        // console.log(btoa(JSON.stringify(data)));
+        url = url + '?data=' + btoa(JSON.stringify(data));
+        
+        window.location.href = url;
       });
     @endif
 
