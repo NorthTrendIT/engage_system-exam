@@ -10,12 +10,19 @@ class Notification extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'type',
+        'module',
         'title',
         'message',
         'is_important',
         'post_time',
         'request_payload',
+        'is_important',
+        'sap_connection_id',
+        'start_date',
+        'end_date',
+        'is_active',
     ];
 
     public function user(){
@@ -28,5 +35,9 @@ class Notification extends Model
 
     public function connections(){
         return $this->hasMany(NotificationConnection::class, 'notification_id', 'id');
+    }
+
+    public function sap_connection(){
+        return $this->hasOne(SapConnection::class, 'id', 'sap_connection_id');
     }
 }
