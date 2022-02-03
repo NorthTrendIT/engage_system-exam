@@ -336,6 +336,9 @@
             module:{
               required:true,
             },
+            is_important:{
+              required:true,
+            },
           },
           messages: {
             title:{
@@ -349,7 +352,10 @@
               required:"Please enter message.",
             },
             module:{
-              required:"Please select Module.",
+              required:"Please select module.",
+            },
+            is_important:{
+              required:"Please select priority.",
             },
           },
       });
