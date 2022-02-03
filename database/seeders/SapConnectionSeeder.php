@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\SapConnection;
+use App\Models\SapApiUrl;
 
 class SapConnectionSeeder extends Seeder
 {
@@ -16,6 +17,7 @@ class SapConnectionSeeder extends Seeder
     {
         \Schema::disableForeignKeyConstraints();
         SapConnection::truncate();
+        SapApiUrl::truncate();
         \Schema::enableForeignKeyConstraints();
 
         $data = array(
@@ -45,5 +47,7 @@ class SapConnectionSeeder extends Seeder
                     ),
         		);
         SapConnection::insert($data);
+
+        SapApiUrl::create(['url'=>'https://project.northtrend.com:50000']);
     }
 }

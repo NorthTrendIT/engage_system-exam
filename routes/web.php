@@ -260,6 +260,7 @@ Route::middleware(['auth'])->group(function(){
             ]);
             Route::post('sap-connection/get-all', 'App\Http\Controllers\SapConnectionController@getAll')->name('sap-connection.get-all');
             Route::get('sap-connection/test/{id}','App\Http\Controllers\SapConnectionController@testAPI')->name('sap-connection.test');
+            Route::post('sap-connection/update-api-url', 'App\Http\Controllers\SapConnectionController@updateApiUrl')->name('sap-connection.update-api-url');
 
             // News and Announcement
             Route::resource('news-and-announcement','App\Http\Controllers\NewsAndAnnouncementController');

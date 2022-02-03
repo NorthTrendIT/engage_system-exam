@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\Invoice;
 use App\Models\Notification;
 use App\Models\LocalOrderItem;
+use App\Models\SapApiUrl;
 use Auth as Auth;
 
 function add_login_log(){
@@ -400,4 +401,10 @@ function common_error_msg($key = ""){
     );
 
     return @$array[$key] ?? "Error !";
+}
+
+function get_sap_api_url(){
+    $obj = SapApiUrl::first();
+
+    return @$obj->url ?? env('SAP_API_URL') ?? "";
 }

@@ -36,7 +36,7 @@ class PostOrder
     	try {
             $response = $this->httpClient->request(
                 'POST',
-                env('SAP_API_URL').'/b1s/v1/Quotations',
+                get_sap_api_url().'/b1s/v1/Quotations',
                 [
                     'headers' => $this->headers,
                     'verify' => false,
