@@ -412,7 +412,7 @@ class NewsAndAnnouncementController extends Controller
         if($search == ''){
             $data = User::orderby('sales_specialist_name','asc')->select('id','sales_specialist_name')->where(['role_id' => 2, 'is_active' => true])->limit(50)->get();
         }else{
-            $data = User::orderby('sales_specialist_name','asc')->select('id','sales_specialist_name')->where(['role_id' => 2, 'is_active' => true])->where('sales_specilist_name', 'like', '%' .$search . '%')->limit(50)->get();
+            $data = User::orderby('sales_specialist_name','asc')->select('id','sales_specialist_name')->where(['role_id' => 2, 'is_active' => true])->where('sales_specialist_name', 'like', '%' .$search . '%')->limit(50)->get();
         }
 
         $response = array();
