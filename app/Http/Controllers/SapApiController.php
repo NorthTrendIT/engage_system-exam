@@ -22,7 +22,7 @@ class SapApiController extends Controller
 	    	$client = new \GuzzleHttp\Client();
 	        $response = $client->request(
 	            'GET',
-	            env('SAP_API_URL').'/b1s/v1/Users',
+	            get_sap_api_url().'/b1s/v1/Users',
 	            [
 	            	'headers' => $this->headers,
 	            	'verify' => false,
@@ -48,7 +48,7 @@ class SapApiController extends Controller
 	    	$client = new \GuzzleHttp\Client();
 	        $response = $client->request(
 	            'GET',
-	            env('SAP_API_URL').'/b1s/v1/BusinessPartners',
+	            get_sap_api_url().'/b1s/v1/BusinessPartners',
 	            [
 	            	'headers' => $this->headers,
 	            	'verify' => false,

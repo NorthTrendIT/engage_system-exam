@@ -32,7 +32,7 @@ class SAPTestAPI
             try {
                 $response = $this->httpClient->request(
                     'POST',
-                    env('SAP_API_URL').'/b1s/v1/Login',
+                    get_sap_api_url().'/b1s/v1/Login',
                     [
                         'verify' => false,
                         'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'],

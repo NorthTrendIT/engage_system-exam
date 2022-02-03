@@ -42,7 +42,7 @@ class SAPCustomerPromotion
     	try {
             $response = $this->httpClient->request(
                 $method,
-                env('SAP_API_URL').$url,
+                get_sap_api_url().$url,
                 [
                     'headers' => $this->headers,
                     'verify' => false,
@@ -210,7 +210,7 @@ class SAPCustomerPromotion
             try {
                 $response = $this->httpClient->request(
                     "POST",
-                    env('SAP_API_URL').'/b1s/v1/Quotations('.$doc_entry.')/Cancel',
+                    get_sap_api_url().'/b1s/v1/Quotations('.$doc_entry.')/Cancel',
                     [
                         'headers' => $this->headers,
                         'verify' => false,
