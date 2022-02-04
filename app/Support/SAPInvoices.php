@@ -39,7 +39,7 @@ class SAPInvoices
     }
 
     // Get Sales Persons data
-    public function getInvoiceData($url = '/b1s/v1/Orders')
+    public function getInvoiceData($url = '/b1s/v1/Invoices')
     {
     	try {
             $response = $this->httpClient->request(

@@ -160,8 +160,8 @@ class OrdersController extends Controller
                                         'sap_connection_id' => $value->id,
                                     ]);
 
-                SyncOrders::dispatch($value->db_name, $value->user_name , $value->password, $order_log_id);
                 SyncQuotations::dispatch($value->db_name, $value->user_name , $value->password, $quotation_log_id);
+                SyncOrders::dispatch($value->db_name, $value->user_name , $value->password, $order_log_id);
                 SyncInvoices::dispatch($value->db_name, $value->user_name , $value->password, $invoice_log_id);
             }
 
