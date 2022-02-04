@@ -16,4 +16,9 @@ class WarrantyClaimPoint extends Model
         'created_at',
         'updated_at',
     ];
+
+
+    public function sub_titles(){
+        return $this->hasMany(self::class, 'parent_id', 'id');
+    }
 }

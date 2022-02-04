@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Warranty;
+use App\Models\WarrantyClaimPoint;
 
 class WarrantyController extends Controller
 {
@@ -23,7 +25,11 @@ class WarrantyController extends Controller
      */
     public function create()
     {
-        //
+        $warranty_claim_types = Warranty::$warranty_claim_types;
+        sort($warranty_claim_types);
+
+        $warranty_claim_points = WarrantyClaimPoint::with('sub_titles')->whereNull('parent_id')->get();
+        return view('warranty.add', compact('warranty_claim_types','warranty_claim_points'));
     }
 
     /**

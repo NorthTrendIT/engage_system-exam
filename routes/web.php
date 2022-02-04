@@ -289,6 +289,11 @@ Route::middleware(['auth'])->group(function(){
         Route::post('draft-order/place-order/','App\Http\Controllers\DraftOrderController@placeOrder')->name('draft-order.placeOrder');
         Route::post('draft-order/get-price/','App\Http\Controllers\DraftOrderController@getPrice')->name('draft-order.get-price');
 
+
+        // Warranty
+        Route::resource('warranty','App\Http\Controllers\WarrantyController');
+        Route::post('warranty/get-all', 'App\Http\Controllers\WarrantyController@getAll')->name('warranty.get-all');
+
     });
     
     // For SS Only
