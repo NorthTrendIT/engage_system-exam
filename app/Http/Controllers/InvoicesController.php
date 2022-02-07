@@ -226,7 +226,7 @@ class InvoicesController extends Controller
                                 $query->orderBy('doc_due_date', $order);
                             })
                             ->orderColumn('company', function ($query, $order) {
-                                $query->join('sap_connections', 'quotations.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
+                                $query->join('sap_connections', 'invoices.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
                             ->rawColumns(['action'])
                             ->make(true);

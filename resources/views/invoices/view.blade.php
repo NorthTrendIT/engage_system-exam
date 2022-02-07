@@ -7,7 +7,7 @@
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Order Details</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Invoice Details</h1>
       </div>
 
       <!--begin::Actions-->
@@ -96,7 +96,7 @@
                             <!--end::Col-->
                             <div class="col-sm-2">
                               <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Order #:</div>
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Invoice #:</div>
                               <!--end::Label-->
                               <!--end::Col-->
                               <div class="fw-bolder fs-6 text-gray-800">{{ @$data->doc_entry ?? "-"  }}</div>
