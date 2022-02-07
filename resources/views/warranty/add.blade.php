@@ -64,7 +64,51 @@
                                             <input type="text" class="form-control form-control-solid" readonly disabled value="{{ @Auth::user()->sales_specialist_name }}">
                                         </div>
                                     </div>
+                                </div>
 
+
+                                <div class="row mb-5">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Customer Email<span class="asterisk">*</span></label>
+                                            <input type="text" class="form-control form-control-solid" name="customer_email" placeholder="Enter customer email">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Customer Phone<span class="asterisk">*</span></label>
+                                            <input type="text" class="form-control form-control-solid" name="customer_phone" placeholder="Enter customer phone">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-5">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Customer Location<span class="asterisk">*</span></label>
+                                            <input type="text" class="form-control form-control-solid" name="customer_location" placeholder="Enter customer location">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Customer Telephone<span class="asterisk">*</span></label>
+                                            <input type="text" class="form-control form-control-solid" name="customer_telephone" placeholder="Enter customer telephone">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-5">
+                                    <!-- Address -->
+                                    <div class="col-md-12">
+                                        <label>Customer Address<span class="asterisk">*</span></label>
+                                        <textarea class="form-control form-control-solid" name="customer_address" placeholder="Enter customer address">@if(isset($edit)) {{ $edit->address }} @endif</textarea>
+                                    </div>
+                                </div>
+
+
+                                <div class="row mb-5 mt-10">
                                     <!-- Dealer's Name -->
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -74,28 +118,18 @@
                                     </div>
                                 </div>
 
-
                                 <div class="row mb-5">
-                                    <!-- Address -->
-                                    <div class="col-md-12">
-                                        <label>Customer Address<span class="asterisk">*</span></label>
-                                        <textarea class="form-control form-control-solid" name="address" placeholder="Enter address">@if(isset($edit)) {{ $edit->address }} @endif</textarea>
-                                    </div>
-                                </div>
-
-
-                                <div class="row mb-5 mt-10">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Location<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="location_1" placeholder="Enter location">
+                                            <label>Dealer's Location<span class="asterisk">*</span></label>
+                                            <input type="text" class="form-control form-control-solid" name="dealer_location" placeholder="Enter dealer's location">
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Telephone<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="telephone_1" placeholder="Enter telephone">
+                                            <label>Dealer's Telephone<span class="asterisk">*</span></label>
+                                            <input type="text" class="form-control form-control-solid" name="dealer_telephone" placeholder="Enter dealer's telephone">
                                         </div>
                                     </div>
                                 </div>
@@ -103,24 +137,8 @@
                                 <div class="row mb-5">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Location<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="location_2" placeholder="Enter location">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Telephone<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="telephone_2" placeholder="Enter telephone">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-5">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Fax<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="fax" placeholder="Enter fax">
+                                            <label>Dealer's Fax</label>
+                                            <input type="text" class="form-control form-control-solid" name="dealer_fax" placeholder="Enter dealer's fax">
                                         </div>
                                     </div>
                                 </div>
@@ -130,7 +148,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <h4 class="text-info">Tire & Vehicle Info</h4>
-                                            <hr>
+                                            {{-- <hr> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -177,18 +195,148 @@
                                     </div>
                                 </div>
 
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="row mb-5 mt-10">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <h5>PC/LT Tire Position</h5>
+                                                    <hr>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                {{-- <div class="row mb-5 mt-10">
+                                        <div class="row mb-5">
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label><input type="checkbox" name="lt_tire_position[]" class="form-check-input mr-10" value="LF" title="LF">LF</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label><input type="checkbox" name="lt_tire_position[]" class="form-check-input mr-10" value="RF" title="RF">RF</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label><input type="checkbox" name="lt_tire_position[]" class="form-check-input mr-10" value="LR" title="LR">LR</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label><input type="checkbox" name="lt_tire_position[]" class="form-check-input mr-10" value="RR" title="RR">RR</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-5">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>Tire Mileage</label>
+                                                    <input type="text" class="form-control form-control-solid" name="lt_tire_mileage" placeholder="Enter tire mileage">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="row mb-5 mt-10">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <h5>2 Wheels/TB Tire Position</h5>
+                                                    <hr>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-5">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label><input type="checkbox" name="tb_tire_position[]" class="form-check-input mr-10" value="Front" title="Front">Front</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label><input type="checkbox" name="tb_tire_position[]" class="form-check-input mr-10" value="Drive" title="Drive">Drive</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label><input type="checkbox" name="tb_tire_position[]" class="form-check-input mr-10" value="Trailer" title="Trailer">Trailer</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-5">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>Tire Mileage</label>
+                                                    <input type="text" class="form-control form-control-solid" name="tb_tire_mileage" placeholder="Enter tire mileage">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-5 mt-5">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <h4 class="text-info">Claim Points</h4>
                                             <hr>
                                         </div>
                                     </div>
-                                </div> --}}
+                                </div>
+
+                                <div class="row mb-5">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Reason for tire return<span class="asterisk">*</span></label>
+                                            <textarea class="form-control form-control-solid" name="reason_for_tire_return" placeholder="Enter reason for tire return"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-5">
+                                    <label class="mb-4">Location of damage</label>
+                                    <div class="d-flex justify-content-between">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Tread" title="Tread">Tread</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Sidewall" title="Sidewall">Sidewall</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Shoulder" title="Shoulder">Shoulder</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Bead" title="Bead">Bead</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Others" title="Others">Others</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
 
-                                <div class="row mb-5 mt-10">
+                                <div class="row mb-5 mt-15">
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <table class="table table-bordered">
@@ -201,17 +349,15 @@
                                                 </thead>
                                                 <tbody>
 
-                                                    @foreach($warranty_claim_points as $key => $point)
+                                                    @foreach($claim_points as $key => $point)
                                                     <tr>
-                                                        <td><b>{{ $key + 1}}. {{ $point->title }}</b></td>
-                                                        <td></td>
-                                                        <td></td>
+                                                        <td colspan="3"><b>{{ $key + 1}}. {{ $point->title }}</b></td>
                                                     </tr>
                                                         @foreach($point->sub_titles as $s_key => $s_point)
                                                         <tr>
                                                             <td><span style="margin-left: 15px;">- {{ $s_point->title }}</span></td>
-                                                            <td><input type="checkbox" class="form-check-input" name="claim_point[{{ $s_point->id }}]" value="yes" title="Yes"></td>
-                                                            <td><input type="checkbox" class="form-check-input" name="claim_point[{{ $s_point->id }}]" value="no" title="No"></td>
+                                                            <td><input type="checkbox" class="form-check-input yes_no_checkbox" name="claim_point[{{ $s_point->id }}]" value="1" title="Yes"></td>
+                                                            <td><input type="checkbox" class="form-check-input yes_no_checkbox" name="claim_point[{{ $s_point->id }}]" value="0" title="No"></td>
                                                         </tr>
                                                         @endforeach
                                                     @endforeach
@@ -222,6 +368,143 @@
                                     </div>
                                 </div>
 
+
+                                <div class="row mb-5 mt-10">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="6"><h4 class="text-info">Tire Manifistation</h4></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>No.</th>
+                                                        <th>Image</th>
+                                                        <th>Manifistation</th>
+                                                        <th>Probable Cause(s)</th>
+                                                        <th>Yes</th>
+                                                        <th>No</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    @foreach($tire_manifistations as $key => $m)
+                                                        <tr>   
+                                                            <td>{{ $key+1}}.</td>
+                                                            <td>
+                                                                @if($m->image && get_valid_file_url('sitebucket/tire-manifistation',$m->image))
+                                                                    <a href="{{ get_valid_file_url('sitebucket/tire-manifistation',$m->image) }}" class="fancybox" title="View Full"><img src="{{ get_valid_file_url('sitebucket/tire-manifistation',$m->image) }}" height="100" width="100"></a>
+                                                                @endif
+                                                            </td>
+                                                            <td>{!! $m->manifistation !!}</td>
+                                                            <td>{!! $m->probable_cause !!}</td>
+                                                            <td><input type="checkbox" class="form-check-input yes_no_checkbox" name="tire_manifistation[{{ $m->id }}]" value="1" title="Yes"></td>
+                                                            <td><input type="checkbox" class="form-check-input yes_no_checkbox" name="tire_manifistation[{{ $m->id }}]" value="0" title="No"></td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row mb-5 mt-10">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <h4 class="text-info">Pictures</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-5 mt-10">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Title <span class="asterisk">*</span></label>
+                                            <input type="text" name="default_pictures[title][1]" class="form-control form-control-solid default_pictures_title" value="Tread Area" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Upload Image <span class="asterisk">*</span></label>
+                                            <input type="file" name="default_pictures[image][1]" class="form-control form-control-solid default_pictures_image" accept="image/*" capture>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-5 mt-10">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Title <span class="asterisk">*</span></label>
+                                            <input type="text" name="default_pictures[title][2]" class="form-control form-control-solid default_pictures_title" value="Sidewall Area" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Upload Image <span class="asterisk">*</span></label>
+                                            <input type="file" name="default_pictures[image][2]" class="form-control form-control-solid default_pictures_image" accept="image/*" capture>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-5 mt-10">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Title <span class="asterisk">*</span></label>
+                                            <input type="text" name="default_pictures[title][3]" class="form-control form-control-solid default_pictures_title" value="Bead Area" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Upload Image <span class="asterisk">*</span></label>
+                                            <input type="file" name="default_pictures[image][3]" class="form-control form-control-solid default_pictures_image" accept="image/*" capture>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-5 mt-10">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Title <span class="asterisk">*</span></label>
+                                            <input type="text" name="default_pictures[title][4]" class="form-control form-control-solid default_pictures_title" value="Inner Liner Area" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Upload Image <span class="asterisk">*</span></label>
+                                            <input type="file" name="default_pictures[image][4]" class="form-control form-control-solid default_pictures_image" accept="image/*" capture>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div data-repeater-list="other_pictures" class="mt-10">
+                                    <div class="row mb-5" data-repeater-item>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label>Title <span class="asterisk">*</span></label>
+                                                <input type="text" name="title" class="form-control form-control-solid other_pictures_title" placeholder="Enter title">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label>Upload Image <span class="asterisk">*</span></label>
+                                                <input type="file" class="form-control form-control-solid other_pictures_image" name="image" accept="image/*" capture>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                            <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-md btn-color-danger mt-6" data-repeater-delete><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-5">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                          <a href="javascript:" class="btn btn-success btn-sm" data-repeater-create >Add more</a>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="row mb-5">
                                     <div class="col-md-12">
@@ -246,24 +529,27 @@
 @push('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.repeater/1.2.1/jquery.repeater.min.js"></script>
 {{-- <script src="{{ asset('assets')}}/assets/js/custom/bootstrap-datepicker.js"/></script> --}}
 <script>
 
 $(document).ready(function() {
 
+    show_loader();
+
     // Select yes or no 
-    $('input[type="checkbox"]').on('change', function() {
+    $('.yes_no_checkbox').on('change', function() {
         $('input[name="' + this.name + '"]').not(this).prop('checked', false);
     });
 
     $('body').on("submit", "#myForm", function (e) {
-      e.preventDefault();
-      var validator = validate_form();
+        e.preventDefault();
+        var validator = validate_form();
 
-      if (validator.form() != false) {
+        if (validator.form() != false) {
         $('[type="submit"]').prop('disabled', true);
         $.ajax({
-          url: "{{route('promotion.store')}}",
+          url: "{{route('warranty.store')}}",
           type: "POST",
           data: new FormData($("#myForm")[0]),
           async: false,
@@ -277,7 +563,7 @@ $(document).ready(function() {
                 @if(isset($edit->id))
                     window.location.reload(); 
                 @else
-                    window.location.href = '{{ route('promotion.index') }}';
+                    window.location.href = '{{ route('warranty.index') }}';
                 @endif
 
               },1500)
@@ -295,117 +581,142 @@ $(document).ready(function() {
     });
 
     function validate_form(){
-      var validator = $("#myForm").validate({
-          errorClass: "is-invalid",
-          validClass: "is-valid",
-          rules: {
-            title:{
-              required: true,
-              maxlength: 185,
+        var validator = $("#myForm").validate({
+            errorClass: "is-invalid",
+            validClass: "is-valid",
+            rules: {
+                warranty_claim_type:{
+                  required: true,
+                },
+                dealer_name:{
+                    required: true,
+                    maxlength: 185,
+                },
+                customer_address:{
+                    required: true,
+                },
+                customer_email:{
+                    required: true,
+                    maxlength: 185,
+                },
+                customer_phone:{
+                    required: true,
+                    minlength:10,
+                    maxlength:10,
+                    digits:true,
+                },
+                customer_location:{
+                    required: true,
+                    maxlength: 185,
+                },
+                customer_telephone:{
+                    required: true,
+                    minlength:10,
+                    maxlength:10,
+                    digits:true,
+                },
+                dealer_location:{
+                    required: true,
+                    maxlength: 185,
+                },
+                dealer_telephone:{
+                    required: true,
+                    minlength:10,
+                    maxlength:10,
+                    digits:true,
+                },
+                vehicle_maker:{
+                    maxlength: 185,
+                    required: true,
+                },
+                year:{
+                    required: true,
+                    minlength:4,
+                    maxlength:4,
+                    digits:true,
+                },
+                vehicle_model:{
+                    required: true,
+                    maxlength: 185,
+                },
+                license_plate:{
+                    required: true,
+                    maxlength: 185,
+                },
+                vehicle_mileage:{
+                    required: true,
+                    maxlength: 185,
+                },
+                reason_for_tire_return:{
+                    required: true,
+                },
             },
-            sap_connection_id:{
-              required: true,
+            messages: {
+                title:{
+                    required: "Please enter promotion title.",
+                },
             },
-            promotion_type_id:{
-              required: true,
-            },
-            promotion_scope:{
-              required: true,
-            },
-            promotion_start_date:{
-              required: true,
-            },
-            promotion_end_date:{
-              required: true,
-            },
-            @if(!isset($edit))
-            promo_image:{
-              required: true,
-            },
-            @endif
-            'customer_ids[]':{
-                required: function () {
-                        if($('[name="promotion_scope"]').find('option:selected').val() == 'C'){
-                            return true;
-                        }else{
-                            return false;
-                        }
-                    },
-            },
-            'class_ids[]':{
-                required: function () {
-                        if($('[name="promotion_scope"]').find('option:selected').val() == 'CL'){
-                            return true;
-                        }else{
-                            return false;
-                        }
-                    },
-            },
-            'territories_ids[]':{
-                required: function () {
-                        if($('[name="promotion_scope"]').find('option:selected').val() == 'T'){
-                            return true;
-                        }else{
-                            return false;
-                        }
-                    },
-            },
-            'sales_specialist_ids[]':{
-                required: function () {
-                        if($('[name="promotion_scope"]').find('option:selected').val() == 'SS'){
-                            return true;
-                        }else{
-                            return false;
-                        }
-                    },
-            },
-            'brand_ids[]':{
-                required: function () {
-                        if($('[name="promotion_scope"]').find('option:selected').val() == 'B'){
-                            return true;
-                        }else{
-                            return false;
-                        }
-                    },
-            },
-            'market_sector_ids[]':{
-                required: function () {
-                        if($('[name="promotion_scope"]').find('option:selected').val() == 'MS'){
-                            return true;
-                        }else{
-                            return false;
-                        }
-                    },
-            },
-          },
-          messages: {
-            title:{
-              required: "Please enter promotion title.",
-              maxlength: "Promotion title is too long.",
-            },
-            promotion_type_id:{
-              required: "Please select promotion type.",
-            },
-            sap_connection_id:{
-              required: "Please select business unit.",
-            },
-            promotion_scope:{
-              required: "Please select customers.",
-            },
-            promotion_start_date:{
-              required: "Please enter promotion stating date.",
-            },
-            promotion_end_date:{
-              required: "Please enter promotion end date.",
-            },
-            promo_image:{
-              required: "Please upload promotion image.",
-            },
-          },
-      });
+        });
 
-      return validator;
+        $('.default_pictures_title').each(function() {
+            $(this).rules('add', {
+                required: true,
+                maxlength: 185,
+            });
+        });
+
+        $('.default_pictures_image').each(function() {
+            $(this).rules('add', {
+                required: true,
+            });
+        });
+
+
+        $('.other_pictures_title').each(function() {
+            $(this).rules('add', {
+                required: true,
+                maxlength: 185,
+            });
+        });
+
+        $('.other_pictures_image').each(function() {
+            var pre_image = $(this).prev('.product_images_value').val();
+
+            $(this).rules('add', {
+                required: function () {
+                          if(!pre_image){
+                              return true;
+                          }else{
+                              return false;
+                          }
+                      },
+                messages: {
+                    accept : "Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp files."
+                }
+            });
+        });
+
+        return validator;
     }
+
+    $('#myForm').repeater({
+        initEmpty: true,
+        show: function () {
+            $(this).find('.product_images_value').remove();
+            $(this).find('.image_preview').remove();
+            $(this).slideDown();
+        },
+        hide: function (deleteElement) {
+            if(confirm('Are you sure you want to delete this element?')) {
+                $(this).slideUp(deleteElement);
+            }
+        },
+        ready: function (setIndexes) {
+        },
+        isFirstItemUndeletable: true,
+    });
+
+    hide_loader();
 
 });
 </script>

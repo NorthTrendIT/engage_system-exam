@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateWarrantyClaimPoints extends Migration
+class CreateTireManifistations extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateWarrantyClaimPoints extends Migration
      */
     public function up()
     {
-        Schema::create('warranty_claim_points', function (Blueprint $table) {
+        Schema::create('tire_manifistations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('warranty_id');
-            $table->unsignedBigInteger('claim_point_id');
-            $table->boolean('is_yes')->default(false);
+            $table->text('image')->nullable();
+            $table->longText('manifistation')->nullable();
+            $table->longText('probable_cause')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateWarrantyClaimPoints extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('warranty_claim_points');
+        Schema::dropIfExists('tire_manifistations');
     }
 }

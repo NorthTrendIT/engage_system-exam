@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\WarrantyClaimPoint;
+use App\Models\ClaimPoint;
 
-class WarrantyClaimPointSeeder extends Seeder
+class ClaimPointSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,7 +15,7 @@ class WarrantyClaimPointSeeder extends Seeder
     public function run()
     {
         \Schema::disableForeignKeyConstraints();
-        WarrantyClaimPoint::truncate();
+        ClaimPoint::truncate();
         \Schema::enableForeignKeyConstraints();
 
 
@@ -148,6 +148,6 @@ class WarrantyClaimPointSeeder extends Seeder
                         'parent_id' => 6,
                     ),
                 );
-        WarrantyClaimPoint::insert($data);
+        ClaimPoint::insert($data);
     }
 }
