@@ -97,7 +97,7 @@
                               @if(in_array(userrole(),[1]))
                               <th>Business Unit</th>
                               @endif
-                              <th>Order #</th>
+                              <th>Invoice #</th>
                               @if(userrole() != 4)
                               <th>Customer Name</th>
                               @endif
