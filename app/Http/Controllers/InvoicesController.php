@@ -70,7 +70,7 @@ class InvoicesController extends Controller
 
         $data = $data->firstOrFail();
 
-        return view('orders.order_view', compact('data'));
+        return view('invoices.view', compact('data'));
     }
 
     /**
