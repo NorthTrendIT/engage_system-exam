@@ -96,10 +96,6 @@ class WarrantyController extends Controller
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
 
-            $input['lt_tire_position'] = implode(",", $input['lt_tire_position']);
-            $input['tb_tire_position'] = implode(",", $input['tb_tire_position']);
-            $input['location_of_damage'] = implode(",", $input['location_of_damage']);
-
             if(isset($input['id'])){
                 $warranty = Warranty::findOrFail($input['id']);
                 $message = "Warranty details updated successfully.";
@@ -110,8 +106,14 @@ class WarrantyController extends Controller
 
             if($warranty->fill($input)->save()){
 
-                if(isset($input['claim_point'])){
+                $input['lt_tire_position'] = implode(",", $input['lt_tire_position']);
+                $input['tb_tire_position'] = implode(",", $input['tb_tire_position']);
+                $input['location_of_damage'] = implode(",", $input['location_of_damage']);
+                $input['warranty_id'] = $warranty->id;
 
+                // $warranty_vehicle =
+
+                if(isset($input['claim_point'])){
                     $claim_points = ClaimPoint::whereNotNull('parent_id')->get();
 
                     foreach($claim_points as $key=>$value){
@@ -133,7 +135,6 @@ class WarrantyController extends Controller
                                                 ]
                                             );
                     }
-
                 }else{
                     $claim_points = ClaimPoint::whereNotNull('parent_id')->get();
 
@@ -147,6 +148,49 @@ class WarrantyController extends Controller
                                                 [
                                                     'warranty_id' => $warranty->id,
                                                     'claim_point_id' => $value->id,
+                                                    'is_yes' => 0,
+                                                ]
+                                            );
+                    }
+                }
+
+
+
+                if(isset($input['tire_manifistation'])){
+                    $tire_manifistations = TireManifistation::whereNotNull('parent_id')->get();
+
+                    foreach($tire_manifistations as $key=>$value){
+
+                        $is_yes = 0;
+                        if(isset($input['tire_manifistation'][$value->id])){
+                            $is_yes = $input['tire_manifistation'][$value->id];
+                        }
+
+                        WarrantyTireManifistation::updateOrCreate(
+                                                [
+                                                    'warranty_id' => $warranty->id,
+                                                    'tire_manifistation_id' => $value->id,
+                                                ],
+                                                [
+                                                    'warranty_id' => $warranty->id,
+                                                    'tire_manifistation_id' => $value->id,
+                                                    'is_yes' => $is_yes,
+                                                ]
+                                            );
+                    }
+                }else{
+                    $tire_manifistations = TireManifistation::whereNotNull('parent_id')->get();
+
+                    foreach($tire_manifistations as $key=>$value){
+
+                        WarrantyTireManifistation::updateOrCreate(
+                                                [
+                                                    'warranty_id' => $warranty->id,
+                                                    'tire_manifistation_id' => $value->id,
+                                                ],
+                                                [
+                                                    'warranty_id' => $warranty->id,
+                                                    'tire_manifistation_id' => $value->id,
                                                     'is_yes' => 0,
                                                 ]
                                             );
