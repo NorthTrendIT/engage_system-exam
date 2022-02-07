@@ -442,6 +442,9 @@
             module:{
               required:true,
             },
+            is_important:{
+              required:true,
+            },
           },
           messages: {
             sap_connecyion_id:{
@@ -467,7 +470,10 @@
                 required: "Please select End date.",
             },
             module:{
-              required:"Please select Module.",
+              required:"Please select module.",
+            },
+            is_important:{
+              required:"Please select priority.",
             },
           },
       });

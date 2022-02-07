@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Support\SAPTestAPI;
 use App\Models\SapConnection;
+use App\Models\SapApiUrl;
 use DataTables;
 use Validator;
 use Auth;
@@ -187,5 +188,31 @@ class SapConnectionController extends Controller
                             })
                             ->rawColumns(['connection', 'action'])
                             ->make(true);
+    }
+
+
+    public function updateApiUrl(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'url' => 'required|string|max:185|url',
+                );
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+            
+            $obj = SapApiUrl::firstOrNew();
+
+            if($obj->fill($input)->save()){
+                $response = ['status'=>true,'message'=>"API URL updated successfully!"];
+            }else{
+                $response = ['status'=>false,'message'=>"Something went wrong!"];
+            }
+
+        }
+        return $response;
     }
 }

@@ -56,6 +56,7 @@ class NewsAndAnnouncementController extends Controller
                     'type' => 'required',
                     'message' => 'required',
                     'module' => 'required',
+                    'is_important' => 'required',
                 );
 
 

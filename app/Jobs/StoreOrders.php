@@ -118,6 +118,11 @@ class StoreOrders implements ShouldQueue
                                     ],
                                     $item
                                 );
+
+                        if(!is_null(@$value['BaseEntry'])){
+                            $obj->base_entry = @$value['BaseEntry'];
+                            $obj->save();
+                        }
                     }
 
                 }

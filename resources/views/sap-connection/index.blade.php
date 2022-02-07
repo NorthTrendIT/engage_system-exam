@@ -28,29 +28,19 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-body">
-              <div class="row mt-5">
-                <!-- <div class="col-md-3">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
-                    <span>
-                      <i class="flaticon2-search-1 text-muted"></i>
-                    </span>
-                  </div>
-                </div> -->
+              <div class="row mt-5" style="display: flex;justify-content: right;">
+                
+                <div class="col-md-2 mt-3" style="text-align:right;">
+                  <h3>API URL: </h3>
+                </div>
 
+                <div class="col-md-5">
+                  <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Enter API URL" name = "url" value="{{ get_sap_api_url() }}">
+                </div>
 
-                <!-- <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
-                    <option value="">Select status</option>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
-                  </select>
-                </div> -->
-
-                <!-- <div class="col-md-3">
-                  <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
-                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
-                </div> -->
+                <div class="col-md-2">
+                  <a href="javascript:" class="btn btn-primary px-6 font-weight-bold update">Update</a>
+                </div>
 
               </div>
               <div class="row mb-5 mt-5">
@@ -161,41 +151,83 @@
     })
 
     $(document).on('click', '.test-api', function(event) {
-        event.preventDefault();
-        $url = $(this).attr('data-url');
+      event.preventDefault();
+      $url = $(this).attr('data-url');
 
-        $.ajax({
-            url: $url,
-            method: "GET",
-        })
-        .done(function(result) {
-            if(result.status){
-                Swal.fire({
-                    title: 'API working!',
-                    // text: result.message,
-                    icon: 'success',
-                    showCancelButton: false,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Ok'
-                });
-                // toast_success(result.message);
-            }else{
-                Swal.fire({
-                    title: 'API not working!',
-                    text: result.message,
-                    icon: 'warning',
-                    showCancelButton: false,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Ok'
-                });
-            }
-        })
-        .fail(function() {
-            toast_error("error");
-        });
+      $.ajax({
+        url: $url,
+        method: "GET",
+      })
+      .done(function(result) {
+          if(result.status){
+              Swal.fire({
+                  title: 'API working!',
+                  // text: result.message,
+                  icon: 'success',
+                  showCancelButton: false,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Ok'
+              });
+              // toast_success(result.message);
+          }else{
+              Swal.fire({
+                  title: 'API not working!',
+                  text: result.message,
+                  icon: 'warning',
+                  showCancelButton: false,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Ok'
+              });
+          }
+      })
+      .fail(function() {
+        toast_error("error");
+      });
     });
+
+    $(document).on('click', '.update', function(event) {
+      event.preventDefault();
+      url = $('[name="url"]').val();
+      if(url == ""){
+        toast_error("The url field is required.");
+        return false;
+      }
+
+      Swal.fire({
+        title: 'Are you sure want to update?',
+        // text: "Syncing process will run in background and it may take some time to sync all Orders Data.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('sap-connection.update-api-url') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                    url:url
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+
+    });
+
   })
 </script>
 @endpush

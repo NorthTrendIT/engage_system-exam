@@ -40,7 +40,7 @@ class SAPOrderPost
     	try {
             $response = $this->httpClient->request(
                 $method,
-                env('SAP_API_URL').$url,
+                get_sap_api_url().$url,
                 [
                     'headers' => $this->headers,
                     'verify' => false,
