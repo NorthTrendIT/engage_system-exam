@@ -45,9 +45,9 @@
                                     <tr>
                                     <th> <b>Priority</b> </th>
                                     @if($data->is_important == 0)
-                                    <td><button type="button" class="btn btn-info btn-sm">Normal</button></td>
+                                    <td><button type="button" class="btn btn-light-info btn-sm">Normal</button></td>
                                     @elseif($data->is_important == 1)
-                                    <td><button type="button" class="btn btn-danger btn-sm">Important</button></td>
+                                    <td><button type="button" class="btn btn-light-danger btn-sm">Important</button></td>
                                     @endif
                                     </tr>
                                     @endif
@@ -64,8 +64,27 @@
 
                                     @if(@Auth::user()->role_id == 1)
                                     <tr>
-                                    <th> <b>Module:</b> </th>
-                                    <td>{{ ucwords(str_replace("_"," ",@$data->module)) ?? "" }}</td>
+                                        <th> <b>Module:</b> </th>
+                                        <td>{{ ucwords(str_replace("_"," ",@$data->module)) ?? "" }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th> <b>Start Date:</b> </th>
+                                        <td>{{ date('M d, Y',strtotime($data->start_date)) }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th> <b>End Date:</b> </th>
+                                        <td>{{ date('M d, Y',strtotime($data->end_date)) }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th> <b>Is Active:</b> </th>
+                                        @if($data->is_active)
+                                        <td><button type="button" class="btn btn-sm btn-light-success font-weight-bold">Active</button></td>
+                                        @else
+                                        <td><button type="button" class="btn btn-sm btn-light-danger font-weight-bold">Inactive</button></td>
+                                        @endif
                                     </tr>
                                     @endif
 
@@ -106,14 +125,14 @@
                                     <table class="table table-bordered" id="myDataTable">
                                         <thead>
                                             <th>No.</th>
-                                            @if(@$data->module == 'customer' || @$data->module == 'customer_class' || @$data->module == 'territory')
+                                            @if(@$data->module == 'customer' || @$data->module == 'customer_class' || @$data->module == 'territory' || @$data->module == 'market_sector')
                                             <th>Customer Name</th>
                                             @endif
                                             @if(@$data->module == 'sales_specialist')
                                             <th>Sales Specialist Name</th>
                                             @endif
-                                            @if(@$data->module == 'role')
-                                            <th>User Name</th>
+                                            @if(@$data->module == 'market_sector')
+                                            <th>Market Sector</th>
                                             @endif
                                             @if(@$data->module == 'customer' || @$data->module == 'sales_specialist' || @$data->module == 'role')
                                             <th>Role</th>
@@ -184,6 +203,9 @@ $(document).ready(function() {
               @if(@$data->module == 'territory')
               'url': "{{ route('news-and-announcement.getAllTerritory') }}",
               @endif
+              @if(@$data->module == 'market_sector')
+              'url': "{{ route('news-and-announcement.getAllMarketSector') }}",
+              @endif
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -195,10 +217,13 @@ $(document).ready(function() {
               }
           },
           columns: [
-              {data: 'DT_RowIndex'},
+              {data: 'DT_RowIndex', orderable: false},
               {data: 'user_name', name: 'user_name', orderable: false},
-              @if(@$data->module == 'customer' || @$data->module == 'role' || @$data->module == 'sales_specialist')
+              @if(@$data->module == 'customer' || @$data->module == 'sales_specialist')
               {data: 'role', name: 'role', orderable: false},
+              @endif
+              @if(@$data->module == 'market_sector')
+              {data: 'market_sector', name: 'market_sector', orderable: false},
               @endif
               @if(@$data->module == 'customer_class')
               {data: 'class_name', name: 'class_name', orderable: false},
