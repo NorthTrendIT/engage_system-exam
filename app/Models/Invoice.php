@@ -38,4 +38,24 @@ class Invoice extends Model
         'updated_at',
         'sap_connection_id',
     ];
+
+    public function items(){
+        return $this->hasMany(InvoiceItem::class, 'invoice_id', 'id');
+    }
+
+    public function customer(){
+        return $this->hasOne(Customer::class, 'card_code', 'card_code');
+    }
+
+    public function sales_specialist(){
+        return $this->belongsTo(User::class, 'sales_person_code','sales_employee_code');
+    }
+
+    public function order(){
+        return $this->hasOne(Order::class, 'doc_entry', 'base_entry');
+    }
+
+    public function sap_connection(){
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
+    }
 }

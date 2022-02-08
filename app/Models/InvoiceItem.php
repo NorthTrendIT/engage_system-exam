@@ -32,4 +32,8 @@ class InvoiceItem extends Model
             'ship_to_description',
             'response',
         ];
+
+    public function product(){
+        return $this->hasOne(Product::class, 'item_code', 'item_code');
+    }
 }

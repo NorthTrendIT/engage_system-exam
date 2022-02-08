@@ -124,9 +124,8 @@ Route::middleware(['auth'])->group(function(){
             // Invoices
             Route::resource('invoices','App\Http\Controllers\InvoicesController');
     	    Route::post('invoices/get-all', 'App\Http\Controllers\InvoicesController@getAll')->name('invoices.get-all');
-    	    Route::post('invoices/sync-orders', 'App\Http\Controllers\InvoicesController@syncInvoices')->name('invoices.sync-invoices');
-
-
+    	    Route::post('invoices/sync-invoices', 'App\Http\Controllers\InvoicesController@syncInvoices')->name('invoices.sync-invoices');
+            Route::post('invoices/get-customer', 'App\Http\Controllers\InvoicesController@getCustomer')->name('invoices.get-customer');
 
             // Route::resource('location','App\Http\Controllers\LocationController');
     	    // Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');
@@ -298,7 +297,7 @@ Route::middleware(['auth'])->group(function(){
     // For SS Only
     Route::get('customer-delivery-schedule/ss-view', 'App\Http\Controllers\CustomerDeliveryScheduleController@ssView')->name('customer-delivery-schedule.ss-view');
     Route::post('customer-delivery-schedule/get-ss-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getSsCustomerList')->name('customer-delivery-schedule.get-ss-customer-list');
-    
+
 
     // Super Admin Routes
     Route::middleware('super-admin')->group(function(){
