@@ -5,7 +5,9 @@ namespace App\Support;
 use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
-use App\Models\SalesPerson;
+use App\Models\User;
+use App\Models\SapConnection;
+use Hash;
 
 class SAPSalesPersons
 {
@@ -17,10 +19,16 @@ class SAPSalesPersons
 
 	protected $database;
 	protected $username;
-	protected $password;
+    protected $password;
+	protected $log_id;
 
-    public function __construct($database, $username, $password)
+    public function __construct($database, $username, $password, $log_id = false)
     {
+        $this->database = $database;
+        $this->username = $username;
+        $this->password = $password;
+        $this->log_id = $log_id;
+        
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
         $this->headers['Cookie'] = $this->authentication->getSessionCookie();
@@ -34,7 +42,7 @@ class SAPSalesPersons
     	try {
             $response = $this->httpClient->request(
                 'GET',
-                env('SAP_API_URL').$url,
+                get_sap_api_url().$url,
                 [
                     'headers' => $this->headers,
                     'verify' => false,
@@ -45,16 +53,22 @@ class SAPSalesPersons
                 $response = json_decode($response->getBody(),true);
 
                 return array(
-                                'status' => true,
-                                'data' => $response
-                            );
+                            'status' => true,
+                            'data' => $response
+                        );
             }
 
         } catch (\Exception $e) {
+
+            add_sap_log([
+                            'status' => "error",
+                            'error_data' => $e->getMessage(),
+                        ], $this->log_id);
+            
             return array(
-                                'status' => false,
-                                'data' => []
-                            );
+                        'status' => false,
+                        'data' => []
+                    );
         }
     }
 
@@ -67,41 +81,55 @@ class SAPSalesPersons
             $response = $this->getSalesPersonsData();
         }
 
+        $where = array(
+                    'db_name' => $this->database,
+                    'user_name' => $this->username,
+                );
+
+        $sap_connection = SapConnection::where($where)->first();
+
         if($response['status']){
             $data = $response['data'];
 
             if($data['value']){
 
                 foreach ($data['value'] as $value) {
+                    $name = explode(" ", $value['SalesEmployeeName'], 2);
+                    $email = strtolower($name[0]).$value['SalesEmployeeCode']."-".@$sap_connection->id.'@mailinator.com';
+                    $password = get_random_password();
 
                     $insert = array(
+                                    'department_id' => 2,
+                                    'role_id' => 2,
                                     'sales_employee_code' => $value['SalesEmployeeCode'],
-                                    'sales_employee_name' => $value['SalesEmployeeName'],
-                                    'remark' => $value['Remarks'],
-                                    'commission_for_sales_employee' => $value['CommissionForSalesEmployee'],
-                                    'commission_group' => $value['CommissionGroup'],
-                                    'locked' => $value['Locked'],
-                                    'employee_id' => $value['EmployeeID'],
+                                    'sales_specialist_name' => $value['SalesEmployeeName'],
+                                    'first_name' => !empty($name[0]) ? $name[0] : null,
+                                    'last_name' => !empty($name[1]) ? $name[1] : null,
                                     'is_active' => $value['Active'] == "tYES" ? true : false,
-                                    'u_manager' => $value['U_MANAGER'],
-                                    'u_position' => $value['U_POSITION'],
-                                    'u_initials' => $value['U_INITIALS'],
-                                    'u_warehouse' => $value['U_WAREHOUSE'],
-                                    'u_password' => $value['U_Password'],
-                                    'u_area' => $value['U_AREA'],
+                                    'password' => Hash::make($password),
+                                    'password_text' => $password,
+                                    'email' => $email,
                                     //'response' => json_encode($value),
+                                    'sap_connection_id' => @$sap_connection->id,
+                                    'first_login' => true,
                                 );
 
-                    $obj = SalesPerson::updateOrCreate(
+                    $obj = User::updateOrCreate(
                                             [
-                                                'sales_employee_code' => @$value['SalesEmployeeCode'],
+                                                'role_id' => 2,
+                                                'email' => $email,
+                                                'sap_connection_id' => @$sap_connection->id,
                                             ],
                                             $insert
                                         );
                 }
 
-                if($data['odata.nextLink']){
+                if(!empty($data['odata.nextLink'])){
                     $this->addSalesPersonsDataInDatabase($data['odata.nextLink']);
+                }else{
+                    add_sap_log([
+                            'status' => "completed",
+                        ], $this->log_id);
                 }
             }
         }

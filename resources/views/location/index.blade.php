@@ -42,7 +42,7 @@
 
                 <div class="col-md-3">
                   <select class="form-control form-control-lg form-control-solid" name="filter_parent" data-control="select2" >
-                    <option value="">Select parent</option>
+                    <option value="">Select province</option>
                     @foreach($parents as $parent)
                     <option value="{{ $parent->id }}">{{ $parent->name }}</option>
                     @endforeach
@@ -73,9 +73,8 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th>No.</th>
                               <th>Name</th>
-                              <th>Parent</th>
+                              <th>Province</th>
                               <th>Status</th>
                               <th>Action</th>
                             </tr>
@@ -143,7 +142,6 @@
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
               {data: 'name', name: 'name'},
               {data: 'parent', name: 'parent'},
               {data: 'status', name: 'status'},

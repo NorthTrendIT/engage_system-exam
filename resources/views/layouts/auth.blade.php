@@ -3,7 +3,7 @@
 <html lang="en">
 	<!--begin::Head-->
 	<head>
-		<title>@yield('title') | B2M</title>
+		<title>@yield('title') | Exceltrend Ordering Management System</title>
 		<meta charset="utf-8" />
 		<meta name="description" content="" />
 		<meta name="keywords" content="" />
@@ -23,6 +23,17 @@
 			.is-invalid{
 				color:red;
 			}
+
+			.bg-body{
+				background-color: rgb(255 255 255/ 60%)!important;
+			}
+
+			.d-flex.flex-column.flex-column-fluid.bgi-position-y-bottom.position-x-center.bgi-no-repeat.bgi-size-contain.bgi-attachment-fixed {
+			    background-size: cover;
+			    width: 100%;
+			    background-repeat: no-repeat;
+			}
+			
 		</style>
 		@stack('css')
 	</head>
@@ -32,13 +43,13 @@
 		<!--begin::Main-->
 		<div class="d-flex flex-column flex-root">
 			<!--begin::Authentication - Sign-in -->
-			<div class="d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed" style="background-image: url({{ asset('assets') }}/assets/media/14.png">
+			<div class="d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed" style="background-image: url({{ asset('assets') }}/assets/media/login-bg.png">
 				<!--begin::Content-->
 				<div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
-					<!--begin::Logo-->
+					{{-- <!--begin::Logo-->
 					<a href="#" class="mb-12">
 						<img alt="Logo" src="{{ asset('assets') }}/assets/media/logo.png" class="h-40px" />
-					</a>
+					</a> --}}
 					<!--end::Logo-->
 					<!--begin::Wrapper-->
 					@yield('content')

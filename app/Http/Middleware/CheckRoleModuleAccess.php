@@ -18,308 +18,439 @@ class CheckRoleModuleAccess
      */
     public function handle(Request $request, Closure $next)
     {
-
+        // return $next($request);
         if(Auth::user()->role_id != 1){ //Not Super Admin
             $status = false;
             $message = "Oops ! you have not access for the module.";;
-            
+
             $role = Auth::user()->role;
 
             if(is_null($role)){
                 return abort(404);
             }
 
-            $access = array();
-            
-            $role_module_access = RoleModuleAccess::where('role_id',$role->id)->get();
-            foreach ($role_module_access as $value) {
-
-                if($value->module->slug){
-                    $access[$value->module->slug] = $value->toArray();
-                }
-            }
+            $access = get_user_role_module_access($role->id);
 
             if(!empty($access)){
                 $status = true;
-                
+
                 // User Module
-                if(!isset($access['user']) && in_array($request->route()->getName(), ['user.index','user.get-all','user.create','user.store','user.edit','user.status','user.destroy']) ){
+                if(in_array($request->route()->getName(), ['role.index','role.get-all','role.show'])){
 
-                    $status = false;
-                    $message = "Oops ! you have not access for user module.";
+                    if(@$access['view-role'] != 1){
 
-                }else{
+                        $status = false;
+                        $message = "Oops ! you have not access for role module.";
 
-                    if(in_array($request->route()->getName(), ['user.index','user.get-all'])){
-                       
-                        if($access['user']['view_access'] != 1){
-                            
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['role.create'])){
+
+                    if(@$access['add-role'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for create role.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['role.store'])){
+
+                    if(isset($request->id)){
+                        if(@$access['edit-role'] != 1){
+
                             $status = false;
-                            $message = "Oops ! you have not access for user module.";
+                            $message = "Oops ! you have not access for edit role.";
 
                         }
+                    }else{
+                        if(@$access['add-role'] != 1){
 
-                    }elseif(in_array($request->route()->getName(), ['user.create'])){
-
-                        if($access['user']['add_access'] != 1){
-                            
                             $status = false;
-                            $message = "Oops ! you have not access for create user.";
+                            $message = "Oops ! you have not access for create role.";
 
                         }
-                       
-                    }elseif(in_array($request->route()->getName(), ['user.store'])){
-                       
-                        if(isset($request->id)){
-                            if($access['user']['edit_access'] != 1){
-                                
-                                $status = false;
-                                $message = "Oops ! you have not access for edit user.";
+                    }
 
-                            }
-                        }else{
-                            if($access['user']['add_access'] != 1){
-                                
-                                $status = false;
-                                $message = "Oops ! you have not access for create user.";
+                }elseif(in_array($request->route()->getName(), ['role.edit','role.status'])){
 
-                            }
-                        }
+                    if(@$access['edit-role'] != 1){
 
-                    }elseif(in_array($request->route()->getName(), ['user.edit','user.status'])){
+                        $status = false;
+                        $message = "Oops ! you have not access for edit role.";
 
-                        if($access['user']['edit_access'] != 1){
-                            
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['role.destroy'])){
+                    if(@$access['delete-role'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for delete role.";
+
+                    }
+                }
+
+                // User Module
+                if(in_array($request->route()->getName(), ['user.index','user.get-all','user.show'])){
+
+                    if(@$access['view-user'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for user module.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['user.create'])){
+
+                    if(@$access['add-user'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for create user.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['user.store'])){
+
+                    if(isset($request->id)){
+                        if(@$access['edit-user'] != 1){
+
                             $status = false;
                             $message = "Oops ! you have not access for edit user.";
 
                         }
-                       
-                    }elseif(in_array($request->route()->getName(), ['user.destroy'])){
-                        if($access['user']['delete_access'] != 1){
-                            
+                    }else{
+                        if(@$access['add-user'] != 1){
+
                             $status = false;
-                            $message = "Oops ! you have not access for delete user.";
+                            $message = "Oops ! you have not access for create user.";
 
                         }
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['user.edit','user.status'])){
+
+                    if(@$access['edit-user'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for edit user.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['user.destroy'])){
+                    if(@$access['delete-user'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for delete user.";
+
                     }
                 }
 
                 // Customer Module
-                if(!isset($access['customer']) && in_array($request->route()->getName(), ['customer.index','customer.get-all','customer.sync-customers']) ){
+                if(in_array($request->route()->getName(), ['customer.index','customer.get-all'])){
 
-                    $status = false;
-                    $message = "Oops ! you have not access for customer module.";
-                }else{
+                    if(@$access['view-customer'] != 1){
 
-                    if(in_array($request->route()->getName(), ['customer.index','customer.get-all'])){
-                       
-                        if($access['customer']['view_access'] != 1){
-                            
-                            $status = false;
-                            $message = "Oops ! you have not access for customer module.";
+                        $status = false;
+                        $message = "Oops ! you have not access for customer module.";
 
-                        }
-                    }elseif(in_array($request->route()->getName(), ['customer.sync-customers'])){
-                        if($access['customer']['add_access'] != 1){
-                            
-                            $status = false;
-                            $message = "Oops ! you have not access for sync customers.";
+                    }
+                }elseif(in_array($request->route()->getName(), ['customer.sync-customers'])){
+                    if(@$access['add-customer'] != 1){
 
-                        }
+                        $status = false;
+                        $message = "Oops ! you have not access for sync customers.";
+
                     }
                 }
 
                 // Sales Person Module
-                if(!isset($access['sales-person']) && in_array($request->route()->getName(), ['sales-persons.index','sales-persons.get-all','sales-persons.sync-sales-persons'])){
+                if(in_array($request->route()->getName(), ['sales-persons.index','sales-persons.get-all'])){
 
-                    $status = false;
-                    $message = "Oops ! you have not access for sales person module.";
-                }else{
+                    if(@$access['view-sales-person'] != 1){
 
-                    if(in_array($request->route()->getName(), ['sales-persons.index','sales-persons.get-all'])){
-                       
-                        if($access['sales-person']['view_access'] != 1){
-                            
-                            $status = false;
-                            $message = "Oops ! you have not access for sales person module.";
+                        $status = false;
+                        $message = "Oops ! you have not access for sales person module.";
 
-                        }
-                    }elseif(in_array($request->route()->getName(), ['sales-persons.sync-sales-persons'])){
-                        if($access['sales-person']['add_access'] != 1){
-                            
-                            $status = false;
-                            $message = "Oops ! you have not access for sync sales persons.";
+                    }
+                }elseif(in_array($request->route()->getName(), ['sales-persons.sync-sales-persons'])){
+                    if(@$access['add-sales-person'] != 1){
 
-                        }
+                        $status = false;
+                        $message = "Oops ! you have not access for sync sales persons.";
+
                     }
                 }
 
 
                 // Product Module
-                if(!isset($access['product']) && in_array($request->route()->getName(), ['product.index','product.get-all','product.sync-products','product.store','product.edit','product.show']) ){
+                if(in_array($request->route()->getName(), ['product.index','product.get-all','product.show'])){
 
-                    $status = false;
-                    $message = "Oops ! you have not access for product module.";
-                }else{
+                    if(@$access['view-product'] != 1){
 
-                    if(in_array($request->route()->getName(), ['product.index','product.get-all','product.show'])){
-                       
-                        if($access['product']['view_access'] != 1){
-                            
-                            $status = false;
-                            $message = "Oops ! you have not access for product module.";
+                        $status = false;
+                        $message = "Oops ! you have not access for product module.";
 
-                        }
-                    }elseif(in_array($request->route()->getName(), ['product.sync-products'])){
-                        if($access['product']['add_access'] != 1){
-                            
-                            $status = false;
-                            $message = "Oops ! you have not access for sync products.";
+                    }
+                }elseif(in_array($request->route()->getName(), ['product.sync-products'])){
+                    if(@$access['add-product'] != 1){
 
-                        }
-                    }elseif(in_array($request->route()->getName(), ['product.store'])){
-                       
-                        if(isset($request->id)){
-                            if($access['product']['edit_access'] != 1){
-                                
-                                $status = false;
-                                $message = "Oops ! you have not access for edit product.";
+                        $status = false;
+                        $message = "Oops ! you have not access for sync products.";
 
-                            }
-                        }else{
-                            if($access['product']['add_access'] != 1){
-                                
-                                $status = false;
-                                $message = "Oops ! you have not access for create product.";
+                    }
+                }elseif(in_array($request->route()->getName(), ['product.store'])){
 
-                            }
-                        }
+                    if(isset($request->id)){
+                        if(@$access['edit-product'] != 1){
 
-                    }elseif(in_array($request->route()->getName(), ['product.edit'])){
-
-                        if($access['product']['edit_access'] != 1){
-                            
                             $status = false;
                             $message = "Oops ! you have not access for edit product.";
 
                         }
-                       
-                    }    
+                    }else{
+                        if(@$access['add-product'] != 1){
+
+                            $status = false;
+                            $message = "Oops ! you have not access for create product.";
+
+                        }
+                    }
+                }elseif(in_array($request->route()->getName(), ['product.edit'])){
+
+                    if(@$access['edit-product'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for edit product.";
+
+                    }
                 }
 
                 // Invoice Module
-                if(!isset($access['invoice']) && in_array($request->route()->getName(), ['invoices.index','invoices.get-all','invoices.sync-invoices'])){
+                if(in_array($request->route()->getName(), ['invoices.index','invoices.get-all'])){
+                    if(@$access['view-invoice'] != 1){
 
-                    $status = false;
-                    $message = "Oops ! you have not access for invoice module.";
-                }else{
+                        $status = false;
+                        $message = "Oops ! you have not access for invoice module.";
 
-                    if(in_array($request->route()->getName(), ['invoices.index','invoices.get-all'])){
-                       
-                        if($access['invoice']['view_access'] != 1){
-                            
-                            $status = false;
-                            $message = "Oops ! you have not access for invoice module.";
+                    }
+                }elseif(in_array($request->route()->getName(), ['invoices.sync-invoices'])){
+                    if(@$access['add-invoice'] != 1){
 
-                        }
-                    }elseif(in_array($request->route()->getName(), ['invoices.sync-invoices'])){
-                        if($access['invoice']['add_access'] != 1){
-                            
-                            $status = false;
-                            $message = "Oops ! you have not access for sync invoices.";
+                        $status = false;
+                        $message = "Oops ! you have not access for sync invoices.";
 
-                        }
                     }
                 }
 
                 // Order Module
-                if(!isset($access['order']) && in_array($request->route()->getName(), ['orders.index','orders.get-all','orders.sync-orders'])){
+                if(in_array($request->route()->getName(), ['orders.index','orders.get-all'])){
 
-                    $status = false;
-                    $message = "Oops ! you have not access for order module.";
-                }else{
+                    if(@$access['view-order'] != 1){
 
-                    if(in_array($request->route()->getName(), ['orders.index','orders.get-all'])){
-                       
-                        if($access['order']['view_access'] != 1){
-                            
-                            $status = false;
-                            $message = "Oops ! you have not access for order module.";
+                        $status = false;
+                        $message = "Oops ! you have not access for order module.";
 
-                        }
-                    }elseif(in_array($request->route()->getName(), ['orders.sync-orders'])){
-                        if($access['order']['add_access'] != 1){
-                            
-                            $status = false;
-                            $message = "Oops ! you have not access for sync orders.";
+                    }
+                }elseif(in_array($request->route()->getName(), ['orders.sync-orders'])){
+                    if($acces['add-order'] != 1){
 
-                        }
+                        $status = false;
+                        $message = "Oops ! you have not access for sync orders.";
+
                     }
                 }
 
                 // Location Module
-                if(!isset($access['location']) && in_array($request->route()->getName(), ['location.index','location.get-all','location.create','location.store','location.edit','location.status','location.destroy']) ){
+                if(in_array($request->route()->getName(), ['location.index','location.get-all'])){
 
-                    $status = false;
-                    $message = "Oops ! you have not access for location module.";
+                    if(@$access['view-location'] != 1){
 
-                }else{
+                        $status = false;
+                        $message = "Oops ! you have not access for location module.";
 
-                    if(in_array($request->route()->getName(), ['location.index','location.get-all'])){
-                       
-                        if($access['location']['view_access'] != 1){
-                            
-                            $status = false;
-                            $message = "Oops ! you have not access for location module.";
+                    }
 
-                        }
+                }elseif(in_array($request->route()->getName(), ['location.create'])){
 
-                    }elseif(in_array($request->route()->getName(), ['location.create'])){
+                    if(@$access['add-location'] != 1){
 
-                        if($access['location']['add_access'] != 1){
-                            
-                            $status = false;
-                            $message = "Oops ! you have not access for create location.";
+                        $status = false;
+                        $message = "Oops ! you have not access for create location.";
 
-                        }
-                       
-                    }elseif(in_array($request->route()->getName(), ['location.store'])){
-                       
-                        if(isset($request->id)){
-                            if($access['location']['edit_access'] != 1){
-                                
-                                $status = false;
-                                $message = "Oops ! you have not access for edit location.";
+                    }
 
-                            }
-                        }else{
-                            if($access['location']['add_access'] != 1){
-                                
-                                $status = false;
-                                $message = "Oops ! you have not access for create location.";
+                }elseif(in_array($request->route()->getName(), ['location.store'])){
 
-                            }
-                        }
+                    if(isset($request->id)){
+                        if(@$access['edit-location'] != 1){
 
-                    }elseif(in_array($request->route()->getName(), ['location.edit','location.status'])){
-
-                        if($access['location']['edit_access'] != 1){
-                            
                             $status = false;
                             $message = "Oops ! you have not access for edit location.";
 
                         }
-                       
-                    }elseif(in_array($request->route()->getName(), ['location.destroy'])){
-                        if($access['location']['delete_access'] != 1){
-                            
+                    }else{
+                        if(@$access['add-location'] != 1){
+
                             $status = false;
-                            $message = "Oops ! you have not access for delete location.";
+                            $message = "Oops ! you have not access for create location.";
 
                         }
                     }
+
+                }elseif(in_array($request->route()->getName(), ['location.edit','location.status'])){
+
+                    if(@$access['edit-location'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for edit location.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['location.destroy'])){
+                    if(@$access['delete-location'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for delete location.";
+
+                    }
                 }
+
+                // Department Module
+                if(in_array($request->route()->getName(), ['department.index','department.get-all'])){
+
+                    if(@$access['view-department'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for department module.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['department.create'])){
+
+                    if(@$access['add-department'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for create department.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['department.store'])){
+
+                    if(isset($request->id)){
+                        if(@$access['edit-department'] != 1){
+
+                            $status = false;
+                            $message = "Oops ! you have not access for edit department.";
+
+                        }
+                    }else{
+                        if(@$access['add-department'] != 1){
+
+                            $status = false;
+                            $message = "Oops ! you have not access for create department.";
+
+                        }
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['department.edit','department.status'])){
+
+                    if(@$access['edit-department'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for edit department.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['department.destroy'])){
+                    if(@$access['delete-department'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for delete department.";
+
+                    }
+                }
+
+                // Product List Module
+                // if(in_array($request->route()->getName(), ['product-list.index','product-list.show'])){
+
+                //     if(@$access['view-product-list'] != 1){
+
+                //         $status = false;
+                //         $message = "Oops ! you have not access for product list module.";
+
+                //     }
+                // }
+
+
+                // Customer Module
+                if(in_array($request->route()->getName(), ['customer-group.index','customer-group.get-all'])){
+
+                    if(@$access['view-customer-group'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for customer group module.";
+
+                    }
+                }elseif(in_array($request->route()->getName(), ['customer-group.sync-customer-groups'])){
+                    if(@$access['add-customer-group'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for sync customer groups.";
+
+                    }
+                }
+
+
+                // Class Module
+                if(in_array($request->route()->getName(), ['class.index','class.get-all'])){
+
+                    if(@$access['view-class'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for class module.";
+
+                    }
+                }
+
+                // Product List Module
+                if(in_array($request->route()->getName(), ['product-list.index','product-list.get-all','product-list.show'])){
+
+                    if(@$access['view-product-list'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for product list module.";
+
+                    }
+                }
+
+                // My Promotions Module
+                if(in_array($request->route()->getName(), ['customer-promotion.index','customer-promotion.get-all','customer-promotion.show','customer-promotion.get-all-product-list','customer-promotion.store-interest','customer-promotion.product-detail','customer-promotion.order.index','customer-promotion.order.create','customer-promotion.order.show','customer-promotion.order.store','customer-promotion.order.get-all'])){
+
+                    if(@$access['view-my-promotions'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for my promotions module.";
+
+                    }
+                }
+
+                // Product Group Module
+                if(in_array($request->route()->getName(), ['product-group.index','product-group.get-all'])){
+
+                    if(@$access['view-product-group'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for product group module.";
+
+                    }
+                }elseif(in_array($request->route()->getName(), ['product-group.sync-product-groups'])){
+                    if(@$access['add-product-group'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for sync product groups.";
+
+                    }
+                }
+
             }
 
             if(!$status){

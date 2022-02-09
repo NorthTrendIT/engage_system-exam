@@ -47,7 +47,7 @@
                   
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Parent</label>
+                      <label>Province</label>
                       <select class="form-control form-control-solid" name="parent_id">
                         <option value=""></option>
                         @foreach($parents as $parent)
@@ -62,7 +62,7 @@
                 <div class="row mb-5">
                   <div class="col-md-12">
                     <div class="form-group">
-                      <input type="submit" value="{{ isset($edit) ? "Update" : "Add" }}" class="btn btn-primary">
+                      <input type="submit" value="{{ isset($edit) ? "Update" : "Save" }}" class="btn btn-primary">
                     </div>
                   </div>
                 </div>
@@ -87,7 +87,7 @@
   $(document).ready(function() {
 
     $('[name="parent_id"]').select2({
-      placeholder: "Select a parent",
+      placeholder: "Select a province",
       allowClear: true
     });
 

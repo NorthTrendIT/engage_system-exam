@@ -9,7 +9,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Customer;
+use App\Models\Classes;
 use App\Models\CustomerBpAddress;
+use App\Models\User;
+use Hash;
 
 class StoreCustomers implements ShouldQueue
 {
@@ -22,9 +25,12 @@ class StoreCustomers implements ShouldQueue
      */
     protected $data;
 
-    public function __construct($data)
+    protected $sap_connection_id;
+
+    public function __construct($data, $sap_connection_id)
     {
         $this->data = $data;
+        $this->sap_connection_id = $sap_connection_id;
     }
 
     /**
@@ -37,7 +43,24 @@ class StoreCustomers implements ShouldQueue
         if(!empty($this->data)){
 
             foreach ($this->data as $value) {
-                    
+
+                if(@$value['CardType'] != "cCustomer"){
+                    continue;
+                }
+
+                if(!is_null(@$value['U_CLASS'])){
+                    $obj_class = Classes::updateOrCreate(
+                                            [
+                                                'name' => @$value['U_CLASS'],
+                                                'module' => 'C',
+                                            ],
+                                            [
+                                                'name' => @$value['U_CLASS'],
+                                                'module' => 'C',
+                                            ]
+                                        );
+                }
+
                 $insert = array(
                                 'card_code' => @$value['CardCode'],
                                 'card_type' => @$value['CardType'],
@@ -55,66 +78,109 @@ class StoreCustomers implements ShouldQueue
                                 'phone1' => @$value['Phone1'],
                                 'notes' => @$value['Notes'],
                                 'credit_limit' => @$value['CreditLimit'],
-                                'max_commitment' => @$value['MaxCommitment'],
+                                //'max_commitment' => @$value['MaxCommitment'],
                                 'federal_tax_id' => @$value['FederalTaxID'],
                                 'current_account_balance' => @$value['CurrentAccountBalance'],
-                                'vat_group' => @$value['VatGroup'],
+                                //'vat_group' => @$value['VatGroup'],
                                 'u_regowner' => @$value['U_REGOWNER'],
-                                'u_mp' => @$value['U_MP'],
+                                //'u_mp' => @$value['U_MP'],
                                 'u_msec' => @$value['U_MSEC'],
                                 'u_tsec' => @$value['U_TSEC'],
                                 'u_class' => @$value['U_CLASS'],
                                 'u_rgn' => @$value['U_RGN'],
+                                'price_list_num' => @$value['PriceListNum'],
+                                'territory' => @$value['Territory'],
+                                
+                                'class_id' => !is_null(@$value['U_CLASS']) ? @$obj_class->id : NULL,
+
+                                'u_mkt_segment' => @$value['U_MktSegment'],
+                                'u_cust_segment' => @$value['U_CustSegment'],
+                                'u_subsector' => @$value['U_Subsector'],
+                                'u_province' => @$value['U_Province'],
+                                'u_card_code' => @$value['U_CardCode'],
+
+                                'sap_connection_id' => $this->sap_connection_id,
                             );
 
                 $obj = Customer::updateOrCreate(
                                         [
                                             'card_code' => @$value['CardCode'],
+                                            'sap_connection_id' => $this->sap_connection_id,
                                         ],
                                         $insert
                                     );
 
                 // Store BPAddresses details
-                $bp_orders = []; 
-                if(isset($value['BPAddresses']) && @$obj->id){
+                if(@$obj->id){
 
-                    foreach ($value['BPAddresses'] as $bp) {
-                        $insert = array(
-                                'bp_code' => @$bp['BPCode'],
-                                'order' => @$bp['RowNum'],
-                                'customer_id' => $obj->id,
-                                'address' => @$bp['AddressName'],
-                                'street' => @$bp['Street'],
-                                'zip_code' => @$bp['ZipCode'],
-                                'city' => @$bp['City'],
-                                'country' => @$bp['Country'],
-                                'state' => @$bp['State'],
-                                'federal_tax_id' => @$bp['FederalTaxID'],
-                                'tax_code' => @$bp['TaxCode'],
-                                'address_type' => @$bp['AddressType'],
-                                'created_date' => @$bp['CreateDate']." ".@$bp['CreateTime'],
-                            );
+                    $bp_orders = []; 
+                    if(isset($value['BPAddresses'])){
 
-                        array_push($bp_orders, @$bp['RowNum']);
+                        foreach ($value['BPAddresses'] as $bp) {
+                            $insert = array(
+                                    'bp_code' => @$bp['BPCode'],
+                                    'order' => @$bp['RowNum'],
+                                    'customer_id' => $obj->id,
+                                    'address' => @$bp['AddressName'],
+                                    'street' => @$bp['Street'],
+                                    'zip_code' => @$bp['ZipCode'],
+                                    'city' => @$bp['City'],
+                                    'country' => @$bp['Country'],
+                                    'state' => @$bp['State'],
+                                    'federal_tax_id' => @$bp['FederalTaxID'],
+                                    'tax_code' => @$bp['TaxCode'],
+                                    'address_type' => @$bp['AddressType'],
+                                    'created_date' => @$bp['CreateDate']." ".@$bp['CreateTime'],
+                                );
 
-                        $bp_obj = CustomerBpAddress::updateOrCreate(
-                                            [
-                                                'order' => @$bp['RowNum'],
-                                                'customer_id' => $obj->id,
-                                            ],
-                                            $insert
+                            array_push($bp_orders, @$bp['RowNum']);
+
+                            $bp_obj = CustomerBpAddress::updateOrCreate(
+                                                [
+                                                    'order' => @$bp['RowNum'],
+                                                    'customer_id' => $obj->id,
+                                                ],
+                                                $insert
+                                            );
+                        }
+
+                        if(empty($value['BPAddresses'])){
+                            $removeBpAddress = CustomerBpAddress::where('customer_id',$obj->id);
+                            $removeBpAddress->delete();
+                        }elseif(!empty($bp_orders)){
+                            $removeBpAddress = CustomerBpAddress::where('customer_id',$obj->id);
+                            $removeBpAddress->whereNotIn('order',$bp_orders);
+                            $removeBpAddress->delete();
+                        }
+                    }
+
+
+                    // Store Customer Records in users table
+                    $check_customer = User::where('customer_id',$obj->id)->first();
+                    if(is_null($check_customer)){
+
+                        $name = explode(" ", $obj->card_name, 2);
+                        $password = get_random_password();
+                        
+                        $insert_user =  array(
+                                            'department_id' => 3,
+                                            'role_id' => 4,
+                                            'customer_id' => $obj->id,
+                                            'sales_specialist_name' => @$obj->card_name,
+                                            'first_name' => !empty($name[0]) ? $name[0] : null,
+                                            'last_name' => !empty($name[1]) ? $name[1] : null,
+                                            'is_active' => $obj->is_active,
+                                            //'password' => Hash::make(@$obj->card_code),
+                                            'password' => Hash::make($password),
+                                            'password_text' => $password,
+                                            'email' => strtolower(@$obj->card_code)."-".$this->sap_connection_id.'@mailinator.com',
+                                            'first_login' => true,
+                                            'sap_connection_id' => $this->sap_connection_id,
                                         );
-                    }
 
-                    if(empty($value['BPAddresses'])){
-                        $removeBpAddress = CustomerBpAddress::where('customer_id',$obj->id);
-                        $removeBpAddress->delete();
-                    }elseif(!empty($bp_orders)){
-                        $removeBpAddress = CustomerBpAddress::where('customer_id',$obj->id);
-                        $removeBpAddress->whereNotIn('order',$bp_orders);
-                        $removeBpAddress->delete();
-                    }
+                        User::create($insert_user);
 
+                    }
                 }
             }
 

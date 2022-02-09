@@ -33,7 +33,7 @@ class SAPAuthentication
     	try {
 	    	$response = $this->httpClient->request(
 	            'POST',
-	            env('SAP_API_URL').'/b1s/v1/Login',
+	            get_sap_api_url().'/b1s/v1/Login',
 	            [
 	            	'verify' => false,
 	            	'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'],
@@ -49,9 +49,10 @@ class SAPAuthentication
 	        	$response = json_decode($response->getBody(), true);
 
 	        	$this->saveAuthentication($response);
-	        }	
-	       
+	        }
+
     	} catch (\Exception $e) {
+            return $e;
             abort(500);
     		dd($e);
     	}
@@ -77,7 +78,7 @@ class SAPAuthentication
                     'company_name' => $this->database,
                     'username' => $this->username,
                     'session_id' => $response['SessionId'],
-                    'expires_at' => $currentTime->addMinutes(25),
+                    'expires_at' => $currentTime->addMinutes(55),
                 ]);
         }
 
@@ -89,7 +90,7 @@ class SAPAuthentication
     	// 		'company_name' => $this->database,
     	// 		'username' => $this->username,
     	// 		'session_id' => $response['SessionId'],
-    	// 		'expires_at' => $currentTime->addMinutes(25),
+    	// 		'expires_at' => $currentTime->addMinutes(55),
     	// 	]);
     }
 
@@ -105,7 +106,7 @@ class SAPAuthentication
 		])->where('expires_at', '>=', Carbon::now())->first();
     }
 
-    
+
     public function getAuthenticationSession()
     {
     	if ($session = $this->getSession()) {
@@ -118,7 +119,7 @@ class SAPAuthentication
     }
 
     public function getSessionCookie()
-    {   
+    {
         $cookie = "";
         if ($session = $this->getAuthenticationSession()) {
             $cookie = "B1SESSION=".$session->session_id.";";
@@ -127,5 +128,47 @@ class SAPAuthentication
 
         $cookie .= "ROUTEID=.node0;";
         return $cookie;
+    }
+
+    // Its use for command job
+    public function forceLogin()
+    {
+        try {
+            $response = $this->httpClient->request(
+                'POST',
+                get_sap_api_url().'/b1s/v1/Login',
+                [
+                    'verify' => false,
+                    'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'],
+                    'body' => json_encode([
+                        'CompanyDB' => $this->database,
+                        'Password' => $this->password,
+                        'UserName' => $this->username,
+                    ])
+                ]
+            );
+
+            if (in_array($response->getStatusCode(), [200,201])) {
+                $response = json_decode($response->getBody(), true);
+                
+                SapCompanySession::updateOrCreate(
+                                        [
+                                            'company_name' => $this->database,
+                                            'username' => $this->username,
+                                        ],
+                                        [
+                                            'company_name' => $this->database,
+                                            'username' => $this->username,
+                                            'session_id' => $response['SessionId'],
+                                            'expires_at' => Carbon::now()->addMinutes(55),
+                                        ]
+                                    );
+            }
+
+        } catch (\Exception $e) {
+            // return $e;
+            // abort(500);
+            // dd($e);
+        }
     }
 }

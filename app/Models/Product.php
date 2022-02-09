@@ -12,7 +12,7 @@ class Product extends Model
 
     protected $fillable = [
     	'item_code',
-    	'item_name',
+        'item_name',
     	'foreign_name',
     	'items_group_code',
     	'customs_group_code',
@@ -25,6 +25,24 @@ class Product extends Model
         'product_features',
         'product_benefits',
         'product_sell_sheets',
+    	'item_prices',
+
+        'sap_connection_id',
+        'u_mobil_sc',
+        'u_item_type',
+        'u_item_application',
+        'u_pattern_type',
+        'u_tire_size',
+        'u_tire_diameter',
+        'u_speed_symbol',
+        'u_ply_rating',
+        'u_tire_const',
+        'u_fitment_conf',
+        'u_business_group',
+        'u_section_width',
+        'u_series',
+        'u_item_line',
+        'u_tires',
     ];
 
     public function product_images()
@@ -32,4 +50,22 @@ class Product extends Model
         return $this->hasMany(ProductImage::class,'product_id');
     }
 
+    public function product_item_line()
+    {
+        return $this->belongsTo(ProductItemLine::class,'u_item_line','u_item_line')->where('sap_connection_id', $this->sap_connection_id);
+    }
+
+    public function product_tires_category()
+    {
+        return $this->belongsTo(ProductTiresCategory::class,'u_tires','u_tires')->where('sap_connection_id', $this->sap_connection_id);
+    }
+
+    public function group()
+    {
+        return $this->belongsTo(ProductGroup::class,'items_group_code','number')->where('sap_connection_id', $this->sap_connection_id);
+    }
+
+    public function sap_connection(){
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
+    }
 }

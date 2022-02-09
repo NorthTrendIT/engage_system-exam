@@ -57,6 +57,10 @@ class ProfileController extends Controller
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
             $user = User::find(Auth::id());
+
+            if($user->first_login == 1 && $user->email == $request->email){
+                return $response = ['status'=>false,'message'=>"Oops ! please add new email address."];
+            }
             
             $old_profile = file_exists(public_path('sitebucket/users/') . "/" . $user->profile);
             if(request()->hasFile('profile') && $user->profile && $old_profile){
@@ -72,6 +76,8 @@ class ProfileController extends Controller
                 $input['profile'] = $name;
             }
 
+            $input['first_login'] = 0;
+            
             $user->fill($input)->save();
 
             $response = ['status'=>true,'message'=>'Profile details update successfully !'];
@@ -146,6 +152,7 @@ class ProfileController extends Controller
             $user = User::find(Auth::id());
             if(Hash::check($input['current_password'], $user->password)){
                 $user->password = Hash::make($input['confirm_password']);
+                $user->password_text = NULL;
                 $user->save();
 
                 $response = ['status'=>true,'message'=>'Password changed successfully !'];

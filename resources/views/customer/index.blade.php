@@ -30,8 +30,8 @@
               <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
             </div> --}}
             <div class="card-body">
-              <div class="row mt-5">
-                <div class="col-md-3">
+              <div class="row">
+                <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -40,18 +40,63 @@
                   </div>
                 </div>
 
+                @if(in_array(userrole(),[1]))
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
+                    <option value=""></option>
+                    @foreach($company as $c)
+                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                @endif
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_customer_group" data-control="select2" data-hide-search="false" data-placeholder="Select group" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($customer_groups as $customer_group)
+                    <option value="{{ $customer_group->code }}">{{ $customer_group->name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_territory" data-control="select2" data-hide-search="false" data-placeholder="Select territory" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_class" data-control="select2" data-hide-search="false" data-placeholder="Select class" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($classes as $class)
+                    <option value="{{ $class->name }}">{{ $class->name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                {{-- <div class="col-md-2 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
                     <option value="">Select status</option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
                   </select>
+                </div> --}}
+
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
+                    </span>
+                  </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
-                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
+                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mr-10">Clear</a>
+                  @if(in_array(userrole(),[1]))
+                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
+                  @endif
                 </div>
 
               </div>
@@ -67,10 +112,19 @@
                             <tr>
                               <th>No.</th>
                               <th>Name</th>
-                              <th>City</th>
+                              @if(in_array(userrole(),[1]))
+                              <th>Business Unit</th>
+                              @endif
+                              <th>Universal Card Code</th>
+                              @if(userrole() == 1)
+                              <th>Credit Limit</th>
+                              @endif
+                              <th>Group</th>
+                              <th>Territory</th>
                               <th>Date</th>
                               <th>Class</th>
-                              <th>Status</th>
+                              {{-- <th>Status</th> --}}
+                              <th>Action</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -115,12 +169,18 @@
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_search"]').val();
+      $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_class = $('[name="filter_class"]').find('option:selected').val();
+      $filter_customer_group = $('[name="filter_customer_group"]').find('option:selected').val();
+      $filter_territory = $('[name="filter_territory"]').find('option:selected').val();
+      $filter_company = $('[name="filter_company"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
           serverSide: true,
           scrollX: true,
+          responsive: true,
           order: [],
           ajax: {
               'url': "{{ route('customer.get-all') }}",
@@ -130,16 +190,30 @@
               },
               data:{
                 filter_search : $filter_search,
+                filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
+                filter_class : $filter_class,
+                filter_customer_group : $filter_customer_group,
+                filter_territory : $filter_territory,
+                filter_company : $filter_company,
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'name', name: 'name'},
-              {data: 'city', name: 'city'},
-              {data: 'created_date', name: 'created_date'},
+              @if(in_array(userrole(),[1]))
+              {data: 'company', name: 'company'},
+              @endif
+              {data: 'u_card_code', name: 'u_card_code'},
+              @if(userrole() == 1)
+              {data: 'credit_limit', name: 'credit_limit'},
+              @endif
+              {data: 'group', name: 'group'},
+              {data: 'territory', name: 'territory'},
+              {data: 'created_at', name: 'created_at'},
               {data: 'class', name: 'class'},
-              {data: 'status', name: 'status'},
+              // {data: 'status', name: 'status'},
+              {data: 'action', name: 'action'},
           ],
           drawCallback:function(){
               $(function () {
@@ -158,7 +232,12 @@
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
+      $('[name="filter_date_range"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
+      $('[name="filter_class"]').val('').trigger('change');
+      $('[name="filter_customer_group"]').val('').trigger('change');
+      $('[name="filter_territory"]').val('').trigger('change');
+      $('[name="filter_company"]').val('').trigger('change');
       render_table();
     })
 
@@ -196,6 +275,49 @@
         }
       })
     });
+
+
+    $('[name="filter_territory"]').select2({
+      ajax: {
+          url: "{{route('customer.get-territory')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
+    @if(in_array(userrole(),[1]))
+      $(document).on("click", ".download_excel", function(e) {
+        var url = "{{route('customer.export')}}";
+
+        var data = {};
+        data.filter_search = $('[name="filter_search"]').val();
+        data.filter_date_range = $('[name="filter_date_range"]').val();
+        data.filter_status = $('[name="filter_status"]').find('option:selected').val();
+        data.filter_class = $('[name="filter_class"]').find('option:selected').val();
+        data.filter_customer_group = $('[name="filter_customer_group"]').find('option:selected').val();
+        data.filter_territory = $('[name="filter_territory"]').find('option:selected').val();
+        data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+
+        // console.log((JSON.stringify(data)));
+        // console.log(btoa(JSON.stringify(data)));
+        url = url + '?data=' + btoa(JSON.stringify(data));
+        
+        window.location.href = url;
+      });
+    @endif
   })
 </script>
 @endpush

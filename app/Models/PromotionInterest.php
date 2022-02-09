@@ -11,7 +11,18 @@ class PromotionInterest extends Model
 
     protected $fillable = [
         'promotion_id',
-        'customer_id',
+        'user_id',
         'is_interested',
-      ];
+        'created_by',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
+
+    public function promotion()
+    {
+        return $this->belongsTo(Promotions::class,'promotion_id');
+    }
 }

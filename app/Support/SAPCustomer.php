@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\Customer;
+use App\Models\SapConnection;
 use App\Models\CustomerBpAddress;
 use App\Jobs\StoreCustomers;
 use App\Jobs\SyncNextCustomers;
@@ -20,13 +21,15 @@ class SAPCustomer
 
 	protected $database;
 	protected $username;
-	protected $password;
+    protected $password;
+	protected $log_id;
 
-    public function __construct($database, $username, $password)
+    public function __construct($database, $username, $password, $log_id = false)
     {
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
+        $this->log_id = $log_id;
         
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
@@ -41,10 +44,13 @@ class SAPCustomer
     	try {
             $response = $this->httpClient->request(
                 'GET',
-                env('SAP_API_URL').$url,
+                get_sap_api_url().$url,
                 [
                     'headers' => $this->headers,
                     'verify' => false,
+                    // 'query' => [
+                    //     '$filter' => "CardType eq 'cCustomer'",
+                    // ],
                 ]
             );
 
@@ -58,6 +64,12 @@ class SAPCustomer
             }
             
         } catch (\Exception $e) {
+
+            add_sap_log([
+                            'status' => "error",
+                            'error_data' => $e->getMessage(),
+                        ], $this->log_id);
+
             return array(
                                 'status' => false,
                                 'data' => []
@@ -162,13 +174,24 @@ class SAPCustomer
                 }*/
 
 
+                $where = array(
+                            'db_name' => $this->database,
+                            'user_name' => $this->username,
+                        );
+
+                $sap_connection = SapConnection::where($where)->first();
+
                 // Store Data of Customer in database
-                StoreCustomers::dispatch($data['value']);
+                StoreCustomers::dispatch($data['value'],@$sap_connection->id);
 
                 if(isset($data['odata.nextLink'])){
 
-                    SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink']);
+                    SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
                     //$this->addCustomerDataInDatabase($data['odata.nextLink']);
+                }else{
+                    add_sap_log([
+                            'status' => "completed",
+                        ], $this->log_id);
                 }
             }
         }

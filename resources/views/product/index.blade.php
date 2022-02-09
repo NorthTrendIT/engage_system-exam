@@ -30,8 +30,8 @@
               <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
             </div> --}}
             <div class="card-body">
-              <div class="row mt-5">
-                <div class="col-md-3">
+              <div class="row">
+                <div class="col-md-6 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -40,18 +40,66 @@
                   </div>
                 </div>
 
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
+                    <option value=""></option>
+                    @foreach($company as $c)
+                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($product_groups as $product_group)
+                    <option value="{{ $product_group->number }}">{{ $product_group->group_name }} @if(in_array(userrole(),[1,2]) && @$product_group->sap_connection->company_name) ({{ @$product_group->sap_connection->company_name }}) @endif</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_product_category" data-control="select2" data-hide-search="false" data-placeholder="Select product category" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($product_category as $key => $c)
+                    <option value="{{ $key }}">{{ $key }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_product_line" data-control="select2" data-hide-search="false" data-placeholder="Select product line" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($product_line as $key => $l)
+                    <option value="{{ $key }}">{{ $key }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                @if(userrole() == 1)
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
                     <option value="">Select status</option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
                   </select>
                 </div>
+                @endif
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
-                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
+                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mr-10">Clear</a>
+                  @if(in_array(userrole(),[1]))
+                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
+                  @endif
                 </div>
 
               </div>
@@ -66,10 +114,16 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>Business Unit</th>
                               <th>Name</th>
+                              <th>Brand</th>
                               <th>Code</th>
+                              <th>Product Line</th>
+                              <th>Product Category</th>
                               <th>Date</th>
+                              @if(userrole() == 1)
                               <th>Status</th>
+                              @endif
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -115,7 +169,12 @@
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_search"]').val();
+      $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+      $filter_product_category = $('[name="filter_product_category"]').find('option:selected').val();
+      $filter_product_line = $('[name="filter_product_line"]').find('option:selected').val();
+      $filter_company = $('[name="filter_company"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -130,15 +189,26 @@
               },
               data:{
                 filter_search : $filter_search,
+                filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
+                filter_brand : $filter_brand,
+                filter_product_category : $filter_product_category,
+                filter_product_line : $filter_product_line,
+                filter_company : $filter_company,
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'company', name: 'company'},
               {data: 'item_name', name: 'item_name'},
+              {data: 'brand', name: 'brand'},
               {data: 'item_code', name: 'item_code'},
+              {data: 'u_item_line', name: 'u_item_line'},
+              {data: 'u_tires', name: 'u_tires'},
               {data: 'created_date', name: 'created_date'},
+              @if(userrole() == 1)
               {data: 'status', name: 'status'},
+              @endif
               {data: 'action', name: 'action'},
           ],
           drawCallback:function(){
@@ -158,7 +228,12 @@
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
+      $('[name="filter_date_range"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
+      $('[name="filter_brand"]').val('').trigger('change');
+      $('[name="filter_product_category"]').val('').trigger('change');
+      $('[name="filter_product_line"]').val('').trigger('change');
+      $('[name="filter_company"]').val('').trigger('change');
       render_table();
     })
 
@@ -196,6 +271,28 @@
         }
       })
     });
+
+    @if(in_array(userrole(),[1]))
+      $(document).on("click", ".download_excel", function(e) {
+        var url = "{{route('product.export')}}";
+
+        var data = {};
+        data.filter_search = $('[name="filter_search"]').val();
+        data.filter_date_range = $('[name="filter_date_range"]').val();
+        data.filter_status = $('[name="filter_status"]').find('option:selected').val();
+        data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+        data.filter_product_category = $('[name="filter_product_category"]').find('option:selected').val();
+        data.filter_product_line = $('[name="filter_product_line"]').find('option:selected').val();
+        data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+
+        // console.log((JSON.stringify(data)));
+        // console.log(btoa(JSON.stringify(data)));
+        url = url + '?data=' + btoa(JSON.stringify(data));
+        
+        window.location.href = url;
+      });
+    @endif
+
   })
 </script>
 @endpush

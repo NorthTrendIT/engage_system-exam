@@ -11,6 +11,7 @@ class Invoice extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'base_entry',
         'doc_entry',
         'doc_num',
         'doc_type',
@@ -31,8 +32,30 @@ class Invoice extends Model
         'u_posono',
         'u_posodate',
         'u_posotime',
+        'u_sostat',
         'response',
         'created_at',
         'updated_at',
+        'sap_connection_id',
     ];
+
+    public function items(){
+        return $this->hasMany(InvoiceItem::class, 'invoice_id', 'id');
+    }
+
+    public function customer(){
+        return $this->hasOne(Customer::class, 'card_code', 'card_code');
+    }
+
+    public function sales_specialist(){
+        return $this->belongsTo(User::class, 'sales_person_code','sales_employee_code');
+    }
+
+    public function order(){
+        return $this->hasOne(Order::class, 'doc_entry', 'base_entry');
+    }
+
+    public function sap_connection(){
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
+    }
 }

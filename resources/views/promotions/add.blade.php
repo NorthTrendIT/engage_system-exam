@@ -34,25 +34,10 @@
 
                                 <div class="row mb-5">
                                     <!-- Title -->
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <label>Title<span class="asterisk">*</span></label>
                                             <input type="text" class="form-control form-control-solid" placeholder="Enter Promotion Title" name="title" @if(isset($edit)) value="{{ $edit->title }}" @endif >
-                                        </div>
-                                    </div>
-
-                                    <!-- Promotion Type -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Select Promotion Type<span class="asterisk">*</span></label>
-                                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" name="promotion_type_id">
-                                                <option value="">Select Promotion Type</option>
-                                                @if(!empty($promotion_type))
-                                                    @foreach($promotion_type as $type)
-                                                        <option value="1" @if(isset($edit) && $edit->promotion_type_id == $type['id']) selected="" @endif>{{ $type['name'] }}</option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -66,22 +51,30 @@
                                 </div>
 
                                 <div class="row mb-5">
-                                    <!-- Discount Percentage -->
+                                    <!-- Promotion Type -->
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Discount Percentage<span class="asterisk">*</span></label>
-                                            <input type="number" class="form-control form-control-solid" placeholder="Enter Promotion Discount Percentage" name="discount_percentage" @if(isset($edit)) value="{{ $edit->discount_percentage }}" @endif >
+                                            <label>Business Unit<span class="asterisk">*</span></label>
+                                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="sap_connection_id" data-placeholder="Select Business Unit">
+                                                <option value=""></option>
+                                                @if(!empty($company))
+                                                    @foreach($company as $value)
+                                                        <option value="{{ $value['id'] }}" @if(isset($edit) && $edit->sap_connection_id == $value['id']) selected="" @endif>{{ $value['company_name'] }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
                                         </div>
                                     </div>
 
-                                    <!-- Promotion For -->
+                                    <!-- Promotion Type -->
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Select Promotion For<span class="asterisk">*</span></label>
-                                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" name="promotion_for" id="promotion_for">
-                                                <option value="">Select Promotion For</option>
-                                                <option value="All" @if(isset($edit) && $edit->promotion_for == "All") selected="" @endif>All</option>
-                                                <option value="Limited" @if(isset($edit) && $edit->promotion_for == "Limited") selected="" @endif>Limited</option>
+                                            <label>Promotion Type<span class="asterisk">*</span></label>
+                                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="promotion_type_id" data-placeholder="Select Promotion Type">
+                                                <option value=""></option>
+                                                @if(isset($edit))
+                                                    <option value="{{ $edit->promotion_type_id }}" selected="" >{{ $edit->promotion_type->title }}</option>
+                                                @endif
                                             </select>
                                         </div>
                                     </div>
@@ -89,15 +82,17 @@
 
                                 <div class="row mb-5">
                                     <!-- Promotion Scope -->
-                                    <div class="col-md-6" id="scope_block" style="display: {{ isset($edit) ? ($edit->promotion_for == 'All' ? 'none' : '') : 'none' }}">
+                                    <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Select Promotion Scope<span class="asterisk">*</span></label>
-                                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" name="promotion_scope" id="promotion_scope">
-                                                <option value="">Select Promotion Scope</option>
-                                                <option value="C" @if(isset($edit) && $edit->promotion_scope == "C") selected="" @endif>Customers</option>
+                                            <label>Select Customers<span class="asterisk">*</span></label>
+                                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="promotion_scope" id="promotion_scope" data-placeholder="Select Customers">
+                                                <option value=""></option>
+                                                <option value="C" @if(isset($edit) && $edit->promotion_scope == "C") selected="" @endif>Customer</option>
                                                 <option value="CL" @if(isset($edit) && $edit->promotion_scope == "CL") selected="" @endif>Class</option>
-                                                <option value="L" @if(isset($edit) && $edit->promotion_scope == "L") selected="" @endif>Location</option>
-                                                <option value="P" @if(isset($edit) && $edit->promotion_scope == "P") selected="" @endif>Products</option>
+                                                <option value="T" @if(isset($edit) && $edit->promotion_scope == "T") selected="" @endif>Territory</option>
+                                                <option value="SS" @if(isset($edit) && $edit->promotion_scope == "SS") selected="" @endif>Sales Specialist</option>
+                                                <option value="B" @if(isset($edit) && $edit->promotion_scope == "B") selected="" @endif>Brand</option>
+                                                <option value="MS" @if(isset($edit) && $edit->promotion_scope == "MS") selected="" @endif>Market Sector</option>
                                             </select>
                                         </div>
                                     </div>
@@ -105,19 +100,54 @@
                                     <!-- Customers -->
                                     <div class="col-md-6" id="customer_block" style="display: {{ isset($edit) ? ($edit->promotion_scope == 'C' ? '' : 'none') : 'none'}}">
                                         <div class="form-group">
-                                            <label>Select Customers<span class="asterisk">*</span></label>
-                                            <select class="form-select form-select-solid" id='selectCustomers' multiple="multiple" data-control="select2" data-hide-search="false" name="customer_ids[]">
-                                                <option value='0'>Select Customers</option>
+                                            <label>Select Customer<span class="asterisk">*</span></label>
+                                            <select class="form-select form-select-solid" id='selectCustomers' multiple="multiple" data-control="select2" data-hide-search="false" name="customer_ids[]" data-placeholder="Select Customers" >
                                             </select>
                                         </div>
                                     </div>
 
-                                    <!-- Products -->
-                                    <div class="col-md-6" id="product_block" style="display: {{ isset($edit) ? ($edit->promotion_scope == 'P' ? '' : 'none') : 'none'}}">
+
+                                    <!-- Territory -->
+                                    <div class="col-md-6" id="territories_block" style="display: {{ isset($edit) ? ($edit->promotion_scope == 'T' ? '' : 'none') : 'none'}}">
                                         <div class="form-group">
-                                            <label>Select Products<span class="asterisk">*</span></label>
-                                            <select class="form-select form-select-solid" id='selectProducts' multiple="multiple" data-control="select2" data-hide-search="false" name="product_ids[]">
-                                                <option value='0'>Select Customers</option>
+                                            <label>Select Territory<span class="asterisk">*</span></label>
+                                            <select class="form-select form-select-solid" id='selectTerritories' multiple="multiple" data-control="select2" data-hide-search="false" name="territories_ids[]" data-placeholder="Select Territory" >
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Class -->
+                                    <div class="col-md-6" id="class_block" style="display: {{ isset($edit) ? ($edit->promotion_scope == 'CL' ? '' : 'none') : 'none'}}">
+                                        <div class="form-group">
+                                            <label>Select Class<span class="asterisk">*</span></label>
+                                            <select class="form-select form-select-solid" id='selectClasses' multiple="multiple" data-control="select2" data-hide-search="false" name="class_ids[]" data-placeholder="Select Class">
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- sales_specialist-->
+                                    <div class="col-md-6" id="sales_specialist_block" style="display: {{ isset($edit) ? ($edit->promotion_scope == 'SS' ? '' : 'none') : 'none'}}">
+                                        <div class="form-group">
+                                            <label>Select Sales Specialist<span class="asterisk">*</span></label>
+                                            <select class="form-select form-select-solid" id='selectSalesSpecialist' multiple="multiple" data-control="select2" data-hide-search="false" name="sales_specialist_ids[]" data-placeholder="Select Sales Specialist">
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Brand -->
+                                    <div class="col-md-6" id="brand_block" style="display: {{ isset($edit) ? ($edit->promotion_scope == 'B' ? '' : 'none') : 'none'}}">
+                                        <div class="form-group">
+                                            <label>Select Brand<span class="asterisk">*</span></label>
+                                            <select class="form-select form-select-solid" id='selectBrand' multiple="multiple" data-control="select2" data-hide-search="false" name="brand_ids[]" data-placeholder="Select Brand">
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Market Sector -->
+                                    <div class="col-md-6" id="market_sector_block" style="display: {{ isset($edit) ? ($edit->promotion_scope == 'MS' ? '' : 'none') : 'none'}}">
+                                        <div class="form-group">
+                                            <label>Select Market Sector<span class="asterisk">*</span></label>
+                                            <select class="form-select form-select-solid" id='selectMarketSector' multiple="multiple" data-control="select2" data-hide-search="false" name="market_sector_ids[]" data-placeholder="Select Market Sector">
                                             </select>
                                         </div>
                                     </div>
@@ -129,7 +159,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Promotion Start Date<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control" name="promotion_start_date" @if(isset($edit)) value="{{date('m/d/Y',strtotime($edit->promotion_start_date))}}" @endif id="kt_datepicker_1" readonly placeholder="Select Promotion Start Date"/>
+                                            <input type="text" class="form-control form-select-solid" name="promotion_start_date" @if(isset($edit)) value="{{date('m/d/Y',strtotime($edit->promotion_start_date))}}" @endif id="kt_datepicker_1" readonly placeholder="Select Promotion Start Date"/>
                                         </div>
                                     </div>
 
@@ -137,7 +167,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Promotion end Date<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control" name="promotion_end_date" @if(isset($edit)) value="{{date('m/d/Y',strtotime($edit->promotion_end_date))}}" @endif id="kt_datepicker_1" readonly placeholder="Select Promotion End Date"/>
+                                            <input type="text" class="form-control form-select-solid" name="promotion_end_date" @if(isset($edit)) value="{{date('m/d/Y',strtotime($edit->promotion_end_date))}}" @endif id="kt_datepicker_1" readonly placeholder="Select Promotion End Date"/>
                                         </div>
                                     </div>
                                 </div>
@@ -146,11 +176,13 @@
                                     <!-- Promotion Image -->
                                     <div class="col-md-6 mt-5">
                                         <div class="custom-file">
-                                            <input type="file" class="form-control form-control-solid" name="promo_image"/>
+
+                                            <label>Promotion Image<span class="asterisk">*</span></label>
+                                            <input type="file" class="form-control form-control-solid" name="promo_image" accept="image/*" />
                                             @if(isset($edit))
                                                 <input type="hidden" class="form-control form-control-solid" name="old_promo_image" value="{{ $edit->promo_image }}"/>
                                                 @if($edit->promo_image)
-                                                    <img src="{{ get_valid_file_url('sitebucket/promotion',$edit->promo_image) }}" height="100" width="100" class="mt-10">
+                                                    <a href="{{ get_valid_file_url('sitebucket/promotion',$edit->promo_image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/promotion',$edit->promo_image) }}" height="100" width="100" class="mt-10"></a>
                                                 @endif
                                             @endif
                                         </div>
@@ -160,7 +192,7 @@
                                 <div class="row mb-5">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <input type="submit" value="{{ isset($edit) ? "Update" : "Add" }}" class="btn btn-primary">
+                                            <input type="submit" value="{{ isset($edit) ? "Update" : "Save" }}" class="btn btn-primary">
                                         </div>
                                     </div>
                                 </div>
@@ -182,10 +214,30 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" ></script>
-<script src="{{ asset('assets')}}/assets/js/custom/bootstrap-datepicker.js"/></script>
+{{-- <script src="{{ asset('assets')}}/assets/js/custom/bootstrap-datepicker.js"/></script> --}}
 <script>
 
   $(document).ready(function() {
+
+    $('[name="promotion_start_date"]').datepicker({
+        todayHighlight: true,
+        orientation: "bottom left",
+        startDate:'today',
+        autoclose: true,
+    });
+
+    $('[name="promotion_start_date"]').datepicker().on('changeDate', (selected) => {
+        $('[name="promotion_end_date"]').val("").datepicker("update");
+        var minDate = new Date(selected.date.valueOf());
+        $('[name="promotion_end_date"]').datepicker('setStartDate', minDate);
+    });
+
+    $('[name="promotion_end_date"]').datepicker({
+        todayHighlight: true,
+        orientation: "bottom left",
+        startDate:'today',
+        autoclose: true,
+    });
 
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
@@ -204,7 +256,13 @@
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.href = '{{ route('promotion.index') }}';
+
+                @if(isset($edit->id))
+                    window.location.reload(); 
+                @else
+                    window.location.href = '{{ route('promotion.index') }}';
+                @endif
+
               },1500)
             } else {
               toast_error(data.message);
@@ -228,15 +286,10 @@
               required: true,
               maxlength: 185,
             },
+            sap_connection_id:{
+              required: true,
+            },
             promotion_type_id:{
-              required: true,
-            },
-            discount_percentage:{
-              required: true,
-              max: 100,
-              min: 1,
-            },
-            promotion_for:{
               required: true,
             },
             promotion_scope:{
@@ -247,6 +300,65 @@
             },
             promotion_end_date:{
               required: true,
+            },
+            @if(!isset($edit))
+            promo_image:{
+              required: true,
+            },
+            @endif
+            'customer_ids[]':{
+                required: function () {
+                        if($('[name="promotion_scope"]').find('option:selected').val() == 'C'){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    },
+            },
+            'class_ids[]':{
+                required: function () {
+                        if($('[name="promotion_scope"]').find('option:selected').val() == 'CL'){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    },
+            },
+            'territories_ids[]':{
+                required: function () {
+                        if($('[name="promotion_scope"]').find('option:selected').val() == 'T'){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    },
+            },
+            'sales_specialist_ids[]':{
+                required: function () {
+                        if($('[name="promotion_scope"]').find('option:selected').val() == 'SS'){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    },
+            },
+            'brand_ids[]':{
+                required: function () {
+                        if($('[name="promotion_scope"]').find('option:selected').val() == 'B'){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    },
+            },
+            'market_sector_ids[]':{
+                required: function () {
+                        if($('[name="promotion_scope"]').find('option:selected').val() == 'MS'){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    },
             },
           },
           messages: {
@@ -257,16 +369,11 @@
             promotion_type_id:{
               required: "Please select promotion type.",
             },
-            discount_percentage:{
-              required: "Please enter discount percentage.",
-              max: "Please enter value less then 100.",
-              min: "Please enter value greater than 0.",
-            },
-            promotion_for:{
-              required: "Please select promotion for.",
+            sap_connection_id:{
+              required: "Please select business unit.",
             },
             promotion_scope:{
-              required: "Please select promotion scope.",
+              required: "Please select customers.",
             },
             promotion_start_date:{
               required: "Please enter promotion stating date.",
@@ -274,35 +381,39 @@
             promotion_end_date:{
               required: "Please enter promotion end date.",
             },
+            promo_image:{
+              required: "Please upload promotion image.",
+            },
           },
       });
 
       return validator;
     }
 
-    $('body').on('change' ,'#promotion_for', function(){
-        $promo_for = $('[name="promotion_for"]').val();
-        console.log($promo_for);
-        if($promo_for == "All"){
-            $('#scope_block').hide();
-            $('#customer_block').hide();
-            $('#product_block').hide();
-        } else {
-            $('body #scope_block').show();
-        }
-    });
 
     $('body').on('change' ,'#promotion_scope', function(){
         $promo_scope = $('[name="promotion_scope"]').val();
+
+        $('#customer_block').hide();
+        $('#territories_block').hide();
+        $('#class_block').hide();
+        $('#sales_specialist_block').hide();
+        $('#brand_block').hide();
+        $('#market_sector_block').hide();
+
+
         if($promo_scope == "C"){
             $('#customer_block').show();
-            $('#product_block').hide();
-        } else if($promo_scope == "P"){
-            $('#customer_block').hide();
-            $('#product_block').show();
-        } else {
-            $('#customer_block').hide();
-            $('#product_block').hide();
+        } else if($promo_scope == "T"){
+            $('#territories_block').show();
+        } else if($promo_scope == "CL"){
+            $('#class_block').show();
+        } else if($promo_scope == "SS"){
+            $('#sales_specialist_block').show();
+        }else if($promo_scope == "B"){
+            $('#brand_block').show();
+        }else if($promo_scope == "MS"){
+            $('#market_sector_block').show();
         }
     });
 
@@ -319,11 +430,55 @@
         @endforeach
     @endif
 
-    @if(isset($edit) && $edit->promotion_scope == 'P')
+    @if(isset($edit) && $edit->promotion_scope == 'T')
         @foreach ($edit->promotion_data as $data)
             var initialOption = {
-                id: {{ $data->product_id }},
-                text: '{{ $data->product->item_name }}',
+                id: {{ $data->territory_id }},
+                text: '{{ $data->territory->description }}',
+                selected: true
+            }
+            $initialOptions.push(initialOption);
+        @endforeach
+    @endif
+
+    @if(isset($edit) && $edit->promotion_scope == 'CL')
+        @foreach ($edit->promotion_data as $data)
+            var initialOption = {
+                id: {{ $data->class_id }},
+                text: '{{ $data->class->name }}',
+                selected: true
+            }
+            $initialOptions.push(initialOption);
+        @endforeach
+    @endif
+
+    @if(isset($edit) && $edit->promotion_scope == 'SS')
+        @foreach ($edit->promotion_data as $data)
+            var initialOption = {
+                id: {{ $data->sales_specialist_id }},
+                text: '{{ $data->sales_specialist->sales_specialist_name }}',
+                selected: true
+            }
+            $initialOptions.push(initialOption);
+        @endforeach
+    @endif
+
+    @if(isset($edit) && $edit->promotion_scope == 'B')
+        @foreach ($edit->promotion_data as $data)
+            var initialOption = {
+                id: {{ $data->brand_id }},
+                text: '{{ $data->brand->group_name }}',
+                selected: true
+            }
+            $initialOptions.push(initialOption);
+        @endforeach
+    @endif
+
+    @if(isset($edit) && $edit->promotion_scope == 'MS')
+        @foreach ($edit->promotion_data as $data)
+            var initialOption = {
+                id: '{{ $data->market_sector }}',
+                text: '{{ $data->market_sector }}',
                 selected: true
             }
             $initialOptions.push(initialOption);
@@ -339,7 +494,8 @@
             data: function (params) {
                 return {
                     _token: "{{ csrf_token() }}",
-                    search: params.term
+                    search: params.term,
+                    sap_connection_id: $('[name="sap_connection_id"]').val()
                 };
             },
             processResults: function (response) {
@@ -349,22 +505,26 @@
             },
             cache: true
         },
-        placeholder: 'Select Customers.',
+        placeholder: 'Select Customer.',
         // minimumInputLength: 1,
         multiple: true,
+        @if(isset($edit) && $edit->promotion_scope == 'C')
         data: $initialOptions
+        @endif
     });
 
-    $("#selectProducts").select2({
+
+    $("#selectTerritories").select2({
         ajax: {
-            url: "{{route('promotion.getProducts')}}",
+            url: "{{route('promotion.getTerritories')}}",
             type: "post",
             dataType: 'json',
             delay: 250,
             data: function (params) {
                 return {
                     _token: "{{ csrf_token() }}",
-                    search: params.term
+                    search: params.term,
+                    sap_connection_id: $('[name="sap_connection_id"]').val()
                 };
             },
             processResults: function (response) {
@@ -374,10 +534,173 @@
             },
             cache: true
         },
-        placeholder: 'Select Products.',
+        placeholder: 'Select Territory',
         // minimumInputLength: 1,
         multiple: true,
+        @if(isset($edit) && $edit->promotion_scope == 'T')
         data: $initialOptions
+        @endif
+    });
+
+    $("#selectClasses").select2({
+        ajax: {
+            url: "{{route('promotion.getClasses')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="sap_connection_id"]').val()
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Class',
+        // minimumInputLength: 1,
+        multiple: true,
+        @if(isset($edit) && $edit->promotion_scope == 'CL')
+        data: $initialOptions
+        @endif
+    });
+
+    $("#selectSalesSpecialist").select2({
+        ajax: {
+            url: "{{route('promotion.getSalesSpecialist')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="sap_connection_id"]').val()
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Sales Specialist',
+        // minimumInputLength: 1,
+        multiple: true,
+        @if(isset($edit) && $edit->promotion_scope == 'SS')
+        data: $initialOptions
+        @endif
+    });
+
+
+    $("[name='promotion_type_id']").select2({
+        ajax: {
+            url: "{{route('promotion.get-promotion-type')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    action: "add",
+                    sap_connection_id: $('[name="sap_connection_id"]').val()
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results:  $.map(response, function (item) {
+                                return {
+                                  text: item.title,
+                                  id: item.id
+                                }
+                            })
+                };
+            },
+            cache: true
+        },
+        multiple: false,
+    });
+
+    $("#selectBrand").select2({
+        ajax: {
+            url: "{{route('promotion.get-brands')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    action: "add",
+                    sap_connection_id: $('[name="sap_connection_id"]').val()
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results:  $.map(response, function (item) {
+                                return {
+                                  text: item.group_name,
+                                  id: item.id
+                                }
+                            })
+                };
+            },
+            cache: true
+        },
+        multiple: true,
+        @if(isset($edit) && $edit->promotion_scope == 'B')
+        data: $initialOptions
+        @endif
+    });
+
+
+    $("#selectMarketSector").select2({
+        ajax: {
+            url: "{{route('promotion.get-market-sectors')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    action: "add",
+                    sap_connection_id: $('[name="sap_connection_id"]').val()
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results:  $.map(response, function (item) {
+                                return {
+                                  text: item.u_msec,
+                                  id: item.u_msec
+                                }
+                            })
+                };
+            },
+            cache: true
+        },
+        multiple: true,
+        @if(isset($edit) && $edit->promotion_scope == 'MS')
+        data: $initialOptions
+        @endif
+    });
+
+    $(document).on('change', '[name="sap_connection_id"]', function(event) {
+        event.preventDefault();
+        $('#selectCustomers').val('').trigger('change');
+        $('#selectClasses').val('').trigger('change');
+        $('#selectBrand').val('').trigger('change');
+        $('#selectMarketSector').val('').trigger('change');
+        $('#selectSalesSpecialist').val('').trigger('change');
+        $('#selectTerritories').val('').trigger('change');
     });
 
 });

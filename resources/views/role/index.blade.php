@@ -13,6 +13,10 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
+        @if(userrole() == 1)
+        <a href="{{ route('role.chart') }}" class="btn btn-sm btn-primary mr-10">Role Chart</a>
+        @endif
+
         <a href="{{ route('role.create') }}" class="btn btn-sm btn-primary">Create</a>
         <!--end::Button-->
       </div>
@@ -131,7 +135,7 @@
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'name', name: 'name'},
               {data: 'parent', name: 'parent'},
               {data: 'access', name: 'access'},

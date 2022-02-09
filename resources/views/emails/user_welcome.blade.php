@@ -6,7 +6,7 @@ style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: 
 <head>
 <meta name="viewport" content="width=device-width"/>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<title>B2B CRM</title>
+<title>Exceltrend Ordering Management System</title>
 
 </head>
 
@@ -38,7 +38,7 @@ bgcolor="#f6f6f6">
                            style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                         <tr>
                             <td style="text-align: center">
-                                <h3>B2B CRM</h3>    
+                                <h3>Exceltrend Ordering Management System</h3>    
                                 <br/>
                             </td>
                         </tr>
@@ -46,24 +46,14 @@ bgcolor="#f6f6f6">
                             <td class="content-block"
                                 style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                 valign="top">
-                            <h2>Welcome {{ @$name }}! </h2>
+                            <h2>Welcome {{ @$name }}, </h2>
                             </td>
                         </tr>
                         <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                             <td class="content-block"
                                 style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                 valign="top">
-                                Your account has been created by us. For, login use below details,
-                            </td>
-                        </tr>
-                        <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                            <td class="content-block"
-                                style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
-                                valign="top">
-                                Email : <b>{{ @$email }}</b> <br>
-
-                                Password : <b>{{ @$password }}</b>
-
+                                Your account has been created in Ordering Management System. Click on the below "Login" button to login to the system and access our services.
                             </td>
                         </tr>
 
@@ -72,16 +62,33 @@ bgcolor="#f6f6f6">
                                 itemtype="http://schema.org/HttpActionHandler"
                                 style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                 valign="top">
-                                <a href="{{ route('login') }}" class="btn-primary" itemprop="url"
+                                <a href="{{ @$link }}" class="btn-primary" itemprop="url"
                                    style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: #6658dd; margin: 0; border-color: #6658dd; border-style: solid; border-width: 8px 16px;">Login</a>
+                            </td>
+                        </tr>
+
+                        <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                            <td class="content-block"
+                                style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
+                                valign="top">
+                                If clicking the Login button doesn't work, copy and paste this link in your browser: <a href="{{ @$link }}" target="_blank" style="word-break: break-word;">{{ @$link }}</a>
                             </td>
                         </tr>
                         <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                             <td class="content-block"
                                 style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                 valign="top">
-                                From,<br>
-                                Admin, B2B CRM
+                                <b style="color:red;">NOTE: The above link is valid for 24 hours.</b>
+                            </td>
+                        </tr>
+
+                        
+                        <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                            <td class="content-block"
+                                style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
+                                valign="top">
+                                Regards,<br>
+                                OMS Team
                             </td>
                         </tr>
                     </table>

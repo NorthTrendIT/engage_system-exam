@@ -13,14 +13,15 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary">Create</a>
+        <a href="javascript:" class="btn btn-sm btn-primary sync-sales-persons" style="display:none">Sync Sales Persons</a>
+        <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary create-btn">Create</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-      
+
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -41,7 +42,7 @@
                 </div>
 
                 <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_role" data-control="select2" data-hide-search="true">
+                  <select class="form-control form-control-lg form-control-solid filter_role" name="filter_role" data-control="select2" data-hide-search="true">
                     <option value="">Select role</option>
                     @foreach($roles as $role)
                     <option value="{{ $role->id }}">{{ $role->name }}</option>
@@ -78,6 +79,7 @@
                               <th>First Name</th>
                               <th>Last Name</th>
                               <th>Email</th>
+                              <th>Territory</th>
                               <th>Status</th>
                               <th>Action</th>
                             </tr>
@@ -85,7 +87,7 @@
                           <!--end::Table head-->
                           <!--begin::Table body-->
                           <tbody>
-                            
+
                           </tbody>
                           <!--end::Table body-->
                        </table>
@@ -145,11 +147,12 @@
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'role', name: 'role'},
               {data: 'first_name', name: 'first_name'},
               {data: 'last_name', name: 'last_name'},
               {data: 'email', name: 'email'},
+              {data: 'territory', name: 'territory'},
               {data: 'status', name: 'status'},
               {data: 'action', name: 'action', orderable: false, searchable: false},
           ],
@@ -157,6 +160,15 @@
               $(function () {
                 $('[data-toggle="tooltip"]').tooltip()
                 $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+                
+                $role = $('[name="filter_role"]').find('option:selected').val();
+                if($role == 2){
+                  $("#myTable").DataTable().column(5).visible(true);
+                  $("#myTable").DataTable().column(1).visible(false);
+                } else {
+                  $("#myTable").DataTable().column(1).visible(true);
+                  $("#myTable").DataTable().column(5).visible(false);
+                }
               })
           },
           initComplete: function () {
@@ -174,6 +186,21 @@
       $('[name="filter_role"]').val('').trigger('change');
       render_table();
     })
+
+    $(document).on('change', '.filter_role', function(){
+        $role = $('[name="filter_role"]').find('option:selected').val();
+        if($role == 2){
+          $('.sync-sales-persons').show();
+          $('.create-btn').hide();
+          $("#myTable").DataTable().column(5).visible(true);
+          $("#myTable").DataTable().column(1).visible(false);
+        } else {
+          $('.sync-sales-persons').hide();
+          $('.create-btn').show();
+          $("#myTable").DataTable().column(1).visible(true);
+          $("#myTable").DataTable().column(5).visible(false);
+        }
+    });
 
     $(document).on('click', '.delete', function(event) {
       event.preventDefault();
@@ -193,7 +220,7 @@
             url: $url,
             method: "DELETE",
             data: {
-                    _token:'{{ csrf_token() }}' 
+                    _token:'{{ csrf_token() }}'
                   }
           })
           .done(function(result) {
@@ -229,7 +256,7 @@
             url: $url,
             method: "POST",
             data: {
-                    _token:'{{ csrf_token() }}' 
+                    _token:'{{ csrf_token() }}'
                   }
           })
           .done(function(result) {
@@ -246,6 +273,70 @@
         }
       })
     });
+
+    $(document).on('click', '.sync-sales-persons', function(event) {
+      event.preventDefault();
+
+      Swal.fire({
+        title: 'Are you sure want to sync sales persons?',
+        text: "Syncing process will run in background and it may take some time to sync all Sales Persons Data.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('sales-persons.sync-sales-persons') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}'
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              render_table();
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
+
+    $(document).on('click', '.copy_login_link', function(event) {
+      event.preventDefault();
+
+      // Create a "hidden" input
+      var aux = document.createElement("input");
+
+      // Assign it the value of the specified element
+      aux.setAttribute("value", $(this).attr('data-href'));
+
+      // Append it to the body
+      document.body.appendChild(aux);
+
+      // Highlight its content
+      aux.select();
+
+      // Copy the highlighted text
+      document.execCommand("copy");
+
+      // Remove it from the body
+      document.body.removeChild(aux);
+
+      toast_success("Link copied successfully !");
+    });
+
+
   })
+
+
 </script>
 @endpush

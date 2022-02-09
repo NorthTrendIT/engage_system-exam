@@ -22,7 +22,7 @@ class SapApiController extends Controller
 	    	$client = new \GuzzleHttp\Client();
 	        $response = $client->request(
 	            'GET',
-	            env('SAP_API_URL').'/b1s/v1/Users',
+	            get_sap_api_url().'/b1s/v1/Users',
 	            [
 	            	'headers' => $this->headers,
 	            	'verify' => false,
@@ -32,11 +32,11 @@ class SapApiController extends Controller
 
 	        if(in_array($response->getStatusCode(), [200,201])){
 	        	$response = json_decode($response->getBody(),true);
-	        	dd($response);
+	        	// dd($response);
 	        }
-    		
+
     	} catch (\Exception $e) {
-    		dd($e->getCode());
+    		// dd($e->getCode());
     	}
 
     }
@@ -48,7 +48,7 @@ class SapApiController extends Controller
 	    	$client = new \GuzzleHttp\Client();
 	        $response = $client->request(
 	            'GET',
-	            env('SAP_API_URL').'/b1s/v1/BusinessPartners',
+	            get_sap_api_url().'/b1s/v1/BusinessPartners',
 	            [
 	            	'headers' => $this->headers,
 	            	'verify' => false,
@@ -63,7 +63,7 @@ class SapApiController extends Controller
 	        					'data' => $response
 	        				);
 	        }
-    		
+
     	} catch (\Exception $e) {
     		//dd($e->getCode());
     		return array(

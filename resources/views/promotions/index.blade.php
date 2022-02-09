@@ -24,8 +24,8 @@
           <div class="card card-xl-stretch mb-5 mb-xl-8">
 
             <div class="card-body">
-              <div class="row mt-5">
-                <div class="col-md-3">
+              <div class="row">
+                <div class="col-md-4 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -34,26 +34,50 @@
                   </div>
                 </div>
 
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_promotion_type" data-control="select2" data-hide-search="false" data-placeholder="Select promotion type" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
 
-                <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
-                    <option value="">Select status</option>
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
+                    <option value=""></option>
+                    @foreach($company as $c)
+                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-2 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select status">
+                    <option value=""></option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
                   </select>
                 </div>
 
-                <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_scope" data-control="select2" data-hide-search="true">
-                    <option value="">Select Promotion Scope</option>
-                    <option value="C">Customers</option>
+                <div class="col-md-4 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_scope" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select promotion customers">
+                    <option value=""></option>
+                    <option value="C">Customer</option>
                     <option value="CL">Class</option>
-                    <option value="L">Location</option>
-                    <option value="P">Product</option>
+                    <option value="T">Territory</option>
+                    <option value="SS">Sales Specialist</option>
+                    <option value="B">Brand</option>
+                    <option value="MS">Market Sector</option>
                   </select>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -70,9 +94,9 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>Business Unit</th>
                               <th>Title</th>
-                              <th>Promotion For</th>
-                              <th>Scop</th>
+                              <th>Promotion Customers</th>
                               <th>Start Date</th>
                               <th>End Date</th>
                               <th>Status</th>
@@ -121,8 +145,11 @@
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_search"]').val();
+      $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
       $filter_scope = $('[name="filter_scope"]').find('option:selected').val();
+      $filter_promotion_type = $('[name="filter_promotion_type"]').find('option:selected').val();
+      $filter_company = $('[name="filter_company"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -139,12 +166,15 @@
                 filter_search : $filter_search,
                 filter_status : $filter_status,
                 filter_scope : $filter_scope,
+                filter_date_range : $filter_date_range,
+                filter_promotion_type : $filter_promotion_type,
+                filter_company : $filter_company,
               }
           },
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'company', name: 'company'},
               {data: 'title', name: 'title'},
-              {data: 'promotion_for', name: 'promotion_for'},
               {data: 'scope', name: 'scope'},
               {data: 'start_date', name: 'start_date'},
               {data: 'end_date', name: 'end_date'},
@@ -168,7 +198,11 @@
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
+      $('[name="filter_date_range"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
+      $('[name="filter_scope"]').val('').trigger('change');
+      $('[name="filter_promotion_type"]').val('').trigger('change');
+      $('[name="filter_company"]').val('').trigger('change');
       render_table();
     })
 
@@ -276,6 +310,32 @@
           });
         }
       })
+    });
+
+    $('[name="filter_promotion_type"]').select2({
+      ajax: {
+          url: "{{route('promotion.get-promotion-type')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term
+              };
+          },
+          processResults: function (response) {
+            return {
+              results:  $.map(response, function (item) {
+                            return {
+                              text: item.title,
+                              id: item.id
+                            }
+                        })
+            };
+          },
+          cache: true
+      },
     });
 
   })

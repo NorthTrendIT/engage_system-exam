@@ -21,7 +21,7 @@
     </div>
   </div>
   
-  <div class="post d-flex flex-column-fluid" id="kt_post">
+  <div class="post d-flex flex-column-fluid detail-view-table" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
@@ -45,8 +45,24 @@
                               <td>{{ @$data->item_name ?? "" }}</td>
                             </tr>
                             <tr>
+                              <th> <b>Product Brand:</b> </th>
+                              <td>{{ @$data->group->group_name ?? "" }}</td>
+                            </tr>
+                            <tr>
                               <th> <b>Product Code:</b> </th>
                               <td>{{ @$data->item_code ?? "" }}</td>
+                            </tr>
+                            <tr>
+                              <th> <b>Business Unit:</b> </th>
+                              <td>{{ @$data->sap_connection->company_name ?? "" }}</td>
+                            </tr>
+                            <tr>
+                              <th> <b>Product Line:</b> </th>
+                              <td>{{ @$data->u_item_line ?? "-" }}</td>
+                            </tr>
+                            <tr>
+                              <th> <b>Product Category:</b> </th>
+                              <td>{{ @$data->u_tires ?? "" }}</td>
                             </tr>
                             <tr>
                               <th> <b>Created Date:</b> </th>
@@ -77,18 +93,11 @@
                             <tr>
                               <th> <b>Product Images:</b> </th>
                               <td>
-                                
-                              </td>
-                            </tr>
-
-                            <tr>
-                              <th></th>
-                              <td>
                                 @if(isset($data->product_images) && count($data->product_images) > 0)
                                   @foreach($data->product_images as $key => $image)
 
                                     @if($image->image && get_valid_file_url('sitebucket/products',$image->image))
-                                      <img src="{{ get_valid_file_url('sitebucket/products',$image->image) }}" height="100" width="100" class="mr-10">
+                                      <a href="{{ get_valid_file_url('sitebucket/products',$image->image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/products',$image->image) }}" height="100" width="100" class="mr-10"></a>
                                     @endif
 
                                   @endforeach

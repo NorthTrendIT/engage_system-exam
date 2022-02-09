@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Role;
 use App\Models\Location;
+use App\Models\Department;
 use App\Models\User;
 use Validator;
 use DataTables;
@@ -21,7 +22,14 @@ class UserController extends Controller
      */
     public function index()
     {
-        $roles = Role::where('id','!=',1)->get();
+
+        // If not admin then show only its
+        if(userrole() != 1){
+            $roles = Role::where('user_id',Auth::id())->get();
+        }else{
+            $roles = Role::where('id','!=',1)->whereNull('user_id')->get();
+        }
+
         return view('user.index',compact('roles'));
     }
 
@@ -34,7 +42,15 @@ class UserController extends Controller
     {
         $roles = Role::where('id','!=',1)->get();
         $provinces = Location::whereNull('parent_id')->where('is_active',true)->get();
-        return view('user.add',compact('roles','provinces'));
+
+        // If not admin then show only its
+        if(userrole() != 1){
+            $departments = Department::where('user_id',Auth::id())->where('is_active',true)->get();
+        }else{
+            $departments = Department::whereNull('user_id')->where('is_active',true)->get();
+        }
+
+        return view('user.add',compact('roles','provinces','departments'));
     }
 
     /**
@@ -51,6 +67,8 @@ class UserController extends Controller
                     'first_name' => 'required|string|max:185',
                     'last_name' => 'required|string|max:185',
                     'email' => 'required|max:185|unique:users,email,NULL,id,deleted_at,NULL|regex:/(.+)@(.+)\.(.+)/i',
+                    'department_id' => 'required|exists:departments,id',
+                    'parent_id' => 'nullable|exists:users,id',
                     'role_id' => 'required|exists:roles,id',
                     'city_id' => 'nullable|exists:locations,id',
                     'province_id' => 'nullable|exists:locations,id',
@@ -81,6 +99,11 @@ class UserController extends Controller
                 $user = new User();
                 $message = "New User created successfully.";
                 $input['password'] = Hash::make($input['confirm_password']);
+
+                $input['is_sap_user'] = false;
+                if(userrole() != 1){
+                    $input['created_by'] = Auth::id();
+                }
             }
 
             $old_profile = file_exists(public_path('sitebucket/users/') . "/" . $user->profile);
@@ -97,19 +120,30 @@ class UserController extends Controller
                 $input['profile'] = $name;
             }
 
+            $input['sales_specialist_name'] = $input['first_name']." ".$input['last_name'];
+
             $user->fill($input)->save();
 
             if(!isset($input['id'])){
                 $mail_data = array(
                                 'name' => $input['first_name'] . " ". $input['last_name'],
                                 'email' => $input['email'],
-                                'password' => $request->password,
+                                // 'password' => $request->password,
+                                'link' => route('login-by-link', encryptValue($user->id."-".time())),
                             );
 
                 Mail::send('emails.user_welcome', $mail_data, function($message) use($mail_data) {
                     $message->to($mail_data['email'], $mail_data['name'])
                             ->subject('Welcome to B2B CRM');
                 });
+            }
+
+            if($message == 'New User created successfully.'){
+                // Add User Created log
+                add_log(3, array('user_id' => $user->id));
+            } else if($message == 'User details updated successfully.'){
+                // Add User Updated log
+                add_log(4, array('user_id' => $user->id));
             }
 
             $response = ['status'=>true,'message'=>$message];
@@ -126,7 +160,16 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        // If not admin then show only its
+        if(userrole() != 1){
+            $data = User::where('id','!=',1)->where('id',$id)->where('created_by',Auth::id())->firstOrFail();
+        }else{
+            $data = User::where('id','!=',1)->where('id',$id)->firstOrFail();
+        }
+
+        $tree = json_encode($this->getUserTreeData($id));
+
+        return view('user.view',compact('data','tree'));
     }
 
     /**
@@ -137,16 +180,30 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $edit = User::where('id','!=',1)->where('id',$id)->firstOrFail();
-        $roles = Role::where('id','!=',1)->get();
+        // If not admin then show only its
+        if(userrole() != 1){
+            $edit = User::where('id','!=',1)->where('id',$id)->where('created_by',Auth::id())->firstOrFail();
+        }else{
+            $edit = User::where('id','!=',1)->where('id',$id)->firstOrFail();
+        }
+
         $provinces = Location::whereNull('parent_id')->where('is_active',true)->get();
+        $parents = User::where('id','!=',1)->where('parent_id',$edit->parent_id)->get();
+        
+        // If not admin then show only its
+        if(userrole() != 1){
+            $departments = Department::where('user_id',Auth::id())->where('is_active',true)->get();
+        }else{
+            $departments = Department::whereNull('user_id')->where('is_active',true)->get();
+        }
+
 
         $cities = collect();
         if($edit->province_id){
             $cities = Location::where('parent_id',$edit->province_id)->where('is_active',true)->get();
         }
 
-        return view('user.add',compact('roles','edit','provinces','cities'));
+        return view('user.add',compact('edit','provinces','cities','departments'));
     }
 
     /**
@@ -169,9 +226,20 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $data = User::find($id);
+        $data = User::where('id', $id);
+        // If not admin then show only its
+        if(userrole() != 1){
+            $data->where('created_by',Auth::id());
+        }
+        $data = $data->first();
+
+
         if(!is_null($data)){
             $data->delete();
+
+            // Add user delete log
+            add_log(5, array('user_data' => $data));
+
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
             $response = ['status'=>false,'message'=>'Record not found !'];
@@ -181,7 +249,13 @@ class UserController extends Controller
 
     public function updateStatus($id)
     {
-        $data = User::find($id);
+        $data = User::where('id', $id);
+        // If not admin then show only its
+        if(userrole() != 1){
+            $data->where('created_by',Auth::id());
+        }
+        $data = $data->first();
+
         if(!is_null($data)){
             $data->is_active = !$data->is_active;
             $data->save();
@@ -203,6 +277,48 @@ class UserController extends Controller
         return $cities;
     }
 
+    public function getRoles(Request $request)
+    {
+        $id = $request->department_id;
+        $roles = collect();
+        if($id != null){
+            $department = Department::where('id',$id)->where('is_active',true)->first();
+
+            if(@$department->roles){
+                $roles = $department->roles()->whereNotIn('role_id',['4'])->with('role')->get();
+            }
+        }
+
+        return $roles;
+    }
+
+    public function getParents(Request $request)
+    {
+        $role_id = $request->role_id;
+        $users = collect();
+        $parent_name = "";
+        if($role_id != null){
+            $role = Role::where('id',$role_id)->first();
+
+            if(!is_null($role)){
+
+                if(!is_null($role->parent_id)){
+
+                    $parent_name = @$role->parent->name;
+                    $users = User::where('role_id',$role->parent_id)->where('is_active',true);
+
+                    if(isset($request->id)){
+                        $users->where('id','!=',$request->id);
+                    }
+                    $users = $users->get();
+                }
+            }
+        }
+
+
+        return ['users' => $users, 'parent_name' => $parent_name];
+    }
+
     public function getAll(Request $request){
 
         $data = User::where('users.id','!=',1);
@@ -220,7 +336,12 @@ class UserController extends Controller
                 $q->orwhere('first_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('last_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('email','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('sales_specialist_name','LIKE',"%".$request->filter_search."%");
             });
+        }
+
+        if(userrole() != 1){
+            $data->where('created_by',Auth::id());
         }
 
         $data->when(!isset($request->order), function ($q) {
@@ -230,17 +351,36 @@ class UserController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('user.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
-                                    <i class="fa fa-pencil"></i>
-                                  </a>';
-                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('user.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
+                                $btn = "";
+
+                                if( (is_null($row->created_by) && userrole() == 1) || (!is_null($row->created_by) && $row->created_by == Auth::id()) ){
+                                    $btn .= '<a href="' . route('user.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10" title="Edit">
+                                        <i class="fa fa-pencil"></i>
+                                      </a>';
+                                }
+
+                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('user.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete mr-10" title="Delete">
                                     <i class="fa fa-trash"></i>
                                   </a>';
-                                
+
+                                $btn .= ' <a href="' . route('user.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm mr-10" title="View">
+                                    <i class="fa fa-eye"></i>
+                                  </a>';
+
+
+                                if( (is_null($row->created_by) && userrole() == 1) || (!is_null($row->created_by) && $row->created_by == Auth::id()) ){
+                                    $btn .= '<a href="javascript:" data-href="' . route('login-by-link', encryptValue($row->id."-".time())). '" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm copy_login_link" title="Copy Login Link">
+                                        <i class="fa fa-link"></i>
+                                      </a>';
+                                }
+
                                 return $btn;
                             })
+                            ->addColumn('territory', function($row) {
+                                return @$row->territory->description ?? "-";
+                            })
                             ->addColumn('role', function($row) {
-                                
+
                                 if(@$row->role){
                                     return @$row->role->name;
                                 }else{
@@ -248,9 +388,9 @@ class UserController extends Controller
                                 }
                             })
                             ->addColumn('status', function($row) {
-                                
+
                                 $btn = "";
-                                if($row->is_active){
+                                if($row->is_active == 1){
                                     $btn .= '<a href="javascript:"  data-url="' . route('user.status',$row->id) . '" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
                                 }else{
                                     $btn .= '<a href="javascript:"  data-url="' . route('user.status',$row->id) . '" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
@@ -278,7 +418,93 @@ class UserController extends Controller
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('is_active', $order);
                             })
-                            ->rawColumns(['action', 'role','status'])
+                            ->orderColumn('territory', function ($query, $order) {
+                                $query->select('users.*')->join('territories', 'users.territory_id', '=', 'territories.id')
+                                    ->orderBy('territories.description', $order);
+                                
+                            })
+                            ->rawColumns(['action', 'role','status','territory'])
                             ->make(true);
+    }
+
+    public function changePasswordStore(Request $request){
+        $input = $request->all();
+
+        $rules = array(
+                    'id' => 'required|exists:users,id',
+                    'new_password' => 'required|string|min:8',
+                    'confirm_password' => 'required|string|min:8|same:new_password',
+                );
+        if(userrole() != 1){
+            $rules['id'] = "required|exists:users,id,created_by,".userid();
+        }
+
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+            $user = User::find($input['id']);
+
+            if($user){
+                $user->password_text = $input['confirm_password'];
+                $user->password = Hash::make($input['confirm_password']);
+                $user->save();
+
+                $response = ['status'=>true,'message'=>'Password changed successfully !'];
+            }else{
+                $response = ['status'=>false,'message'=>'User not found !'];
+            }
+            
+        }
+
+        return $response;
+    }
+
+    public function getUserTreeData($user_id){
+
+        $result = array();
+        $user = User::find($user_id);
+        if($user){
+            $temp = array(
+                            'title' => @$user->first_name." ".@$user->last_name,
+                            'name' => @$user->role->name,
+                        );
+
+            $result = array_merge($result,$temp);
+
+            $child = $this->getUserChildData($user_id);
+
+            if(count($child)){
+                $result['children'] = $child;
+            }
+        }
+
+        return $result;
+    }
+
+    public function getUserChildData($user_id)
+    {
+        $result = array();
+        $users = User::where('parent_id',$user_id)->get();
+
+        if(count($users)){
+            foreach ($users as $key => $value) {
+
+                $temp = array(
+                            'title' => @$value->first_name." ".@$value->last_name,
+                            'name' => @$value->role->name,
+                        );
+
+                $child = $this->getUserChildData($value->id);
+
+                if(count($child)){
+                    $temp['children'] = $child;
+                }
+
+                $result[$key] = $temp;
+            }
+        }
+
+        return $result;
     }
 }

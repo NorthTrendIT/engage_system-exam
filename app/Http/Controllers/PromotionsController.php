@@ -8,6 +8,13 @@ use App\Models\PromotionTypes;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\PromotionFor;
+use App\Models\PromotionInterest;
+use App\Models\CustomerPromotion;
+use App\Models\Territory;
+use App\Models\Classes;
+use App\Models\User;
+use App\Models\SapConnection;
+use App\Models\ProductGroup;
 use Validator;
 use DataTables;
 use Auth;
@@ -21,7 +28,8 @@ class PromotionsController extends Controller
      */
     public function index()
     {
-        return view('promotions.index');
+        $company = SapConnection::all();
+        return view('promotions.index', compact('company'));
     }
 
     /**
@@ -31,8 +39,8 @@ class PromotionsController extends Controller
      */
     public function create()
     {
-        $promotion_type = PromotionTypes::get();
-        return view('promotions.add', compact('promotion_type'));
+        $company = SapConnection::all();
+        return view('promotions.add', compact('company'));
     }
 
     /**
@@ -46,12 +54,23 @@ class PromotionsController extends Controller
         $input = $request->all();
 
         $rules = array(
-                    'promotion_type_id' => 'required',
-                    'title' => 'required|string|max:185',
-                    'discount_percentage' => 'required',
+                    'title' => 'required|max:185|unique:promotions,title,NULL,id,deleted_at,NULL',
+                    'promotion_type_id' => 'required|exists:promotion_types,id',
+                    'sap_connection_id' => 'required|exists:sap_connections,id',
+                    'promotion_scope' => 'required',
                     'customer_ids'=> 'required_if:promotion_scope,==,C',
-                    'product_ids'=> 'required_if:promotion_scope,==,P',
+                    'territories_ids'=> 'required_if:promotion_scope,==,T',
+                    'class_ids'=> 'required_if:promotion_scope,==,CL',
+                    'sales_specialist_ids'=> 'required_if:promotion_scope,==,SS',
+                    'brand_ids'=> 'required_if:promotion_scope,==,B',
+                    'market_sector_ids'=> 'required_if:promotion_scope,==,MS',
+                    'promo_image'=> 'required|max:5000|mimes:jpeg,png,jpg,eps,bmp,tif,tiff,webp',
                 );
+
+        if(isset($input['id'])){
+            unset($rules['promo_image']);
+            $rules['title'] = 'required|max:185|unique:promotions,title,'.$input['id'].',id,deleted_at,NULL';
+        }
 
         if(request()->hasFile('promo_image')){
             $rules['promo_image'] = "required|max:5000|mimes:jpeg,png,jpg,eps,bmp,tif,tiff,webp";
@@ -62,7 +81,55 @@ class PromotionsController extends Controller
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
-            // dd($input);
+
+            if(isset($input['id'])){
+
+                // check in promotions claimed or not
+                $customer_promotions = CustomerPromotion::where('promotion_id',$input['id'])->count();
+
+                if($customer_promotions > 0){
+                    return $response = ['status'=>false,'message'=>"Oops! you can not make any updates to this promotions because its already claimed by the customer."];
+                }
+
+            }
+
+            // Start - Check Same Type Promotion Used on Dates
+            $check = Promotions::where('promotion_type_id', $input['promotion_type_id']);
+            if(isset($input['id'])){
+                $check->where('id','!=',$input['id']);
+            }
+            $check = $check->get();
+
+            if(count($check) > 0){
+                $s = date('Y-m-d',strtotime($input['promotion_start_date']));
+                $e = date('Y-m-d',strtotime($input['promotion_end_date']));
+
+                foreach ($check as $value) {
+                    /*if($s > $value->promotion_start_date && $e < $value->promotion_end_date){
+
+                        return $response = ['status'=>false,'message'=>'This promotion type can not be assigned to another promotion unless the end date of that promotion is over.'];
+
+                    }elseif($s < $value->promotion_start_date && ($e > $value->promotion_start_date && $e < $value->promotion_end_date)){
+
+                        return $response = ['status'=>false,'message'=>'This promotion type can not be assigned to another promotion unless the end date of that promotion is over.'];
+
+                    }elseif($s < $value->promotion_end_date && ($e > $value->promotion_end_date)){
+
+                        return $response = ['status'=>false,'message'=>'This promotion type can not be assigned to another promotion unless the end date of that promotion is over.'];
+                    }*/
+
+
+                    if( ($s > $value->promotion_start_date) && ($s < $value->promotion_end_date) ){
+
+                        return $response = ['status'=>false,'message'=>'The selected Promotion Type is already assigned to another promotion. Please choose another Promotion Type OR you can choose the same promotion type once the other promotion ends.'];
+                    }else if( ($e > $value->promotion_start_date) && ($e < $value->promotion_end_date) ){
+                        return $response = ['status'=>false,'message'=>'The selected Promotion Type is already assigned to another promotion. Please choose another Promotion Type OR you can choose the same promotion type once the other promotion ends.'];
+                    }
+                }
+            }
+            // End - Check Same Type Promotion User on Dates
+
+
             if(isset($input['id'])){
                 $promotion = Promotions::find($input['id']);
                 $message = "Promotion updated successfully.";
@@ -71,36 +138,34 @@ class PromotionsController extends Controller
                 $message = "Promotion created successfully.";
             }
 
-            // $old_promo_image = file_exists(public_path('sitebucket/promotion/') . "/" . $promotion->promo_image);
-            // if(request()->hasFile('promo_image') && $promotion->promo_image && $old_promo_image){
-            //     unlink(public_path('sitebucket/promotion/') . "/" . $promotion->promo_image);
-            //     $input['promo_image'] = null;
-            // }
+            $old_promo_image = file_exists(public_path('sitebucket/promotion/') . "/" . @$promotion->promo_image);
+            if(request()->hasFile('promo_image') && @$promotion->promo_image && $old_promo_image){
+                unlink(public_path('sitebucket/promotion/') . "/" . $promotion->promo_image);
+                $promotion->promo_image = null;
+            }
 
             /*Upload Image*/
             if (request()->hasFile('promo_image')) {
                 $file = $request->file('promo_image');
                 $name = date("YmdHis") . $file->getClientOriginalName();
                 request()->file('promo_image')->move(public_path() . '/sitebucket/promotion/', $name);
-                $input['promo_image'] = $name;
+                $promotion->promo_image = $name;
             }
 
             $promotion->promotion_type_id = $input['promotion_type_id'];
             $promotion->title = $input['title'];
             $promotion->description = $input['description'];
-            $promotion->discount_percentage = $input['discount_percentage'];
-            $promotion->promotion_for = $input['promotion_for'];
             $promotion->promotion_scope = $input['promotion_scope'];
-            $promotion->promo_image = !empty($input['promo_image']) && $input['promo_image'] ? $input['promo_image'] : null;
             $promotion->promotion_start_date = date('Y-m-d',strtotime($input['promotion_start_date']));
             $promotion->promotion_end_date = date('Y-m-d',strtotime($input['promotion_end_date']));
+            $promotion->sap_connection_id = $input['sap_connection_id'];
             $promotion->save();
 
+            PromotionFor::where('promotion_id', $promotion->id)->delete();
             if($input['promotion_scope'] == 'C' && isset($input['customer_ids']) ){
                 $c_ids = $input['customer_ids'];
-                PromotionFor::where('promotion_id', $promotion->id)->delete();
                 foreach($c_ids as $value){
-                    $promotionFor = PromotionFor::updateOrCreate([
+                    $promotionFor = PromotionFor::create([
                                 'promotion_id' => $promotion->id,
                                 'customer_id' => $value,
                             ]
@@ -108,16 +173,67 @@ class PromotionsController extends Controller
                 }
             }
 
-            if($input['promotion_scope'] == 'P' && isset($input['product_ids']) ){
-                $c_ids = $input['product_ids'];
-                PromotionFor::where('promotion_id', $promotion->id)->delete();
+            if($input['promotion_scope'] == 'T' && isset($input['territories_ids']) ){
+                $c_ids = $input['territories_ids'];
                 foreach($c_ids as $value){
-                    $promotionFor = PromotionFor::updateOrCreate([
+                    $promotionFor = PromotionFor::create([
                                 'promotion_id' => $promotion->id,
-                                'product_id' => $value,
+                                'territory_id' => $value,
                             ]
                         );
                 }
+            }
+
+            if($input['promotion_scope'] == 'CL' && isset($input['class_ids']) ){
+                $c_ids = $input['class_ids'];
+                foreach($c_ids as $value){
+                    $promotionFor = PromotionFor::create([
+                                'promotion_id' => $promotion->id,
+                                'class_id' => $value,
+                            ]
+                        );
+                }
+            }
+
+            if($input['promotion_scope'] == 'SS' && isset($input['sales_specialist_ids']) ){
+                $c_ids = $input['sales_specialist_ids'];
+                foreach($c_ids as $value){
+                    $promotionFor = PromotionFor::create([
+                                'promotion_id' => $promotion->id,
+                                'sales_specialist_id' => $value,
+                            ]
+                        );
+                }
+            }
+
+            if($input['promotion_scope'] == 'B' && isset($input['brand_ids']) ){
+                $c_ids = $input['brand_ids'];
+                foreach($c_ids as $value){
+                    $promotionFor = PromotionFor::create([
+                                'promotion_id' => $promotion->id,
+                                'brand_id' => $value,
+                            ]
+                        );
+                }
+            }
+
+            if($input['promotion_scope'] == 'MS' && isset($input['market_sector_ids']) ){
+                $c_ids = $input['market_sector_ids'];
+                foreach($c_ids as $value){
+                    $promotionFor = PromotionFor::create([
+                                'promotion_id' => $promotion->id,
+                                'market_sector' => $value,
+                            ]
+                        );
+                }
+            }
+
+            if(isset($input['id'])){
+                // Add Promotion Updated log.
+                add_log(20, array('promotion_id' => $promotion->id));
+            } else {
+                // Add Promotion Created log.
+                add_log(19, array('promotion_id' => $promotion->id));
             }
 
             $response = ['status'=>true,'message'=>$message];
@@ -134,16 +250,8 @@ class PromotionsController extends Controller
      */
     public function show($id)
     {
-        $temp = Promotions::where('id',$id)->firstOrFail();
+        $data = Promotions::where('id',$id)->firstOrFail();
 
-        if($temp->promotion_scope == 'C'){
-            $data = Promotions::where('id',$id)->with(['promotion_data', 'promotion_data.customer'])->firstOrFail();
-        }
-        if($temp->promotion_scope == 'P'){
-            $data = Promotions::where('id',$id)->with(['promotion_data', 'promotion_data.product'])->firstOrFail();
-        }
-
-        // dd($edit->toArray());
         $promotion_type = PromotionTypes::get();
 
         return view('promotions.view',compact('data', 'promotion_type'));
@@ -157,19 +265,11 @@ class PromotionsController extends Controller
      */
     public function edit($id)
     {
-        $data = Promotions::where('id',$id)->firstOrFail();
+        $edit = Promotions::where('id',$id)->firstOrFail();
 
-        if($data->promotion_scope == 'C'){
-            $edit = Promotions::where('id',$id)->with(['promotion_data', 'promotion_data.customer'])->firstOrFail();
-        }
-        if($data->promotion_scope == 'P'){
-            $edit = Promotions::where('id',$id)->with(['promotion_data', 'promotion_data.product'])->firstOrFail();
-        }
+        $company = SapConnection::all();
 
-        // dd($edit->toArray());
-        $promotion_type = PromotionTypes::get();
-
-        return view('promotions.add',compact('edit', 'promotion_type'));
+        return view('promotions.add',compact('edit', 'company'));
     }
 
     /**
@@ -195,6 +295,10 @@ class PromotionsController extends Controller
         $data = Promotions::find($id);
         if(!is_null($data)){
             $data->delete();
+
+            // Add Promotion Deleted log.
+            add_log(21, array('promotion_id' => $data));
+
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
             $response = ['status'=>false,'message'=>'Record not found !'];
@@ -227,12 +331,30 @@ class PromotionsController extends Controller
           $data->where('promotion_scope',$request->filter_scope);
         }
 
+        if($request->filter_promotion_type != ""){
+          $data->where('promotion_type_id',$request->filter_promotion_type);
+        }
+
+        if($request->filter_company != ""){
+            $data->where('sap_connection_id',$request->filter_company);
+        }
+
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
                 $q->orwhere('title','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('description','LIKE',"%".$request->filter_search."%");
             });
         }
+
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('promotion_start_date', '>=' , $start);
+            $data->whereDate('promotion_start_date', '<=' , $end);
+        }
+
 
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
@@ -243,32 +365,38 @@ class PromotionsController extends Controller
                 ->addColumn('title', function($row) {
                     return $row->title;
                 })
-                ->addColumn('promotion_for', function($row) {
-                    return $row->promotion_for;
-                })
                 ->addColumn('scope', function($row) {
-                  $scope;
-                  switch ($row->promotion_scope) {
-                    case "C":
-                      $scope = "Customer";
-                      break;
-                    case "CL":
-                      $scope = "Class";
-                      break;
-                    case "L":
-                      $scope = "Location";
-                      break;
-                    case "P":
-                      $scope = "Products";
-                      break;
-                  }
+                    $scope = "";
+                    switch (@$row->promotion_scope) {
+                        case "C":
+                          $scope = "Customer";
+                          break;
+                        case "CL":
+                          $scope = "Class";
+                          break;
+                        case "T":
+                          $scope = "Territory";
+                          break;
+                        case "SS":
+                          $scope = "Sales Specialist";
+                          break;
+                        case "B":
+                          $scope = "Brand";
+                          break;
+                        case "MS":
+                          $scope = "Market Sector";
+                          break;
+                    }
                     return $scope;
                 })
                 ->addColumn('start_date', function($row) {
                     return date('M d, Y',strtotime($row->promotion_start_date));
                 })
                 ->addColumn('end_date', function($row) {
-                  return date('M d, Y',strtotime($row->promotion_end_date));
+                    return date('M d, Y',strtotime($row->promotion_end_date));
+                })
+                ->addColumn('company', function($row) {
+                    return  @$row->sap_connection->company_name ?? "-";
                 })
                 ->addColumn('status', function($row) {
                     $btn = "";
@@ -280,15 +408,17 @@ class PromotionsController extends Controller
                     return $btn;
                 })
                 ->addColumn('action', function($row) {
-                    $btn = '<a href="' . route('promotion.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary">
-                              <i class="fa fa-eye"></i>
-                          </a>';
-                    $btn .= '<a href="' . route('promotion.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-success">
+                    $btn = '<a href="' . route('promotion.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-success mr-10">
                                 <i class="fa fa-pencil"></i>
                             </a>';
-                    $btn .= ' <a href="javascript:void(0)" data-url="' . route('promotion.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-danger delete">
+
+                    $btn .= ' <a href="javascript:void(0)" data-url="' . route('promotion.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-danger delete mr-10">
                                 <i class="fa fa-trash"></i>
                               </a>';
+
+                    $btn .= '<a href="' . route('promotion.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary">
+                              <i class="fa fa-eye"></i>
+                          </a>';
 
                     return $btn;
                 })
@@ -299,6 +429,24 @@ class PromotionsController extends Controller
 
                     return $btn;
                 })
+                ->orderColumn('title', function ($query, $order) {
+                    $query->orderBy('title', $order);
+                })
+                ->orderColumn('status', function ($query, $order) {
+                    $query->orderBy('is_active', $order);
+                })
+                ->orderColumn('scope', function ($query, $order) {
+                    $query->orderBy('promotion_scope', $order);
+                })
+                ->orderColumn('start_date', function ($query, $order) {
+                    $query->orderBy('promotion_start_date', $order);
+                })
+                ->orderColumn('end_date', function ($query, $order) {
+                    $query->orderBy('promotion_end_date', $order);
+                })
+                ->orderColumn('company', function ($query, $order) {
+                    $query->join('sap_connections', 'promotions.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
+                })
                 ->rawColumns(['view', 'status', 'action'])
                 ->make(true);
     }
@@ -306,11 +454,14 @@ class PromotionsController extends Controller
     function getCustomers(Request $request){
         $search = $request->search;
 
-        if($search == ''){
-            $data = Customer::orderby('card_name','asc')->select('id','card_name')->limit(50)->get();
-        }else{
-            $data = Customer::orderby('card_name','asc')->select('id','card_name')->where('card_name', 'like', '%' .$search . '%')->limit(50)->get();
+        $data = Customer::orderby('card_name','asc')->select('id','card_name');
+        if($search  != ''){
+            $data->where('card_name', 'like', '%' .$search . '%');
         }
+
+        $data->where('sap_connection_id',@$request->sap_connection_id);
+
+        $data = $data->limit(50)->get();
 
         $response = array();
         foreach($data as $value){
@@ -347,29 +498,187 @@ class PromotionsController extends Controller
         $scope = $request->scope;
         // $data = PromotionFor::where('id', $request->id);
 
-        if($scope == 'C'){
-            $data = PromotionFor::where('promotion_id', $request->id)->with('customer');
-        }
+        $data = PromotionFor::where('promotion_id', $request->id)->get();
 
-        if($scope == 'P'){
-            $data = PromotionFor::where('promotion_id', $request->id)->with('product');
-        }
-
-        // dd($data->get()->toArray());
         return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('name', function($row) use ($scope) {
                     if($scope == 'C'){
                         return $row->customer->card_name;
-                    }
-
-                    if($scope == 'P'){
-                        return $row->product->item_name;
+                    }else if($scope == 'T'){
+                        return $row->territory->description;
+                    }else if($scope == 'CL'){
+                        return $row->class->name;
+                    }else if($scope == 'SS'){
+                        return $row->sales_specialist->sales_specialist_name;
+                    }else if($scope == 'B'){
+                        return $row->brand->group_name;
+                    }else if($scope == 'MS'){
+                        return $row->market_sector;
                     }
                 })
                 ->addColumn('is_interested', function($row) {
                     return "-";
                 })
                 ->make(true);
+    }
+
+    public function getTerritories(Request $request){
+        $search = $request->search;
+
+        $data = Territory::orderby('description','asc')->select('id','description');
+        if($search != ''){
+            $data->where('description', 'like', '%' .$search . '%');
+        }
+
+        // $data->where('sap_connection_id',@$request->sap_connection_id);
+
+        $data = $data->limit(50)->get();
+
+        $response = array();
+        foreach($data as $value){
+            $response[] = array(
+                "id"=>$value->id,
+                "text"=>$value->description
+            );
+        }
+
+        return response()->json($response);
+    }
+
+    public function getClasses(Request $request){
+        $search = $request->search;
+
+        $data = Classes::orderby('name','asc')->select('id','name');
+        if($search != ''){
+            $data->where('name', 'like', '%' .$search . '%');
+        }
+
+        // $data->where('sap_connection_id',@$request->sap_connection_id);
+
+        $data = $data->limit(50)->get();
+
+        $response = array();
+        foreach($data as $value){
+            $response[] = array(
+                "id"=>$value->id,
+                "text"=>$value->name
+            );
+        }
+
+        return response()->json($response);
+    }
+
+    public function getSalesSpecialist(Request $request){
+        $search = $request->search;
+
+        $data = User::orderby('sales_specialist_name','asc')->where('role_id',2)->select('id','sales_specialist_name');
+        if($search != ''){
+            $data->where('sales_specialist_name', 'like', '%' .$search . '%');
+        }
+
+        $data->where('sap_connection_id',@$request->sap_connection_id);
+
+        $data = $data->limit(50)->get();
+
+        $response = array();
+        foreach($data as $value){
+            $response[] = array(
+                "id"=>$value->id,
+                "text"=>$value->sales_specialist_name
+            );
+        }
+
+        return response()->json($response);
+    }
+
+    public function getPromotionInterestData(Request $request){
+
+        $data = PromotionInterest::where('promotion_id', $request->id)->latest()->get();
+
+        return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('customer', function($row) {
+                    return @$row->user->sales_specialist_name ?? "-";
+                })
+                ->addColumn('is_interested', function($row) {
+                    return $row->is_interested ? "Yes" : "No";
+                })
+                ->make(true);
+    }
+
+    public function getPromotionClaimedData(Request $request){
+
+        $data = CustomerPromotion::where('promotion_id', $request->id)->latest()->get();
+
+        return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('customer', function($row) {
+                    return @$row->user->sales_specialist_name ?? "-";
+                })
+                ->addColumn('date_time', function($row) {
+                    return date('M d, Y',strtotime($row->created_at));
+                })
+                ->addColumn('action', function($row) {
+
+                    $btn = '<a href="' . route('customer-promotion.order.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm" title="View" target="_blank">
+                        <i class="fa fa-eye"></i>
+                      </a>';
+
+                    return $btn;
+                })
+                ->rawColumns(['action','date_time'])
+                ->make(true);
+    }
+
+    public function getPromotionType(Request $request){
+        $search = $request->search;
+
+        $data = PromotionTypes::orderby('title','asc')->select('id','title');
+        if($search != ''){
+            $data->where('title', 'like', '%' .$search . '%');
+        }
+
+        if(isset($request->action) && $request->action == "add"){
+            if($request->sap_connection_id != ''){
+                $data->where('sap_connection_id',@$request->sap_connection_id);
+            }else{
+                return response()->json(collect());
+            }
+        }
+
+        $data = $data->limit(50)->get();
+
+        return response()->json($data);
+    }
+
+    public function getBrands(Request $request){
+        $search = $request->search;
+
+        $data = ProductGroup::orderby('group_name','asc')->select('id','group_name');
+        if($search != ''){
+            $data->where('group_name', 'like', '%' .$search . '%');
+        }
+
+        $data->where('sap_connection_id',@$request->sap_connection_id);
+
+        $data = $data->limit(50)->get();
+
+        return response()->json($data);
+    }
+
+    public function getMarketSectors(Request $request){
+        $search = $request->search;
+
+        $data = Customer::orderby('u_msec','asc')->whereNotNull('u_msec')->select('id','u_msec');
+        if($search != ''){
+            $data->where('u_msec', 'like', '%' .$search . '%');
+        }
+
+        $data->where('sap_connection_id',@$request->sap_connection_id);
+
+        $data = $data->get()->unique('u_msec');
+
+        return response()->json($data);
     }
 }
