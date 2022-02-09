@@ -634,7 +634,7 @@ class PromotionsController extends Controller
     public function getPromotionType(Request $request){
         $search = $request->search;
 
-        $data = PromotionTypes::orderby('title','asc')->select('id','title');
+        $data = PromotionTypes::where('is_active', 1)->orderby('title','asc')->select('id','title');
         if($search != ''){
             $data->where('title', 'like', '%' .$search . '%');
         }
