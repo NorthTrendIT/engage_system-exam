@@ -84,15 +84,15 @@
                                     <!-- Promotion Scope -->
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Select Customers<span class="asterisk">*</span></label>
+                                            <label>Select Customer Group<span class="asterisk">*</span></label>
                                             <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="promotion_scope" id="promotion_scope" data-placeholder="Select Customers">
                                                 <option value=""></option>
-                                                <option value="C" @if(isset($edit) && $edit->promotion_scope == "C") selected="" @endif>Customer</option>
-                                                <option value="CL" @if(isset($edit) && $edit->promotion_scope == "CL") selected="" @endif>Class</option>
-                                                <option value="T" @if(isset($edit) && $edit->promotion_scope == "T") selected="" @endif>Territory</option>
-                                                <option value="SS" @if(isset($edit) && $edit->promotion_scope == "SS") selected="" @endif>Sales Specialist</option>
-                                                <option value="B" @if(isset($edit) && $edit->promotion_scope == "B") selected="" @endif>Brand</option>
-                                                <option value="MS" @if(isset($edit) && $edit->promotion_scope == "MS") selected="" @endif>Market Sector</option>
+                                                <option value="B" @if(isset($edit) && $edit->promotion_scope == "B") selected="" @endif>By Brand</option>
+                                                <option value="CL" @if(isset($edit) && $edit->promotion_scope == "CL") selected="" @endif>By Class</option>
+                                                <option value="SS" @if(isset($edit) && $edit->promotion_scope == "SS") selected="" @endif>By Sales Specialist</option>
+                                                <option value="T" @if(isset($edit) && $edit->promotion_scope == "T") selected="" @endif>By Territory</option>
+                                                <option value="MS" @if(isset($edit) && $edit->promotion_scope == "MS") selected="" @endif>By Market Sector</option>
+                                                <option value="C" @if(isset($edit) && $edit->promotion_scope == "C") selected="" @endif>By Customer</option>
                                             </select>
                                         </div>
                                     </div>
@@ -258,7 +258,7 @@
               setTimeout(function(){
 
                 @if(isset($edit->id))
-                    window.location.reload(); 
+                    window.location.reload();
                 @else
                     window.location.href = '{{ route('promotion.index') }}';
                 @endif

@@ -83,7 +83,7 @@ class PromotionsController extends Controller
         }else{
 
             if(isset($input['id'])){
-                
+
                 // check in promotions claimed or not
                 $customer_promotions = CustomerPromotion::where('promotion_id',$input['id'])->count();
 
@@ -99,7 +99,7 @@ class PromotionsController extends Controller
                 $check->where('id','!=',$input['id']);
             }
             $check = $check->get();
-            
+
             if(count($check) > 0){
                 $s = date('Y-m-d',strtotime($input['promotion_start_date']));
                 $e = date('Y-m-d',strtotime($input['promotion_end_date']));
@@ -128,7 +128,7 @@ class PromotionsController extends Controller
                 }
             }
             // End - Check Same Type Promotion User on Dates
-            
+
 
             if(isset($input['id'])){
                 $promotion = Promotions::find($input['id']);
@@ -634,7 +634,7 @@ class PromotionsController extends Controller
     public function getPromotionType(Request $request){
         $search = $request->search;
 
-        $data = PromotionTypes::orderby('title','asc')->select('id','title');
+        $data = PromotionTypes::where('is_active', 1)->orderby('title','asc')->select('id','title');
         if($search != ''){
             $data->where('title', 'like', '%' .$search . '%');
         }
