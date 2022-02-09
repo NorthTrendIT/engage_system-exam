@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Warranty;
-use App\Models\WarrantyClaimPoint;
 use App\Models\ClaimPoint;
 use App\Models\TireManifistation;
+use App\Models\Warranty;
+use App\Models\WarrantyVehicle;
+use App\Models\WarrantyPicture;
+use App\Models\WarrantyClaimPoint;
+use App\Models\WarrantyTireManifistation;
 use Auth;
 use Validator;
 use DataTables;
@@ -50,7 +53,7 @@ class WarrantyController extends Controller
     {
         $input = $request->all();
 
-        dd($input);
+        // dd($input);
 
         $input['user_id'] = Auth::id();
 
@@ -66,7 +69,7 @@ class WarrantyController extends Controller
                         'dealer_location' => 'required',
                         'dealer_telephone' => 'required',
                         'vehicle_maker' => 'required',
-                        'year' => 'required|integer|max:4',
+                        'year' => 'required|integer',
                         'vehicle_model' => 'required',
                         'license_plate' => 'required',
                         'vehicle_mileage' => 'required',
@@ -83,10 +86,10 @@ class WarrantyController extends Controller
                         'other_pictures.title.*' => 'required',
 
                         'claim_point' => 'nullable|array',
-                        'claim_point.*' => 'exists:claim_points,id',
+                        // 'claim_point.*' => 'exists:claim_points,id',
 
                         'tire_manifistation' => 'nullable|array',
-                        'tire_manifistation.*' => 'exists:tire_manifistations,id',
+                        // 'tire_manifistation.*' => 'exists:tire_manifistations,id',
                     );
 
 
@@ -100,7 +103,7 @@ class WarrantyController extends Controller
                 $warranty = Warranty::findOrFail($input['id']);
                 $message = "Warranty details updated successfully.";
             }else{
-                $warranty = Warranty::findOrFail($input['id']);
+                $warranty = new Warranty();
                 $message = "Warranty details saved successfully.";
             }
 
@@ -111,8 +114,10 @@ class WarrantyController extends Controller
                 $input['location_of_damage'] = implode(",", $input['location_of_damage']);
                 $input['warranty_id'] = $warranty->id;
 
-                // $warranty_vehicle =
+                $warranty_vehicle_obj = WarrantyVehicle::firstOrNew(['warranty_id' => $warranty->id]);
+                $warranty_vehicle_obj->fill($input)->save();
 
+                // Start Claim Point
                 if(isset($input['claim_point'])){
                     $claim_points = ClaimPoint::whereNotNull('parent_id')->get();
 
@@ -153,11 +158,11 @@ class WarrantyController extends Controller
                                             );
                     }
                 }
+                // End Claim Point
 
-
-
+                // Start Tire Manifisation
                 if(isset($input['tire_manifistation'])){
-                    $tire_manifistations = TireManifistation::whereNotNull('parent_id')->get();
+                    $tire_manifistations = TireManifistation::all();
 
                     foreach($tire_manifistations as $key=>$value){
 
@@ -179,7 +184,7 @@ class WarrantyController extends Controller
                                             );
                     }
                 }else{
-                    $tire_manifistations = TireManifistation::whereNotNull('parent_id')->get();
+                    $tire_manifistations = TireManifistation::all();
 
                     foreach($tire_manifistations as $key=>$value){
 
@@ -196,12 +201,102 @@ class WarrantyController extends Controller
                                             );
                     }
                 }
+                // End Manifisation
 
+
+                // Start Warranty Pictures
+                $warranty_pictures_ids = array();
+                if(isset($input['default_pictures']['image'])){
+                    foreach ($input['default_pictures']['image'] as $key => $value) {
+                        $insert['warranty_id'] = $warranty->id;
+
+                        if(isset($value) && is_object($value)){
+                            $file = $request->file('default_pictures')['image'][$key];
+
+                            if(!in_array($file->extension(),['jpeg','jpg','png','eps','bmp','tif','tiff','webp'])){
+                              continue;
+                            }
+
+                            if($file->getSize() <= 10 * 1024 * 1024){ //10MB
+                              $name = date("YmdHis")."_".$key."_".$file->getClientOriginalName() ;
+                              $file->move(public_path() . '/sitebucket/warranty-pictures/', $name);
+                              $insert['image'] = $name;
+                            }
+                        }
+
+                        if($insert['image'] && @$input['default_pictures']['title'][$key] != ""){
+                            $insert['title'] = $input['default_pictures']['title'][$key];
+                            $insert['type'] = 'default';
+
+                            // if(isset($value['id'])){
+                            //     $warranty_picture_obj = WarrantyPicture::find($value['id']);
+                            // }else{
+                                $warranty_picture_obj = New WarrantyPicture();
+                            //}
+
+                            $warranty_picture_obj->fill($insert)->save();
+
+                            if(@$warranty_picture_obj->id){
+                              array_push($warranty_pictures_ids, $warranty_picture_obj->id);
+                            }
+                        }
+                    }
+                }
+
+                if(isset($input['other_pictures'])){
+                    foreach ($input['other_pictures'] as $key => $value) {
+                        $insert['warranty_id'] = $warranty->id;
+
+                        if(isset($value['image']) && is_object($value['image'])){
+                            $file = $request->file('other_pictures')[$key]['image'];
+
+                            if(!in_array($file->extension(),['jpeg','jpg','png','eps','bmp','tif','tiff','webp'])){
+                                continue;
+                            }
+
+                            if($file->getSize() <= 10 * 1024 * 1024){ //10MB
+                                $name = date("YmdHis")."_".$key."_".$file->getClientOriginalName() ;
+                                $file->move(public_path() . '/sitebucket/warranty-pictures/', $name);
+                                $insert['image'] = $name;
+                            }
+                        }
+
+                        if($insert['image'] && @$value['title'] != ""){
+                            $insert['title'] = $value['title'];
+                            $insert['type'] = 'other';
+
+                            // if(isset($value['id'])){
+                            //     $warranty_picture_obj = WarrantyPicture::find($value['id']);
+                            // }else{
+                                $warranty_picture_obj = New WarrantyPicture();
+                            // }
+
+                            $warranty_picture_obj->fill($insert)->save();
+
+                            if(@$warranty_picture_obj->id){
+                              array_push($warranty_pictures_ids, $warranty_picture_obj->id);
+                            }
+                        }
+                    }
+                }
+
+                if(!isset($input['default_pictures']) && !isset($input['other_pictures'])){
+                    $removeWarrantyPicture = WarrantyPicture::where('warranty_id',$warranty->id);
+                    $removeWarrantyPicture->delete();
+                }elseif(!empty($warranty_pictures_ids)){
+                    $removeWarrantyPicture = WarrantyPicture::where('warranty_id',$warranty->id);
+                    $removeWarrantyPicture->whereNotIn('id',$warranty_pictures_ids);
+                    $removeWarrantyPicture->delete();
+                }
+                // End Warranty Pictures
+
+                $response = ['status' => true,'message' => $message];
             }else{
                 $response = ['status' => false,'message' => "Something went wrong."];
             }
         }
 
+        dd($response);
         return $response;
     }
 
