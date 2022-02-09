@@ -70,7 +70,7 @@
                                         <label>Promotion Customers</label>
                                         @if($data->promotion_scope == 'C')
                                             <input type="text" class="form-control form-control-solid" value="Customer" disabled="disabled">
-                                        @endif()
+                                        @endif
 
                                         @if($data->promotion_scope == 'CL')
                                             <input type="text" class="form-control form-control-solid" value="Class" disabled="disabled">
