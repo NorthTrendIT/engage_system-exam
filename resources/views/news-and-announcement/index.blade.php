@@ -35,14 +35,14 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_module" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select module">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_module" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select Customer">
                     <option value=""></option>
-                    <option value="role" >Role</option>
-                    <option value="customer" >Customer</option>
-                    <option value="customer_class" >Customer Class</option>
-                    <option value="sales_specialist" >Sales Specialist</option>
-                    <option value="territory" >Territory</option>
-
+                    <option value="brand">Brand</option>
+                    <option value="customer_class">Class</option>
+                    <option value="customer">Customer</option>
+                    <option value="sales_specialist">Sales Specialist</option>
+                    <option value="territory">Territory</option>
+                    <option value="market_sector">Market Sector</option>
                   </select>
                 </div>
 
@@ -63,6 +63,14 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name="filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -79,6 +87,7 @@
                           <thead>
                             <tr>
                                 <th>No</th>
+                                <th>Bussines Unit</th>
                                 <th>Title</th>
                                 <th>Type</th>
                                 <th>Module</th>
@@ -86,6 +95,7 @@
                                 @if(@Auth::user()->role_id == 1)
                                 <th>User Name</th>
                                 @endif
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                           </thead>
@@ -119,7 +129,6 @@
 @endpush
 
 @push('js')
-
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script>
@@ -135,6 +144,7 @@ $(document).ready(function() {
       $filter_type = $('[name="filter_type"]').find('option:selected').val();
       $filter_module = $('[name="filter_module"]').find('option:selected').val();
       $filter_priority = $('[name="filter_priority"]').find('option:selected').val();
+      $filter_date_range = $('[name="filter_date_range"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -152,10 +162,12 @@ $(document).ready(function() {
                 filter_type : $filter_type,
                 filter_module : $filter_module,
                 filter_priority : $filter_priority,
+                filter_date_range : $filter_date_range,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'bussines_unit', name: 'bussines_unit'},
               {data: 'title', name: 'title'},
               {data: 'type', name: 'type'},
               {data: 'module', name: 'module'},
@@ -163,6 +175,7 @@ $(document).ready(function() {
               @if(@Auth::user()->role_id == 1)
               {data: 'user_name', name: 'user_name'},
               @endif
+              {data: 'status', name: 'status', orderable: false},
               {data: 'action', name: 'action', orderable: false},
           ],
           drawCallback:function(){
@@ -185,6 +198,7 @@ $(document).ready(function() {
       $('[name="filter_type"]').val('').trigger('change');
       $('[name="filter_module"]').val('').trigger('change');
       $('[name="filter_priority"]').val('').trigger('change');
+      $('[name="filter_date_range"]').val('').trigger('change');
       render_table();
     });
 
@@ -205,6 +219,41 @@ $(document).ready(function() {
           $.ajax({
             url: $url,
             method: "DELETE",
+            data: {
+                    _token:'{{ csrf_token() }}'
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              render_table();
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
+    $(document).on('click', '.status', function(event) {
+      event.preventDefault();
+      $url = $(this).attr('data-url');
+
+      Swal.fire({
+        title: 'Are you sure want to change status?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, change it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: $url,
+            method: "POST",
             data: {
                     _token:'{{ csrf_token() }}'
                   }

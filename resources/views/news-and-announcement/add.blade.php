@@ -37,6 +37,32 @@
                 @endif
 
                 <div class="row mb-5">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Select Bussines Unit<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid bussinesUnit" data-control="select2" data-hide-search="false" name="sap_connection_id">
+                                <option value="">Select Bussines Unit</option>
+                                @if($sap_connections)
+                                    @foreach($sap_connections as $sap)
+                                    <option value="{{ $sap->id }}" @if(isset($edit) && $edit->sap_connection_id == $sap->id) selected @endif>{{ $sap->company_name }}</option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Select Priority<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid selectPriority" data-control="select2" data-hide-search="false" name="is_important">
+                                <option value="">Select Priority</option>
+                                <option value="0" @if(isset($edit) && $edit->is_important == 0) selected @endif>Normal</option>
+                                <option value="1" @if(isset($edit) && $edit->is_important == 1) selected @endif>Important</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Title<span class="asterisk">*</span></label>
@@ -47,7 +73,7 @@
                   <div class="col-md-6">
                         <div class="form-group">
                             <label>Select Type<span class="asterisk">*</span></label>
-                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="type">
+                            <select class="form-select form-select-solid selectType" data-control="select2" data-hide-search="false" name="type">
                                 <option value="">Select Type</option>
                                 <option value="A" @if(isset($edit) && $edit->type == 'A') selected @endif>Announcement</option>
                                 <option value="N" @if(isset($edit) && $edit->type == 'N') selected @endif>News</option>
@@ -66,24 +92,43 @@
                 </div>
 
                 <div class="row mb-5">
+                    <!-- Start Date -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Start Date<span class="asterisk">*</span></label>
+                            <input type="text" class="form-control form-select-solid" name="start_date" @if(isset($edit)) value="{{date('m/d/Y',strtotime($edit->start_date))}}" @endif id="kt_datepicker_1" readonly placeholder="Select Start Date"/>
+                        </div>
+                    </div>
+
+                    <!-- End Date -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>End Date<span class="asterisk">*</span></label>
+                            <input type="text" class="form-control form-select-solid" name="end_date" @if(isset($edit)) value="{{date('m/d/Y',strtotime($edit->end_date))}}" @endif id="kt_datepicker_1" readonly placeholder="Select End Date"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
                     <div class="col-md-6">
                             <div class="form-group">
-                                <label>Select Module<span class="asterisk">*</span></label>
+                                <label>Select Customer<span class="asterisk">*</span></label>
                                 <select class="form-select form-select-solid" data-control="select2" id="selectModule" data-hide-search="false" name="module">
-                                    <option value="">Select Module</option>
-                                    <option value="role" @if(isset($edit->connection) && $edit->connection->module == 'role') selected @endif>Role</option>
-                                    <option value="customer" @if(isset($edit->connection) && $edit->connection->module == 'customer') selected @endif>Customer</option>
-                                    <option value="customer_class" @if(isset($edit->connection) && $edit->connection->module == 'customer_class') selected @endif>Customer Class</option>
-                                    <option value="sales_specialist" @if(isset($edit->connection) && $edit->connection->module == 'sales_specialist') selected @endif>Sales Specialist</option>
-                                    <option value="territory" @if(isset($edit->connection) && $edit->connection->module == 'territory') selected @endif>Territory</option>
+                                    <option value="">Select Customer</option>
+                                    <option value="brand" @if(isset($edit->connection) && $edit->connection->module == 'role') selected @endif>By Brand</option>
+                                    <option value="customer_class" @if(isset($edit->connection) && $edit->connection->module == 'customer_class') selected @endif>By Class</option>
+                                    <option value="sales_specialist" @if(isset($edit->connection) && $edit->connection->module == 'sales_specialist') selected @endif>By Sales Specialist</option>
+                                    <option value="territory" @if(isset($edit->connection) && $edit->connection->module == 'territory') selected @endif>By Territory</option>
+                                    <option value="market_sector" @if(isset($edit->connection) && $edit->connection->module == 'territory') selected @endif>By Market Sector</option>
+                                    <option value="customer" @if(isset($edit->connection) && $edit->connection->module == 'customer') selected @endif>By Customer</option>
                                 </select>
                             </div>
                     </div>
-                    <!-- Roles -->
-                    <div class="col-md-6 roles" style="display:none">
+                    <!-- Brand -->
+                    <div class="col-md-6 brand" style="display:none">
                         <div class="form-group">
-                            <label>Select Role<span class="asterisk">*</span></label>
-                            <select class="form-select form-select-solid" data-control="select2" id="selectRole" data-hide-search="false" name="record_id[]">
+                            <label>Select Brand<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" id="selectBrand" data-hide-search="false" name="record_id[]">
                             </select>
                         </div>
                     </div>
@@ -123,19 +168,19 @@
                             </select>
                         </div>
                     </div>
-                </div>
 
-                <div class="row mb-5 mt-10">
-                    <div class="col-md-6">
+                    <!-- Market Sector -->
+                    <div class="col-md-6 market_sector" style="display:none">
                         <div class="form-group">
-                            <label>Select Priority<span class="asterisk">*</span></label>
-                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="is_important">
-                                <option value="">Select Priority</option>
-                                <option value="0" @if(isset($edit) && $edit->is_important == 0) selected @endif>Normal</option>
-                                <option value="1" @if(isset($edit) && $edit->is_important == 1) selected @endif>Important</option>
+                            <label>Select Market Sector<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" id="selectMarketSector" data-hide-search="false" name="record_id[]">
                             </select>
                         </div>
                     </div>
+                </div>
+
+                <div class="row mb-5 mt-10">
+
                 </div>
 
                 <div class="row mb-5 mt-10">
@@ -181,7 +226,7 @@
                     <div class="row mb-5" data-repeater-item>
                       <div class="col-md-6">
                         <div class="form-group">
-                          <input type="file" class="dropify form-control form-control-solid product_images_image" name="file" accept="image/*" data-allowed-file-extensions="jpeg jpg png eps bmp tif tiff webp" data-max-file-size-preview="10M">
+                          <input type="file" class="dropify form-control form-control-solid product_images_image" name="file" accept="" data-allowed-file-extensions="jpeg jpg png eps bmp tif tiff webp pdf doc docx xls xlsx ppt pptx odt ods" data-max-file-size-preview="10M">
                         </div>
                       </div>
 
@@ -224,15 +269,18 @@
 </div>
 @endsection
 
+@push('css')
+  <link rel="stylesheet" href="{{ asset('assets') }}/assets/css/datepicker.css" class="href">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css" />
+@endpush
 
 @push('js')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css" />
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.repeater/1.2.1/jquery.repeater.min.js"></script>
 <script src="https://cdn.ckeditor.com/4.17.1/standard/ckeditor.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js" ></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" ></script>
 
 <script>
   $(document).ready(function() {
@@ -241,31 +289,74 @@
       removePlugins: ['image', 'uploadimage']
     });
 
+    $('.bussinesUnit').select2({
+        placeholder: 'Select Bussines Unit',
+    });
+
+    $('.selectType').select2({
+        placeholder: 'Select Type',
+    });
+
+    $('.selectPriority').select2({
+        placeholder: 'Select Priority',
+    });
+
+    $('#selectModule').select2({
+        placeholder: 'Select Customer',
+    });
+
+    $('[name="start_date"]').datepicker({
+        todayHighlight: true,
+        orientation: "bottom left",
+        startDate:'today',
+        autoclose: true,
+    });
+
+    $('[name="start_date"]').datepicker().on('changeDate', (selected) => {
+        $('[name="end_date"]').val("").datepicker("update");
+        var minDate = new Date(selected.date.valueOf());
+        $('[name="end_date"]').datepicker('setStartDate', minDate);
+    });
+
+    $('[name="end_date"]').datepicker({
+        todayHighlight: true,
+        orientation: "bottom left",
+        startDate:'today',
+        autoclose: true,
+    });
+
+    // $('body').on('change' ,'#selectModule', function(){
+
+    // }
+
     $('body').on('change' ,'#selectModule', function(){
         $module = $('[name="module"]').val();
         // Hide all.
-        $('.roles').hide();
+        $('.brand').hide();
         $('.customer').hide();
         $('.customer_class').hide();
         $('.sales_specialist').hide();
         $('.territory').hide();
+        $('.market_sector').hide();
         // Dissable all.
-        $('#selectRole').prop('disabled', true);
+        $('#selectrBrand').prop('disabled', true);
         $('#selectCustomer').prop('disabled', true);
         $('#selectCustomerClass').prop('disabled', true);
         $('#selectSalesSpecialist').prop('disabled', true);
         $('#selectTerritory').prop('disabled', true);
+        $('#selectMarketSector').prop('disabled', true);
         // Set null value to all.
-        $('#selectRole').val(null).trigger("change");
+        $('#selectBrand').val(null).trigger("change");
         $('#selectCustomer').val(null).trigger("change");
         $('#selectCustomerClass').val(null).trigger("change");
         $('#selectSalesSpecialist').val(null).trigger("change");
         $('#selectTerritory').val(null).trigger("change");
+        $('#selectMarketSector').val(null).trigger("change");
 
         // Show and enable according to Module selection.
-        if($module == "role"){
-            $('.roles').show();
-            $('#selectRole').prop('disabled', false);
+        if($module == "brand"){
+            $('.brand').show();
+            $('#selectBrand').prop('disabled', false);
         } else if ($module == "customer"){
             $('.customer').show();
             $('#selectCustomer').prop('disabled', false);
@@ -278,6 +369,9 @@
         } else if($module == "territory"){
             $('.territory').show();
             $('#selectTerritory').prop('disabled', false);
+        } else if($module == "market_sector"){
+            $('.market_sector').show();
+            $('#selectMarketSector').prop('disabled', false);
         }
     });
 
@@ -323,6 +417,12 @@
           errorClass: "is-invalid",
           validClass: "is-valid",
           rules: {
+            sap_connection_id:{
+                required: true,
+            },
+            is_important:{
+                required: true,
+            },
             title:{
               required: true,
               maxlength: 185,
@@ -333,6 +433,12 @@
             message:{
               required:true,
             },
+            start_date:{
+                required: true,
+            },
+            end_date:{
+                required: true,
+            },
             module:{
               required:true,
             },
@@ -341,6 +447,12 @@
             },
           },
           messages: {
+            sap_connection_id:{
+                required: "Please select Bussines Unit.",
+            },
+            is_important:{
+                required: "Please select priority.",
+            },
             title:{
               required: "Please enter title.",
               maxlength:'Please enter title less than 185 character',
@@ -350,6 +462,12 @@
             },
             message:{
               required:"Please enter message.",
+            },
+            start_date:{
+                required: "Please select Start date.",
+            },
+            end_date:{
+                required: "Please select End date.",
             },
             module:{
               required:"Please select module.",
@@ -363,8 +481,11 @@
       $('.product_images_image').each(function() {
         $(this).rules('add', {
           required:false,
+          maxsize: 10000000,
+          extension: 'jpeg | jpg | png | eps | bmp | tif | tiff | webp | pdf | doc | docx | xls | xlsx | ppt | pptx | odt | ods',
           messages: {
-            accept : "Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp .pdf .doc .docx .xls .xlsx .ppt .pptx .odt .ods files."
+            extension: "Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp .pdf .doc .docx .xls .xlsx .ppt .pptx .odt .ods files.",
+            maxsize: "File size must not exceed 10MB.",
           }
         });
       });
@@ -389,17 +510,18 @@
       isFirstItemUndeletable: true,
     });
 
-    // Role
-    $("#selectRole").select2({
+    // Brand
+    $("#selectBrand").select2({
         ajax: {
-            url: "{{route('news-and-announcement.getRoles')}}",
+            url: "{{route('news-and-announcement.getBrands')}}",
             type: "post",
             dataType: 'json',
             delay: 250,
             data: function (params) {
                 return {
                     _token: "{{ csrf_token() }}",
-                    search: params.term
+                    search: params.term,
+                    sap_connection_id: $('.bussinesUnit').val(),
                 };
             },
             processResults: function (response) {
@@ -409,7 +531,7 @@
             },
             cache: true
         },
-        placeholder: 'Select Role',
+        placeholder: 'Select Brand',
         // minimumInputLength: 1,
         multiple: true,
     });
@@ -424,7 +546,8 @@
             data: function (params) {
                 return {
                     _token: "{{ csrf_token() }}",
-                    search: params.term
+                    search: params.term,
+                    sap_connection_id: $('.bussinesUnit').val(),
                 };
             },
             processResults: function (response) {
@@ -449,7 +572,8 @@
             data: function (params) {
                 return {
                     _token: "{{ csrf_token() }}",
-                    search: params.term
+                    search: params.term,
+                    sap_connection_id: $('.bussinesUnit').val(),
                 };
             },
             processResults: function (response) {
@@ -474,7 +598,8 @@
             data: function (params) {
                 return {
                     _token: "{{ csrf_token() }}",
-                    search: params.term
+                    search: params.term,
+                    sap_connection_id: $('.bussinesUnit').val(),
                 };
             },
             processResults: function (response) {
@@ -499,7 +624,8 @@
             data: function (params) {
                 return {
                     _token: "{{ csrf_token() }}",
-                    search: params.term
+                    search: params.term,
+                    sap_connection_id: $('.bussinesUnit').val(),
                 };
             },
             processResults: function (response) {
@@ -510,6 +636,32 @@
             cache: true
         },
         placeholder: 'Select Territory',
+        // minimumInputLength: 2,
+        multiple: true,
+    });
+
+    // getMarketSector
+    $("#selectMarketSector").select2({
+        ajax: {
+            url: "{{route('news-and-announcement.getMarketSector')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('.bussinesUnit').val(),
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Market Sector',
         // minimumInputLength: 2,
         multiple: true,
     });

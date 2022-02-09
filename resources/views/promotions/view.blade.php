@@ -61,7 +61,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
 
                             <div class="row mb-5">
                                 <!-- Promotion Scope -->
@@ -70,7 +70,7 @@
                                         <label>Promotion Customers</label>
                                         @if($data->promotion_scope == 'C')
                                             <input type="text" class="form-control form-control-solid" value="Customer" disabled="disabled">
-                                        @endif()
+                                        @endif
 
                                         @if($data->promotion_scope == 'CL')
                                             <input type="text" class="form-control form-control-solid" value="Class" disabled="disabled">
@@ -83,7 +83,7 @@
                                         @if($data->promotion_scope == 'SS')
                                             <input type="text" class="form-control form-control-solid" value="Sales Specialist" disabled="disabled">
                                         @endif
-                                        
+
                                         @if($data->promotion_scope == 'B')
                                             <input type="text" class="form-control form-control-solid" value="Brand" disabled="disabled">
                                         @endif
@@ -91,7 +91,7 @@
                                         @if($data->promotion_scope == 'MS')
                                             <input type="text" class="form-control form-control-solid" value="Market Sector" disabled="disabled">
                                         @endif
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -163,7 +163,7 @@
                         </div>
 
                         <div class="card-body">
-                          
+
                           <div class="row mb-5">
                             <div class="col-md-12">
                               <div class="form-group">
@@ -207,7 +207,7 @@
                         </div>
 
                         <div class="card-body">
-                          
+
                           <div class="row mb-5">
                             <div class="col-md-12">
                               <div class="form-group">
@@ -252,7 +252,7 @@
                         </div>
 
                         <div class="card-body">
-                          
+
                           <div class="row mb-5">
                             <div class="col-md-12">
                               <div class="form-group">

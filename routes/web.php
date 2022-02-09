@@ -127,8 +127,6 @@ Route::middleware(['auth'])->group(function(){
     	    Route::post('invoices/sync-invoices', 'App\Http\Controllers\InvoicesController@syncInvoices')->name('invoices.sync-invoices');
             Route::post('invoices/get-customer', 'App\Http\Controllers\InvoicesController@getCustomer')->name('invoices.get-customer');
 
-
-
             // Route::resource('location','App\Http\Controllers\LocationController');
     	    // Route::post('location/get-all', 'App\Http\Controllers\LocationController@getAll')->name('location.get-all');
     	    // Route::post('location/status/{id}', 'App\Http\Controllers\LocationController@updateStatus')->name('location.status');
@@ -271,11 +269,16 @@ Route::middleware(['auth'])->group(function(){
             Route::post('news-and-announcement/get-customer-class', 'App\Http\Controllers\NewsAndAnnouncementController@getCustomerClass')->name('news-and-announcement.getCustomerClass');
             Route::post('news-and-announcement/get-sales-specialist', 'App\Http\Controllers\NewsAndAnnouncementController@getSalesSpecialist')->name('news-and-announcement.getSalesSpecialist');
             Route::post('news-and-announcement/get-territory', 'App\Http\Controllers\NewsAndAnnouncementController@getTerritory')->name('news-and-announcement.getTerritory');
+            Route::post('news-and-announcement/get-brands', 'App\Http\Controllers\NewsAndAnnouncementController@getBrands')->name('news-and-announcement.getBrands');
+            Route::post('news-and-announcement/get-market-sector', 'App\Http\Controllers\NewsAndAnnouncementController@getMarketSector')->name('news-and-announcement.getMarketSector');
             Route::post('news-and-announcement/get-all-role', 'App\Http\Controllers\NewsAndAnnouncementController@getAllRole')->name('news-and-announcement.getAllRole');
             Route::post('news-and-announcement/get-all-customer', 'App\Http\Controllers\NewsAndAnnouncementController@getAllCustomer')->name('news-and-announcement.getAllCustomer');
             Route::post('news-and-announcement/get-all-sales-specialist', 'App\Http\Controllers\NewsAndAnnouncementController@getAllSalesSpecialist')->name('news-and-announcement.getAllSalesSpecialist');
             Route::post('news-and-announcement/get-all-customer-class', 'App\Http\Controllers\NewsAndAnnouncementController@getAllCustomerClass')->name('news-and-announcement.getAllCustomerClass');
             Route::post('news-and-announcement/get-all-territory', 'App\Http\Controllers\NewsAndAnnouncementController@getAllTerritory')->name('news-and-announcement.getAllTerritory');
+            Route::post('news-and-announcement/get-all-market-sector', 'App\Http\Controllers\NewsAndAnnouncementController@getAllMarketSector')->name('news-and-announcement.getAllMarketSector');
+            Route::post('news-and-announcement/get-all-brands', 'App\Http\Controllers\NewsAndAnnouncementController@getAllBrands')->name('news-and-announcement.getAllBrands');
+            Route::post('news-and-announcement/status/{id}', 'App\Http\Controllers\NewsAndAnnouncementController@updateStatus')->name('news-and-announcement.status');
         });
 
         // Customer Orders
