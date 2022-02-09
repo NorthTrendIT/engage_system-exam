@@ -277,6 +277,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('news-and-announcement/get-all-customer-class', 'App\Http\Controllers\NewsAndAnnouncementController@getAllCustomerClass')->name('news-and-announcement.getAllCustomerClass');
             Route::post('news-and-announcement/get-all-territory', 'App\Http\Controllers\NewsAndAnnouncementController@getAllTerritory')->name('news-and-announcement.getAllTerritory');
             Route::post('news-and-announcement/get-all-market-sector', 'App\Http\Controllers\NewsAndAnnouncementController@getAllMarketSector')->name('news-and-announcement.getAllMarketSector');
+            Route::post('news-and-announcement/get-all-brands', 'App\Http\Controllers\NewsAndAnnouncementController@getAllBrands')->name('news-and-announcement.getAllBrands');
             Route::post('news-and-announcement/status/{id}', 'App\Http\Controllers\NewsAndAnnouncementController@updateStatus')->name('news-and-announcement.status');
         });
 

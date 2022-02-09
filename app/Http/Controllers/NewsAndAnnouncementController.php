@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\Territory;
 use App\Models\SapConnection;
 use App\Models\ProductGroup;
+use App\Models\CustomerProductGroup;
 use OneSignal;
 use DataTables;
 use Validator;
@@ -52,7 +53,7 @@ class NewsAndAnnouncementController extends Controller
         $input = $request->all();
         // dd($input);
         $rules = array(
-                    'title' => 'required',
+                    'title' => 'required|unique:notifications',
                     'type' => 'required',
                     'message' => 'required',
                     'module' => 'required',
@@ -82,6 +83,11 @@ class NewsAndAnnouncementController extends Controller
             $notification->user_id = Auth::user()->id;
             $notification->start_date = date('Y-m-d',strtotime($input['start_date']));
             $notification->end_date = date('Y-m-d',strtotime($input['end_date']));
+
+            if(in_array($input['module'], ['brand', 'customer_class', 'territory', 'market_sector'])){
+                $notification->request_payload = json_encode($input['record_id']);
+            }
+
             $notification->save();
 
             if(isset($input['record_id']) && count($input['record_id']) > 0 ){
@@ -243,6 +249,8 @@ class NewsAndAnnouncementController extends Controller
      */
     public function show($id)
     {
+        $brands = collect();
+        $territories = collect();
         if(Auth::user()->role_id != 1){
             $connection = NotificationConnection::where('user_id', '=', @Auth::user()->id)
                 ->where('notification_id', '=', $id)->first();
@@ -250,7 +258,16 @@ class NewsAndAnnouncementController extends Controller
             $connection->save();
         }
         $data = Notification::with(['user', 'documents', 'connections'])->where('id', $id)->firstOrFail();
-        return view('news-and-announcement.view', compact('data'));
+        if(@$data->module == 'brand' && !empty(@$data->request_payload)){
+            $brand_ids = json_decode(@$data->request_payload);
+            $brands = ProductGroup::whereIn('id', $brand_ids)->orderby('group_name','asc')->pluck('group_name');
+        }
+        if(@$data->module == 'territory' && !empty(@$data->request_payload)){
+            $territory_ids = json_decode(@$data->request_payload);
+            $territories = Territory::whereIn('id', $territory_ids)->where('territory_id','!=','-2')->where('is_active',true)->orderBy('description','asc')->pluck('description');
+        }
+        // dd($brand)
+        return view('news-and-announcement.view', compact('data', 'brands', 'territories'));
     }
 
     /**
@@ -348,7 +365,7 @@ class NewsAndAnnouncementController extends Controller
             $end = date("Y-m-d", strtotime($date[1]));
 
             $data->whereDate('start_date', '>=' , $start);
-            $data->whereDate('start_date', '<=' , $end);
+            $data->whereDate('end_date', '<=' , $end);
         }
 
         $data->when(!isset($request->order), function ($q) {
@@ -381,10 +398,13 @@ class NewsAndAnnouncementController extends Controller
                                 return "-";
                             })
                             ->orderColumn('title', function ($query, $order) {
-                                $query->orderBy('company_name', $order);
+                                $query->orderBy('title', $order);
                             })
                             ->orderColumn('user_name', function ($query, $order) {
-                                $query->orderBy('user_name', $order);
+                                $query->orderBy('user_id', $order);
+                            })
+                            ->orderColumn('type', function ($query, $order) {
+                                $query->orderBy('type', $order);
                             })
                             ->orderColumn('module', function ($query, $order) {
                                 $query->orderBy('module', $order);
@@ -825,6 +845,51 @@ class NewsAndAnnouncementController extends Controller
                             })
                             ->addColumn('market_sector', function($row) {
                                 return @$row->user->customer->u_msec;
+                                // return '-';
+                            })
+                            ->addColumn('is_seen', function($row) {
+                                if($row->is_seen){
+                                    return '<span class="label label-lg label-light-success label-inline">Yes</span>';
+                                } else {
+                                    return '<span class="label label-lg label-light-danger label-inline">No</span>';
+                                }
+                            })
+                            ->rawColumns(['is_seen'])
+                            ->make(true);
+    }
+
+    public function getAllBrands(Request $request){
+
+        $data = NotificationConnection::with(['user.customer.product_groups.product_group'])->where('notification_id', $request->notification_id);
+        // dd($data->get());
+
+        if($request->filter_type!= ""){
+            $data->where('type',$request->filter_type);
+        }
+
+        if($request->filter_search != ""){
+            $data->where(function($q) use ($request) {
+                $q->orwhere('title','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('id', 'desc');
+        });
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('user_name', function($row) {
+                                if($row->user->role_id == 2){
+                                    return $row->user->sales_specialist_name;
+                                }
+                                if($row->user->role_id == 4){
+                                    return $row->user->first_name.' '.$row->user->last_name;
+                                }
+                                return '-';
+                            })
+                            ->addColumn('brand', function($row) {
+                                return @$row->user->customer->product_groups;
                                 // return '-';
                             })
                             ->addColumn('is_seen', function($row) {
