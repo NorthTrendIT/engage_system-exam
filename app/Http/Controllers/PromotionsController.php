@@ -681,4 +681,31 @@ class PromotionsController extends Controller
 
         return response()->json($data);
     }
+
+    public function checkTitle(Request $request){
+        // dd($request->all());
+        if(!empty(@$request->title)){
+            $input = $request->all();
+
+            $rules = array(
+                        'title' => 'required|max:185|unique:promotions,title,NULL,id,deleted_at,NULL',
+                    );
+
+            if(isset($input['id'])){
+                $rules['title'] = 'required|max:185|unique:promotions,title,'.$input['id'].',id,deleted_at,NULL';
+            }
+
+            $validator = Validator::make($input, $rules);
+
+            if ($validator->fails()) {
+                $response = ['status'=>false,'message'=>$validator->errors()->first()];
+            }else{
+                $response = ['status'=>true,'message'=>'Title is unique!'];
+            }
+
+        }else{
+            $response = ['status'=>false,'message'=>'Something went wrong!'];
+        }
+        return $response;
+    }
 }
