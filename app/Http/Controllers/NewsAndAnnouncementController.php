@@ -28,7 +28,8 @@ class NewsAndAnnouncementController extends Controller
      */
     public function index()
     {
-        return view('news-and-announcement.index');
+        $sap_connection = SapConnection::all();
+        return view('news-and-announcement.index',compact('sap_connection'));
     }
 
     /**
@@ -343,6 +344,10 @@ class NewsAndAnnouncementController extends Controller
             $data->where('type',$request->filter_type);
         }
 
+        if($request->filter_sap_connection != ""){
+            $data->where('sap_connection_id', $request->filter_sap_connection);
+        }
+
 
         if($request->filter_module != ""){
             $data->where('module',$request->filter_module);
@@ -421,11 +426,27 @@ class NewsAndAnnouncementController extends Controller
                                 return $btn;
                             })
                             ->addColumn('status', function($row) {
-                                $btn = "";
+                                $btn = '';
                                 if($row->is_active){
-                                    $btn .= '<a href="javascript:"  data-url="' . route('news-and-announcement.status',$row->id) . '" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
+                                    $btn .= '<div class="form-group">
+                                    <div class="col-3">
+                                     <span class="switch">
+                                      <label>
+                                       <input type="checkbox" checked="checked" name="select" class="status" data-url="' . route('news-and-announcement.status',$row->id) . '"/>
+                                       <span></span>
+                                      </label>
+                                     </span>
+                                    </div>';
                                 }else{
-                                    $btn .= '<a href="javascript:"  data-url="' . route('news-and-announcement.status',$row->id) . '" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
+                                    $btn .= '<div class="form-group">
+                                    <div class="col-3">
+                                     <span class="switch">
+                                      <label>
+                                       <input type="checkbox" name="select" class="status" data-url="' . route('news-and-announcement.status',$row->id) . '"/>
+                                       <span></span>
+                                      </label>
+                                     </span>
+                                    </div>';
                                 }
                                 return $btn;
                             })
