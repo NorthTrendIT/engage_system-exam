@@ -226,7 +226,7 @@
                     <div class="row mb-5" data-repeater-item>
                       <div class="col-md-6">
                         <div class="form-group">
-                          <input type="file" class="dropify form-control form-control-solid product_images_image" name="file" accept="image/*" data-allowed-file-extensions="jpeg jpg png eps bmp tif tiff webp" data-max-file-size-preview="10M">
+                          <input type="file" class="dropify form-control form-control-solid product_images_image" name="file" accept="" data-allowed-file-extensions="jpeg jpg png eps bmp tif tiff webp pdf doc docx xls xlsx ppt pptx odt ods" data-max-file-size-preview="10M">
                         </div>
                       </div>
 
@@ -417,7 +417,7 @@
           errorClass: "is-invalid",
           validClass: "is-valid",
           rules: {
-            sap_connecyion_id:{
+            sap_connection_id:{
                 required: true,
             },
             is_important:{
@@ -447,7 +447,7 @@
             },
           },
           messages: {
-            sap_connecyion_id:{
+            sap_connection_id:{
                 required: "Please select Bussines Unit.",
             },
             is_important:{
@@ -481,8 +481,11 @@
       $('.product_images_image').each(function() {
         $(this).rules('add', {
           required:false,
+          maxsize: 10000000,
+          extension: 'jpeg | jpg | png | eps | bmp | tif | tiff | webp | pdf | doc | docx | xls | xlsx | ppt | pptx | odt | ods',
           messages: {
-            accept : "Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp .pdf .doc .docx .xls .xlsx .ppt .pptx .odt .ods files."
+            extension: "Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp .pdf .doc .docx .xls .xlsx .ppt .pptx .odt .ods files.",
+            maxsize: "File size must not exceed 10MB.",
           }
         });
       });
