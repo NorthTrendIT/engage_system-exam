@@ -325,6 +325,7 @@ Route::middleware(['auth'])->group(function(){
         Route::post('promotion/get-promotion-type/','App\Http\Controllers\PromotionsController@getPromotionType')->name('promotion.get-promotion-type');
         Route::post('promotion/get-brands/','App\Http\Controllers\PromotionsController@getBrands')->name('promotion.get-brands');
         Route::post('promotion/get-market-sectors/','App\Http\Controllers\PromotionsController@getMarketSectors')->name('promotion.get-market-sectors');
+        Route::post('promotion/check-title/','App\Http\Controllers\PromotionsController@checkTitle')->name('promotion.checkTitle');
 
 
         // Customer Delivery Schedule

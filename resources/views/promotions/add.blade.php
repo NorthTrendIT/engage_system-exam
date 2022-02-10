@@ -29,7 +29,7 @@
                                 @csrf
 
                                 @if(isset($edit))
-                                <input type="hidden" name="id" value="{{ $edit->id }}">
+                                    <input type="hidden" name="id" value="{{ $edit->id }}">
                                 @endif
 
                                 <div class="row mb-5">
@@ -37,7 +37,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label>Title<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" placeholder="Enter Promotion Title" name="title" @if(isset($edit)) value="{{ $edit->title }}" @endif >
+                                            <input type="text" class="form-control form-control-solid promotionTitle" placeholder="Enter Promotion Title" name="title" @if(isset($edit)) value="{{ $edit->title }}" @endif autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -701,6 +701,35 @@
         $('#selectMarketSector').val('').trigger('change');
         $('#selectSalesSpecialist').val('').trigger('change');
         $('#selectTerritories').val('').trigger('change');
+    });
+
+    $(document).on('change', '[name="title"]', function(event) {
+        $.ajax({
+          url: "{{route('promotion.checkTitle')}}",
+          type: "POST",
+          processing: true,
+          serverSide: true,
+          headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+              },
+          data: {
+                title: $('[name="title"]').val(),
+                @if(isset($edit->id))
+                    id: '{{$edit->id}}',
+                @endif
+            },
+          success: function (data) {
+            if (data.status) {
+              toast_success(data.message)
+            } else {
+              toast_error(data.message);
+              $('[name="title"]').val('');
+            }
+          },
+          error: function () {
+            toast_error("Something went to wrong !");
+          },
+        });
     });
 
 });
