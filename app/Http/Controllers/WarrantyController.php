@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
+use App\Models\User;
 use App\Models\ClaimPoint;
 use App\Models\TireManifistation;
+use App\Models\SapConnection;
 use App\Models\Warranty;
 use App\Models\WarrantyVehicle;
 use App\Models\WarrantyPicture;
 use App\Models\WarrantyClaimPoint;
 use App\Models\WarrantyTireManifistation;
+
 use Auth;
 use Validator;
 use DataTables;
@@ -23,7 +27,15 @@ class WarrantyController extends Controller
      */
     public function index()
     {
-        //
+        $company = collect();
+        if(in_array(userrole(),[1,3])){
+            $company = SapConnection::all();
+        }
+
+        $warranty_claim_types = Warranty::$warranty_claim_types;
+        sort($warranty_claim_types);
+
+        return view('warranty.index', compact('company','warranty_claim_types'));
     }
 
     /**
@@ -33,6 +45,10 @@ class WarrantyController extends Controller
      */
     public function create()
     {
+        if(!in_array(userrole(),[4])){ // Not a customer
+            return abort(404);
+        }
+
         $warranty_claim_types = Warranty::$warranty_claim_types;
         sort($warranty_claim_types);
 
@@ -55,10 +71,14 @@ class WarrantyController extends Controller
 
         // dd($input);
 
-        $input['user_id'] = Auth::id();
+        if(!isset($input['id']) && !in_array(userrole(),[1,3])){
+            $input['user_id'] = Auth::id();
+            // $input['sap_connection_id'] = Auth::user()->sap_connection_id;
+        }
 
         $rules = array(
-                        'user_id' => 'required|exists:users,id',
+                        'user_id' => 'required|exists:users,id,role_id,4',
+                        // 'sap_connection_id' => 'required|exists:sap_connections,id',
                         'warranty_claim_type' => 'required',
                         'dealer_name' => 'required',
                         'customer_address' => 'required',
@@ -92,6 +112,10 @@ class WarrantyController extends Controller
                         // 'tire_manifistation.*' => 'exists:tire_manifistations,id',
                     );
 
+        // if(isset($input['id'])){
+        //     unset($input['sap_connection_id']);
+        //     unset($rules['sap_connection_id']);
+        // }
 
         $validator = Validator::make($input, $rules);
 
@@ -102,9 +126,11 @@ class WarrantyController extends Controller
             if(isset($input['id'])){
                 $warranty = Warranty::findOrFail($input['id']);
                 $message = "Warranty details updated successfully.";
+                $input['updated_by'] = Auth::id();
             }else{
                 $warranty = new Warranty();
                 $message = "Warranty details saved successfully.";
+                $input['created_by'] = Auth::id();
             }
 
             if($warranty->fill($input)->save()){
@@ -296,7 +322,6 @@ class WarrantyController extends Controller
             }
         }
 
-        dd($response);
         return $response;
     }
 
@@ -319,7 +344,23 @@ class WarrantyController extends Controller
      */
     public function edit($id)
     {
-        //
+        $edit = Warranty::findOrFail($id);
+        if(!in_array(userrole(),[1,4]) || ( !in_array(userrole(),[1,4]) && $edit->user_id != Auth::id()) ){ // Not a customer
+            return abort(404);
+        }
+        
+        $warranty_claim_types = Warranty::$warranty_claim_types;
+        sort($warranty_claim_types);
+
+        $claim_points = ClaimPoint::with('sub_titles')->whereNull('parent_id')->get();
+
+        $tire_manifistations = TireManifistation::all();
+
+        $warranty_claim_points = array_combine(array_column($edit->claim_points->toArray(),'claim_point_id'), array_column($edit->claim_points->toArray(),'is_yes'));
+
+        $warranty_tire_manifistations = array_combine(array_column($edit->tire_manifistations->toArray(),'tire_manifistation_id'), array_column($edit->tire_manifistations->toArray(),'is_yes'));
+
+        return view('warranty.add', compact('warranty_claim_types','claim_points','tire_manifistations','warranty_claim_points','warranty_tire_manifistations', 'edit'));
     }
 
     /**
@@ -340,8 +381,146 @@ class WarrantyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        //
+    public function destroy($id){
+        $data = Warranty::where('id', $id)->first();
+        if(!is_null($data) && in_array(userrole(),[1,3])){
+
+            $data->updated_by = Auth::id();
+            $data->save();
+
+            $data->delete();
+
+            $response = ['status'=>true,'message'=>'Record deleted successfully !'];
+        }else{
+            $response = ['status'=>false,'message'=>'Record not found !'];
+        }
+        return $response;
+    }
+
+
+    public function getAll(Request $request){
+        $data = Warranty::query();
+
+        if(userrole() == 4){
+            $data->where('user_id', @Auth::user()->id);
+        }elseif(!in_array(userrole(),[1,3])){
+            return DataTables::of(collect())->make(true);;
+        }
+
+        if($request->filter_search != ""){
+            $data->where(function($q) use ($request) {
+                $q->orwhere('customer_phone','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('customer_email','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('dealer_name','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('warranty_claim_type','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        if($request->filter_customer != ""){
+            $data->where('user_id',$request->filter_customer);
+        }
+
+        if($request->filter_claim_type != ""){
+            $data->where('warranty_claim_type',$request->filter_claim_type);
+        }
+
+        if($request->filter_company != ""){
+            $data->whereHas('user.sap_connection',function($q) use ($request){
+                $q->where('sap_connection_id',$request->filter_company);
+            });
+        }
+
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('created_at', '>=' , $start);
+            $data->whereDate('created_at', '<=' , $end);
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('id', 'desc');
+        });
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('name', function($row) {
+                                return  @$row->user->sales_specialist_name ?? "-";
+                            })
+                            ->addColumn('dealer_name', function($row) {
+                                return  @$row->dealer_name ?? "-";
+                            })
+                            ->addColumn('warranty_claim_type', function($row) {
+                                return  @$row->warranty_claim_type ?? "-";
+                            })
+                            ->addColumn('ref_no', function($row) {
+                                return 'EOMSW'. $row->id;
+                            })
+                            ->addColumn('created_at', function($row) {
+                                return date('M d, Y',strtotime($row->created_at));
+                            })
+                            ->addColumn('company', function($row) {
+                                return @$row->user->sap_connection->company_name ?? "-";
+                            })
+                            ->addColumn('action', function($row){
+                                $btn = '<a href="' . route('warranty.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
+                                            <i class="fa fa-pencil"></i>
+                                        </a>';
+
+                                if(in_array(userrole(),[1,3])){
+                                    $btn .= ' <a href="javascript:void(0)" data-url="' . route('warranty.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete mr-10">
+                                                <i class="fa fa-trash"></i>
+                                              </a>';
+                                }
+
+                                $btn .= '<a href="' . route('warranty.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm ">
+                                          <i class="fa fa-eye"></i>
+                                      </a>';
+
+
+                                return $btn;
+                            })
+                            ->orderColumn('name', function ($query, $order) {
+                                $query->select('warranties.*')->join('users', 'warranties.user_id', '=', 'users.id')
+                                    ->orderBy('users.sales_specialist_name', $order);
+                            })
+                            ->orderColumn('ref_no', function ($query, $order) {
+                                $query->orderBy('id', $order);
+                            })
+                            ->orderColumn('warranty_claim_type', function ($query, $order) {
+                                $query->orderBy('warranty_claim_type', $order);
+                            })
+                            ->orderColumn('dealer_name', function ($query, $order) {
+                                $query->orderBy('dealer_name', $order);
+                            })
+                            ->orderColumn('created_at', function ($query, $order) {
+                                $query->orderBy('created_at', $order);
+                            })
+                            ->orderColumn('company', function ($query, $order) {
+                                $query->select('warranties.*')
+                                        ->leftjoin('users', 'users.id', '=', 'warranties.user_id')
+                                        ->leftjoin('sap_connections', 'sap_connections.id', '=', 'users.id')
+                                        ->orderBy('sap_connections.company_name', $order);
+                            })
+                            ->rawColumns(['action'])
+                            ->make(true);
+    }
+
+
+    public function getCustomer(Request $request){
+        $search = $request->search;
+
+        $data = User::with('sap_connection')->where('role_id', 4)->orderBy('sales_specialist_name','asc');
+
+        if($search != ''){
+            $data->where(function($q) use ($search){
+                $q->orwhere('sales_specialist_name', 'like', '%' .$search . '%');
+            });
+        }
+
+        $data = $data->limit(50)->get();
+
+        return response()->json($data);
     }
 }

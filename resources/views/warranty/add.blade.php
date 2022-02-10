@@ -37,7 +37,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Date<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" readonly disabled value="{{ date('F d, Y') }}">
+                                            <input type="text" class="form-control form-control-solid" readonly="" disabled="" @if(isset($edit)) value="{{ date('F d, Y',strtotime($edit->created_at)) }}" @else value="{{ date('F d, Y') }}" @endif>
                                         </div>
                                     </div>
 
@@ -48,7 +48,7 @@
                                             <select class="form-control form-control-lg form-control-solid" name="warranty_claim_type" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select type of warranty claim">
                                                 <option value=""></option>
                                                 @foreach($warranty_claim_types as $key => $value)
-                                                <option value="{{ $value }}">{{ $value }}</option>
+                                                <option value="{{ $value }}" @if(isset($edit) && $edit->warranty_claim_type == $value) selected @endif>{{ $value }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -61,7 +61,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Name<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" readonly disabled value="{{ @Auth::user()->sales_specialist_name }}">
+                                            <input type="text" class="form-control form-control-solid" readonly="" disabled="" @if(isset($edit)) value="{{ $edit->user->sales_specialist_name }}" @else value="{{ Auth::user()->sales_specialist_name }}" @endif>
                                         </div>
                                     </div>
                                 </div>
@@ -71,14 +71,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Email<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="customer_email" placeholder="Enter customer email">
+                                            <input type="email" class="form-control form-control-solid" name="customer_email" placeholder="Enter customer email" @if(isset($edit)) value="{{ $edit->customer_email }}" @endif>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Phone<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="customer_phone" placeholder="Enter customer phone">
+                                            <input type="number" class="form-control form-control-solid" name="customer_phone" placeholder="Enter customer phone"  @if(isset($edit)) value="{{ $edit->customer_phone }}" @endif>
                                         </div>
                                     </div>
                                 </div>
@@ -87,14 +87,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Location<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="customer_location" placeholder="Enter customer location">
+                                            <input type="text" class="form-control form-control-solid" name="customer_location" placeholder="Enter customer location"  @if(isset($edit)) value="{{ $edit->customer_location }}" @endif>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Telephone<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="customer_telephone" placeholder="Enter customer telephone">
+                                            <input type="number" class="form-control form-control-solid" name="customer_telephone" placeholder="Enter customer telephone"  @if(isset($edit)) value="{{ $edit->customer_telephone }}" @endif>
                                         </div>
                                     </div>
                                 </div>
@@ -103,7 +103,7 @@
                                     <!-- Address -->
                                     <div class="col-md-12">
                                         <label>Customer Address<span class="asterisk">*</span></label>
-                                        <textarea class="form-control form-control-solid" name="customer_address" placeholder="Enter customer address">@if(isset($edit)) {{ $edit->address }} @endif</textarea>
+                                        <textarea class="form-control form-control-solid" name="customer_address" placeholder="Enter customer address">@if(isset($edit)) {{ $edit->customer_address }} @endif</textarea>
                                     </div>
                                 </div>
 
@@ -113,7 +113,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Dealer's Name<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="dealer_name" placeholder="Enter dealer's name">
+                                            <input type="text" class="form-control form-control-solid" name="dealer_name" placeholder="Enter dealer's name" @if(isset($edit)) value="{{ $edit->dealer_name }}" @endif >
                                         </div>
                                     </div>
                                 </div>
@@ -122,14 +122,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Dealer's Location<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="dealer_location" placeholder="Enter dealer's location">
+                                            <input type="text" class="form-control form-control-solid" name="dealer_location" placeholder="Enter dealer's location" @if(isset($edit)) value="{{ $edit->dealer_location }}" @endif >
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Dealer's Telephone<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="dealer_telephone" placeholder="Enter dealer's telephone">
+                                            <input type="number" class="form-control form-control-solid" name="dealer_telephone" placeholder="Enter dealer's telephone" @if(isset($edit)) value="{{ $edit->dealer_telephone }}" @endif >
                                         </div>
                                     </div>
                                 </div>
@@ -138,7 +138,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Dealer's Fax</label>
-                                            <input type="text" class="form-control form-control-solid" name="dealer_fax" placeholder="Enter dealer's fax">
+                                            <input type="text" class="form-control form-control-solid" name="dealer_fax" placeholder="Enter dealer's fax" @if(isset($edit)) value="{{ $edit->dealer_fax }}" @endif >
                                         </div>
                                     </div>
                                 </div>
@@ -356,8 +356,8 @@
                                                         @foreach($point->sub_titles as $s_key => $s_point)
                                                         <tr>
                                                             <td><span style="margin-left: 15px;">- {{ $s_point->title }}</span></td>
-                                                            <td><input type="checkbox" class="form-check-input yes_no_checkbox" name="claim_point[{{ $s_point->id }}]" value="1" title="Yes"></td>
-                                                            <td><input type="checkbox" class="form-check-input yes_no_checkbox" name="claim_point[{{ $s_point->id }}]" value="0" title="No"></td>
+                                                            <td><input type="checkbox" class="form-check-input yes_no_checkbox" name="claim_point[{{ $s_point->id }}]" value="1" title="Yes" @if(isset($warranty_claim_points) && @$warranty_claim_points[$s_point->id] == 1) checked @endif ></td>
+                                                            <td><input type="checkbox" class="form-check-input yes_no_checkbox" name="claim_point[{{ $s_point->id }}]" value="0" title="No" @if(isset($warranty_claim_points) && @$warranty_claim_points[$s_point->id] == 0) checked @endif ></td>
                                                         </tr>
                                                         @endforeach
                                                     @endforeach
@@ -398,8 +398,8 @@
                                                             </td>
                                                             <td>{!! $m->manifistation !!}</td>
                                                             <td>{!! $m->probable_cause !!}</td>
-                                                            <td><input type="checkbox" class="form-check-input yes_no_checkbox" name="tire_manifistation[{{ $m->id }}]" value="1" title="Yes"></td>
-                                                            <td><input type="checkbox" class="form-check-input yes_no_checkbox" name="tire_manifistation[{{ $m->id }}]" value="0" title="No"></td>
+                                                            <td><input type="checkbox" class="form-check-input yes_no_checkbox" name="tire_manifistation[{{ $m->id }}]" value="1" title="Yes" @if(isset($warranty_tire_manifistations) && @$warranty_tire_manifistations[$m->id] == 1) checked @endif ></td>
+                                                            <td><input type="checkbox" class="form-check-input yes_no_checkbox" name="tire_manifistation[{{ $m->id }}]" value="0" title="No" @if(isset($warranty_tire_manifistations) && @$warranty_tire_manifistations[$m->id] == 0) checked @endif ></td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>

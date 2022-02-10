@@ -297,6 +297,7 @@ Route::middleware(['auth'])->group(function(){
         // Warranty
         Route::resource('warranty','App\Http\Controllers\WarrantyController');
         Route::post('warranty/get-all', 'App\Http\Controllers\WarrantyController@getAll')->name('warranty.get-all');
+        Route::post('warranty/get-customer', 'App\Http\Controllers\WarrantyController@getCustomer')->name('warranty.get-customer');
 
     });
 

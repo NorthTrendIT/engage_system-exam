@@ -25,7 +25,7 @@
 
             <div class="card-body">
               <div class="row">
-                <div class="col-md-4 mt-5">
+                <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -34,12 +34,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_promotion_type" data-control="select2" data-hide-search="false" data-placeholder="Select promotion type" data-allow-clear="true">
-                    <option value=""></option>
-                  </select>
-                </div>
-
+                @if(in_array(userrole(),[1,3]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                     <option value=""></option>
@@ -49,23 +44,19 @@
                   </select>
                 </div>
 
-                <div class="col-md-2 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select status">
+                <div class="col-md-6 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-placeholder="Select customer" data-allow-clear="true">
                     <option value=""></option>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
                   </select>
                 </div>
+                @endif
 
-                <div class="col-md-4 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_scope" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select promotion customers">
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_claim_type" data-allow-clear="true" data-placeholder="Select claim type">
                     <option value=""></option>
-                    <option value="C">Customer</option>
-                    <option value="CL">Class</option>
-                    <option value="T">Territory</option>
-                    <option value="SS">Sales Specialist</option>
-                    <option value="B">Brand</option>
-                    <option value="MS">Market Sector</option>
+                    @foreach($warranty_claim_types as $key => $value)
+                    <option value="{{ $value }}">{{ $value }}</option>
+                    @endforeach
                   </select>
                 </div>
 
@@ -77,7 +68,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-4 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -94,12 +85,14 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>Ref No.</th>
+                              @if(in_array(userrole(),[1,3]))
                               <th>Business Unit</th>
-                              <th>Title</th>
-                              <th>Promotion Customers</th>
-                              <th>Start Date</th>
-                              <th>End Date</th>
-                              <th>Status</th>
+                              <th>Claim Type</th>
+                              @endif
+                              <th>Customer Name</th>
+                              <th>Dealer Name</th>
+                              <th>Created At</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -146,10 +139,9 @@
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
-      $filter_status = $('[name="filter_status"]').find('option:selected').val();
-      $filter_scope = $('[name="filter_scope"]').find('option:selected').val();
-      $filter_promotion_type = $('[name="filter_promotion_type"]').find('option:selected').val();
+      $filter_claim_type = $('[name="filter_claim_type"]').find('option:selected').val();
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
+      $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -157,28 +149,29 @@
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('promotion.get-all') }}",
+              'url': "{{ route('warranty.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
               data:{
                 filter_search : $filter_search,
-                filter_status : $filter_status,
-                filter_scope : $filter_scope,
+                filter_claim_type : $filter_claim_type,
                 filter_date_range : $filter_date_range,
-                filter_promotion_type : $filter_promotion_type,
                 filter_company : $filter_company,
+                filter_customer : $filter_customer,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'ref_no', name: 'ref_no'},
+              @if(in_array(userrole(),[1,3]))
               {data: 'company', name: 'company'},
-              {data: 'title', name: 'title'},
-              {data: 'scope', name: 'scope'},
-              {data: 'start_date', name: 'start_date'},
-              {data: 'end_date', name: 'end_date'},
-              {data: 'status', name: 'status', searchable: false},
+              {data: 'warranty_claim_type', name: 'warranty_claim_type'},
+              @endif
+              {data: 'name', name: 'name'},
+              {data: 'dealer_name', name: 'dealer_name'},
+              {data: 'created_at', name: 'created_at'},
               {data: 'action', name: 'action', orderable: false, searchable: false},
           ],
           drawCallback:function(){
@@ -199,47 +192,11 @@
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
       $('[name="filter_date_range"]').val('');
-      $('[name="filter_status"]').val('').trigger('change');
-      $('[name="filter_scope"]').val('').trigger('change');
-      $('[name="filter_promotion_type"]').val('').trigger('change');
+      $('[name="filter_claim_type"]').val('').trigger('change');
       $('[name="filter_company"]').val('').trigger('change');
+      $('[name="filter_customer"]').val('').trigger('change');
       render_table();
     })
-
-    $(document).on('click', '.sync-orders', function(event) {
-      event.preventDefault();
-
-      Swal.fire({
-        title: 'Are you sure want to sync orders?',
-        text: "Syncing process will run in background and it may take some time to sync all Orders Data.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: '{{ route('orders.sync-orders') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}'
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              render_table();
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
-    });
 
     $(document).on('click', '.delete', function(event) {
       event.preventDefault();
@@ -277,44 +234,10 @@
       })
     });
 
-    $(document).on('click', '.status', function(event) {
-      event.preventDefault();
-      $url = $(this).attr('data-url');
-
-      Swal.fire({
-        title: 'Are you sure want to change status?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, change it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: $url,
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}'
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              render_table();
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
-    });
-
-    $('[name="filter_promotion_type"]').select2({
+    @if(in_array(userrole(),[1,3]))
+    $('[name="filter_customer"]').select2({
       ajax: {
-          url: "{{route('promotion.get-promotion-type')}}",
+          url: "{{route('warranty.get-customer')}}",
           type: "post",
           dataType: 'json',
           delay: 250,
@@ -328,7 +251,7 @@
             return {
               results:  $.map(response, function (item) {
                             return {
-                              text: item.title,
+                              text: item.sales_specialist_name + " (Company: "+item.sap_connection.company_name+" )",
                               id: item.id
                             }
                         })
@@ -337,7 +260,7 @@
           cache: true
       },
     });
-
+    @endif
   })
 </script>
 @endpush

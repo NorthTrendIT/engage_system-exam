@@ -32,4 +32,20 @@ class Warranty extends Model
         'Ride Vibration',
         'Road Hazard',
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class,'user_id');
+    }
+
+    public function claim_points(){
+        return $this->hasMany(WarrantyClaimPoint::class,'warranty_id');
+    }
+
+    public function tire_manifistations(){
+        return $this->hasMany(WarrantyTireManifistation::class,'warranty_id');
+    }
+
+    public function pictures(){
+        return $this->hasMany(WarrantyPicture::class,'warranty_id');
+    }
 }
