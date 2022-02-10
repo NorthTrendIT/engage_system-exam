@@ -34,6 +34,7 @@
                   </div>
                 </div>
 
+                @if(@Auth::user()->role_id == 1)
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_module" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select Customer">
                     <option value=""></option>
@@ -45,6 +46,7 @@
                     <option value="market_sector">Market Sector</option>
                   </select>
                 </div>
+                @endif
 
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_priority" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select priority">
@@ -62,6 +64,7 @@
                   </select>
                 </div>
 
+                @if(@Auth::user()->role_id == 1)
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name="filter_date_range" id="kt_daterangepicker_1" readonly>
@@ -69,6 +72,7 @@
                     </span>
                   </div>
                 </div>
+                @endif
 
                 <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
@@ -87,15 +91,17 @@
                           <thead>
                             <tr>
                                 <th>No</th>
+                                @if(@Auth::user()->role_id == 1)
                                 <th>Bussines Unit</th>
+                                @endif
                                 <th>Title</th>
                                 <th>Type</th>
                                 <th>Module</th>
                                 <th>Priority</th>
                                 @if(@Auth::user()->role_id == 1)
                                 <th>User Name</th>
-                                @endif
                                 <th>Status</th>
+                                @endif
                                 <th>Action</th>
                             </tr>
                           </thead>
@@ -160,22 +166,26 @@ $(document).ready(function() {
               data:{
                 filter_search : $filter_search,
                 filter_type : $filter_type,
-                filter_module : $filter_module,
                 filter_priority : $filter_priority,
+                @if(@Auth::user()->role_id == 1)
+                filter_module : $filter_module,
                 filter_date_range : $filter_date_range,
+                @endif
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              @if(@Auth::user()->role_id == 1)
               {data: 'bussines_unit', name: 'bussines_unit'},
+              @endif
               {data: 'title', name: 'title'},
               {data: 'type', name: 'type'},
               {data: 'module', name: 'module'},
               {data: 'is_important', name: 'is_important', orderable: false},
               @if(@Auth::user()->role_id == 1)
               {data: 'user_name', name: 'user_name'},
-              @endif
               {data: 'status', name: 'status', orderable: false},
+              @endif
               {data: 'action', name: 'action', orderable: false},
           ],
           drawCallback:function(){
