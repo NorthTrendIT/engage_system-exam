@@ -160,6 +160,7 @@
           processing: true,
           serverSide: true,
           scrollX: true,
+          responsive: true,
           order: [],
           ajax: {
               'url': "{{ route('customer-promotion.order.get-all') }}",
