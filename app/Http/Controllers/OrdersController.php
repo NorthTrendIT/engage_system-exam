@@ -612,7 +612,7 @@ class OrdersController extends Controller
                             'doc_entry' => $value->doc_entry,
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
                             'doc_total' => number_format($value->doc_total),
-                            'created_at' => date('M d, Y',strtotime($value->created_date)),
+                            'created_at' => date('M d, Y',strtotime($value->doc_date)),
                             'status' => getOrderStatus($value),
                           );
         }

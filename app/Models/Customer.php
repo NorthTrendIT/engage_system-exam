@@ -47,6 +47,7 @@ class Customer extends Model
         'u_subsector',
         'u_province',
         'u_card_code',
+        'u_classification',
     ];
 
     public function bp_addresses()
