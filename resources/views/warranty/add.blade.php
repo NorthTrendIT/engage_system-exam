@@ -25,7 +25,7 @@
                         </div>
 
                         <div class="card-body">
-                            <form method="post" id="myForm">
+                            <form method="post" id="myForm" autocomplete="off">
                                 @csrf
 
                                 @if(isset($edit))
@@ -72,14 +72,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Email<span class="asterisk">*</span></label>
-                                            <input type="email" class="form-control form-control-solid" name="customer_email" placeholder="Enter customer email" @if(isset($edit)) value="{{ $edit->customer_email }}" @endif >
+                                            <input type="email" class="form-control form-control-solid" name="customer_email" placeholder="Enter customer email" @if(isset($edit)) value="{{ $edit->customer_email }}" @endif autocomplete="off">
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Phone<span class="asterisk">*</span></label>
-                                            <input type="number" class="form-control form-control-solid" name="customer_phone" placeholder="Enter customer phone"  @if(isset($edit)) value="{{ $edit->customer_phone }}" @endif >
+                                            <input type="number" class="form-control form-control-solid" name="customer_phone" placeholder="Enter customer phone"  @if(isset($edit)) value="{{ $edit->customer_phone }}" @endif autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -95,7 +95,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Telephone<span class="asterisk">*</span></label>
-                                            <input type="number" class="form-control form-control-solid" name="customer_telephone" placeholder="Enter customer telephone"  @if(isset($edit)) value="{{ $edit->customer_telephone }}" @endif >
+                                            <input type="number" class="form-control form-control-solid" name="customer_telephone" placeholder="Enter customer telephone"  @if(isset($edit)) value="{{ $edit->customer_telephone }}" @endif autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -130,7 +130,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Dealer's Telephone<span class="asterisk">*</span></label>
-                                            <input type="number" class="form-control form-control-solid" name="dealer_telephone" placeholder="Enter dealer's telephone" @if(isset($edit)) value="{{ $edit->dealer_telephone }}" @endif >
+                                            <input type="number" class="form-control form-control-solid" name="dealer_telephone" placeholder="Enter dealer's telephone" @if(isset($edit)) value="{{ $edit->dealer_telephone }}" @endif autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
