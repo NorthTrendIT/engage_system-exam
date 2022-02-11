@@ -22,7 +22,7 @@
 
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -35,7 +35,7 @@
               <div class="row">
                 <div class="col-md-6 mt-5">
                   <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
                     <span>
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
@@ -97,7 +97,7 @@
                           <!--end::Table head-->
                           <!--begin::Table body-->
                           <tbody>
-                            
+
                           </tbody>
                           <!--end::Table body-->
                        </table>
