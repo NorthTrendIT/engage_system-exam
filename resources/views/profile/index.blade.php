@@ -69,7 +69,7 @@
                   <div class="col-md-12">
                     <div class="form-group">
                       <label>Profile</label>
-                      <input type="file" class="form-control form-control-solid" name="profile" accept="image/*">
+                      <input type="file" class="form-control form-control-solid" name="profile" data-allowed-file-extensions="jpeg jpg png eps bmp tif tiff webp pdf doc docx xls xlsx ppt pptx odt ods">
                     </div>
                   </div>
                 </div>
@@ -159,9 +159,13 @@
                 required:true,
                 maxlength: 185,
               },
+              profile:{
+                required: false,
+                maxsize: 10000000,
+                extension: 'jpeg|jpg|png|eps|bmp|tif|tiff|webp',
+              },
           },
           messages: {
-              
               first_name:{
                 required: "Please enter first name.",
                 maxlength:'Please enter first name less than 185 character',
@@ -174,12 +178,16 @@
                 required:"Please enter email.",
                 maxlength:'Please enter email less than 185 character',
               },
+              profile:{
+                extension: "Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp files.",
+                maxsize: "File size must not exceed 10MB.",
+              },
           },
       });
 
       return validator;
     }
-  
+
   });
 </script>
 @endpush
