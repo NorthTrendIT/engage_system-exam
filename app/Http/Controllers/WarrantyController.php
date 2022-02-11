@@ -69,8 +69,6 @@ class WarrantyController extends Controller
     {
         $input = $request->all();
 
-        // dd($input);
-
         if(!isset($input['id']) && !in_array(userrole(),[1,3])){
             $input['user_id'] = Auth::id();
             // $input['sap_connection_id'] = Auth::user()->sap_connection_id;
@@ -135,9 +133,22 @@ class WarrantyController extends Controller
 
             if($warranty->fill($input)->save()){
 
-                $input['lt_tire_position'] = implode(",", $input['lt_tire_position']);
-                $input['tb_tire_position'] = implode(",", $input['tb_tire_position']);
-                $input['location_of_damage'] = implode(",", $input['location_of_damage']);
+                if(@$input['lt_tire_position']){
+                    $input['lt_tire_position'] = implode(", ", $input['lt_tire_position']);
+                }else{
+                    $input['lt_tire_position'] = NULL;
+                }
+                if(@$input['tb_tire_position']){
+                    $input['tb_tire_position'] = implode(", ", $input['tb_tire_position']);
+                }else{
+                    $input['tb_tire_position'] = NULL;
+                }
+                if(@$input['location_of_damage']){
+                    $input['location_of_damage'] = implode(", ", $input['location_of_damage']);
+                }else{
+                    $input['location_of_damage'] = NULL;
+                }
+
                 $input['warranty_id'] = $warranty->id;
 
                 $warranty_vehicle_obj = WarrantyVehicle::firstOrNew(['warranty_id' => $warranty->id]);
@@ -244,21 +255,23 @@ class WarrantyController extends Controller
                             }
 
                             if($file->getSize() <= 10 * 1024 * 1024){ //10MB
-                              $name = date("YmdHis")."_".$key."_".$file->getClientOriginalName() ;
-                              $file->move(public_path() . '/sitebucket/warranty-pictures/', $name);
-                              $insert['image'] = $name;
+                                $name = date("YmdHis")."_".$key."_".$file->getClientOriginalName() ;
+                                $file->move(public_path() . '/sitebucket/warranty-pictures/', $name);
+                                $insert['image'] = $name;
                             }
+                        }else{
+                            $insert['image'] = $value;
                         }
 
                         if($insert['image'] && @$input['default_pictures']['title'][$key] != ""){
                             $insert['title'] = $input['default_pictures']['title'][$key];
                             $insert['type'] = 'default';
 
-                            // if(isset($value['id'])){
-                            //     $warranty_picture_obj = WarrantyPicture::find($value['id']);
-                            // }else{
+                            if(@$input['default_pictures']['id'][$key] != ""){
+                                $warranty_picture_obj = WarrantyPicture::find(@$input['default_pictures']['id'][$key]);
+                            }else{
                                 $warranty_picture_obj = New WarrantyPicture();
-                            //}
+                            }
 
                             $warranty_picture_obj->fill($insert)->save();
 
@@ -285,17 +298,19 @@ class WarrantyController extends Controller
                                 $file->move(public_path() . '/sitebucket/warranty-pictures/', $name);
                                 $insert['image'] = $name;
                             }
+                        }else{
+                            $insert['image'] = $value['image'];
                         }
 
                         if($insert['image'] && @$value['title'] != ""){
                             $insert['title'] = $value['title'];
                             $insert['type'] = 'other';
 
-                            // if(isset($value['id'])){
-                            //     $warranty_picture_obj = WarrantyPicture::find($value['id']);
-                            // }else{
+                            if(isset($value['id'])){
+                                $warranty_picture_obj = WarrantyPicture::find($value['id']);
+                            }else{
                                 $warranty_picture_obj = New WarrantyPicture();
-                            // }
+                            }
 
                             $warranty_picture_obj->fill($insert)->save();
 
@@ -333,7 +348,21 @@ class WarrantyController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = Warranty::findOrFail($id);
+        if(!in_array(userrole(),[1,4]) || ( !in_array(userrole(),[1,4]) && $data->user_id != Auth::id()) ){ // Not a customer
+            return abort(404);
+        }
+
+        $claim_points = ClaimPoint::with('sub_titles')->whereNull('parent_id')->get();
+
+        $tire_manifistations = TireManifistation::all();
+
+        $warranty_claim_points = array_combine(array_column($data->claim_points->toArray(),'claim_point_id'), array_column($data->claim_points->toArray(),'is_yes'));
+
+        $warranty_tire_manifistations = array_combine(array_column($data->tire_manifistations->toArray(),'tire_manifistation_id'), array_column($data->tire_manifistations->toArray(),'is_yes'));
+
+
+        return view('warranty.view', compact('claim_points','tire_manifistations','warranty_claim_points','warranty_tire_manifistations','data'));
     }
 
     /**
@@ -356,11 +385,18 @@ class WarrantyController extends Controller
 
         $tire_manifistations = TireManifistation::all();
 
+
+
         $warranty_claim_points = array_combine(array_column($edit->claim_points->toArray(),'claim_point_id'), array_column($edit->claim_points->toArray(),'is_yes'));
 
         $warranty_tire_manifistations = array_combine(array_column($edit->tire_manifistations->toArray(),'tire_manifistation_id'), array_column($edit->tire_manifistations->toArray(),'is_yes'));
 
-        return view('warranty.add', compact('warranty_claim_types','claim_points','tire_manifistations','warranty_claim_points','warranty_tire_manifistations', 'edit'));
+        $location_of_damage = explode(", ", $edit->vehicle->location_of_damage);
+        $tb_tire_position = explode(", ", $edit->vehicle->tb_tire_position);
+        $lt_tire_position = explode(", ", $edit->vehicle->lt_tire_position);
+
+
+        return view('warranty.add', compact('warranty_claim_types','claim_points','tire_manifistations','warranty_claim_points','warranty_tire_manifistations', 'location_of_damage', 'tb_tire_position', 'lt_tire_position','edit'));
     }
 
     /**

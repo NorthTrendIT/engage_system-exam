@@ -30,6 +30,7 @@
 
                                 @if(isset($edit))
                                 <input type="hidden" name="id" value="{{ $edit->id }}">
+                                <input type="hidden" name="user_id" value="{{ $edit->user_id }}">
                                 @endif
 
                                 <div class="row mb-5">
@@ -37,7 +38,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Date<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" readonly="" disabled="" @if(isset($edit)) value="{{ date('F d, Y',strtotime($edit->created_at)) }}" @else value="{{ date('F d, Y') }}" @endif>
+                                            <input type="text" class="form-control form-control-solid" readonly="" disabled="" @if(isset($edit)) value="{{ date('F d, Y',strtotime($edit->created_at)) }}" @else value="{{ date('F d, Y') }}" @endif >
                                         </div>
                                     </div>
 
@@ -48,7 +49,7 @@
                                             <select class="form-control form-control-lg form-control-solid" name="warranty_claim_type" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select type of warranty claim">
                                                 <option value=""></option>
                                                 @foreach($warranty_claim_types as $key => $value)
-                                                <option value="{{ $value }}" @if(isset($edit) && $edit->warranty_claim_type == $value) selected @endif>{{ $value }}</option>
+                                                <option value="{{ $value }}" @if(isset($edit) && $edit->warranty_claim_type == $value) selected @endif >{{ $value }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -61,7 +62,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Name<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" readonly="" disabled="" @if(isset($edit)) value="{{ $edit->user->sales_specialist_name }}" @else value="{{ Auth::user()->sales_specialist_name }}" @endif>
+                                            <input type="text" class="form-control form-control-solid" readonly="" disabled="" @if(isset($edit)) value="{{ $edit->user->sales_specialist_name }}" @else value="{{ Auth::user()->sales_specialist_name }}" @endif >
                                         </div>
                                     </div>
                                 </div>
@@ -71,14 +72,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Email<span class="asterisk">*</span></label>
-                                            <input type="email" class="form-control form-control-solid" name="customer_email" placeholder="Enter customer email" @if(isset($edit)) value="{{ $edit->customer_email }}" @endif>
+                                            <input type="email" class="form-control form-control-solid" name="customer_email" placeholder="Enter customer email" @if(isset($edit)) value="{{ $edit->customer_email }}" @endif >
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Phone<span class="asterisk">*</span></label>
-                                            <input type="number" class="form-control form-control-solid" name="customer_phone" placeholder="Enter customer phone"  @if(isset($edit)) value="{{ $edit->customer_phone }}" @endif>
+                                            <input type="number" class="form-control form-control-solid" name="customer_phone" placeholder="Enter customer phone"  @if(isset($edit)) value="{{ $edit->customer_phone }}" @endif >
                                         </div>
                                     </div>
                                 </div>
@@ -87,14 +88,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Location<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="customer_location" placeholder="Enter customer location"  @if(isset($edit)) value="{{ $edit->customer_location }}" @endif>
+                                            <input type="text" class="form-control form-control-solid" name="customer_location" placeholder="Enter customer location"  @if(isset($edit)) value="{{ $edit->customer_location }}" @endif >
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Telephone<span class="asterisk">*</span></label>
-                                            <input type="number" class="form-control form-control-solid" name="customer_telephone" placeholder="Enter customer telephone"  @if(isset($edit)) value="{{ $edit->customer_telephone }}" @endif>
+                                            <input type="number" class="form-control form-control-solid" name="customer_telephone" placeholder="Enter customer telephone"  @if(isset($edit)) value="{{ $edit->customer_telephone }}" @endif >
                                         </div>
                                     </div>
                                 </div>
@@ -158,14 +159,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Vehicle Maker<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="vehicle_maker" placeholder="Enter vehicle maker">
+                                            <input type="text" class="form-control form-control-solid" name="vehicle_maker" placeholder="Enter vehicle maker" @if(isset($edit)) value="{{ @$edit->vehicle->vehicle_maker }}" @endif >
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Year<span class="asterisk">*</span></label>
-                                            <input type="number" class="form-control form-control-solid" name="year" placeholder="Enter year">
+                                            <input type="number" class="form-control form-control-solid" name="year" placeholder="Enter year" @if(isset($edit)) value="{{ @$edit->vehicle->year }}" @endif >
                                         </div>
                                     </div>
                                 </div>
@@ -174,14 +175,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Vehicle Model<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="vehicle_model" placeholder="Enter vehicle model">
+                                            <input type="text" class="form-control form-control-solid" name="vehicle_model" placeholder="Enter vehicle model" @if(isset($edit)) value="{{ @$edit->vehicle->vehicle_model }}" @endif >
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>License Plate<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="license_plate" placeholder="Enter license plate">
+                                            <input type="text" class="form-control form-control-solid" name="license_plate" placeholder="Enter license plate" @if(isset($edit)) value="{{ @$edit->vehicle->license_plate }}" @endif >
                                         </div>
                                     </div>
                                 </div>
@@ -190,7 +191,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Vehicle Mileage<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" name="vehicle_mileage" placeholder="Enter vehicle mileage">
+                                            <input type="text" class="form-control form-control-solid" name="vehicle_mileage" placeholder="Enter vehicle mileage" @if(isset($edit)) value="{{ @$edit->vehicle->vehicle_mileage }}" @endif >
                                         </div>
                                     </div>
                                 </div>
@@ -209,25 +210,25 @@
                                         <div class="row mb-5">
                                             <div class="col-md-3">
                                                 <div class="form-group">
-                                                    <label><input type="checkbox" name="lt_tire_position[]" class="form-check-input mr-10" value="LF" title="LF">LF</label>
+                                                    <label><input type="checkbox" name="lt_tire_position[]" class="form-check-input mr-10" value="LF" title="LF" @if(isset($lt_tire_position) && in_array('LF', $lt_tire_position)) checked @endif >LF</label>
                                                 </div>
                                             </div>
 
                                             <div class="col-md-3">
                                                 <div class="form-group">
-                                                    <label><input type="checkbox" name="lt_tire_position[]" class="form-check-input mr-10" value="RF" title="RF">RF</label>
+                                                    <label><input type="checkbox" name="lt_tire_position[]" class="form-check-input mr-10" value="RF" title="RF" @if(isset($lt_tire_position) && in_array('RF', $lt_tire_position)) checked @endif >RF</label>
                                                 </div>
                                             </div>
 
                                             <div class="col-md-3">
                                                 <div class="form-group">
-                                                    <label><input type="checkbox" name="lt_tire_position[]" class="form-check-input mr-10" value="LR" title="LR">LR</label>
+                                                    <label><input type="checkbox" name="lt_tire_position[]" class="form-check-input mr-10" value="LR" title="LR" @if(isset($lt_tire_position) && in_array('LR', $lt_tire_position)) checked @endif >LR</label>
                                                 </div>
                                             </div>
 
                                             <div class="col-md-3">
                                                 <div class="form-group">
-                                                    <label><input type="checkbox" name="lt_tire_position[]" class="form-check-input mr-10" value="RR" title="RR">RR</label>
+                                                    <label><input type="checkbox" name="lt_tire_position[]" class="form-check-input mr-10" value="RR" title="RR" @if(isset($lt_tire_position) && in_array('RR', $lt_tire_position)) checked @endif >RR</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -236,7 +237,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label>Tire Mileage</label>
-                                                    <input type="text" class="form-control form-control-solid" name="lt_tire_mileage" placeholder="Enter tire mileage">
+                                                    <input type="text" class="form-control form-control-solid" name="lt_tire_mileage" placeholder="Enter tire mileage" @if(isset($edit)) value="{{ @$edit->vehicle->vehicle_maker }}" @endif >
                                                 </div>
                                             </div>
                                         </div>
@@ -255,19 +256,19 @@
                                         <div class="row mb-5">
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label><input type="checkbox" name="tb_tire_position[]" class="form-check-input mr-10" value="Front" title="Front">Front</label>
+                                                    <label><input type="checkbox" name="tb_tire_position[]" class="form-check-input mr-10" value="Front" title="Front" @if(isset($tb_tire_position) && in_array('Front', $tb_tire_position)) checked @endif >Front</label>
                                                 </div>
                                             </div>
 
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label><input type="checkbox" name="tb_tire_position[]" class="form-check-input mr-10" value="Drive" title="Drive">Drive</label>
+                                                    <label><input type="checkbox" name="tb_tire_position[]" class="form-check-input mr-10" value="Drive" title="Drive" @if(isset($tb_tire_position) && in_array('Drive', $tb_tire_position)) checked @endif >Drive</label>
                                                 </div>
                                             </div>
 
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label><input type="checkbox" name="tb_tire_position[]" class="form-check-input mr-10" value="Trailer" title="Trailer">Trailer</label>
+                                                    <label><input type="checkbox" name="tb_tire_position[]" class="form-check-input mr-10" value="Trailer" title="Trailer" @if(isset($tb_tire_position) && in_array('Trailer', $tb_tire_position)) checked @endif >Trailer</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -276,7 +277,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label>Tire Mileage</label>
-                                                    <input type="text" class="form-control form-control-solid" name="tb_tire_mileage" placeholder="Enter tire mileage">
+                                                    <input type="text" class="form-control form-control-solid" name="tb_tire_mileage" placeholder="Enter tire mileage" @if(isset($edit)) value="{{ @$edit->vehicle->vehicle_maker }}" @endif >
                                                 </div>
                                             </div>
                                         </div>
@@ -295,7 +296,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label>Reason for tire return<span class="asterisk">*</span></label>
-                                            <textarea class="form-control form-control-solid" name="reason_for_tire_return" placeholder="Enter reason for tire return"></textarea>
+                                            <textarea class="form-control form-control-solid" name="reason_for_tire_return" placeholder="Enter reason for tire return">@if(isset($edit)){{ @$edit->vehicle->reason_for_tire_return }}@endif</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -305,31 +306,31 @@
                                     <div class="d-flex justify-content-between">
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Tread" title="Tread">Tread</label>
+                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Tread" title="Tread" @if(isset($location_of_damage) && in_array('Tread', $location_of_damage)) checked @endif >Tread</label>
                                             </div>
                                         </div>
 
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Sidewall" title="Sidewall">Sidewall</label>
+                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Sidewall" title="Sidewall" @if(isset($location_of_damage) && in_array('Sidewall', $location_of_damage)) checked @endif >Sidewall</label>
                                             </div>
                                         </div>
 
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Shoulder" title="Shoulder">Shoulder</label>
+                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Shoulder" title="Shoulder" @if(isset($location_of_damage) && in_array('Shoulder', $location_of_damage)) checked @endif >Shoulder</label>
                                             </div>
                                         </div>
 
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Bead" title="Bead">Bead</label>
+                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Bead" title="Bead" @if(isset($location_of_damage) && in_array('Bead', $location_of_damage)) checked @endif >Bead</label>
                                             </div>
                                         </div>
 
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Others" title="Others">Others</label>
+                                                <label><input type="checkbox" name="location_of_damage[]" class="form-check-input mr-10" value="Others" title="Others" @if(isset($location_of_damage) && in_array('Others', $location_of_damage)) checked @endif >Others</label>
                                             </div>
                                         </div>
                                     </div>
@@ -425,12 +426,31 @@
                                             <input type="text" name="default_pictures[title][1]" class="form-control form-control-solid default_pictures_title" value="Tread Area" readonly>
                                         </div>
                                     </div>
+
+                                    @if(isset($edit))
+                                        @php
+                                            $default_picture = @$edit->pictures()->where('title','Tread Area')->first();
+                                        @endphp
+
+                                        <input type="hidden" class="default_pictures_id" name="default_pictures[id][1]" value="{{ @$default_picture->id }}">
+                                        <input type="hidden" class="default_pictures_image" name="default_pictures[image][1]" value="{{ @$default_picture->image }}">
+                                    @endif
+
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label>Upload Image <span class="asterisk">*</span></label>
                                             <input type="file" name="default_pictures[image][1]" class="form-control form-control-solid default_pictures_image" accept="image/*" capture>
                                         </div>
                                     </div>
+
+                                    @if(@$default_picture->image && get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image))
+                                      <div class="col-md-2 image_preview">
+                                        <div class="form-group">
+                                          <a href="{{ get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image) }}" height="100" width="100" class=""></a>
+                                        </div>
+                                      </div>
+                                    @endif
+
                                 </div>
                                 <div class="row mb-5 mt-10">
                                     <div class="col-md-5">
@@ -439,12 +459,31 @@
                                             <input type="text" name="default_pictures[title][2]" class="form-control form-control-solid default_pictures_title" value="Sidewall Area" readonly>
                                         </div>
                                     </div>
+
+                                    @if(isset($edit))
+                                        @php
+                                            $default_picture = @$edit->pictures()->where('title','Sidewall Area')->first();
+                                        @endphp
+
+                                        <input type="hidden" class="default_pictures_id" name="default_pictures[id][2]" value="{{ @$default_picture->id }}">
+                                        <input type="hidden" class="default_pictures_image" name="default_pictures[image][2]" value="{{ @$default_picture->image }}">
+                                    @endif
+
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label>Upload Image <span class="asterisk">*</span></label>
                                             <input type="file" name="default_pictures[image][2]" class="form-control form-control-solid default_pictures_image" accept="image/*" capture>
                                         </div>
                                     </div>
+
+                                    @if(@$default_picture->image && get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image))
+                                        <div class="col-md-2 image_preview">
+                                            <div class="form-group">
+                                                <a href="{{ get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image) }}" height="100" width="100" class=""></a>
+                                            </div>
+                                        </div>
+                                    @endif
+
                                 </div>
                                 <div class="row mb-5 mt-10">
                                     <div class="col-md-5">
@@ -453,12 +492,32 @@
                                             <input type="text" name="default_pictures[title][3]" class="form-control form-control-solid default_pictures_title" value="Bead Area" readonly>
                                         </div>
                                     </div>
+
+                                    @if(isset($edit))
+                                        @php
+                                            $default_picture = @$edit->pictures()->where('title','Bead Area')->first();
+                                        @endphp
+
+                                        <input type="hidden" class="default_pictures_id" name="default_pictures[id][3]" value="{{ @$default_picture->id }}">
+                                        <input type="hidden" class="default_pictures_image" name="default_pictures[image][3]" value="{{ @$default_picture->image }}">
+                                    @endif
+
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label>Upload Image <span class="asterisk">*</span></label>
                                             <input type="file" name="default_pictures[image][3]" class="form-control form-control-solid default_pictures_image" accept="image/*" capture>
                                         </div>
                                     </div>
+
+                                    @if(@$default_picture->image && get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image))
+                                      <div class="col-md-2 image_preview">
+                                        <div class="form-group">
+                                          <a href="{{ get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image) }}" height="100" width="100" class=""></a>
+                                        </div>
+                                      </div>
+                                    @endif
+                                        
+
                                 </div>
                                 <div class="row mb-5 mt-10">
                                     <div class="col-md-5">
@@ -467,15 +526,69 @@
                                             <input type="text" name="default_pictures[title][4]" class="form-control form-control-solid default_pictures_title" value="Inner Liner Area" readonly>
                                         </div>
                                     </div>
+
+                                    @if(isset($edit))
+                                        @php
+                                            $default_picture = @$edit->pictures()->where('title','Inner Liner Area')->first();
+                                        @endphp
+
+                                        <input type="hidden" class="default_pictures_id" name="default_pictures[id][4]" value="{{ @$default_picture->id }}">
+                                        <input type="hidden" class="default_pictures_image" name="default_pictures[image][4]" value="{{ @$default_picture->image }}">
+                                    @endif
+
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label>Upload Image <span class="asterisk">*</span></label>
                                             <input type="file" name="default_pictures[image][4]" class="form-control form-control-solid default_pictures_image" accept="image/*" capture>
                                         </div>
                                     </div>
+
+                                    @if(@$default_picture->image && get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image))
+                                      <div class="col-md-2 image_preview">
+                                        <div class="form-group">
+                                          <a href="{{ get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image) }}" height="100" width="100" class=""></a>
+                                        </div>
+                                      </div>
+                                    @endif
+
                                 </div>
 
                                 <div data-repeater-list="other_pictures" class="mt-10">
+                                    @if(isset($edit))
+
+                                        @foreach(@$edit->pictures()->where('type','other')->get() as $key => $other)
+                                            <div class="row mb-5" data-repeater-item>
+                                                <div class="col-md-5">
+                                                    <div class="form-group">
+                                                        <label>Title <span class="asterisk">*</span></label>
+                                                        <input type="text" name="title" class="form-control form-control-solid other_pictures_title" placeholder="Enter title" value="{{ $other->title }}">
+                                                    </div>
+                                                </div>
+
+                                                <input type="hidden" class="other_pictures_id" name="id" value="{{ @$other->id }}">
+                                                <input type="hidden" class="other_pictures_image" name="image" value="{{ @$other->image }}">
+
+                                                <div class="col-md-5">
+                                                    <div class="form-group">
+                                                        <label>Upload Image <span class="asterisk">*</span></label>
+                                                        <input type="file" class="form-control form-control-solid other_pictures_image" name="image" accept="image/*" capture>
+
+                                                        @if(@$other->image && get_valid_file_url('sitebucket/warranty-pictures',$other->image))
+                                                            <br>
+                                                            <a href="{{ get_valid_file_url('sitebucket/warranty-pictures',$other->image) }}" class="fancybox image_preview"><img src="{{ get_valid_file_url('sitebucket/warranty-pictures',$other->image) }}" height="100" width="100" class=""></a>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                    <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-md btn-color-danger mt-6" data-repeater-delete><i class="fa fa-trash"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+
+                                    @else
                                     <div class="row mb-5" data-repeater-item>
                                         <div class="col-md-5">
                                             <div class="form-group">
@@ -496,6 +609,8 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @endif
+
                                 </div>
 
                                 <div class="row mb-5">
@@ -666,9 +781,27 @@ $(document).ready(function() {
         });
 
         $('.default_pictures_image').each(function() {
-            $(this).rules('add', {
+            /*$(this).rules('add', {
+                @if(!isset($edit))
                 required: true,
+                @endif
+            });*/
+
+            var pre_image = $(this).closest('.row').find('.default_pictures_id').val();
+
+            $(this).rules('add', {
+                required: function () {
+                            if(!pre_image){
+                                return true;
+                            }else{
+                                return false;
+                            }
+                        },
+                messages: {
+                    accept : "Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp files."
+                }
             });
+
         });
 
 
@@ -680,7 +813,7 @@ $(document).ready(function() {
         });
 
         $('.other_pictures_image').each(function() {
-            var pre_image = $(this).prev('.product_images_value').val();
+            var pre_image = $(this).closest('.row').find('.other_pictures_id').val();
 
             $(this).rules('add', {
                 required: function () {
@@ -700,7 +833,11 @@ $(document).ready(function() {
     }
 
     $('#myForm').repeater({
+        @if(isset($edit) && count(@$edit->pictures()->where('type','other')->get()))
+        initEmpty: false,
+        @else
         initEmpty: true,
+        @endif
         show: function () {
             $(this).find('.product_images_value').remove();
             $(this).find('.image_preview').remove();
@@ -713,7 +850,7 @@ $(document).ready(function() {
         },
         ready: function (setIndexes) {
         },
-        isFirstItemUndeletable: true,
+        isFirstItemUndeletable: false,
     });
 
     hide_loader();

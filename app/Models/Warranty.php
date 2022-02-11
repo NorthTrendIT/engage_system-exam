@@ -37,6 +37,10 @@ class Warranty extends Model
         return $this->belongsTo(User::class,'user_id');
     }
 
+    public function vehicle(){
+        return $this->belongsTo(WarrantyVehicle::class,'id','warranty_id');
+    }
+
     public function claim_points(){
         return $this->hasMany(WarrantyClaimPoint::class,'warranty_id');
     }

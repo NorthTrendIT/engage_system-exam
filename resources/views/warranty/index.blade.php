@@ -1,18 +1,20 @@
 @extends('layouts.master')
 
-@section('title','Promotions')
+@section('title','Warranty')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Promotions</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Warranty</h1>
       </div>
 
+      @if(userrole() == 4)
       <div class="d-flex align-items-center py-1">
-        <a href="{{ route('promotion.create') }}" class="btn btn-sm btn-primary">Create</a>
+        <a href="{{ route('warranty.create') }}" class="btn btn-sm btn-primary">Create</a>
       </div>
+      @endif
 
     </div>
   </div>
@@ -68,7 +70,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-4 mt-5">
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -88,11 +90,11 @@
                               <th>Ref No.</th>
                               @if(in_array(userrole(),[1,3]))
                               <th>Business Unit</th>
-                              <th>Claim Type</th>
-                              @endif
                               <th>Customer Name</th>
+                              @endif
+                              <th>Claim Type</th>
                               <th>Dealer Name</th>
-                              <th>Created At</th>
+                              <th>Date Time</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -167,9 +169,9 @@
               {data: 'ref_no', name: 'ref_no'},
               @if(in_array(userrole(),[1,3]))
               {data: 'company', name: 'company'},
-              {data: 'warranty_claim_type', name: 'warranty_claim_type'},
-              @endif
               {data: 'name', name: 'name'},
+              @endif
+              {data: 'warranty_claim_type', name: 'warranty_claim_type'},
               {data: 'dealer_name', name: 'dealer_name'},
               {data: 'created_at', name: 'created_at'},
               {data: 'action', name: 'action', orderable: false, searchable: false},
