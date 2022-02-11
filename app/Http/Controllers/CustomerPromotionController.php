@@ -136,7 +136,7 @@ class CustomerPromotionController extends Controller
                             }
 
                         }else if($promotion->promotion_scope == "B"){ //Market Sector
-     
+
                             if($customer){
                                 $brands = $customer->product_groups()->pluck('product_group_id')->toArray();
                                 $check = $promotion->promotion_data()->whereIn('brand_id', $brands)->get();

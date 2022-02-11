@@ -138,7 +138,7 @@ class DepartmentController extends Controller
      */
     public function edit($id)
     {
-        
+
         if(userrole() != 1){
             $edit = Department::where('id',$id)->whereNotIn('id',[1])->where('user_id',Auth::id())->firstOrFail();
             $roles = Role::where('id','!=',1)->where('user_id',Auth::id())->get();
@@ -253,13 +253,37 @@ class DepartmentController extends Controller
 
                                 $btn = "";
                                 if($row->is_active){
-                                    $btn .= '<a href="javascript:"  data-url="' . route('department.status',$row->id) . '" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
+                                    $btn .= '<div class="form-group">
+                                    <div class="col-3">
+                                     <span class="switch">
+                                      <label>
+                                       <input type="checkbox" checked="checked" name="status" class="status" data-url="' . route('department.status',$row->id) . '"/>
+                                       <span></span>
+                                      </label>
+                                     </span>
+                                    </div>';
                                 }else{
-                                    $btn .= '<a href="javascript:"  data-url="' . route('department.status',$row->id) . '" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
+                                    $btn .= '<div class="form-group">
+                                    <div class="col-3">
+                                     <span class="switch">
+                                      <label>
+                                       <input type="checkbox" name="status" class="status" data-url="' . route('department.status',$row->id) . '"/>
+                                       <span></span>
+                                      </label>
+                                     </span>
+                                    </div>';
                                 }
 
                                 if(in_array($row->id, [1])){
-                                  $btn = '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline">Active</a>';
+                                  $btn = '<div class="form-group">
+                                  <div class="col-3">
+                                   <span class="switch">
+                                    <label>
+                                     <input type="checkbox" checked="checked" name="status" disabled/>
+                                     <span></span>
+                                    </label>
+                                   </span>
+                                  </div>';
                                   return $btn;
                                 }
 

@@ -39,9 +39,9 @@
                 <div class="row mb-5">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Select Bussines Unit<span class="asterisk">*</span></label>
+                            <label>Select Business Unit<span class="asterisk">*</span></label>
                             <select class="form-select form-select-solid bussinesUnit" data-control="select2" data-hide-search="false" name="sap_connection_id">
-                                <option value="">Select Bussines Unit</option>
+                                <option value="">Select Business Unit</option>
                                 @if($sap_connections)
                                     @foreach($sap_connections as $sap)
                                     <option value="{{ $sap->id }}" @if(isset($edit) && $edit->sap_connection_id == $sap->id) selected @endif>{{ $sap->company_name }}</option>

@@ -25,34 +25,36 @@
             <div class="card-body">
               <div class="row">
 
-                <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
-                    <span>
-                      <i class="flaticon2-search-1 text-muted"></i>
-                    </span>
-                  </div>
-                </div>
-
                 @if(@Auth::user()->role_id == 1)
+                @if(!empty($sap_connection))
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_module" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select Customer">
-                    <option value=""></option>
-                    <option value="brand">Brand</option>
-                    <option value="customer_class">Class</option>
-                    <option value="customer">Customer</option>
-                    <option value="sales_specialist">Sales Specialist</option>
-                    <option value="territory">Territory</option>
-                    <option value="market_sector">Market Sector</option>
-                  </select>
+                    <select class="form-control form-control-lg form-control-solid" name="filter_sap_connection" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select Business Unit">
+                        <option value=""></option>
+                        @foreach($sap_connection as $item)
+                            <option value="{{ $item->id }}"> {{ $item->company_name }} </option>
+                        @endforeach
+                    </select>
                 </div>
                 @endif
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_module" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select Customer By">
+                    <option value=""></option>
+                    <option value="brand">By Brand</option>
+                    <option value="customer_class">By Class</option>
+                    <option value="customer">By Customer</option>
+                    <option value="sales_specialist">By Sales Specialist</option>
+                    <option value="territory">By Territory</option>
+                    <option value="market_sector">By Market Sector</option>
+                  </select>
+                </div>
+
 
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_priority" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select priority">
                     <option value=""></option>
                     <option value="0">Normal</option>
-                    <option value="2">Important</option>
+                    <option value="1">Important</option>
                   </select>
                 </div>
 
@@ -68,10 +70,39 @@
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name="filter_date_range" id="kt_daterangepicker_1" readonly>
-                    <span>
-                    </span>
                   </div>
                 </div>
+                @endif
+
+                <div class="col-md-6 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search title..." name="filter_search" autocomplete="off">
+                  </div>
+                </div>
+                @else
+
+                <div class="col-md-6 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search title..." name="filter_search" autocomplete="off">
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_priority" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select priority">
+                    <option value=""></option>
+                    <option value="0">Normal</option>
+                    <option value="1">Important</option>
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_type" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select type">
+                    <option value=""></option>
+                    <option value="A">Announcement</option>
+                    <option value="N">News</option>
+                  </select>
+                </div>
+
                 @endif
 
                 <div class="col-md-3 mt-5">
@@ -92,7 +123,7 @@
                             <tr>
                                 <th>No</th>
                                 @if(@Auth::user()->role_id == 1)
-                                <th>Bussines Unit</th>
+                                <th>Business Unit</th>
                                 @endif
                                 <th>Title</th>
                                 <th>Type</th>
@@ -132,6 +163,7 @@
 
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css" />
 @endpush
 
 @push('js')
@@ -151,6 +183,7 @@ $(document).ready(function() {
       $filter_module = $('[name="filter_module"]').find('option:selected').val();
       $filter_priority = $('[name="filter_priority"]').find('option:selected').val();
       $filter_date_range = $('[name="filter_date_range"]').find('option:selected').val();
+      $filter_sap_connection = $('[name="filter_sap_connection"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -170,6 +203,7 @@ $(document).ready(function() {
                 @if(@Auth::user()->role_id == 1)
                 filter_module : $filter_module,
                 filter_date_range : $filter_date_range,
+                filter_sap_connection : $filter_sap_connection,
                 @endif
               }
           },
@@ -209,6 +243,7 @@ $(document).ready(function() {
       $('[name="filter_module"]').val('').trigger('change');
       $('[name="filter_priority"]').val('').trigger('change');
       $('[name="filter_date_range"]').val('').trigger('change');
+      $('[name="filter_sap_connection"]').val('').trigger('change');
       render_table();
     });
 
