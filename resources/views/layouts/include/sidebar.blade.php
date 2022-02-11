@@ -495,6 +495,28 @@
             @endif
 
 
+            {{-- Warranty --}}
+            @if(in_array(Auth::user()->role_id,[1,3,4]))
+            <div class="menu-item">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['warranty.index','warranty.show', 'warranty.edit'])) ? 'active' : '' }}" href="{{ route('warranty.index') }}">
+                  <span class="menu-icon">
+                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
+                     <span class="svg-icon svg-icon-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
+                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
+                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
+                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
+                        </svg>
+                     </span>
+                     <!--end::Svg Icon-->
+                  </span>
+                  <span class="menu-title">Warranty</span>
+               </a>
+            </div>
+            @endif
+
+
             {{-- Help Desk --}}
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['help-desk.index','help-desk.edit','help-desk.show'])) ? 'active' : '' }}" href="{{ route('help-desk.index') }}">
