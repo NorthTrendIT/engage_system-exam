@@ -17,10 +17,10 @@
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-      
+
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -73,7 +73,7 @@
                           <!--end::Table head-->
                           <!--begin::Table body-->
                           <tbody>
-                            
+
                           </tbody>
                           <!--end::Table body-->
                        </table>
@@ -97,6 +97,7 @@
 
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css" />
 @endpush
 
 @push('js')
@@ -175,7 +176,7 @@
             url: $url,
             method: "DELETE",
             data: {
-                    _token:'{{ csrf_token() }}' 
+                    _token:'{{ csrf_token() }}'
                   }
           })
           .done(function(result) {
@@ -211,7 +212,7 @@
             url: $url,
             method: "POST",
             data: {
-                    _token:'{{ csrf_token() }}' 
+                    _token:'{{ csrf_token() }}'
                   }
           })
           .done(function(result) {

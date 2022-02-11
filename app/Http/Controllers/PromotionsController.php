@@ -401,9 +401,25 @@ class PromotionsController extends Controller
                 ->addColumn('status', function($row) {
                     $btn = "";
                     if($row->is_active){
-                        $btn .= '<a href="javascript:"  data-url="' . route('promotion.status',$row->id) . '" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
+                        $btn .= '<div class="form-group">
+                        <div class="col-3">
+                         <span class="switch">
+                          <label>
+                           <input type="checkbox" checked="checked" name="status" class="status" data-url="' . route('promotion.status',$row->id) . '"/>
+                           <span></span>
+                          </label>
+                         </span>
+                        </div>';
                     }else{
-                        $btn .= '<a href="javascript:"  data-url="' . route('promotion.status',$row->id) . '" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
+                        $btn .= '<div class="form-group">
+                        <div class="col-3">
+                         <span class="switch">
+                          <label>
+                           <input type="checkbox" name="status" class="status" data-url="' . route('promotion.status',$row->id) . '"/>
+                           <span></span>
+                          </label>
+                         </span>
+                        </div>';
                     }
                     return $btn;
                 })

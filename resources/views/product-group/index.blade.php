@@ -17,10 +17,10 @@
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-      
+
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -32,21 +32,18 @@
             <div class="card-body">
               <div class="row mt-5">
                 <div class="col-md-3">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
-                    <span>
-                      <i class="flaticon2-search-1 text-muted"></i>
-                    </span>
-                  </div>
-                </div>
-
-                <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid filter_company" name="filter_company" data-control="select2" data-hide-search="false" data-placeholder="Select business unit" data-allow-clear="true">
+                  <select class="form-control form-control-lg form-control-solid filter_company" name="filter_company" data-control="select2" data-hide-search="true" data-placeholder="Select business unit" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($company as $c)
                     <option value="{{ $c->id }}">{{ $c->company_name }}</option>
                     @endforeach
                   </select>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
+                  </div>
                 </div>
 
                 <div class="col-md-3">
@@ -76,7 +73,7 @@
                           <!--end::Table head-->
                           <!--begin::Table body-->
                           <tbody>
-                            
+
                           </tbody>
                           <!--end::Table body-->
                        </table>
@@ -179,7 +176,7 @@
             url: '{{ route('product-group.sync-product-groups') }}',
             method: "POST",
             data: {
-                    _token:'{{ csrf_token() }}' 
+                    _token:'{{ csrf_token() }}'
                   }
           })
           .done(function(result) {

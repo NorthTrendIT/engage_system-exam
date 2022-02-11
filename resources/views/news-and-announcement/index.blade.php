@@ -25,32 +25,36 @@
             <div class="card-body">
               <div class="row">
 
+                @if(@Auth::user()->role_id == 1)
+                @if(!empty($sap_connection))
                 <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
-                    <span>
-                      <i class="flaticon2-search-1 text-muted"></i>
-                    </span>
-                  </div>
+                    <select class="form-control form-control-lg form-control-solid" name="filter_sap_connection" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select Business Unit">
+                        <option value=""></option>
+                        @foreach($sap_connection as $item)
+                            <option value="{{ $item->id }}"> {{ $item->company_name }} </option>
+                        @endforeach
+                    </select>
                 </div>
+                @endif
 
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_module" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select Customer">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_module" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select Customer By">
                     <option value=""></option>
-                    <option value="brand">Brand</option>
-                    <option value="customer_class">Class</option>
-                    <option value="customer">Customer</option>
-                    <option value="sales_specialist">Sales Specialist</option>
-                    <option value="territory">Territory</option>
-                    <option value="market_sector">Market Sector</option>
+                    <option value="brand">By Brand</option>
+                    <option value="customer_class">By Class</option>
+                    <option value="customer">By Customer</option>
+                    <option value="sales_specialist">By Sales Specialist</option>
+                    <option value="territory">By Territory</option>
+                    <option value="market_sector">By Market Sector</option>
                   </select>
                 </div>
+
 
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_priority" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select priority">
                     <option value=""></option>
                     <option value="0">Normal</option>
-                    <option value="2">Important</option>
+                    <option value="1">Important</option>
                   </select>
                 </div>
 
@@ -62,13 +66,44 @@
                   </select>
                 </div>
 
+                @if(@Auth::user()->role_id == 1)
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name="filter_date_range" id="kt_daterangepicker_1" readonly>
-                    <span>
-                    </span>
                   </div>
                 </div>
+                @endif
+
+                <div class="col-md-6 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search title..." name="filter_search" autocomplete="off">
+                  </div>
+                </div>
+                @else
+
+                <div class="col-md-6 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search title..." name="filter_search" autocomplete="off">
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_priority" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select priority">
+                    <option value=""></option>
+                    <option value="0">Normal</option>
+                    <option value="1">Important</option>
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_type" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select type">
+                    <option value=""></option>
+                    <option value="A">Announcement</option>
+                    <option value="N">News</option>
+                  </select>
+                </div>
+
+                @endif
 
                 <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
@@ -87,15 +122,17 @@
                           <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Bussines Unit</th>
+                                @if(@Auth::user()->role_id == 1)
+                                <th>Business Unit</th>
+                                @endif
                                 <th>Title</th>
                                 <th>Type</th>
                                 <th>Module</th>
                                 <th>Priority</th>
                                 @if(@Auth::user()->role_id == 1)
                                 <th>User Name</th>
-                                @endif
                                 <th>Status</th>
+                                @endif
                                 <th>Action</th>
                             </tr>
                           </thead>
@@ -126,6 +163,7 @@
 
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css" />
 @endpush
 
 @push('js')
@@ -145,6 +183,7 @@ $(document).ready(function() {
       $filter_module = $('[name="filter_module"]').find('option:selected').val();
       $filter_priority = $('[name="filter_priority"]').find('option:selected').val();
       $filter_date_range = $('[name="filter_date_range"]').find('option:selected').val();
+      $filter_sap_connection = $('[name="filter_sap_connection"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -160,22 +199,27 @@ $(document).ready(function() {
               data:{
                 filter_search : $filter_search,
                 filter_type : $filter_type,
-                filter_module : $filter_module,
                 filter_priority : $filter_priority,
+                @if(@Auth::user()->role_id == 1)
+                filter_module : $filter_module,
                 filter_date_range : $filter_date_range,
+                filter_sap_connection : $filter_sap_connection,
+                @endif
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              @if(@Auth::user()->role_id == 1)
               {data: 'bussines_unit', name: 'bussines_unit'},
+              @endif
               {data: 'title', name: 'title'},
               {data: 'type', name: 'type'},
               {data: 'module', name: 'module'},
               {data: 'is_important', name: 'is_important', orderable: false},
               @if(@Auth::user()->role_id == 1)
               {data: 'user_name', name: 'user_name'},
-              @endif
               {data: 'status', name: 'status', orderable: false},
+              @endif
               {data: 'action', name: 'action', orderable: false},
           ],
           drawCallback:function(){
@@ -199,6 +243,7 @@ $(document).ready(function() {
       $('[name="filter_module"]').val('').trigger('change');
       $('[name="filter_priority"]').val('').trigger('change');
       $('[name="filter_date_range"]').val('').trigger('change');
+      $('[name="filter_sap_connection"]').val('').trigger('change');
       render_table();
     });
 

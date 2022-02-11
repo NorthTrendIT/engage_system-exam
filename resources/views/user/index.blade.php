@@ -111,6 +111,7 @@
 
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css" />
 @endpush
 
 @push('js')
@@ -160,7 +161,7 @@
               $(function () {
                 $('[data-toggle="tooltip"]').tooltip()
                 $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
-                
+
                 $role = $('[name="filter_role"]').find('option:selected').val();
                 if($role == 2){
                   $("#myTable").DataTable().column(5).visible(true);

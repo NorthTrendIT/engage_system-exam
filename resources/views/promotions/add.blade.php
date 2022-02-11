@@ -704,32 +704,35 @@
     });
 
     $(document).on('change', '[name="title"]', function(event) {
-        $.ajax({
-          url: "{{route('promotion.checkTitle')}}",
-          type: "POST",
-          processing: true,
-          serverSide: true,
-          headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-              },
-          data: {
-                title: $('[name="title"]').val(),
-                @if(isset($edit->id))
-                    id: '{{$edit->id}}',
-                @endif
-            },
-          success: function (data) {
-            if (data.status) {
-              toast_success(data.message)
-            } else {
-              toast_error(data.message);
-              $('[name="title"]').val('');
-            }
-          },
-          error: function () {
-            toast_error("Something went to wrong !");
-          },
-        });
+        $title = $('[name="title"]').val();
+        if($title != ''){
+            $.ajax({
+                url: "{{route('promotion.checkTitle')}}",
+                type: "POST",
+                processing: true,
+                serverSide: true,
+                headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                data: {
+                        title: $('[name="title"]').val(),
+                        @if(isset($edit->id))
+                            id: '{{$edit->id}}',
+                        @endif
+                    },
+                success: function (data) {
+                    if (data.status) {
+                    toast_success(data.message)
+                    } else {
+                    toast_error(data.message);
+                    $('[name="title"]').val('');
+                    }
+                },
+                error: function () {
+                    toast_error("Something went to wrong !");
+                },
+            });
+        }
     });
 
 });
