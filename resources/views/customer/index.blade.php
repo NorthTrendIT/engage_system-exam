@@ -17,10 +17,10 @@
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-      
+
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -31,14 +31,6 @@
             </div> --}}
             <div class="card-body">
               <div class="row">
-                <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
-                    <span>
-                      <i class="flaticon2-search-1 text-muted"></i>
-                    </span>
-                  </div>
-                </div>
 
                 @if(in_array(userrole(),[1]))
                 <div class="col-md-3 mt-5">
@@ -91,6 +83,12 @@
                   </div>
                 </div>
 
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
+                  </div>
+                </div>
+
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mr-10">Clear</a>
@@ -130,7 +128,7 @@
                           <!--end::Table head-->
                           <!--begin::Table body-->
                           <tbody>
-                            
+
                           </tbody>
                           <!--end::Table body-->
                        </table>
@@ -258,7 +256,7 @@
             url: '{{ route('customer.sync-customers') }}',
             method: "POST",
             data: {
-                    _token:'{{ csrf_token() }}' 
+                    _token:'{{ csrf_token() }}'
                   }
           })
           .done(function(result) {
@@ -314,7 +312,7 @@
         // console.log((JSON.stringify(data)));
         // console.log(btoa(JSON.stringify(data)));
         url = url + '?data=' + btoa(JSON.stringify(data));
-        
+
         window.location.href = url;
       });
     @endif

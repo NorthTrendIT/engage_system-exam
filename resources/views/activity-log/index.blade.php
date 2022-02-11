@@ -21,7 +21,7 @@
               <div class="row">
                 <div class="col-md-5 mt-5">
                   <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
                     <span>
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
@@ -142,11 +142,11 @@
     <div class="modal-body">
       <!--begin::Stepper-->
       <div class="stepper stepper-pills stepper-column d-flex flex-column flex-xl-row flex-row-fluid" id="kt_modal_error_data_stepper">
-        
+
         <!--begin::Content-->
         <div class="flex-row-fluid">
           <p id="error_data_text">
-            
+
           </p>
         </div>
         <!--end::Content-->
