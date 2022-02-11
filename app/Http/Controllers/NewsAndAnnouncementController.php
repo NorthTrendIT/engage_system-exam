@@ -432,7 +432,7 @@ class NewsAndAnnouncementController extends Controller
                                     <div class="col-3">
                                      <span class="switch">
                                       <label>
-                                       <input type="checkbox" checked="checked" name="select" class="status" data-url="' . route('news-and-announcement.status',$row->id) . '"/>
+                                       <input type="checkbox" checked="checked" name="status" class="status" data-url="' . route('news-and-announcement.status',$row->id) . '"/>
                                        <span></span>
                                       </label>
                                      </span>
@@ -442,7 +442,7 @@ class NewsAndAnnouncementController extends Controller
                                     <div class="col-3">
                                      <span class="switch">
                                       <label>
-                                       <input type="checkbox" name="select" class="status" data-url="' . route('news-and-announcement.status',$row->id) . '"/>
+                                       <input type="checkbox" name="status" class="status" data-url="' . route('news-and-announcement.status',$row->id) . '"/>
                                        <span></span>
                                       </label>
                                      </span>

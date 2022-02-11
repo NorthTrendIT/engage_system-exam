@@ -9,7 +9,7 @@
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Claimed Promotions</h1>
       </div>
-      
+
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
 
@@ -17,10 +17,10 @@
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-      
+
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -32,14 +32,16 @@
             <div class="card-body">
               <div class="row">
 
+                @if(in_array(userrole(),[1]))
                 <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
-                    <span>
-                      <i class="flaticon2-search-1 text-muted"></i>
-                    </span>
-                  </div>
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="true" name="filter_company" data-allow-clear="true" data-placeholder="Select Business Unit">
+                    <option value=""></option>
+                    @foreach($company as $c)
+                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                    @endforeach
+                  </select>
                 </div>
+                @endif
 
                 @if(in_array(userrole(),[1,2]))
                 <div class="col-md-4 mt-5">
@@ -49,17 +51,6 @@
                 </div>
                 @endif
 
-                @if(in_array(userrole(),[1]))
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select company">
-                    <option value=""></option>
-                    @foreach($company as $c)
-                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
-                    @endforeach
-                  </select>
-                </div>
-                @endif
-                
                 <div class="col-md-2 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select status" data-allow-clear="true">
                     <option value=""></option>
@@ -73,6 +64,15 @@
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
                     <span>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
+                    <span>
+                      <i class="flaticon2-search-1 text-muted"></i>
                     </span>
                   </div>
                 </div>
@@ -112,7 +112,7 @@
                           <!--end::Table head-->
                           <!--begin::Table body-->
                           <tbody>
-                            
+
                           </tbody>
                           <!--end::Table body-->
                        </table>
@@ -255,7 +255,7 @@
         // console.log((JSON.stringify(data)));
         // console.log(btoa(JSON.stringify(data)));
         url = url + '?data=' + btoa(JSON.stringify(data));
-        
+
         window.location.href = url;
       });
     @endif

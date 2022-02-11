@@ -282,7 +282,7 @@ class ProductController extends Controller
                                 <div class="col-3">
                                  <span class="switch">
                                   <label>
-                                   <input type="checkbox" disabled checked="checked" name="select" class="status" data-url="' . route('news-and-announcement.status',$row->id) . '"/>
+                                   <input type="checkbox" disabled checked="checked" name="status" class="status"/>
                                    <span></span>
                                   </label>
                                  </span>
@@ -292,7 +292,7 @@ class ProductController extends Controller
                                 <div class="col-3">
                                  <span class="switch">
                                   <label>
-                                   <input type="checkbox" disabled name="select" class="status" data-url="' . route('news-and-announcement.status',$row->id) . '"/>
+                                   <input type="checkbox" disabled name="status" class="status"/>
                                    <span></span>
                                   </label>
                                  </span>

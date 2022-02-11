@@ -189,7 +189,7 @@ class UserController extends Controller
 
         $provinces = Location::whereNull('parent_id')->where('is_active',true)->get();
         $parents = User::where('id','!=',1)->where('parent_id',$edit->parent_id)->get();
-        
+
         // If not admin then show only its
         if(userrole() != 1){
             $departments = Department::where('user_id',Auth::id())->where('is_active',true)->get();
@@ -390,10 +390,26 @@ class UserController extends Controller
                             ->addColumn('status', function($row) {
 
                                 $btn = "";
-                                if($row->is_active == 1){
-                                    $btn .= '<a href="javascript:"  data-url="' . route('user.status',$row->id) . '" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
+                                if($row->is_active){
+                                    $btn .= '<div class="form-group">
+                                    <div class="col-3">
+                                     <span class="switch">
+                                      <label>
+                                       <input type="checkbox" checked="checked" name="status" class="status" data-url="' . route('user.status',$row->id) . '"/>
+                                       <span></span>
+                                      </label>
+                                     </span>
+                                    </div>';
                                 }else{
-                                    $btn .= '<a href="javascript:"  data-url="' . route('user.status',$row->id) . '" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
+                                    $btn .= '<div class="form-group">
+                                    <div class="col-3">
+                                     <span class="switch">
+                                      <label>
+                                       <input type="checkbox" name="status" class="status" data-url="' . route('user.status',$row->id) . '"/>
+                                       <span></span>
+                                      </label>
+                                     </span>
+                                    </div>';
                                 }
 
                                 return $btn;
@@ -421,7 +437,7 @@ class UserController extends Controller
                             ->orderColumn('territory', function ($query, $order) {
                                 $query->select('users.*')->join('territories', 'users.territory_id', '=', 'territories.id')
                                     ->orderBy('territories.description', $order);
-                                
+
                             })
                             ->rawColumns(['action', 'role','status','territory'])
                             ->make(true);
@@ -454,7 +470,7 @@ class UserController extends Controller
             }else{
                 $response = ['status'=>false,'message'=>'User not found !'];
             }
-            
+
         }
 
         return $response;

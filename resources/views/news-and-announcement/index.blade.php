@@ -28,7 +28,7 @@
                 @if(@Auth::user()->role_id == 1)
                 @if(!empty($sap_connection))
                 <div class="col-md-3 mt-5">
-                    <select class="form-control form-control-lg form-control-solid" name="filter_sap_connection" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select Bussines Unit">
+                    <select class="form-control form-control-lg form-control-solid" name="filter_sap_connection" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select Business Unit">
                         <option value=""></option>
                         @foreach($sap_connection as $item)
                             <option value="{{ $item->id }}"> {{ $item->company_name }} </option>
@@ -123,7 +123,7 @@
                             <tr>
                                 <th>No</th>
                                 @if(@Auth::user()->role_id == 1)
-                                <th>Bussines Unit</th>
+                                <th>Business Unit</th>
                                 @endif
                                 <th>Title</th>
                                 <th>Type</th>

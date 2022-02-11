@@ -59,7 +59,7 @@ class PromotionTypeController extends Controller
                         'min_percentage' => 'required_if:scope,R',
                         'percentage' => 'required_if:scope,P,U',
                         'fixed_price' => 'required_if:scope,U',
-                        
+
                         'is_total_fixed_quantity' => 'required_if:is_fixed_quantity,1',
                         'total_fixed_quantity' => 'required_if:is_total_fixed_quantity,1',
 
@@ -87,7 +87,7 @@ class PromotionTypeController extends Controller
         }else{
 
             if(isset($input['id'])){
-                
+
                 // check in promotions claimed or not
                 $customer_promotions = CustomerPromotion::whereHas('promotion',function($q) use ($input){
                     $q->where('promotion_type_id',$input['id']);
@@ -327,14 +327,28 @@ class PromotionTypeController extends Controller
                                 return  @$row->sap_connection->company_name ?? "-";
                             })
                             ->addColumn('status', function($row) {
-
                                 $btn = "";
                                 if($row->is_active){
-                                    $btn .= '<a href="javascript:"  data-url="' . route('promotion-type.status',$row->id) . '" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
+                                    $btn .= '<div class="form-group">
+                                    <div class="col-3">
+                                     <span class="switch">
+                                      <label>
+                                       <input type="checkbox" checked="checked" name="status" class="status" data-url="' . route('promotion-type.status',$row->id) . '"/>
+                                       <span></span>
+                                      </label>
+                                     </span>
+                                    </div>';
                                 }else{
-                                    $btn .= '<a href="javascript:"  data-url="' . route('promotion-type.status',$row->id) . '" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
+                                    $btn .= '<div class="form-group">
+                                    <div class="col-3">
+                                     <span class="switch">
+                                      <label>
+                                       <input type="checkbox" name="status" class="status" data-url="' . route('promotion-type.status',$row->id) . '"/>
+                                       <span></span>
+                                      </label>
+                                     </span>
+                                    </div>';
                                 }
-
                                 return $btn;
                             })
                             ->orderColumn('title', function ($query, $order) {
@@ -372,7 +386,7 @@ class PromotionTypeController extends Controller
                         );
 
             $data = Product::orderby('item_name','asc')->where($where);
-            
+
             if($search != ''){
                 $data->where('item_name', 'like', '%' .$search . '%');
             }
@@ -395,7 +409,7 @@ class PromotionTypeController extends Controller
 
         if(@$request->sap_connection_id){
             $data = ProductGroup::orderby('group_name','asc')->where('sap_connection_id',$request->sap_connection_id);
-            
+
             if($search != ''){
                 $data->where('group_name', 'like', '%' .$search . '%');
             }
