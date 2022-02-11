@@ -25,27 +25,18 @@
 
             <div class="card-body">
               <div class="row">
-                <div class="col-md-4 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
-                    <span>
-                      <i class="flaticon2-search-1 text-muted"></i>
-                    </span>
-                  </div>
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="true" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
+                    <option value=""></option>
+                    @foreach($company as $c)
+                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                    @endforeach
+                  </select>
                 </div>
 
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_promotion_type" data-control="select2" data-hide-search="false" data-placeholder="Select promotion type" data-allow-clear="true">
                     <option value=""></option>
-                  </select>
-                </div>
-
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
-                    <option value=""></option>
-                    @foreach($company as $c)
-                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
-                    @endforeach
                   </select>
                 </div>
 
@@ -58,7 +49,7 @@
                 </div>
 
                 <div class="col-md-4 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_scope" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select promotion customers">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_scope" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select promotion customers">
                     <option value=""></option>
                     <option value="C">Customer</option>
                     <option value="CL">Class</option>
@@ -74,6 +65,12 @@
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
                     <span>
                     </span>
+                  </div>
+                </div>
+
+                <div class="col-md-6 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search" autocomplete="off">
                   </div>
                 </div>
 

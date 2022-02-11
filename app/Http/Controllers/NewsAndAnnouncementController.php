@@ -333,6 +333,7 @@ class NewsAndAnnouncementController extends Controller
         if(@Auth::user()->role_id == 1){
             $data = Notification::with(['user']);
         } else {
+            $now = date("Y-m-d");
             $data = Notification::whereHas('connections', function($q){
                 $q->where('user_id', '=', @Auth::user()->id);
             })->where('start_date','<=',$now)
@@ -363,7 +364,6 @@ class NewsAndAnnouncementController extends Controller
             });
         }
 
-        $now = date("Y-m-d");
         if($request->filter_date_range != ""){
             $date = explode(" - ", $request->filter_date_range);
             $start = date("Y-m-d", strtotime($date[0]));

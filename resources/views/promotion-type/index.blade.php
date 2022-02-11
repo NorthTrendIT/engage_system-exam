@@ -20,7 +20,7 @@
 
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -31,14 +31,6 @@
             </div> --}}
             <div class="card-body">
               <div class="row">
-                <div class="col-md-4 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
-                    <span>
-                      <i class="flaticon2-search-1 text-muted"></i>
-                    </span>
-                  </div>
-                </div>
 
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
@@ -59,20 +51,26 @@
                 </div>
 
 
-                <div class="col-md-2 mt-5">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select status" data-allow-clear="true">
                     <option value=""></option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
                   </select>
                 </div>
-                
+
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_fixed_quantity" data-control="select2" data-hide-search="true" data-placeholder="Select fixed quantity" data-allow-clear="true">
                     <option value=""></option>
                     <option value="1">Yes</option>
                     <option value="0">No</option>
                   </select>
+                </div>
+
+                <div class="col-md-4 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search" autocompete="off">
+                  </div>
                 </div>
 
                 <div class="col-md-3 mt-5">
@@ -103,7 +101,7 @@
                           <!--end::Table head-->
                           <!--begin::Table body-->
                           <tbody>
-                            
+
                           </tbody>
                           <!--end::Table body-->
                        </table>
