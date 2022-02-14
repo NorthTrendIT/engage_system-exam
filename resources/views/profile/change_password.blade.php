@@ -119,10 +119,12 @@
             new_password:{
               required:true,
               minlength:8,
+              maxlength:20,
             },
             confirm_password:{
               required:true,
               minlength:8,
+              maxlength:20,
               equalTo : "#new_password"
             }
           },
