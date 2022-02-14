@@ -105,7 +105,7 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <!--begin::Table container-->
-                    <div class="table-responsive1">
+                    <div class="table-responsive1 column-left-right-fix-scroll-hidden">
                        <!--begin::Table-->
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <!--begin::Table head-->
@@ -131,6 +131,8 @@
 
                           </tbody>
                           <!--end::Table body-->
+
+                          
                        </table>
                        <!--end::Table-->
                     </div>
@@ -188,8 +190,9 @@
           scrollY: "800px",
           scrollCollapse: true,
           // responsive: true,
+          paging: true,
           fixedColumns:   {
-            left: 1,
+            left: 1,  
             right: 1
           },
           // paging:false,
