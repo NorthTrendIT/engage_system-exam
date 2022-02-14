@@ -729,3 +729,34 @@ td.disabled.day {
     height: 10px;
     width: 10px;
   }
+.column-left-right-fix-scroll-hidden .dataTables_wrapper .table-responsive{
+    overflow-y: hidden;
+}
+.column-left-right-fix-scroll-hidden .dataTables_wrapper .table-responsive .DTFC_ScrollWrapper{
+    height: auto !important;
+}
+.column-left-right-fix-scroll-hidden .dataTables_wrapper .table-responsive .DTFC_LeftWrapper .DTFC_LeftBodyLiner,
+.column-left-right-fix-scroll-hidden .dataTables_wrapper .table-responsive .DTFC_LeftWrapper .DTFC_LeftHeadWrapper{
+    overflow-y: hidden !important;
+}
+.column-left-right-fix-scroll-hidden .dataTables_wrapper .table-responsive .DTFC_LeftWrapper .DTFC_LeftBodyWrapper{
+    box-shadow: 0 0 20px 0 rgb(76 87 125 / 8%);
+    height: 1000px !important;
+}
+.column-left-right-fix-scroll-hidden .dataTables_wrapper .table-responsive .DTFC_LeftWrapper .DTFC_LeftHeadWrapper{
+    box-shadow: 0 12px 20px 0 rgb(76 87 125 / 8%);
+}
+.column-left-right-fix-scroll-hidden .dataTables_wrapper .table-responsive table tbody tr td.dtfc-fixed-right,
+.column-left-right-fix-scroll-hidden .dataTables_wrapper .table-responsive table thead tr th.dtfc-fixed-right{
+    box-shadow: 0 12px 20px 0 rgb(76 87 125 / 8%);
+}
+.column-left-right-fix-scroll-hidden .dataTables_wrapper .table-responsive table thead tr th:last-child{
+    background-color: #fff;
+}
+.column-left-right-fix-scroll-hidden .table.gs-0 td:first-child, .column-left-right-fix-scroll-hidden .table.gs-0 th:first-child {
+    padding-left: 0.75rem;
+    vertical-align: middle;
+}
+.column-left-right-fix-scroll-hidden .table.gs-0 td:last-child, .column-left-right-fix-scroll-hidden .table.gs-0 th:last-child {
+    padding-right: 0.75rem;
+}
