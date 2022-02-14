@@ -374,7 +374,7 @@ $(document).ready(function() {
                     url: $url,
                     method: "POST",
                     data: {
-                            _token:'{{ csrf_token() }}'
+                            _token:'{{ csrf_token() }}',
                         }
                 })
                 .done(function(result) {

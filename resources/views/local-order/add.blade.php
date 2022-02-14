@@ -106,7 +106,7 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <input type="number" class="form-control quantity" name="quantity" data-price="{{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}" placeholder="Enter quantity" value="{{ $value->quantity }}">
+                                                                <input type="number" class="form-control quantity" name="quantity" data-price="{{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                                             </td>
                                                             <td style="text-align:right">
                                                                 <span class="price text-primary">₱ {{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}</span>
@@ -129,7 +129,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="number" class="form-control quantity" name="quantity" data-price="0" placeholder="Enter quantity" value="">
+                                                            <input type="number" class="form-control quantity" name="quantity" data-price="0" placeholder="Enter quantity" value="" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                                         </td>
                                                         <td style="text-align:right">
                                                             <span class="price text-primary">₱ 0</span>
