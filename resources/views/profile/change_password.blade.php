@@ -53,6 +53,14 @@
                 <div class="row mb-5">
                   <div class="col-md-12">
                     <div class="form-group">
+                      <span class="text-muted">Password has to meet the following criteria: Must be at least 8 characters long. Must contain at least: one lowercase letter, one uppercase letter, one numeric character, and one of the following special characters !@#$%^&-_+=.</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
                       <input type="submit" value="Update" class="btn btn-primary">
                     </div>
                   </div>
@@ -136,10 +144,12 @@
             new_password:{
               required:'Please enter new password.',
               minlength:'Please enter new password greater than 8 digits',
+              maxlength:'Please enter new password less than 20 digits',
             },
             confirm_password:{
               required:'Please enter confirm password.',
               minlength:'Please enter confirm password greater than 8 digits',
+              maxlength:'Please enter confirm password less than 20 digits',
               equalTo : "Enter confirm password not same as password !"
             }
           },

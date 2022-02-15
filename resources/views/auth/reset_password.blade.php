@@ -14,25 +14,29 @@
     	<input type="hidden" name="email" value="{{ $email }}">
 
 		<!--begin::Heading-->
-		<div class="text-center mb-10">
+		<div class="text-center mb-3">
 			<!--begin::Title-->
 			<h1 class="text-dark mb-3">Reset Password !</h1>
 			<!--end::Title-->
 		</div>
 		<!--begin::Heading-->
-		<div class="fv-row mb-10">
+		<div class="fv-row mb-3">
 			<label class="form-label fs-6 fw-bolder text-dark">Email</label>
 			<input class="form-control form-control-lg form-control-solid" type="email" name="email" autocomplete="off" placeholder="Enter your registered email address" disabled="" value="{{ $email }}"/>
 		</div>
 
-		<div class="fv-row mb-10">
+		<div class="fv-row mb-3">
 			<label class="form-label fs-6 fw-bolder text-dark">New Password</label>
 			<input type="password" class="form-control form-control-lg form-control-solid" name="new_password" tabindex="1" placeholder="********" autocomplete="new-password"/> 
 		</div>
 
-		<div class="fv-row mb-10">
+		<div class="fv-row mb-3">
 			<label class="form-label fs-6 fw-bolder text-dark">Confirm Password</label>
 			<input type="password" class="form-control form-control-lg form-control-solid" name="confirm_password" tabindex="1" placeholder="********" autocomplete="new-password"/>
+		</div>
+
+		<div class="fv-row mb-3">
+			<span class="">Password has to meet the following criteria: Must be at least 8 characters long. Must contain at least: one lowercase letter, one uppercase letter, one numeric character, and one of the following special characters !@#$%^&-_+=.</span>
 		</div>
 
 		<!--begin::Actions-->
@@ -67,26 +71,28 @@
 		        rules: {
 	                new_password:{
 	                    required: true,
-	                    maxlength: 52,
+	                    maxlength: 20,
 	                    minlength:8,
 	                },
 	                confirm_password:{
 	                    required: true,
 	                    equalTo: '#myForm input[name="new_password"]',
-	                    maxlength: 52,
+	                    maxlength: 20,
 	                    minlength:8,
 	                },
 	            },
 	            messages: {
 	                new_password:{
-	                    required: "Please enter your new password.",
-	                    maxlength: "Password is too long.",
-	                },
-	                confirm_password:{
-	                    required: "Please enter your confirm password.",
-	                    equalTo: "Please enter same password.",
-	                    maxlength: "Password is too long.",
-	                },
+	              		required:'Please enter new password.',
+		              	minlength:'Please enter new password greater than 8 digits',
+		              	maxlength:'Please enter new password less than 20 digits',
+		            },
+	            	confirm_password:{
+	              		required:'Please enter confirm password.',
+	              		minlength:'Please enter confirm password greater than 8 digits',
+	              		maxlength:'Please enter confirm password less than 20 digits',
+	              		equalTo : "Enter confirm password not same as password !"
+	            	}
 	            },
 		    });
 		    return validator;
