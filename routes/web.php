@@ -97,6 +97,13 @@ Route::middleware(['auth'])->group(function(){
     	    Route::resource('product','App\Http\Controllers\ProductController');
             Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
     	    Route::post('product/sync-products', 'App\Http\Controllers\ProductController@syncProducts')->name('product.sync-products');
+            Route::post('product/get-brand-data', 'App\Http\Controllers\ProductController@getBrandData')->name('product.get-brand-data');
+            Route::post('product/get-product-category-data', 'App\Http\Controllers\ProductController@getProductCategoryData')->name('product.get-product-category-data');
+            Route::post('product/get-product-line-data', 'App\Http\Controllers\ProductController@getProductLineData')->name('product.get-product-line-data');
+            Route::post('product/get-product-class-data', 'App\Http\Controllers\ProductController@getProductClassData')->name('product.get-product-class-data');
+            Route::post('product/get-product-type-data', 'App\Http\Controllers\ProductController@getProductTypeData')->name('product.get-product-type-data');
+            Route::post('product/get-product-application-data', 'App\Http\Controllers\ProductController@getProductApplicationData')->name('product.get-product-application-data');
+            Route::post('product/get-product-pattern-data', 'App\Http\Controllers\ProductController@getProductPatternData')->name('product.get-product-pattern-data');
 
             // Product Group
             Route::resource('product-group','App\Http\Controllers\ProductGroupController');
