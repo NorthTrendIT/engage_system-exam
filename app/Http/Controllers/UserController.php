@@ -72,8 +72,8 @@ class UserController extends Controller
                     'role_id' => 'required|exists:roles,id',
                     'city_id' => 'nullable|exists:locations,id',
                     'province_id' => 'nullable|exists:locations,id',
-                    'password' => 'required|string|min:8',
-                    'confirm_password' => 'required|string|min:8|same:password',
+                    'password' => 'required|regex:/^(?=.*\d)(?=.*[@#\-_$%^&+=§!\?])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@#\-_$%^&+=§!\?]{8,20}$/',
+                    'confirm_password' => 'required|same:password',
                 );
 
         if(isset($input['id'])){
@@ -448,8 +448,8 @@ class UserController extends Controller
 
         $rules = array(
                     'id' => 'required|exists:users,id',
-                    'new_password' => 'required|string|min:8',
-                    'confirm_password' => 'required|string|min:8|same:new_password',
+                    'new_password' => 'required|regex:/^(?=.*\d)(?=.*[@#\-_$%^&+=§!\?])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@#\-_$%^&+=§!\?]{8,20}$/',
+                    'confirm_password' => 'required|same:new_password',
                 );
         if(userrole() != 1){
             $rules['id'] = "required|exists:users,id,created_by,".userid();

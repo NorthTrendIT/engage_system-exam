@@ -48,6 +48,10 @@ class StoreCustomers implements ShouldQueue
                     continue;
                 }
 
+                if(@$value['GroupCode'] == "111"){ // GROUP EMPLOYEE NO NEED TO STORE
+                    continue;
+                }
+
                 if(!is_null(@$value['U_CLASS'])){
                     $obj_class = Classes::updateOrCreate(
                                             [

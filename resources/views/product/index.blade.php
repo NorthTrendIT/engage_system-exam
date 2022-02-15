@@ -105,7 +105,7 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <!--begin::Table container-->
-                    <div class="table-responsive">
+                    <div class="table-responsive1 column-left-right-fix-scroll-hidden">
                        <!--begin::Table-->
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <!--begin::Table head-->
@@ -131,6 +131,8 @@
 
                           </tbody>
                           <!--end::Table body-->
+
+                          
                        </table>
                        <!--end::Table-->
                     </div>
@@ -153,11 +155,17 @@
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 <link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
+
+<style type="text/css">
+  
+</style>
 @endpush
 
 @push('js')
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
 <script>
   $(document).ready(function() {
 
@@ -179,7 +187,15 @@
           processing: true,
           serverSide: true,
           scrollX: true,
-          responsive: true,
+          scrollY: "800px",
+          scrollCollapse: true,
+          // responsive: true,
+          paging: true,
+          fixedColumns:   {
+            left: 1,  
+            right: 1
+          },
+          // paging:false,
           order: [],
           ajax: {
               'url': "{{ route('product.get-all') }}",
