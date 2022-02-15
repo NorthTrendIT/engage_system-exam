@@ -174,6 +174,28 @@ class CustomerController extends Controller
             $data->where('u_rgn',$request->filter_region);
         }
 
+        if($request->filter_province != ""){
+            $data->where('u_province',$request->filter_province);
+        }
+
+        if($request->filter_city != ""){
+            $data->where('city',$request->filter_city);
+        }
+
+        if($request->filter_branch != ""){
+            $data->where('group_code',$request->filter_branch);
+        }
+
+        if($request->filter_sales_specialist != ""){
+            $data->whereHas('sales_specialist', function($q) use($request){
+                $q->where('id', $request->filter_sales_specialist);
+            });
+        }
+
+        if($request->filter_customer_class != ""){
+            $data->where('customer_class',$request->filter_customer_class);
+        }
+
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
                 $q->orwhere('card_code','LIKE',"%".$request->filter_search."%");
