@@ -59,7 +59,7 @@ class LocalOrderController extends Controller
         $rules = array(
                 'customer_id' => 'required',
                 'address_id' => 'required|string|max:185',
-                'due_date' => 'required|date',
+                'due_date' => 'required',
                 'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@$customer->sap_connection_id,
             );
 

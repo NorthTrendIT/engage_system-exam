@@ -419,7 +419,7 @@ class NewsAndAnnouncementController extends Controller
                                   <i class="fa fa-eye"></i>
                                 </a>';
                                 if(@Auth::user()->role_id == 1){
-                                    $btn .= '<a href="javascript:"  data-url="' . route('news-and-announcement.destroy',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10 delete">
+                                    $btn .= '<a href="javascript:"  data-url="' . route('news-and-announcement.destroy',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10 delete" title="Delete">
                                         <i class="fa fa-trash"></i>
                                       </a>';
                                 }
@@ -428,7 +428,7 @@ class NewsAndAnnouncementController extends Controller
                             ->addColumn('status', function($row) {
                                 $btn = '';
                                 if($row->is_active){
-                                    $btn .= '<div class="form-group">
+                                    $btn .= '<div class="form-group" title="Status: Active">
                                     <div class="col-3">
                                      <span class="switch">
                                       <label>
@@ -438,7 +438,7 @@ class NewsAndAnnouncementController extends Controller
                                      </span>
                                     </div>';
                                 }else{
-                                    $btn .= '<div class="form-group">
+                                    $btn .= '<div class="form-group" title="Status: Inactive">
                                     <div class="col-3">
                                      <span class="switch">
                                       <label>

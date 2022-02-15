@@ -306,6 +306,18 @@ Route::middleware(['auth'])->group(function(){
         Route::post('warranty/get-all', 'App\Http\Controllers\WarrantyController@getAll')->name('warranty.get-all');
         Route::post('warranty/get-customer', 'App\Http\Controllers\WarrantyController@getCustomer')->name('warranty.get-customer');
 
+        // Common Routes
+        Route::post('common/get-business-units', 'App\Http\Controllers\CommonController@getBusinessUnits')->name('common.getBusinessUnits');
+        Route::post('common/get-territory', 'App\Http\Controllers\CommonController@getTerritory')->name('common.getTerritory');
+        Route::post('common/get-market-sector', 'App\Http\Controllers\CommonController@getMarketSector')->name('common.getMarketSector');
+        Route::post('common/get-market-sub-sector', 'App\Http\Controllers\CommonController@getMarketSubSector')->name('common.getMarketSubSector');
+        Route::post('common/get-region', 'App\Http\Controllers\CommonController@getRegion')->name('common.getRegion');
+        Route::post('common/get-province', 'App\Http\Controllers\CommonController@getProvince')->name('common.getProvince');
+        Route::post('common/get-city', 'App\Http\Controllers\CommonController@getCity')->name('common.getCity');
+        Route::post('common/get-branch', 'App\Http\Controllers\CommonController@getBranch')->name('common.getBranch');
+        Route::post('common/get-sales-specialist', 'App\Http\Controllers\CommonController@getSalesSpecialist')->name('common.getSalesSpecialist');
+        Route::post('common/get-customer-class', 'App\Http\Controllers\CommonController@getCustomerClass')->name('common.getCustomerClass');
+
     });
 
     // For SS Only
