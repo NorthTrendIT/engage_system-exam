@@ -29,15 +29,7 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customer_groups = CustomerGroup::where('name','!=','EMPLOYEE')->get();
-        $classes = Classes::all();
-
-        $company = collect();
-        if(userrole() == 1){
-            $company = SapConnection::all();
-        }
-
-        return view('customer.index',compact('customer_groups','classes','company'));
+        return view('customer.index');
     }
 
     /**
@@ -162,20 +154,24 @@ class CustomerController extends Controller
             $data->where('is_active',$request->filter_status);
         }
 
-        if($request->filter_customer_group != ""){
-            $data->where('group_code',$request->filter_customer_group);
-        }
-
         if($request->filter_territory != ""){
             $data->where('territory',$request->filter_territory);
         }
 
-        if($request->filter_class != ""){
-            $data->where('u_class',$request->filter_class);
-        }
-
         if($request->filter_company != ""){
             $data->where('sap_connection_id',$request->filter_company);
+        }
+
+        if($request->filter_market_sector != ""){
+            $data->where('u_msec',$request->filter_market_sector);
+        }
+
+        if($request->filter_market_sub_sector != ""){
+            $data->where('u_tsec',$request->filter_market_sub_sector);
+        }
+
+        if($request->filter_region != ""){
+            $data->where('u_rgn',$request->filter_region);
         }
 
         if($request->filter_search != ""){
