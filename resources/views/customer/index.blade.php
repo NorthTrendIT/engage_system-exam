@@ -36,44 +36,72 @@
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                     <option value=""></option>
-                    @foreach($company as $c)
-                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
-                    @endforeach
                   </select>
                 </div>
                 @endif
 
+                <!-- Market Sector -->
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_customer_group" data-control="select2" data-hide-search="false" data-placeholder="Select group" data-allow-clear="true">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_market_sector" data-control="select2" data-hide-search="false" data-placeholder="Select Market Sector" data-allow-clear="true">
                     <option value=""></option>
-                    @foreach($customer_groups as $customer_group)
-                    <option value="{{ $customer_group->code }}">{{ $customer_group->name }}</option>
-                    @endforeach
                   </select>
                 </div>
 
+                <!-- Market Subsetor -->
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_market_sub_sector" data-control="select2" data-hide-search="false" data-placeholder="Select Market Subsector" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <!-- Region -->
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_region" data-control="select2" data-hide-search="false" data-placeholder="Select Region" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <!-- Province -->
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_province" data-control="select2" data-hide-search="false" data-placeholder="Select Province" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <!-- City -->
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_city" data-control="select2" data-hide-search="false" data-placeholder="Select City" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <!-- Territory -->
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_territory" data-control="select2" data-hide-search="false" data-placeholder="Select territory" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
 
+                <!-- Branch -->
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_class" data-control="select2" data-hide-search="false" data-placeholder="Select class" data-allow-clear="true">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_branch" data-control="select2" data-hide-search="false" data-placeholder="Select Branch" data-allow-clear="true">
                     <option value=""></option>
-                    @foreach($classes as $class)
-                    <option value="{{ $class->name }}">{{ $class->name }}</option>
-                    @endforeach
                   </select>
                 </div>
 
-                {{-- <div class="col-md-2 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
-                    <option value="">Select status</option>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
+                <!-- Sales Specialist -->
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_sales_specialist" data-control="select2" data-hide-search="false" data-placeholder="Select Sales Specialist" data-allow-clear="true">
+                    <option value=""></option>
                   </select>
-                </div> --}}
+                </div>
+
+                <!-- Customer Class -->
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_customer_class" data-control="select2" data-hide-search="false" data-placeholder="Select Customer Class" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
 
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
@@ -169,10 +197,17 @@
       $filter_search = $('[name="filter_search"]').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
-      $filter_class = $('[name="filter_class"]').find('option:selected').val();
-      $filter_customer_group = $('[name="filter_customer_group"]').find('option:selected').val();
       $filter_territory = $('[name="filter_territory"]').find('option:selected').val();
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
+      $filter_market_sector = $('[name="filter_market_sector"]').val();
+      $filter_market_sub_sector = $('[name="filter_market_sub_sector"]').val();
+      $filter_region = $('[name="filter_region"]').val();
+      $filter_province = $('[name="filter_province"]').val();
+      $filter_city = $('[name="filter_city"]').val();
+      $filter_branch = $('[name="filter_branch"]').val();
+      $filter_sales_specialist = $('[name="filter_sales_specialist"]').val();
+      $filter_customer_class = $('[name="filter_customer_class"]').val();
+
 
       table.DataTable({
           processing: true,
@@ -187,13 +222,19 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
               data:{
+                filter_company : $filter_company,
+                filter_market_sector : $filter_market_sector,
+                filter_market_sub_sector : $filter_market_sub_sector,
+                filter_region : $filter_region,
+                filter_province : $filter_province,
+                filter_city : $filter_city,
+                filter_branch : $filter_branch,
+                filter_sales_specialist : $filter_sales_specialist,
+                filter_customer_class : $filter_customer_class,
+
+                filter_territory : $filter_territory,
                 filter_search : $filter_search,
                 filter_date_range : $filter_date_range,
-                filter_status : $filter_status,
-                filter_class : $filter_class,
-                filter_customer_group : $filter_customer_group,
-                filter_territory : $filter_territory,
-                filter_company : $filter_company,
               }
           },
           columns: [
@@ -231,11 +272,16 @@
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
       $('[name="filter_date_range"]').val('');
-      $('[name="filter_status"]').val('').trigger('change');
-      $('[name="filter_class"]').val('').trigger('change');
-      $('[name="filter_customer_group"]').val('').trigger('change');
       $('[name="filter_territory"]').val('').trigger('change');
       $('[name="filter_company"]').val('').trigger('change');
+      $('[name="filter_market_sector"]').val('').trigger('change');
+      $('[name="filter_market_sub_sector"]').val('').trigger('change');
+      $('[name="filter_region"]').val('').trigger('change');
+      $('[name="filter_province"]').val('').trigger('change');
+      $('[name="filter_city"]').val('').trigger('change');
+      $('[name="filter_branch"]').val('').trigger('change');
+      $('[name="filter_sales_specialist"]').val('').trigger('change');
+      $('[name="filter_customer_class"]').val('').trigger('change');
       render_table();
     })
 
@@ -274,17 +320,39 @@
       })
     });
 
+    @if(in_array(userrole(),[1]))
+        $('[name="filter_company"]').select2({
+            ajax: {
+                url: "{{route('common.getBusinessUnits')}}",
+                type: "post",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        _token: "{{ csrf_token() }}",
+                        search: params.term
+                    };
+                },
+                processResults: function (response) {
+                    return {
+                    results: response
+                    };
+                },
+                cache: true
+            },
+        });
+    @endif
 
     $('[name="filter_territory"]').select2({
       ajax: {
-          url: "{{route('customer.get-territory')}}",
+          url: "{{route('common.getTerritory')}}",
           type: "post",
           dataType: 'json',
           delay: 250,
           data: function (params) {
               return {
                   _token: "{{ csrf_token() }}",
-                  search: params.term
+                  search: params.term,
               };
           },
           processResults: function (response) {
@@ -296,6 +364,183 @@
       },
     });
 
+    $('[name="filter_market_sector"]').select2({
+      ajax: {
+          url: "{{route('common.getMarketSector')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
+    $('[name="filter_market_sub_sector"]').select2({
+      ajax: {
+          url: "{{route('common.getMarketSubSector')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
+    $('[name="filter_region"]').select2({
+      ajax: {
+          url: "{{route('common.getRegion')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
+    $('[name="filter_province"]').select2({
+      ajax: {
+          url: "{{route('common.getProvince')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
+    $('[name="filter_city"]').select2({
+      ajax: {
+          url: "{{route('common.getCity')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
+    $('[name="filter_branch"]').select2({
+      ajax: {
+          url: "{{route('common.getProvince')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
+    $('[name="filter_sales_specialist"]').select2({
+      ajax: {
+          url: "{{route('common.getSalesSpecialist')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
+    $('[name="filter_customer_class"]').select2({
+      ajax: {
+          url: "{{route('common.getCustomerClass')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
+
     @if(in_array(userrole(),[1]))
       $(document).on("click", ".download_excel", function(e) {
         var url = "{{route('customer.export')}}";
@@ -304,8 +549,6 @@
         data.filter_search = $('[name="filter_search"]').val();
         data.filter_date_range = $('[name="filter_date_range"]').val();
         data.filter_status = $('[name="filter_status"]').find('option:selected').val();
-        data.filter_class = $('[name="filter_class"]').find('option:selected').val();
-        data.filter_customer_group = $('[name="filter_customer_group"]').find('option:selected').val();
         data.filter_territory = $('[name="filter_territory"]').find('option:selected').val();
         data.filter_company = $('[name="filter_company"]').find('option:selected').val();
 
