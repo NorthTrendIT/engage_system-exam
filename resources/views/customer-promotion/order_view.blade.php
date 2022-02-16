@@ -136,7 +136,7 @@
 
                             @if(userrole() == 1)
                               
-                              @if($data->status == "approved" && $data->is_sap_pushed == false && $data->is_approved)
+                              @if($data->status == "approved" && $is_sap_pushed == false && $data->is_approved)
                               <!--end::Col-->
                               <div class="col-sm-3">
                                 <div class="fw-bold fs-7 text-gray-600 mb-1">Push Details In SAP:</div>
