@@ -127,7 +127,7 @@
                                 @endif
                                 <th>Title</th>
                                 <th>Type</th>
-                                <th>Module</th>
+                                <th>Customer</th>
                                 <th>Priority</th>
                                 @if(@Auth::user()->role_id == 1)
                                 <th>User Name</th>

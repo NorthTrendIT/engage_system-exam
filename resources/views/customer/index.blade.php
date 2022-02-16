@@ -137,7 +137,10 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>Customer Code</th>
                               <th>Name</th>
+                              <th>Date Created</th>
+                              <th>Credit Limit</th>
                               @if(in_array(userrole(),[1]))
                               <th>Business Unit</th>
                               @endif
@@ -147,7 +150,6 @@
                               @endif
                               <th>Group</th>
                               <th>Territory</th>
-                              <th>Date</th>
                               <th>Class</th>
                               {{-- <th>Status</th> --}}
                               <th>Action</th>
@@ -239,7 +241,10 @@
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'customer_code', name: 'customer_code'},
               {data: 'name', name: 'name'},
+              {data: 'created_at', name: 'created_at'},
+              {data: 'credit_limit', name: 'credit_limit'},
               @if(in_array(userrole(),[1]))
               {data: 'company', name: 'company'},
               @endif
@@ -249,7 +254,6 @@
               @endif
               {data: 'group', name: 'group'},
               {data: 'territory', name: 'territory'},
-              {data: 'created_at', name: 'created_at'},
               {data: 'class', name: 'class'},
               // {data: 'status', name: 'status'},
               {data: 'action', name: 'action'},
