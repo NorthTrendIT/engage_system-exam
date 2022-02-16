@@ -75,6 +75,7 @@ class StoreProducts implements ShouldQueue
                                 'u_item_line' => @$value['U_ItemLine'],
                                 'item_class' => @$value['ItemClass'],
                                 'u_series2' => @$value['U_Series2'],
+                                'u_pattern2' => @$value['U_Pattern2'],
 
 
                                 'sap_connection_id' => $this->sap_connection_id,
