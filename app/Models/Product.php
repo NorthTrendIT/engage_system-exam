@@ -45,6 +45,7 @@ class Product extends Model
         'u_tires',
         'item_class',
         'u_series2',
+        'u_pattern2',
     ];
 
     public function product_images()

@@ -26,12 +26,12 @@ class ProductController extends Controller
    */
   public function index()
   {
-    $product_groups = ProductGroup::all();
-    $product_line = ProductItemLine::get()->groupBy('u_item_line');
-    $product_category = ProductTiresCategory::get()->groupBy('u_tires');
+    // $product_groups = ProductGroup::all();
+    // $product_line = ProductItemLine::get()->groupBy('u_item_line');
+    // $product_category = ProductTiresCategory::get()->groupBy('u_tires');
     $company = SapConnection::all();
 
-    return view('product.index',compact('product_groups','product_line','product_category','company'));
+    return view('product.index',compact('company'));
   }
 
   /**
@@ -229,6 +229,22 @@ class ProductController extends Controller
       $data->where('u_item_line',$request->filter_product_line);
     }
 
+    if($request->filter_product_class != ""){
+      $data->where('item_class',$request->filter_product_class);
+    }
+
+    if($request->filter_product_type != ""){
+      $data->where('u_item_type',$request->filter_product_type);
+    }
+
+    if($request->filter_product_application != ""){
+      $data->where('u_item_application',$request->filter_product_application);
+    }
+
+    if($request->filter_product_pattern != ""){
+      $data->where('u_pattern2',$request->filter_product_pattern);
+    }
+
     if($request->filter_search != ""){
       $data->where(function($q) use ($request) {
         $q->orwhere('item_code','LIKE',"%".$request->filter_search."%");
@@ -261,19 +277,37 @@ class ProductController extends Controller
     return DataTables::of($data)
                           ->addIndexColumn()
                           ->addColumn('item_name', function($row) {
-                              return @$row->item_name ?? "";
+                            return @$row->item_name ?? "";
                           })
                           ->addColumn('item_code', function($row) {
-                              return @$row->item_code ?? "";
+                            return @$row->item_code ?? "";
                           })
                           ->addColumn('brand', function($row) {
-                              return @$row->group->group_name ?? "";
+                            return @$row->group->group_name ?? "";
                           })
                           ->addColumn('u_item_line', function($row) {
-                              return @$row->u_item_line ?? "-";
+                            return @$row->u_item_line ?? "-";
                           })
                           ->addColumn('u_tires', function($row) {
-                              return @$row->u_tires ?? "-";
+                            return @$row->u_tires ?? "-";
+                          })
+                          ->addColumn('item_class', function($row) {
+                            return @$row->item_class ?? "-";
+                          })
+                          ->addColumn('u_item_type', function($row) {
+                            return @$row->u_item_type ?? "-";
+                          })
+                          ->addColumn('u_item_application', function($row) {
+                            return @$row->u_item_application ?? "-";
+                          })
+                          ->addColumn('u_pattern2', function($row) {
+                            return @$row->u_pattern2 ?? "-";
+                          })
+                          ->addColumn('created_date', function($row) {
+                            return date('M d, Y',strtotime($row->created_date));
+                          })
+                          ->addColumn('company', function($row) {
+                            return @$row->sap_connection->company_name ?? "-";
                           })
                           ->addColumn('status', function($row) {
                             $btn = "";
@@ -312,44 +346,50 @@ class ProductController extends Controller
                               return $btn;
                           })
                           ->addColumn('class', function($row) {
-                              $html = "";
-                              return $html;
-                          })
-                          ->addColumn('created_date', function($row) {
-                              return date('M d, Y',strtotime($row->created_date));
-                          })
-                          ->addColumn('company', function($row) {
-                              return  @$row->sap_connection->company_name ?? "-";
+                            $html = "";
+                            return $html;
                           })
                           ->orderColumn('item_name', function ($query, $order) {
-                              $query->orderBy('item_name', $order);
+                            $query->orderBy('item_name', $order);
                           })
                           ->orderColumn('item_code', function ($query, $order) {
-                              $query->orderBy('item_code', $order);
+                            $query->orderBy('item_code', $order);
                           })
                           ->orderColumn('u_tires', function ($query, $order) {
-                              $query->orderBy('u_tires', $order);
+                            $query->orderBy('u_tires', $order);
                           })
                           ->orderColumn('u_item_line', function ($query, $order) {
-                              $query->orderBy('u_item_line', $order);
+                            $query->orderBy('u_item_line', $order);
+                          })
+                          ->orderColumn('item_class', function ($query, $order) {
+                            $query->orderBy('item_class', $order);
+                          })
+                          ->orderColumn('u_item_type', function ($query, $order) {
+                            $query->orderBy('u_item_type', $order);
+                          })
+                          ->orderColumn('u_item_application', function ($query, $order) {
+                            $query->orderBy('u_item_application', $order);
+                          })
+                          ->orderColumn('u_pattern2', function ($query, $order) {
+                            $query->orderBy('u_pattern2', $order);
                           })
                           ->orderColumn('created_date', function ($query, $order) {
-                              $query->orderBy('created_date', $order);
+                            $query->orderBy('created_date', $order);
                           })
                           ->orderColumn('status', function ($query, $order) {
-                              $query->orderBy('is_active', $order);
+                            $query->orderBy('is_active', $order);
                           })
                           ->orderColumn('brand', function ($query, $order) {
-                              // $query->join('product_groups', 'products.items_group_code', '=', 'product_groups.number')
-                              //       ->orderBy('product_groups.group_name', $order);
+                            // $query->join('product_groups', 'products.items_group_code', '=', 'product_groups.number')
+                            //       ->orderBy('product_groups.group_name', $order);
 
-                              $query->join("product_groups",function($join){
-                                  $join->on("products.items_group_code","=","product_groups.number")
-                                      ->on("products.sap_connection_id","=","product_groups.sap_connection_id");
-                              })->orderBy('product_groups.group_name', $order);
+                            $query->join("product_groups",function($join){
+                                $join->on("products.items_group_code","=","product_groups.number")
+                                    ->on("products.sap_connection_id","=","product_groups.sap_connection_id");
+                            })->orderBy('product_groups.group_name', $order);
                           })
                           ->orderColumn('company', function ($query, $order) {
-                              $query->join('sap_connections', 'promotion_types.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
+                            $query->join('sap_connections', 'promotion_types.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                           })
                           ->rawColumns(['status','action'])
                           ->make(true);
@@ -432,4 +472,122 @@ class ProductController extends Controller
     \Session::flash('error_message', common_error_msg('excel_download'));
     return redirect()->back();
   }
+
+  public function getBrandData(Request $request){
+    $data = collect();
+
+    if(@$request->sap_connection_id != ""){
+      $data = ProductGroup::where('sap_connection_id', $request->sap_connection_id)->orderby('group_name')->limit(50);
+
+      if(@$request->search  != ''){
+        $data->where('group_name', 'like', '%' .$request->search . '%');
+      }
+
+      $data = $data->get();
+    }
+
+    return response()->json($data);
+  }
+
+  public function getProductCategoryData(Request $request){
+    $data = collect();
+
+    if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
+      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_tires')->orderby('u_tires')->limit(50);
+
+      if(@$request->search  != ''){
+        $data->where('u_tires', 'like', '%' .$request->search . '%');
+      }
+      
+      $data = $data->get()->groupBy('u_tires');
+    }
+
+    return response()->json($data);
+  }
+
+
+  public function getProductLineData(Request $request){
+    $data = collect();
+
+    if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
+      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_line')->orderby('u_item_line')->limit(50);
+
+      if(@$request->search  != ''){
+        $data->where('u_item_line', 'like', '%' .$request->search . '%');
+      }
+      
+      $data = $data->get()->groupBy('u_item_line');
+    }
+
+    return response()->json($data);
+  }
+
+
+  public function getProductClassData(Request $request){
+    $data = collect();
+
+    if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
+      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('item_class')->orderby('item_class')->limit(50);
+
+      if(@$request->search  != ''){
+        $data->where('item_class', 'like', '%' .$request->search . '%');
+      }
+      
+      $data = $data->get()->groupBy('item_class');
+    }
+
+    return response()->json($data);
+  }
+
+
+  public function getProductTypeData(Request $request){
+    $data = collect();
+
+    if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
+      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_type')->orderby('u_item_type')->limit(50);
+
+      if(@$request->search  != ''){
+        $data->where('u_item_type', 'like', '%' .$request->search . '%');
+      }
+      
+      $data = $data->get()->groupBy('u_item_type');
+    }
+
+    return response()->json($data);
+  }
+
+
+  public function getProductApplicationData(Request $request){
+    $data = collect();
+
+    if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
+      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_application')->orderby('u_item_application')->limit(50);
+
+      if(@$request->search  != ''){
+        $data->where('u_item_application', 'like', '%' .$request->search . '%');
+      }
+      
+      $data = $data->get()->groupBy('u_item_application');
+    }
+
+    return response()->json($data);
+  }
+
+
+  public function getProductPatternData(Request $request){
+    $data = collect();
+
+    if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
+      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_pattern2')->orderby('u_pattern2')->limit(50);
+
+      if(@$request->search  != ''){
+        $data->where('u_pattern2', 'like', '%' .$request->search . '%');
+      }
+      
+      $data = $data->get()->groupBy('u_pattern2');
+    }
+
+    return response()->json($data);
+  }
+
 }
