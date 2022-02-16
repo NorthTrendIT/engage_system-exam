@@ -220,7 +220,7 @@ class CustomerPromotionController extends Controller
 
             $promotion_id = $request->promotion_id;
 
-            $last = PromotionTypeProduct::where($where)->select('id')->first();
+            $last = PromotionTypeProduct::where($where)->orderBy('id', 'ASC')->select('id')->first();
 
             if (!$products->isEmpty()) {
 
