@@ -64,8 +64,8 @@
 
                                         @if(@Auth::user()->role_id == 1)
                                         <tr>
-                                            <th> <b>Module:</b> </th>
-                                            <td>{{ ucwords(str_replace("_"," ",@$data->module)) ?? "" }}</td>
+                                            <th> <b>Customers :</b> </th>
+                                            <td>By {{ ucwords(str_replace("_"," ",@$data->module)) ?? "" }}</td>
                                         </tr>
 
                                         @if(@$data->module == 'market_sector')
