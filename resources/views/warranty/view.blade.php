@@ -41,74 +41,74 @@
                           <!--begin::Table head-->
                           <thead>
                             <tr>
-                              <th> <b>Date Time:</b> </th>
+                              <th> <b>Date Time :</b> </th>
                               <td>{{ date('M d, Y',strtotime($data->created_at)) }}</td>
                             </tr>
                             
                             <tr>
-                              <th> <b>Type of Warranty Claim:</b> </th>
+                              <th> <b>Type of Warranty Claim :</b> </th>
                               <td>{{ @$data->warranty_claim_type ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Ref No:</b> </th>
-                              <td>{{ 'EOMSW'. @$data->id }}</td>
+                              <th> <b>Ref No :</b> </th>
+                              <td>{{ @$data->ref_no ?? "-" }}</td>
                             </tr>
 
                             @if(in_array(userrole(),[1,3]))
                             <tr>
-                              <th> <b>Business Unit:</b> </th>
+                              <th> <b>Business Unit :</b> </th>
                               <td>{{ @$data->user->sap_connection->company_name ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Customer Name:</b> </th>
+                              <th> <b>Customer Name :</b> </th>
                               <td>{{ @$data->user->sales_specialist_name ?? "-" }}</td>
                             </tr>
                             @endif
 
                             <tr>
-                              <th> <b>Customer Email:</b> </th>
+                              <th> <b>Customer Email :</b> </th>
                               <td>{{ @$data->customer_email ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Customer Phone:</b> </th>
+                              <th> <b>Customer Phone :</b> </th>
                               <td>{{ @$data->customer_phone ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Customer Location:</b> </th>
+                              <th> <b>Customer Location :</b> </th>
                               <td>{{ @$data->customer_location ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Customer Telephone:</b> </th>
+                              <th> <b>Customer Telephone :</b> </th>
                               <td>{{ @$data->customer_telephone ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Customer Address:</b> </th>
+                              <th> <b>Customer Address :</b> </th>
                               <td>{{ @$data->customer_address ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Dealer Name:</b> </th>
+                              <th> <b>Dealer Name :</b> </th>
                               <td>{{ @$data->dealer_name ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Dealer Location:</b> </th>
+                              <th> <b>Dealer Location :</b> </th>
                               <td>{{ @$data->dealer_location ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Dealer Telephone:</b> </th>
+                              <th> <b>Dealer Telephone :</b> </th>
                               <td>{{ @$data->dealer_telephone ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Dealer Fax:</b> </th>
+                              <th> <b>Dealer Fax :</b> </th>
                               <td>{{ @$data->dealer_fax ?? "-" }}</td>
                             </tr>
 
@@ -152,59 +152,69 @@
                           <thead>
                             
                             <tr>
-                              <th> <b>Vehicle Maker:</b> </th>
+                              <th> <b>Vehicle Maker :</b> </th>
                               <td>{{ @$data->vehicle->vehicle_maker ?? "-" }}</td>
                             </tr>
                             
                             <tr>
-                              <th> <b>Vehicle Model:</b> </th>
+                              <th> <b>Vehicle Model :</b> </th>
                               <td>{{ @$data->vehicle->vehicle_model ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Vehicle Mileage:</b> </th>
+                              <th> <b>Vehicle Mileage :</b> </th>
                               <td>{{ @$data->vehicle->vehicle_mileage ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Year:</b> </th>
+                              <th> <b>Year :</b> </th>
                               <td>{{ @$data->vehicle->year ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>License Plate:</b> </th>
+                              <th> <b>License Plate :</b> </th>
                               <td>{{ @$data->vehicle->license_plate ?? "-" }}</td>
                             </tr>
 
 
                             <tr>
-                              <th> <b>PC/LT Tire Position:</b> </th>
+                              <th> <b>PC/LT Tire Position :</b> </th>
                               <td>{{ @$data->vehicle->lt_tire_position ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>PC/LT Tire Mileage:</b> </th>
+                              <th> <b>PC/LT Tire Mileage :</b> </th>
                               <td>{{ @$data->vehicle->lt_tire_mileage ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>2 Wheels/TB Tire Position:</b> </th>
+                              <th> <b>PC/LT Tire Serial No.  :</b> </th>
+                              <td>{{ @$data->vehicle->lt_tire_serial_no ?? "-" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>2 Wheels/TB Tire Position :</b> </th>
                               <td>{{ @$data->vehicle->tb_tire_position ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>2 Wheels/TB Tire Mileage:</b> </th>
+                              <th> <b>2 Wheels/TB Tire Mileage :</b> </th>
                               <td>{{ @$data->vehicle->tb_tire_mileage ?? "-" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>2 Wheels/TB Tire Serial No. :</b> </th>
+                              <td>{{ @$data->vehicle->tb_tire_serial_no ?? "-" }}</td>
                             </tr>
 
 
                             <tr>
-                              <th> <b>Reason for tire return:</b> </th>
+                              <th> <b>Reason for tire return :</b> </th>
                               <td>{{ @$data->vehicle->reason_for_tire_return ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Location of damage:</b> </th>
+                              <th> <b>Location of damage :</b> </th>
                               <td>{{ @$data->vehicle->location_of_damage ?? "-" }}</td>
                             </tr>
 
@@ -296,7 +306,7 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
-              <h5>Tire Manifistation</h5>
+              <h5>Tire Manifistation Probable Cause</h5>
             </div>
             <div class="card-body">
               
@@ -362,7 +372,7 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
-              <h5>Pictures</h5>
+              <h5>Pictures of the Tire focusing on Damage Areas</h5>
             </div>
             <div class="card-body">
               
