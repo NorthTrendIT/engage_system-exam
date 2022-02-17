@@ -36,7 +36,25 @@
                   <div class="col-md-12">
                     <div class="form-group">
                       <label>New Password<span class="asterisk">*</span></label>
-                      <input type="password" class="form-control form-control-solid" placeholder="Enter new password" name="new_password" id="new_password">
+                      <div class="input-group input-group-solid">
+                        <input class="form-control form-control-solid password" type="password" placeholder="Enter password" name="password">
+                        <div class="input-group-append password_icon_div cursor-pointer pt-2">
+                          <span class="input-group-text">
+                            <i class="fas fa-eye-slash password_icon"></i>
+                          </span>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+
+
+                <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <a href="javascript:" class="btn btn-light-dark btn-sm password_generate">Password Generate</a>
                     </div>
                   </div>
                 </div>
@@ -45,7 +63,17 @@
                   <div class="col-md-12">
                     <div class="form-group">
                       <label>Confirm Password<span class="asterisk">*</span></label>
-                      <input type="password" class="form-control form-control-solid" placeholder="Enter confirm password" name="confirm_password" >
+                      {{-- <input type="password" class="form-control form-control-solid" placeholder="Enter confirm password" name="confirm_password" > --}}
+
+                      <div class="input-group input-group-solid">
+                        <input class="form-control form-control-solid password" type="password" placeholder="Enter confirm password" name="confirm_password">
+                        <div class="input-group-append password_icon_div cursor-pointer pt-2">
+                          <span class="input-group-text">
+                            <i class="fas fa-eye-slash password_icon"></i>
+                          </span>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
                 </div>
@@ -53,7 +81,7 @@
                 <div class="row mb-5">
                   <div class="col-md-12">
                     <div class="form-group">
-                      <span class="text-muted">Password has to meet the following criteria: Must be at least 8 characters long. Must contain at least: one lowercase letter, one uppercase letter, one numeric character, and one of the following special characters !@#$%^&-_+=.</span>
+                      <span class="text-muted">Password has to meet the following criteria: Must be at least 8 characters long. Must contain at least: one lowercase letter, one uppercase letter, one numeric character, and one of the following special characters @$!%*#?&_-~<>;</span>
                     </div>
                   </div>
                 </div>
@@ -157,7 +185,6 @@
 
       return validator;
     }
-  
   });
 </script>
 @endpush

@@ -92,6 +92,22 @@
 			$(document).ajaxStop(function() {
 			  	hide_loader();
 			});
+
+			$(document).on('click', '.password_icon_div', function(event) {
+			    event.preventDefault();
+			    element = $(this).prev();
+			    children = $(this).children();
+
+			    if(element.attr('type') == "text"){
+			      element.attr('type', 'password');
+			      children.find('.password_icon').addClass('fa-eye-slash');
+			      children.find('.password_icon').removeClass('fa-eye');
+			    }else{
+			      element.attr('type', 'text');
+			      children.find('.password_icon').removeClass('fa-eye-slash');
+			      children.find('.password_icon').addClass('fa-eye');
+			    }
+			});
 				
 		</script>
 		

@@ -43,3 +43,13 @@ function toast_success(msg) {
     toastr.success(msg);
 }
     
+
+// Generate a password string
+function generate_password(length = 10){
+    var possible = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&_-~<>;';
+    var text = '';
+    for(var i=0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+}
