@@ -188,7 +188,7 @@ class CustomerController extends Controller
 
         if($request->filter_sales_specialist != ""){
             $data->whereHas('sales_specialist', function($q) use($request){
-                $q->where('id', $request->filter_sales_specialist);
+                $q->where('ss_id', $request->filter_sales_specialist);
             });
         }
 
@@ -239,6 +239,12 @@ class CustomerController extends Controller
                                   </a>';
 
                                 return $btn;
+                            })
+                            ->addColumn('customer_code', function($row) {
+                                return @$row->card_code ?? "-";
+                            })
+                            ->addColumn('credit_limit', function($row) {
+                                return @$row->credit_limit ?? "-";
                             })
                             ->addColumn('name', function($row) {
                                 $html = "";
@@ -302,11 +308,17 @@ class CustomerController extends Controller
                             ->addColumn('company', function($row) {
                                 return @$row->sap_connection->company_name ?? "-";
                             })
+                            ->orderColumn('customer_code', function ($query, $order) {
+                                $query->orderBy('card_code', $order);
+                            })
                             ->orderColumn('name', function ($query, $order) {
                                 $query->orderBy('card_name', $order);
                             })
                             ->orderColumn('created_at', function ($query, $order) {
                                 $query->orderBy('created_at', $order);
+                            })
+                            ->orderColumn('credit_limit', function ($query, $order) {
+                                $query->orderBy('credit_limit', $order);
                             })
                             ->orderColumn('u_card_code', function ($query, $order) {
                                 $query->orderBy('u_card_code', $order);

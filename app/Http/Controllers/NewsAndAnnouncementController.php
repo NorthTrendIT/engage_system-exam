@@ -137,11 +137,17 @@ class NewsAndAnnouncementController extends Controller
 
                 if($input['module'] == 'sales_specialist'){
                     foreach($records as $record_id){
-                        $connection = new NotificationConnection();
-                        $connection->notification_id = $notification->id;
-                        $connection->user_id = $record_id;
-                        $connection->record_id = $record_id;
-                        $connection->save();
+                        $data = Customer::whereHas('sales_specialist', function($q) use($record_id){
+                            $q->where('ss_id', $record_id);
+                        })->get();
+
+                        foreach($data as $customer){
+                            $connection = new NotificationConnection();
+                            $connection->notification_id = $notification->id;
+                            $connection->user_id = $record_id;
+                            $connection->record_id = $record_id;
+                            $connection->save();
+                        }
                     }
                 }
 

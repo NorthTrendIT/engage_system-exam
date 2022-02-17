@@ -194,6 +194,10 @@ class OrdersController extends Controller
                 $q->orwhere('doc_type','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");
             });
+
+            $data->whereHas('customer', function($q) use ($request){
+                $q->orWhere('card_name', 'LIKE', "%".$request->filter_search."%");
+            });
         }
 
         if($request->filter_customer != ""){
@@ -298,6 +302,7 @@ class OrdersController extends Controller
             $notification->type = 'OU';
             $notification->title = 'Order Status Updated';
             $notification->module = 'customer';
+            $notification->sap_connection_id = $quotation->sap_connection_id;
             $notification->message = 'Your order <a href="'.$link.'"><b>#'.$quotation->doc_entry.'</b></a> status has been updated to <b>[STATUS]</b>.';
             $notification->user_id = @Auth::user()->id;
             $notification->save();
