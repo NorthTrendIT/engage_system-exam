@@ -7,6 +7,7 @@ use App\Models\SapConnection;
 use App\Models\Territory;
 use App\Models\Customer;
 use App\Models\User;
+use App\Models\ProductGroup;
 
 class CommonController extends Controller
 {
@@ -38,7 +39,7 @@ class CommonController extends Controller
         $response = array();
         $search = $request->search;
 
-        $data = Territory::where('is_active', true)->orderby('description','asc')->select('territory_id','description');
+        $data = Territory::where('territory_id','!=','-2')->where('is_active', true)->orderby('description','asc')->select('id','description');
 
         if($search != ''){
             $data->where('description', 'like', '%' .$search . '%');
@@ -48,7 +49,7 @@ class CommonController extends Controller
 
         foreach($data as $value){
             $response[] = array(
-                "id" => $value->territory_id,
+                "id" => $value->id,
                 "text" => $value->description
             );
         }
@@ -231,7 +232,7 @@ class CommonController extends Controller
         return response()->json($response);
     }
 
-    // Get Branch
+    // Get Sales Specialist
     public function getSalesSpecialist(Request $request){
         $response = array();
         if($request->sap_connection_id){
@@ -283,6 +284,38 @@ class CommonController extends Controller
                 $response[] = array(
                     "id" => $value->u_class,
                     "text" => $value->u_class,
+                );
+            }
+        }
+
+        return response()->json($response);
+    }
+
+    // Get Brand
+    public function getBrands(Request $request){
+
+        $response = array();
+        if($request->sap_connection_id){
+            $search = $request->search;
+
+            $data = ProductGroup::orderby('group_name','asc')
+                                ->select('id','group_name')
+                                ->limit(50);
+
+            if($search != ''){
+                $data->where('group_name', 'like', '%' .$search . '%');
+            }
+
+            if($request->sap_connection_id != ''){
+                $data->where('sap_connection_id',$request->sap_connection_id);
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+                $response[] = array(
+                    "id" => $value->id,
+                    "text" => $value->group_name
                 );
             }
         }

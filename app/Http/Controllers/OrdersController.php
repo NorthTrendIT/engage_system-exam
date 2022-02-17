@@ -188,15 +188,59 @@ class OrdersController extends Controller
             }
         }
 
+        if($request->filter_brand != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where(function($que) use ($request) {
+                        $que->whereHas('product_groups', function($q2) use ($request){
+                            $q2->where('product_group_id', $request->filter_brand);
+                        });
+                    });
+                });
+            });
+        }
+
+        if($request->filter_class != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where('u_class', $request->filter_class);
+                });
+            });
+        }
+
+        if($request->filter_sales_specialist != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where(function($que) use ($request) {
+                        $que->whereHas('sales_specialist', function($q2) use ($request){
+                            $q2->where('id', $request->filter_sales_specialist);
+                        });
+                    });
+                });
+            });
+        }
+
+        if($request->filter_market_sector != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where('u_msec', $request->filter_market_sector);
+                });
+            });
+        }
+
+        if($request->filter_territory != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where('territory', $request->filter_territory);
+                });
+            });
+        }
+
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
                 // $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_type','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");
-            });
-
-            $data->whereHas('customer', function($q) use ($request){
-                $q->orWhere('card_name', 'LIKE', "%".$request->filter_search."%");
             });
         }
 

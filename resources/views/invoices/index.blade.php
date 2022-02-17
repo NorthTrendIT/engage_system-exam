@@ -43,6 +43,52 @@
                     @endforeach
                   </select>
                 </div>
+
+                <!-- Select Customer By -->
+                <div class="col-md-3 mt-5">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectModule" data-hide-search="false" data-allow-clear="true" data-placeholder="Select Customer By" name="module">
+                        <option value=""></option>
+                        <option value="brand">By Brand</option>
+                        <option value="customer_class">By Class</option>
+                        <option value="sales_specialist">By Sales Specialist</option>
+                        <option value="territory">By Territory</option>
+                        <option value="market_sector">By Market Sector</option>
+                    </select>
+                </div>
+                <!-- Brand -->
+                <div class="col-md-3 mt-5 brand" style="display:none">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectBrand" data-hide-search="false" data-allow-clear="true" name="filter_brand" data-placeholder="Select Brand">
+                        <option value=""></option>
+                    </select>
+                </div>
+
+                <!-- Customer Class -->
+                <div class="col-md-3 mt-5 customer_class" style="display:none">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectCustomerClass" data-hide-search="false" data-allow-clear="true" name="filter_customer_class">
+                      <option value=""></option>
+                    </select>
+                </div>
+
+                <!-- Sales Specilalist -->
+                <div class="col-md-3 mt-5 sales_specialist" style="display:none">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectSalesSpecialist" data-hide-search="false" data-allow-clear="true" name="filter_sales_specialist">
+                      <option value=""></option>
+                    </select>
+                </div>
+
+                <!-- Territory -->
+                <div class="col-md-3 mt-5 territory" style="display:none">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectTerritory" data-hide-search="false" data-allow-clear="true" name="filter_territory">
+                      <option value=""></option>
+                    </select>
+                </div>
+
+                <!-- Market Sector -->
+                <div class="col-md-3 mt-5 market_sector" style="display:none">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectMarketSector" data-hide-search="false" data-allow-clear="true" name="filter_market_sector">
+                      <option value=""></option>
+                    </select>
+                </div>
                 @endif
 
                 @if(in_array(userrole(),[1,2]))
@@ -143,6 +189,11 @@
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
+      $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+      $filter_class = $('[name="filter_class"]').find('option:selected').val();
+      $filter_territory = $('[name="filter_territory"]').find('option:selected').val();
+      $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
+      $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -161,6 +212,11 @@
                 filter_status : $filter_status,
                 filter_customer : $filter_customer,
                 filter_company : $filter_company,
+                filter_brand : $filter_brand,
+                filter_class : $filter_class,
+                filter_sales_specialist : $filter_sales_specialist,
+                filter_market_sector : $filter_market_sector,
+                filter_territory : $filter_territory,
               }
           },
           columns: [
@@ -319,6 +375,182 @@
 
         window.location.href = url;
       });
+
+        $('body').on('change' ,'#selectModule', function(){
+            $module = $('[name="module"]').val();
+            // Hide all.
+            $('.brand').hide();
+            $('.customer').hide();
+            $('.customer_class').hide();
+            $('.sales_specialist').hide();
+            $('.territory').hide();
+            $('.market_sector').hide();
+            // Dissable all.
+            $('#selectrBrand').prop('disabled', true);
+            $('#selectCustomer').prop('disabled', true);
+            $('#selectCustomerClass').prop('disabled', true);
+            $('#selectSalesSpecialist').prop('disabled', true);
+            $('#selectTerritory').prop('disabled', true);
+            $('#selectMarketSector').prop('disabled', true);
+            // Set null value to all.
+            $('#selectBrand').val(null).trigger("change");
+            $('#selectCustomer').val(null).trigger("change");
+            $('#selectCustomerClass').val(null).trigger("change");
+            $('#selectSalesSpecialist').val(null).trigger("change");
+            $('#selectTerritory').val(null).trigger("change");
+            $('#selectMarketSector').val(null).trigger("change");
+
+            // Show and enable according to Module selection.
+            if($module == "brand"){
+                $('.brand').show();
+                $('#selectBrand').prop('disabled', false);
+            } else if ($module == "customer"){
+                $('.customer').show();
+                $('#selectCustomer').prop('disabled', false);
+            } else if($module == "customer_class"){
+                $('.customer_class').show();
+                $('#selectCustomerClass').prop('disabled', false);
+            } else if($module == "sales_specialist"){
+                $('.sales_specialist').show();
+                $('#selectSalesSpecialist').prop('disabled', false);
+            } else if($module == "territory"){
+                $('.territory').show();
+                $('#selectTerritory').prop('disabled', false);
+            } else if($module == "market_sector"){
+                $('.market_sector').show();
+                $('#selectMarketSector').prop('disabled', false);
+            }
+        });
+
+        // Brand
+        $("#selectBrand").select2({
+            ajax: {
+                url: "{{route('common.getBrands')}}",
+                type: "post",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        _token: "{{ csrf_token() }}",
+                        search: params.term,
+                        sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    };
+                },
+                processResults: function (response) {
+                    return {
+                        results: response
+                    };
+                },
+                cache: true
+            },
+            placeholder: 'Select Brand',
+            // minimumInputLength: 1,
+            multiple: false,
+        });
+
+        // getCustomerClass
+        $("#selectCustomerClass").select2({
+            ajax: {
+                url: "{{route('common.getCustomerClass')}}",
+                type: "post",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        _token: "{{ csrf_token() }}",
+                        search: params.term,
+                        sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    };
+                },
+                processResults: function (response) {
+                    return {
+                        results: response
+                    };
+                },
+                cache: true
+            },
+            placeholder: 'Select Customer Class',
+            // minimumInputLength: 2,
+            multiple: false,
+        });
+
+        // getSalesSpecialist
+        $("#selectSalesSpecialist").select2({
+            ajax: {
+                url: "{{route('common.getSalesSpecialist')}}",
+                type: "post",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        _token: "{{ csrf_token() }}",
+                        search: params.term,
+                        sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    };
+                },
+                processResults: function (response) {
+                    return {
+                        results: response
+                    };
+                },
+                cache: true
+            },
+            placeholder: 'Select Sales Specialist',
+            // minimumInputLength: 2,
+            multiple: false,
+        });
+
+        // getTerritory
+        $("#selectTerritory").select2({
+            ajax: {
+                url: "{{route('common.getTerritory')}}",
+                type: "post",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        _token: "{{ csrf_token() }}",
+                        search: params.term,
+                        sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    };
+                },
+                processResults: function (response) {
+                    return {
+                        results: response
+                    };
+                },
+                cache: true
+            },
+            placeholder: 'Select Territory',
+            // minimumInputLength: 2,
+            multiple: false,
+        });
+
+        // getMarketSector
+        $("#selectMarketSector").select2({
+            ajax: {
+                url: "{{route('common.getMarketSector')}}",
+                type: "post",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        _token: "{{ csrf_token() }}",
+                        search: params.term,
+                        sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    };
+                },
+                processResults: function (response) {
+                    return {
+                        results: response
+                    };
+                },
+                cache: true
+            },
+            placeholder: 'Select Market Sector',
+            // minimumInputLength: 2,
+            multiple: false,
+        });
     @endif
   })
 </script>
