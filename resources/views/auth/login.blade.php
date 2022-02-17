@@ -24,11 +24,19 @@
 		<!--begin::Heading-->
 		<div class="fv-row mb-10">
 			<label class="form-label fs-6 fw-bolder text-dark">Email</label>
-			<input class="form-control form-control-lg form-control-solid" type="email" name="email" autocomplete="off" />
+			<input class="form-control form-control-lg form-control-solid" type="email" name="email" autocomplete="off" placeholder="Enter email" />
 		</div>
 		<div class="fv-row mb-10">
 			<label class="form-label fs-6 fw-bolder text-dark">Password</label>
-			<input class="form-control form-control-lg form-control-solid" type="password" name="password" autocomplete="off" />
+			<div class="input-group input-group-solid">
+	            <input class="form-control form-control-lg form-control-solid" type="password" name="password" autocomplete="off" placeholder="********" />
+	            <div class="input-group-append password_icon_div cursor-pointer pt-2">
+	              <span class="input-group-text">
+	                <i class="fas fa-eye-slash password_icon"></i>
+	              </span>
+	            </div>
+	        </div>
+			
 		</div>
 		<!--end::Input group-->
 		<div class="fv-row mb-10 text-left">
