@@ -622,7 +622,8 @@ class OrdersController extends Controller
                           );
         }
         if(count($records)){
-            return Excel::download(new OrderExport($records), 'Order Report.xlsx');
+            $title = 'Order Report '.date('dmY').'.xlsx';
+            return Excel::download(new OrderExport($records), $title);
         }
 
         \Session::flash('error_message', common_error_msg('excel_download'));
