@@ -329,6 +329,7 @@ Route::middleware(['auth'])->group(function(){
     Route::middleware('super-admin')->group(function(){
 
         // Pramotion Type
+        Route::get('promotion-type/export', 'App\Http\Controllers\PromotionTypeController@export')->name('promotion-type.export');
         Route::resource('promotion-type','App\Http\Controllers\PromotionTypeController');
         Route::post('promotion-type/get-all', 'App\Http\Controllers\PromotionTypeController@getAll')->name('promotion-type.get-all');
         Route::post('promotion-type/status/{id}', 'App\Http\Controllers\PromotionTypeController@updateStatus')->name('promotion-type.status');
@@ -337,6 +338,7 @@ Route::middleware(['auth'])->group(function(){
 
 
         // Pramotions
+        Route::get('promotion/export', 'App\Http\Controllers\PromotionsController@export')->name('promotion.export');
         Route::resource('promotion','App\Http\Controllers\PromotionsController');
         Route::post('promotion/get-all', 'App\Http\Controllers\PromotionsController@getAll')->name('promotion.get-all');
         Route::post('promotion/status/{id}', 'App\Http\Controllers\PromotionsController@updateStatus')->name('promotion.status');

@@ -19,6 +19,9 @@ use Validator;
 use DataTables;
 use Auth;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PromotionExport;
+
 class PromotionsController extends Controller
 {
     /**
@@ -723,5 +726,92 @@ class PromotionsController extends Controller
             $response = ['status'=>false,'message'=>'Something went wrong!'];
         }
         return $response;
+    }
+
+
+    public function export(Request $request){
+        $filter = collect();
+        if(@$request->data){
+          $filter = json_decode(base64_decode($request->data));
+        }
+
+        $data = Promotions::orderBy('created_at', 'desc');
+
+        if(@$filter->filter_status != ""){
+            $data->where('is_active',$filter->filter_status);
+        }
+
+        if(@$filter->filter_scope != ""){
+          $data->where('promotion_scope',$filter->filter_scope);
+        }
+
+        if(@$filter->filter_promotion_type != ""){
+          $data->where('promotion_type_id',$filter->filter_promotion_type);
+        }
+
+        if(@$filter->filter_company != ""){
+            $data->where('sap_connection_id',$filter->filter_company);
+        }
+
+        if(@$filter->filter_search != ""){
+            $data->where(function($q) use ($filter) {
+                $q->orwhere('title','LIKE',"%".$filter->filter_search."%");
+                $q->orwhere('description','LIKE',"%".$filter->filter_search."%");
+            });
+        }
+
+        if(@$filter->filter_date_range != ""){
+            $date = explode(" - ", $filter->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('promotion_start_date', '>=' , $start);
+            $data->whereDate('promotion_start_date', '<=' , $end);
+        }
+
+        $data = $data->get();
+
+        $records = array();
+        foreach($data as $key => $value){
+
+            $scope = "";
+            switch (@$value->promotion_scope) {
+                case "C":
+                    $scope = "Customer";
+                    break;
+                case "CL":
+                    $scope = "Class";
+                    break;
+                case "T":
+                    $scope = "Territory";
+                    break;
+                case "SS":
+                    $scope = "Sales Specialist";
+                    break;
+                case "B":
+                    $scope = "Brand";
+                    break;
+                case "MS":
+                    $scope = "Market Sector";
+                    break;
+            }
+
+
+            $records[] = array(
+                            'no' => $key + 1,
+                            'company' => @$value->sap_connection->company_name,
+                            'title' => $value->title,
+                            'customer_group' => $scope,
+                            'start_date' => date('M d, Y',strtotime($value->promotion_start_date)),
+                            'end_date' => date('M d, Y',strtotime($value->promotion_end_date)),
+                            'status' => $value->is_active ? "Active" : "Inctive",
+                          );
+        }
+        if(count($records)){
+          return Excel::download(new PromotionExport($records), 'Promotion Report.xlsx');
+        }
+
+        \Session::flash('error_message', common_error_msg('excel_download'));
+        return redirect()->back();
     }
 }

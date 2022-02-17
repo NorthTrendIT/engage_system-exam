@@ -228,13 +228,11 @@
           scrollX: true,
           scrollY: "800px",
           scrollCollapse: true,
-          // responsive: true,
           paging: true,
           fixedColumns:   {
-            left: 1,  
+            left: 2,  
             right: 1
           },
-          // paging:false,
           order: [],
           ajax: {
               'url': "{{ route('product.get-all') }}",
