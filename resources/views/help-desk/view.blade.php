@@ -46,6 +46,11 @@
                             </tr>
 
                             <tr>
+                              <th> <b>Type of Customer Request:</b> </th>
+                              <td>{{ @$data->type_of_customer_request ?? "" }}</td>
+                            </tr>
+
+                            <tr>
                               <th> <b>Name:</b> </th>
                               <td>{{ @$data->user->first_name ?? "" }} {{ @$data->user->last_name ?? "" }}</td>
                             </tr>
