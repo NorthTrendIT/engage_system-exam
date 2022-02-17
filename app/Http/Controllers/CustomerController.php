@@ -471,7 +471,8 @@ class CustomerController extends Controller
                             );
         }
         if(count($records)){
-            return Excel::download(new CustomerExport($records), 'Customer Report.xlsx');
+            $title = 'Customer Report '.date('dmY').'.xlsx';
+            return Excel::download(new CustomerExport($records), $title);
         }
 
         \Session::flash('error_message', common_error_msg('excel_download'));

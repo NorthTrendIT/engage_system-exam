@@ -1013,7 +1013,8 @@ class CustomerPromotionController extends Controller
                           );
         }
         if(count($records)){
-          return Excel::download(new CustomerPromotionExport($records), 'Customer Promotion Report.xlsx');
+            $title = 'Customer Promotion Report '.date('dmY').'.xlsx';
+            return Excel::download(new CustomerPromotionExport($records), $title);
         }
 
         \Session::flash('error_message', common_error_msg('excel_download'));

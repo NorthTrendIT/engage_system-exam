@@ -808,7 +808,8 @@ class PromotionsController extends Controller
                           );
         }
         if(count($records)){
-          return Excel::download(new PromotionExport($records), 'Promotion Report.xlsx');
+            $title = 'Promotion Report '.date('dmY').'.xlsx';
+            return Excel::download(new PromotionExport($records), $title);
         }
 
         \Session::flash('error_message', common_error_msg('excel_download'));

@@ -469,7 +469,8 @@ class PromotionTypeController extends Controller
                           );
         }
         if(count($records)){
-          return Excel::download(new PromotionTypeExport($records), 'Promotion Type Report.xlsx');
+            $title = 'Promotion Type Report '.date('dmY').'.xlsx';
+            return Excel::download(new PromotionTypeExport($records), $title);
         }
 
         \Session::flash('error_message', common_error_msg('excel_download'));
