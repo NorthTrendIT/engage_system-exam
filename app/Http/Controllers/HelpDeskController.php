@@ -72,14 +72,14 @@ class HelpDeskController extends Controller
 
             $input['user_id'] = Auth::id();
             $input['help_desk_status_id'] = 1;
-            $input['ticket_number'] = '#OMS';
+            $input['ticket_number'] = '#EOMSH';
 
             $ticket = new HelpDesk();
             $message = "Help Desk ticket created successfully.";
 
             $ticket->fill($input)->save();
 
-            $ticket->ticket_number = '#OMS'.$ticket->id;
+            $ticket->ticket_number = '#EOMSH'.$ticket->id;
             $ticket->save();
 
             // Assign Support Department
