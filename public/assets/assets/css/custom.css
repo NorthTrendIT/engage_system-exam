@@ -750,6 +750,11 @@ td.disabled.day {
 .column-left-right-fix-scroll-hidden .dataTables_wrapper .dataTables_scroll .dataTables_scrollHead .dataTables_scrollHeadInner table thead tr{
     height: auto !important;
 }
+
+.column-left-right-fix-scroll-hidden .dataTables_wrapper .dataTables_scroll .dataTables_scrollBody table tbody tr{
+    height: auto !important;
+}
+
 .column-left-right-fix-scroll-hidden .dataTables_wrapper .dataTables_scroll .dtfc-fixed-left{
     box-shadow: 8px 0px 14px 0px rgb(76 87 125 / 6%) !important;
      z-index: 1;

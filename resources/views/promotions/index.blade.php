@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="col-md-4 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_scope" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select promotion customers">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_scope" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select customer group">
                     <option value=""></option>
                     <option value="C">Customer</option>
                     <option value="CL">Class</option>
@@ -68,15 +68,18 @@
                   </div>
                 </div>
 
-                <div class="col-md-6 mt-5">
+                <div class="col-md-4 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search" autocomplete="off">
                   </div>
                 </div>
 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-5 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
-                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
+                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mr-10">Clear</a>
+                  @if(in_array(userrole(),[1]))
+                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
+                  @endif
                 </div>
 
               </div>
@@ -84,7 +87,7 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <!--begin::Table container-->
-                    <div class="table-responsive">
+                    <div class="table-responsive column-left-right-fix-scroll-hidden">
                        <!--begin::Table-->
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <!--begin::Table head-->
@@ -93,7 +96,7 @@
                               <th>No.</th>
                               <th>Business Unit</th>
                               <th>Title</th>
-                              <th>Promotion Customers</th>
+                              <th>Customer Group</th>
                               <th>Start Date</th>
                               <th>End Date</th>
                               <th>Status</th>
@@ -153,7 +156,7 @@
           processing: true,
           serverSide: true,
           scrollX: true,
-          responsive: true,
+          // responsive: true,
           order: [],
           ajax: {
               'url': "{{ route('promotion.get-all') }}",
@@ -336,6 +339,26 @@
           cache: true
       },
     });
+
+
+    @if(in_array(userrole(),[1]))
+      $(document).on("click", ".download_excel", function(e) {
+        var url = "{{route('promotion.export')}}";
+
+        var data = {};
+        data.filter_search = $('[name="filter_search"]').val();
+        data.filter_date_range = $('[name="filter_date_range"]').val();
+        data.filter_status = $('[name="filter_status"]').find('option:selected').val();
+        data.filter_scope = $('[name="filter_scope"]').find('option:selected').val();
+        data.filter_promotion_type = $('[name="filter_promotion_type"]').find('option:selected').val();
+        data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+      
+        url = url + '?data=' + btoa(JSON.stringify(data));
+
+        window.location.href = url;
+      });
+    @endif
+
 
   })
 </script>

@@ -14,6 +14,9 @@ use DataTables;
 use Validator;
 use Auth;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PromotionTypeExport;
+
 class PromotionTypeController extends Controller
 {
     /**
@@ -418,5 +421,58 @@ class PromotionTypeController extends Controller
         }
 
         return $data;
+    }
+
+
+    public function export(Request $request){
+        $filter = collect();
+        if(@$request->data){
+          $filter = json_decode(base64_decode($request->data));
+        }
+
+        $data = PromotionTypes::orderBy('created_at', 'desc');
+
+        if(@$filter->filter_status != ""){
+            $data->where('is_active',$filter->filter_status);
+        }
+
+        if(@$filter->filter_fixed_quantity != ""){
+            $data->where('is_fixed_quantity',$filter->filter_fixed_quantity);
+        }
+
+        if(@$filter->filter_criteria != ""){
+            $data->where('scope',$filter->filter_criteria);
+        }
+
+        if(@$filter->filter_company != ""){
+            $data->where('sap_connection_id',$filter->filter_company);
+        }
+
+        if(@$filter->filter_search != ""){
+            $data->where(function($q) use ($filter) {
+                $q->orwhere('title','LIKE',"%".$filter->filter_search."%");
+                $q->orwhere('description','LIKE',"%".$filter->filter_search."%");
+            });
+        }
+
+        $data = $data->get();
+
+        $records = array();
+        foreach($data as $key => $value){
+            $records[] = array(
+                            'no' => $key + 1,
+                            'company' => @$value->sap_connection->company_name,
+                            'title' => $value->title,
+                            'criteria' => get_promotion_type_criteria($value->scope),
+                            'fixed_quantity' => @$value->is_fixed_quantity ? "Yes" : "No",
+                            'status' => $value->is_active ? "Active" : "Inctive",
+                          );
+        }
+        if(count($records)){
+          return Excel::download(new PromotionTypeExport($records), 'Promotion Type Report.xlsx');
+        }
+
+        \Session::flash('error_message', common_error_msg('excel_download'));
+        return redirect()->back();
     }
 }

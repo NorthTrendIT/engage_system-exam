@@ -73,9 +73,12 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-5 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
-                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
+                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mr-10">Clear</a>
+                  @if(in_array(userrole(),[1]))
+                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
+                  @endif
                 </div>
 
               </div>
@@ -83,7 +86,7 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <!--begin::Table container-->
-                    <div class="table-responsive">
+                    <div class="table-responsive column-left-right-fix-scroll-hidden">
                        <!--begin::Table-->
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <!--begin::Table head-->
@@ -150,7 +153,7 @@
           processing: true,
           serverSide: true,
           scrollX: true,
-          responsive: true,
+          // responsive: true,
           order: [],
           ajax: {
               'url': "{{ route('promotion-type.get-all') }}",
@@ -270,6 +273,24 @@
         }
       })
     });
+
+
+    @if(in_array(userrole(),[1]))
+      $(document).on("click", ".download_excel", function(e) {
+        var url = "{{route('promotion-type.export')}}";
+
+        var data = {};
+        data.filter_search = $('[name="filter_search"]').val();
+        data.filter_criteria = $('[name="filter_criteria"]').find('option:selected').val();
+        data.filter_fixed_quantity = $('[name="filter_fixed_quantity"]').find('option:selected').val();
+        data.filter_status = $('[name="filter_status"]').find('option:selected').val();
+        data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+      
+        url = url + '?data=' + btoa(JSON.stringify(data));
+
+        window.location.href = url;
+      });
+    @endif
 
   })
 </script>
