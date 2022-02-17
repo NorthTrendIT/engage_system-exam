@@ -8,6 +8,8 @@ use App\Support\SAPAuthentication;
 use App\Models\Quotation;
 use App\Models\QuotationItem;
 use App\Models\CustomerPromotion;
+use App\Models\CustomerPromotionProduct;
+use App\Models\CustomerPromotionProductDelivery;
 
 class SAPCustomerPromotion
 {
@@ -39,6 +41,7 @@ class SAPCustomerPromotion
 
     public function requestSapApi($url = '/b1s/v1/Quotations', $method = "POST", $body = "")
     {
+        \Log::debug('The requestSapApi called.');
     	try {
             $response = $this->httpClient->request(
                 $method,
@@ -59,6 +62,7 @@ class SAPCustomerPromotion
             }
 
         } catch (\Exception $e) {
+            \Log::error('The requestSapApi called error : -->'. $e->getMessage());
             return array(
                         'status' => false,
                         'data' => []
@@ -68,6 +72,8 @@ class SAPCustomerPromotion
 
     public function pushOrderDetailsInDatabase($data)
     {
+        \Log::debug('The pushOrderDetailsInDatabase called.');
+
         if($data){
             $insert = array(
                         'doc_entry' => $data['DocEntry'],
@@ -150,6 +156,164 @@ class SAPCustomerPromotion
 
 
     public function createOrder($id){
+        \Log::debug('The createOrder called -->'. $id);
+
+        $body = $this->madeSapData($id);
+
+        $response = array();
+
+        if(!empty($body)){
+            $response = $this->requestSapApi('/b1s/v1/Quotations', "POST", $body);
+            $status = $response['status'];
+            $data = $response['data'];
+
+            if($status){
+                $obj = CustomerPromotionProductDelivery::find($id);
+                $obj->doc_entry = $data['DocEntry'];
+                $obj->is_sap_pushed = true;
+                $obj->save();
+
+                $this->pushOrderDetailsInDatabase($data);
+            }
+        }
+
+        return $response;
+    }
+
+    public function updateOrder($id, $doc_entry){
+        $body = $this->madeSapData($id);
+
+        $response = array();
+
+        if(!empty($body)){
+            $response = $this->requestSapApi('/b1s/v1/Quotations('.$doc_entry.')', "PUT", $body);
+
+            $status = $response['status'];
+            $data = $response['data'];
+
+            if($status){
+
+                $obj = CustomerPromotionProductDelivery::find($id);
+                $obj->doc_entry = $data['DocEntry'];
+                $obj->is_sap_pushed = true;
+                $obj->save();
+
+                $this->pushOrderDetailsInDatabase($data);
+            }
+        }
+
+        return $response;
+    }
+
+    public function cancelOrder($id, $doc_entry){
+        \Log::debug('The cancelOrder called -->'. $id);
+
+
+        $response = array(
+                            'status' => false,
+                            'data' => []
+                        );
+
+        if(!empty($doc_entry)){
+
+            try {
+                $response = $this->httpClient->request(
+                    "POST",
+                    get_sap_api_url().'/b1s/v1/Quotations('.$doc_entry.')/Cancel',
+                    [
+                        'headers' => $this->headers,
+                        'verify' => false,
+                    ]
+                );
+
+                if(in_array($response->getStatusCode(), [200,201,204])){
+                    $response = json_decode($response->getBody(),true);
+
+                    $obj = CustomerPromotionProductDelivery::find($id);
+                    $obj->doc_entry = null;
+                    $obj->is_sap_pushed = false;
+                    $obj->save();
+
+
+                    $where = array(
+                                'doc_entry' => $doc_entry,
+                                'customer_promotion_id' => @$obj->customer_promotion_product->customer_promotion_id,
+                            );
+
+                    $quotation = Quotation::where($where)->first();
+                    if(!is_null($quotation)){
+                        $quotation->document_status = "Cancelled";
+                        $quotation->save();
+                    }
+
+                    return array(
+                                'status' => true,
+                                'data' => []
+                            );
+                }
+
+            } catch (\Exception $e) {
+                \Log::error('The requestSapApi called error : -->'. $e->getMessage());
+            }
+
+        }
+
+        return $response;
+    }
+
+    public function madeSapData($id){
+
+        $response = [];
+        $customer_promotion_product_delivery = CustomerPromotionProductDelivery::find($id);
+        $customer_promotion_product = @$customer_promotion_product_delivery->customer_promotion_product;
+        $customer_promotion = @$customer_promotion_product->customer_promotion;
+
+        $this->customer_promotion_id = @$customer_promotion->id;
+
+        if(!is_null($customer_promotion)){
+
+            if(@$customer_promotion->user->customer->card_code){
+
+                $this->sap_connection_id = @$customer_promotion->sap_connection_id;
+
+                $response['CardCode'] = @$customer_promotion->user->customer->card_code;
+                $response['CardName'] = @$customer_promotion->user->customer->card_name;
+                // $response['DocTotal'] = @$customer_promotion->total_amount;
+                $response['Address'] = @$customer_promotion->customer_bp_address->address;
+
+                if(@$customer_promotion->sales_specialist->sales_employee_code && @$customer_promotion->sales_specialist->is_active){
+                    $response['SalesPersonCode'] = @$customer_promotion->sales_specialist->sales_employee_code;
+                }
+
+                $response['DocCurrency'] = "PHP";
+                $response['DocumentLines'] = [];
+
+                if(@$customer_promotion->products){
+
+                    $temp = array(
+                                'ItemCode' => @$customer_promotion_product->product->item_code,
+                                'ItemDescription' => @$customer_promotion_product->product->item_name,
+                                'Price' => @$customer_promotion_product->price,
+                                'UnitPrice' => @$customer_promotion_product->price - @$customer_promotion_product->discount,
+                                'Quantity' => @$customer_promotion_product_delivery->delivery_quantity,
+                                'ShipDate' => @$customer_promotion_product_delivery->delivery_date,
+                            );
+
+                    array_push($response['DocumentLines'], $temp);
+                }
+
+            }
+
+        }
+
+
+        return $response;
+    }
+
+
+
+    // Start old code before 16-02-2022
+    public function createOrder1($id){
         $body = $this->madeSapData($id);
 
         $response = array();
@@ -173,7 +337,7 @@ class SAPCustomerPromotion
         return $response;
     }
 
-    public function updateOrder($id, $doc_entry){
+    public function updateOrder1($id, $doc_entry){
         $body = $this->madeSapData($id);
 
         $response = array();
@@ -198,7 +362,7 @@ class SAPCustomerPromotion
         return $response;
     }
 
-    public function cancelOrder($id, $doc_entry){
+    public function cancelOrder1($id, $doc_entry){
 
         $response = array(
                             'status' => false,
@@ -250,7 +414,7 @@ class SAPCustomerPromotion
         return $response;
     }
 
-    public function madeSapData($id){
+    public function madeSapData1($id){
 
         $response = [];
         $customer_promotion = CustomerPromotion::find($id);
@@ -305,6 +469,7 @@ class SAPCustomerPromotion
 
 
         return $response;
-
     }
+    // End old code before 16-02-2022
+
 }

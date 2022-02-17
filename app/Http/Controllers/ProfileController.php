@@ -141,7 +141,7 @@ class ProfileController extends Controller
 
         $rules = array(
                     'current_password' => 'required|string',
-                    'new_password' => 'required|regex:/^(?=.*\d)(?=.*[@#\-_$%^&+=§!\?])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@#\-_$%^&+=§!\?]{8,20}$/',
+                    'new_password' => 'required|max:20|regex:/^(?=.*\d)(?=.*[@$!%*#?&_-~<>;])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@$!%*#?&_-~<>;]{8,20}$/',
                     'confirm_password' => 'required|string|min:8|same:new_password',
                 );
         $validator = Validator::make($input, $rules);

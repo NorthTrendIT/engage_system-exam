@@ -20,11 +20,18 @@ class CustomerPromotionProduct extends Model
         'last_data',
         'created_at',
     	'updated_at',
+        'doc_entry',
+        'is_sap_pushed',
     ];
 
     public function product()
     {
         return $this->belongsTo(Product::class,'product_id');
+    }
+
+    public function customer_promotion()
+    {
+        return $this->belongsTo(CustomerPromotion::class,'customer_promotion_id');
     }
 
     public function deliveries()

@@ -466,7 +466,8 @@ class ProductController extends Controller
                       );
     }
     if(count($records)){
-      return Excel::download(new ProductExport($records), 'Product Report.xlsx');
+      $title = 'Product Report '.date('dmY').'.xlsx';
+      return Excel::download(new ProductExport($records), $title);
     }
 
     \Session::flash('error_message', common_error_msg('excel_download'));

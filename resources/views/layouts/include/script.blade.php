@@ -72,6 +72,47 @@
     $(this).val('');
   });
 
+
+  $(document).on('click', '.password_generate', function(event) {
+    event.preventDefault();
+
+    password = generate_password();
+
+    $('[name="password"]').val(password);
+    $('[name="new_password"]').val(password);
+    $('[name="confirm_password"]').val(password);
+
+    // Create a "hidden" input
+    var aux = document.createElement("input");
+    // Assign it the value of the specified element
+    aux.setAttribute("value", password);
+    // Append it to the body
+    document.body.appendChild(aux);
+    // Highlight its content
+    aux.select();
+    // Copy the highlighted text
+    document.execCommand("copy");
+    // Remove it from the body
+    document.body.removeChild(aux);
+    toast_success("Generated password copied successfully !");
+  });
+
+  $(document).on('click', '.password_icon_div', function(event) {
+    event.preventDefault();
+    element = $(this).prev();
+    children = $(this).children();
+
+    if(element.attr('type') == "text"){
+      element.attr('type', 'password');
+      children.find('.password_icon').addClass('fa-eye-slash');
+      children.find('.password_icon').removeClass('fa-eye');
+    }else{
+      element.attr('type', 'text');
+      children.find('.password_icon').removeClass('fa-eye-slash');
+      children.find('.password_icon').addClass('fa-eye');
+    }
+  });
+
 </script>
 
 @stack('js')
