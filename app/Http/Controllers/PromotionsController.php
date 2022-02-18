@@ -717,7 +717,7 @@ class PromotionsController extends Controller
             $validator = Validator::make($input, $rules);
 
             if ($validator->fails()) {
-                $response = ['status'=>false,'message'=>$validator->errors()->first()];
+                $response = ['status'=>false,'message'=> 'Title already exists, please choose another title'];
             }else{
                 $response = ['status'=>true,'message'=>'Title is unique!'];
             }
