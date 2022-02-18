@@ -84,6 +84,9 @@ class LoginController extends Controller
 		                if(!is_null($user->role)){
 			                Auth::loginUsingId($id);
 
+			                //save log
+            				add_log(45, $input);
+
 			                \Session::flash('login_success_message', "Login successfully !");
 			                return redirect()->route('home');
 		                }

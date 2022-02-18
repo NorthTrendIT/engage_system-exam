@@ -99,9 +99,15 @@ class CustomersSalesSpecialistsController extends Controller
 
 
             if(isset($input['id'])){
-                $message = "Details updated successfully.";
+                $message = "Record updated successfully.";
+
+                //save log
+                add_log(42, $input);
             }else{
-                $message = "Created successfully.";
+                $message = "Record created successfully.";
+
+                //save log
+                add_log(41, $input);
             }
 
 
@@ -202,6 +208,10 @@ class CustomersSalesSpecialistsController extends Controller
     {
         $data = CustomersSalesSpecialist::where('customer_id', $id)->count();
         if($data > 0){
+
+            //save log
+            add_log(43, $input);
+
             CustomersSalesSpecialist::where('customer_id', $id)->delete();
             CustomerProductGroup::where('customer_id', $id)->delete();
             CustomerProductItemLine::where('customer_id', $id)->delete();
