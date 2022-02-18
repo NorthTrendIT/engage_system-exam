@@ -168,6 +168,42 @@ class ActivityMasterSeeder extends Seeder
                         'name' => 'Upload Sales Specialist Assignment'
                     ),
 
+                    array(
+                        'id' => 38,
+                        'name' => 'Customer Delivery Schedule Created'
+                    ),
+                    array(
+                        'id' => 39,
+                        'name' => 'Customer Delivery Schedule Updated'
+                    ),
+                    array(
+                        'id' => 40,
+                        'name' => 'Customer Delivery Schedule Deleted'
+                    ),
+
+                    array(
+                        'id' => 41,
+                        'name' => 'Customers Sales Specialist Created'
+                    ),
+                    array(
+                        'id' => 42,
+                        'name' => 'Customers Sales Specialist Updated'
+                    ),
+                    array(
+                        'id' => 43,
+                        'name' => 'Customers Sales Specialist Deleted'
+                    ),
+
+
+                    array(
+                        'id' => 44,
+                        'name' => 'User Password Updated'
+                    ),
+
+                    array(
+                        'id' => 45,
+                        'name' => 'User Login By Link'
+                    ),
         		);
         ActivityMaster::insert($data);
     }

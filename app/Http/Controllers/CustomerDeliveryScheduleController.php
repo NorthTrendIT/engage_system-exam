@@ -101,8 +101,14 @@ class CustomerDeliveryScheduleController extends Controller
             
             if(isset($input['id'])){
                 $message = "Record updated successfully.";
+
+                //save log
+                add_log(39, $input);
             }else{
                 $message = "Record created successfully.";
+
+                //save log
+                add_log(38, $input);
             }
 
             $response = ['status'=>true,'message'=>$message];
@@ -193,6 +199,10 @@ class CustomerDeliveryScheduleController extends Controller
     {
         $user = User::where('id', $id)->where('role_id', 4)->firstOrFail();
         if(!is_null($user)){
+
+            //save log
+            add_log(40, $input);
+
             CustomerDeliverySchedule::where('user_id', $user->id)->delete();
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
