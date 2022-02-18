@@ -131,11 +131,13 @@
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 <link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
 @endpush
 
 @push('js')
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
 <script>
   $(document).ready(function() {
 
@@ -156,7 +158,13 @@
           processing: true,
           serverSide: true,
           scrollX: true,
-          // responsive: true,
+          scrollY: "800px",
+          scrollCollapse: true,
+          paging: true,
+          fixedColumns:   {
+            left: 1,  
+            right: 1
+          },
           order: [],
           ajax: {
               'url': "{{ route('promotion.get-all') }}",

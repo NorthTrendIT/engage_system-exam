@@ -32,6 +32,12 @@
             <div class="card-body">
               <div class="row">
 
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
+                  </div>
+                </div>
+
                 @if(in_array(userrole(),[1]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
@@ -41,36 +47,58 @@
                 @endif
 
                 <!-- Market Sector -->
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_market_sector" data-control="select2" data-hide-search="false" data-placeholder="Select Market Sector" data-allow-clear="true">
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_market_sector" data-control="select2" data-hide-search="false" data-placeholder="Select market sector" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
 
                 <!-- Market Subsetor -->
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_market_sub_sector" data-control="select2" data-hide-search="false" data-placeholder="Select Market Subsector" data-allow-clear="true">
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_market_sub_sector" data-control="select2" data-hide-search="false" data-placeholder="Select market subsector" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
 
                 <!-- Region -->
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_region" data-control="select2" data-hide-search="false" data-placeholder="Select Region" data-allow-clear="true">
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_region" data-control="select2" data-hide-search="false" data-placeholder="Select region" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
 
                 <!-- Province -->
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_province" data-control="select2" data-hide-search="false" data-placeholder="Select Province" data-allow-clear="true">
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_province" data-control="select2" data-hide-search="false" data-placeholder="Select province" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
 
                 <!-- City -->
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_city" data-control="select2" data-hide-search="false" data-placeholder="Select City" data-allow-clear="true">
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_city" data-control="select2" data-hide-search="false" data-placeholder="Select city" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                
+                <!-- Branch -->
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_branch" data-control="select2" data-hide-search="false" data-placeholder="Select branch" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <!-- Sales Specialist -->
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_sales_specialist" data-control="select2" data-hide-search="false" data-placeholder="Select sales specialist" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <!-- Customer Class -->
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_customer_class" data-control="select2" data-hide-search="false" data-placeholder="Select customer class" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
@@ -82,38 +110,11 @@
                   </select>
                 </div>
 
-                <!-- Branch -->
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_branch" data-control="select2" data-hide-search="false" data-placeholder="Select Branch" data-allow-clear="true">
-                    <option value=""></option>
-                  </select>
-                </div>
-
-                <!-- Sales Specialist -->
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_sales_specialist" data-control="select2" data-hide-search="false" data-placeholder="Select Sales Specialist" data-allow-clear="true">
-                    <option value=""></option>
-                  </select>
-                </div>
-
-                <!-- Customer Class -->
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_customer_class" data-control="select2" data-hide-search="false" data-placeholder="Select Customer Class" data-allow-clear="true">
-                    <option value=""></option>
-                  </select>
-                </div>
-
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
                     <span>
                     </span>
-                  </div>
-                </div>
-
-                <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
                   </div>
                 </div>
 
@@ -130,7 +131,7 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <!--begin::Table container-->
-                    <div class="table-responsive">
+                    <div class="table-responsive column-left-right-fix-scroll-hidden">
                        <!--begin::Table-->
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <!--begin::Table head-->
@@ -182,11 +183,18 @@
 
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
+<style type="text/css">
+  .other_filter_div{
+    display: none;
+  }
+</style>
 @endpush
 
 @push('js')
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
 <script>
   $(document).ready(function() {
 
@@ -215,7 +223,13 @@
           processing: true,
           serverSide: true,
           scrollX: true,
-          responsive: true,
+          scrollY: "800px",
+          scrollCollapse: true,
+          paging: true,
+          fixedColumns:   {
+            left: 2,  
+            right: 1
+          },
           order: [],
           ajax: {
               'url': "{{ route('customer.get-all') }}",
@@ -480,7 +494,7 @@
 
     $('[name="filter_branch"]').select2({
       ajax: {
-          url: "{{route('common.getProvince')}}",
+          url: "{{route('common.getBranch')}}",
           type: "post",
           dataType: 'json',
           delay: 250,
@@ -545,6 +559,25 @@
     });
 
 
+    $(document).on('change', '[name="filter_company"]', function(event) {
+      event.preventDefault();
+      $('[name="filter_market_sector"]').val('').trigger('change');
+      $('[name="filter_market_sub_sector"]').val('').trigger('change');
+      $('[name="filter_region"]').val('').trigger('change');
+      $('[name="filter_province"]').val('').trigger('change');
+      $('[name="filter_city"]').val('').trigger('change');
+      $('[name="filter_branch"]').val('').trigger('change');
+      $('[name="filter_sales_specialist"]').val('').trigger('change');
+      $('[name="filter_customer_class"]').val('').trigger('change');
+      
+      if($(this).find('option:selected').val() != ""){
+        $('.other_filter_div').show();
+      }else{
+        $('.other_filter_div').hide();
+      }
+
+    });
+
     @if(in_array(userrole(),[1]))
       $(document).on("click", ".download_excel", function(e) {
         var url = "{{route('customer.export')}}";
@@ -555,6 +588,14 @@
         data.filter_status = $('[name="filter_status"]').find('option:selected').val();
         data.filter_territory = $('[name="filter_territory"]').find('option:selected').val();
         data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+        data.filter_market_sector = $('[name="filter_market_sector"]').val();
+        data.filter_market_sub_sector = $('[name="filter_market_sub_sector"]').val();
+        data.filter_region = $('[name="filter_region"]').val();
+        data.filter_province = $('[name="filter_province"]').val();
+        data.filter_city = $('[name="filter_city"]').val();
+        data.filter_branch = $('[name="filter_branch"]').val();
+        data.filter_sales_specialist = $('[name="filter_sales_specialist"]').val();
+        data.filter_customer_class = $('[name="filter_customer_class"]').val();
 
         // console.log((JSON.stringify(data)));
         // console.log(btoa(JSON.stringify(data)));

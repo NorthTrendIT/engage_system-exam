@@ -300,7 +300,7 @@ class RoleController extends Controller
         return DataTables::of($data->get())
                             ->addIndexColumn()
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('role.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm ">
+                                $btn = '<a href="' . route('role.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
 

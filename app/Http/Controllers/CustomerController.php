@@ -193,7 +193,7 @@ class CustomerController extends Controller
         }
 
         if($request->filter_customer_class != ""){
-            $data->where('customer_class',$request->filter_customer_class);
+            $data->where('u_classification',$request->filter_customer_class);
         }
 
         if($request->filter_search != ""){
@@ -404,20 +404,46 @@ class CustomerController extends Controller
             $data->where('is_active',$filter->filter_status);
         }
 
-        if(@$filter->filter_customer_group != ""){
-            $data->where('group_code',$filter->filter_customer_group);
-        }
-
         if(@$filter->filter_territory != ""){
             $data->where('territory',$filter->filter_territory);
         }
 
-        if(@$filter->filter_class != ""){
-            $data->where('u_class',$filter->filter_class);
-        }
-
         if(@$filter->filter_company != ""){
             $data->where('sap_connection_id',$filter->filter_company);
+        }
+
+        if(@$filter->filter_market_sector != ""){
+            $data->where('u_msec',$filter->filter_market_sector);
+        }
+
+        if(@$filter->filter_market_sub_sector != ""){
+            $data->where('u_tsec',$filter->filter_market_sub_sector);
+        }
+
+        if(@$filter->filter_region != ""){
+            $data->where('u_rgn',$filter->filter_region);
+        }
+
+        if(@$filter->filter_province != ""){
+            $data->where('u_province',$filter->filter_province);
+        }
+
+        if(@$filter->filter_city != ""){
+            $data->where('city',$filter->filter_city);
+        }
+
+        if(@$filter->filter_branch != ""){
+            $data->where('group_code',$filter->filter_branch);
+        }
+
+        if(@$filter->filter_sales_specialist != ""){
+            $data->whereHas('sales_specialist', function($q) use($filter){
+                $q->where('ss_id', $filter->filter_sales_specialist);
+            });
+        }
+
+        if(@$filter->filter_customer_class != ""){
+            $data->where('u_classification',$filter->filter_customer_class);
         }
 
         if(@$filter->filter_search != ""){

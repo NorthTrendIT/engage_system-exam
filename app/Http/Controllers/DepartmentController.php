@@ -235,7 +235,7 @@ class DepartmentController extends Controller
                                 $btn = '<a href="' . route('department.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
-                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('department.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete" style="margin-right: 5px;">
+                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('department.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete mr-10">
                                     <i class="fa fa-trash"></i>
                                   </a>';
 
