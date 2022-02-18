@@ -199,7 +199,7 @@ class TerritorySalesSpecialistController extends Controller
                                 return @$row->first()->user->sales_specialist_name ?? "-";
                             })
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('territory-sales-specialist.edit',$row->first()->user_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                $btn = '<a href="' . route('territory-sales-specialist.edit',$row->first()->user_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
                                 $btn .= ' <a href="javascript:void(0)" data-url="' . route('territory-sales-specialist.destroy',$row->first()->user_id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">

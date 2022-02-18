@@ -304,10 +304,10 @@ class PromotionTypeController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('promotion-type.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                $btn = '<a href="' . route('promotion-type.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
-                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('promotion-type.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
+                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('promotion-type.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete mr-10">
                                     <i class="fa fa-trash"></i>
                                   </a>';
 

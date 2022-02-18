@@ -126,7 +126,7 @@ class ProductBenefitsController extends Controller
         return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row) {
-                    $btn = '<a href="' . route('productbenefits.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                    $btn = '<a href="' . route('productbenefits.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                         <i class="fa fa-pencil"></i>
                         </a>';
                     $btn .= ' <a href="javascript:void(0)" data-url="' . route('productbenefits.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">

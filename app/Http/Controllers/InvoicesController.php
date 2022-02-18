@@ -250,7 +250,7 @@ class InvoicesController extends Controller
                                 return @$row->sap_connection->company_name ?? "-";
                             })
                             ->addColumn('action', function($row){
-                                $btn = '<a href="' . route('invoices.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary">
+                                $btn = '<a href="' . route('invoices.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
                                             <i class="fa fa-eye"></i>
                                         </a>';
                                 return $btn;

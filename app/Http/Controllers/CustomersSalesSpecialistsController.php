@@ -235,7 +235,7 @@ class CustomersSalesSpecialistsController extends Controller
                                 return $row->card_name;
                             })
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('customers-sales-specialist.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                $btn = '<a href="' . route('customers-sales-specialist.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
                                 $btn .= ' <a href="javascript:void(0)" data-url="' . route('customers-sales-specialist.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
@@ -283,7 +283,7 @@ class CustomersSalesSpecialistsController extends Controller
                                 return @$row->first()->customer->sap_connection->company_name;
                             })
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('customers-sales-specialist.edit',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                $btn = '<a href="' . route('customers-sales-specialist.edit',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
 
