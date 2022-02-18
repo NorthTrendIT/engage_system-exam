@@ -71,6 +71,18 @@
 
                   <div class="col-md-6">
                     <div class="form-group">
+                        <label>Type of Customer Request<span class="asterisk">*</span></label>
+                        <select class="form-control form-control-lg form-control-solid" name="type_of_customer_request" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select type of customer request">
+                            <option value=""></option>
+                            @foreach(\App\Models\HelpDesk::$type_of_customer_requests as $key => $value)
+                            <option value="{{ $value }}" @if(isset($edit) && $edit->type_of_customer_request == $value) selected @endif >{{ $value }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
                       <label>Urgency<span class="asterisk">*</span></label>
                       <select class="form-control form-control-lg form-control-solid" name="help_desk_urgency_id" data-control="select2" data-hide-search="true" data-placeholder="Select a urgency" data-allow-clear="true">
                         <option value=""></option>
@@ -227,6 +239,9 @@
               required:true,
             },
             help_desk_urgency_id:{
+              required:true,
+            },
+            type_of_customer_request:{
               required:true,
             },
             subject:{

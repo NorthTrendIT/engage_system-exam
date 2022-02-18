@@ -11,6 +11,7 @@ class Warranty extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'ref_no',
         'user_id',
         'warranty_claim_type',
         'customer_phone',

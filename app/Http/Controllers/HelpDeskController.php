@@ -60,6 +60,7 @@ class HelpDeskController extends Controller
                         'message' => 'required',
                         //'department_id' => 'required|exists:departments,id',
                         'help_desk_urgency_id' => 'nullable|exists:help_desk_urgencies,id',
+                        'type_of_customer_request' => 'required',
                   );
 
 
@@ -71,14 +72,14 @@ class HelpDeskController extends Controller
 
             $input['user_id'] = Auth::id();
             $input['help_desk_status_id'] = 1;
-            $input['ticket_number'] = '#OMS';
+            $input['ticket_number'] = '#EOMSH';
 
             $ticket = new HelpDesk();
             $message = "Help Desk ticket created successfully.";
 
             $ticket->fill($input)->save();
 
-            $ticket->ticket_number = '#OMS'.$ticket->id;
+            $ticket->ticket_number = '#EOMSH'.$ticket->id;
             $ticket->save();
 
             // Assign Support Department
@@ -219,6 +220,10 @@ class HelpDeskController extends Controller
             $data->where('help_desk_status_id',$request->filter_status);
         }
 
+        if($request->filter_type_of_customer_request != ""){
+            $data->where('type_of_customer_request',$request->filter_type_of_customer_request);
+        }
+
         if($request->filter_urgency != ""){
             $data->where('help_desk_urgency_id',$request->filter_urgency);
         }
@@ -247,6 +252,9 @@ class HelpDeskController extends Controller
                             ->addIndexColumn()
                             ->addColumn('ticket_number', function($row) {
                                 return @$row->ticket_number ?? "";
+                            })
+                            ->addColumn('type_of_customer_request', function($row) {
+                                return @$row->type_of_customer_request ?? "";
                             })
                             ->addColumn('subject', function($row) {
                                 return @$row->subject ?? "";
@@ -281,6 +289,9 @@ class HelpDeskController extends Controller
                             })
                             ->orderColumn('ticket_number', function ($query, $order) {
                                 $query->orderBy('ticket_number', $order);
+                            })
+                            ->orderColumn('type_of_customer_request', function ($query, $order) {
+                                $query->orderBy('type_of_customer_request', $order);
                             })
                             ->orderColumn('subject', function ($query, $order) {
                                 $query->orderBy('subject', $order);

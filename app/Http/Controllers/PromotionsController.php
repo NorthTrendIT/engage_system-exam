@@ -427,15 +427,15 @@ class PromotionsController extends Controller
                     return $btn;
                 })
                 ->addColumn('action', function($row) {
-                    $btn = '<a href="' . route('promotion.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-success mr-10">
+                    $btn = '<a href="' . route('promotion.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                 <i class="fa fa-pencil"></i>
                             </a>';
 
-                    $btn .= ' <a href="javascript:void(0)" data-url="' . route('promotion.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-danger delete mr-10">
+                    $btn .= ' <a href="javascript:void(0)" data-url="' . route('promotion.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete mr-10">
                                 <i class="fa fa-trash"></i>
                               </a>';
 
-                    $btn .= '<a href="' . route('promotion.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary">
+                    $btn .= '<a href="' . route('promotion.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
                               <i class="fa fa-eye"></i>
                           </a>';
 

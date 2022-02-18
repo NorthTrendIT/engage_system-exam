@@ -8,6 +8,7 @@ use App\Models\Territory;
 use App\Models\Customer;
 use App\Models\User;
 use App\Models\ProductGroup;
+use App\Models\CustomerGroup;
 
 class CommonController extends Controller
 {
@@ -209,10 +210,11 @@ class CommonController extends Controller
         if($request->sap_connection_id){
             $search = $request->search;
 
-            $data = Customer::where('is_active', true)->orderby('group_code','asc')->select('group_code')->limit(50)->groupBy('group_code');
+            // $data = Customer::where('is_active', true)->orderby('group_code','asc')->select('group_code')->limit(50)->groupBy('group_code');
+            $data = CustomerGroup::orderby('name','asc')->limit(50);
 
             if($search != ''){
-                $data->where('group_code', 'like', '%' .$search . '%');
+                $data->where('name', 'like', '%' .$search . '%');
             }
 
             if(@$request->sap_connection_id != ''){
@@ -223,8 +225,8 @@ class CommonController extends Controller
 
             foreach($data as $value){
                 $response[] = array(
-                    "id" => $value->group_code,
-                    "text" => $value->group_code,
+                    "id" => $value->code,
+                    "text" => $value->name,
                 );
             }
         }

@@ -132,6 +132,9 @@ class WarrantyController extends Controller
             }
 
             if($warranty->fill($input)->save()){
+                $warranty->ref_no = "#EOMSW".$warranty->id;
+                $warranty->save();
+
 
                 if(@$input['lt_tire_position']){
                     $input['lt_tire_position'] = implode(", ", $input['lt_tire_position']);
@@ -491,7 +494,7 @@ class WarrantyController extends Controller
                                 return  @$row->warranty_claim_type ?? "-";
                             })
                             ->addColumn('ref_no', function($row) {
-                                return 'EOMSW'. $row->id;
+                                return @$row->ref_no ?? "-";
                             })
                             ->addColumn('created_at', function($row) {
                                 return date('M d, Y',strtotime($row->created_at));
@@ -522,7 +525,7 @@ class WarrantyController extends Controller
                                     ->orderBy('users.sales_specialist_name', $order);
                             })
                             ->orderColumn('ref_no', function ($query, $order) {
-                                $query->orderBy('id', $order);
+                                $query->orderBy('ref_no', $order);
                             })
                             ->orderColumn('warranty_claim_type', function ($query, $order) {
                                 $query->orderBy('warranty_claim_type', $order);

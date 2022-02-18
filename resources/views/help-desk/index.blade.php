@@ -33,7 +33,7 @@
             </div> --}}
             <div class="card-body">
               <div class="row">
-                <div class="col-md-6 mt-5">
+                <div class="col-md-5 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
                     <span>
@@ -42,12 +42,11 @@
                   </div>
                 </div>
 
-
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select a status" data-allow-clear="true">
+                <div class="col-md-4 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_type_of_customer_request" data-control="select2" data-hide-search="false" data-placeholder="Select a type of customer request" data-allow-clear="true">
                     <option value=""></option>
-                    @foreach($status as $s)
-                    <option value="{{ $s->id }}">{{ $s->name }}</option>
+                    @foreach(\App\Models\HelpDesk::$type_of_customer_requests as $key => $value)
+                    <option value="{{ $value }}">{{ $value }}</option>
                     @endforeach
                   </select>
                 </div>
@@ -57,6 +56,15 @@
                     <option value=""></option>
                     @foreach($urgencies as $u)
                     <option value="{{ $u->id }}">{{ $u->name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select a status" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($status as $s)
+                    <option value="{{ $s->id }}">{{ $s->name }}</option>
                     @endforeach
                   </select>
                 </div>
@@ -79,7 +87,7 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <!--begin::Table container-->
-                    <div class="table-responsive">
+                    <div class="table-responsive column-left-right-fix-scroll-hidden">
                        <!--begin::Table-->
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <!--begin::Table head-->
@@ -87,6 +95,7 @@
                             <tr>
                               <th>No.</th>
                               <th>Ticket No.</th>
+                              <th>Type of Customer Request</th>
                               <th>Subject</th>
                               <th>Date</th>
                               <th>Status</th>
@@ -121,11 +130,13 @@
 
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
 @endpush
 
 @push('js')
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
 <script>
   $(document).ready(function() {
 
@@ -139,11 +150,19 @@
       $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
       $filter_urgency = $('[name="filter_urgency"]').find('option:selected').val();
+      $filter_type_of_customer_request = $('[name="filter_type_of_customer_request"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
           serverSide: true,
           scrollX: true,
+          scrollY: "800px",
+          scrollCollapse: true,
+          paging: true,
+          fixedColumns:   {
+            left: 2,  
+            right: 1
+          },
           order: [],
           ajax: {
               'url': "{{ route('help-desk.get-all') }}",
@@ -156,11 +175,13 @@
                 filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
                 filter_urgency : $filter_urgency,
+                filter_type_of_customer_request : $filter_type_of_customer_request,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'ticket_number', name: 'ticket_number'},
+              {data: 'type_of_customer_request', name: 'type_of_customer_request'},
               {data: 'subject', name: 'subject'},
               {data: 'created_at', name: 'created_at'},
               {data: 'status', name: 'status'},
@@ -187,6 +208,7 @@
       $('[name="filter_date_range"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
       $('[name="filter_urgency"]').val('').trigger('change');
+      $('[name="filter_type_of_customer_request"]').val('').trigger('change');
       render_table();
     })
 

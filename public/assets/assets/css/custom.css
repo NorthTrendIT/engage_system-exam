@@ -2,6 +2,11 @@
 	font-size: 50px;
 }
 
+.btn.btn-bg-light {
+    border-color: #eef2f5 !important;
+    background-color: #eef2f5 !important;
+}
+
 .detail-view-table .card .card-header{padding-top: 30px !important;    min-height: auto;}
 .detail-view-table .card .card-header h5{font-size: 16px;}
 .detail-view-table .card .card-body tr th{width: 25%;padding-right: 10px !important;}

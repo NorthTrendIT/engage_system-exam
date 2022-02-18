@@ -290,11 +290,11 @@ class OrdersController extends Controller
                                 return @$row->sap_connection->company_name ?? "-";
                             })
                             ->addColumn('action', function($row){
-                                $btn = '<a href="' . route('orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary">
+                                $btn = '<a href="' . route('orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm mr-10">
                                             <i class="fa fa-eye"></i>
                                         </a>';
                                 if(userrole() == 1){
-                                    $btn .= '<a href="javascript:;" data-url="'. route('orders.notify-customer').'" data-order="'.$row->id.'" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm btn-color-primary m-5 notifyCustomer" title="Notify Customer">
+                                    $btn .= '<a href="javascript:;" data-url="'. route('orders.notify-customer').'" data-order="'.$row->id.'" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm m-5 notifyCustomer" title="Notify Customer">
                                             <i class="fa fa-bell"></i>
                                         </a>';
                                 }

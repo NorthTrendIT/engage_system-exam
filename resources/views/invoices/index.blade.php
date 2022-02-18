@@ -123,17 +123,17 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <!--begin::Table container-->
-                    <div class="table-responsive">
+                    <div class="table-responsive column-left-right-fix-scroll-hidden">
                        <!--begin::Table-->
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <!--begin::Table head-->
                           <thead>
                             <tr>
                               <th>No</th>
+                              <th>Invoice #</th>
                               @if(in_array(userrole(),[1]))
                               <th>Business Unit</th>
                               @endif
-                              <th>Invoice #</th>
                               @if(userrole() != 4)
                               <th>Customer Name</th>
                               @endif
@@ -170,11 +170,13 @@
 
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
 @endpush
 
 @push('js')
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
 <script>
   $(document).ready(function() {
 
@@ -199,6 +201,13 @@
           processing: true,
           serverSide: true,
           scrollX: true,
+          scrollY: "800px",
+          scrollCollapse: true,
+          paging: true,
+          fixedColumns:   {
+            left: 2,  
+            right: 1
+          },
           order: [],
           ajax: {
               'url': "{{ route('invoices.get-all') }}",
@@ -221,10 +230,10 @@
           },
           columns: [
               {data: 'DT_RowIndex'},
+              {data: 'doc_entry', name: 'doc_entry'},
               @if(in_array(userrole(),[1]))
               {data: 'company', name: 'company'},
               @endif
-              {data: 'doc_entry', name: 'doc_entry'},
               @if(userrole() != 4)
               {data: 'name', name: 'name'},
               @endif

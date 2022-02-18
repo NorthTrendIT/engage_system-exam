@@ -237,10 +237,20 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label>Tire Mileage</label>
-                                                    <input type="text" class="form-control form-control-solid" name="lt_tire_mileage" placeholder="Enter tire mileage" @if(isset($edit)) value="{{ @$edit->vehicle->vehicle_maker }}" @endif >
+                                                    <input type="text" class="form-control form-control-solid" name="lt_tire_mileage" placeholder="Enter tire mileage" @if(isset($edit)) value="{{ @$edit->vehicle->lt_tire_mileage }}" @endif >
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div class="row mb-5">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>Tire Serial No.</label>
+                                                    <input type="text" class="form-control form-control-solid" name="lt_tire_serial_no" placeholder="Enter tire serial no." @if(isset($edit)) value="{{ @$edit->vehicle->lt_tire_serial_no }}" @endif >
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
 
                                     <div class="col-md-6">
@@ -277,10 +287,20 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label>Tire Mileage</label>
-                                                    <input type="text" class="form-control form-control-solid" name="tb_tire_mileage" placeholder="Enter tire mileage" @if(isset($edit)) value="{{ @$edit->vehicle->vehicle_maker }}" @endif >
+                                                    <input type="text" class="form-control form-control-solid" name="tb_tire_mileage" placeholder="Enter tire mileage" @if(isset($edit)) value="{{ @$edit->vehicle->tb_tire_mileage }}" @endif >
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div class="row mb-5">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>Tire Serial No.</label>
+                                                    <input type="text" class="form-control form-control-solid" name="tb_tire_serial_no" placeholder="Enter tire serial no." @if(isset($edit)) value="{{ @$edit->vehicle->tb_tire_serial_no }}" @endif >
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
 
@@ -376,7 +396,7 @@
                                             <table class="table table-bordered">
                                                 <thead>
                                                     <tr>
-                                                        <th colspan="6"><h4 class="text-info">Tire Manifistation</h4></th>
+                                                        <th colspan="6"><h4 class="text-info">Tire Manifistation Probable Cause</h4></th>
                                                     </tr>
                                                     <tr>
                                                         <th>No.</th>
@@ -414,7 +434,7 @@
                                 <div class="row mb-5 mt-10">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <h4 class="text-info">Pictures</h4>
+                                            <h4 class="text-info">Pictures of the Tire focusing on Damage Areas</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -764,6 +784,18 @@ $(document).ready(function() {
                 },
                 reason_for_tire_return:{
                     required: true,
+                },
+                lt_tire_position:{
+                    maxlength: 185,
+                },
+                lt_tire_serial_no:{
+                    maxlength: 185,
+                },
+                tb_tire_position:{
+                    maxlength: 185,
+                },
+                tb_tire_serial_no:{
+                    maxlength: 185,
                 },
             },
             messages: {
