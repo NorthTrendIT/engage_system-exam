@@ -202,7 +202,64 @@ class ActivityMasterSeeder extends Seeder
 
                     array(
                         'id' => 45,
-                        'name' => 'User Login By Link'
+                        'name' => 'User Logined By Link'
+                    ),
+
+                    array(
+                        'id' => 46,
+                        'name' => 'Warranty Created'
+                    ),
+                    array(
+                        'id' => 47,
+                        'name' => 'Warranty Updated'
+                    ),
+                    array(
+                        'id' => 48,
+                        'name' => 'Warranty Deleted'
+                    ),
+                    array(
+                        'id' => 49,
+                        'name' => 'Warranty Viewed'
+                    ),
+
+
+                    array(
+                        'id' => 50,
+                        'name' => 'Help Desk Created'
+                    ),
+                    array(
+                        'id' => 51,
+                        'name' => 'Help Desk Updated'
+                    ),
+                    array(
+                        'id' => 52,
+                        'name' => 'Help Desk Viewed'
+                    ),
+                    array(
+                        'id' => 53,
+                        'name' => 'Help Desk Status Updated'
+                    ),
+                    array(
+                        'id' => 54,
+                        'name' => 'Help Desk Comment Created'
+                    ),
+
+
+                    array(
+                        'id' => 55,
+                        'name' => 'SAP API Connection Created'
+                    ),
+                    array(
+                        'id' => 56,
+                        'name' => 'SAP API Connection Updated'
+                    ),
+                    array(
+                        'id' => 57,
+                        'name' => 'SAP API Connection API URL Updated'
+                    ),
+                    array(
+                        'id' => 58,
+                        'name' => 'SAP API Connection Tested'
                     ),
         		);
         ActivityMaster::insert($data);

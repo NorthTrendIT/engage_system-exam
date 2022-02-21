@@ -61,9 +61,13 @@ class SapConnectionController extends Controller
             if(isset($input['id'])){
                 $connection = SapConnection::find($input['id']);
                 $message = "SAP Connection details updated successfully.";
+
+                add_log(56, $input);
             }else{
                 $connection = new SapConnection();
                 $message = "SAP Connection created successfully.";
+
+                add_log(55, $input);
             }
 
             $connection->fill($input)->save();
@@ -133,6 +137,9 @@ class SapConnectionController extends Controller
         } catch (\Exception $e) {
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
+
+        add_log(58, $data->toArray());
+
         return $response;
     }
 
@@ -207,6 +214,9 @@ class SapConnectionController extends Controller
             $obj = SapApiUrl::firstOrNew();
 
             if($obj->fill($input)->save()){
+
+                add_log(57, $obj->toArray());
+
                 $response = ['status'=>true,'message'=>"API URL updated successfully!"];
             }else{
                 $response = ['status'=>false,'message'=>"Something went wrong!"];

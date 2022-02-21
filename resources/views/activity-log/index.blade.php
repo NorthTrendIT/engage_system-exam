@@ -201,6 +201,7 @@
             left: 1,  
             right: 1
           },
+          order: [[7,'desc']],
           lengthMenu: [50, 100, 250, 500],
           pageLength: 50,
           ajax: {
