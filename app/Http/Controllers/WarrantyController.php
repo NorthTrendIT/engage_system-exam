@@ -125,10 +125,14 @@ class WarrantyController extends Controller
                 $warranty = Warranty::findOrFail($input['id']);
                 $message = "Warranty details updated successfully.";
                 $input['updated_by'] = Auth::id();
+
+                add_log(47, $input);
             }else{
                 $warranty = new Warranty();
                 $message = "Warranty details saved successfully.";
                 $input['created_by'] = Auth::id();
+
+                add_log(46, $input);
             }
 
             if($warranty->fill($input)->save()){
@@ -365,6 +369,8 @@ class WarrantyController extends Controller
         $warranty_tire_manifistations = array_combine(array_column($data->tire_manifistations->toArray(),'tire_manifistation_id'), array_column($data->tire_manifistations->toArray(),'is_yes'));
 
 
+        add_log(49, null);
+
         return view('warranty.view', compact('claim_points','tire_manifistations','warranty_claim_points','warranty_tire_manifistations','data'));
     }
 
@@ -426,6 +432,8 @@ class WarrantyController extends Controller
 
             $data->updated_by = Auth::id();
             $data->save();
+
+            add_log(48, $data->toArray());
 
             $data->delete();
 
