@@ -10,6 +10,7 @@ use App\Models\Classes;
 use App\Models\CustomerGroup;
 use App\Models\SapConnection;
 use App\Models\CustomerBpAddress;
+use App\Models\CustomerProductGroup;
 use App\Models\Territory;
 use DataTables;
 use Auth;
@@ -246,6 +247,9 @@ class CustomerController extends Controller
                             ->addColumn('credit_limit', function($row) {
                                 return @$row->credit_limit ?? "-";
                             })
+                            ->addColumn('card_name', function($row) {
+                                return @$row->card_name ?? "-";
+                            })
                             ->addColumn('name', function($row) {
                                 $html = "";
 
@@ -302,6 +306,24 @@ class CustomerController extends Controller
                             ->addColumn('territory', function($row) {
                                 return @$row->territories->description ?? "-";
                             })
+                            ->addColumn('city', function($row) {
+                                return @$row->city ?? "-";
+                            })
+                            ->addColumn('u_cust_segment', function($row) {
+                                return @$row->u_cust_segment ?? "-";
+                            })
+                            ->addColumn('u_msec', function($row) {
+                                return @$row->u_msec ?? "-";
+                            })
+                            ->addColumn('u_tsec', function($row) {
+                                return @$row->u_tsec ?? "-";
+                            })
+                            ->addColumn('u_rgn', function($row) {
+                                return @$row->u_rgn ?? "-";
+                            })
+                            ->addColumn('u_province', function($row) {
+                                return @$row->u_province ?? "-";
+                            })
                             ->addColumn('created_at', function($row) {
                                 return date('M d, Y',strtotime($row->created_date));
                             })
@@ -310,6 +332,9 @@ class CustomerController extends Controller
                             })
                             ->orderColumn('customer_code', function ($query, $order) {
                                 $query->orderBy('card_code', $order);
+                            })
+                            ->orderColumn('card_name', function ($query, $order) {
+                                $query->orderBy('card_name', $order);
                             })
                             ->orderColumn('name', function ($query, $order) {
                                 $query->orderBy('card_name', $order);
@@ -326,11 +351,26 @@ class CustomerController extends Controller
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('is_active', $order);
                             })
-                            ->orderColumn('credit_limit', function ($query, $order) {
-                                $query->orderBy('credit_limit', $order);
-                            })
                             ->orderColumn('class', function ($query, $order) {
                                 $query->orderBy('u_class', $order);
+                            })
+                            ->orderColumn('u_cust_segment', function ($query, $order) {
+                                $query->orderBy('u_cust_segment', $order);
+                            })
+                            ->orderColumn('u_msec', function ($query, $order) {
+                                $query->orderBy('u_msec', $order);
+                            })
+                            ->orderColumn('u_tsec', function ($query, $order) {
+                                $query->orderBy('u_tsec', $order);
+                            })
+                            ->orderColumn('u_rgn', function ($query, $order) {
+                                $query->orderBy('u_rgn', $order);
+                            })
+                            ->orderColumn('u_province', function ($query, $order) {
+                                $query->orderBy('u_province', $order);
+                            })
+                            ->orderColumn('city', function ($query, $order) {
+                                $query->orderBy('city', $order);
                             })
                             ->orderColumn('group', function ($query, $order) {
                                 $query->join('customer_groups', 'customers.group_code', '=', 'customer_groups.code')->orderBy('customer_groups.name', $order);
@@ -503,5 +543,76 @@ class CustomerController extends Controller
 
         \Session::flash('error_message', common_error_msg('excel_download'));
         return redirect()->back();
+    }
+
+
+    public function customerTaggingIndex(){
+        return view('customer.tagging');
+    }
+
+
+    public function customerTaggingGetTerritory(Request $request){
+
+        $response = $territory_ids = array();
+        $search = $request->search;
+
+        if(@$request->sap_connection_id != "" && @$request->brand_id != ""){
+
+            $customers = CustomerProductGroup::has('customer')->with('customer')->where('product_group_id', $request->brand_id)->get()->toArray();
+
+            $territory_ids = array_map( function ( $ar ) {
+                           return $ar['territory'];
+                        }, array_column( $customers, 'customer' ) );
+
+            if(!empty($territory_ids)){
+                $data = Territory::whereIn('territory_id', $territory_ids)->orderby('description','asc')->select('territory_id','description')->limit(50);
+
+                if($search != ''){
+                    $data->where('description', 'like', '%' .$search . '%');
+                }
+
+                $data = $data->get();
+
+                foreach($data as $value){
+                    $response[] = array(
+                        "id" => $value->territory_id,
+                        "text" => $value->description
+                    );
+                }
+            }
+        }
+
+        return response()->json($response);
+    }
+
+
+    public function customerTaggingGetMarketSector(Request $request){
+
+        $response = array();
+        $search = $request->search;
+
+        if(@$request->sap_connection_id != "" && @$request->brand_id != ""){
+
+            $data = CustomerProductGroup::has('customer')->with('customer')->where('product_group_id', $request->brand_id);
+
+            if($search != ''){
+                $data->where('customer',function($q) use ($search) {
+                    $q->where('u_msec', 'like', '%' .$search . '%');
+                });
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+                $response[] = array(
+                    "id" => $value->customer->u_msec,
+                    "text" => $value->customer->u_msec
+                );
+            }
+
+            sort($response);
+        }
+
+        return response()->json($response);
     }
 }
