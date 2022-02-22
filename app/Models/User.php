@@ -114,4 +114,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(SapConnection::class,'sap_connection_id');
     }
+
+    public function sales_specialist_customers()
+    {
+        return $this->hasMany(CustomersSalesSpecialist::class, 'ss_id', 'id');
+    }
 }
