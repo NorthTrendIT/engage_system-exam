@@ -9,6 +9,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\SapConnection;
 use DataTables;
+use Auth;
 
 class InvoicesController extends Controller
 {
