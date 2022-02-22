@@ -51,12 +51,12 @@
                             </tr>
 
                             <tr>
-                              <th> <b>Name:</b> </th>
+                              <th> <b>User Name:</b> </th>
                               <td>{{ @$data->user->first_name ?? "" }} {{ @$data->user->last_name ?? "" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Email:</b> </th>
+                              <th> <b>User Email:</b> </th>
                               <td>{{ @$data->user->email ?? "" }}</td>
                             </tr>
 

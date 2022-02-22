@@ -408,3 +408,17 @@ function get_sap_api_url(){
 
     return @$obj->url ?? env('SAP_API_URL') ?? "";
 }
+
+function convert_hex_to_rgba($hex, $opacity = 1){
+    list($r, $g, $b) = sscanf($hex, "#%02x%02x%02x");
+    return sprintf('rgba(%s, %s, %s, %s)', $r, $g, $b, $opacity);
+}
+
+function get_sort_char($string){
+    $str_array = explode(" ", $string);
+    return substr(@$str_array[0], 0,1).substr(@$str_array[1], 0,1);
+}
+
+function get_hex_color(){
+    return '#'.substr(md5(rand()), 0, 6); //Generate Color Code
+}

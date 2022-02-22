@@ -33,13 +33,19 @@
             </div> --}}
             <div class="card-body">
               <div class="row">
-                <div class="col-md-5 mt-5">
+                <div class="col-md-4 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
                     <span>
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
                   </div>
+                </div>
+
+                <div class="col-md-4 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_user" data-allow-clear="true" data-placeholder="Select user">
+                    <option value=""></option>
+                  </select>
                 </div>
 
                 <div class="col-md-4 mt-5">
@@ -95,6 +101,7 @@
                             <tr>
                               <th>No.</th>
                               <th>Ticket No.</th>
+                              <th>User Name</th>
                               <th>Type of Customer Request</th>
                               <th>Subject</th>
                               <th>Date</th>
@@ -149,6 +156,7 @@
       $filter_search = $('[name="filter_search"]').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_user = $('[name="filter_user"]').find('option:selected').val();
       $filter_urgency = $('[name="filter_urgency"]').find('option:selected').val();
       $filter_type_of_customer_request = $('[name="filter_type_of_customer_request"]').find('option:selected').val();
 
@@ -161,7 +169,7 @@
           paging: true,
           fixedColumns:   {
             left: 2,  
-            right: 1
+            right: 0
           },
           order: [],
           ajax: {
@@ -174,6 +182,7 @@
                 filter_search : $filter_search,
                 filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
+                filter_user : $filter_user,
                 filter_urgency : $filter_urgency,
                 filter_type_of_customer_request : $filter_type_of_customer_request,
               }
@@ -181,6 +190,7 @@
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'ticket_number', name: 'ticket_number'},
+              {data: 'user', name: 'user'},
               {data: 'type_of_customer_request', name: 'type_of_customer_request'},
               {data: 'subject', name: 'subject'},
               {data: 'created_at', name: 'created_at'},
@@ -208,9 +218,32 @@
       $('[name="filter_date_range"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
       $('[name="filter_urgency"]').val('').trigger('change');
+      $('[name="filter_user"]').val('').trigger('change');
       $('[name="filter_type_of_customer_request"]').val('').trigger('change');
       render_table();
     })
+
+
+    $('[name="filter_user"]').select2({
+      ajax: {
+          url: "{{route('common.getUsers')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                _token: "{{ csrf_token() }}",
+                search: params.term
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
 
   })
 </script>
