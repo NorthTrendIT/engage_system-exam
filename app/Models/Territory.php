@@ -17,4 +17,5 @@ class Territory extends Model
         'is_active',
         'response',
     ];
+
 }

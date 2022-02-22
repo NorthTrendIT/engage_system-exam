@@ -5,17 +5,20 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Support\SAPCustomer;
 use App\Jobs\SyncCustomers;
+use App\Models\User;
 use App\Models\Customer;
 use App\Models\Classes;
 use App\Models\CustomerGroup;
 use App\Models\SapConnection;
 use App\Models\CustomerBpAddress;
+use App\Models\CustomerProductGroup;
 use App\Models\Territory;
 use DataTables;
 use Auth;
 
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomerExport;
+use App\Exports\CustomerTaggingExport;
 
 class CustomerController extends Controller
 {
@@ -192,8 +195,14 @@ class CustomerController extends Controller
             });
         }
 
+        if($request->filter_brand != ""){
+            $data->whereHas('product_groups', function($q) use($request){
+                $q->where('product_group_id', $request->filter_brand);
+            });
+        }
+
         if($request->filter_customer_class != ""){
-            $data->where('u_classification',$request->filter_customer_class);
+            $data->where('u_class',$request->filter_customer_class);
         }
 
         if($request->filter_search != ""){
@@ -245,6 +254,9 @@ class CustomerController extends Controller
                             })
                             ->addColumn('credit_limit', function($row) {
                                 return @$row->credit_limit ?? "-";
+                            })
+                            ->addColumn('card_name', function($row) {
+                                return @$row->card_name ?? "-";
                             })
                             ->addColumn('name', function($row) {
                                 $html = "";
@@ -302,6 +314,24 @@ class CustomerController extends Controller
                             ->addColumn('territory', function($row) {
                                 return @$row->territories->description ?? "-";
                             })
+                            ->addColumn('city', function($row) {
+                                return @$row->city ?? "-";
+                            })
+                            ->addColumn('u_cust_segment', function($row) {
+                                return @$row->u_cust_segment ?? "-";
+                            })
+                            ->addColumn('u_msec', function($row) {
+                                return @$row->u_msec ?? "-";
+                            })
+                            ->addColumn('u_tsec', function($row) {
+                                return @$row->u_tsec ?? "-";
+                            })
+                            ->addColumn('u_rgn', function($row) {
+                                return @$row->u_rgn ?? "-";
+                            })
+                            ->addColumn('u_province', function($row) {
+                                return @$row->u_province ?? "-";
+                            })
                             ->addColumn('created_at', function($row) {
                                 return date('M d, Y',strtotime($row->created_date));
                             })
@@ -310,6 +340,9 @@ class CustomerController extends Controller
                             })
                             ->orderColumn('customer_code', function ($query, $order) {
                                 $query->orderBy('card_code', $order);
+                            })
+                            ->orderColumn('card_name', function ($query, $order) {
+                                $query->orderBy('card_name', $order);
                             })
                             ->orderColumn('name', function ($query, $order) {
                                 $query->orderBy('card_name', $order);
@@ -326,11 +359,26 @@ class CustomerController extends Controller
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('is_active', $order);
                             })
-                            ->orderColumn('credit_limit', function ($query, $order) {
-                                $query->orderBy('credit_limit', $order);
-                            })
                             ->orderColumn('class', function ($query, $order) {
                                 $query->orderBy('u_class', $order);
+                            })
+                            ->orderColumn('u_cust_segment', function ($query, $order) {
+                                $query->orderBy('u_cust_segment', $order);
+                            })
+                            ->orderColumn('u_msec', function ($query, $order) {
+                                $query->orderBy('u_msec', $order);
+                            })
+                            ->orderColumn('u_tsec', function ($query, $order) {
+                                $query->orderBy('u_tsec', $order);
+                            })
+                            ->orderColumn('u_rgn', function ($query, $order) {
+                                $query->orderBy('u_rgn', $order);
+                            })
+                            ->orderColumn('u_province', function ($query, $order) {
+                                $query->orderBy('u_province', $order);
+                            })
+                            ->orderColumn('city', function ($query, $order) {
+                                $query->orderBy('city', $order);
                             })
                             ->orderColumn('group', function ($query, $order) {
                                 $query->join('customer_groups', 'customers.group_code', '=', 'customer_groups.code')->orderBy('customer_groups.name', $order);
@@ -436,6 +484,12 @@ class CustomerController extends Controller
             $data->where('group_code',$filter->filter_branch);
         }
 
+        if(@$filter->filter_brand != ""){
+            $data->whereHas('product_groups', function($q) use($filter){
+                $q->where('product_group_id', $filter->filter_brand);
+            });
+        }
+
         if(@$filter->filter_sales_specialist != ""){
             $data->whereHas('sales_specialist', function($q) use($filter){
                 $q->where('ss_id', $filter->filter_sales_specialist);
@@ -443,7 +497,7 @@ class CustomerController extends Controller
         }
 
         if(@$filter->filter_customer_class != ""){
-            $data->where('u_classification',$filter->filter_customer_class);
+            $data->where('u_class',$filter->filter_customer_class);
         }
 
         if(@$filter->filter_search != ""){
@@ -481,27 +535,196 @@ class CustomerController extends Controller
 
         $records = array();
         foreach($data as $key => $value){
-            $records[] = array(
-                                'no' => $key + 1,
-                                'company' => @$value->sap_connection->company_name,
-                                'card_code' => $value->card_code,
-                                'card_name' => $value->card_name,
-                                'email' => @$value->user->email,
-                                'u_card_code' => $value->u_card_code,
-                                'credit_limit' => $value->credit_limit,
-                                'group_name' => @$value->group->name,
-                                'territory' => @$value->territories->description,
-                                'class' => @$value->u_class,
-                                'created_at' => date('M d, Y',strtotime($value->created_date)),
-                                // 'status' => $value->is_active ? "Active" : "Inctive",
-                            );
+
+            if(@$filter->module_type == "customer-tagging"){
+                $records[] = array(
+                                    'no' => $key + 1,
+                                    'card_code' => $value->card_code,
+                                    'card_name' => $value->card_name,
+                                    'class' => @$value->u_class,
+                                    'customer_segment' => @$value->u_cust_segment,
+                                    'market_sector' => @$value->u_msec,
+                                    'market_sub_sector' => @$value->u_tsec,
+                                    'region' => @$value->u_rgn,
+                                    'province' => @$value->u_province,
+                                    'territory' => @$value->territories->description,
+                                    'city' => @$value->city,
+                                );
+            }else{
+                $records[] = array(
+                                    'no' => $key + 1,
+                                    'company' => @$value->sap_connection->company_name,
+                                    'card_code' => $value->card_code,
+                                    'card_name' => $value->card_name,
+                                    'email' => @$value->user->email,
+                                    'u_card_code' => $value->u_card_code,
+                                    'credit_limit' => $value->credit_limit,
+                                    'group_name' => @$value->group->name,
+                                    'territory' => @$value->territories->description,
+                                    'class' => @$value->u_class,
+                                    'created_at' => date('M d, Y',strtotime($value->created_date)),
+                                    // 'status' => $value->is_active ? "Active" : "Inctive",
+                                );
+            }
         }
         if(count($records)){
-            $title = 'Customer Report '.date('dmY').'.xlsx';
-            return Excel::download(new CustomerExport($records), $title);
+
+            if(@$filter->module_type == "customer-tagging"){
+                $title = 'Customer Tagging Report '.date('dmY').'.xlsx';
+                return Excel::download(new CustomerTaggingExport($records), $title);
+            }else{
+                $title = 'Customer Report '.date('dmY').'.xlsx';
+                return Excel::download(new CustomerExport($records), $title);
+            }
         }
 
         \Session::flash('error_message', common_error_msg('excel_download'));
         return redirect()->back();
+    }
+
+
+    public function customerTaggingIndex(){
+        return view('customer.tagging');
+    }
+
+
+    public function customerTaggingGetTerritory(Request $request){
+
+        $response = $territory_ids = array();
+        $search = $request->search;
+
+        if(@$request->sap_connection_id != "" && @$request->brand_id != ""){
+
+            $customers = CustomerProductGroup::has('customer')->with('customer')->where('product_group_id', $request->brand_id)->get()->toArray();
+
+            $territory_ids = array_map( function ( $ar ) {
+                           return $ar['territory'];
+                        }, array_column( $customers, 'customer' ) );
+
+            if(!empty($territory_ids)){
+                $data = Territory::whereIn('territory_id', $territory_ids)->orderby('description','asc')->select('territory_id','description')->limit(50);
+
+                if($search != ''){
+                    $data->where('description', 'like', '%' .$search . '%');
+                }
+
+                $data = $data->get();
+
+                foreach($data as $value){
+                    $response[] = array(
+                        "id" => $value->territory_id,
+                        "text" => $value->description
+                    );
+                }
+            }
+        }
+
+        return response()->json($response);
+    }
+
+
+    public function customerTaggingGetMarketSector(Request $request){
+
+        $response = array();
+        $search = $request->search;
+
+        if(@$request->sap_connection_id != "" && @$request->brand_id != ""){
+
+            $data = CustomerProductGroup::has('customer')->with('customer')->where('product_group_id', $request->brand_id);
+
+            if($search != ''){
+                $data->where('customer',function($q) use ($search) {
+                    $q->where('u_msec', 'like', '%' .$search . '%');
+                });
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+
+                if(isset($response[$value->customer->u_msec])){
+                   continue; 
+                }
+
+                $response[$value->customer->u_msec] = array(
+                    "id" => $value->customer->u_msec,
+                    "text" => $value->customer->u_msec
+                );
+            }
+
+            sort($response);
+        }
+
+        return response()->json($response);
+    }
+
+
+    public function customerTaggingGetCustomerClass(Request $request){
+
+        $response = array();
+        $search = $request->search;
+
+        if(@$request->sap_connection_id != "" && @$request->brand_id != ""){
+
+            $data = CustomerProductGroup::has('customer')->with('customer')->where('product_group_id', $request->brand_id);
+
+            if($search != ''){
+                $data->where('customer',function($q) use ($search) {
+                    $q->where('u_class', 'like', '%' .$search . '%');
+                });
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+
+                if(isset($response[$value->customer->u_class])){
+                   continue; 
+                }
+                
+                $response[$value->customer->u_class] = array(
+                    "id" => $value->customer->u_class,
+                    "text" => $value->customer->u_class
+                );
+            }
+
+            sort($response);
+        }
+
+        return response()->json($response);
+    }
+
+
+    public function customerTaggingGetSalesSpecialist(Request $request){
+
+        $response = $customer_ids = array();
+        $search = $request->search;
+
+        if(@$request->sap_connection_id != "" && @$request->brand_id != ""){
+
+            $customer_ids = CustomerProductGroup::has('customer')->with('customer')->where('product_group_id', $request->brand_id)->pluck('customer_id')->toArray();
+
+            if(!empty($customer_ids)){
+
+                $data = User::where('role_id', 2)->has('sales_specialist_customers')->orderby('sales_specialist_name','asc');
+
+                $data->whereHas('sales_specialist_customers', function($q) use ($customer_ids) {
+                    $q->whereIn('customer_id', $customer_ids);
+                });
+
+                $data = $data->get();
+
+                foreach($data as $value){
+                    
+                    $response[] = array(
+                        "id" => $value->id,
+                        "text" => $value->sales_specialist_name
+                    );
+                }
+            }
+
+        }
+
+        return response()->json($response);
     }
 }
