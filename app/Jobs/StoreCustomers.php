@@ -94,7 +94,7 @@ class StoreCustomers implements ShouldQueue
                                 'u_rgn' => @$value['U_RGN'],
                                 'price_list_num' => @$value['PriceListNum'],
                                 'territory' => @$value['Territory'],
-                                
+
                                 'class_id' => !is_null(@$value['U_CLASS']) ? @$obj_class->id : NULL,
 
                                 'u_mkt_segment' => @$value['U_MktSegment'],
@@ -103,6 +103,7 @@ class StoreCustomers implements ShouldQueue
                                 'u_province' => @$value['U_Province'],
                                 'u_card_code' => @$value['U_CardCode'],
 
+                                'updated_date' => $value['UpdateDate'],
                                 'sap_connection_id' => $this->sap_connection_id,
                             );
 
@@ -117,7 +118,7 @@ class StoreCustomers implements ShouldQueue
                 // Store BPAddresses details
                 if(@$obj->id){
 
-                    $bp_orders = []; 
+                    $bp_orders = [];
                     if(isset($value['BPAddresses'])){
 
                         foreach ($value['BPAddresses'] as $bp) {
@@ -165,7 +166,7 @@ class StoreCustomers implements ShouldQueue
 
                         $name = explode(" ", $obj->card_name, 2);
                         $password = get_random_password();
-                        
+
                         $insert_user =  array(
                                             'department_id' => 3,
                                             'role_id' => 4,

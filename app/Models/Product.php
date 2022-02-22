@@ -46,6 +46,7 @@ class Product extends Model
         'item_class',
         'u_series2',
         'u_pattern2',
+        'updated_date',
     ];
 
     public function product_images()
