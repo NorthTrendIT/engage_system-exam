@@ -80,7 +80,13 @@ class SAPInvoices
         if($url){
             $response = $this->getInvoiceData($url);
         }else{
-            $response = $this->getInvoiceData();
+            $latestData = Invoice::orderBy('updated_date','DESC')->first();
+            if(!empty($latestData)){
+                $url = '/b1s/v1/Invoices?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
+                $response = $this->getInvoiceData($url);
+            } else {
+                $response = $this->getInvoiceData();
+            }
         }
 
         if($response['status']){

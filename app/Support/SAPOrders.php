@@ -80,7 +80,13 @@ class SAPOrders
         if($url){
             $response = $this->getOrderData($url);
         }else{
-            $response = $this->getOrderData();
+            $latestData = Order::orderBy('updated_date','DESC')->first();
+            if(!empty($latestData)){
+                $url = '/b1s/v1/Orders?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
+                $response = $this->getOrderData($url);
+            } else {
+                $response = $this->getOrderData();
+            }
         }
 
         if($response['status']){

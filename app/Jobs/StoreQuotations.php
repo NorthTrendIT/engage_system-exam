@@ -70,6 +70,7 @@ class StoreQuotations implements ShouldQueue
                             'updated_at' => $value['UpdateDate'],
                             //'response' => json_encode($order),
 
+                            'updated_date' => $value['UpdateDate'],
                             'sap_connection_id' => $this->sap_connection_id,
                         );
 

@@ -38,6 +38,7 @@ class Order extends Model
         'response',
         'created_at',
         'updated_at',
+        'updated_date',
         'sap_connection_id',
     ];
 

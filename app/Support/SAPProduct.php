@@ -58,7 +58,7 @@ class SAPProduct
                                 'data' => $response
                             );
             }
-            
+
         } catch (\Exception $e) {
 
             add_sap_log([
@@ -79,7 +79,13 @@ class SAPProduct
         if($url){
             $response = $this->getProductData($url);
         }else{
-            $response = $this->getProductData();
+            $latestData = Product::orderBy('updated_date','DESC')->first();
+            if(!empty($latestData)){
+                $url = '/b1s/v1/Items?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
+                $response = $this->getProductData($url);
+            } else {
+                $response = $this->getProductData();
+            }
         }
 
         if($response['status']){
@@ -88,7 +94,7 @@ class SAPProduct
             if($data['value']){
 
                 /*foreach ($data['value'] as $value) {
-                    
+
                     $insert = array(
 
                                     'item_code' => @$value['ItemCode'],
@@ -123,7 +129,7 @@ class SAPProduct
 
                 if(isset($data['odata.nextLink'])){
                     //$this->addProductDataInDatabase($data['odata.nextLink']);
-                    
+
                     SyncNextProducts::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
                 }else{
                     add_sap_log([

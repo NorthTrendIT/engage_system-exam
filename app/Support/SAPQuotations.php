@@ -81,7 +81,13 @@ class SAPQuotations
         if($url){
             $response = $this->getQuotationData($url);
         }else{
-            $response = $this->getQuotationData();
+            $latestData = Quotation::orderBy('updated_date','DESC')->first();
+            if(!empty($latestData)){
+                $url = '/b1s/v1/Quotations?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
+                $response = $this->getQuotationData($url);
+            } else {
+                $response = $this->getQuotationData();
+            }
         }
 
         if($response['status']){
@@ -176,9 +182,9 @@ class SAPQuotations
                 StoreQuotations::dispatch($data['value'],@$sap_connection->id);
 
                 if(!empty($data['odata.nextLink'])){
-
+                    // dd($data);
                     SyncNextQuotations::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
-                    
+
                     //$this->addQuotationsDataInDatabase($data['odata.nextLink']);
                 } else {
                     add_sap_log([
