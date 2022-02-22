@@ -30,7 +30,7 @@ class SAPCustomer
         $this->username = $username;
         $this->password = $password;
         $this->log_id = $log_id;
-        
+
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
         $this->headers['Cookie'] = $this->authentication->getSessionCookie();
@@ -62,7 +62,7 @@ class SAPCustomer
                                 'data' => $response
                             );
             }
-            
+
         } catch (\Exception $e) {
 
             add_sap_log([
@@ -83,7 +83,13 @@ class SAPCustomer
         if($url){
             $response = $this->getCustomerData($url);
         }else{
-            $response = $this->getCustomerData();
+            $latestData = Customer::orderBy('updated_date','DESC')->first();
+            if(!empty($latestData)){
+                $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
+                $response = $this->getCustomerData($url);
+            } else {
+                $response = $this->getCustomerData();
+            }
         }
 
         if($response['status']){
@@ -92,7 +98,7 @@ class SAPCustomer
             if($data['value']){
 
                 /*foreach ($data['value'] as $value) {
-                    
+
                     $insert = array(
                                     'card_code' => @$value['CardCode'],
                                     'card_type' => @$value['CardType'],
@@ -130,7 +136,7 @@ class SAPCustomer
                                         );
 
                     // Store BPAddresses details
-                    $bp_orders = []; 
+                    $bp_orders = [];
                     if(isset($value['BPAddresses']) && @$obj->id){
 
                         foreach ($value['BPAddresses'] as $bp) {

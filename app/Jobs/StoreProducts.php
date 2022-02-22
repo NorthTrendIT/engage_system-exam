@@ -43,7 +43,7 @@ class StoreProducts implements ShouldQueue
         if(!empty($this->data)){
 
             foreach ($this->data as $value) {
-                    
+
                 $insert = array(
 
                                 'item_code' => @$value['ItemCode'],
@@ -77,7 +77,7 @@ class StoreProducts implements ShouldQueue
                                 'u_series2' => @$value['U_Series2'],
                                 'u_pattern2' => @$value['U_Pattern2'],
 
-
+                                'updated_date' => $value['UpdateDate'],
                                 'sap_connection_id' => $this->sap_connection_id,
                             );
 
