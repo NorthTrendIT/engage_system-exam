@@ -466,6 +466,9 @@ class UserController extends Controller
                 $user->password = Hash::make($input['confirm_password']);
                 $user->save();
 
+                //save log
+                add_log(44, $input);
+
                 $response = ['status'=>true,'message'=>'Password changed successfully !'];
             }else{
                 $response = ['status'=>false,'message'=>'User not found !'];

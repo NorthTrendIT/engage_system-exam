@@ -82,6 +82,8 @@ class HelpDeskController extends Controller
             $ticket->ticket_number = '#EOMSH'.$ticket->id;
             $ticket->save();
 
+            add_log(50, $ticket->toArray());
+
             // Assign Support Department
             HelpDeskDepartment::create(
                                     [
@@ -166,6 +168,9 @@ class HelpDeskController extends Controller
         // Access only for admin and support department and created by 
         if(userrole() == 1 || userdepartment() == 1 || $data->user_id == Auth::id()){
             $status = HelpDeskStatuses::all();
+
+            add_log(52, NULL);
+
             return view('help-desk.view',compact('data','status'));
         }
 
@@ -322,6 +327,9 @@ class HelpDeskController extends Controller
             if(!is_null($obj) && $request->status != ""){
                 $obj->help_desk_status_id = $request->status;
                 $obj->save();
+
+                add_log(53, $obj->toArray());
+
                 $response = ['status'=>true,'message'=>'Status update successfully !'];
             }else{
                 $response = ['status'=>false,'message'=>'Record not found !'];
@@ -359,6 +367,8 @@ class HelpDeskController extends Controller
                 $message = "Comment created successfully.";
 
                 $comment->fill($input)->save();
+
+                add_log(54, $comment->toArray());
 
                 $response = ['status'=>true,'message'=>$message];
 
