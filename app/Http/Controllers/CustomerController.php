@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Support\SAPCustomer;
 use App\Jobs\SyncCustomers;
+use App\Models\User;
 use App\Models\Customer;
 use App\Models\Classes;
 use App\Models\CustomerGroup;
@@ -17,6 +18,7 @@ use Auth;
 
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomerExport;
+use App\Exports\CustomerTaggingExport;
 
 class CustomerController extends Controller
 {
@@ -193,8 +195,14 @@ class CustomerController extends Controller
             });
         }
 
+        if($request->filter_brand != ""){
+            $data->whereHas('product_groups', function($q) use($request){
+                $q->where('product_group_id', $request->filter_brand);
+            });
+        }
+
         if($request->filter_customer_class != ""){
-            $data->where('u_classification',$request->filter_customer_class);
+            $data->where('u_class',$request->filter_customer_class);
         }
 
         if($request->filter_search != ""){
@@ -476,6 +484,12 @@ class CustomerController extends Controller
             $data->where('group_code',$filter->filter_branch);
         }
 
+        if(@$filter->filter_brand != ""){
+            $data->whereHas('product_groups', function($q) use($filter){
+                $q->where('product_group_id', $filter->filter_brand);
+            });
+        }
+
         if(@$filter->filter_sales_specialist != ""){
             $data->whereHas('sales_specialist', function($q) use($filter){
                 $q->where('ss_id', $filter->filter_sales_specialist);
@@ -483,7 +497,7 @@ class CustomerController extends Controller
         }
 
         if(@$filter->filter_customer_class != ""){
-            $data->where('u_classification',$filter->filter_customer_class);
+            $data->where('u_class',$filter->filter_customer_class);
         }
 
         if(@$filter->filter_search != ""){
@@ -521,24 +535,47 @@ class CustomerController extends Controller
 
         $records = array();
         foreach($data as $key => $value){
-            $records[] = array(
-                                'no' => $key + 1,
-                                'company' => @$value->sap_connection->company_name,
-                                'card_code' => $value->card_code,
-                                'card_name' => $value->card_name,
-                                'email' => @$value->user->email,
-                                'u_card_code' => $value->u_card_code,
-                                'credit_limit' => $value->credit_limit,
-                                'group_name' => @$value->group->name,
-                                'territory' => @$value->territories->description,
-                                'class' => @$value->u_class,
-                                'created_at' => date('M d, Y',strtotime($value->created_date)),
-                                // 'status' => $value->is_active ? "Active" : "Inctive",
-                            );
+
+            if(@$filter->module_type == "customer-tagging"){
+                $records[] = array(
+                                    'no' => $key + 1,
+                                    'card_code' => $value->card_code,
+                                    'card_name' => $value->card_name,
+                                    'class' => @$value->u_class,
+                                    'customer_segment' => @$value->u_cust_segment,
+                                    'market_sector' => @$value->u_msec,
+                                    'market_sub_sector' => @$value->u_tsec,
+                                    'region' => @$value->u_rgn,
+                                    'province' => @$value->u_province,
+                                    'territory' => @$value->territories->description,
+                                    'city' => @$value->city,
+                                );
+            }else{
+                $records[] = array(
+                                    'no' => $key + 1,
+                                    'company' => @$value->sap_connection->company_name,
+                                    'card_code' => $value->card_code,
+                                    'card_name' => $value->card_name,
+                                    'email' => @$value->user->email,
+                                    'u_card_code' => $value->u_card_code,
+                                    'credit_limit' => $value->credit_limit,
+                                    'group_name' => @$value->group->name,
+                                    'territory' => @$value->territories->description,
+                                    'class' => @$value->u_class,
+                                    'created_at' => date('M d, Y',strtotime($value->created_date)),
+                                    // 'status' => $value->is_active ? "Active" : "Inctive",
+                                );
+            }
         }
         if(count($records)){
-            $title = 'Customer Report '.date('dmY').'.xlsx';
-            return Excel::download(new CustomerExport($records), $title);
+
+            if(@$filter->module_type == "customer-tagging"){
+                $title = 'Customer Tagging Report '.date('dmY').'.xlsx';
+                return Excel::download(new CustomerTaggingExport($records), $title);
+            }else{
+                $title = 'Customer Report '.date('dmY').'.xlsx';
+                return Excel::download(new CustomerExport($records), $title);
+            }
         }
 
         \Session::flash('error_message', common_error_msg('excel_download'));
@@ -604,13 +641,88 @@ class CustomerController extends Controller
             $data = $data->get();
 
             foreach($data as $value){
-                $response[] = array(
+
+                if(isset($response[$value->customer->u_msec])){
+                   continue; 
+                }
+
+                $response[$value->customer->u_msec] = array(
                     "id" => $value->customer->u_msec,
                     "text" => $value->customer->u_msec
                 );
             }
 
             sort($response);
+        }
+
+        return response()->json($response);
+    }
+
+
+    public function customerTaggingGetCustomerClass(Request $request){
+
+        $response = array();
+        $search = $request->search;
+
+        if(@$request->sap_connection_id != "" && @$request->brand_id != ""){
+
+            $data = CustomerProductGroup::has('customer')->with('customer')->where('product_group_id', $request->brand_id);
+
+            if($search != ''){
+                $data->where('customer',function($q) use ($search) {
+                    $q->where('u_class', 'like', '%' .$search . '%');
+                });
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+
+                if(isset($response[$value->customer->u_class])){
+                   continue; 
+                }
+                
+                $response[$value->customer->u_class] = array(
+                    "id" => $value->customer->u_class,
+                    "text" => $value->customer->u_class
+                );
+            }
+
+            sort($response);
+        }
+
+        return response()->json($response);
+    }
+
+
+    public function customerTaggingGetSalesSpecialist(Request $request){
+
+        $response = $customer_ids = array();
+        $search = $request->search;
+
+        if(@$request->sap_connection_id != "" && @$request->brand_id != ""){
+
+            $customer_ids = CustomerProductGroup::has('customer')->with('customer')->where('product_group_id', $request->brand_id)->pluck('customer_id')->toArray();
+
+            if(!empty($customer_ids)){
+
+                $data = User::where('role_id', 2)->has('sales_specialist_customers')->orderby('sales_specialist_name','asc');
+
+                $data->whereHas('sales_specialist_customers', function($q) use ($customer_ids) {
+                    $q->whereIn('customer_id', $customer_ids);
+                });
+
+                $data = $data->get();
+
+                foreach($data as $value){
+                    
+                    $response[] = array(
+                        "id" => $value->id,
+                        "text" => $value->sales_specialist_name
+                    );
+                }
+            }
+
         }
 
         return response()->json($response);

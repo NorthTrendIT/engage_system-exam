@@ -69,10 +69,6 @@ Route::middleware(['auth'])->group(function(){
             Route::post('customer/get-territory', 'App\Http\Controllers\CustomerController@getTerritory')->name('customer.get-territory');
 
 
-            Route::get('customer-tagging', 'App\Http\Controllers\CustomerController@customerTaggingIndex')->name('customer-tagging.index');
-            Route::post('customer-tagging/get-territory', 'App\Http\Controllers\CustomerController@customerTaggingGetTerritory')->name('customer-tagging.get-territory');
-            Route::post('customer-tagging/get-market-sector', 'App\Http\Controllers\CustomerController@customerTaggingGetMarketSector')->name('customer-tagging.get-market-sector');
-
     	    Route::resource('user','App\Http\Controllers\UserController');
     	    Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');
     	    Route::post('user/status/{id}', 'App\Http\Controllers\UserController@updateStatus')->name('user.status');
@@ -332,6 +328,12 @@ Route::middleware(['auth'])->group(function(){
     // Super Admin Routes
     Route::middleware('super-admin')->group(function(){
 
+        Route::get('customer-tagging', 'App\Http\Controllers\CustomerController@customerTaggingIndex')->name('customer-tagging.index');
+        Route::post('customer-tagging/get-territory', 'App\Http\Controllers\CustomerController@customerTaggingGetTerritory')->name('customer-tagging.get-territory');
+        Route::post('customer-tagging/get-market-sector', 'App\Http\Controllers\CustomerController@customerTaggingGetMarketSector')->name('customer-tagging.get-market-sector');
+        Route::post('customer-tagging/get-customer-class', 'App\Http\Controllers\CustomerController@customerTaggingGetCustomerClass')->name('customer-tagging.get-customer-class');
+        Route::post('customer-tagging/get-sales-specialist', 'App\Http\Controllers\CustomerController@customerTaggingGetSalesSpecialist')->name('customer-tagging.get-sales-specialist');
+            
         // Pramotion Type
         Route::get('promotion-type/export', 'App\Http\Controllers\PromotionTypeController@export')->name('promotion-type.export');
         Route::resource('promotion-type','App\Http\Controllers\PromotionTypeController');
