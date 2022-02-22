@@ -263,7 +263,7 @@ class CustomerController extends Controller
 
                                 $html .= '<div class="d-flex align-items-center">
                                             <div class="symbol symbol-45px me-5">
-                                                <img src="'.asset('assets/assets/media/default_user.png').'" alt="">
+                                                <div class="symbol-label fs-3" style="color:'.convert_hex_to_rgba(@$row->user->default_profile_color).';background-color:'.convert_hex_to_rgba(@$row->user->default_profile_color,0.5).';"><b>'.get_sort_char(@$row->card_name).'</b></div>
                                             </div>
                                             <div class="d-flex justify-content-start flex-column">
                                                 <a href="' . route('customer.show',$row->id). '" class="text-dark fw-bolder text-hover-primary fs-6">';

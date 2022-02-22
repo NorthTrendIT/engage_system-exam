@@ -181,6 +181,7 @@ class StoreCustomers implements ShouldQueue
                                             'email' => strtolower(@$obj->card_code)."-".$this->sap_connection_id.'@mailinator.com',
                                             'first_login' => true,
                                             'sap_connection_id' => $this->sap_connection_id,
+                                            'default_profile_color' => get_hex_color(),
                                         );
 
                         User::create($insert_user);

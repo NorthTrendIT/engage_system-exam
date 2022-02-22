@@ -324,4 +324,27 @@ class CommonController extends Controller
 
         return response()->json($response);
     }
+
+    // Get Users
+    public function getUsers(Request $request){
+        $search = $request->search;
+
+        $data = User::where('department_id', 1)->select('id','sales_specialist_name');
+
+        if($search != ''){
+            $data = $data->where('sales_specialist_name', 'like', '%' .$search . '%');
+        }
+
+        $data = $data->orderby('sales_specialist_name','asc')->limit(50)->get();
+
+        $response = array();
+        foreach($data as $value){
+            $response[] = array(
+                "id"=>$value->id,
+                "text"=>$value->sales_specialist_name
+            );
+        }
+
+        return response()->json($response);
+    }
 }
