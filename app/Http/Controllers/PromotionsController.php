@@ -706,14 +706,14 @@ class PromotionsController extends Controller
     public function getMarketSectors(Request $request){
         $search = $request->search;
 
-        $data = Customer::orderby('u_msec','asc')->whereNotNull('u_msec')->select('id','u_msec');
+        $data = Customer::orderby('u_sector','asc')->whereNotNull('u_sector')->select('id','u_sector');
         if($search != ''){
-            $data->where('u_msec', 'like', '%' .$search . '%');
+            $data->where('u_sector', 'like', '%' .$search . '%');
         }
 
         $data->where('sap_connection_id',@$request->sap_connection_id);
 
-        $data = $data->get()->unique('u_msec');
+        $data = $data->get()->unique('u_sector');
 
         return response()->json($data);
     }

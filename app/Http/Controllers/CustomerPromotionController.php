@@ -126,7 +126,7 @@ class CustomerPromotionController extends Controller
                         }else if($promotion->promotion_scope == "MS"){ //Market Sector
 
                             if($customer){
-                                $check = $promotion->promotion_data->firstWhere('market_sector', $customer->u_msec);
+                                $check = $promotion->promotion_data->firstWhere('market_sector', $customer->u_sector);
 
                                 if(is_null($check)){
                                     $is_continue = true;

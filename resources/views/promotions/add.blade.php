@@ -688,8 +688,8 @@
                 return {
                     results:  $.map(response, function (item) {
                                 return {
-                                  text: item.u_msec,
-                                  id: item.u_msec
+                                  text: item.u_sector,
+                                  id: item.u_sector
                                 }
                             })
                 };

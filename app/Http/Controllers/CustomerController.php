@@ -166,11 +166,11 @@ class CustomerController extends Controller
         }
 
         if($request->filter_market_sector != ""){
-            $data->where('u_msec',$request->filter_market_sector);
+            $data->where('u_sector',$request->filter_market_sector);
         }
 
         if($request->filter_market_sub_sector != ""){
-            $data->where('u_tsec',$request->filter_market_sub_sector);
+            $data->where('u_subsector',$request->filter_market_sub_sector);
         }
 
         if($request->filter_region != ""){
@@ -320,11 +320,11 @@ class CustomerController extends Controller
                             ->addColumn('u_cust_segment', function($row) {
                                 return @$row->u_cust_segment ?? "-";
                             })
-                            ->addColumn('u_msec', function($row) {
-                                return @$row->u_msec ?? "-";
+                            ->addColumn('u_sector', function($row) {
+                                return @$row->u_sector ?? "-";
                             })
-                            ->addColumn('u_tsec', function($row) {
-                                return @$row->u_tsec ?? "-";
+                            ->addColumn('u_subsector', function($row) {
+                                return @$row->u_subsector ?? "-";
                             })
                             ->addColumn('u_rgn', function($row) {
                                 return @$row->u_rgn ?? "-";
@@ -365,11 +365,11 @@ class CustomerController extends Controller
                             ->orderColumn('u_cust_segment', function ($query, $order) {
                                 $query->orderBy('u_cust_segment', $order);
                             })
-                            ->orderColumn('u_msec', function ($query, $order) {
-                                $query->orderBy('u_msec', $order);
+                            ->orderColumn('u_sector', function ($query, $order) {
+                                $query->orderBy('u_sector', $order);
                             })
-                            ->orderColumn('u_tsec', function ($query, $order) {
-                                $query->orderBy('u_tsec', $order);
+                            ->orderColumn('u_subsector', function ($query, $order) {
+                                $query->orderBy('u_subsector', $order);
                             })
                             ->orderColumn('u_rgn', function ($query, $order) {
                                 $query->orderBy('u_rgn', $order);
@@ -461,11 +461,11 @@ class CustomerController extends Controller
         }
 
         if(@$filter->filter_market_sector != ""){
-            $data->where('u_msec',$filter->filter_market_sector);
+            $data->where('u_sector',$filter->filter_market_sector);
         }
 
         if(@$filter->filter_market_sub_sector != ""){
-            $data->where('u_tsec',$filter->filter_market_sub_sector);
+            $data->where('u_subsector',$filter->filter_market_sub_sector);
         }
 
         if(@$filter->filter_region != ""){
@@ -543,8 +543,8 @@ class CustomerController extends Controller
                                     'card_name' => $value->card_name,
                                     'class' => @$value->u_class,
                                     'customer_segment' => @$value->u_cust_segment,
-                                    'market_sector' => @$value->u_msec,
-                                    'market_sub_sector' => @$value->u_tsec,
+                                    'market_sector' => @$value->u_sector,
+                                    'market_sub_sector' => @$value->u_subsector,
                                     'region' => @$value->u_rgn,
                                     'province' => @$value->u_province,
                                     'territory' => @$value->territories->description,
@@ -634,7 +634,7 @@ class CustomerController extends Controller
 
             if($search != ''){
                 $data->where('customer',function($q) use ($search) {
-                    $q->where('u_msec', 'like', '%' .$search . '%');
+                    $q->where('u_sector', 'like', '%' .$search . '%');
                 });
             }
 
@@ -642,13 +642,13 @@ class CustomerController extends Controller
 
             foreach($data as $value){
 
-                if(isset($response[$value->customer->u_msec])){
+                if(isset($response[$value->customer->u_sector])){
                    continue; 
                 }
 
-                $response[$value->customer->u_msec] = array(
-                    "id" => $value->customer->u_msec,
-                    "text" => $value->customer->u_msec
+                $response[$value->customer->u_sector] = array(
+                    "id" => $value->customer->u_sector,
+                    "text" => $value->customer->u_sector
                 );
             }
 
