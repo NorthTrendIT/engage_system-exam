@@ -32,15 +32,7 @@
             </div> --}}
             <div class="card-body">
               <div class="row mt-5">
-                <div class="col-md-3">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search" autocomplete="off">
-                    <span>
-                      <i class="flaticon2-search-1 text-muted"></i>
-                    </span>
-                  </div>
-                </div>
-
+                
                 <div class="col-md-3">
                   <select class="form-control form-control-lg form-control-solid filter_role" name="filter_role" data-control="select2" data-hide-search="true">
                     <option value="">Select role</option>
@@ -56,6 +48,15 @@
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
                   </select>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search" autocomplete="off">
+                    <span>
+                      <i class="flaticon2-search-1 text-muted"></i>
+                    </span>
+                  </div>
                 </div>
 
                 <div class="col-md-3">
@@ -141,7 +142,7 @@
           paging: true,
           fixedColumns:   {
             left: 2,  
-            right: 1
+            right: 0
           },
           order: [],
           ajax: {

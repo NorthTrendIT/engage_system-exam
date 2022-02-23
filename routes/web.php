@@ -317,6 +317,7 @@ Route::middleware(['auth'])->group(function(){
         Route::post('common/get-sales-specialist', 'App\Http\Controllers\CommonController@getSalesSpecialist')->name('common.getSalesSpecialist');
         Route::post('common/get-customer-class', 'App\Http\Controllers\CommonController@getCustomerClass')->name('common.getCustomerClass');
         Route::post('common/get-brands', 'App\Http\Controllers\CommonController@getBrands')->name('common.getBrands');
+        Route::post('common/get-users', 'App\Http\Controllers\CommonController@getUsers')->name('common.getUsers');
 
     });
 

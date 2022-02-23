@@ -99,6 +99,7 @@ class UserController extends Controller
                 $user = new User();
                 $message = "New User created successfully.";
                 $input['password'] = Hash::make($input['confirm_password']);
+                $input['default_profile_color'] = get_hex_color();
 
                 $input['is_sap_user'] = false;
                 if(userrole() != 1){
@@ -235,10 +236,10 @@ class UserController extends Controller
 
 
         if(!is_null($data)){
-            $data->delete();
-
             // Add user delete log
             add_log(5, array('user_data' => $data));
+
+            $data->delete();
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{

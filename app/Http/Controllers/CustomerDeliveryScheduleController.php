@@ -201,7 +201,7 @@ class CustomerDeliveryScheduleController extends Controller
         if(!is_null($user)){
 
             //save log
-            add_log(40, $input);
+            add_log(40, $user->toArray());
 
             CustomerDeliverySchedule::where('user_id', $user->id)->delete();
 

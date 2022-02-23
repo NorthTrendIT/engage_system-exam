@@ -35,6 +35,17 @@
             </div> --}}
             <div class="card-body">
               <div class="row mt-5">
+                
+
+                <div class="col-md-4">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_parent" data-control="select2" >
+                    <option value="">Select parent</option>
+                    @foreach($parents as $parent)
+                    <option value="{{ $parent->id }}">{{ $parent->name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
                 <div class="col-md-4">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-solid" placeholder="Search here..." id="kt_datatable_search_query">
@@ -42,15 +53,6 @@
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
                   </div>
-                </div>
-
-                <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_parent" data-control="select2" >
-                    <option value="">Select parent</option>
-                    @foreach($parents as $parent)
-                    <option value="{{ $parent->id }}">{{ $parent->name }}</option>
-                    @endforeach
-                  </select>
                 </div>
 
                 <div class="col-md-4">

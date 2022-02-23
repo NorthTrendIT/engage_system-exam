@@ -31,14 +31,7 @@
             </div> --}}
             <div class="card-body">
               <div class="row mt-5">
-                <div class="col-md-3">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
-                    <span>
-                      <i class="flaticon2-search-1 text-muted"></i>
-                    </span>
-                  </div>
-                </div>
+                
 
                 <div class="col-md-3">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
@@ -48,6 +41,15 @@
                   </select>
                 </div>
 
+                <div class="col-md-3">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
+                    <span>
+                      <i class="flaticon2-search-1 text-muted"></i>
+                    </span>
+                  </div>
+                </div>
+                
                 <div class="col-md-3">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>

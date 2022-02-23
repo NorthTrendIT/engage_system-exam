@@ -564,7 +564,7 @@
                     },
             },
             max_percentage:{
-              min:parseFloat($('#min_percentage').val()),
+              // min:parseFloat($('#min_percentage').val()),
               max:100,
               number: true,
               required: function () {
@@ -572,6 +572,13 @@
                             return true;
                         }else{
                             return false;
+                        }
+                    },
+              min: function () {
+                        if(parseFloat($('#min_percentage').val())){
+                          return parseFloat($('#min_percentage').val());
+                        }else{
+                          return 0;
                         }
                     },
             },
@@ -629,12 +636,14 @@
       });
 
       $('.discount_percentage').each(function() {
-        $(this).rules('add', {
-          required:true,
-          min:parseFloat($('#min_percentage').val()),
-          max:parseFloat($('#max_percentage').val()),
-          number: true
-        });
+        if(parseFloat($('#min_percentage').val()) && parseFloat($('#max_percentage').val())){
+          $(this).rules('add', {
+            required:true,
+            min:parseFloat($('#min_percentage').val()),
+            max:parseFloat($('#max_percentage').val()),
+            number: true
+          });
+        }
       });
 
       $('.fixed_quantity').each(function() {
