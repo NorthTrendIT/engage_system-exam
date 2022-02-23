@@ -236,10 +236,10 @@ class UserController extends Controller
 
 
         if(!is_null($data)){
-            $data->delete();
-
             // Add user delete log
             add_log(5, array('user_data' => $data));
+
+            $data->delete();
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{

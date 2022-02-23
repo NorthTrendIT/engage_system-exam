@@ -47,8 +47,12 @@
                               <td>{{ @$data->title ?? "" }}</td>
                             </tr>
                             <tr>
+                              <th> <b>Code:</b> </th>
+                              <td>{{ @$data->code ?? "-" }}</td>
+                            </tr>
+                            <tr>
                               <th> <b>Description:</b> </th>
-                              <td>{{ @$data->description ?? "" }}</td>
+                              <td>{{ @$data->description ?? "-" }}</td>
                             </tr>
                             <tr>
                               <th> <b>Discount:</b> </th>

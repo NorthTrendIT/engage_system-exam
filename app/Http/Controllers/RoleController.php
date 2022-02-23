@@ -270,10 +270,10 @@ class RoleController extends Controller
         $data = $data->first();
 
         if(!is_null($data)){
-            $data->delete();
-
             // Add Role Deleted log.
             add_log(8, array('role_data' => $data));
+            
+            $data->delete();
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{

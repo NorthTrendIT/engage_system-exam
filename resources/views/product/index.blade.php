@@ -32,30 +32,6 @@
             <div class="card-body">
               <div class="row">
 
-                <div class="col-md-6 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
-                  </div>
-                </div>
-
-                @if(userrole() == 1)
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
-                    <option value="">Select status</option>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
-                  </select>
-                </div>
-                @endif
-
-                <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
-                    <span>
-                    </span>
-                  </div>
-                </div>
-
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                     <option value=""></option>
@@ -120,6 +96,29 @@
                   </select>
                 </div>
 
+                @if(userrole() == 1)
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
+                    <option value="">Select status</option>
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                  </select>
+                </div>
+                @endif
+
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
+                  </div>
+                </div>
 
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
@@ -142,8 +141,8 @@
                             <tr>
                               <th>No.</th>
                               <th>Product Code</th>
-                              <th>Brand</th>
                               <th>Product Name</th>
+                              <th>Brand</th>
                               <th>Product Category</th>
                               <th>Business Unit</th>
                               <th>Product Line</th>
@@ -230,8 +229,8 @@
           scrollCollapse: true,
           paging: true,
           fixedColumns:   {
-            left: 2,  
-            right: 1
+            left: 3,  
+            right: 0
           },
           order: [],
           ajax: {
@@ -257,8 +256,8 @@
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'item_code', name: 'item_code'},
-              {data: 'brand', name: 'brand'},
               {data: 'item_name', name: 'item_name'},
+              {data: 'brand', name: 'brand'},
               {data: 'u_tires', name: 'u_tires'},
               {data: 'company', name: 'company'},
               {data: 'u_item_line', name: 'u_item_line'},

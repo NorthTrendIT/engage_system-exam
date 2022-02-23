@@ -168,9 +168,9 @@ function userip(){
 
 function get_random_password($length = 8){
 
-    $password = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ') , 0 , 1);
+    $password = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&_-~<>;') , 0 , 1);
 
-    $password .= substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-=~!@#$%^&*()_+,./<>?;:[]{}\|') , 0 , $length - 1 );
+    $password .= substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&_-~<>;') , 0 , $length - 1 );
 
     return $password;
 }
