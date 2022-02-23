@@ -99,7 +99,7 @@ function get_product_customer_price($item_prices,$number, $discount = false, $di
 
         $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
 
-        $price = $prices[$number]['Price'] ?? 0;
+        $price = @$prices[$number]['Price'] ?? 0;
 
         if($discount){
 

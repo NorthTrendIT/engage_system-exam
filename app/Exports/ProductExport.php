@@ -35,6 +35,11 @@ class ProductExport implements FromCollection,WithHeadings,WithTitle,ShouldAutoS
             'Product Category',
             'Created Date',
             'Status',
+            'Online Price',
+            'Commercial Price',
+            'SRP',
+            'RDLP',
+            'RDLP-2',
         ];
     }
 

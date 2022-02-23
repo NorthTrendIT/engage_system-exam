@@ -309,6 +309,61 @@ class ProductController extends Controller
                           ->addColumn('company', function($row) {
                             return @$row->sap_connection->company_name ?? "-";
                           })
+                          ->addColumn('online_price', function($row) {
+                            $price = "-";
+                            $item_prices = json_decode($row->item_prices,true);
+
+                            if(count($item_prices) > 0){
+                              $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                              $price = '₱ '.(@$prices[11]['Price'] ? @$prices[11]['Price'] : '0');
+                            }
+
+                            return $price;
+                          })
+                          ->addColumn('commercial_price', function($row) {
+                            $price = "-";
+                            $item_prices = json_decode($row->item_prices,true);
+
+                            if(count($item_prices) > 0){
+                              $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                              $price = '₱ '.(@$prices[12]['Price'] ? @$prices[12]['Price'] : '0');
+                            }
+                            
+                            return $price;
+                          })
+                          ->addColumn('srp_price', function($row) {
+                            $price = "-";
+                            $item_prices = json_decode($row->item_prices,true);
+
+                            if(count($item_prices) > 0){
+                              $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                              $price = '₱ '.(@$prices[13]['Price'] ? @$prices[13]['Price'] : '0');
+                            }
+                            
+                            return $price;
+                          })
+                          ->addColumn('rdlp_price', function($row) {
+                            $price = "-";
+                            $item_prices = json_decode($row->item_prices,true);
+
+                            if(count($item_prices) > 0){
+                              $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                              $price = '₱ '.(@$prices[14]['Price'] ? @$prices[14]['Price'] : '0');
+                            }
+                            
+                            return $price;
+                          })
+                          ->addColumn('rdlp2_price', function($row) {
+                            $price = "-";
+                            $item_prices = json_decode($row->item_prices,true);
+
+                            if(count($item_prices) > 0){
+                              $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                              $price = '₱ '.(@$prices[15]['Price'] ? @$prices[15]['Price'] : '0');
+                            }
+                            
+                            return $price;
+                          })
                           ->addColumn('status', function($row) {
                             // $btn = "";
                             // if($row->is_active){
@@ -463,6 +518,13 @@ class ProductController extends Controller
 
     $records = array();
     foreach($data as $key => $value){
+
+      $item_prices = json_decode($value->item_prices,true);
+      $prices = array();
+      if(count($item_prices) > 0){
+        $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+      }
+
       $records[] = array(
                         'no' => $key + 1,
                         'company' => @$value->sap_connection->company_name,
@@ -473,6 +535,11 @@ class ProductController extends Controller
                         'product_category' => $value->u_tires,
                         'created_at' => date('M d, Y',strtotime($value->created_date)),
                         'status' => $value->is_active ? "Active" : "Inctive",
+                        'online_price' => @$prices[11]['Price'] ?? 0,
+                        'commercial_price' => @$prices[12]['Price'] ?? 0,
+                        'srp_price' => @$prices[13]['Price'] ?? 0,
+                        'rdlp_price' => @$prices[14]['Price'] ?? 0,
+                        'rdlp2_price' => @$prices[15]['Price'] ?? 0,
                       );
     }
     if(count($records)){
