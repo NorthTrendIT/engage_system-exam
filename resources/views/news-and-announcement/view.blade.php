@@ -65,7 +65,7 @@
                                         @if(@Auth::user()->role_id == 1)
                                         <tr>
                                             <th> <b>Customers :</b> </th>
-                                            <td>By {{ ucwords(str_replace("_"," ",@$data->module)) ?? "" }}</td>
+                                            <td>@if(@$data->module != 'all') By @endif {{ ucwords(str_replace("_"," ",@$data->module)) ?? "" }}</td>
                                         </tr>
 
                                         @if(@$data->module == 'market_sector')
@@ -152,7 +152,7 @@
                                         <table class="table table-bordered" id="myDataTable">
                                             <thead>
                                                 <th>No.</th>
-                                                @if(@$data->module == 'customer' || @$data->module == 'customer_class' || @$data->module == 'territory' || @$data->module == 'market_sector' || @$data->module == 'brand')
+                                                @if(@$data->module == 'customer' || @$data->module == 'customer_class' || @$data->module == 'territory' || @$data->module == 'market_sector' || @$data->module == 'brand' || @$data->module == 'all')
                                                 <th>Customer Name</th>
                                                 @endif
                                                 @if(@$data->module == 'sales_specialist')
@@ -166,7 +166,7 @@
                                                 <th>Brand</th>
                                                 @endif
                                                 --}}
-                                                @if(@$data->module == 'customer' || @$data->module == 'sales_specialist' || @$data->module == 'role')
+                                                @if(@$data->module == 'customer' || @$data->module == 'sales_specialist' || @$data->module == 'role' || @$data->module == 'all')
                                                 <th>Role</th>
                                                 @endif
                                                 @if(@$data->module == 'customer_class')
@@ -259,7 +259,7 @@ $(document).ready(function() {
               @if(@$data->module == 'role')
               'url': "{{ route('news-and-announcement.getAllRole') }}",
               @endif
-              @if(@$data->module == 'customer')
+              @if(@$data->module == 'customer' || @$data->module == 'all')
               'url': "{{ route('news-and-announcement.getAllCustomer') }}",
               @endif
               @if(@$data->module == 'sales_specialist')
@@ -290,7 +290,7 @@ $(document).ready(function() {
           columns: [
               {data: 'DT_RowIndex', orderable: false},
               {data: 'user_name', name: 'user_name', orderable: false},
-              @if(@$data->module == 'customer' || @$data->module == 'sales_specialist')
+              @if(@$data->module == 'customer' || @$data->module == 'sales_specialist' || @$data->module == 'all')
               {data: 'role', name: 'role', orderable: false},
               @endif
               @if(@$data->module == 'market_sector')
