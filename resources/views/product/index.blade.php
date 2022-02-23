@@ -153,6 +153,11 @@
                               <th>Date</th>
                               @if(userrole() == 1)
                               <th>Status</th>
+                              <th>Online Price</th>
+                              <th>Commercial Price</th>
+                              <th>SRP</th>
+                              <th>RDLP</th>
+                              <th>RDLP-2</th>
                               @endif
                               <th>Action</th>
                             </tr>
@@ -268,6 +273,11 @@
               {data: 'created_date', name: 'created_date'},
               @if(userrole() == 1)
               {data: 'status', name: 'status'},
+              {data: 'online_price', name: 'online_price',orderable:false,searchable:false},
+              {data: 'commercial_price', name: 'commercial_price',orderable:false,searchable:false},
+              {data: 'srp_price', name: 'srp_price',orderable:false,searchable:false},
+              {data: 'rdlp_price', name: 'rdlp_price',orderable:false,searchable:false},
+              {data: 'rdlp2_price', name: 'rdlp2_price',orderable:false,searchable:false},
               @endif
               {data: 'action', name: 'action'},
           ],
