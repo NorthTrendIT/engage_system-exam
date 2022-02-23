@@ -115,12 +115,13 @@
                                 <label>Select Customer<span class="asterisk">*</span></label>
                                 <select class="form-select form-select-solid" data-control="select2" id="selectModule" data-hide-search="false" name="module">
                                     <option value="">Select Customer</option>
-                                    <option value="brand" @if(isset($edit->connection) && $edit->connection->module == 'role') selected @endif>By Brand</option>
-                                    <option value="customer_class" @if(isset($edit->connection) && $edit->connection->module == 'customer_class') selected @endif>By Class</option>
-                                    <option value="sales_specialist" @if(isset($edit->connection) && $edit->connection->module == 'sales_specialist') selected @endif>By Sales Specialist</option>
-                                    <option value="territory" @if(isset($edit->connection) && $edit->connection->module == 'territory') selected @endif>By Territory</option>
-                                    <option value="market_sector" @if(isset($edit->connection) && $edit->connection->module == 'territory') selected @endif>By Market Sector</option>
-                                    <option value="customer" @if(isset($edit->connection) && $edit->connection->module == 'customer') selected @endif>By Customer</option>
+                                    <option value="all" @if(isset($edit->module) && $edit->module == 'all') selected @endif>All</option>
+                                    <option value="brand" @if(isset($edit->module) && $edit->module == 'role') selected @endif>By Brand</option>
+                                    <option value="customer_class" @if(isset($edit->module) && $edit->module == 'customer_class') selected @endif>By Class</option>
+                                    <option value="sales_specialist" @if(isset($edit->module) && $edit->module == 'sales_specialist') selected @endif>By Sales Specialist</option>
+                                    <option value="territory" @if(isset($edit->module) && $edit->module == 'territory') selected @endif>By Territory</option>
+                                    <option value="market_sector" @if(isset($edit->module) && $edit->module == 'territory') selected @endif>By Market Sector</option>
+                                    <option value="customer" @if(isset($edit->module) && $edit->module == 'customer') selected @endif>By Customer</option>
                                 </select>
                             </div>
                     </div>
@@ -482,7 +483,7 @@
         $(this).rules('add', {
           required:false,
           maxsize: 10000000,
-          extension: 'jpeg | jpg | png | eps | bmp | tif | tiff | webp | pdf | doc | docx | xls | xlsx | ppt | pptx | odt | ods',
+          extension: 'jpeg|jpg|png|eps|bmp|tif|tiff|webp|pdf|doc|docx|xls|xlsx|ppt|pptx|odt|ods',
           messages: {
             extension: "Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp .pdf .doc .docx .xls .xlsx .ppt .pptx .odt .ods files.",
             maxsize: "File size must not exceed 10MB.",
