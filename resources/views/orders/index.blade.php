@@ -239,11 +239,11 @@
           columns: [
               {data: 'DT_RowIndex'},
               {data: 'doc_entry', name: 'doc_entry'},
-              @if(in_array(userrole(),[1]))
-              {data: 'company', name: 'company'},
-              @endif
               @if(userrole() != 4)
               {data: 'name', name: 'name'},
+              @endif
+              @if(in_array(userrole(),[1]))
+              {data: 'company', name: 'company'},
               @endif
               {data: 'total', name: 'total'},
               {data: 'date', name: 'date'},
