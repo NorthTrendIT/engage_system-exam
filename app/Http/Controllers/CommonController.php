@@ -65,22 +65,22 @@ class CommonController extends Controller
         if($request->sap_connection_id){
             $search = $request->search;
 
-            $data = Customer::where('is_active', true)->orderby('u_msec','asc')->select('u_msec');
+            $data = Customer::where('is_active', true)->orderby('u_sector','asc')->select('u_sector');
 
             if($search != ''){
-                $data->where('u_msec', 'like', '%' .$search . '%');
+                $data->where('u_sector', 'like', '%' .$search . '%');
             }
 
             if(@$request->sap_connection_id != ''){
                 $data->where('sap_connection_id',@$request->sap_connection_id);
             }
 
-            $data = $data->limit(50)->groupBy('u_msec')->get();
+            $data = $data->limit(50)->groupBy('u_sector')->get();
 
             foreach($data as $value){
                 $response[] = array(
-                    "id" => $value->u_msec,
-                    "text" => $value->u_msec
+                    "id" => $value->u_sector,
+                    "text" => $value->u_sector
                 );
             }
         }

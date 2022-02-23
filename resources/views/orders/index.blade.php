@@ -266,11 +266,13 @@
     });
 
     $(document).on('click', '.clear-search', function(event) {
-      $('[name="filter_search"]').val('');
-      $('[name="filter_date_range"]').val('');
-      $('[name="filter_status"]').val('').trigger('change');
-      $('[name="filter_customer"]').val('').trigger('change');
-      $('[name="filter_company"]').val('').trigger('change');
+      // $('[name="filter_search"]').val('');
+      // $('[name="filter_date_range"]').val('');
+      // $('[name="filter_status"]').val('').trigger('change');
+      // $('[name="filter_customer"]').val('').trigger('change');
+      // $('[name="filter_company"]').val('').trigger('change');
+      $('input').val('');
+      $('select').val('').trigger('change');
       $('[name="module"]').val(null).trigger('change');
       render_table();
     })

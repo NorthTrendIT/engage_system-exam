@@ -99,6 +99,7 @@ class StoreCustomers implements ShouldQueue
 
                                 'u_mkt_segment' => @$value['U_MktSegment'],
                                 'u_cust_segment' => @$value['U_CustSegment'],
+                                'u_sector' => @$value['U_Sector'],
                                 'u_subsector' => @$value['U_Subsector'],
                                 'u_province' => @$value['U_Province'],
                                 'u_card_code' => @$value['U_CardCode'],
