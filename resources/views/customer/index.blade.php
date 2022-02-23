@@ -228,7 +228,7 @@
           paging: true,
           fixedColumns:   {
             left: 2,  
-            right: 1
+            right: 0
           },
           order: [],
           ajax: {

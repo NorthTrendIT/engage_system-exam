@@ -151,27 +151,36 @@ class TerritoriesController extends Controller
                             })
                             ->addColumn('status', function($row) {
 
+                                // $btn = "";
+                                // if($row->is_active){
+                                //     $btn .= '<div class="form-group">
+                                //     <div class="col-3">
+                                //      <span class="switch">
+                                //       <label>
+                                //        <input type="checkbox" disabled checked="checked" name="status"/>
+                                //        <span></span>
+                                //       </label>
+                                //      </span>
+                                //     </div>';
+                                // }else{
+                                //     $btn .= '<div class="form-group">
+                                //     <div class="col-3">
+                                //      <span class="switch">
+                                //       <label>
+                                //        <input type="checkbox" disabled name="status"/>
+                                //        <span></span>
+                                //       </label>
+                                //      </span>
+                                //     </div>';
+                                // }
+
+                                // return $btn;
+
                                 $btn = "";
                                 if($row->is_active){
-                                    $btn .= '<div class="form-group">
-                                    <div class="col-3">
-                                     <span class="switch">
-                                      <label>
-                                       <input type="checkbox" disabled checked="checked" name="status"/>
-                                       <span></span>
-                                      </label>
-                                     </span>
-                                    </div>';
+                                  $btn .= '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
                                 }else{
-                                    $btn .= '<div class="form-group">
-                                    <div class="col-3">
-                                     <span class="switch">
-                                      <label>
-                                       <input type="checkbox" disabled name="status"/>
-                                       <span></span>
-                                      </label>
-                                     </span>
-                                    </div>';
+                                  $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
                                 }
 
                                 return $btn;

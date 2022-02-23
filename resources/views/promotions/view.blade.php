@@ -28,10 +28,17 @@
 
                             <div class="row mb-5">
                                 <!-- Title -->
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Title</label>
                                         <input type="text" class="form-control form-control-solid"  value="{{ $data->title }}" disabled="disabled">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Code</label>
+                                        <input type="text" class="form-control form-control-solid"  value="{{ $data->code }}" disabled="disabled">
                                     </div>
                                 </div>
                             </div>
@@ -68,6 +75,10 @@
                                 <div class="col-md-6" id="scope_block">
                                     <div class="form-group">
                                         <label>Promotion Customers</label>
+                                        @if($data->promotion_scope == 'A')
+                                            <input type="text" class="form-control form-control-solid" value="All" disabled="disabled">
+                                        @endif
+
                                         @if($data->promotion_scope == 'C')
                                             <input type="text" class="form-control form-control-solid" value="Customer" disabled="disabled">
                                         @endif
