@@ -73,7 +73,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-4 mt-5">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_search" data-control="select2" data-hide-search="false" data-placeholder="Select customer" data-allow-clear="true">
                     <option value=""></option>
                   </select>

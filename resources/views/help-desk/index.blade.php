@@ -33,15 +33,7 @@
             </div> --}}
             <div class="card-body">
               <div class="row">
-                <div class="col-md-4 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
-                    <span>
-                      <i class="flaticon2-search-1 text-muted"></i>
-                    </span>
-                  </div>
-                </div>
-
+                
                 <div class="col-md-4 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_user" data-allow-clear="true" data-placeholder="Select user">
                     <option value=""></option>
@@ -57,7 +49,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-4 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_urgency" data-control="select2" data-hide-search="true" data-placeholder="Select a urgency" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($urgencies as $u)
@@ -66,7 +58,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-4 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select a status" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($status as $s)
@@ -75,7 +67,16 @@
                   </select>
                 </div>
 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-4 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
+                    <span>
+                      <i class="flaticon2-search-1 text-muted"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-4 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
                     <span>
