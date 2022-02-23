@@ -94,6 +94,10 @@ class NewsAndAnnouncementController extends Controller
             }
             $notification->save();
 
+            if(isset($input['id'])){
+                NotificationConnection::where('notification_id', $notification->id)->delete();
+            }
+
             if($input['module'] == 'all'){
                 $data = Customer::where('sap_connection_id', $input['sap_connection_id'])->get();
                 foreach($data as $item){
