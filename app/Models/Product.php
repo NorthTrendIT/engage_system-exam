@@ -47,6 +47,21 @@ class Product extends Model
         'u_series2',
         'u_pattern2',
         'updated_date',
+
+        'u_loadindex',
+        'u_blength',
+        'u_bwidth',
+        'u_bheight',
+        'u_bthicknes',
+        'u_brsvdcapacity',
+        'u_bcoldcrankamps',
+        'u_bamperhour',
+        'u_bhandle',
+        'u_bpolarity',
+        'u_bterminal',
+        'u_bholddown',
+        'u_bleadweight',
+        'u_btotalweight',
     ];
 
     public function product_images()

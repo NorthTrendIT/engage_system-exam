@@ -77,6 +77,21 @@ class StoreProducts implements ShouldQueue
                                 'u_series2' => @$value['U_Series2'],
                                 'u_pattern2' => @$value['U_Pattern2'],
 
+                                'u_loadindex' => @$value['U_LoadIndex'],
+                                'u_blength' => @$value['U_BLength'],
+                                'u_bwidth' => @$value['U_BWidth'],
+                                'u_bheight' => @$value['U_BHeight'],
+                                'u_bthicknes' => @$value['U_BThicknes'],
+                                'u_brsvdcapacity' => @$value['U_BRsvdCapacity'],
+                                'u_bcoldcrankamps' => @$value['U_BColdCrankAmps'],
+                                'u_bamperhour' => @$value['U_BAmperHour'],
+                                'u_bhandle' => @$value['U_BHandle'],
+                                'u_bpolarity' => @$value['U_BPolarity'],
+                                'u_bterminal' => @$value['U_BTerminal'],
+                                'u_bholddown' => @$value['U_BHoldDown'],
+                                'u_bleadweight' => @$value['U_BLeadWeight'],
+                                'u_btotalweight' => @$value['U_BTotalWeight'],
+
                                 'updated_date' => $value['UpdateDate'],
                                 'sap_connection_id' => $this->sap_connection_id,
                             );
