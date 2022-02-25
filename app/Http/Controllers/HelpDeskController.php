@@ -221,6 +221,10 @@ class HelpDeskController extends Controller
             $data->where('user_id',Auth::id());
         }
 
+        if($request->filter_user != ""){
+            $data->where('user_id',$request->filter_user);
+        }
+
         if($request->filter_status != ""){
             $data->where('help_desk_status_id',$request->filter_status);
         }
@@ -264,6 +268,9 @@ class HelpDeskController extends Controller
                             ->addColumn('subject', function($row) {
                                 return @$row->subject ?? "";
                             })
+                            ->addColumn('user', function($row) {
+                                return @$row->user->sales_specialist_name ?? "";
+                            })
                             ->addColumn('status', function($row) {
                                 $btn = "";
                                 if(@$row->status){
@@ -305,13 +312,13 @@ class HelpDeskController extends Controller
                                 $query->orderBy('created_at', $order);
                             })
                             ->orderColumn('status', function ($query, $order) {
-                                //$query->orderBy('help_desk_status_id', $order);
                                 $query->join('help_desk_statuses', 'help_desks.help_desk_status_id', '=', 'help_desk_statuses.id')->orderBy('help_desk_statuses.name', $order);
                             })
                             ->orderColumn('urgency', function ($query, $order) {
-                                //$query->orderBy('help_desk_urgency_id', $order);
                                 $query->join('help_desk_urgencies', 'help_desks.help_desk_urgency_id', '=', 'help_desk_urgencies.id')->orderBy('help_desk_urgencies.name', $order);
-
+                            })
+                            ->orderColumn('user', function ($query, $order) {
+                                $query->join('users', 'help_desks.user_id', '=', 'users.id')->orderBy('users.sales_specialist_name', $order);
                             })
                             ->rawColumns(['status','action','urgency'])
                             ->make(true);

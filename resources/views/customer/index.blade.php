@@ -32,12 +32,6 @@
             <div class="card-body">
               <div class="row">
 
-                <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
-                  </div>
-                </div>
-
                 @if(in_array(userrole(),[1]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
@@ -115,6 +109,12 @@
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
                     <span>
                     </span>
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
                   </div>
                 </div>
 
@@ -227,7 +227,7 @@
           paging: true,
           fixedColumns:   {
             left: 2,
-            right: 1
+            right: 0
           },
           order: [],
           ajax: {

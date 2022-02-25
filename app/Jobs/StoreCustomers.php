@@ -99,6 +99,7 @@ class StoreCustomers implements ShouldQueue
 
                                 'u_mkt_segment' => @$value['U_MktSegment'],
                                 'u_cust_segment' => @$value['U_CustSegment'],
+                                'u_sector' => @$value['U_Sector'],
                                 'u_subsector' => @$value['U_Subsector'],
                                 'u_province' => @$value['U_Province'],
                                 'u_card_code' => @$value['U_CardCode'],
@@ -181,6 +182,7 @@ class StoreCustomers implements ShouldQueue
                                             'email' => strtolower(@$obj->card_code)."-".$this->sap_connection_id.'@mailinator.com',
                                             'first_login' => true,
                                             'sap_connection_id' => $this->sap_connection_id,
+                                            'default_profile_color' => get_hex_color(),
                                         );
 
                         User::create($insert_user);

@@ -192,7 +192,7 @@ class InvoicesController extends Controller
         if($request->filter_market_sector != ""){
             $data->where(function($query) use ($request) {
                 $query->whereHas('customer', function($q) use ($request) {
-                    $q->where('u_msec', $request->filter_market_sector);
+                    $q->where('u_sector', $request->filter_market_sector);
                 });
             });
         }

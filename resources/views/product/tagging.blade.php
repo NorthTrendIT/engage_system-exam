@@ -1,22 +1,14 @@
 @extends('layouts.master')
 
-@section('title','Product')
+@section('title','Product Tagging')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Product</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Product Tagging</h1>
       </div>
-
-      <!--begin::Actions-->
-      <div class="d-flex align-items-center py-1">
-        <!--begin::Button-->
-        <a href="javascript:" class="btn btn-sm btn-primary sync-products">Sync Products</a>
-        <!--end::Button-->
-      </div>
-      <!--end::Actions-->
 
     </div>
   </div>
@@ -96,24 +88,6 @@
                   </select>
                 </div>
 
-                @if(userrole() == 1)
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
-                    <option value="">Select status</option>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
-                  </select>
-                </div>
-                @endif
-
-                <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
-                    <span>
-                    </span>
-                  </div>
-                </div>
-
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
@@ -146,20 +120,44 @@
                               <th>Product Category</th>
                               <th>Business Unit</th>
                               <th>Product Line</th>
-                              <th>Product Class</th>
-                              <th>Product Type</th>
-                              <th>Product Application</th>
-                              <th>Product Pattern</th>
-                              <th>Date</th>
-                              @if(userrole() == 1)
-                              <th>Status</th>
-                              <th>Online Price</th>
+                              
+                              <th>Unit</th>
+                              <th>RDLP</th>
                               <th>Commercial Price</th>
                               <th>SRP</th>
-                              <th>RDLP</th>
-                              <th>RDLP-2</th>
-                              @endif
-                              <th>Action</th>
+
+                              <th>Product Application</th>
+                              <th>Product Type</th>
+                              <th>Product Class</th>
+                              <th>Product Pattern</th>
+                              <th>Product Technology</th>
+
+                              {{-- Tires Category --}}
+                              <th>Tread Pattern Type</th>
+                              <th>Section Width</th>
+                              <th>Series</th>
+                              <th>Tire Diameter</th>
+                              <th>Load Index</th>
+                              <th>Speed Symbol</th>
+                              <th>Ply Rating</th>
+                              <th>Tire Construction</th>
+                              <th>Fitment Configuration</th>
+
+
+                              {{-- Battery Category --}}
+                              <th>L</th>
+                              <th>W</th>
+                              <th>H</th>
+                              <th>TH</th>
+                              <th>RC</th>
+                              <th>CCA</th>
+                              <th>AH</th>
+                              <th>Handle</th>
+                              <th>Polarity</th>
+                              <th>Terminal</th>
+                              <th>Hold down</th>
+                              <th>Lead Weight(kg)</th>
+                              <th>Total Weight(kg)</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -217,8 +215,6 @@
       $filter_search = $('[name="filter_search"]').val();
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
-      $filter_status = $('[name="filter_status"]').find('option:selected').val();
-      $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_product_category = $('[name="filter_product_category"]').find('option:selected').val();
       $filter_product_line = $('[name="filter_product_line"]').find('option:selected').val();
       $filter_product_class = $('[name="filter_product_class"]').find('option:selected').val();
@@ -234,7 +230,7 @@
           scrollCollapse: true,
           paging: true,
           fixedColumns:   {
-            left: 3,  
+            left: 2,  
             right: 0
           },
           order: [],
@@ -248,8 +244,6 @@
                 filter_search : $filter_search,
                 filter_company : $filter_company,
                 filter_brand : $filter_brand,
-                filter_status : $filter_status,
-                filter_date_range : $filter_date_range,
                 filter_product_category : $filter_product_category,
                 filter_product_line : $filter_product_line,
                 filter_product_class : $filter_product_class,
@@ -266,36 +260,88 @@
               {data: 'u_tires', name: 'u_tires'},
               {data: 'company', name: 'company'},
               {data: 'u_item_line', name: 'u_item_line'},
-              {data: 'item_class', name: 'item_class'},
-              {data: 'u_item_type', name: 'u_item_type'},
-              {data: 'u_item_application', name: 'u_item_application'},
-              {data: 'u_pattern2', name: 'u_pattern2'},
-              {data: 'created_date', name: 'created_date'},
-              @if(userrole() == 1)
-              {data: 'status', name: 'status'},
-              {data: 'online_price', name: 'online_price',orderable:false,searchable:false},
+
+              {data: 'unit', name: 'unit',orderable:false,searchable:false},
+              {data: 'rdlp_price', name: 'rdlp_price',orderable:false,searchable:false},
               {data: 'commercial_price', name: 'commercial_price',orderable:false,searchable:false},
               {data: 'srp_price', name: 'srp_price',orderable:false,searchable:false},
-              {data: 'rdlp_price', name: 'rdlp_price',orderable:false,searchable:false},
-              {data: 'rdlp2_price', name: 'rdlp2_price',orderable:false,searchable:false},
-              @endif
-              {data: 'action', name: 'action'},
+
+              {data: 'u_item_application', name: 'u_item_application'},
+              {data: 'u_item_type', name: 'u_item_type'},
+              {data: 'item_class', name: 'item_class'},
+              {data: 'u_pattern2', name: 'u_pattern2'},
+              {data: 'product_technology', name: 'product_technology'},
+
+              {{-- Tires Category --}}
+              {data: 'u_pattern_type', name: 'u_pattern_type'},
+              {data: 'u_section_width', name: 'u_section_width'},
+              {data: 'u_series', name: 'u_series'},
+              {data: 'u_tire_diameter', name: 'u_tire_diameter'},
+              {data: 'u_loadindex', name: 'u_loadindex'},
+              {data: 'u_speed_symbol', name: 'u_speed_symbol'},
+              {data: 'u_ply_rating', name: 'u_ply_rating'},
+              {data: 'u_tire_const', name: 'u_tire_const'},
+              {data: 'u_fitment_conf', name: 'u_fitment_conf'},
+
+
+              {{-- Battery Category --}}
+              {data: 'u_blength', name: 'u_blength'},
+              {data: 'u_bwidth', name: 'u_bwidth'},
+              {data: 'u_bheight', name: 'u_bheight'},
+              {data: 'u_bthicknes', name: 'u_bthicknes'},
+              {data: 'u_brsvdcapacity', name: 'u_brsvdcapacity'},
+              {data: 'u_bcoldcrankamps', name: 'u_bcoldcrankamps'},
+              {data: 'u_bamperhour', name: 'u_bamperhour'},
+              {data: 'u_bhandle', name: 'u_bhandle'},
+              {data: 'u_bpolarity', name: 'u_bpolarity'},
+              {data: 'u_bterminal', name: 'u_bterminal'},
+              {data: 'u_bholddown', name: 'u_bholddown'},
+              {data: 'u_bleadweight', name: 'u_bleadweight'},
+              {data: 'u_btotalweight', name: 'u_btotalweight'},
           ],
           drawCallback:function(){
               $(function () {
                 $('[data-toggle="tooltip"]').tooltip()
                 $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
 
-                $("#myTable").DataTable().column(7).visible(false);
-                $("#myTable").DataTable().column(10).visible(false);
+                for (var i = 13; i <=37; i++) {
+                  $("#myTable").DataTable().column(i).visible(false);
+                }
 
                 $product_category = $('[name="filter_product_category"]').find('option:selected').val().toLowerCase();
-                if(jQuery.inArray($product_category, ["lubes","chem","tires"]) !== -1){
-                  $("#myTable").DataTable().column(7).visible(true);
+
+                // Hide Product Type
+                if(jQuery.inArray($product_category, ["tires"]) !== -1){
+                  $("#myTable").DataTable().column(12).visible(false);
+                }
+
+                // Shows Product Class
+                if(jQuery.inArray($product_category, ["lubes","tires"]) !== -1){
+                  $("#myTable").DataTable().column(13).visible(true);
                 }
 
                 if(jQuery.inArray($product_category, ["tires"]) !== -1){
-                  $("#myTable").DataTable().column(10).visible(true);
+                  $("#myTable").DataTable().column(11).visible(true);
+                  $("#myTable").DataTable().column(14).visible(true);
+                }
+
+                // Shows Product Technology
+                if(jQuery.inArray($product_category, ["battery","autoparts"]) !== -1){
+                  $("#myTable").DataTable().column(15).visible(true);
+                }
+
+                // Shows Tires Field
+                if(jQuery.inArray($product_category, ["tires"]) !== -1){
+                  for (var j = 16; j <=24; j++) {
+                    $("#myTable").DataTable().column(j).visible(true);
+                  }
+                }
+
+                // Shows Battery Field
+                if(jQuery.inArray($product_category, ["battery"]) !== -1){
+                  for (var k = 25; k <=37; k++) {
+                    $("#myTable").DataTable().column(k).visible(true);
+                  }
                 }
 
               })
@@ -310,59 +356,18 @@
     });
 
     $(document).on('click', '.clear-search', function(event) {
-      // $('[name="filter_search"]').val('');
-      // $('[name="filter_date_range"]').val('');
-      // $('[name="filter_status"]').val('').trigger('change');
-      // $('[name="filter_brand"]').val('').trigger('change');
-      // $('[name="filter_product_category"]').val('').trigger('change');
-      // $('[name="filter_product_line"]').val('').trigger('change');
-      // $('[name="filter_company"]').val('').trigger('change');
 
       $('input').val('');
       $('select').val('').trigger('change');
       render_table();
     })
 
-    $(document).on('click', '.sync-products', function(event) {
-      event.preventDefault();
-
-      Swal.fire({
-        title: 'Are you sure you want to Sync Products?',
-        text: "Syncing process will run in background and it may take some time to sync all products Data.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: '{{ route('product.sync-products') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}'
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              render_table();
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
-    });
-
     @if(in_array(userrole(),[1]))
       $(document).on("click", ".download_excel", function(e) {
         var url = "{{route('product.export')}}";
 
         var data = {};
+        data.module_type = 'product-tagging';
         data.filter_search = $('[name="filter_search"]').val();
         data.filter_date_range = $('[name="filter_date_range"]').val();
         data.filter_status = $('[name="filter_status"]').find('option:selected').val();

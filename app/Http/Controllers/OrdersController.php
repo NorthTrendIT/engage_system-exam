@@ -223,7 +223,7 @@ class OrdersController extends Controller
         if($request->filter_market_sector != ""){
             $data->where(function($query) use ($request) {
                 $query->whereHas('customer', function($q) use ($request) {
-                    $q->where('u_msec', $request->filter_market_sector);
+                    $q->where('u_sector', $request->filter_market_sector);
                 });
             });
         }
@@ -657,8 +657,8 @@ class OrdersController extends Controller
         foreach($data as $key => $value){
             $records[] = array(
                             'no' => $key + 1,
-                            'company' => @$value->sap_connection->company_name,
-                            'doc_entry' => $value->doc_entry,
+                            'company' => @$value->sap_connection->company_name ?? "-",
+                            'doc_entry' => $value->doc_entry ?? "-",
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
                             'doc_total' => number_format($value->doc_total),
                             'created_at' => date('M d, Y',strtotime($value->doc_date)),

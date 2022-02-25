@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class ProductExport implements FromCollection,WithHeadings,WithTitle,ShouldAutoSize
+class ProductTaggingExport implements FromCollection,WithHeadings,WithTitle,ShouldAutoSize
 {
     protected $records, $headers;
 
@@ -31,6 +31,6 @@ class ProductExport implements FromCollection,WithHeadings,WithTitle,ShouldAutoS
 
     public function title(): string
     {
-        return "Product";
+        return "Product Tagging";
     }
 }

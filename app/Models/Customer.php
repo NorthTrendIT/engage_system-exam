@@ -44,6 +44,7 @@ class Customer extends Model
         'sap_connection_id',
         'u_mkt_segment',
         'u_cust_segment',
+        'u_sector',
         'u_subsector',
         'u_province',
         'u_card_code',

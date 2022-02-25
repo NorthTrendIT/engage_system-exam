@@ -58,6 +58,7 @@ class PromotionsController extends Controller
 
         $rules = array(
                     'title' => 'required|max:185|unique:promotions,title,NULL,id,deleted_at,NULL',
+                    'code' => 'required|max:185|regex:/(^([a-zA-Z0-9]+)(\d+)?$)/u|unique:promotions,code,NULL,id,deleted_at,NULL',
                     'promotion_type_id' => 'required|exists:promotion_types,id',
                     'sap_connection_id' => 'required|exists:sap_connections,id',
                     'promotion_scope' => 'required',
@@ -73,13 +74,18 @@ class PromotionsController extends Controller
         if(isset($input['id'])){
             unset($rules['promo_image']);
             $rules['title'] = 'required|max:185|unique:promotions,title,'.$input['id'].',id,deleted_at,NULL';
+            $rules['code'] = 'required|max:185|regex:/(^([a-zA-Z0-9]+)(\d+)?$)/u|unique:promotions,code,'.$input['id'].',id,deleted_at,NULL';
         }
 
         if(request()->hasFile('promo_image')){
             $rules['promo_image'] = "required|max:5000|mimes:jpeg,png,jpg,eps,bmp,tif,tiff,webp";
         }
 
-        $validator = Validator::make($input, $rules);
+        $message = array(
+                        'code.regex' => 'Opps ! the promotion code must be alphanumeric.'
+                    );
+
+        $validator = Validator::make($input, $rules, $message);
 
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
@@ -157,6 +163,7 @@ class PromotionsController extends Controller
 
             $promotion->promotion_type_id = $input['promotion_type_id'];
             $promotion->title = $input['title'];
+            $promotion->code = strtoupper($input['code']);
             $promotion->description = $input['description'];
             $promotion->promotion_scope = $input['promotion_scope'];
             $promotion->promotion_start_date = date('Y-m-d',strtotime($input['promotion_start_date']));
@@ -297,10 +304,10 @@ class PromotionsController extends Controller
     {
         $data = Promotions::find($id);
         if(!is_null($data)){
-            $data->delete();
-
             // Add Promotion Deleted log.
             add_log(21, array('promotion_id' => $data));
+            
+            $data->delete();
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
@@ -345,6 +352,7 @@ class PromotionsController extends Controller
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
                 $q->orwhere('title','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('code','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('description','LIKE',"%".$request->filter_search."%");
             });
         }
@@ -368,9 +376,15 @@ class PromotionsController extends Controller
                 ->addColumn('title', function($row) {
                     return $row->title;
                 })
+                ->addColumn('code', function($row) {
+                    return @$row->code ?? "-";
+                })
                 ->addColumn('scope', function($row) {
                     $scope = "";
                     switch (@$row->promotion_scope) {
+                        case "A":
+                          $scope = "All";
+                          break;
                         case "C":
                           $scope = "Customer";
                           break;
@@ -450,6 +464,9 @@ class PromotionsController extends Controller
                 })
                 ->orderColumn('title', function ($query, $order) {
                     $query->orderBy('title', $order);
+                })
+                ->orderColumn('code', function ($query, $order) {
+                    $query->orderBy('code', $order);
                 })
                 ->orderColumn('status', function ($query, $order) {
                     $query->orderBy('is_active', $order);
@@ -689,14 +706,14 @@ class PromotionsController extends Controller
     public function getMarketSectors(Request $request){
         $search = $request->search;
 
-        $data = Customer::orderby('u_msec','asc')->whereNotNull('u_msec')->select('id','u_msec');
+        $data = Customer::orderby('u_sector','asc')->whereNotNull('u_sector')->select('id','u_sector');
         if($search != ''){
-            $data->where('u_msec', 'like', '%' .$search . '%');
+            $data->where('u_sector', 'like', '%' .$search . '%');
         }
 
         $data->where('sap_connection_id',@$request->sap_connection_id);
 
-        $data = $data->get()->unique('u_msec');
+        $data = $data->get()->unique('u_sector');
 
         return response()->json($data);
     }
@@ -774,7 +791,7 @@ class PromotionsController extends Controller
         $records = array();
         foreach($data as $key => $value){
 
-            $scope = "";
+            $scope = "-";
             switch (@$value->promotion_scope) {
                 case "C":
                     $scope = "Customer";
@@ -799,9 +816,10 @@ class PromotionsController extends Controller
 
             $records[] = array(
                             'no' => $key + 1,
-                            'company' => @$value->sap_connection->company_name,
-                            'title' => $value->title,
-                            'customer_group' => $scope,
+                            'company' => @$value->sap_connection->company_name ?? "-",
+                            'title' => $value->title ?? "-",
+                            'code' => $value->code ?? "-",
+                            'customer_group' => $scope ?? "-",
                             'start_date' => date('M d, Y',strtotime($value->promotion_start_date)),
                             'end_date' => date('M d, Y',strtotime($value->promotion_end_date)),
                             'status' => $value->is_active ? "Active" : "Inctive",

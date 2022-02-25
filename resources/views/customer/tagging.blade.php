@@ -73,7 +73,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-4 mt-5">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_search" data-control="select2" data-hide-search="false" data-placeholder="Select customer" data-allow-clear="true">
                     <option value=""></option>
                   </select>
@@ -202,8 +202,8 @@
               {data: 'card_name', name: 'card_name'},
               {data: 'class', name: 'class'},
               {data: 'u_cust_segment', name: 'u_cust_segment'},
-              {data: 'u_msec', name: 'u_msec'},
-              {data: 'u_tsec', name: 'u_tsec'},
+              {data: 'u_sector', name: 'u_sector'},
+              {data: 'u_subsector', name: 'u_subsector'},
               {data: 'u_rgn', name: 'u_rgn'},
               {data: 'u_province', name: 'u_province'},
               {data: 'territory', name: 'territory'},

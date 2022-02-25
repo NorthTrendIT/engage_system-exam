@@ -126,7 +126,7 @@ class CustomerPromotionController extends Controller
                         }else if($promotion->promotion_scope == "MS"){ //Market Sector
 
                             if($customer){
-                                $check = $promotion->promotion_data->firstWhere('market_sector', $customer->u_msec);
+                                $check = $promotion->promotion_data->firstWhere('market_sector', $customer->u_sector);
 
                                 if(is_null($check)){
                                     $is_continue = true;
@@ -604,16 +604,18 @@ class CustomerPromotionController extends Controller
 
                                 $btn = "";
 
-                                if($row->status != 'canceled' && in_array(Auth::id(),[$row->user_id, $row->sales_specialist_id, $row->customer_user_id]) ){
+                                if(@$row->user->customer_id){
+                                    if($row->status != 'canceled' && in_array(Auth::id(),[$row->user_id, $row->sales_specialist_id, $row->customer_user_id]) ){
 
-                                    $url = route('customer-promotion.order.edit', $row->id);
-                                    if(userrole() != 4){
-                                        $url .= "/".$row->user->customer_id;
+                                        $url = route('customer-promotion.order.edit', $row->id);
+                                        if(userrole() != 4){
+                                            $url .= "/".$row->user->customer_id;
+                                        }
+
+                                        $btn .= '<a href="' . $url. '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
+                                            <i class="fa fa-pencil"></i>
+                                          </a>';
                                     }
-
-                                    $btn .= '<a href="' . $url. '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
-                                        <i class="fa fa-pencil"></i>
-                                      </a>';
                                 }
 
                                 $btn .= '<a href="' . route('customer-promotion.order.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
@@ -1005,7 +1007,7 @@ class CustomerPromotionController extends Controller
         foreach($data as $key => $value){
             $records[] = array(
                             'no' => $key + 1,
-                            'company' => @$value->sap_connection->company_name,
+                            'company' => @$value->sap_connection->company_name ?? "-",
                             'promotion' => @$value->promotion->title ?? "-",
                             'customer' => @$value->user->sales_specialist_name ?? "",
                             'created_at' => date('M d, Y',strtotime($value->created_at)),

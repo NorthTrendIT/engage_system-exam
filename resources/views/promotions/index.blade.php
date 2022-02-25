@@ -51,6 +51,7 @@
                 <div class="col-md-4 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_scope" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select customer group">
                     <option value=""></option>
+                    <option value="A">All</option>
                     <option value="C">Customer</option>
                     <option value="CL">Class</option>
                     <option value="T">Territory</option>
@@ -68,7 +69,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-4 mt-5">
+                <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search" autocomplete="off">
                   </div>
@@ -96,6 +97,7 @@
                               <th>No.</th>
                               <th>Business Unit</th>
                               <th>Title</th>
+                              <th>Code</th>
                               <th>Customer Group</th>
                               <th>Start Date</th>
                               <th>End Date</th>
@@ -162,8 +164,8 @@
           scrollCollapse: true,
           paging: true,
           fixedColumns:   {
-            left: 1,  
-            right: 1
+            left: 3,  
+            right: 0
           },
           order: [],
           ajax: {
@@ -185,6 +187,7 @@
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'company', name: 'company'},
               {data: 'title', name: 'title'},
+              {data: 'code', name: 'code'},
               {data: 'scope', name: 'scope'},
               {data: 'start_date', name: 'start_date'},
               {data: 'end_date', name: 'end_date'},

@@ -35,6 +35,13 @@
             </div> --}}
             <div class="card-body">
               <div class="row">
+                
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_territory" data-control="select2" data-hide-search="false" data-placeholder="Select territory" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
                 <div class="col-md-4 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
@@ -42,12 +49,6 @@
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
                   </div>
-                </div>
-
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_territory" data-control="select2" data-hide-search="false" data-placeholder="Select territory" data-allow-clear="true">
-                    <option value=""></option>
-                  </select>
                 </div>
 
                 <div class="col-md-4  mt-5">

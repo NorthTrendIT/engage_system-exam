@@ -39,6 +39,7 @@ class User extends Authenticatable
         'created_by',
         'password_text',
         'is_sap_user',
+        'default_profile_color',
     ];
 
     /**

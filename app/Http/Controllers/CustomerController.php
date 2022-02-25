@@ -166,11 +166,11 @@ class CustomerController extends Controller
         }
 
         if($request->filter_market_sector != ""){
-            $data->where('u_msec',$request->filter_market_sector);
+            $data->where('u_sector',$request->filter_market_sector);
         }
 
         if($request->filter_market_sub_sector != ""){
-            $data->where('u_tsec',$request->filter_market_sub_sector);
+            $data->where('u_subsector',$request->filter_market_sub_sector);
         }
 
         if($request->filter_region != ""){
@@ -260,7 +260,7 @@ class CustomerController extends Controller
 
                                 $html .= '<div class="d-flex align-items-center">
                                             <div class="symbol symbol-45px me-5">
-                                                <img src="'.asset('assets/assets/media/default_user.png').'" alt="">
+                                                <div class="symbol-label fs-3" style="color:'.convert_hex_to_rgba(@$row->user->default_profile_color).';background-color:'.convert_hex_to_rgba(@$row->user->default_profile_color,0.5).';"><b>'.get_sort_char(@$row->card_name).'</b></div>
                                             </div>
                                             <div class="d-flex justify-content-start flex-column">
                                                 <a href="' . route('customer.show',$row->id). '" class="text-dark fw-bolder text-hover-primary fs-6">';
@@ -317,11 +317,11 @@ class CustomerController extends Controller
                             ->addColumn('u_cust_segment', function($row) {
                                 return @$row->u_cust_segment ?? "-";
                             })
-                            ->addColumn('u_msec', function($row) {
-                                return @$row->u_msec ?? "-";
+                            ->addColumn('u_sector', function($row) {
+                                return @$row->u_sector ?? "-";
                             })
-                            ->addColumn('u_tsec', function($row) {
-                                return @$row->u_tsec ?? "-";
+                            ->addColumn('u_subsector', function($row) {
+                                return @$row->u_subsector ?? "-";
                             })
                             ->addColumn('u_rgn', function($row) {
                                 return @$row->u_rgn ?? "-";
@@ -362,11 +362,11 @@ class CustomerController extends Controller
                             ->orderColumn('u_cust_segment', function ($query, $order) {
                                 $query->orderBy('u_cust_segment', $order);
                             })
-                            ->orderColumn('u_msec', function ($query, $order) {
-                                $query->orderBy('u_msec', $order);
+                            ->orderColumn('u_sector', function ($query, $order) {
+                                $query->orderBy('u_sector', $order);
                             })
-                            ->orderColumn('u_tsec', function ($query, $order) {
-                                $query->orderBy('u_tsec', $order);
+                            ->orderColumn('u_subsector', function ($query, $order) {
+                                $query->orderBy('u_subsector', $order);
                             })
                             ->orderColumn('u_rgn', function ($query, $order) {
                                 $query->orderBy('u_rgn', $order);
@@ -458,11 +458,11 @@ class CustomerController extends Controller
         }
 
         if(@$filter->filter_market_sector != ""){
-            $data->where('u_msec',$filter->filter_market_sector);
+            $data->where('u_sector',$filter->filter_market_sector);
         }
 
         if(@$filter->filter_market_sub_sector != ""){
-            $data->where('u_tsec',$filter->filter_market_sub_sector);
+            $data->where('u_subsector',$filter->filter_market_sub_sector);
         }
 
         if(@$filter->filter_region != ""){
@@ -536,29 +536,29 @@ class CustomerController extends Controller
             if(@$filter->module_type == "customer-tagging"){
                 $records[] = array(
                                     'no' => $key + 1,
-                                    'card_code' => $value->card_code,
-                                    'card_name' => $value->card_name,
-                                    'class' => @$value->u_class,
-                                    'customer_segment' => @$value->u_cust_segment,
-                                    'market_sector' => @$value->u_msec,
-                                    'market_sub_sector' => @$value->u_tsec,
-                                    'region' => @$value->u_rgn,
-                                    'province' => @$value->u_province,
-                                    'territory' => @$value->territories->description,
-                                    'city' => @$value->city,
+                                    'card_code' => $value->card_code ?? "-",
+                                    'card_name' => $value->card_name ?? "-",
+                                    'class' => @$value->u_class ?? "-",
+                                    'customer_segment' => @$value->u_cust_segment ?? "-",
+                                    'market_sector' => @$value->u_sector ?? "-",
+                                    'market_sub_sector' => @$value->u_subsector ?? "-",
+                                    'region' => @$value->u_rgn ?? "-",
+                                    'province' => @$value->u_province ?? "-",
+                                    'territory' => @$value->territories->description ?? "-",
+                                    'city' => @$value->city ?? "-",
                                 );
             }else{
                 $records[] = array(
                                     'no' => $key + 1,
-                                    'company' => @$value->sap_connection->company_name,
-                                    'card_code' => $value->card_code,
-                                    'card_name' => $value->card_name,
-                                    'email' => @$value->user->email,
-                                    'u_card_code' => $value->u_card_code,
-                                    'credit_limit' => $value->credit_limit,
-                                    'group_name' => @$value->group->name,
-                                    'territory' => @$value->territories->description,
-                                    'class' => @$value->u_class,
+                                    'company' => @$value->sap_connection->company_name ?? "-",
+                                    'card_code' => $value->card_code ?? "-",
+                                    'card_name' => $value->card_name ?? "-",
+                                    'email' => @$value->user->email ?? "-",
+                                    'u_card_code' => $value->u_card_code ?? "-",
+                                    'credit_limit' => $value->credit_limit ?? "-",
+                                    'group_name' => @$value->group->name ?? "-",
+                                    'territory' => @$value->territories->description ?? "-",
+                                    'class' => @$value->u_class ?? "-",
                                     'created_at' => date('M d, Y',strtotime($value->created_date)),
                                     // 'status' => $value->is_active ? "Active" : "Inctive",
                                 );
@@ -631,7 +631,7 @@ class CustomerController extends Controller
 
             if($search != ''){
                 $data->where('customer',function($q) use ($search) {
-                    $q->where('u_msec', 'like', '%' .$search . '%');
+                    $q->where('u_sector', 'like', '%' .$search . '%');
                 });
             }
 
@@ -639,13 +639,14 @@ class CustomerController extends Controller
 
             foreach($data as $value){
 
-                if(isset($response[$value->customer->u_msec])){
+
+                if(isset($response[$value->customer->u_sector])){
                    continue;
                 }
 
-                $response[$value->customer->u_msec] = array(
-                    "id" => $value->customer->u_msec,
-                    "text" => $value->customer->u_msec
+                $response[$value->customer->u_sector] = array(
+                    "id" => $value->customer->u_sector,
+                    "text" => $value->customer->u_sector
                 );
             }
 

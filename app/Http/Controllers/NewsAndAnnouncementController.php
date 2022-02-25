@@ -59,8 +59,12 @@ class NewsAndAnnouncementController extends Controller
                     'message' => 'required',
                     'module' => 'required',
                     'is_important' => 'required',
+                    'sap_connection_id' => 'required',
                 );
 
+        if(isset($input['id'])){
+            $rules['title'] = 'required|max:185|unique:notifications,title,'.$input['id'].',id';
+        }
 
         $validator = Validator::make($input, $rules);
 
@@ -88,14 +92,28 @@ class NewsAndAnnouncementController extends Controller
             if(in_array($input['module'], ['brand', 'customer_class', 'territory', 'market_sector'])){
                 $notification->request_payload = json_encode($input['record_id']);
             }
-
             $notification->save();
+
+            if(isset($input['id'])){
+                NotificationConnection::where('notification_id', $notification->id)->delete();
+            }
+
+            if($input['module'] == 'all'){
+                $data = Customer::where('sap_connection_id', $input['sap_connection_id'])->get();
+                foreach($data as $item){
+                    $user = User::where('customer_id', $item->id)->firstOrFail();
+                    $connection = new NotificationConnection();
+                    $connection->notification_id = $notification->id;
+                    $connection->user_id = $user->id;
+                    $connection->record_id = $item->id;
+                    $connection->save();
+                }
+            }
 
             if(isset($input['record_id']) && count($input['record_id']) > 0 ){
                 $records = $input['record_id'];
                 NotificationConnection::where('notification_id', $notification->id)->delete();
 
-                // Save Notifications for Brand
                 if($input['module'] == 'brand'){
                     foreach($records as $record_id){
                         $data = CustomerProductGroup::where('product_group_id', $record_id)->get();
@@ -285,9 +303,18 @@ class NewsAndAnnouncementController extends Controller
      */
     public function edit($id)
     {
+        $data = collect();
         $edit = Notification::with(['user', 'documents'])->where('id', $id)->firstOrFail();
-        // dd($edit);
-        return view('news-and-announcement.add', compact('edit'));
+        $sap_connections = SapConnection::all();
+        if(@$edit->module == 'brand' && !empty(@$edit->request_payload)){
+            $brand_ids = json_decode(@$edit->request_payload);
+            $brands = ProductGroup::whereIn('id', $brand_ids)->orderby('group_name','asc')->pluck('group_name');
+        }
+        if(@$edit->module == 'territory' && !empty(@$edit->request_payload)){
+            $territory_ids = json_decode(@$edit->request_payload);
+            $territories = Territory::whereIn('id', $territory_ids)->where('territory_id','!=','-2')->where('is_active',true)->orderBy('description','asc')->pluck('description');
+        }
+        return view('news-and-announcement.add', compact('edit', 'sap_connections'));
     }
 
     /**
@@ -397,6 +424,15 @@ class NewsAndAnnouncementController extends Controller
                             ->addColumn('type', function($row) {
                                 return getNotificationType($row->type);
                             })
+                            ->addColumn('date_period', function($row) {
+                                if($row->type != 'OU'){
+                                    $startDate = date('M d, Y',strtotime($row->start_date));
+                                    $endDate = date('M d, Y',strtotime($row->end_date));
+                                    return $startDate.' - '.$endDate;
+                                } else {
+                                    return '-';
+                                }
+                            })
                             ->addColumn('module', function($row) {
                                 return ucwords(str_replace('_',' ',$row->module));
                             })
@@ -417,6 +453,9 @@ class NewsAndAnnouncementController extends Controller
                             ->orderColumn('type', function ($query, $order) {
                                 $query->orderBy('type', $order);
                             })
+                            ->orderColumn('date_period', function ($query, $order) {
+                                $query->orderBy('start_date', $order);
+                            })
                             ->orderColumn('module', function ($query, $order) {
                                 $query->orderBy('module', $order);
                             })
@@ -425,9 +464,14 @@ class NewsAndAnnouncementController extends Controller
                                   <i class="fa fa-eye"></i>
                                 </a>';
                                 if(@Auth::user()->role_id == 1){
-                                    $btn .= '<a href="javascript:"  data-url="' . route('news-and-announcement.destroy',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10 delete" title="Delete">
-                                        <i class="fa fa-trash"></i>
-                                      </a>';
+                                    $btn .= '<a href="' . route('news-and-announcement.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10 ">
+                                    <i class="fa fa-pencil"></i>
+                                    </a>';
+                                    if($row->type != 'OU'){
+                                        $btn .= '<a href="javascript:"  data-url="' . route('news-and-announcement.destroy',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10 delete" title="Delete">
+                                            <i class="fa fa-trash"></i>
+                                        </a>';
+                                    }
                                 }
                                 return $btn;
                             })

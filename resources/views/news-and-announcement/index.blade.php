@@ -128,6 +128,9 @@
                                 @endif
                                 <th>Title</th>
                                 <th>Type</th>
+                                @if(@Auth::user()->role_id == 1)
+                                <th>Period/Date</th>
+                                @endif
                                 <th>Customer</th>
                                 <th>Priority</th>
                                 @if(@Auth::user()->role_id == 1)
@@ -215,6 +218,9 @@ $(document).ready(function() {
               @endif
               {data: 'title', name: 'title'},
               {data: 'type', name: 'type'},
+              @if(@Auth::user()->role_id == 1)
+              {data: 'date_period', name: 'date_period'},
+              @endif
               {data: 'module', name: 'module'},
               {data: 'is_important', name: 'is_important', orderable: false},
               @if(@Auth::user()->role_id == 1)

@@ -461,8 +461,8 @@ class PromotionTypeController extends Controller
         foreach($data as $key => $value){
             $records[] = array(
                             'no' => $key + 1,
-                            'company' => @$value->sap_connection->company_name,
-                            'title' => $value->title,
+                            'company' => @$value->sap_connection->company_name ?? "-",
+                            'title' => $value->title ?? "-",
                             'criteria' => get_promotion_type_criteria($value->scope),
                             'fixed_quantity' => @$value->is_fixed_quantity ? "Yes" : "No",
                             'status' => $value->is_active ? "Active" : "Inctive",

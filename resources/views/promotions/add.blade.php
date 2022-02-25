@@ -34,10 +34,18 @@
 
                                 <div class="row mb-5">
                                     <!-- Title -->
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Title<span class="asterisk">*</span></label>
                                             <input type="text" class="form-control form-control-solid promotionTitle" placeholder="Enter Promotion Title" name="title" @if(isset($edit)) value="{{ $edit->title }}" @endif autocomplete="off">
+                                        </div>
+                                    </div>
+
+                                    <!-- Code -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Code<span class="asterisk">*</span></label>
+                                            <input type="text" class="form-control form-control-solid" placeholder="Enter Promotion Code" name="code" @if(isset($edit)) value="{{ $edit->code }}" @endif autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -87,6 +95,7 @@
                                             <label>Select Customer Group<span class="asterisk">*</span></label>
                                             <select class="form-select form-select-solid" data-control="select2" data-hide-search="false" name="promotion_scope" id="promotion_scope" data-placeholder="Select Customers">
                                                 <option value=""></option>
+                                                <option value="A" @if(isset($edit) && $edit->promotion_scope == "A") selected="" @endif>All</option>
                                                 <option value="B" @if(isset($edit) && $edit->promotion_scope == "B") selected="" @endif>By Brand</option>
                                                 <option value="CL" @if(isset($edit) && $edit->promotion_scope == "CL") selected="" @endif>By Class</option>
                                                 <option value="SS" @if(isset($edit) && $edit->promotion_scope == "SS") selected="" @endif>By Sales Specialist</option>
@@ -679,8 +688,8 @@
                 return {
                     results:  $.map(response, function (item) {
                                 return {
-                                  text: item.u_msec,
-                                  id: item.u_msec
+                                  text: item.u_sector,
+                                  id: item.u_sector
                                 }
                             })
                 };

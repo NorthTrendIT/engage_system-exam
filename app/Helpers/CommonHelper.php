@@ -99,7 +99,7 @@ function get_product_customer_price($item_prices,$number, $discount = false, $di
 
         $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
 
-        $price = $prices[$number]['Price'] ?? 0;
+        $price = @$prices[$number]['Price'] ?? 0;
 
         if($discount){
 
@@ -168,9 +168,9 @@ function userip(){
 
 function get_random_password($length = 8){
 
-    $password = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ') , 0 , 1);
+    $password = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&_-~<>;') , 0 , 1);
 
-    $password .= substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-=~!@#$%^&*()_+,./<>?;:[]{}\|') , 0 , $length - 1 );
+    $password .= substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&_-~<>;') , 0 , $length - 1 );
 
     return $password;
 }
@@ -407,4 +407,18 @@ function get_sap_api_url(){
     $obj = SapApiUrl::first();
 
     return @$obj->url ?? env('SAP_API_URL') ?? "";
+}
+
+function convert_hex_to_rgba($hex, $opacity = 1){
+    list($r, $g, $b) = sscanf($hex, "#%02x%02x%02x");
+    return sprintf('rgba(%s, %s, %s, %s)', $r, $g, $b, $opacity);
+}
+
+function get_sort_char($string){
+    $str_array = explode(" ", $string);
+    return strtoupper(substr(@$str_array[0], 0,1).substr(@$str_array[1], 0,1));
+}
+
+function get_hex_color(){
+    return '#'.substr(md5(rand()), 0, 6); //Generate Color Code
 }

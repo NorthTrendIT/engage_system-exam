@@ -119,7 +119,8 @@
                      @if(get_login_user_profile())
                      <img src="{{ get_login_user_profile() }}" alt="user" />
                      @else
-                     <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" />
+                     <div class="symbol-label fs-3" style="color:{{ convert_hex_to_rgba(Auth::user()->default_profile_color) }};background-color:{{ convert_hex_to_rgba(Auth::user()->default_profile_color,0.5) }};"><b>{{ get_sort_char(Auth::user()->sales_specialist_name) }}</b></div>
+                     {{-- <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" /> --}}
                      @endif
                   </div>
                   <!--begin::Menu-->
@@ -132,7 +133,8 @@
                               @if(get_login_user_profile())
                               <img src="{{ get_login_user_profile() }}" alt="user" />
                               @else
-                              <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" />
+                              {{-- <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" /> --}}
+                              <div class="symbol-label fs-3" style="color:{{ convert_hex_to_rgba(Auth::user()->default_profile_color) }};background-color:{{ convert_hex_to_rgba(Auth::user()->default_profile_color,0.5) }};"><b>{{ get_sort_char(Auth::user()->sales_specialist_name) }}</b></div>
                               @endif
                            </div>
                            <!--end::Avatar-->

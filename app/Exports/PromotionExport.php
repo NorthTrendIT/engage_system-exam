@@ -29,6 +29,7 @@ class PromotionExport implements FromCollection,WithHeadings,WithTitle,ShouldAut
             'No.',
             'Business Unit',
             'Title',
+            'Code',
             'Customer Group',
             'Start Date',
             'End Date',

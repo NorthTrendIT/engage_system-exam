@@ -112,6 +112,7 @@ class SAPSalesPersons
                                     //'response' => json_encode($value),
                                     'sap_connection_id' => @$sap_connection->id,
                                     'first_login' => true,
+                                    'default_profile_color' => get_hex_color(),
                                 );
 
                     $obj = User::updateOrCreate(
