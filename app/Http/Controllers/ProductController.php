@@ -16,6 +16,7 @@ use Auth;
 
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ProductExport;
+use App\Exports\ProductTaggingExport;
 
 class ProductController extends Controller
 {
@@ -662,6 +663,8 @@ class ProductController extends Controller
 
     $data = $data->get();
 
+    $product_category = strtolower(@$filter->filter_product_category);
+
     $records = array();
     foreach($data as $key => $value){
 
@@ -672,22 +675,36 @@ class ProductController extends Controller
       }
 
       if(@$filter->module_type != "product-tagging"){
-        $records[] = array(
-                          'no' => $key + 1,
-                          'company' => @$value->sap_connection->company_name,
-                          'item_name' => $value->item_name,
-                          'brand' => @$value->group->group_name ?? "",
-                          'item_code' => $value->item_code,
-                          'product_line' => $value->u_item_line,
-                          'product_category' => $value->u_tires,
-                          'created_at' => date('M d, Y',strtotime($value->created_date)),
-                          'status' => $value->is_active ? "Active" : "Inctive",
-                          'online_price' => @$prices[11]['Price'] ?? 0,
-                          'commercial_price' => @$prices[12]['Price'] ?? 0,
-                          'srp_price' => @$prices[13]['Price'] ?? 0,
-                          'rdlp_price' => @$prices[14]['Price'] ?? 0,
-                          'rdlp2_price' => @$prices[15]['Price'] ?? 0,
-                        );
+        $temp = array(
+                  'no' => $key + 1,
+                  'company' => @$value->sap_connection->company_name,
+                  'item_name' => $value->item_name,
+                  'brand' => @$value->group->group_name ?? "",
+                  'item_code' => $value->item_code,
+                  'product_line' => $value->u_item_line,
+                  'product_category' => $value->u_tires
+                );
+
+
+        // Shows Product Class
+        if(in_array($product_category, ["lubes","chem","tires"])){
+          $temp['item_class'] = $value->item_class;
+        }
+
+        // Shows Product Pattern 
+        if(in_array($product_category, ["tires"])){
+          $temp['u_pattern2'] = $value->u_pattern2;
+        }
+
+        $temp['created_at'] = date('M d, Y',strtotime($value->created_date));
+        $temp['status'] = $value->is_active ? "Active" : "Inctive";
+        $temp['online_price'] = @$prices[11]['Price'] ?? 0;
+        $temp['commercial_price'] = @$prices[12]['Price'] ?? 0;
+        $temp['srp_price'] = @$prices[13]['Price'] ?? 0;
+        $temp['rdlp_price'] = @$prices[14]['Price'] ?? 0;
+        $temp['rdlp2_price'] = @$prices[15]['Price'] ?? 0;
+                        
+        $records[] = $temp;
       }else{
 
         $temp = array(
@@ -707,7 +724,6 @@ class ProductController extends Controller
                 );
         
 
-        $product_category = strtolower(@$filter->filter_product_category);
 
         // Hide Product Type
         if(in_array($product_category, ["tires"])){
@@ -773,15 +789,29 @@ class ProductController extends Controller
                       'Product Brand',
                       'Product Code',
                       'Product Line',
-                      'Product Category',
-                      'Created Date',
-                      'Status',
-                      'Online Price',
-                      'Commercial Price',
-                      'SRP',
-                      'RDLP',
-                      'RDLP-2',
+                      'Product Category'
                     );
+      
+
+      // Shows Product Class
+      if(in_array($product_category, ["lubes","chem","tires"])){
+        array_push($headers, 'Product Class');
+      }
+
+      // Shows Product Pattern 
+      if(in_array($product_category, ["tires"])){
+        array_push($headers, 'Product Pattern');
+      }
+
+      array_push($headers, 'Created Date');
+      array_push($headers, 'Status');
+      array_push($headers, 'Online Price');
+      array_push($headers, 'Commercial Price');
+      array_push($headers, 'SRP');
+      array_push($headers, 'RDLP');
+      array_push($headers, 'RDLP-2');
+
+
     }else{
       $headers = array(
                 'No.',
@@ -800,7 +830,6 @@ class ProductController extends Controller
               );
       
 
-      $product_category = strtolower(@$filter->filter_product_category);
 
       // Hide Product Type
       if(in_array($product_category, ["tires"])){
@@ -856,8 +885,13 @@ class ProductController extends Controller
 
     // start from here
     if(count($records)){
-      $title = 'Product Report '.date('dmY').'.xlsx';
-      return Excel::download(new ProductExport($records), $title);
+      if(@$filter->module_type == "product-tagging"){
+        $title = 'Product Tagging Report '.date('dmY').'.xlsx';
+        return Excel::download(new ProductTaggingExport($records, $headers), $title);
+      }else{
+        $title = 'Product Report '.date('dmY').'.xlsx';
+        return Excel::download(new ProductExport($records, $headers), $title);
+      }
     }
 
     \Session::flash('error_message', common_error_msg('excel_download'));

@@ -289,12 +289,12 @@
                 $("#myTable").DataTable().column(7).visible(false);
                 $("#myTable").DataTable().column(10).visible(false);
 
-                $product_category = $('[name="filter_product_category"]').find('option:selected').val();
-                if(jQuery.inArray($product_category, ["Lubes","Chem","Tires"]) !== -1){
+                $product_category = $('[name="filter_product_category"]').find('option:selected').val().toLowerCase();
+                if(jQuery.inArray($product_category, ["lubes","chem","tires"]) !== -1){
                   $("#myTable").DataTable().column(7).visible(true);
                 }
 
-                if(jQuery.inArray($product_category, ["Tires"]) !== -1){
+                if(jQuery.inArray($product_category, ["tires"]) !== -1){
                   $("#myTable").DataTable().column(10).visible(true);
                 }
 

@@ -169,7 +169,7 @@
           scrollCollapse: true,
           paging: true,
           fixedColumns:   {
-            left: 2,  
+            left: 3,  
             right: 0
           },
           order: [],
