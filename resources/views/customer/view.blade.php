@@ -17,10 +17,10 @@
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-      
+
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid detail-view-table" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -30,7 +30,7 @@
               <h5>View Details</h5>
             </div>
             <div class="card-body">
-              
+
               <div class="row mb-5">
                 <div class="col-md-12">
                   <div class="form-group">
@@ -42,76 +42,76 @@
                           <thead>
                             <tr>
                               <th> <b>Business Unit:</b> </th>
-                              <td>{{ @$data->sap_connection->company_name ?? "" }}</td>
+                              <td>{{ @$data->sap_connection->company_name ?? "-" }}</td>
                             </tr>
                             <tr>
                               <th> <b>Card Code:</b> </th>
-                              <td>{{ @$data->card_code ?? "" }}</td>
+                              <td>{{ @$data->card_code ?? "-" }}</td>
                             </tr>
                             <tr>
                               <th> <b>Universal Card Code:</b> </th>
-                              <td>{{ @$data->u_card_code ?? "" }}</td>
+                              <td>{{ @$data->u_card_code ?? "-" }}</td>
                             </tr>
                             <tr>
                               <th> <b>Card Name:</b> </th>
-                              <td>{{ @$data->card_name ?? "" }}</td>
+                              <td>{{ @$data->card_name ?? "-" }}</td>
                             </tr>
 
                             <tr>
                               <th> <b>Group Name:</b> </th>
-                              <td>{{ @$data->group->name ?? "" }}</td>
+                              <td>{{ @$data->group->name ?? "-" }}</td>
                             </tr>
 
                             <tr>
                               <th> <b>OMS Email:</b> </th>
-                              <td>{{ @$data->user->email ?? "" }}</td>
+                              <td>{{ @$data->user->email ?? "-" }}</td>
                             </tr>
 
                             <tr>
                               <th> <b>Email:</b> </th>
-                              <td>{{ @$data->email ?? "" }}</td>
+                              <td>{{ @$data->email ?? "-" }}</td>
                             </tr>
 
                             <tr>
                               <th> <b>Contact Person Name:</b> </th>
-                              <td>{{ @$data->contact_person ?? "" }}</td>
+                              <td>{{ @$data->contact_person ?? "-" }}</td>
                             </tr>
 
                             <tr>
                               <th> <b>Class:</b> </th>
-                              <td>{{ @$data->u_class ?? "" }}</td>
+                              <td>{{ @$data->u_class ?? "-" }}</td>
                             </tr>
 
                             <tr>
                               <th> <b>Address:</b> </th>
-                              <td>{{ @$data->address ?? "" }}</td>
+                              <td>{{ @$data->address ?? "-" }}</td>
                             </tr>
 
                             <tr>
                               <th> <b>Territory:</b> </th>
-                              <td>{{ @$data->territories->description ?? "" }}</td>
+                              <td>{{ @$data->territories->description ?? "-" }}</td>
                             </tr>
-                            
+
                             @if(userrole() == 1)
                             <tr>
                               <th> <b>Credit Limit:</b> </th>
-                              <td>{{ @$data->credit_limit ?? "" }}</td>
+                              <td>{{ @$data->credit_limit ?? "-" }}</td>
                             </tr>
                             @endif
-                            
+
                             {{-- <tr>
                               <th> <b>Max Commitment:</b> </th>
-                              <td>{{ @$data->max_commitment ?? "" }}</td>
+                              <td>{{ @$data->max_commitment ?? "-" }}</td>
                             </tr> --}}
 
                             <tr>
                               <th> <b>Federal Tax ID:</b> </th>
-                              <td>{{ @$data->federal_tax_id ?? "" }}</td>
+                              <td>{{ @$data->federal_tax_id ?? "-" }}</td>
                             </tr>
 
                             <tr>
                               <th> <b>Current Account Balance:</b> </th>
-                              <td>{{ @$data->current_account_balance ?? "" }}</td>
+                              <td>{{ @$data->current_account_balance ?? "-" }}</td>
                             </tr>
 
                             <tr>
@@ -127,7 +127,7 @@
                           <!--end::Table head-->
                           <!--begin::Table body-->
                           <tbody>
-                            
+
                           </tbody>
                           <!--end::Table body-->
                        </table>
@@ -153,7 +153,7 @@
               <h5>Customer's Address Details</h5>
             </div>
             <div class="card-body">
-              
+
               <div class="row mb-5 mt-5">
                 <div class="col-md-12">
                   <div class="form-group">

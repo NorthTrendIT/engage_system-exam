@@ -40,6 +40,7 @@
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_module" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select Customer By">
                     <option value=""></option>
+                    <option value="all">All</option>
                     <option value="brand">By Brand</option>
                     <option value="customer_class">By Class</option>
                     <option value="customer">By Customer</option>

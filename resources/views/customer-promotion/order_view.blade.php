@@ -9,7 +9,7 @@
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Claimed Promotions</h1>
       </div>
-      
+
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
 
@@ -17,10 +17,10 @@
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-      
+
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -30,16 +30,16 @@
               <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
             </div> --}}
             <div class="card-body">
-              
+
               <div class="row mb-5 mt-5">
                 <div class="col-md-12">
                   <div class="form-group">
-                    
+
                     <!--begin::Content-->
                     <div class="flex-lg-row-fluid me-xl-18 mb-10 mb-xl-0">
                       <!--begin::Invoice 2 content-->
                       <div class="mt-n1">
-                        
+
                         <!--begin::Wrapper-->
                         <div class="m-0">
                           <!--begin::Label-->
@@ -49,7 +49,7 @@
                           @if(in_array(userrole(),[4]))
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
-                            
+
                             @if(@$data->sales_specialist)
                               <!--end::Col-->
                               <div class="col-sm-5">
@@ -135,7 +135,7 @@
                             @endif
 
                             @if(userrole() == 1)
-                              
+
                               @if($data->status == "approved" && $is_sap_pushed == false && $data->is_approved)
                               <!--end::Col-->
                               <div class="col-sm-3">
@@ -188,11 +188,11 @@
                               <div class="fw-bolder fs-6 text-gray-800">
 
                                 @if($data->status == "approved")
-                                  <a href="javascript:" class="btn btn-sm btn-success btn-inline ">Approved</a>
+                                    <a href="javascript:" class="btn btn-sm btn-light-success btn-inline ">Approved</a>
                                 @elseif($data->status == "pending")
-                                  <a href="javascript:" class="btn btn-sm btn-warning btn-inline ">Pending</a>
+                                    <a href="javascript:" class="btn btn-sm btn-light-info btn-inline ">Pending</a>
                                 @elseif($data->status == "canceled")
-                                  <a href="javascript:" class="btn btn-sm btn-danger btn-inline ">Canceled</a>
+                                    <a href="javascript:" class="btn btn-sm btn-light-danger btn-inline ">Canceled</a>
                                 @endif
 
                               </div>
@@ -216,7 +216,7 @@
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  
+
                                   @if(@$data->products)
 
                                     @foreach(@$data->products as $p)
@@ -259,7 +259,7 @@
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
-                                
+
                                 <!--begin::Item-->
                                 <div class="d-flex flex-stack">
                                   <!--begin::Code-->
@@ -282,15 +282,15 @@
 
                         <!--begin::Wrapper-->
                         <div class="mt-20">
-                          
+
                           <hr>
-                          
+
                           <!--begin::Label-->
                           <div class="fw-bolder fs-3 text-gray-800 mb-8 mt-2">Delivery details</div>
                           <!--end::Label-->
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
-                            
+
                             <!--end::Col-->
                             <div class="col-sm-12">
                               <!--end::Label-->
@@ -322,7 +322,7 @@
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    
+
                                     @foreach(@$p->deliveries as $d)
                                       <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ date('F d, Y',strtotime($d->delivery_date)) }}</td>
@@ -380,7 +380,7 @@
               <h5>Update Status</h5>
             </div>
             <div class="card-body">
-              
+
               <form id="myForm" method="post">
                 @csrf
 
@@ -436,12 +436,12 @@
 
 
 <script>
-  
+
   $(document).ready(function() {
 
     $(document).on('change', '[name="status"]', function(event) {
       event.preventDefault();
-      
+
       if($(this).find('option:selected').val() == 'canceled'){
         $('.cancel_reason_div').show();
       }else{
@@ -459,7 +459,7 @@
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
       var validator = validate_form();
-      
+
       if (validator.form() != false) {
 
         $('[type="submit"]').prop('disabled', true);
@@ -509,7 +509,7 @@
             }
           },
           messages: {
-            
+
           },
       });
       return validator;
@@ -592,7 +592,7 @@
             });
           }
         })
-        
+
       });
 
     @endif

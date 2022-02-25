@@ -252,9 +252,6 @@ class CustomerController extends Controller
                             ->addColumn('customer_code', function($row) {
                                 return @$row->card_code ?? "-";
                             })
-                            ->addColumn('credit_limit', function($row) {
-                                return @$row->credit_limit ?? "-";
-                            })
                             ->addColumn('card_name', function($row) {
                                 return @$row->card_name ?? "-";
                             })
@@ -643,7 +640,7 @@ class CustomerController extends Controller
             foreach($data as $value){
 
                 if(isset($response[$value->customer->u_msec])){
-                   continue; 
+                   continue;
                 }
 
                 $response[$value->customer->u_msec] = array(
@@ -679,9 +676,9 @@ class CustomerController extends Controller
             foreach($data as $value){
 
                 if(isset($response[$value->customer->u_class])){
-                   continue; 
+                   continue;
                 }
-                
+
                 $response[$value->customer->u_class] = array(
                     "id" => $value->customer->u_class,
                     "text" => $value->customer->u_class
@@ -715,7 +712,7 @@ class CustomerController extends Controller
                 $data = $data->get();
 
                 foreach($data as $value){
-                    
+
                     $response[] = array(
                         "id" => $value->id,
                         "text" => $value->sales_specialist_name

@@ -81,7 +81,7 @@
                   </select>
                 </div>
 
-                
+
                 <!-- Branch -->
                 <div class="col-md-3 mt-5 other_filter_div">
                   <select class="form-control form-control-lg form-control-solid" name="filter_branch" data-control="select2" data-hide-search="false" data-placeholder="Select branch" data-allow-clear="true">
@@ -141,7 +141,6 @@
                               <th>Customer Code</th>
                               <th>Name</th>
                               <th>Date Created</th>
-                              <th>Credit Limit</th>
                               @if(in_array(userrole(),[1]))
                               <th>Business Unit</th>
                               @endif
@@ -227,7 +226,7 @@
           scrollCollapse: true,
           paging: true,
           fixedColumns:   {
-            left: 2,  
+            left: 2,
             right: 1
           },
           order: [],
@@ -258,7 +257,6 @@
               {data: 'customer_code', name: 'customer_code'},
               {data: 'name', name: 'name'},
               {data: 'created_at', name: 'created_at'},
-              {data: 'credit_limit', name: 'credit_limit'},
               @if(in_array(userrole(),[1]))
               {data: 'company', name: 'company'},
               @endif
@@ -569,7 +567,7 @@
       $('[name="filter_branch"]').val('').trigger('change');
       $('[name="filter_sales_specialist"]').val('').trigger('change');
       $('[name="filter_customer_class"]').val('').trigger('change');
-      
+
       if($(this).find('option:selected').val() != ""){
         $('.other_filter_div').show();
       }else{
