@@ -791,7 +791,7 @@ class PromotionsController extends Controller
         $records = array();
         foreach($data as $key => $value){
 
-            $scope = "";
+            $scope = "-";
             switch (@$value->promotion_scope) {
                 case "C":
                     $scope = "Customer";
@@ -816,9 +816,10 @@ class PromotionsController extends Controller
 
             $records[] = array(
                             'no' => $key + 1,
-                            'company' => @$value->sap_connection->company_name,
-                            'title' => $value->title,
-                            'customer_group' => $scope,
+                            'company' => @$value->sap_connection->company_name ?? "-",
+                            'title' => $value->title ?? "-",
+                            'code' => $value->code ?? "-",
+                            'customer_group' => $scope ?? "-",
                             'start_date' => date('M d, Y',strtotime($value->promotion_start_date)),
                             'end_date' => date('M d, Y',strtotime($value->promotion_end_date)),
                             'status' => $value->is_active ? "Active" : "Inctive",

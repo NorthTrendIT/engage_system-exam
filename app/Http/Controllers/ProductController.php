@@ -677,50 +677,50 @@ class ProductController extends Controller
       if(@$filter->module_type != "product-tagging"){
         $temp = array(
                   'no' => $key + 1,
-                  'company' => @$value->sap_connection->company_name,
-                  'item_name' => $value->item_name,
+                  'company' => @$value->sap_connection->company_name ?? "-",
+                  'item_name' => $value->item_name ?? "-",
                   'brand' => @$value->group->group_name ?? "",
-                  'item_code' => $value->item_code,
-                  'product_line' => $value->u_item_line,
-                  'product_category' => $value->u_tires
+                  'item_code' => $value->item_code ?? "-",
+                  'product_line' => $value->u_item_line ?? "-",
+                  'product_category' => $value->u_tires ?? "-",
                 );
 
 
         // Shows Product Class
         if(in_array($product_category, ["lubes","chem","tires"])){
-          $temp['item_class'] = $value->item_class;
+          $temp['item_class'] = $value->item_class ?? "-";
         }
 
         // Shows Product Pattern 
         if(in_array($product_category, ["tires"])){
-          $temp['u_pattern2'] = $value->u_pattern2;
+          $temp['u_pattern2'] = $value->u_pattern2 ?? "-";
         }
 
         $temp['created_at'] = date('M d, Y',strtotime($value->created_date));
         $temp['status'] = $value->is_active ? "Active" : "Inctive";
-        $temp['online_price'] = @$prices[11]['Price'] ?? 0;
-        $temp['commercial_price'] = @$prices[12]['Price'] ?? 0;
-        $temp['srp_price'] = @$prices[13]['Price'] ?? 0;
-        $temp['rdlp_price'] = @$prices[14]['Price'] ?? 0;
-        $temp['rdlp2_price'] = @$prices[15]['Price'] ?? 0;
+        $temp['online_price'] = @$prices[11]['Price'] ?? "-";
+        $temp['commercial_price'] = @$prices[12]['Price'] ?? "-";
+        $temp['srp_price'] = @$prices[13]['Price'] ?? "-";
+        $temp['rdlp_price'] = @$prices[14]['Price'] ?? "-";
+        $temp['rdlp2_price'] = @$prices[15]['Price'] ?? "-";
                         
         $records[] = $temp;
       }else{
 
         $temp = array(
                   'no' => $key + 1,
-                  'company' => @$value->sap_connection->company_name,
-                  'item_name' => $value->item_name,
-                  'brand' => @$value->group->group_name ?? "",
-                  'item_code' => $value->item_code,
-                  'product_line' => $value->u_item_line,
-                  'product_category' => $value->u_tires,
+                  'company' => @$value->sap_connection->company_name ?? "-",
+                  'item_name' => $value->item_name ?? "-",
+                  'brand' => @$value->group->group_name ?? "-",
+                  'item_code' => $value->item_code ?? "-",
+                  'product_line' => $value->u_item_line ?? "-",
+                  'product_category' => $value->u_tires ?? "-",
                   'unit' => "",
-                  'rdlp_price' => @$prices[14]['Price'] ?? 0,
-                  'commercial_price' => @$prices[12]['Price'] ?? 0,
-                  'srp_price' => @$prices[13]['Price'] ?? 0,
-                  'product_application' => $value->u_item_application,
-                  'product_type' => $value->u_item_type,
+                  'rdlp_price' => @$prices[14]['Price'] ?? "-",
+                  'commercial_price' => @$prices[12]['Price'] ?? "-",
+                  'srp_price' => @$prices[13]['Price'] ?? "-",
+                  'product_application' => $value->u_item_application ?? "-",
+                  'product_type' => $value->u_item_type ?? "-",
                 );
         
 
@@ -732,12 +732,12 @@ class ProductController extends Controller
 
         // Shows Product Class
         if(in_array($product_category, ["lubes","tires"])){
-          $temp['item_class'] = $value->item_class;
+          $temp['item_class'] = $value->item_class ?? "-";
         }
 
         // Shows Product Pattern 
         if(in_array($product_category, ["tires"])){
-          $temp['u_pattern2'] = $value->u_pattern2;
+          $temp['u_pattern2'] = $value->u_pattern2 ?? "-";
         }
 
         // Shows Product Technology
@@ -747,32 +747,32 @@ class ProductController extends Controller
 
         // Shows Tires Field
         if(in_array($product_category, ["tires"])){
-          $temp['u_pattern_type'] = $value->u_pattern_type;
-          $temp['u_section_width'] = $value->u_section_width;
-          $temp['u_series'] = $value->u_series;
-          $temp['u_tire_diameter'] = $value->u_tire_diameter;
-          $temp['u_loadindex'] = $value->u_loadindex;
-          $temp['u_speed_symbol'] = $value->u_speed_symbol;
-          $temp['u_ply_rating'] = $value->u_ply_rating;
-          $temp['u_tire_const'] = $value->u_tire_const;
-          $temp['u_fitment_conf'] = $value->u_fitment_conf;
+          $temp['u_pattern_type'] = $value->u_pattern_type ?? "-";
+          $temp['u_section_width'] = $value->u_section_width ?? "-";
+          $temp['u_series'] = $value->u_series ?? "-";
+          $temp['u_tire_diameter'] = $value->u_tire_diameter ?? "-";
+          $temp['u_loadindex'] = $value->u_loadindex ?? "-";
+          $temp['u_speed_symbol'] = $value->u_speed_symbol ?? "-";
+          $temp['u_ply_rating'] = $value->u_ply_rating ?? "-";
+          $temp['u_tire_const'] = $value->u_tire_const ?? "-";
+          $temp['u_fitment_conf'] = $value->u_fitment_conf ?? "-";
         }
 
         // Shows Battery Field
         if(in_array($product_category, ["battery"])){
-          $temp['u_blength'] = $value->u_blength;
-          $temp['u_bwidth'] = $value->u_bwidth;
-          $temp['u_bheight'] = $value->u_bheight;
-          $temp['u_bthicknes'] = $value->u_bthicknes;
-          $temp['u_brsvdcapacity'] = $value->u_brsvdcapacity;
-          $temp['u_bcoldcrankamps'] = $value->u_bcoldcrankamps;
-          $temp['u_bamperhour'] = $value->u_bamperhour;
-          $temp['u_bhandle'] = $value->u_bhandle;
-          $temp['u_bpolarity'] = $value->u_bpolarity;
-          $temp['u_bterminal'] = $value->u_bterminal;
-          $temp['u_bholddown'] = $value->u_bholddown;
-          $temp['u_bleadweight'] = $value->u_bleadweight;
-          $temp['u_btotalweight'] = $value->u_btotalweight;
+          $temp['u_blength'] = $value->u_blength ?? "-";
+          $temp['u_bwidth'] = $value->u_bwidth ?? "-";
+          $temp['u_bheight'] = $value->u_bheight ?? "-";
+          $temp['u_bthicknes'] = $value->u_bthicknes ?? "-";
+          $temp['u_brsvdcapacity'] = $value->u_brsvdcapacity ?? "-";
+          $temp['u_bcoldcrankamps'] = $value->u_bcoldcrankamps ?? "-";
+          $temp['u_bamperhour'] = $value->u_bamperhour ?? "-";
+          $temp['u_bhandle'] = $value->u_bhandle ?? "-";
+          $temp['u_bpolarity'] = $value->u_bpolarity ?? "-";
+          $temp['u_bterminal'] = $value->u_bterminal ?? "-";
+          $temp['u_bholddown'] = $value->u_bholddown ?? "-";
+          $temp['u_bleadweight'] = $value->u_bleadweight ?? "-";
+          $temp['u_btotalweight'] = $value->u_btotalweight ?? "-";
         }
 
         $records[] = $temp;
