@@ -63,7 +63,7 @@ class CustomersSalesSpecialistsController extends Controller
 
                     'customer_ids' => 'required',
                     'customer_ids.*' => 'required|exists:customers,id,sap_connection_id,'.$input['company_id'],
-                    
+
                     'ss_ids' => 'required',
                     'ss_ids.*' => 'required|exists:users,id,sap_connection_id,'.$input['company_id'],
 
@@ -266,7 +266,7 @@ class CustomersSalesSpecialistsController extends Controller
                                             ->has('sales_person')
                                             ->select('ss_id','customer_id')
                                             ->orderBy('id', 'desc');
-        
+
         if($request->filter_company != ""){
 
             $data->whereHas('customer', function($q) use ($request){
