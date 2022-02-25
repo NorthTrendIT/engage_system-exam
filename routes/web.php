@@ -329,6 +329,10 @@ Route::middleware(['auth'])->group(function(){
     // Super Admin Routes
     Route::middleware('super-admin')->group(function(){
 
+        // Product Tagging
+        Route::get('product-tagging', 'App\Http\Controllers\ProductController@productTaggingIndex')->name('product-tagging.index');
+
+        // Customer Tagging
         Route::get('customer-tagging', 'App\Http\Controllers\CustomerController@customerTaggingIndex')->name('customer-tagging.index');
         Route::post('customer-tagging/get-territory', 'App\Http\Controllers\CustomerController@customerTaggingGetTerritory')->name('customer-tagging.get-territory');
         Route::post('customer-tagging/get-market-sector', 'App\Http\Controllers\CustomerController@customerTaggingGetMarketSector')->name('customer-tagging.get-market-sector');

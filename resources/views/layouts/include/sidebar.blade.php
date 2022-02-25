@@ -70,7 +70,7 @@
 
             {{-- Product Management --}}
             @if(Auth::user()->role_id == 1 || (isset($access['view-product']) && $access['view-product'] == 1) || (isset($access['view-product-group']) && $access['view-product-group'] == 1))
-            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['product-group.index','product-group.create','product-group.edit','product-group.show','product.index','product.create','product.edit','product.show'])) ? 'hover show' : '' }}">
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['product-group.index','product-group.create','product-group.edit','product-group.show','product.index','product.create','product.edit','product.show','product-tagging.index'])) ? 'hover show' : '' }}">
 
                <span class="menu-link">
                   <span class="menu-icon">
@@ -95,6 +95,17 @@
                         <span class="bullet bullet-dot"></span>
                         </span>
                         <span class="menu-title">Products</span>
+                     </a>
+                  </div>
+                  @endif
+
+                  @if(Auth::user()->role_id == 1)
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['product-tagging.index'])) ? 'active' : '' }}" href="{{ route('product-tagging.index') }}">
+                        <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Product Tagging</span>
                      </a>
                   </div>
                   @endif
