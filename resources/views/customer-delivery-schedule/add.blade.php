@@ -37,7 +37,7 @@
                 @endif
 
                 <div class="row mb-5">
-                  
+
                   <div class="col-md-6 mt-5">
                     <div class="form-group">
                       <label>Territory<span class="asterisk">*</span></label>
@@ -98,9 +98,9 @@ $(document).ready(function() {
       format: 'dd/mm/yyyy',
       todayHighlight: true,
       orientation: "bottom left",
-      @if(!isset($edit))
+      {{-- @if(!isset($edit)) --}}
       startDate:'{{ date('d/m/Y') }}',
-      @endif
+      {{-- @endif --}}
       autoclose: true,
       multidate: true,
       clearBtn: true,
@@ -126,7 +126,7 @@ $(document).ready(function() {
               setTimeout(function(){
 
                 @if(isset($edit->id))
-                  window.location.reload(); 
+                  window.location.reload();
                 @else
                   window.location.href = '{{ route('customer-delivery-schedule.index') }}';
                 @endif
