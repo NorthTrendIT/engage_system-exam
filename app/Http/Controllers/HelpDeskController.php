@@ -216,7 +216,7 @@ class HelpDeskController extends Controller
     public function getAll(Request $request)
     {
         $data = HelpDesk::query();
-
+        // dd($request->all());
         if(!(userrole() == 1 || userdepartment() == 1)){
             $data->where('user_id',Auth::id());
         }
@@ -236,6 +236,76 @@ class HelpDeskController extends Controller
         if($request->filter_urgency != ""){
             $data->where('help_desk_urgency_id',$request->filter_urgency);
         }
+
+
+        if($request->filter_sales_specialist != ""){
+            $data->whereHas('user', function($q) use ($request){
+                $q->where('role_id', 2)->where('id',$request->filter_sales_specialist);
+            });
+        }
+
+        // Start Check Only Customer and thier self users
+        if($request->filter_territory != ""){
+            $data->where(function($query) use ($request) {
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('customer.territories', function($q1) use ($request){
+                            $q1->where('id', $request->filter_territory);
+                        });
+                    });
+                });
+
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('created_by_user.customer.territories', function($q1) use ($request){
+                            $q1->where('id', $request->filter_territory);
+                        });
+                    });
+                });
+            });
+        }
+
+        if($request->filter_customer_class != ""){
+            $data->where(function($query) use ($request) {
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('customer', function($q1) use ($request){
+                            $q1->where('u_class', $request->filter_customer_class);
+                        });
+                    });
+                });
+
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('created_by_user.customer', function($q1) use ($request){
+                            $q1->where('u_class', $request->filter_customer_class);
+                        });
+                    });
+                });
+            });
+        }
+
+        if($request->filter_market_sector != ""){
+            $data->where(function($query) use ($request) {
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('customer', function($q1) use ($request){
+                            $q1->where('u_sector', $request->filter_market_sector);
+                        });
+                    });
+                });
+
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('created_by_user.customer', function($q1) use ($request){
+                            $q1->where('u_sector', $request->filter_market_sector);
+                        });
+                    });
+                });
+            });
+        }
+
+        // End Check Only Customer and thier self users
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
