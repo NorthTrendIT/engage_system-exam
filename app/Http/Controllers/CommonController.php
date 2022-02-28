@@ -329,7 +329,7 @@ class CommonController extends Controller
     public function getUsers(Request $request){
         $search = $request->search;
 
-        $data = User::where('department_id', 1)->select('id','sales_specialist_name');
+        $data = User::where('department_id', '!=', 1)->select('id','sales_specialist_name');
 
         if($search != ''){
             $data = $data->where('sales_specialist_name', 'like', '%' .$search . '%');
