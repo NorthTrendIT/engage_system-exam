@@ -718,7 +718,7 @@ class ProductController extends Controller
                   'item_code' => $value->item_code ?? "-",
                   'product_line' => $value->u_item_line ?? "-",
                   'product_category' => $value->u_tires ?? "-",
-                  'unit' => $value->sales_unit ?? "-";,
+                  'unit' => $value->sales_unit ?? "-",
                   'rdlp_price' => @$prices[14]['Price'] ?? "-",
                   'commercial_price' => @$prices[12]['Price'] ?? "-",
                   'srp_price' => @$prices[13]['Price'] ?? "-",
