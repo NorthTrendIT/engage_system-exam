@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\User;
 use App\Models\ProductGroup;
 use App\Models\CustomerGroup;
+use App\Models\Promotions;
 
 class CommonController extends Controller
 {
@@ -342,6 +343,30 @@ class CommonController extends Controller
             $response[] = array(
                 "id"=>$value->id,
                 "text"=>$value->sales_specialist_name
+            );
+        }
+
+        return response()->json($response);
+    }
+
+
+    // Get Promotion Code
+    public function getPromotionCodes(Request $request){
+        $search = $request->search;
+
+        $data = Promotions::select('id','code');
+
+        if($search != ''){
+            $data = $data->where('code', 'like', '%' .$search . '%');
+        }
+
+        $data = $data->orderby('code','asc')->limit(50)->get();
+
+        $response = array();
+        foreach($data as $value){
+            $response[] = array(
+                "id"=>$value->id,
+                "text"=>$value->code
             );
         }
 

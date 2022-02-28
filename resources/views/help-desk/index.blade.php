@@ -272,7 +272,7 @@
     $(document).on('change', '[name="filter_company"]', function(event) {
       event.preventDefault();
       $('[name="filter_market_sector"]').val('').trigger('change');
-      $('[name="filter_territory"]').val('').trigger('change');
+      // $('[name="filter_territory"]').val('').trigger('change');
       $('[name="filter_sales_specialist"]').val('').trigger('change');
       $('[name="filter_customer_class"]').val('').trigger('change');
       

@@ -36,13 +36,13 @@
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="true" name="filter_company" data-allow-clear="true" data-placeholder="Select Business Unit">
                     <option value=""></option>
-                    @foreach($company as $c)
+                    {{-- @foreach($company as $c)
                       <option value="{{ $c->id }}">{{ $c->company_name }}</option>
-                    @endforeach
+                    @endforeach --}}
                   </select>
                 </div>
 
-                {{-- <div class="col-md-3 mt-5 other_filter_div">
+                <div class="col-md-3 mt-5 other_filter_div">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_brand" data-allow-clear="true" data-placeholder="Select brand">
                     <option value=""></option>
                   </select>
@@ -70,7 +70,7 @@
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_territory" data-allow-clear="true" data-placeholder="Select territory">
                     <option value=""></option>
                   </select>
-                </div> --}}
+                </div>
                 @endif
 
                 @if(in_array(userrole(),[1,2]))
@@ -80,6 +80,12 @@
                   </select>
                 </div>
                 @endif
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_promotion" data-control="select2" data-hide-search="false" data-placeholder="Select promotion code" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
 
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select status" data-allow-clear="true">
@@ -130,7 +136,7 @@
                               @if(in_array(userrole(),[1]))
                               <th>Company</th>
                               @endif
-                              <th>Promotion</th>
+                              <th>Promotion Code</th>
                               @if(in_array(userrole(),[1,2]))
                               <th>Customer</th>
                               @endif
@@ -167,6 +173,11 @@
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
+<style>
+  .other_filter_div{
+    display: none;
+  }
+</style>
 @endpush
 
 @push('js')
@@ -186,7 +197,14 @@
       $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
+      $filter_promotion = $('[name="filter_promotion"]').find('option:selected').val();
+
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
+      $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+      $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
+      $filter_customer_class = $('[name="filter_customer_class"]').find('option:selected').val();
+      $filter_territory = $('[name="filter_territory"]').find('option:selected').val();
+      $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
 
       table.DataTable({
           processing: true,
@@ -211,7 +229,14 @@
                 filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
                 filter_customer : $filter_customer,
+                filter_promotion : $filter_promotion,
+
                 filter_company : $filter_company,
+                filter_brand : $filter_brand,
+                filter_sales_specialist : $filter_sales_specialist,
+                filter_market_sector : $filter_market_sector,
+                filter_customer_class : $filter_customer_class,
+                filter_territory : $filter_territory,
               }
           },
           columns: [
@@ -243,11 +268,8 @@
     });
 
     $(document).on('click', '.clear-search', function(event) {
-      $('[name="filter_search"]').val('');
-      $('[name="filter_date_range"]').val('');
-      $('[name="filter_status"]').val('').trigger('change');
-      $('[name="filter_customer"]').val('').trigger('change');
-      $('[name="filter_company"]').val('').trigger('change');
+      $('input').val('');
+      $('select').val('').trigger('change');
       render_table();
     })
 
@@ -280,7 +302,176 @@
     @endif
 
 
+    $('[name="filter_promotion"]').select2({
+      ajax: {
+          url: "{{route('common.getPromotionCodes')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                _token: "{{ csrf_token() }}",
+                search: params.term,
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
     @if(in_array(userrole(),[1]))
+      $(document).on('change', '[name="filter_company"]', function(event) {
+        event.preventDefault();
+        $('[name="filter_brand"]').val('').trigger('change');
+        $('[name="filter_customer_class"]').val('').trigger('change');
+        $('[name="filter_sales_specialist"]').val('').trigger('change');
+        $('[name="filter_market_sector"]').val('').trigger('change');
+        
+        if($(this).find('option:selected').val() != ""){
+          $('.other_filter_div').show();
+        }else{
+          $('.other_filter_div').hide();
+        }
+
+      });
+
+      $('[name="filter_company"]').select2({
+        ajax: {
+            url: "{{route('common.getBusinessUnits')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term
+                };
+            },
+            processResults: function (response) {
+              return {
+                results: response
+              };
+            },
+            cache: true
+        },
+      });
+
+      $('[name="filter_brand"]').select2({
+        ajax: {
+            url: "{{route('common.getBrands')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term,
+                  sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                };
+            },
+            processResults: function (response) {
+              return {
+                results: response
+              };
+            },
+            cache: true
+        },
+      });
+
+      $('[name="filter_sales_specialist"]').select2({
+        ajax: {
+            url: "{{route('common.getSalesSpecialist')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term,
+                  sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                };
+            },
+            processResults: function (response) {
+              return {
+                results: response
+              };
+            },
+            cache: true
+        },
+      });
+
+
+      $('[name="filter_customer_class"]').select2({
+        ajax: {
+            url: "{{route('common.getCustomerClass')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term,
+                  sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                };
+            },
+            processResults: function (response) {
+              return {
+                results: response
+              };
+            },
+            cache: true
+        },
+      });
+
+
+      $('[name="filter_market_sector"]').select2({
+        ajax: {
+            url: "{{route('common.getMarketSector')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term,
+                  sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                };
+            },
+            processResults: function (response) {
+              return {
+                results: response
+              };
+            },
+            cache: true
+        },
+      });
+
+      $('[name="filter_territory"]').select2({
+        ajax: {
+            url: "{{route('common.getTerritory')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term,
+                  sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                };
+            },
+            processResults: function (response) {
+              return {
+                results: response
+              };
+            },
+            cache: true
+        },
+      });
+
       $(document).on("click", ".download_excel", function(e) {
         var url = "{{route('customer-promotion.order.export')}}";
 
@@ -289,7 +480,14 @@
         data.filter_date_range = $('[name="filter_date_range"]').val();
         data.filter_status = $('[name="filter_status"]').find('option:selected').val();
         data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
+        data.filter_promotion = $('[name="filter_promotion"]').find('option:selected').val();
+        
         data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+        data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+        data.filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
+        data.filter_customer_class = $('[name="filter_customer_class"]').find('option:selected').val();
+        data.filter_territory = $('[name="filter_territory"]').find('option:selected').val();
+        data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
 
         // console.log((JSON.stringify(data)));
         // console.log(btoa(JSON.stringify(data)));

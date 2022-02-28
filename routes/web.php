@@ -318,6 +318,7 @@ Route::middleware(['auth'])->group(function(){
         Route::post('common/get-customer-class', 'App\Http\Controllers\CommonController@getCustomerClass')->name('common.getCustomerClass');
         Route::post('common/get-brands', 'App\Http\Controllers\CommonController@getBrands')->name('common.getBrands');
         Route::post('common/get-users', 'App\Http\Controllers\CommonController@getUsers')->name('common.getUsers');
+        Route::post('common/get-promotion-codes', 'App\Http\Controllers\CommonController@getPromotionCodes')->name('common.getPromotionCodes');
 
     });
 
