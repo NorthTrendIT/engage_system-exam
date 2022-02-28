@@ -247,10 +247,12 @@
             subject:{
               required:true,
               maxlength:185,
-            },
+            }
           },
           messages: {
-            
+            "images[]":{
+              accept:"Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp files.",
+            },
           },
       });
 

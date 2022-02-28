@@ -128,7 +128,7 @@ class HelpDeskController extends Controller
                     if(isset($value) && is_object($value)){
                         $file = $value;
 
-                        if(!in_array($file->extension(),['jpeg','jpg','png'])){
+                        if(!in_array($file->extension(),['jpeg','jpg','png','eps','bmp','tif','tiff','webp'])){
                           continue;
                         }
 
@@ -344,7 +344,7 @@ class HelpDeskController extends Controller
                             ->addColumn('status', function($row) {
                                 $btn = "";
                                 if(@$row->status){
-                                    $btn .= '<b style="color: '.@$row->status->color_code.'" class="badge badge-light-dark">'.@$row->status->name ??  "-".'</b>';
+                                    $btn .= '<b style="color:'.convert_hex_to_rgba(@$row->status->color_code).';background-color:'.convert_hex_to_rgba(@$row->status->color_code,0.1).';"  class="btn btn-sm">'.@$row->status->name ??  "-".'</b>';
                                 }
 
                                 return $btn;
@@ -352,7 +352,7 @@ class HelpDeskController extends Controller
                             ->addColumn('urgency', function($row) {
                                 $btn = "";
                                 if(@$row->urgency){
-                                    $btn .= '<b style="color: '.@$row->urgency->color_code.'" class="badge badge-light-dark">'.@$row->urgency->name ??  "-".'</b>';
+                                    $btn .= '<b style="color:'.convert_hex_to_rgba(@$row->urgency->color_code).';background-color:'.convert_hex_to_rgba(@$row->urgency->color_code,0.1).';"  class="btn btn-sm">'.@$row->urgency->name ??  "-".'</b>';
                                 }
 
                                 return $btn;
