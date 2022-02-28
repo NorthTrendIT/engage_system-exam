@@ -356,7 +356,7 @@ class WarrantyController extends Controller
     public function show($id)
     {
         $data = Warranty::findOrFail($id);
-        if(!in_array(userrole(),[1,4]) || ( !in_array(userrole(),[1,4]) && $data->user_id != Auth::id()) ){ // Not a customer
+        if(!in_array(userrole(),[1,3,4]) || ( !in_array(userrole(),[1,3,4]) && $data->user_id != Auth::id()) ){ // Not a customer
             return abort(404);
         }
 
@@ -383,7 +383,7 @@ class WarrantyController extends Controller
     public function edit($id)
     {
         $edit = Warranty::findOrFail($id);
-        if(!in_array(userrole(),[1,4]) || ( !in_array(userrole(),[1,4]) && $edit->user_id != Auth::id()) ){ // Not a customer
+        if(!in_array(userrole(),[1,3,4]) || ( !in_array(userrole(),[1,3,4]) && $edit->user_id != Auth::id()) ){ // Not a customer
             return abort(404);
         }
         
