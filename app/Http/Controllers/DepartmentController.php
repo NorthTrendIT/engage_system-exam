@@ -178,10 +178,11 @@ class DepartmentController extends Controller
     {
         $data = Department::find($id);
         if(!is_null($data)){
+            // Add Department Deleted log.
+            add_log(11, array('department_data' => $data->toArray()));
+
             $data->delete();
 
-            // Add Department Deleted log.
-            add_log(11, array('department_data' => $data));
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
