@@ -479,8 +479,8 @@ class CustomerPromotionController extends Controller
                                     }
 
 
-                                    $price = get_product_customer_price(@$product->item_prices,@$customer_user->customer->price_list_num);
-                                    $amount = $discount = get_product_customer_price(@$product->item_prices,@$customer_user->customer->price_list_num,$discount_percentage,@$discount_fix_amount);
+                                    $price = get_product_customer_price(@$product->item_prices,14);
+                                    $amount = $discount = get_product_customer_price(@$product->item_prices,14,$discount_percentage,@$discount_fix_amount);
 
                                     $discount = $price - $discount;
 

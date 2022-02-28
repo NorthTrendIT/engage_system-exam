@@ -93,13 +93,13 @@
 
                           <p>
                             @if(@$discount_percentage)
-                                @if(get_product_customer_price(@$product->item_prices,@$customer->price_list_num) > 0)
-                                  <span class="mr-3 text-muted">(₱ <strike> <b>{{ get_product_customer_price(@$product->item_prices,@$customer->price_list_num) }}</strike></b>)</span>
+                                @if(get_product_customer_price(@$product->item_prices, 14) > 0)
+                                  <span class="mr-3 text-muted">(₱ <strike> <b>{{ get_product_customer_price(@$product->item_prices, 14) }}</strike></b>)</span>
                                 @endif
 
-                                <span class="mr-1 price"><strong>₱ {{ get_product_customer_price(@$product->item_prices,@$customer->price_list_num,@$discount_percentage,@$discount_fix_amount) }}</strong></span>
+                                <span class="mr-1 price"><strong>₱ {{ get_product_customer_price(@$product->item_prices, 14,@$discount_percentage,@$discount_fix_amount) }}</strong></span>
                             @else
-                              <span class="mr-1 price"><strong>₱ {{ get_product_customer_price(@$product->item_prices,@$customer->price_list_num) }}</strong></span>
+                              <span class="mr-1 price"><strong>₱ {{ get_product_customer_price(@$product->item_prices, 14) }}</strong></span>
                             @endif
                           </p>
                          <p class="pt-1">{!! @$product->technical_specifications ?? "" !!}</p>

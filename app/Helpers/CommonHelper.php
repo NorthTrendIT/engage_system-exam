@@ -88,7 +88,7 @@ function get_modules(){
     return $result;
 }
 
-function get_product_customer_price($item_prices,$number, $discount = false, $discount_fix_amount = false)
+function get_product_customer_price($item_prices, $number, $discount = false, $discount_fix_amount = false)
 {
     if(is_null($number)){
         $number = 1;
