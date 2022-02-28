@@ -23,10 +23,10 @@ class CreateHelpDeskStatusesTable extends Migration
 
         DB::table('help_desk_statuses')->insert(
             array(
-                array('name' => 'Open'),
-                array('name' => 'In Progress'),
-                array('name' => 'Answered'),
-                array('name' => 'Closed')
+                array('name' => 'Open', 'color_code' => '#008000' ),
+                array('name' => 'In Progress', 'color_code' => '#ffa500' ),
+                array('name' => 'Answered', 'color_code' => '#b3b30f' ),
+                array('name' => 'Closed', 'color_code' => '#ff0000' )
             )
         );
     }
