@@ -91,6 +91,8 @@ class StoreProducts implements ShouldQueue
                                 'u_bholddown' => @$value['U_BHoldDown'],
                                 'u_bleadweight' => @$value['U_BLeadWeight'],
                                 'u_btotalweight' => @$value['U_BTotalWeight'],
+                                'u_product_tech' => @$value['U_ProductTech'],
+                                'sales_unit' => @$value['SalesUnit'],
 
                                 'updated_date' => $value['UpdateDate'],
                                 'sap_connection_id' => $this->sap_connection_id,

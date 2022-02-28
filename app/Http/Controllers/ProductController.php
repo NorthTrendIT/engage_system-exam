@@ -306,10 +306,10 @@ class ProductController extends Controller
                           })
 
                           ->addColumn('unit', function($row) {
-                            return @$row->unit ?? "-";
+                            return @$row->sales_unit ?? "-";
                           })
                           ->addColumn('product_technology', function($row) {
-                            return @$row->product_technology ?? "-";
+                            return @$row->u_product_tech ?? "-";
                           })
 
                           //Tires Category
@@ -498,9 +498,12 @@ class ProductController extends Controller
 
 
                           ->orderColumn('unit', function ($query, $order) {
-                            $query->orderBy('unit', $order);
+                            $query->orderBy('sales_unit', $order);
                           })
 
+                          ->orderColumn('product_technology', function ($query, $order) {
+                            $query->orderBy('u_product_tech', $order);
+                          })
                           
                           //Tires Category
                           ->orderColumn('u_pattern_type', function ($query, $order) {
@@ -715,7 +718,7 @@ class ProductController extends Controller
                   'item_code' => $value->item_code ?? "-",
                   'product_line' => $value->u_item_line ?? "-",
                   'product_category' => $value->u_tires ?? "-",
-                  'unit' => "",
+                  'unit' => $value->sales_unit ?? "-";,
                   'rdlp_price' => @$prices[14]['Price'] ?? "-",
                   'commercial_price' => @$prices[12]['Price'] ?? "-",
                   'srp_price' => @$prices[13]['Price'] ?? "-",
@@ -742,7 +745,7 @@ class ProductController extends Controller
 
         // Shows Product Technology
         if(in_array($product_category, ["battery","autoparts"])){
-          $temp['product_technology'] = "";
+          $temp['product_technology'] = $value->u_product_tech ?? "-";
         }
 
         // Shows Tires Field
