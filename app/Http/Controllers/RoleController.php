@@ -271,7 +271,7 @@ class RoleController extends Controller
 
         if(!is_null($data)){
             // Add Role Deleted log.
-            add_log(8, array('role_data' => $data));
+            add_log(8, array('role_data' => $id));
             
             $data->delete();
 

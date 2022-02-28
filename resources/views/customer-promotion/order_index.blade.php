@@ -41,17 +41,47 @@
                     @endforeach
                   </select>
                 </div>
+
+                {{-- <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_brand" data-allow-clear="true" data-placeholder="Select brand">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_customer_class" data-allow-clear="true" data-placeholder="Select customer class">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_sales_specialist" data-allow-clear="true" data-placeholder="Select sales specialist">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_market_sector" data-allow-clear="true" data-placeholder="Select market sector">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_territory" data-allow-clear="true" data-placeholder="Select territory">
+                    <option value=""></option>
+                  </select>
+                </div> --}}
                 @endif
 
                 @if(in_array(userrole(),[1,2]))
-                <div class="col-md-4 mt-5">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-placeholder="Select customer" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
                 @endif
 
-                <div class="col-md-2 mt-5">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true" data-placeholder="Select status" data-allow-clear="true">
                     <option value=""></option>
                     <option value="pending">Pending</option>
