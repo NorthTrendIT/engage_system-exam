@@ -409,9 +409,11 @@ function get_sap_api_url(){
     return @$obj->url ?? env('SAP_API_URL') ?? "";
 }
 
-function convert_hex_to_rgba($hex, $opacity = 1){
-    list($r, $g, $b) = sscanf($hex, "#%02x%02x%02x");
-    return sprintf('rgba(%s, %s, %s, %s)', $r, $g, $b, $opacity);
+function convert_hex_to_rgba($hex = "", $opacity = 1){
+    if($hex){
+        list($r, $g, $b) = sscanf($hex, "#%02x%02x%02x");
+        return sprintf('rgba(%s, %s, %s, %s)', $r, $g, $b, $opacity);
+    }
 }
 
 function get_sort_char($string){
