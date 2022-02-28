@@ -24,10 +24,10 @@ class CreateHelpDeskUrgenciesTable extends Migration
         // Insert some stuff
         DB::table('help_desk_urgencies')->insert(
             array(
-                array('name' => 'Low'),
-                array('name' => 'Medium'),
-                array('name' => 'High'),
-                array('name' => 'Critical')
+                array('name' => 'Low', 'color_code' => '#008000' ),
+                array('name' => 'Medium', 'color_code' => '#0000ff' ),
+                array('name' => 'High', 'color_code' => '#ef5a5ad1' ),
+                array('name' => 'Critical', 'color_code' => '#ff0202' )
             )
         );
     }
