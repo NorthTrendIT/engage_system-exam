@@ -17,7 +17,7 @@
             @if($message->user->profile && get_valid_file_url('sitebucket/users',$message->user->profile))
               <img alt="user" src="{{ get_valid_file_url('sitebucket/users',$message->user->profile) }}" />
             @else
-              <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" />
+              <div class="symbol-label fs-3" style="color:{{ convert_hex_to_rgba($message->user->default_profile_color) }};background-color:{{ convert_hex_to_rgba($message->user->default_profile_color,0.5) }};"><b>{{ get_sort_char($message->user->sales_specialist_name) }}</b></div>
             @endif
           </div>
           <!--end::Avatar-->
@@ -56,7 +56,7 @@
             @if(get_login_user_profile())
               <img src="{{ get_login_user_profile() }}" alt="user" />
             @else
-              <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" />
+              <div class="symbol-label fs-3" style="color:{{ convert_hex_to_rgba(Auth::user()->default_profile_color) }};background-color:{{ convert_hex_to_rgba(Auth::user()->default_profile_color,0.5) }};"><b>{{ get_sort_char(Auth::user()->sales_specialist_name) }}</b></div>
             @endif
           </div>
           <!--end::Avatar-->
