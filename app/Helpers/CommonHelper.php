@@ -11,6 +11,8 @@ use App\Models\Invoice;
 use App\Models\Notification;
 use App\Models\LocalOrderItem;
 use App\Models\SapApiUrl;
+use App\Models\ConversationMessage;
+
 use Auth as Auth;
 
 function add_login_log(){
@@ -309,23 +311,26 @@ function array_value_recursive($key, array $arr){
     return count($val) > 1 ? $val : array_pop($val);
 }
 
-function getRecommendedProducts(){
-    $customer = collect();
-    if(userrole() == 4){
-        $customer = @Auth::user()->customer;
-    }elseif (!is_null(@Auth::user()->created_by)) {
-        $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
-        if(!is_null($customer)){
-            $customer = @$customer->customer;
-        }
+function getRecommendedProducts($customer_id = false){
+    // $customer = collect();
+    // if(userrole() == 4){
+    //     $customer = @Auth::user()->customer;
+    // }elseif (!is_null(@Auth::user()->created_by)) {
+    //     $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
+    //     if(!is_null($customer)){
+    //         $customer = @$customer->customer;
+    //     }
+    // }elseif($customer_id){
+    //     $customer = Customer::findOrFail($customer_id);
+    // }
+
+    $data = collect([]);
+
+    if($customer_id){
+        $data = LocalOrderItem::with('product')->whereHas('order', function($q) use ($customer_id){
+                $q->where('customer_id' ,'=', $customer_id);
+            })->orderBy('id', 'desc')->get()->take(10);
     }
-
-    $data = LocalOrderItem::with('product')->whereHas('order', function($q) use ($customer){
-            $q->where('customer_id' ,'=', $customer->id);
-        })->orderBy('id', 'desc')->get()->take(10);
-        // ->groupBy('local_order_items.product_id')
-
-    // dd($data);
 
     return $data;
 
@@ -423,4 +428,27 @@ function get_sort_char($string){
 
 function get_hex_color(){
     return '#'.substr(md5(rand()), 0, 6); //Generate Color Code
+}
+
+function get_login_user_un_read_message_count(){
+    $un_read_message = ConversationMessage::where('user_id','!=', userid())->where('is_read',false);
+
+    $un_read_message->where(function($query){
+        $query->orwhere(function($q1){
+            $q1->whereHas('conversation',function($qs1){
+                $qs1->where('receiver_id', userid())->where('receiver_delete',false);
+            });
+        });
+
+        $query->orwhere(function($q2){
+            $q2->whereHas('conversation',function($qs2){
+                $qs2->where('sender_id', userid())->where('sender_delete',false);
+            });
+        });
+    });
+
+
+    $un_read_message = $un_read_message->count();
+
+    return $un_read_message;
 }

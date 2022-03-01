@@ -81,6 +81,19 @@
                     </div>
                   </div>
 
+                  <div class="col-md-6 other_type_of_customer_request_name_div" style="display:none;">
+                    <div class="form-group">
+                      <label>Other Type of Customer Request Name<span class="asterisk">*</span></label>
+                      <input type="text" class="form-control form-control-solid" placeholder="Enter other type of customer request name" name="other_type_of_customer_request_name">
+                    </div>
+                  </div>
+                  
+
+                </div>
+
+
+                <div class="row mb-5">
+
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Urgency<span class="asterisk">*</span></label>
@@ -93,12 +106,7 @@
                     </div>
                   </div>
 
-                </div>
-
-
-                <div class="row mb-5">
-                  
-                  <div class="col-md-12">
+                  <div class="col-md-6">
                     <div class="form-group">
                       <label>Subject<span class="asterisk">*</span></label>
                       <input type="text" class="form-control form-control-solid" name="subject" placeholder="Enter subject">
@@ -247,6 +255,16 @@
             subject:{
               required:true,
               maxlength:185,
+            },
+            other_type_of_customer_request_name:{
+              required: function () {
+                          if($('[name="type_of_customer_request"] option:selected').val() == "Other Matters"){
+                            return true;
+                          }else{
+                            return false;
+                          }
+                        },
+              maxlength:185,
             }
           },
           messages: {
@@ -284,7 +302,16 @@
       },
       isFirstItemUndeletable: true,
     });
-  
+
+
+    $(document).on('change', '[name="type_of_customer_request"]', function(event) {
+      event.preventDefault();
+      if($(this).val() == "Other Matters"){
+        $('.other_type_of_customer_request_name_div').show();
+      }else{
+        $('.other_type_of_customer_request_name_div').hide();
+      }
+    });
   });
 </script>
 @endpush

@@ -1,5 +1,10 @@
 @if(@$message)
   
+  @php
+    $url = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
+    $message_text = preg_replace($url, '<a href="$0" target="_blank" title="$0">$0</a>', $message->message ?? "-");
+  @endphp
+
   @if($message->user_id != userid())
     <!--begin::Message(in)-->
     <div class="d-flex justify-content-start mb-10 conversation_message_list_item" id="conversation_message_list_item{{ $message->id }}">
@@ -25,7 +30,7 @@
         </div>
         <!--end::User-->
         <!--begin::Text-->
-        <div class="p-5 rounded bg-light-info text-dark fw-bold mw-lg-400px text-start" data-kt-element="message-text">{{ $message->message ?? "-" }}</div>
+        <div class="p-5 rounded bg-light-info text-dark fw-bold mw-lg-400px text-start" data-kt-element="message-text">{!! $message_text !!}</div>
         <!--end::Text-->
       </div>
       <!--end::Wrapper-->
@@ -58,7 +63,7 @@
         </div>
         <!--end::User-->
         <!--begin::Text-->
-        <div class="p-5 rounded bg-light-primary text-dark fw-bold mw-lg-400px text-end" data-kt-element="message-text">{{ $message->message ?? "-" }}</div>
+        <div class="p-5 rounded bg-light-primary text-dark fw-bold mw-lg-400px text-end" data-kt-element="message-text">{!! $message_text !!}</div>
         <!--end::Text-->
       </div>
       <!--end::Wrapper-->

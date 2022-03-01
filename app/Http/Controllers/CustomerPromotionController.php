@@ -984,7 +984,7 @@ class CustomerPromotionController extends Controller
     public function getInterest(Request $request){
 
         if($request->ajax()){
-            $data = PromotionInterest::where('user_id', @Auth::id())->latest()->get();
+            $data = PromotionInterest::has('promotion')->where('user_id', @Auth::id())->latest()->get();
 
             return DataTables::of($data)
                     ->addIndexColumn()

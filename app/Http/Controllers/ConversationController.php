@@ -62,11 +62,21 @@ class ConversationController extends Controller
                 $conversation = Conversation::where(['sender_id' => userid(), 'receiver_id' => $input['user_id']])->first();
             }
 
-
             if(is_null($conversation)){
                 $conversation = new Conversation();
                 $conversation->fill([ 'sender_id' => userid(), 'receiver_id' => $input['user_id'] ])->save();
+                
+                
+                // Sent Message First Time
+                $messageInput = array(
+                                    'user_id' => userid(),
+                                    'conversation_id' => $conversation->id,
+                                    'message' => "Hey !",
+                                );
             
+                $message = new ConversationMessage();
+                $message->fill($messageInput)->save();
+
             }else if(!empty($conversation->id)){
                 $conversation->receiver_delete = false;
                 $conversation->sender_delete = false;
