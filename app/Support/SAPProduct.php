@@ -79,13 +79,13 @@ class SAPProduct
         if($url){
             $response = $this->getProductData($url);
         }else{
-            $latestData = Product::orderBy('updated_date','DESC')->first();
-            if(!empty($latestData)){
-                $url = '/b1s/v1/Items?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
-                $response = $this->getProductData($url);
-            } else {
+            // $latestData = Product::orderBy('updated_date','DESC')->first();
+            // if(!empty($latestData)){
+            //     $url = '/b1s/v1/Items?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
+            //     $response = $this->getProductData($url);
+            // } else {
                 $response = $this->getProductData();
-            }
+            // }
         }
 
         if($response['status']){

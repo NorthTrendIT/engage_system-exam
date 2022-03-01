@@ -479,8 +479,8 @@ class CustomerPromotionController extends Controller
                                     }
 
 
-                                    $price = get_product_customer_price(@$product->item_prices,@$customer_user->customer->price_list_num);
-                                    $amount = $discount = get_product_customer_price(@$product->item_prices,@$customer_user->customer->price_list_num,$discount_percentage,@$discount_fix_amount);
+                                    $price = get_product_customer_price(@$product->item_prices,14);
+                                    $amount = $discount = get_product_customer_price(@$product->item_prices,14,$discount_percentage,@$discount_fix_amount);
 
                                     $discount = $price - $discount;
 
@@ -535,13 +535,13 @@ class CustomerPromotionController extends Controller
 
     public function orderIndex(){
 
-        if(userrole() == 1){
-            $company = SapConnection::all();
-        }else{
-            $company = collect();
-        }
+        // if(userrole() == 1){
+        //     $company = SapConnection::all();
+        // }else{
+        //     $company = collect();
+        // }
 
-        return view('customer-promotion.order_index',compact('company'));
+        return view('customer-promotion.order_index');
     }
 
     public function orderGetAll(Request $request){
@@ -568,11 +568,15 @@ class CustomerPromotionController extends Controller
             $data->where('sap_connection_id',$request->filter_company);
         }
 
+        if($request->filter_promotion != ""){
+            $data->where('promotion_id',$request->filter_promotion);
+        }
+
         if($request->filter_search != ""){
             $data->where(function($query) use ($request) {
 
                 $query->whereHas('promotion',function($q) use ($request) {
-                    $q->where('title','LIKE',"%".$request->filter_search."%");
+                    $q->where('code','LIKE',"%".$request->filter_search."%");
                 });
 
             });
@@ -588,6 +592,109 @@ class CustomerPromotionController extends Controller
         }
 
 
+        // Start Check Only Customer and thier self users
+        if($request->filter_territory != ""){
+            $data->where(function($query) use ($request) {
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('customer.territories', function($q1) use ($request){
+                            $q1->where('id', $request->filter_territory);
+                        });
+                    });
+                });
+
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('created_by_user.customer.territories', function($q1) use ($request){
+                            $q1->where('id', $request->filter_territory);
+                        });
+                    });
+                });
+            });
+        }
+
+        if($request->filter_customer_class != ""){
+            $data->where(function($query) use ($request) {
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('customer', function($q1) use ($request){
+                            $q1->where('u_class', $request->filter_customer_class);
+                        });
+                    });
+                });
+
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('created_by_user.customer', function($q1) use ($request){
+                            $q1->where('u_class', $request->filter_customer_class);
+                        });
+                    });
+                });
+            });
+        }
+
+        if($request->filter_market_sector != ""){
+            $data->where(function($query) use ($request) {
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('customer', function($q1) use ($request){
+                            $q1->where('u_sector', $request->filter_market_sector);
+                        });
+                    });
+                });
+
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('created_by_user.customer', function($q1) use ($request){
+                            $q1->where('u_sector', $request->filter_market_sector);
+                        });
+                    });
+                });
+            });
+        }
+
+        if($request->filter_brand != ""){
+            $data->where(function($query) use ($request) {
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('customer.product_groups', function($q1) use ($request){
+                            $q1->where('product_group_id', $request->filter_brand);
+                        });
+                    });
+                });
+
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('created_by_user.customer.product_groups', function($q1) use ($request){
+                            $q1->where('product_group_id', $request->filter_brand);
+                        });
+                    });
+                });
+            });
+        }
+
+        if($request->filter_sales_specialist != ""){
+            $data->where(function($query) use ($request) {
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('customer.sales_specialist', function($q1) use ($request){
+                            $q1->where('ss_id', $request->filter_sales_specialist);
+                        });
+                    });
+                });
+
+                $query->orwhere(function($query1) use ($request) {
+                    $query1->whereHas('user', function($q) use ($request){
+                        $q->whereHas('created_by_user.customer.sales_specialist', function($q1) use ($request){
+                            $q1->where('ss_id', $request->filter_sales_specialist);
+                        });
+                    });
+                });
+            });
+        }
+        // End Check Only Customer and thier self users
+
+
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('customer_promotions.id', 'desc');
         });
@@ -595,7 +702,9 @@ class CustomerPromotionController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('promotion', function($row) {
-                                return @$row->promotion->title ?? "-";
+                                // return @$row->promotion->title ?? "-";
+
+                                return "<span style='cursor: pointer;' title='".@$row->promotion->title."'>".(@$row->promotion->code ?? '-')."</span>";
                             })
                             ->addColumn('user', function($row) {
                                 return @$row->user->sales_specialist_name ?? "-";
@@ -645,7 +754,7 @@ class CustomerPromotionController extends Controller
                             })
                             ->orderColumn('promotion', function ($query, $order) {
                                 $query->select('customer_promotions.*')->join('promotions', 'customer_promotions.promotion_id', '=', 'promotions.id')
-                                    ->orderBy('promotions.title', $order);
+                                    ->orderBy('promotions.code', $order);
                             })
                             ->orderColumn('user', function ($query, $order) {
                                 $query->select('customer_promotions.*')->join('users', 'customer_promotions.user_id', '=', 'users.id')
@@ -660,7 +769,7 @@ class CustomerPromotionController extends Controller
                             ->orderColumn('company', function ($query, $order) {
                                 $query->join('sap_connections', 'customer_promotions.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
-                            ->rawColumns(['action','status','created_at','user'])
+                            ->rawColumns(['action','status','created_at','user','promotion'])
                             ->make(true);
     }
 
@@ -982,11 +1091,118 @@ class CustomerPromotionController extends Controller
             $data->where('sap_connection_id',$filter->filter_company);
         }
 
+        if(@$filter->filter_promotion != ""){
+            $data->where('promotion_id',$filter->filter_promotion);
+        }
+
+
+        // Start Check Only Customer and thier self users
+        if(@$filter->filter_territory != ""){
+            $data->where(function($query) use ($filter) {
+                $query->orwhere(function($query1) use ($filter) {
+                    $query1->whereHas('user', function($q) use ($filter){
+                        $q->whereHas('customer.territories', function($q1) use ($filter){
+                            $q1->where('id', $filter->filter_territory);
+                        });
+                    });
+                });
+
+                $query->orwhere(function($query1) use ($filter) {
+                    $query1->whereHas('user', function($q) use ($filter){
+                        $q->whereHas('created_by_user.customer.territories', function($q1) use ($filter){
+                            $q1->where('id', $filter->filter_territory);
+                        });
+                    });
+                });
+            });
+        }
+
+        if(@$filter->filter_customer_class != ""){
+            $data->where(function($query) use ($filter) {
+                $query->orwhere(function($query1) use ($filter) {
+                    $query1->whereHas('user', function($q) use ($filter){
+                        $q->whereHas('customer', function($q1) use ($filter){
+                            $q1->where('u_class', $filter->filter_customer_class);
+                        });
+                    });
+                });
+
+                $query->orwhere(function($query1) use ($filter) {
+                    $query1->whereHas('user', function($q) use ($filter){
+                        $q->whereHas('created_by_user.customer', function($q1) use ($filter){
+                            $q1->where('u_class', $filter->filter_customer_class);
+                        });
+                    });
+                });
+            });
+        }
+
+        if(@$filter->filter_market_sector != ""){
+            $data->where(function($query) use ($filter) {
+                $query->orwhere(function($query1) use ($filter) {
+                    $query1->whereHas('user', function($q) use ($filter){
+                        $q->whereHas('customer', function($q1) use ($filter){
+                            $q1->where('u_sector', $filter->filter_market_sector);
+                        });
+                    });
+                });
+
+                $query->orwhere(function($query1) use ($filter) {
+                    $query1->whereHas('user', function($q) use ($filter){
+                        $q->whereHas('created_by_user.customer', function($q1) use ($filter){
+                            $q1->where('u_sector', $filter->filter_market_sector);
+                        });
+                    });
+                });
+            });
+        }
+
+        if(@$filter->filter_brand != ""){
+            $data->where(function($query) use ($filter) {
+                $query->orwhere(function($query1) use ($filter) {
+                    $query1->whereHas('user', function($q) use ($filter){
+                        $q->whereHas('customer.product_groups', function($q1) use ($filter){
+                            $q1->where('product_group_id', $filter->filter_brand);
+                        });
+                    });
+                });
+
+                $query->orwhere(function($query1) use ($filter) {
+                    $query1->whereHas('user', function($q) use ($filter){
+                        $q->whereHas('created_by_user.customer.product_groups', function($q1) use ($filter){
+                            $q1->where('product_group_id', $filter->filter_brand);
+                        });
+                    });
+                });
+            });
+        }
+
+        if(@$filter->filter_sales_specialist != ""){
+            $data->where(function($query) use ($filter) {
+                $query->orwhere(function($query1) use ($filter) {
+                    $query1->whereHas('user', function($q) use ($filter){
+                        $q->whereHas('customer.sales_specialist', function($q1) use ($filter){
+                            $q1->where('ss_id', $filter->filter_sales_specialist);
+                        });
+                    });
+                });
+
+                $query->orwhere(function($query1) use ($filter) {
+                    $query1->whereHas('user', function($q) use ($filter){
+                        $q->whereHas('created_by_user.customer.sales_specialist', function($q1) use ($filter){
+                            $q1->where('ss_id', $filter->filter_sales_specialist);
+                        });
+                    });
+                });
+            });
+        }
+        // End Check Only Customer and thier self users
+
         if(@$filter->filter_search != ""){
             $data->where(function($query) use ($filter) {
 
                 $query->whereHas('promotion',function($q) use ($filter) {
-                    $q->where('title','LIKE',"%".$filter->filter_search."%");
+                    $q->where('code','LIKE',"%".$filter->filter_search."%");
                 });
 
             });
@@ -1008,7 +1224,7 @@ class CustomerPromotionController extends Controller
             $records[] = array(
                             'no' => $key + 1,
                             'company' => @$value->sap_connection->company_name ?? "-",
-                            'promotion' => @$value->promotion->title ?? "-",
+                            'promotion' => @$value->promotion->code ?? "-",
                             'customer' => @$value->user->sales_specialist_name ?? "",
                             'created_at' => date('M d, Y',strtotime($value->created_at)),
                             'status' => $value->is_active ? "Active" : "Inctive",

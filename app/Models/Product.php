@@ -62,6 +62,8 @@ class Product extends Model
         'u_bholddown',
         'u_bleadweight',
         'u_btotalweight',
+        'u_product_tech',
+        'sales_unit',
     ];
 
     public function product_images()

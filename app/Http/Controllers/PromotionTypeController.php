@@ -246,7 +246,7 @@ class PromotionTypeController extends Controller
         if(!is_null($data)){
 
             // Add Log
-            add_log(25, array('id' => $data));
+            add_log(25, array('id' => $id));
 
             $data->delete();
 

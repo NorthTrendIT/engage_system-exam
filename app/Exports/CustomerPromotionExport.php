@@ -28,7 +28,7 @@ class CustomerPromotionExport implements FromCollection,WithHeadings,WithTitle,S
         return [
             'No.',
             'Business Unit',
-            'Promotion Title',
+            'Promotion Code',
             'Customer Name',
             'Created Date',
             'Status',

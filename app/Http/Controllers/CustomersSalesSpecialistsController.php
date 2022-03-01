@@ -210,7 +210,7 @@ class CustomersSalesSpecialistsController extends Controller
         if($data > 0){
 
             //save log
-            add_log(43, $data->toArray());
+            add_log(43, ['id'=>$id]);
 
             CustomersSalesSpecialist::where('customer_id', $id)->delete();
             CustomerProductGroup::where('customer_id', $id)->delete();

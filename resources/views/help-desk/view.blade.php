@@ -74,17 +74,21 @@
                               <th> <b>Department:</b> </th>
                               <td>{{ @$data->department->name ?? "" }}</td>
                             </tr> --}}
-                            
-                            <tr>
-                              <th> <b>Urgency:</b> </th>
-                              <td><b style="color: {{ @$data->urgency->color_code ??  "-" }}">{{ @$data->urgency->name ??  "-" }}</b></td>
-                            </tr>
 
                             <tr>
                               <th> <b>Status:</b> </th>
-                              <td><b style="color: {{ @$data->status->color_code ??  "-" }}">{{ @$data->status->name ??  "-" }}</b></td>
+                              <td>
+                                <b style="color:{{ convert_hex_to_rgba(@$data->status->color_code)}};background-color:{{convert_hex_to_rgba(@$data->status->color_code,0.1)}};" class="btn btn-sm">{{ @$data->status->name ?? "-" }}</b>
+                              </td>
                             </tr>
 
+                            <tr>
+                              <th> <b>Urgency:</b> </th>
+                              <td>
+                                <b style="color:{{ convert_hex_to_rgba(@$data->urgency->color_code)}};background-color:{{convert_hex_to_rgba(@$data->urgency->color_code,0.1)}};" class="btn btn-sm">{{ @$data->urgency->name ?? "-" }}</b>
+                              </td>
+                            </tr>
+                            
                             <tr>
                               <th> <b>Subject:</b> </th>
                               <td>{!! @$data->subject ?? "" !!}</td>
@@ -172,6 +176,8 @@
               <h5>Comments</h5>
             </div>
             <div class="card-body">
+
+              @if(@$data->status->name != "Closed")
               <form id="myForm" method="post">
                 @csrf
                 <input type="hidden" name="help_desk_id" value="{{ $data->id }}">
@@ -193,6 +199,7 @@
               </form>
 
               <hr>
+              @endif
 
               <div class="row mb-5 mt-10" id="comment_list_row">
                 

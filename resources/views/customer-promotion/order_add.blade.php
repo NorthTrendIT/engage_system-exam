@@ -107,8 +107,8 @@
                           }
                         }
 
-                        $amount = get_product_customer_price(@$p->product->item_prices,@$customer_user->customer->price_list_num);
-                        $total_amount = $discount_amount = get_product_customer_price(@$p->product->item_prices,@$customer_user->customer->price_list_num,$discount_percentage,@$discount_fix_amount);
+                        $amount = get_product_customer_price(@$p->product->item_prices, 14);
+                        $total_amount = $discount_amount = get_product_customer_price(@$p->product->item_prices, 14,$discount_percentage,@$discount_fix_amount);
 
                         $discount_amount = $amount - $discount_amount;
 

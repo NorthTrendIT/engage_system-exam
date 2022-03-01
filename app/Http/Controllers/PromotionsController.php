@@ -305,7 +305,7 @@ class PromotionsController extends Controller
         $data = Promotions::find($id);
         if(!is_null($data)){
             // Add Promotion Deleted log.
-            add_log(21, array('promotion_id' => $data));
+            add_log(21, array('promotion_id' => $id));
             
             $data->delete();
 

@@ -66,7 +66,17 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Password<span class="asterisk">*</span></label>
-                      <input type="text" class="form-control form-control-solid" placeholder="Enter password" name="password" @if(isset($edit)) value="{{ $edit->password }}" @endif>
+                      {{-- <input type="text" class="form-control form-control-solid" placeholder="Enter password" name="password" @if(isset($edit)) value="{{ $edit->password }}" @endif> --}}
+
+                      <div class="input-group input-group-solid">
+                        <input type="password" class="form-control form-control-solid" placeholder="Enter password" name="password" id="password" @if(isset($edit)) value="{{ $edit->password }}" @endif>
+                        <div class="input-group-append password_icon_div cursor-pointer pt-2">
+                          <span class="input-group-text">
+                            <i class="fas fa-eye-slash password_icon"></i>
+                          </span>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
                 </div>
