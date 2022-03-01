@@ -304,12 +304,23 @@ class PromotionsController extends Controller
     {
         $data = Promotions::find($id);
         if(!is_null($data)){
-            // Add Promotion Deleted log.
-            add_log(21, array('promotion_id' => $id));
-            
-            $data->delete();
 
-            $response = ['status'=>true,'message'=>'Record deleted successfully !'];
+            $where = array(
+                            'promotion_id' => $id,
+                        );
+
+            $claim_count = CustomerPromotion::where($where)->count();
+            if($claim_count == 0){
+                // Add Promotion Deleted log.
+                add_log(21, array('promotion_id' => $id));
+                
+                $data->delete();
+
+                $response = ['status'=>true,'message'=>'Record deleted successfully !'];
+
+            }else{
+                $response = ['status'=>false,'message'=>'Oops! you can not delete this promotions because its already claimed by the customer.'];
+            }
         }else{
             $response = ['status'=>false,'message'=>'Record not found !'];
         }

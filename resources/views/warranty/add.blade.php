@@ -48,9 +48,13 @@
                                             <label>Type of Warranty Claim<span class="asterisk">*</span></label>
                                             <select class="form-control form-control-lg form-control-solid" name="warranty_claim_type" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select type of warranty claim">
                                                 <option value=""></option>
-                                                @foreach($warranty_claim_types as $key => $value)
-                                                <option value="{{ $value }}" @if(isset($edit) && $edit->warranty_claim_type == $value) selected @endif >{{ $value }}</option>
-                                                @endforeach
+                                                @if(isset($edit))
+                                                    <option value="{{ $edit->warranty_claim_type }}" selected>{{ $edit->warranty_claim_type }}</option>
+                                                @else
+                                                    @foreach($warranty_claim_types as $key => $value)
+                                                    <option value="{{ $value }}" @if(isset($edit) && $edit->warranty_claim_type == $value) selected @endif >{{ $value }}</option>
+                                                    @endforeach
+                                                @endif
                                             </select>
                                         </div>
                                     </div>

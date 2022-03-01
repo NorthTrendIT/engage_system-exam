@@ -308,7 +308,7 @@
             </div>
             @endif
 
-            {{-- Product List --}}
+            {{-- Customer Delivery Schedule --}}
             @if(userrole() == 2)
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer-delivery-schedule.ss-view'])) ? 'active' : '' }}" href="{{ route('customer-delivery-schedule.ss-view') }}">
@@ -432,7 +432,7 @@
             {{-- Product List --}}
             @if((isset($access['view-product-list']) && $access['view-product-list'] == 1))
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['product-list.index','product-list.show'])) ? 'active' : '' }}" href="{{ route('product-list.index') }}">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['product-list.index','product-list.show','recommended-products.index'])) ? 'active' : '' }}" href="{{ route('product-list.index') }}">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
@@ -575,7 +575,8 @@
                   </span>
                   <span class="menu-title">Live Chat</span>
 
-                  <i class="fa fa-circle new-message text-primary" aria-hidden="true" style="display: none;"></i>
+                  <span class="badge badge-circle badge-light-success new-message" aria-hidden="true" style="display: none;">{{ get_login_user_un_read_message_count() }}</span>
+                  {{-- <i class="fa fa-circle new-message text-primary" aria-hidden="true" style="display: none;"></i> --}}
                </a>
             </div>
             @endif

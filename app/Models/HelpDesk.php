@@ -27,16 +27,22 @@ class HelpDesk extends Model
         'subject',
         'message',
         'type_of_customer_request',
+        'other_type_of_customer_request_name',
     ];
 
     public static $type_of_customer_requests = [
-        'Delivery',
-        'Marketing',
-        'Payments',
+        'Marketing Promo & Collaterals',
+        'Sales Order',
+        'Sales Invoice',
         'Pricing',
         'Rebates',
-        'Sales Orders',
-        'Others',
+        'Delivery',
+        'Payments',
+        'Warranty Claim',
+        'Meeting Request',
+        'Training Request',
+        'Stock Availability',
+        'Other Matters',
     ];
 
     public function urgency()

@@ -102,29 +102,24 @@ class RecommendedProductController extends Controller
         $customer_price_list_no = null;
 
         if(userrole() == 4){
-            if (!is_null(@Auth::user()->created_by)) {
-                $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
-                if(!is_null($customer)){
-                    $customer = @$customer->customer;
-                    $customer_price_list_no = @$customer->price_list_num;
-                }
-            } else {
-                $customer = @Auth::user()->customer;
-                $customer_price_list_no = @Auth::user()->customer->price_list_num;
-            }
-        }
+            $customer = @Auth::user()->customer;
+            $customer_price_list_no = @Auth::user()->customer->price_list_num;
 
-        if($request->custumer_id){
-            $customer = User::where('role_id', 4)->where('id', $request->custumer_id)->first();
+        }else if (!is_null(@Auth::user()->created_by)) {
+            $user = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
+            if(!is_null($user)){
+                $customer = @$user->customer;
+                $customer_price_list_no = @$customer->price_list_num;
+            }
+        }else if($request->customer_id){
+            $customer = Customer::where('id', $request->customer_id)->first();
             if(!is_null($customer)){
-                $customer = @$customer->customer;
                 $customer_price_list_no = @$customer->price_list_num;
             }
         }
 
         $products = LocalOrderItem::orderBy('id', 'DESC');
-
-        if (userrole() == 4) {
+        if (@$customer->id) {
             $products->whereHas('order', function($q) use ($customer){
                 $q->where('customer_id' ,'=', $customer->id);
             });
@@ -149,11 +144,11 @@ class RecommendedProductController extends Controller
                               return @$row->product->item_code ?? "";
                           })
                           ->addColumn('price', function($row) use ($customer_price_list_no) {
-                              return "₱ ".get_product_customer_price(@$row->product->item_prices,$customer_price_list_no);
+                              return "₱ ".number_format(get_product_customer_price(@$row->product->item_prices,$customer_price_list_no),2);
                           })
-                          ->addColumn('action', function($row) use ($request) {
+                          ->addColumn('action', function($row) use ($customer) {
                             if(userrole() == 2){
-                                if(is_in_cart(@$row->product->id, $request->customer_id) == 1){
+                                if(is_in_cart(@$row->product->id, @$customer->id) == 1){
                                     $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 }else{
                                     $btn = '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm mr-10 addToCart" data-url="'.route('recommended-products.cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>
@@ -164,16 +159,15 @@ class RecommendedProductController extends Controller
                                 if(is_in_cart(@$row->product->id) == 1){
                                     $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 }else{
-                                    $btn = '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm  mr-10addToCart" data-url="'.route('cart.add',@$row->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>
+                                    $btn = '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm  mr-10addToCart" data-url="'.route('cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>
                                     <a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 }
                             }
 
 
-                            $btn .= '<a href="' . route('product-list.show',@$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm m-3">
+                            $btn .= '<a href="' . route('product-list.show',['id' => @$row->product->id, 'customer_id' => @$customer->id]). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm m-3" target="_blank">
                                     <i class="fa fa-eye"></i>
                                 </a>';
-
                             return $btn;
                           })
                           ->orderColumn('item_name', function ($query, $order) {

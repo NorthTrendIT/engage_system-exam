@@ -311,6 +311,8 @@ class HelpDeskController extends Controller
             $data->where(function($q) use ($request) {
                 $q->orwhere('subject','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('ticket_number','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('type_of_customer_request','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('other_type_of_customer_request_name','LIKE',"%".$request->filter_search."%");
             });
         }
 
@@ -333,7 +335,12 @@ class HelpDeskController extends Controller
                                 return @$row->ticket_number ?? "";
                             })
                             ->addColumn('type_of_customer_request', function($row) {
-                                return @$row->type_of_customer_request ?? "";
+                                $text = @$row->type_of_customer_request ?? "";
+
+                                if(@$row->type_of_customer_request == "Other Matters" && @$row->other_type_of_customer_request_name){
+                                    $text .= " (".@$row->other_type_of_customer_request_name.")";
+                                }
+                                return $text;
                             })
                             ->addColumn('subject', function($row) {
                                 return @$row->subject ?? "";
