@@ -61,6 +61,7 @@
                             <tr>
                               <th>Sales Specialist Name</th>
                               <th>Confirmation Status</th>
+                              <th>Total</th>
                               <th>Due Date</th>
                               <th>Action</th>
                             </tr>
@@ -122,6 +123,7 @@ $(document).ready(function() {
           columns: [
               {data: 'sales_specialist_name', name: 'sales_specialist_name', orderable: false},
               {data: 'confirmation_status', name: 'confirmation_status'},
+              {data: 'total', name: 'total', orderable: false},
               {data: 'due_date', name: 'due_date'},
               {data: 'action', name: 'action'},
           ],
