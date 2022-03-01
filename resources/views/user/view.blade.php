@@ -17,10 +17,10 @@
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-      
+
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid detail-view-table" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -39,7 +39,7 @@
               </div>
             </div>
             <div class="card-body">
-              
+
               <div class="row mb-5">
                 <div class="col-md-12">
                   <div class="form-group">
@@ -51,30 +51,30 @@
                           <thead>
                             <tr>
                               <th> <b>First Name:</b> </th>
-                              <td>{{ @$data->first_name ?? "" }}</td>
+                              <td>{{ @$data->first_name ?? "-" }}</td>
                             </tr>
                             <tr>
                               <th> <b>Last Name:</b> </th>
-                              <td>{{ @$data->last_name ?? "" }}</td>
+                              <td>{{ @$data->last_name ?? "-" }}</td>
                             </tr>
 
                             <tr>
                               <th> <b>Email:</b> </th>
-                              <td>{{ @$data->email ?? "" }}</td>
+                              <td>{{ @$data->email ?? "-" }}</td>
                             </tr>
                             <tr>
                               <th> <b>Department Name:</b> </th>
-                              <td>{{ @$data->department->name ?? "" }}</td>
+                              <td>{{ @$data->department->name ?? "-" }}</td>
                             </tr>
 
                             <tr>
                               <th> <b>Role Name:</b> </th>
-                              <td>{{ @$data->role->name ?? "" }}</td>
+                              <td>{{ @$data->role->name ?? "-" }}</td>
                             </tr>
-                            
+
                             <tr>
                               <th> <b>Parent User Name:</b> </th>
-                              <td>{{ @$data->parent->first_name ?? "" }} {{ @$data->parent->last_name ?? "" }}</td>
+                              <td>{{ @$data->parent->first_name ?? "-" }} {{ @$data->parent->last_name ?? "" }}</td>
                             </tr>
 
                             @if(!is_null($data->password_text) && userrole() == 1)
@@ -103,7 +103,7 @@
                             @if(@$data->role_id == 2)
                             <tr>
                               <th> <b>Sales Employee Code:</b> </th>
-                              <td>{{ @$data->sales_employee_code ?? "" }}</td>
+                              <td>{{ @$data->sales_employee_code ?? "-" }}</td>
                             </tr>
                             @endif
 
@@ -118,10 +118,12 @@
 
                             <tr>
                               <th> <b>Profile Image:</b> </th>
-                              
+
                               <td>
                                 @if($data->profile && get_valid_file_url('sitebucket/users',$data->profile))
                                   <a href="{{ get_valid_file_url('sitebucket/users',$data->profile) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/users',$data->profile) }}" height="100" width="100" class="mr-10"></a>
+                                @else
+                                    -
                                 @endif
                               </td>
                             </tr>
@@ -142,7 +144,7 @@
                           <!--end::Table head-->
                           <!--begin::Table body-->
                           <tbody>
-                            
+
                           </tbody>
                           <!--end::Table body-->
                        </table>

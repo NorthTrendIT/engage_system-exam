@@ -17,10 +17,10 @@
         <!--end::Button-->
       </div>
       <!--end::Actions-->
-      
+
     </div>
   </div>
-  
+
   <div class="post d-flex flex-column-fluid detail-view-table" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
@@ -30,7 +30,7 @@
               <h5>View Details</h5>
             </div>
             <div class="card-body">
-              
+
               <div class="row mb-5">
                 <div class="col-md-12">
                   <div class="form-group">
@@ -42,19 +42,19 @@
                           <thead>
                             <tr>
                               <th> <b>Product Name:</b> </th>
-                              <td>{{ @$data->item_name ?? "" }}</td>
+                              <td>{{ @$data->item_name ?? "-" }}</td>
                             </tr>
                             <tr>
                               <th> <b>Product Brand:</b> </th>
-                              <td>{{ @$data->group->group_name ?? "" }}</td>
+                              <td>{{ @$data->group->group_name ?? "-" }}</td>
                             </tr>
                             <tr>
                               <th> <b>Product Code:</b> </th>
-                              <td>{{ @$data->item_code ?? "" }}</td>
+                              <td>{{ @$data->item_code ?? "-" }}</td>
                             </tr>
                             <tr>
                               <th> <b>Business Unit:</b> </th>
-                              <td>{{ @$data->sap_connection->company_name ?? "" }}</td>
+                              <td>{{ @$data->sap_connection->company_name ?? "-" }}</td>
                             </tr>
                             <tr>
                               <th> <b>Product Line:</b> </th>
@@ -62,7 +62,7 @@
                             </tr>
                             <tr>
                               <th> <b>Product Category:</b> </th>
-                              <td>{{ @$data->u_tires ?? "" }}</td>
+                              <td>{{ @$data->u_tires ?? "-" }}</td>
                             </tr>
                             <tr>
                               <th> <b>Created Date:</b> </th>
@@ -75,19 +75,19 @@
 
                             <tr>
                               <th> <b>Technical specifications:</b> </th>
-                              <td>{!! @$data->technical_specifications ?? "" !!}</td>
+                              <td>{!! @$data->technical_specifications ?? "-" !!}</td>
                             </tr>
                             <tr>
                               <th> <b>Features:</b> </th>
-                              <td>{!! @$data->product_features ?? "" !!}</td>
+                              <td>{!! @$data->product_features ?? "-" !!}</td>
                             </tr>
                             <tr>
                               <th> <b>Advantages & Benefits:</b> </th>
-                              <td>{!! @$data->product_benefits ?? "" !!}</td>
+                              <td>{!! @$data->product_benefits ?? "-" !!}</td>
                             </tr>
                             <tr>
                               <th> <b>Sell Sheets:</b> </th>
-                              <td>{!! @$data->product_sell_sheets ?? "" !!}</td>
+                              <td>{!! @$data->product_sell_sheets ?? "-" !!}</td>
                             </tr>
 
                             <tr>
@@ -109,7 +109,7 @@
                           <!--end::Table head-->
                           <!--begin::Table body-->
                           <tbody>
-                            
+
                           </tbody>
                           <!--end::Table body-->
                        </table>
