@@ -273,7 +273,7 @@ class CartController extends Controller
             }
 
             // return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
-            // Cart::where('customer_id', $customer_id)->delete();
+            Cart::where('customer_id', $customer_id)->delete();
 
             try{
                 $sap_connection = SapConnection::find(@Auth::user()->customer->sap_connection_id);
