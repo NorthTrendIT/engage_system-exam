@@ -59,6 +59,7 @@
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <thead>
                             <tr>
+                              <th>No.</th>
                               <th>Sales Specialist Name</th>
                               <th>Confirmation Status</th>
                               <th>Total</th>
@@ -121,6 +122,7 @@ $(document).ready(function() {
               }
           },
           columns: [
+              {data: 'DT_RowIndex'},
               {data: 'sales_specialist_name', name: 'sales_specialist_name', orderable: false},
               {data: 'confirmation_status', name: 'confirmation_status'},
               {data: 'total', name: 'total', orderable: false},

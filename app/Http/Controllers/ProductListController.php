@@ -378,7 +378,7 @@ class ProductListController extends Controller
                               return @$row->u_tires ?? "-";
                           })
                           ->addColumn('price', function($row) use ($customer_price_list_no) {
-                              return "₱ ".number_format(get_product_customer_price(@$row->item_prices,$customer_price_list_no));
+                              return "₱ ".number_format(get_product_customer_price(@$row->item_prices,$customer_price_list_no), 2);
                           })
                           ->addColumn('action', function($row) {
                             $btn = null;
