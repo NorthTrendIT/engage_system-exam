@@ -776,6 +776,6 @@ td.disabled.day {
     padding-right: 0.75rem;
 }
 
-.marker{
+span.marker{
     background-color: yellow;
 }
