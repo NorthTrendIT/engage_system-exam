@@ -775,3 +775,7 @@ td.disabled.day {
 .column-left-right-fix-scroll-hidden .table.gs-0 td:last-child, .column-left-right-fix-scroll-hidden .table.gs-0 th:last-child {
     padding-right: 0.75rem;
 }
+
+.marker{
+    background-color: yellow;
+}

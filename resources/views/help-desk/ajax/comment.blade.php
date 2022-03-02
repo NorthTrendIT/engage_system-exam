@@ -5,7 +5,7 @@
 		<!--begin::Body-->
 		<div class="mb-0">
 			<!--begin::Text-->
-			<div class="fw-bold fs-5 text-gray-600 text-dark mt-4">
+			<div class="fw-bold fs-5  mt-4">
 				{!! $comment->comment !!}
 			</div>
 			<!--end::Text-->
