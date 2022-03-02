@@ -64,6 +64,12 @@
                     <option value=""></option>
                     <option value="A">Announcement</option>
                     <option value="N">News</option>
+                    @if(userrole() != 1)
+                    <option value="OU">Order</option>
+                    <option value="CP">Claimed Promotion</option>
+                    <option value="HD">Help Desk</option>
+                    <option value="LC">Live Chat</option>
+                    @endif
                   </select>
                 </div>
 
@@ -101,6 +107,12 @@
                     <option value=""></option>
                     <option value="A">Announcement</option>
                     <option value="N">News</option>
+                    @if(userrole() != 1)
+                    <option value="OU">Order</option>
+                    <option value="CP">Claimed Promotion</option>
+                    <option value="HD">Help Desk</option>
+                    <option value="LC">Live Chat</option>
+                    @endif
                   </select>
                 </div>
 
@@ -130,8 +142,8 @@
                                 <th>Type</th>
                                 @if(@Auth::user()->role_id == 1)
                                 <th>Period/Date</th>
-                                @endif
                                 <th>Customer</th>
+                                @endif
                                 <th>Priority</th>
                                 @if(@Auth::user()->role_id == 1)
                                 <th>User Name</th>
@@ -220,8 +232,8 @@ $(document).ready(function() {
               {data: 'type', name: 'type'},
               @if(@Auth::user()->role_id == 1)
               {data: 'date_period', name: 'date_period'},
-              @endif
               {data: 'module', name: 'module'},
+              @endif
               {data: 'is_important', name: 'is_important', orderable: false},
               @if(@Auth::user()->role_id == 1)
               {data: 'user_name', name: 'user_name'},

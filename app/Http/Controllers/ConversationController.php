@@ -8,9 +8,12 @@ use App\Models\CustomersSalesSpecialist;
 use App\Models\Conversation;
 use App\Models\ConversationMessage;
 use App\Models\Department;
+use App\Models\Notification;
+use App\Models\NotificationConnection;
 
 use Auth;
 use Validator;
+use OneSignal;
 
 class ConversationController extends Controller
 {
@@ -188,7 +191,47 @@ class ConversationController extends Controller
             $input['user_id'] = userid();
             
             $message = new ConversationMessage();
-            $message->fill($input)->save();
+            if($message->fill($input)->save()){
+
+                // Start Push Notification to receiver
+                $noti_receiver_id = false;
+                if($conversation->sender_id == userid()){
+                    $noti_receiver_id = $conversation->receiver_id;
+                }elseif($conversation->receiver_id == userid()){
+                    $noti_receiver_id = $conversation->sender_id;
+                }
+
+                if($noti_receiver_id){
+
+                    $link = route('conversation.index').'?id='.$conversation->id;
+
+                    // Create Local Notification
+                    $notification = new Notification();
+                    $notification->type = 'LC';
+                    $notification->title = Auth::user()->sales_specialist_name.' sent you a new message.';
+                    $notification->module = 'live-chat';
+                    $notification->sap_connection_id = null;
+                    $notification->message = Auth::user()->sales_specialist_name.' sent you a new message. <a href="'.$link.'"><b>View</b></a>';
+                    $notification->user_id = userid();
+                    $notification->save();
+
+                    if($notification->id){
+                        $connection = new NotificationConnection();
+                        $connection->notification_id = $notification->id;
+                        $connection->user_id = $noti_receiver_id;
+                        $connection->record_id = null;
+                        $connection->save();
+                    }
+
+                    // Send One Signal Notification.
+                    $fields['filters'] = array(array("field" => "tag", "key" => "user", "relation"=> "=", "value"=> $noti_receiver_id));
+                    $message_text = $notification->title;
+
+                    $push = OneSignal::sendPush($fields, $message_text);
+                }
+                // End Push Notification to receiver
+
+            }
 
             $html = view('conversation.ajax.message_list',compact('message'))->render();
 

@@ -294,7 +294,13 @@ function getNotificationType($type){
         } else if($type == 'N' || $type == 'n'){
             return 'News';
         } else if($type == 'OU' || $type == 'ou'){
-            return 'Order Update';
+            return 'Order';
+        }else if($type == 'LC' || $type == 'lc'){
+            return 'Live Chat';
+        }else if($type == 'HD' || $type == 'hd'){
+            return 'Help Desk';
+        }else if($type == 'CP' || $type == 'cp'){
+            return 'Claimed Promotion';
         } else {
             return '-';
         }
