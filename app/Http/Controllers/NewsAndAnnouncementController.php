@@ -364,14 +364,22 @@ class NewsAndAnnouncementController extends Controller
 
     public function getAll(Request $request){
         if(@Auth::user()->role_id == 1){
-            $data = Notification::with(['user']);
+            $data = Notification::with(['user'])->whereIn('type',['A','N']);
         } else {
             $now = date("Y-m-d");
             $data = Notification::whereHas('connections', function($q){
                 $q->where('user_id', '=', @Auth::user()->id);
-            })->where('start_date','<=',$now)
-              ->where('end_date','>=',$now)
-              ->where('is_active', true);
+            })->where('is_active', true);
+
+            $data->where(function($query) use ($now){
+                $query->orwhere(function($q) use ($now){
+                    $q->where('start_date','<=',$now)->where('end_date','>=',$now);
+                });
+
+                $query->orwhere(function($q1){
+                    $q1->whereNull('start_date')->whereNull('end_date');
+                });
+            });
         }
 
         if($request->filter_type != ""){
@@ -413,7 +421,7 @@ class NewsAndAnnouncementController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('bussines_unit', function($row) {
-                                return $row->sap_connection->company_name;
+                                return @$row->sap_connection->company_name ?? "-";
                             })
                             ->addColumn('title', function($row) {
                                 return $row->title;
