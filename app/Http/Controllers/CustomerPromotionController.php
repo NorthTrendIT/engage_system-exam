@@ -15,16 +15,19 @@ use App\Models\CustomerPromotion;
 use App\Models\CustomerPromotionProduct;
 use App\Models\CustomerPromotionProductDelivery;
 use App\Models\CustomerBpAddress;
-
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\CustomerPromotionExport;
+use App\Models\Notification;
+use App\Models\NotificationConnection;
+use App\Models\SapConnection;
 
 use App\Support\SAPCustomerPromotion;
-use App\Models\SapConnection;
+
+use App\Exports\CustomerPromotionExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 use Validator;
 use DataTables;
 use Auth;
+use OneSignal;
 
 class CustomerPromotionController extends Controller
 {
@@ -854,6 +857,35 @@ class CustomerPromotionController extends Controller
 
             // Add Log.
             add_log(28, $input);
+
+
+            // Start Push Notification to receiver
+            $link = route('customer-promotion.order.show', $obj->id);
+
+            // Create Local Notification
+            $notification = new Notification();
+            $notification->type = 'CP';
+            $notification->title = 'Claimed promotion status updated.';
+            $notification->module = 'claimed-promotions';
+            $notification->sap_connection_id = null;
+            $notification->message = 'Your claimed promotion status has been updated to <b>'.@$obj->status.'. </b><a href="'.$link.'"><b>View</b></a>.';
+            $notification->user_id = userid();
+            $notification->save();
+
+            if($notification->id){
+                $connection = new NotificationConnection();
+                $connection->notification_id = $notification->id;
+                $connection->user_id = $obj->user_id;
+                $connection->record_id = null;
+                $connection->save();
+            }
+
+            // Send One Signal Notification.
+            $fields['filters'] = array(array("field" => "tag", "key" => "user", "relation"=> "=", "value"=> $obj->user_id));
+            $message_text = $notification->title;
+
+            $push = OneSignal::sendPush($fields, $message_text);
+        // End Push Notification to receiver
         }
 
         return $response;
@@ -984,7 +1016,7 @@ class CustomerPromotionController extends Controller
     public function getInterest(Request $request){
 
         if($request->ajax()){
-            $data = PromotionInterest::where('user_id', @Auth::id())->latest()->get();
+            $data = PromotionInterest::has('promotion')->where('user_id', @Auth::id())->latest()->get();
 
             return DataTables::of($data)
                     ->addIndexColumn()

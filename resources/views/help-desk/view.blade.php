@@ -47,7 +47,12 @@
 
                             <tr>
                               <th> <b>Type of Customer Request:</b> </th>
-                              <td>{{ @$data->type_of_customer_request ?? "" }}</td>
+                              <td>
+                                {{ @$data->type_of_customer_request ?? "" }}
+                                @if(@$data->type_of_customer_request == "Other Matters" && @$data->other_type_of_customer_request_name)
+                                    ({{@$data->other_type_of_customer_request_name}})
+                                @endif
+                              </td>
                             </tr>
 
                             <tr>

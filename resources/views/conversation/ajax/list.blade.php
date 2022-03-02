@@ -16,7 +16,7 @@
             @if($user->profile && get_valid_file_url('sitebucket/users',$user->profile))
               <img alt="user" src="{{ get_valid_file_url('sitebucket/users',$user->profile) }}" />
             @else
-              <img src="{{ asset('assets') }}/assets/media/default_user.png" alt="user" />
+              <div class="symbol-label fs-3" style="color:{{ convert_hex_to_rgba($user->default_profile_color) }};background-color:{{ convert_hex_to_rgba($user->default_profile_color,0.5) }};"><b>{{ get_sort_char($user->sales_specialist_name) }}</b></div>
             @endif
             {{-- <div class="symbol-badge bg-success start-100 top-100 border-4 h-15px w-15px ms-n2 mt-n2"></div> --}}
         </div>

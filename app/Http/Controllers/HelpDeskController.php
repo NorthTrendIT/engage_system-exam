@@ -11,9 +11,13 @@ use App\Models\HelpDeskStatuses;
 use App\Models\HelpDeskUrgencies;
 use App\Models\HelpDeskDepartment;
 use App\Models\Department;
+use App\Models\Notification;
+use App\Models\NotificationConnection;
+
 use DataTables;
 use Validator;
 use Auth;
+use OneSignal;
 
 class HelpDeskController extends Controller
 {
@@ -311,6 +315,8 @@ class HelpDeskController extends Controller
             $data->where(function($q) use ($request) {
                 $q->orwhere('subject','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('ticket_number','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('type_of_customer_request','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('other_type_of_customer_request_name','LIKE',"%".$request->filter_search."%");
             });
         }
 
@@ -333,7 +339,12 @@ class HelpDeskController extends Controller
                                 return @$row->ticket_number ?? "";
                             })
                             ->addColumn('type_of_customer_request', function($row) {
-                                return @$row->type_of_customer_request ?? "";
+                                $text = @$row->type_of_customer_request ?? "";
+
+                                if(@$row->type_of_customer_request == "Other Matters" && @$row->other_type_of_customer_request_name){
+                                    $text .= " (".@$row->other_type_of_customer_request_name.")";
+                                }
+                                return $text;
                             })
                             ->addColumn('subject', function($row) {
                                 return @$row->subject ?? "";
@@ -408,6 +419,37 @@ class HelpDeskController extends Controller
                 add_log(53, $obj->toArray());
 
                 $response = ['status'=>true,'message'=>'Status update successfully !'];
+
+
+                // Start Push Notification to receiver
+                    $link = route('help-desk.show', $obj->id);
+
+                    // Create Local Notification
+                    $notification = new Notification();
+                    $notification->type = 'HD';
+                    $notification->title = 'Help Desk ticket '.$obj->ticket_number.' status updated.';
+                    $notification->module = 'help-desk';
+                    $notification->sap_connection_id = null;
+                    $notification->message = 'Your Help Desk ticket <a href="'.$link.'"><b>'.$obj->ticket_number.'</b></a> status has been updated to <b>'.@$obj->status->name.'</b>.';
+                    $notification->user_id = userid();
+                    $notification->save();
+
+                    if($notification->id){
+                        $connection = new NotificationConnection();
+                        $connection->notification_id = $notification->id;
+                        $connection->user_id = $obj->user_id;
+                        $connection->record_id = null;
+                        $connection->save();
+                    }
+
+                    // Send One Signal Notification.
+                    $fields['filters'] = array(array("field" => "tag", "key" => "user", "relation"=> "=", "value"=> $obj->user_id));
+                    $message_text = $notification->title;
+
+                    $push = OneSignal::sendPush($fields, $message_text);
+                // End Push Notification to receiver
+
+
             }else{
                 $response = ['status'=>false,'message'=>'Record not found !'];
             }
@@ -448,6 +490,38 @@ class HelpDeskController extends Controller
                 add_log(54, $comment->toArray());
 
                 $response = ['status'=>true,'message'=>$message];
+
+
+                if($obj->user_id != userid()){
+                // Start Push Notification to receiver
+                    $link = route('help-desk.show', $obj->id);
+
+                    // Create Local Notification
+                    $notification = new Notification();
+                    $notification->type = 'HD';
+                    $notification->title = Auth::user()->sales_specialist_name.' added new comment on Help Desk ticket '.$obj->ticket_number.'.';
+                    $notification->module = 'help-desk';
+                    $notification->sap_connection_id = null;
+                    $notification->message = Auth::user()->sales_specialist_name.' added new comment on Help Desk ticket <a href="'.$link.'"><b>'.$obj->ticket_number.'</b></a>.';
+                    $notification->user_id = userid();
+                    $notification->save();
+
+                    if($notification->id){
+                        $connection = new NotificationConnection();
+                        $connection->notification_id = $notification->id;
+                        $connection->user_id = $obj->user_id;
+                        $connection->record_id = null;
+                        $connection->save();
+                    }
+
+                    // Send One Signal Notification.
+                    $fields['filters'] = array(array("field" => "tag", "key" => "user", "relation"=> "=", "value"=> $obj->user_id));
+                    $message_text = $notification->title;
+
+                    $push = OneSignal::sendPush($fields, $message_text);
+                // End Push Notification to receiver
+                }
+
 
             }else{
                 return $response = ['status'=>false,'message'=>'Access Denied !'];

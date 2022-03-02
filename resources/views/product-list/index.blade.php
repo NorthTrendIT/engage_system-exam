@@ -236,10 +236,8 @@ $(document).ready(function() {
     });
 
     $(document).on('click', '.clear-search', function(event) {
-      $('[name="filter_search"]').val('');
-      $('[name="filter_brand"]').val('').trigger('change');
-      $('[name="filter_product_category"]').val('').trigger('change');
-      $('[name="filter_product_line"]').val('').trigger('change');
+      $('input').val('');
+      $('select').val('').trigger('change');
       render_table();
     })
 //   getProductList();

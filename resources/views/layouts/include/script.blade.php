@@ -136,14 +136,17 @@
 
 	@if(!in_array( Route::currentRouteName(), ['conversation.index']))
 
-		{{-- @if(getUserLastMessage(userid()) > 0)
-			//$('.new-message').show();
-		@endif--}}
+		@if(get_login_user_un_read_message_count() > 0)
+			$('.new-message').show();
+		@endif
 
 		// Receive Message
 		socket.on('receiveMessage', data => {
 			if(data.to == '{{ userid() }}'){
 				toast_success("You have received one new message !");
+
+        var count = parseInt($('.new-message').text()) + 1;
+        $('.new-message').text(count);
 				$('.new-message').show();
 			}
 

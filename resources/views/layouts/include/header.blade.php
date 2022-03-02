@@ -36,7 +36,9 @@
          <div class="d-flex align-items-stretch flex-shrink-0">
             <!-- Notification -->
             @if(Auth::user()->role_id != 1)
-                @php $notification = getMyNotifications(); @endphp
+                @php 
+                  $notification = getMyNotifications(); 
+                @endphp
                <div class="d-flex align-items-stretch flex-shrink-0">
                   <!--begin::User-->
                   <div class="d-flex align-items-center ms-1 ms-lg-3" id="kt_header_user_menu_toggle">
@@ -50,7 +52,7 @@
                         @endif
                      </div>
                      <!--begin::Menu-->
-                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px" data-kt-menu="true">
+                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-350px" data-kt-menu="true">
                         @if(isset($notification) && count($notification) > 0)
                         @foreach($notification as $item)
                         <div class="menu-item px-3">
