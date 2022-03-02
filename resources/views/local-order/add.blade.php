@@ -229,6 +229,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" ></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.repeater/1.2.1/jquery.repeater.min.js"></script>
 <script>
+    @if(isset($edit))
+    window.onload = function() {
+        $('#selectCustomers').trigger('change');
+    };
+    @endif
     $(document).ready(function() {
         var form = $('#myForm');
 
@@ -336,6 +341,10 @@
             multiple: false,
             // data: $initialOptions
         });
+
+        @if(isset($edit))
+            $('#selectCustomers').trigger('change');
+        @endif
 
         $('body').on('change' ,'#selectCustomers', function(){
             $customer = $('[name="customer_id"]').val();

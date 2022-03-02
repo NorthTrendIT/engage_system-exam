@@ -38,7 +38,7 @@
                                             <span class="text-gray-800 fs-6 fw-bolder">{{ $value->product->item_name}}</span>
                                             <span class="text-muted fw-bold d-block fs-7">CODE: {{ $value->product->item_code }}</span>
                                         </div>
-                                        <span class="fw-bolder my-2 price">₱ {{ number_format(get_product_customer_price(@$value->product->item_prices,@Auth::user()->customer->price_list_num) * $value->qty) }}</span>
+                                        <span class="fw-bolder my-2 price">₱ {{ number_format(get_product_customer_price(@$value->product->item_prices,@Auth::user()->customer->price_list_num) * $value->qty , 2) }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>
@@ -86,7 +86,7 @@
                                             <span class="text-gray-800 fs-6 fw-bolder">Price</span>
                                         </div>
 
-                                        <span class="fw-bolder my-2 totalPrice">₱ {{ number_format($total) }}</span>
+                                        <span class="fw-bolder my-2 totalPrice">₱ {{ number_format($total, 2) }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>
@@ -124,7 +124,7 @@
                                         <div class="flex-grow-1 me-2">
                                             <h3 class="text-gray-800 fs-6 fw-bolder">Total Amount</h3>
                                         </div>
-                                        <span class="fw-boldest fs-5 my-2 totalAmount">₱ {{ number_format($total) }}</span>
+                                        <span class="fw-boldest fs-5 my-2 totalAmount">₱ {{ number_format($total, 2) }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>

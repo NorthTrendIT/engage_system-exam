@@ -188,6 +188,7 @@ class DraftOrderController extends Controller
         });
 
         return DataTables::of($data)
+                            ->addIndexColumn()
                             ->addColumn('sales_specialist_name', function($row) {
                                 if(isset($row->sales_specialist)){
                                     return $row->sales_specialist->sales_specialist_name;
@@ -206,7 +207,7 @@ class DraftOrderController extends Controller
                                 return date('M d, Y',strtotime($row->due_date));
                             })
                             ->addColumn('total', function($row) {
-                                return $row->items->sum('total');
+                                return number_format($row->items->sum('total'), 2);
                             })
                             ->orderColumn('due_date', function ($query, $order) {
                                 $query->orderBy('due_date', $order);

@@ -46,6 +46,7 @@ class StoreQuotations implements ShouldQueue
                             'doc_entry' => $value['DocEntry'],
                             'doc_num' => $value['DocNum'],
                             'doc_type' => $value['DocType'],
+                            'num_at_card' => $value['NumAtCard'],
                             'document_status' => $value['DocumentStatus'],
                             'doc_date' => $value['DocDate'],
                             'doc_time' => $value['DocTime'],
