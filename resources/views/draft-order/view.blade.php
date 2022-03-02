@@ -183,7 +183,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-5 text-gray-700">₱ {{ @$data->doc_total }}</div>
+                                  <div class="text-end fw-bolder fs-5 text-gray-700">₱ {{ number_format(@$data->doc_total, 2) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->

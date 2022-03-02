@@ -99,7 +99,7 @@
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Invoice #:</div>
                               <!--end::Label-->
                               <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->doc_entry ?? "-"  }}</div>
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->doc_num ?? "-"  }}</div>
                               <!--end::Col-->
                             </div>
                             <!--end::Col-->
@@ -183,7 +183,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ @$data->doc_total }}</div>
+                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format(@$data->doc_total, 2) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
