@@ -472,9 +472,9 @@ class NewsAndAnnouncementController extends Controller
                                   <i class="fa fa-eye"></i>
                                 </a>';
                                 if(@Auth::user()->role_id == 1){
-                                    $btn .= '<a href="' . route('news-and-announcement.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10 ">
-                                    <i class="fa fa-pencil"></i>
-                                    </a>';
+                                    // $btn .= '<a href="' . route('news-and-announcement.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10 ">
+                                    // <i class="fa fa-pencil"></i>
+                                    // </a>';
                                     if($row->type != 'OU'){
                                         $btn .= '<a href="javascript:"  data-url="' . route('news-and-announcement.destroy',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10 delete" title="Delete">
                                             <i class="fa fa-trash"></i>
