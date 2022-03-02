@@ -278,7 +278,7 @@ class OrdersController extends Controller
                                 return $row->doc_entry;
                             })
                             ->addColumn('total', function($row) {
-                                return '₱ '. number_format($row->doc_total);
+                                return '₱ '. number_format($row->doc_total, 2);
                             })
                             ->addColumn('date', function($row) {
                                 return date('M d, Y',strtotime($row->doc_date));
@@ -660,7 +660,7 @@ class OrdersController extends Controller
                             'company' => @$value->sap_connection->company_name ?? "-",
                             'doc_entry' => $value->doc_entry ?? "-",
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
-                            'doc_total' => number_format($value->doc_total),
+                            'doc_total' => number_format($value->doc_total, 2),
                             'created_at' => date('M d, Y',strtotime($value->doc_date)),
                             'status' => getOrderStatus($value),
                           );

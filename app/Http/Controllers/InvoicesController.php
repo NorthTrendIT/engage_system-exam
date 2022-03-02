@@ -239,7 +239,7 @@ class InvoicesController extends Controller
                                 return $row->doc_entry;
                             })
                             ->addColumn('total', function($row) {
-                                return '₱ '. number_format($row->doc_total);
+                                return '₱ '. number_format($row->doc_total, 2);
                             })
                             ->addColumn('date', function($row) {
                                 return date('M d, Y',strtotime($row->doc_date));

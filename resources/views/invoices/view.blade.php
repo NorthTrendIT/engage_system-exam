@@ -165,8 +165,8 @@
                                         <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}</td>
                                         <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
-                                        <td class="pt-6">₱ {{ number_format($value->gross_price) }}</td>
-                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format($value->gross_total) }}</td>
+                                        <td class="pt-6">₱ {{ number_format($value->gross_price, 2) }}</td>
+                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format($value->gross_total, 2) }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -204,7 +204,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
                                   <!--end::Code-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-5 fw-boldest">₱ {{ number_format(@$data->doc_total) }}</div>
+                                  <div class="text-end fw-bolder fs-5 fw-boldest">₱ {{ number_format(@$data->doc_total, 2) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->

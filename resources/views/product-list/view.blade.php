@@ -72,7 +72,11 @@
                          <h5>{{ @$product->item_name ?? "" }}</h5>
 
                          @if($customer)
+<<<<<<< HEAD
+                         <p><span class="mr-1 price"><strong>₱ {{ number_format(get_product_customer_price(@$product->item_prices,@$customer->price_list_num), 2) }}</strong></span></p>
+=======
                          <p><span class="mr-1 price"><strong>₱ {{ number_format(get_product_customer_price(@$product->item_prices,@$customer->price_list_num),2) }}</strong></span></p>
+>>>>>>> df7da3b8c09e5e28a544222e4614139969de62c2
                          @endif
                          <p class="pt-1">{!! @$product->technical_specifications ?? "" !!}</p>
                          <div class="table-responsive">
@@ -188,8 +192,8 @@
                 </div>
                 <div class="card-body">
                     <div class="row tns tns-default" id="product_list_row">
-                        @php 
-                            $products = getRecommendedProducts(@$customer->id); 
+                        @php
+                            $products = getRecommendedProducts(@$customer->id);
                         @endphp
                         @if(!empty($products) && count($products) > 0)
                         <div class="tns-outer my-slider"
