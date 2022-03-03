@@ -21,7 +21,7 @@ class CheckRoleModuleAccess
         // return $next($request);
         if(Auth::user()->role_id != 1){ //Not Super Admin
             $status = false;
-            $message = "Oops ! you have not access for the module.";;
+            $message = "Oops! you don't have access to this module.";
 
             $role = Auth::user()->role;
 
@@ -451,6 +451,11 @@ class CheckRoleModuleAccess
                     }
                 }
 
+            }
+
+
+            if(in_array($request->route()->getName(), ['news-and-announcement.index','news-and-announcement.get-all','news-and-announcement.show'])){
+                $status = true;
             }
 
             if(!$status){

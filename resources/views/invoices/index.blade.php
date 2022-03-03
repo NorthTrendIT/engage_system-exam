@@ -100,6 +100,16 @@
                 @endif
 
                 <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="false" data-placeholder="Select status" data-allow-clear="true">
+                    <option value=""></option>
+
+                    @foreach(getOrderStatusArray() as $key => $value)
+                      <option value="{{ $key }}">{{ $value }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
                     <span>
@@ -239,7 +249,7 @@
               @endif
               {data: 'total', name: 'total'},
               {data: 'date', name: 'date'},
-              {data: 'status', name: 'status'},
+              {data: 'status', name: 'status',orderable:false,searchable:false},
               {data: 'action', name: 'action'},
           ],
           drawCallback:function(){
@@ -371,198 +381,181 @@
     @endif
 
     @if(in_array(userrole(),[1]))
-      $(document).on("click", ".download_excel", function(e) {
-        var url = "{{route('orders.export')}}";
+      $('body').on('change' ,'#selectModule', function(){
+          $module = $('[name="module"]').val();
+          // Hide all.
+          $('.brand').hide();
+          $('.customer').hide();
+          $('.customer_class').hide();
+          $('.sales_specialist').hide();
+          $('.territory').hide();
+          $('.market_sector').hide();
+          // Dissable all.
+          $('#selectrBrand').prop('disabled', true);
+          $('#selectCustomer').prop('disabled', true);
+          $('#selectCustomerClass').prop('disabled', true);
+          $('#selectSalesSpecialist').prop('disabled', true);
+          $('#selectTerritory').prop('disabled', true);
+          $('#selectMarketSector').prop('disabled', true);
+          // Set null value to all.
+          $('#selectBrand').val(null).trigger("change");
+          $('#selectCustomer').val(null).trigger("change");
+          $('#selectCustomerClass').val(null).trigger("change");
+          $('#selectSalesSpecialist').val(null).trigger("change");
+          $('#selectTerritory').val(null).trigger("change");
+          $('#selectMarketSector').val(null).trigger("change");
 
-        var data = {};
-        data.filter_search = $('[name="filter_search"]').val();
-        data.filter_date_range = $('[name="filter_date_range"]').val();
-        data.filter_status = $('[name="filter_status"]').find('option:selected').val();
-        data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
-        data.filter_company = $('[name="filter_company"]').find('option:selected').val();
-
-        // console.log((JSON.stringify(data)));
-        // console.log(btoa(JSON.stringify(data)));
-        url = url + '?data=' + btoa(JSON.stringify(data));
-
-        window.location.href = url;
+          // Show and enable according to Module selection.
+          if($module == "brand"){
+              $('.brand').show();
+              $('#selectBrand').prop('disabled', false);
+          } else if ($module == "customer"){
+              $('.customer').show();
+              $('#selectCustomer').prop('disabled', false);
+          } else if($module == "customer_class"){
+              $('.customer_class').show();
+              $('#selectCustomerClass').prop('disabled', false);
+          } else if($module == "sales_specialist"){
+              $('.sales_specialist').show();
+              $('#selectSalesSpecialist').prop('disabled', false);
+          } else if($module == "territory"){
+              $('.territory').show();
+              $('#selectTerritory').prop('disabled', false);
+          } else if($module == "market_sector"){
+              $('.market_sector').show();
+              $('#selectMarketSector').prop('disabled', false);
+          }
       });
 
-        $('body').on('change' ,'#selectModule', function(){
-            $module = $('[name="module"]').val();
-            // Hide all.
-            $('.brand').hide();
-            $('.customer').hide();
-            $('.customer_class').hide();
-            $('.sales_specialist').hide();
-            $('.territory').hide();
-            $('.market_sector').hide();
-            // Dissable all.
-            $('#selectrBrand').prop('disabled', true);
-            $('#selectCustomer').prop('disabled', true);
-            $('#selectCustomerClass').prop('disabled', true);
-            $('#selectSalesSpecialist').prop('disabled', true);
-            $('#selectTerritory').prop('disabled', true);
-            $('#selectMarketSector').prop('disabled', true);
-            // Set null value to all.
-            $('#selectBrand').val(null).trigger("change");
-            $('#selectCustomer').val(null).trigger("change");
-            $('#selectCustomerClass').val(null).trigger("change");
-            $('#selectSalesSpecialist').val(null).trigger("change");
-            $('#selectTerritory').val(null).trigger("change");
-            $('#selectMarketSector').val(null).trigger("change");
+      // Brand
+      $("#selectBrand").select2({
+          ajax: {
+              url: "{{route('common.getBrands')}}",
+              type: "post",
+              dataType: 'json',
+              delay: 250,
+              data: function (params) {
+                  return {
+                      _token: "{{ csrf_token() }}",
+                      search: params.term,
+                      sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                  };
+              },
+              processResults: function (response) {
+                  return {
+                      results: response
+                  };
+              },
+              cache: true
+          },
+          placeholder: 'Select Brand',
+          // minimumInputLength: 1,
+          multiple: false,
+      });
 
-            // Show and enable according to Module selection.
-            if($module == "brand"){
-                $('.brand').show();
-                $('#selectBrand').prop('disabled', false);
-            } else if ($module == "customer"){
-                $('.customer').show();
-                $('#selectCustomer').prop('disabled', false);
-            } else if($module == "customer_class"){
-                $('.customer_class').show();
-                $('#selectCustomerClass').prop('disabled', false);
-            } else if($module == "sales_specialist"){
-                $('.sales_specialist').show();
-                $('#selectSalesSpecialist').prop('disabled', false);
-            } else if($module == "territory"){
-                $('.territory').show();
-                $('#selectTerritory').prop('disabled', false);
-            } else if($module == "market_sector"){
-                $('.market_sector').show();
-                $('#selectMarketSector').prop('disabled', false);
-            }
-        });
+      // getCustomerClass
+      $("#selectCustomerClass").select2({
+          ajax: {
+              url: "{{route('common.getCustomerClass')}}",
+              type: "post",
+              dataType: 'json',
+              delay: 250,
+              data: function (params) {
+                  return {
+                      _token: "{{ csrf_token() }}",
+                      search: params.term,
+                      sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                  };
+              },
+              processResults: function (response) {
+                  return {
+                      results: response
+                  };
+              },
+              cache: true
+          },
+          placeholder: 'Select Customer Class',
+          // minimumInputLength: 2,
+          multiple: false,
+      });
 
-        // Brand
-        $("#selectBrand").select2({
-            ajax: {
-                url: "{{route('common.getBrands')}}",
-                type: "post",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        _token: "{{ csrf_token() }}",
-                        search: params.term,
-                        sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
-                    };
-                },
-                processResults: function (response) {
-                    return {
-                        results: response
-                    };
-                },
-                cache: true
-            },
-            placeholder: 'Select Brand',
-            // minimumInputLength: 1,
-            multiple: false,
-        });
+      // getSalesSpecialist
+      $("#selectSalesSpecialist").select2({
+          ajax: {
+              url: "{{route('common.getSalesSpecialist')}}",
+              type: "post",
+              dataType: 'json',
+              delay: 250,
+              data: function (params) {
+                  return {
+                      _token: "{{ csrf_token() }}",
+                      search: params.term,
+                      sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                  };
+              },
+              processResults: function (response) {
+                  return {
+                      results: response
+                  };
+              },
+              cache: true
+          },
+          placeholder: 'Select Sales Specialist',
+          // minimumInputLength: 2,
+          multiple: false,
+      });
 
-        // getCustomerClass
-        $("#selectCustomerClass").select2({
-            ajax: {
-                url: "{{route('common.getCustomerClass')}}",
-                type: "post",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        _token: "{{ csrf_token() }}",
-                        search: params.term,
-                        sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
-                    };
-                },
-                processResults: function (response) {
-                    return {
-                        results: response
-                    };
-                },
-                cache: true
-            },
-            placeholder: 'Select Customer Class',
-            // minimumInputLength: 2,
-            multiple: false,
-        });
+      // getTerritory
+      $("#selectTerritory").select2({
+          ajax: {
+              url: "{{route('common.getTerritory')}}",
+              type: "post",
+              dataType: 'json',
+              delay: 250,
+              data: function (params) {
+                  return {
+                      _token: "{{ csrf_token() }}",
+                      search: params.term,
+                      sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                  };
+              },
+              processResults: function (response) {
+                  return {
+                      results: response
+                  };
+              },
+              cache: true
+          },
+          placeholder: 'Select Territory',
+          // minimumInputLength: 2,
+          multiple: false,
+      });
 
-        // getSalesSpecialist
-        $("#selectSalesSpecialist").select2({
-            ajax: {
-                url: "{{route('common.getSalesSpecialist')}}",
-                type: "post",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        _token: "{{ csrf_token() }}",
-                        search: params.term,
-                        sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
-                    };
-                },
-                processResults: function (response) {
-                    return {
-                        results: response
-                    };
-                },
-                cache: true
-            },
-            placeholder: 'Select Sales Specialist',
-            // minimumInputLength: 2,
-            multiple: false,
-        });
-
-        // getTerritory
-        $("#selectTerritory").select2({
-            ajax: {
-                url: "{{route('common.getTerritory')}}",
-                type: "post",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        _token: "{{ csrf_token() }}",
-                        search: params.term,
-                        sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
-                    };
-                },
-                processResults: function (response) {
-                    return {
-                        results: response
-                    };
-                },
-                cache: true
-            },
-            placeholder: 'Select Territory',
-            // minimumInputLength: 2,
-            multiple: false,
-        });
-
-        // getMarketSector
-        $("#selectMarketSector").select2({
-            ajax: {
-                url: "{{route('common.getMarketSector')}}",
-                type: "post",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        _token: "{{ csrf_token() }}",
-                        search: params.term,
-                        sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
-                    };
-                },
-                processResults: function (response) {
-                    return {
-                        results: response
-                    };
-                },
-                cache: true
-            },
-            placeholder: 'Select Market Sector',
-            // minimumInputLength: 2,
-            multiple: false,
-        });
+      // getMarketSector
+      $("#selectMarketSector").select2({
+          ajax: {
+              url: "{{route('common.getMarketSector')}}",
+              type: "post",
+              dataType: 'json',
+              delay: 250,
+              data: function (params) {
+                  return {
+                      _token: "{{ csrf_token() }}",
+                      search: params.term,
+                      sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                  };
+              },
+              processResults: function (response) {
+                  return {
+                      results: response
+                  };
+              },
+              cache: true
+          },
+          placeholder: 'Select Market Sector',
+          // minimumInputLength: 2,
+          multiple: false,
+      });
     @endif
   })
 </script>

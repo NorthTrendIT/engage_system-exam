@@ -182,7 +182,7 @@ function getOrderStatus($data){
     $status = '';
 
     if(!empty($data)){
-        if(!empty($data->order) && $data->order->cancelled == 'No'){
+        if(!empty($data->order) && $data->order->cancelled == 'Yes'){
             $status = 'Cancelled';
         } else {
             if(!empty($data->order) && $data->order->document_status == 'bost_open'){
@@ -457,4 +457,52 @@ function get_login_user_un_read_message_count(){
     $un_read_message = $un_read_message->count();
 
     return $un_read_message;
+}
+
+function getOrderStatusArray($key = ""){
+    $array = array(
+                'PN' => 'Pending', //For List only
+                'OP' => 'On Process',
+                'FD' => 'For Delivery',
+                'DL' => 'Delivered',
+                'CF' => 'Confirmed',
+                'CM' => 'Completed',
+                'IN' => 'Invoiced',
+                'CL' => 'Cancelled', //For List only
+            );
+
+    if($key != ""){
+        return @$array[$key] ?? $array['PN'];
+    }
+
+    return $array;
+}
+
+// Start Status
+function getOrderStatusByInvoice($data){
+    $status = getOrderStatusArray("PN");
+
+    if(!empty($data)){
+
+        if($data->cancelled == 'Yes'){
+            $status = getOrderStatusArray('CL');
+        }else{
+            if(!empty($data->order) && $data->order->cancelled == 'Yes'){
+                $status = getOrderStatusArray('CL');
+            } else {
+                if($data->document_status == 'bost_Open' && !empty($data->u_sostat)){
+
+                    $status = getOrderStatusArray($data->u_sostat);
+
+                } else {
+                    $status = getOrderStatusArray("PN");
+                }
+            }
+        }
+
+    } else {
+        $status = getOrderStatusArray("PN");
+    }
+
+    return $status;
 }

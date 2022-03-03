@@ -213,6 +213,32 @@ class InvoicesController extends Controller
             $data->where('sap_connection_id',$request->filter_company);
         }
 
+        if($request->filter_status != ""){
+            $status = $request->filter_status;
+
+            if($status == "CL"){ //Cancel
+                $data->where('cancelled', 'Yes');
+
+            }elseif($status == "PN"){ //Pending
+
+                // $data->where('cancelled', 'No');
+
+                $data->where(function($query){
+                    $query->orwhere(function($q){
+                        $q->whereNull('u_sostat');
+                    });
+
+                    $query->orwhere(function($q1){
+                        $q1->where('cancelled', 'No')->whereNotIn('u_sostat', array_keys(getOrderStatusArray()));
+                    });
+                });
+
+            }else{
+                $data->where('document_status', 'bost_Open')->where('u_sostat', $status);
+            }
+        }
+
+
         if($request->filter_date_range != ""){
             $date = explode(" - ", $request->filter_date_range);
             $start = date("Y-m-d", strtotime($date[0]));
@@ -233,7 +259,7 @@ class InvoicesController extends Controller
                                 return  @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('status', function($row) {
-                                return getOrderStatus($row);
+                                return getOrderStatusByInvoice($row);
                             })
                             ->addColumn('doc_entry', function($row) {
                                 return $row->doc_entry;

@@ -210,22 +210,6 @@ Route::middleware(['auth'])->group(function(){
             Route::post('cart/qty-plus/{id}','App\Http\Controllers\CartController@qtyPlus')->name('cart.qty-plus');
             Route::post('cart/qty-minus/{id}','App\Http\Controllers\CartController@qtyMinus')->name('cart.qty-minus');
 
-            // Local Orders
-            Route::resource('sales-specialist-orders','App\Http\Controllers\LocalOrderController', [
-                'names' => [
-                    'index' => 'sales-specialist-orders.index',
-                    'create' => 'sales-specialist-orders.create',
-                    'store' => 'sales-specialist-orders.store',
-                    'edit' => 'sales-specialist-orders.edit',
-                ]
-            ]);
-            Route::post('sales-specialist-orders/get-all', 'App\Http\Controllers\LocalOrderController@getAll')->name('sales-specialist-orders.get-all');
-            Route::post('sales-specialist-orders/get-customers/','App\Http\Controllers\LocalOrderController@getCustomers')->name('sales-specialist-orders.getCustomers');
-            Route::post('sales-specialist-orders/get-products/','App\Http\Controllers\LocalOrderController@getProducts')->name('sales-specialist-orders.getProducts');
-            Route::post('sales-specialist-orders/get-address/','App\Http\Controllers\LocalOrderController@getAddress')->name('sales-specialist-orders.getAddress');
-            Route::post('sales-specialist-orders/place-order/','App\Http\Controllers\LocalOrderController@placeOrder')->name('sales-specialist-orders.placeOrder');
-            Route::post('sales-specialist-orders/get-price/','App\Http\Controllers\LocalOrderController@getPrice')->name('sales-specialist-orders.get-price');
-            Route::post('sales-specialist-orders/get-customer-schedule/','App\Http\Controllers\LocalOrderController@getCustomerSchedule')->name('sales-specialist-orders.get-customer-schedule');
 
             Route::get('customer-promotion/', 'App\Http\Controllers\CustomerPromotionController@index')->name('customer-promotion.index')/*->middleware('not-super-admin')*/;
             Route::post('customer-promotion/get-all', 'App\Http\Controllers\CustomerPromotionController@getAll')->name('customer-promotion.get-all');
@@ -300,6 +284,24 @@ Route::middleware(['auth'])->group(function(){
         Route::post('draft-order/get-price/','App\Http\Controllers\DraftOrderController@getPrice')->name('draft-order.get-price');
 
 
+        // Local Orders
+        Route::resource('sales-specialist-orders','App\Http\Controllers\LocalOrderController', [
+            'names' => [
+                'index' => 'sales-specialist-orders.index',
+                'create' => 'sales-specialist-orders.create',
+                'store' => 'sales-specialist-orders.store',
+                'edit' => 'sales-specialist-orders.edit',
+            ]
+        ]);
+        Route::post('sales-specialist-orders/get-all', 'App\Http\Controllers\LocalOrderController@getAll')->name('sales-specialist-orders.get-all');
+        Route::post('sales-specialist-orders/get-customers/','App\Http\Controllers\LocalOrderController@getCustomers')->name('sales-specialist-orders.getCustomers');
+        Route::post('sales-specialist-orders/get-products/','App\Http\Controllers\LocalOrderController@getProducts')->name('sales-specialist-orders.getProducts');
+        Route::post('sales-specialist-orders/get-address/','App\Http\Controllers\LocalOrderController@getAddress')->name('sales-specialist-orders.getAddress');
+        Route::post('sales-specialist-orders/place-order/','App\Http\Controllers\LocalOrderController@placeOrder')->name('sales-specialist-orders.placeOrder');
+        Route::post('sales-specialist-orders/get-price/','App\Http\Controllers\LocalOrderController@getPrice')->name('sales-specialist-orders.get-price');
+        Route::post('sales-specialist-orders/get-customer-schedule/','App\Http\Controllers\LocalOrderController@getCustomerSchedule')->name('sales-specialist-orders.get-customer-schedule');
+
+            
         // Warranty
         Route::resource('warranty','App\Http\Controllers\WarrantyController');
         Route::post('warranty/get-all', 'App\Http\Controllers\WarrantyController@getAll')->name('warranty.get-all');
