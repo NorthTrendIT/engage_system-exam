@@ -290,11 +290,13 @@ class SAPCustomerPromotion
 
                 if(@$customer_promotion->products){
 
+                    $Price = @$customer_promotion_product->price * @$customer_promotion_product_delivery->delivery_quantity;
+
                     $temp = array(
                                 'ItemCode' => @$customer_promotion_product->product->item_code,
                                 'ItemDescription' => @$customer_promotion_product->product->item_name,
-                                'Price' => @$customer_promotion_product->price,
-                                'UnitPrice' => @$customer_promotion_product->price - @$customer_promotion_product->discount,
+                                'Price' => $Price,
+                                'UnitPrice' => $Price - @$customer_promotion_product->discount,
                                 'Quantity' => @$customer_promotion_product_delivery->delivery_quantity,
                                 'ShipDate' => @$customer_promotion_product_delivery->delivery_date,
                             );
