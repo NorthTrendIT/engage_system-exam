@@ -33,6 +33,7 @@ class Order extends Model
         'u_posodate',
         'u_posotime',
         'u_sostat',
+        'cancelled',
         'cancel_date',
         'created_at',
         'response',
@@ -40,6 +41,7 @@ class Order extends Model
         'updated_at',
         'updated_date',
         'sap_connection_id',
+        'document_status',
     ];
 
     public function invoice(){

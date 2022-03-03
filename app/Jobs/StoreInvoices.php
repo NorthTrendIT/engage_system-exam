@@ -65,6 +65,8 @@ class StoreInvoices implements ShouldQueue
                             'u_sostat' => $invoice['U_SOSTAT'],
                             'created_at' => $invoice['CreationDate'],
                             'updated_at' => $invoice['UpdateDate'],
+                            'document_status' => $invoice['DocumentStatus'],
+                            'cancelled' => @$invoice['Cancelled'] == 'tYES' ? 'Yes' : 'No',
                             //'response' => json_encode($invoice),
 
                             'updated_date' => $invoice['UpdateDate'],
