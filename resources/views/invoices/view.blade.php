@@ -122,7 +122,7 @@
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
-                                <span>{{ getOrderStatus($data->id) }}</span>
+                                <span>{{ getOrderStatusByInvoice($data) }}</span>
                               </div>
                               <!--end::Text-->
                             </div>

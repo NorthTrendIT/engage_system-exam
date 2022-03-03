@@ -38,6 +38,8 @@ class Invoice extends Model
         'updated_at',
         'updated_date',
         'sap_connection_id',
+        'document_status',
+        'cancelled',
     ];
 
     public function items(){
