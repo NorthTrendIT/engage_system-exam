@@ -453,6 +453,11 @@ class CheckRoleModuleAccess
 
             }
 
+
+            if(in_array($request->route()->getName(), ['news-and-announcement.index','news-and-announcement.get-all','news-and-announcement.show'])){
+                $status = true;
+            }
+
             if(!$status){
                 if($request->ajax()){
                     $response = array('status' => $status, "message" => $message);
