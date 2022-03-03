@@ -149,6 +149,9 @@ class TerritoriesController extends Controller
                             ->orderColumn('name', function ($query, $order) {
                                 $query->orderBy('description', $order);
                             })
+                            ->orderColumn('status', function ($query, $order) {
+                                $query->orderBy('status', $order);
+                            })
                             ->addColumn('status', function($row) {
 
                                 // $btn = "";
