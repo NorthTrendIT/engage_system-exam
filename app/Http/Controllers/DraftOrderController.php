@@ -216,9 +216,13 @@ class DraftOrderController extends Controller
                                 $query->orderBy('confirmation_status', $order);
                             })
                             ->addColumn('action', function($row) {
-                                $btn = ' <a href="' . route('draft-order.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
-                                    <i class="fa fa-eye"></i>
-                                  </a>';
+                                $btn = "";
+
+                                if($row->confirmation_status != 'ERR'){
+                                    $btn = ' <a href="' . route('draft-order.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                        <i class="fa fa-eye"></i>
+                                    </a>';
+                                }
 
                                 return $btn;
                             })

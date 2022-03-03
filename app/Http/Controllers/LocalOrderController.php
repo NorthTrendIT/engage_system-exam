@@ -82,10 +82,12 @@ class LocalOrderController extends Controller
                 $message = "Order created successfully.";
             }
 
+            $due_date = strtr($input['due_date'], '/', '-');
+
             if(!empty($customer) && !empty($address)){
                 $order->customer_id = $input['customer_id'];
                 $order->address_id = $input['address_id'];
-                $order->due_date = date('Y-m-d',strtotime($input['due_date']));
+                $order->due_date = date('Y-m-d',strtotime($due_date));
                 $order->sales_specialist_id = Auth::id();
                 $order->placed_by = "S";
                 $order->confirmation_status = "P";
@@ -208,6 +210,9 @@ class LocalOrderController extends Controller
                             }
                             if($row->confirmation_status == 'C'){
                                 return "Confirm";
+                            }
+                            if($row->confirmation_status == 'ERR'){
+                                return "ERR";
                             }
                         })
                         ->addColumn('due_date', function($row) {
