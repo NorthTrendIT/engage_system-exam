@@ -146,9 +146,9 @@
                                       <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ @$p->product->item_name ?? "-" }}</td>
                                         <td class="pt-6">{{ @$p->quantity }}</td>
-                                        <td class="pt-6">₱ {{ number_format(@$p->price,2) }}</td>
-                                        <td class="pt-6">₱ {{ number_format(@$p->discount,2) }}</td>
-                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format(@$p->amount,2) }}</td>
+                                        <td class="pt-6">₱ {{ number_format_value(@$p->price) }}</td>
+                                        <td class="pt-6">₱ {{ number_format_value(@$p->discount) }}</td>
+                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value(@$p->amount) }}</td>
                                       </tr>
                                     @endforeach
 
@@ -168,7 +168,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format(@$data->total_price,2) }}</div>
+                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format_value(@$data->total_price) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -178,7 +178,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Discount:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">- ₱ {{ number_format(@$data->total_discount,2) }}</div>
+                                  <div class="text-end fw-bolder fs-6 text-gray-700">- ₱ {{ number_format_value(@$data->total_discount) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -189,7 +189,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
                                   <!--end::Code-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format(@$data->total_amount,2) }}</div>
+                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format_value(@$data->total_amount) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
