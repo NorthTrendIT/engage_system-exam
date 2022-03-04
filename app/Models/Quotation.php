@@ -40,6 +40,7 @@ class Quotation extends Model
         'sap_connection_id',
         'customer_promotion_id',
         'updated_date',
+        'num_at_card',
     ];
 
     public function items(){
