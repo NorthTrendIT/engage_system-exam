@@ -508,7 +508,7 @@ function getOrderStatusByInvoice($data){
 }
 
 // Start Status
-function getOrderStatusByQuotation($data){
+/*function getOrderStatusByQuotation($data){
     $status = getOrderStatusArray("PN");
 
     if(!empty($data)){
@@ -543,4 +543,4 @@ function getOrderStatusByQuotation($data){
     }
 
     return $status;
-}
+}*/
