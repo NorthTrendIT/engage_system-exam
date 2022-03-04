@@ -432,7 +432,7 @@ class ProductListController extends Controller
     public function getProducts(Request $request)
     {
         $data = $this->getProductData($request);
-        $products = $data['products']->limit(50)->get();
+        $products = $data['products']->get();
 
         return response()->json($products);
     }
@@ -442,7 +442,7 @@ class ProductListController extends Controller
 
         $where = array('is_active' => true);
 
-        $products = Product::where($where);
+        $products = Product::where($where)->limit(50);
 
         if($request->filter_search != ""){
             $products->where(function($q) use ($request) {
