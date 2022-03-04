@@ -59,7 +59,7 @@ class Customer extends Model
 
     public function group()
     {
-        return $this->belongsTo(CustomerGroup::class,'group_code','code');
+        return $this->belongsTo(CustomerGroup::class,'group_code','code')->where('sap_connection_id', $this->sap_connection_id);
     }
 
     public function sales_specialist(){

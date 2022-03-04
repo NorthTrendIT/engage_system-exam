@@ -171,6 +171,7 @@ class SAPCustomerPromotion
                 $obj = CustomerPromotionProductDelivery::find($id);
                 $obj->doc_entry = $data['DocEntry'];
                 $obj->is_sap_pushed = true;
+                $obj->sap_connection_id = $this->sap_connection_id;
                 $obj->save();
 
                 $this->pushOrderDetailsInDatabase($data);
@@ -196,6 +197,7 @@ class SAPCustomerPromotion
                 $obj = CustomerPromotionProductDelivery::find($id);
                 $obj->doc_entry = $data['DocEntry'];
                 $obj->is_sap_pushed = true;
+                $obj->sap_connection_id = $this->sap_connection_id;
                 $obj->save();
 
                 $this->pushOrderDetailsInDatabase($data);
@@ -232,6 +234,7 @@ class SAPCustomerPromotion
                     $obj = CustomerPromotionProductDelivery::find($id);
                     $obj->doc_entry = null;
                     $obj->is_sap_pushed = false;
+                    $obj->sap_connection_id = $this->sap_connection_id;
                     $obj->save();
 
 
