@@ -432,7 +432,11 @@ class ProductListController extends Controller
     public function getProducts(Request $request)
     {
         $data = $this->getProductData($request);
-        $products = $data['products']->get();
+        if(count($data['products'])){
+            $products = $data['products']->get();
+        }else{
+            $products = collect();
+        }
 
         return response()->json($products);
     }
