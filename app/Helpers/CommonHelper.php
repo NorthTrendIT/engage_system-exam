@@ -506,3 +506,41 @@ function getOrderStatusByInvoice($data){
 
     return $status;
 }
+
+// Start Status
+function getOrderStatusByQuotation($data){
+    $status = getOrderStatusArray("PN");
+
+    if(!empty($data)){
+
+        if($data->cancelled == 'Yes'){
+            $status = getOrderStatusArray('CL');
+        }else{
+            if(!empty(@$data->order))
+
+                if($data->order->cancelled == 'Yes'){
+                    $status = getOrderStatusArray('CL');
+                } else {
+
+                    if($data->document_status == 'bost_Open'){
+                        $status = getOrderStatusArray("OP");
+                    }
+
+                    if(!empty(@$data->order->invoice)){
+                        
+                        if(@$data->order->invoice->document_status == 'bost_Open' && !empty(@$data->order->invoice->u_sostat)){
+                            $status = getOrderStatusArray(@$data->order->invoice->u_sostat);
+                        } else {
+                            $status = getOrderStatusArray("PN");
+                        }
+                    }
+                }
+            }
+        }
+
+    } else {
+        $status = getOrderStatusArray("PN");
+    }
+
+    return $status;
+}

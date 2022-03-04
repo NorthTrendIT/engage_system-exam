@@ -45,6 +45,6 @@ class Order extends Model
     ];
 
     public function invoice(){
-        return $this->hasOne(Invoice::class, 'base_entry', 'doc_entry');
+        return $this->hasOne(Invoice::class, 'base_entry', 'doc_entry')->where('sap_connection_id', $this->sap_connection_id);
     }
 }

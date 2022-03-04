@@ -213,18 +213,25 @@
                                     <th class="min-w-80px text-end pb-2">Unit Price</th>
                                     <th class="min-w-80px text-end pb-2">Discount</th>
                                     <th class="min-w-80px text-end pb-2">Price</th>
+                                    @if($is_sap_pushed)
                                     <th class="min-w-80px text-end pb-2">Price After VAT</th>
+                                    @endif
                                     <th class="min-w-100px text-end pb-2">Amount</th>
                                   </tr>
                                 </thead>
                                 <tbody>
+
+                                  @php
+                                    $total_amount = 0.00;
+                                  @endphp
 
                                   @if(@$data->products)
 
                                     @foreach(@$data->products as $p)
 
                                       @php
-                                        $price_after_vat = "";
+                                        $price = @$p->price - @$p->discount;
+                                        $price_after_vat = $price;
 
                                         if($is_sap_pushed){
                                           $delivery = @$p->deliveries()->first();
@@ -232,6 +239,10 @@
                                           $quotation_item = @$quotation->items()->first();
                                           $price_after_vat = @$quotation_item->price_after_vat;
                                         }
+
+                                        $amount = $price_after_vat * @$p->quantity;
+                                        $total_amount += $amount;
+
                                       @endphp
                                       
                                       <tr class="fw-bolder text-gray-700 fs-7 text-end">
@@ -239,9 +250,11 @@
                                         <td class="pt-6">{{ @$p->quantity }}</td>
                                         <td class="pt-6">₱ {{ number_format(@$p->price,2) }}</td>
                                         <td class="pt-6">₱ {{ number_format(@$p->discount,2) }}</td>
-                                        <td class="pt-6">₱ {{ number_format((@$p->price - @$p->discount),2) }}</td>
+                                        <td class="pt-6">₱ {{ number_format(($price),2) }}</td>
+                                        @if($is_sap_pushed)
                                         <td class="pt-6">₱ {{ number_format(@$price_after_vat,2) }}</td>
-                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format(@$p->amount,2) }}</td>
+                                        @endif
+                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format($amount,2) }}</td>
                                       </tr>
                                     @endforeach
 
@@ -261,7 +274,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format(@$data->total_price,2) }}</div>
+                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format($total_amount,2) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -282,7 +295,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
                                   <!--end::Code-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format(@$data->total_amount,2) }}</div>
+                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format(($total_amount - @$data->total_discount),2) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->

@@ -60,7 +60,7 @@ class InvoicesController extends Controller
     public function show($id)
     {
         $total = 0;
-        $data = Invoice::with(['items.product', 'customer'])->where('id', $id);
+        $data = Invoice::where('id', $id);
         if(userrole() == 4){
             $data->where('card_code', @Auth::user()->customer->card_code);
         }elseif(userrole() == 2){

@@ -19,6 +19,7 @@ class CustomerPromotionProductDelivery extends Model
     	'updated_at',
         'doc_entry',
         'is_sap_pushed',
+        'sap_connection_id',
     ];
 
     public function customer_promotion_product(){
@@ -26,6 +27,10 @@ class CustomerPromotionProductDelivery extends Model
     }
 
     public function quotation(){
-        return $this->belongsTo(Quotation::class, 'doc_entry','doc_entry');
+        return $this->belongsTo(Quotation::class, 'doc_entry','doc_entry')->where('sap_connection_id', $this->sap_connection_id);
+    }
+
+    public function sap_connection(){
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
     }
 }
