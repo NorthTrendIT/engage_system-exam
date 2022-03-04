@@ -248,13 +248,13 @@
                                       <tr class="fw-bolder text-gray-700 fs-7 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ @$p->product->item_name ?? "-" }}</td>
                                         <td class="pt-6">{{ @$p->quantity }}</td>
-                                        <td class="pt-6">₱ {{ number_format(@$p->price,2) }}</td>
-                                        <td class="pt-6">₱ {{ number_format(@$p->discount,2) }}</td>
-                                        <td class="pt-6">₱ {{ number_format(($price),2) }}</td>
+                                        <td class="pt-6">₱ {{ number_format_value(@$p->price) }}</td>
+                                        <td class="pt-6">₱ {{ number_format_value(@$p->discount) }}</td>
+                                        <td class="pt-6">₱ {{ number_format_value(($price)) }}</td>
                                         @if($is_sap_pushed)
-                                        <td class="pt-6">₱ {{ number_format(@$price_after_vat,2) }}</td>
+                                        <td class="pt-6">₱ {{ number_format_value(@$price_after_vat) }}</td>
                                         @endif
-                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format($amount,2) }}</td>
+                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($amount) }}</td>
                                       </tr>
                                     @endforeach
 
@@ -274,7 +274,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format($total_amount,2) }}</div>
+                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format_value($total_amount) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -284,7 +284,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Discount:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">- ₱ {{ number_format(@$data->total_discount,2) }}</div>
+                                  <div class="text-end fw-bolder fs-6 text-gray-700">- ₱ {{ number_format_value(@$data->total_discount) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -295,7 +295,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
                                   <!--end::Code-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format(($total_amount - @$data->total_discount),2) }}</div>
+                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format_value(($total_amount - @$data->total_discount)) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -356,6 +356,45 @@
                                       <tr class="fw-bolder text-gray-700 fs-7 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ date('F d, Y',strtotime($d->delivery_date)) }}</td>
                                         <td class="pt-6">{{ @$d->delivery_quantity }}</td>
+                                      </tr>
+                                      <tr class="fw-bolder text-gray-700 fs-7 text-center">
+                                        <td colspan="2">
+                                          @php
+                                            $status = getOrderStatusByQuotation(@$d->quotation);
+                                          @endphp
+
+                                          <div class="hh-grayBox pt45 pb20">
+                                            
+                                            <div class="row justify-content-between">
+                                              <div class="order-tracking {{ in_array('Pending',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
+                                                <span class="is-complete"></span>
+                                                <p>Pending</p>
+                                              </div>
+                                              <div class="order-tracking {{ in_array('On Process',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
+                                                <span class="is-complete"></span>
+                                                <p>On Process</p>
+                                              </div>
+                                              <div class="order-tracking {{ in_array('For Delivery',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
+                                                <span class="is-complete"></span>
+                                                <p>For Delivery</p>
+                                              </div>
+                                              <div class="order-tracking {{ in_array('Delivered',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
+                                                <span class="is-complete"></span>
+                                                <p>Delivered</p>
+                                              </div>
+                                              <div class="order-tracking {{ in_array('Completed',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
+                                                <span class="is-complete"></span>
+                                                <p>Completed</p>
+                                              </div>
+                                            </div>
+
+                                            <div class="row justify-content-center mt-10">
+                                              <span>Delivery Status</span>
+                                            </div>
+
+                                          </div>
+
+                                        </td>
                                       </tr>
                                     @endforeach
 

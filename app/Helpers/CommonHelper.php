@@ -508,7 +508,7 @@ function getOrderStatusByInvoice($data){
 }
 
 // Start Status
-/*function getOrderStatusByQuotation($data){
+function getOrderStatusByQuotation($data){
     $status = getOrderStatusArray("PN");
 
     if(!empty($data)){
@@ -516,31 +516,100 @@ function getOrderStatusByInvoice($data){
         if($data->cancelled == 'Yes'){
             $status = getOrderStatusArray('CL');
         }else{
-            if(!empty(@$data->order))
+            if(!empty(@$data->order)){
 
                 if($data->order->cancelled == 'Yes'){
                     $status = getOrderStatusArray('CL');
-                } else {
+                }else{
 
                     if($data->document_status == 'bost_Open'){
                         $status = getOrderStatusArray("OP");
                     }
 
                     if(!empty(@$data->order->invoice)){
-                        
+
                         if(@$data->order->invoice->document_status == 'bost_Open' && !empty(@$data->order->invoice->u_sostat)){
                             $status = getOrderStatusArray(@$data->order->invoice->u_sostat);
-                        } else {
+                        }else{
                             $status = getOrderStatusArray("PN");
                         }
                     }
                 }
             }
         }
-
-    } else {
+    }else{
         $status = getOrderStatusArray("PN");
     }
 
     return $status;
-}*/
+}
+
+
+function getOrderStatusProcessArray($status){
+    $array = array();
+    switch ($status) {
+        case "Pending":
+            $array = array(
+                            'Pending'
+                        );
+            break;
+        case "On Process":
+            $array = array(
+                            'Pending',
+                            'On Process',
+                        );
+            break;
+        case "For Delivery":
+            $array = array(
+                            'Pending',
+                            'On Process',
+                            'For Delivery',
+                        );
+            break;
+        case "Delivered":
+            $array = array(
+                            'Pending',
+                            'On Process',
+                            'For Delivery',
+                            'Delivered',
+                        );
+            break;
+        case "Confirmed":
+            $array = array(
+                            'Pending',
+                            'On Process',
+                        );
+            break;
+        case "Completed":
+            $array = array(
+                            'Pending',
+                            'On Process',
+                            'For Delivery',
+                            'Delivered',
+                            'Confirmed',
+                            'Completed',
+                        );
+            break;
+        case "Invoiced":
+            $array = array(
+                            'Pending',
+                            'On Process',
+                            'For Delivery',
+                            'Delivered',
+                            'Confirmed',
+                            'Completed',
+                            'Invoiced',
+                        );
+            break;
+        case "Cancelled":
+            break;
+        default:
+            break;
+    }
+
+    return $array;
+}
+
+function number_format_value($value){
+    return number_format($value,2);
+}

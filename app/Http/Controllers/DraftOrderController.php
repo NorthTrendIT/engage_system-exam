@@ -207,7 +207,7 @@ class DraftOrderController extends Controller
                                 return date('M d, Y',strtotime($row->due_date));
                             })
                             ->addColumn('total', function($row) {
-                                return number_format($row->items->sum('total'), 2);
+                                return number_format_value($row->items->sum('total'));
                             })
                             ->orderColumn('due_date', function ($query, $order) {
                                 $query->orderBy('due_date', $order);

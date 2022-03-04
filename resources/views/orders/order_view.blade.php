@@ -166,9 +166,9 @@
                                         <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}</td>
                                         <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
-                                        <td class="pt-6">₱ {{ number_format($value->price, 2) }}</td>
-                                        <td class="pt-6">₱ {{ number_format($value->price_after_vat, 2) }}</td>
-                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format($value->gross_total, 2) }}</td>
+                                        <td class="pt-6">₱ {{ number_format_value($value->price) }}</td>
+                                        <td class="pt-6">₱ {{ number_format_value($value->price_after_vat) }}</td>
+                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($value->gross_total) }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -185,7 +185,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format(@$data->doc_total, 2) }}</div>
+                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format_value(@$data->doc_total) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -206,7 +206,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
                                   <!--end::Code-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-5 fw-boldest">₱ {{ number_format(@$data->doc_total, 2) }}</div>
+                                  <div class="text-end fw-bolder fs-5 fw-boldest">₱ {{ number_format_value(@$data->doc_total) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
