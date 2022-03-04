@@ -210,8 +210,10 @@
                                   <tr class="border-bottom fs-6 fw-bolder text-muted">
                                     <th class="min-w-175px pb-2">Product</th>
                                     <th class="min-w-70px text-end pb-2">Quantity</th>
-                                    <th class="min-w-80px text-end pb-2">Price</th>
+                                    <th class="min-w-80px text-end pb-2">Unit Price</th>
                                     <th class="min-w-80px text-end pb-2">Discount</th>
+                                    <th class="min-w-80px text-end pb-2">Price</th>
+                                    <th class="min-w-80px text-end pb-2">Price After VAT</th>
                                     <th class="min-w-100px text-end pb-2">Amount</th>
                                   </tr>
                                 </thead>
@@ -220,11 +222,25 @@
                                   @if(@$data->products)
 
                                     @foreach(@$data->products as $p)
-                                      <tr class="fw-bolder text-gray-700 fs-5 text-end">
+
+                                      @php
+                                        $price_after_vat = "";
+
+                                        if($is_sap_pushed){
+                                          $delivery = @$p->deliveries()->first();
+                                          $quotation = @$delivery->quotation()->first();
+                                          $quotation_item = @$quotation->items()->first();
+                                          $price_after_vat = @$quotation_item->price_after_vat;
+                                        }
+                                      @endphp
+                                      
+                                      <tr class="fw-bolder text-gray-700 fs-7 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ @$p->product->item_name ?? "-" }}</td>
                                         <td class="pt-6">{{ @$p->quantity }}</td>
                                         <td class="pt-6">₱ {{ number_format(@$p->price,2) }}</td>
                                         <td class="pt-6">₱ {{ number_format(@$p->discount,2) }}</td>
+                                        <td class="pt-6">₱ {{ number_format((@$p->price - @$p->discount),2) }}</td>
+                                        <td class="pt-6">₱ {{ number_format(@$price_after_vat,2) }}</td>
                                         <td class="pt-6 text-dark fw-boldest">₱ {{ number_format(@$p->amount,2) }}</td>
                                       </tr>
                                     @endforeach
@@ -324,7 +340,7 @@
                                   <tbody>
 
                                     @foreach(@$p->deliveries as $d)
-                                      <tr class="fw-bolder text-gray-700 fs-5 text-end">
+                                      <tr class="fw-bolder text-gray-700 fs-7 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ date('F d, Y',strtotime($d->delivery_date)) }}</td>
                                         <td class="pt-6">{{ @$d->delivery_quantity }}</td>
                                       </tr>

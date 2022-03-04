@@ -21,8 +21,11 @@ class CustomerPromotionProductDelivery extends Model
         'is_sap_pushed',
     ];
 
-    public function customer_promotion_product()
-    {
+    public function customer_promotion_product(){
         return $this->belongsTo(CustomerPromotionProduct::class,'customer_promotion_product_id');
+    }
+
+    public function quotation(){
+        return $this->belongsTo(Quotation::class, 'doc_entry','doc_entry');
     }
 }
