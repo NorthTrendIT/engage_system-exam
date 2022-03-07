@@ -212,7 +212,7 @@ class CartController extends Controller
                 $total += $subTotal;
             }
 
-            return $response = ['status'=>true,'message'=>"Product removed from cart.", 'total' => number_format($total, 2), 'count' => count($data)];
+            return $response = ['status' => true,'message' => 'Product removed from cart.', 'total' => number_format($total, 2), 'count' => count($data)];
         }
 
 
