@@ -10,7 +10,7 @@ use App\Jobs\SyncOrders;
 use App\Jobs\SyncInvoices;
 use App\Jobs\SyncQuotations;
 use App\Jobs\SAPAllOrderPost;
-use App\Jobs\SAPCustomerPromotionPost;
+use App\Jobs\SAPAllCustomerPromotionPost;
 use App\Models\Order;
 use App\Models\Quotation;
 use App\Models\Invoice;
@@ -593,7 +593,7 @@ class OrdersController extends Controller
                 $sap_connection = SapConnection::find(@$item->sap_connection_id);
 
                 if(!is_null($sap_connection)){
-                    SAPCustomerPromotionPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, @$item->id);
+                    SAPAllCustomerPromotionPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, @$item->id);
                 }
             }
             return $response = ['status' => true, 'message' => 'All Promotion Pushed Successfully!'];
