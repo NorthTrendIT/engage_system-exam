@@ -269,6 +269,16 @@ Route::middleware(['auth'])->group(function(){
             Route::post('news-and-announcement/get-all-market-sector', 'App\Http\Controllers\NewsAndAnnouncementController@getAllMarketSector')->name('news-and-announcement.getAllMarketSector');
             Route::post('news-and-announcement/get-all-brands', 'App\Http\Controllers\NewsAndAnnouncementController@getAllBrands')->name('news-and-announcement.getAllBrands');
             Route::post('news-and-announcement/status/{id}', 'App\Http\Controllers\NewsAndAnnouncementController@updateStatus')->name('news-and-announcement.status');
+
+            Route::resource('report', 'App\Http\Controllers\ReportController');
+
+            Route::prefix('report')->group(function(){
+                Route::resource('promotion-report', 'App\Http\Controllers\PromotionReportController', [
+                    'names' => [
+                        'index' => 'promotion-report.index',
+                    ]
+                ]);
+            });
         });
 
         // Customer Orders
@@ -301,7 +311,7 @@ Route::middleware(['auth'])->group(function(){
         Route::post('sales-specialist-orders/get-price/','App\Http\Controllers\LocalOrderController@getPrice')->name('sales-specialist-orders.get-price');
         Route::post('sales-specialist-orders/get-customer-schedule/','App\Http\Controllers\LocalOrderController@getCustomerSchedule')->name('sales-specialist-orders.get-customer-schedule');
 
-            
+
         // Warranty
         Route::resource('warranty','App\Http\Controllers\WarrantyController');
         Route::post('warranty/get-all', 'App\Http\Controllers\WarrantyController@getAll')->name('warranty.get-all');
@@ -341,7 +351,7 @@ Route::middleware(['auth'])->group(function(){
         Route::post('customer-tagging/get-market-sector', 'App\Http\Controllers\CustomerController@customerTaggingGetMarketSector')->name('customer-tagging.get-market-sector');
         Route::post('customer-tagging/get-customer-class', 'App\Http\Controllers\CustomerController@customerTaggingGetCustomerClass')->name('customer-tagging.get-customer-class');
         Route::post('customer-tagging/get-sales-specialist', 'App\Http\Controllers\CustomerController@customerTaggingGetSalesSpecialist')->name('customer-tagging.get-sales-specialist');
-            
+
         // Pramotion Type
         Route::get('promotion-type/export', 'App\Http\Controllers\PromotionTypeController@export')->name('promotion-type.export');
         Route::resource('promotion-type','App\Http\Controllers\PromotionTypeController');
