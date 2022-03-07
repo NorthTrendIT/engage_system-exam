@@ -513,32 +513,30 @@ function getOrderStatusByQuotation($data){
 
     if(!empty($data)){
 
-        if($data->cancelled == 'Yes'){
-            $status = getOrderStatusArray('CL');
-        }else{
-            if(!empty(@$data->order)){
+        if(!empty(@$data->order)){
 
-                if($data->order->cancelled == 'Yes'){
-                    $status = getOrderStatusArray('CL');
-                }else{
+            if($data->order->cancelled == 'Yes'){
+                $status = getOrderStatusArray('CL');
+            }else{
 
-                    if($data->document_status == 'bost_Open'){
-                        $status = getOrderStatusArray("OP");
-                    }
+                if($data->order->document_status == 'bost_Open'){
+                    $status = getOrderStatusArray("OP");
+                }
 
-                    if(!empty(@$data->order->invoice)){
+                if(!empty(@$data->order->invoice)){
 
-                        if(@$data->order->invoice->document_status == 'bost_Open' && !empty(@$data->order->invoice->u_sostat)){
-                            $status = getOrderStatusArray(@$data->order->invoice->u_sostat);
-                        }else{
-                            $status = getOrderStatusArray("PN");
-                        }
+                    if($data->order->invoice->cancelled == 'Yes'){
+                        $status = getOrderStatusArray('CL');
+                    }else if(@$data->order->invoice->document_status == 'bost_Open' && !empty(@$data->order->invoice->u_sostat)){
+                        $status = getOrderStatusArray(@$data->order->invoice->u_sostat);
+                    }else{
+                        $status = getOrderStatusArray("PN");
                     }
                 }
             }
+        }else{
+            $status = getOrderStatusArray("PN");
         }
-    }else{
-        $status = getOrderStatusArray("PN");
     }
 
     return $status;

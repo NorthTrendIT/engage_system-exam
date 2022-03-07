@@ -167,7 +167,6 @@ class OrdersController extends Controller
 
             $response = ['status' => true, 'message' => 'Sync Orders successfully !'];
         } catch (\Exception $e) {
-            dd($e);
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
         return $response;
@@ -238,7 +237,6 @@ class OrdersController extends Controller
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
-                // $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_type','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");
             });
@@ -251,6 +249,43 @@ class OrdersController extends Controller
         if($request->filter_company != ""){
             $data->where('sap_connection_id',$request->filter_company);
         }
+
+        if($request->filter_status != ""){
+            $status = $request->filter_status;
+
+            if($status == "CL"){ //Cancel
+
+                $data->where(function($query){
+                    $query->orwhere(function($q){
+                        $q->whereHas('order',function($p){
+                            $p->where('cancelled', 'Yes');
+                        });
+                    });
+
+                    $query->orwhere(function($q1){
+                        $q1->whereHas('order.invoice',function($p1){
+                            $p1->where('cancelled', 'Yes');
+                        });
+                    });
+                });
+
+            }elseif($status == "PN"){ //Pending
+
+                $data->has('order', '<', 1);
+
+            }elseif($status == "OP"){ //On Process
+
+                $data->whereHas('order',function($q){
+                    $q->where('document_status', 'bost_Open')->doesntHave('invoice');
+                });
+
+            }else{
+                $data->whereHas('order.invoice',function($q) use ($status){
+                    $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', $status);
+                });
+            }
+        }
+
 
         if($request->filter_date_range != ""){
             $date = explode(" - ", $request->filter_date_range);
@@ -272,7 +307,7 @@ class OrdersController extends Controller
                                 return  @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('status', function($row) {
-                                return getOrderStatus($row);
+                                return getOrderStatusByQuotation($row);
                             })
                             ->addColumn('doc_entry', function($row) {
                                 return $row->doc_entry;
