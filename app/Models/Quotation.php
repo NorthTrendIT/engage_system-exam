@@ -48,15 +48,15 @@ class Quotation extends Model
     }
 
     public function customer(){
-        return $this->hasOne(Customer::class, 'card_code', 'card_code');
+        return $this->hasOne(Customer::class, 'card_code', 'card_code')->where('sap_connection_id', $this->sap_connection_id);
     }
 
     public function sales_specialist(){
-        return $this->belongsTo(User::class, 'sales_person_code','sales_employee_code');
+        return $this->belongsTo(User::class, 'sales_person_code','sales_employee_code')->where('sap_connection_id', $this->sap_connection_id);
     }
 
     public function order(){
-        return $this->hasOne(Order::class, 'base_entry', 'doc_entry');
+        return $this->hasOne(Order::class, 'base_entry', 'doc_entry')->where('sap_connection_id', $this->sap_connection_id);
     }
 
     public function sap_connection(){

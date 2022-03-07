@@ -144,7 +144,7 @@ class RecommendedProductController extends Controller
                               return @$row->product->item_code ?? "";
                           })
                           ->addColumn('price', function($row) use ($customer_price_list_no) {
-                              return "₱ ".number_format(get_product_customer_price(@$row->product->item_prices,$customer_price_list_no),2);
+                              return "₱ ".number_format_value(get_product_customer_price(@$row->product->item_prices,$customer_price_list_no));
                           })
                           ->addColumn('action', function($row) use ($customer) {
                             if(userrole() == 2){

@@ -167,7 +167,7 @@ class CartController extends Controller
                 $total += $subTotal;
             }
 
-            return $response = ['status'=>true,'message'=>"Product quantity updated successfully.", 'total' => number_format($total, 2)];
+            return $response = ['status'=>true,'message'=>"Product quantity updated successfully.", 'total' => number_format_value($total)];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];
@@ -194,7 +194,7 @@ class CartController extends Controller
                 $total += $subTotal;
             }
 
-            return $response = ['status'=>true,'message'=> $message, 'total' => number_format($total, 2), 'count' => count($data), 'cart_count' => $cartCount];
+            return $response = ['status'=>true,'message'=> $message, 'total' => number_format_value($total), 'count' => count($data), 'cart_count' => $cartCount];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];

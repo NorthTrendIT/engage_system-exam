@@ -78,7 +78,7 @@ class OrdersController extends Controller
     public function show($id)
     {
         $total = 0;
-        $data = Quotation::with(['items.product', 'customer'])->where('id', $id);
+        $data = Quotation::where('id', $id);
         if(userrole() == 4){
             $data->where('card_code', @Auth::user()->customer->card_code);
         }elseif(userrole() == 2){
@@ -278,7 +278,7 @@ class OrdersController extends Controller
                                 return $row->doc_entry;
                             })
                             ->addColumn('total', function($row) {
-                                return '₱ '. number_format($row->doc_total, 2);
+                                return '₱ '. number_format_value($row->doc_total);
                             })
                             ->addColumn('date', function($row) {
                                 return date('M d, Y',strtotime($row->doc_date));
@@ -660,7 +660,7 @@ class OrdersController extends Controller
                             'company' => @$value->sap_connection->company_name ?? "-",
                             'doc_entry' => $value->doc_entry ?? "-",
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
-                            'doc_total' => number_format($value->doc_total, 2),
+                            'doc_total' => number_format_value($value->doc_total),
                             'created_at' => date('M d, Y',strtotime($value->doc_date)),
                             'status' => getOrderStatus($value),
                           );
