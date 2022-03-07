@@ -244,10 +244,17 @@
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {
+                    var product_ids = [];
+                    $('.selectProducts').each(function(){
+                        if(this.value){
+                            product_ids.push(this.value);
+                        }
+                    });
                     return {
                         _token: "{{ csrf_token() }}",
                         filter_search: params.term,
                         customer_id: $('[name="customer_id"]').val(),
+                        product_ids: product_ids,
                     };
                 },
                 processResults: function (response) {
