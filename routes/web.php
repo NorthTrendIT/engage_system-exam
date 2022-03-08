@@ -271,14 +271,8 @@ Route::middleware(['auth'])->group(function(){
             Route::post('news-and-announcement/status/{id}', 'App\Http\Controllers\NewsAndAnnouncementController@updateStatus')->name('news-and-announcement.status');
 
             Route::resource('report', 'App\Http\Controllers\ReportController');
-
-            Route::prefix('report')->group(function(){
-                Route::resource('promotion-report', 'App\Http\Controllers\PromotionReportController', [
-                    'names' => [
-                        'index' => 'promotion-report.index',
-                    ]
-                ]);
-            });
+            Route::get('reports/promotion', 'App\Http\Controllers\PromotionReportController@index')->name('report.promotion.index');
+            Route::post('reports/promotion/get-all', 'App\Http\Controllers\PromotionReportController@getAll')->name('report.promotion.get-all');
         });
 
         // Customer Orders

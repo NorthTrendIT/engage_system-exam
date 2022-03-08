@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\SapConnection;
+use App\Models\Promotions;
 use Auth;
 
 class PromotionReportController extends Controller
@@ -14,7 +16,8 @@ class PromotionReportController extends Controller
      */
     public function index()
     {
-        return view('report.promotion');
+        $company = SapConnection::all();
+        return view('report.promotion', compact('company'));
     }
 
     /**
@@ -81,5 +84,26 @@ class PromotionReportController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function getAll(Request $request){
+        $company = SapConnection::query();
+
+        if($request->filter_company != ""){
+            $data->where('id', $request->filter_company);
+        }
+
+        $company = $company->get();
+
+        // dd($company);
+
+        $outputData = [];
+        foreach($company as $key => $item){
+                $outputData[] = ['no' => $key, 'company_name' => $item->company_name, 'status' => $key, 'total_promotion' => 'TP-123', 'total_quantity' => 'TQ-123', 'total_amount' => 'TA-123'];
+                // $totalPromotion = Promotions::where(['is_active' => 1, 'sap_connection_id' => ])->count()
+        }
+
+        return ['status' => true, 'data' => $outputData];
+
     }
 }

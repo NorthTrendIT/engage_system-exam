@@ -67,7 +67,7 @@
                     @endforeach --}}
                   </select>
                 </div>
-                
+
 
                 <div class="col-md-3 mt-5 other_filter_div">
                   <select class="form-control form-control-lg form-control-solid" name="filter_product_class" data-control="select2" data-hide-search="false" data-placeholder="Select product class" data-allow-clear="true">
@@ -169,7 +169,7 @@
                           </tbody>
                           <!--end::Table body-->
 
-                          
+
                        </table>
                        <!--end::Table-->
                     </div>
@@ -234,7 +234,7 @@
           scrollCollapse: true,
           paging: true,
           fixedColumns:   {
-            left: 3,  
+            left: 3,
             right: 0
           },
           order: [],
@@ -383,7 +383,7 @@
     $(document).on('change', '[name="filter_company"]', function(event) {
       event.preventDefault();
       $('[name="filter_brand"]').val('').trigger('change');
-      
+
       if($(this).find('option:selected').val() != ""){
         $('.filter_brand_div').show();
       }else{
