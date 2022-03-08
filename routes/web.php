@@ -113,7 +113,8 @@ Route::middleware(['auth'])->group(function(){
     	    Route::get('orders/export', 'App\Http\Controllers\OrdersController@export')->name('orders.export');
             Route::resource('orders','App\Http\Controllers\OrdersController');
             Route::post('orders/get-all', 'App\Http\Controllers\OrdersController@getAll')->name('orders.get-all');
-    	    Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
+            Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
+    	    Route::post('orders/sync-specific-orders', 'App\Http\Controllers\OrdersController@syncSpecificOrder')->name('orders.sync-specific-orders');
             Route::post('orders/get-customer', 'App\Http\Controllers\OrdersController@getCustomer')->name('orders.get-customer');
             Route::post('orders/notify-customer', 'App\Http\Controllers\OrdersController@notifyCustomer')->name('orders.notify-customer');
 
@@ -131,6 +132,7 @@ Route::middleware(['auth'])->group(function(){
             Route::resource('invoices','App\Http\Controllers\InvoicesController');
     	    Route::post('invoices/get-all', 'App\Http\Controllers\InvoicesController@getAll')->name('invoices.get-all');
     	    Route::post('invoices/sync-invoices', 'App\Http\Controllers\InvoicesController@syncInvoices')->name('invoices.sync-invoices');
+            Route::post('invoices/sync-specific-invoices', 'App\Http\Controllers\InvoicesController@syncSpecificInvoice')->name('invoices.sync-specific-invoices');
             Route::post('invoices/get-customer', 'App\Http\Controllers\InvoicesController@getCustomer')->name('invoices.get-customer');
 
             // Route::resource('location','App\Http\Controllers\LocationController');

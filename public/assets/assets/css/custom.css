@@ -807,6 +807,21 @@ span.marker{
   -webkit-transition: background 0.25s linear;
   z-index: 2;
 }
+
+.order-tracking .is-cancelled {
+    display: block;
+    position: relative;
+    border-radius: 50%;
+    height: 60px;
+    width: 60px;
+    border: 0px solid #f71616;
+    background-color: #f71616;
+    margin: 0 auto;
+    transition: background 0.25s linear;
+    -webkit-transition: background 0.25s linear;
+    z-index: 2;
+}
+
 .order-tracking .is-complete:after {
   display: block;
   position: absolute;
@@ -865,14 +880,21 @@ span.marker{
     justify-content: center;
     align-items: center;padding: 13px;
 }
-.hh-grayBox .order-tracking span.is-complete img, .hh-grayBox .order-tracking span.is-complete svg {
+.hh-grayBox .order-tracking span.is-complete img, .hh-grayBox .order-tracking span.is-complete svg, .hh-grayBox .order-tracking span.is-cancelled img, .hh-grayBox .order-tracking span.is-cancelled svg{
     padding: 0;
+    max-width: 60px;
+
     /*max-width: 35px;
     width: 100%;*/
 }
 
-.hh-grayBox .order-tracking.completed span.is-complete img, .hh-grayBox .order-tracking.completed span.is-complete svg{
+.hh-grayBox .order-tracking.completed span.is-complete img, .hh-grayBox .order-tracking.completed span.is-complete svg, .hh-grayBox .order-tracking.completed span.is-cancelled img, .hh-grayBox .order-tracking.completed span.is-cancelled svg{
     filter: brightness(0) invert(1);
+}
+
+
+.order-tracking.cancelled:before {
+    background-color: #f71616 !important;
 }
 
 @media(max-width: 580px) {
