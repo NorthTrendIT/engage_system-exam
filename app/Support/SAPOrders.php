@@ -62,10 +62,12 @@ class SAPOrders
 
         } catch (\Exception $e) {
 
-            add_sap_log([
-                    'status' => "error",
-                    'error_data' => $e->getMessage(),
-                ], $this->log_id);
+            if($this->log_id){
+                add_sap_log([
+                        'status' => "error",
+                        'error_data' => $e->getMessage(),
+                    ], $this->log_id);
+            }
 
             return array(
                                 'status' => false,
@@ -94,8 +96,51 @@ class SAPOrders
 
             if($data['value']){
 
-                /*foreach ($data['value'] as $order) {
+                $where = array(
+                            'db_name' => $this->database,
+                            'user_name' => $this->username,
+                        );
 
+                $sap_connection = SapConnection::where($where)->first();
+
+                // Store Data of Order in database
+                StoreOrders::dispatch($data['value'], @$sap_connection->id);
+
+                if(isset($data['odata.nextLink'])){
+
+                    SyncNextOrders::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
+
+                    //$this->addOrdersDataInDatabase($data['odata.nextLink']);
+                } else {
+                    add_sap_log([
+                        'status' => "completed",
+                    ], $this->log_id);
+                }
+            }
+        }
+    }
+
+
+    // Store Specific Orders Data
+    public function addSpecificOrdersDataInDatabase($doc_entry = false)
+    {
+        if($doc_entry){
+            $url = '/b1s/v1/Orders('.$doc_entry.')';
+            $response = $this->getOrderData($url);
+
+            if($response['status']){
+                $order = $response['data'];
+
+                if(!empty($order)){
+
+                    $where = array(
+                                'db_name' => $this->database,
+                                'user_name' => $this->username,
+                            );
+
+                    $sap_connection = SapConnection::where($where)->first();
+
+                    
                     $insert = array(
                                 'doc_entry' => $order['DocEntry'],
                                 'doc_num' => $order['DocNum'],
@@ -122,11 +167,20 @@ class SAPOrders
                                 'cancel_date' => $order['CancelDate'],
                                 'created_at' => $order['CreationDate'],
                                 'updated_at' => $order['UpdateDate'],
+                                'document_status' => $order['DocumentStatus'],
                                 //'response' => json_encode($order),
+
+                                'updated_date' => $order['UpdateDate'],
+                                'sap_connection_id' => $sap_connection->id,
                             );
+
+                    if(!empty($order['DocumentLines'])){
+                        array_push($insert, array('base_entry' => $order['DocumentLines'][0]['BaseEntry']));
+                    }
 
                     $obj = Order::updateOrCreate([
                                                 'doc_entry' => $order['DocEntry'],
+                                                'sap_connection_id' => $sap_connection->id,
                                             ],
                                             $insert
                                         );
@@ -162,34 +216,18 @@ class SAPOrders
 
                             $item_obj = OrderItem::updateOrCreate([
                                             'order_id' => $obj->id,
-                                            'item_code' => $value['ItemCode'],
+                                            'item_code' => @$value['ItemCode'],
                                         ],
                                         $item
                                     );
+
+                            if(!is_null(@$value['BaseEntry'])){
+                                $obj->base_entry = @$value['BaseEntry'];
+                                $obj->save();
+                            }
                         }
 
                     }
-                }*/
-
-                $where = array(
-                            'db_name' => $this->database,
-                            'user_name' => $this->username,
-                        );
-
-                $sap_connection = SapConnection::where($where)->first();
-
-                // Store Data of Order in database
-                StoreOrders::dispatch($data['value'], @$sap_connection->id);
-
-                if(isset($data['odata.nextLink'])){
-
-                    SyncNextOrders::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
-
-                    //$this->addOrdersDataInDatabase($data['odata.nextLink']);
-                } else {
-                    add_sap_log([
-                        'status' => "completed",
-                    ], $this->log_id);
                 }
             }
         }
