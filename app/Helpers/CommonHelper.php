@@ -611,3 +611,39 @@ function getOrderStatusProcessArray($status){
 function number_format_value($value){
     return number_format($value,2);
 }
+
+
+function getOrderStatusBtnHtml($status){
+
+    $btn = "";
+    switch ($status) {
+        case "Pending":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#78909c').';background-color:'.convert_hex_to_rgba('#78909c',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "On Process":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#ffa726').';background-color:'.convert_hex_to_rgba('#ffa726',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "For Delivery":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#29b6f6').';background-color:'.convert_hex_to_rgba('#29b6f6',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "Delivered":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#66bb6a').';background-color:'.convert_hex_to_rgba('#66bb6a',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "Confirmed":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#2e7d32').';background-color:'.convert_hex_to_rgba('#2e7d32',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "Completed":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#2e7d32').';background-color:'.convert_hex_to_rgba('#2e7d32',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "Invoiced":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#2e7d32').';background-color:'.convert_hex_to_rgba('#2e7d32',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "Cancelled":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#f44336').';background-color:'.convert_hex_to_rgba('#f44336',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        default:
+            break;
+    }
+
+    return $btn;
+}

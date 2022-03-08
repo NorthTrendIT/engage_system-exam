@@ -46,7 +46,6 @@
                           <!-- <div class="fw-bolder fs-3 text-gray-800 mb-8">Order</div> -->
                           <!--end::Label-->
 
-
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
@@ -124,7 +123,7 @@
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
-                                <span>{{ getOrderStatusByQuotation($data) }}</span>
+                                <span>{!! getOrderStatusBtnHtml(getOrderStatusByQuotation($data)) !!}</span>
                               </div>
                               <!--end::Text-->
                             </div>

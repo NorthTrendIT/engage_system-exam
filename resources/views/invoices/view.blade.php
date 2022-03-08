@@ -125,7 +125,7 @@
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
-                                <span>{{ getOrderStatusByInvoice($data) }}</span>
+                                <span>{!! getOrderStatusBtnHtml(getOrderStatusByInvoice($data)) !!}</span>
                               </div>
                               <!--end::Text-->
                             </div>

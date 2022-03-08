@@ -61,8 +61,7 @@ class SAPInvoices
             }
 
         } catch (\Exception $e) {
-            dd($e->getMessage());
-            
+
             if($this->log_id){
                 add_sap_log([
                         'status' => "error",
