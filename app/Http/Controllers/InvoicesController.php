@@ -260,7 +260,7 @@ class InvoicesController extends Controller
                                 return  @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('status', function($row) {
-                                return getOrderStatusByInvoice($row);
+                                return getOrderStatusBtnHtml(getOrderStatusByInvoice($row));
                             })
                             ->addColumn('doc_entry', function($row) {
                                 return $row->doc_entry;
@@ -304,7 +304,7 @@ class InvoicesController extends Controller
                             ->orderColumn('company', function ($query, $order) {
                                 $query->join('sap_connections', 'invoices.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
-                            ->rawColumns(['action'])
+                            ->rawColumns(['action','status'])
                             ->make(true);
     }
 

@@ -343,7 +343,7 @@ class OrdersController extends Controller
                                 return  @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('status', function($row) {
-                                return getOrderStatusByQuotation($row);
+                                return getOrderStatusBtnHtml(getOrderStatusByQuotation($row));
                             })
                             ->addColumn('doc_entry', function($row) {
                                 return $row->doc_entry;
@@ -392,7 +392,7 @@ class OrdersController extends Controller
                             ->orderColumn('company', function ($query, $order) {
                                 $query->join('sap_connections', 'quotations.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
-                            ->rawColumns(['action'])
+                            ->rawColumns(['action','status'])
                             ->make(true);
     }
 
