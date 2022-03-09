@@ -234,7 +234,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('customer-promotion/order/push-in-sap', 'App\Http\Controllers\CustomerPromotionController@orderPushInSap')->name('customer-promotion.order.push-in-sap');
             Route::post('customer-promotion/order/approved', 'App\Http\Controllers\CustomerPromotionController@orderApproved')->name('customer-promotion.order.approved');
             Route::get('customer-promotion/order/export', 'App\Http\Controllers\CustomerPromotionController@orderExport')->name('customer-promotion.order.export');
-
+            Route::post('customer-promotion/order/sync-delivery-status', 'App\Http\Controllers\CustomerPromotionController@orderSyncDeliveryStatus')->name('customer-promotion.order.sync-delivery-status');
 
             // Quotations
             Route::resource('quotation','App\Http\Controllers\QuotationController');

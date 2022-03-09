@@ -341,6 +341,7 @@
                             <!--begin::Content-->
                             <div class="flex-grow-1 mt-20">
                               <h5 class="mb-5"> {{ ordinal($key + 1) }} Product: <i>{{ @$p->product->item_name ?? "-" }}</i></h5>
+
                               <!--begin::Table-->
                               <div class="table-responsive border-bottom mb-9">
                                 <table class="table mb-3">
@@ -348,6 +349,7 @@
                                     <tr class="border-bottom fs-6 fw-bolder text-muted">
                                       <th class="min-w-175px pb-2">Delivery Date</th>
                                       <th class="min-w-70px text-end pb-2">Delivery Quantity</th>
+                                      <th class="min-w-70px text-end pb-2">Sync</th>
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -356,62 +358,21 @@
                                       <tr class="fw-bolder text-gray-700 fs-7 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ date('F d, Y',strtotime($d->delivery_date)) }}</td>
                                         <td class="pt-6">{{ @$d->delivery_quantity }}</td>
+                                        <td class="pt-6">
+                                          <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm sync-delivery-status" title="Sync Delivery Status" data-id="{{ @$d->quotation->id }}"><i class="fa fa-sync"></i></a>
+                                        </td>
                                       </tr>
                                       <tr class="fw-bolder text-gray-700 fs-7 text-center">
-                                        <td colspan="2">
+                                        <td colspan="3">
                                           @php
                                             $status = getOrderStatusByQuotation(@$d->quotation);
                                             // $status = "Cancelled";
                                           @endphp
 
-                                          <div class="hh-grayBox pt45 pb20">
-                                              @if($status == "Cancelled")
-                                              <div class="row justify-content-center">
-                                                <div class="order-tracking completed">
-                                                  <span class="is-complete"><img src="{{ asset('assets/assets/media/svg/order/pending.svg') }}"></span>
-                                                  <p>Pending</p>
-                                                </div>
-
-                                                <div class="order-tracking completed cancelled">
-                                                  <span class="is-cancelled">
-                                                    <img src="{{ asset('assets/assets/media/svg/order/cancelled.svg') }}">
-                                                  </span>
-                                                  <p>Cancelled</p>
-                                                </div>
-                                              </div>
-                                              @else
-                                              <div class="row justify-content-between">
-                                                <div class="order-tracking {{ in_array('Pending',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
-                                                  <span class="is-complete"><img src="{{ asset('assets/assets/media/svg/order/pending.svg') }}"></span>
-                                                  <p>Pending</p>
-                                                </div>
-                                                <div class="order-tracking {{ in_array('On Process',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
-                                                  <span class="is-complete"><img src="{{ asset('assets/assets/media/svg/order/on-process.svg') }}"></span>
-                                                  <p>On Process</p>
-                                                </div>
-                                                <div class="order-tracking {{ in_array('For Delivery',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
-                                                  <span class="is-complete"><img src="{{ asset('assets/assets/media/svg/order/for-delivery.svg') }}"></span>
-                                                  <p>For Delivery</p>
-                                                </div>
-                                                <div class="order-tracking {{ in_array('Delivered',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
-                                                  <span class="is-complete"><img src="{{ asset('assets/assets/media/svg/order/delivered.svg') }}"></span>
-                                                  <p>Delivered</p>
-                                                </div>
-                                                <div class="order-tracking {{ in_array('Completed',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
-                                                  <span class="is-complete">
-                                                    <img src="{{ asset('assets/assets/media/svg/order/completed.svg') }}">
-                                                  </span>
-                                                  <p>Completed</p>
-                                                </div>
-                                              </div>
-                                              @endif
-
-                                            <div class="row justify-content-center mt-10">
-                                              <span>Delivery Status</span>
-                                            </div>
-
+                                          <div class="delivery_status_div_{{ @$d->quotation->id }}">
+                                            {!! view('customer-promotion.ajax.delivery-status',compact('status')) !!}
                                           </div>
-
+                                          
                                         </td>
                                       </tr>
                                     @endforeach
@@ -682,6 +643,46 @@
       });
 
     @endif
+
+
+    $(document).on('click', '.sync-delivery-status', function(event) {
+      event.preventDefault();
+
+      var id = $(this).data('id');
+
+      Swal.fire({
+        title: 'Are you sure want to sync delivery status details?',
+        text: "It may take some time to sync delivery status details.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('customer-promotion.order.sync-delivery-status') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                    id:id,
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              $('.delivery_status_div_'+id).html(result.html);
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
   });
 
 </script>
