@@ -156,7 +156,6 @@ class SAPOrderPost
                                 ],
                                 $fields
                             );
-                    return $item_obj;
                 }
             }
         }

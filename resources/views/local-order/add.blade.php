@@ -57,7 +57,7 @@
                                         </div>
                                         <div class="col-xl-4 col-lg-4 col-md-4 col-12">
                                             <label class="col-form-label text-right">Delivery Date<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control" placeholder="Delivery Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('m/d/Y',strtotime($edit->due_date))}}" @endif>
+                                            <input type="text" class="form-control" placeholder="Delivery Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('d/m/Y',strtotime($edit->due_date))}}" @endif>
                                         </div>
                                     </div>
                                 </div>
@@ -352,7 +352,7 @@
         $('body').on('change' ,'#selectCustomers', function(){
             $customer = $('[name="customer_id"]').val();
 
-            @if(is_null($edit))
+            @if(empty($edit))
                 $('#selectAddress').val(null).trigger('change');
             @endif
 

@@ -13,7 +13,7 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
 
-        <a href="{{ route('orders.panding-orders') }}" class="btn btn-sm btn-primary">Back</a>
+        <a href="{{ route('draft-order.index') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -40,59 +40,18 @@
 
                         <!--begin::Wrapper-->
                         <div class="m-0">
-                          <!--begin::Label-->
-                          <!-- <div class="fw-bolder fs-3 text-gray-800 mb-8">Order</div> -->
-                          <!--end::Label-->
 
-
-                          <!--begin::Row-->
                           <div class="row g-5 mb-11">
-                            <!--end::Col-->
                             <div class="col-sm-4">
-                              <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Name</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->card_name ?? '-' }}</div>
-                              <!--end::Text-->
                             </div>
-                            <!--end::Col-->
 
-                            <!--end::Col-->
                             <div class="col-sm-3">
-                              <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Order Date:</div>
-                              <!--end::Label-->
-                              <!--end::Col-->
                               <div class="fw-bolder fs-6 text-gray-800">{{  date('F d, Y',strtotime($data->created_at))  }}</div>
-                              <!--end::Col-->
                             </div>
-                            <!--end::Col-->
 
-                            <!--end::Col-->
-                            <div class="col-sm-3">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">
-                                <span>{{ $data->message ?? '-' }}</span>
-                              </div>
-                              <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
-
-                            <!--end::Col-->
-                            <div class="col-sm-2">
-                              <!--end::Label-->
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800" style="text-align:end">
-                                <a href="javascript:;" class="btn btn-light-info btn-sm push-order">Push</a>
-                              </div>
-                              <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
                           </div>
                           <!--end::Row-->
                           <!--begin::Content-->
@@ -196,51 +155,6 @@
 @endpush
 
 @push('js')
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
-
-
 <script>
-
-  $(document).ready(function() {
-
-    $(document).on('click', '.push-order', function(event) {
-      event.preventDefault();
-
-      Swal.fire({
-        title: 'Are you sure want to do this?',
-        //text: "Once deleted, you will not be able to recover this record!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: '{{ route('orders.push-order') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                    id: '{{ @$data->id }}',
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              window.location.href = "{{ route('orders.panding-orders') }}";
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
-    });
-  });
-
 </script>
 @endpush
