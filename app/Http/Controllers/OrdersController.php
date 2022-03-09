@@ -647,7 +647,7 @@ class OrdersController extends Controller
                 $sap_connection = SapConnection::find(@$order->customer->sap_connection_id);
 
                 if(!is_null($sap_connection)){
-                    SAPAllOrderPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, @$order->id);
+                    SAPAllOrderPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, @$order->id, $sap_connection_id);
                 }
             }
             return $response = ['status' => true, 'message' => 'All Order Placed Successfully!'];
