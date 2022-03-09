@@ -114,29 +114,27 @@ class DraftOrderController extends Controller
      */
     public function show($id)
     {
-        // $total = 0;
-        // $edit = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id',$id)->firstOrFail();
-        // $customer = Customer::findOrFail($edit->customer->id);
-        // $customer_price_list_no = @$customer->price_list_num;
-
-        // foreach($edit->items as $value){
-        //     $total += get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity;
-        // }
-
-        // return view('draft-order.view',compact(['edit', 'customer_price_list_no', 'total']));
         $local_order = LocalOrder::where('id',$id)->firstOrFail();
-        $data = Quotation::with(['items.product', 'customer'])->where('doc_entry', $local_order->doc_entry);
-        if(userrole() == 4){
-            $data->where('card_code', @Auth::user()->customer->card_code);
-        }elseif(userrole() == 2){
-            $data->where('sales_person_code', @Auth::user()->sales_employee_code);
-        }elseif(userrole() != 1){
-            return abort(404);
+        if(empty($local_order->doc_entry)){
+            $total = 0;
+            $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id', $id)->firstOrFail();
+            return view('draft-order.pending_order_view', compact('data', 'total'));
+        } else {
+            $data = Quotation::with(['items.product', 'customer'])->where('doc_entry', $local_order->doc_entry);
+            if(userrole() == 4){
+                $data->where('card_code', @Auth::user()->customer->card_code);
+            }elseif(userrole() == 2){
+                $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+            }elseif(userrole() != 1){
+                return abort(404);
+            }
+
+            $data = $data->firstOrFail();
+
+            return view('draft-order.view', compact('data'));
         }
 
-        $data = $data->firstOrFail();
 
-        return view('draft-order.view', compact('data'));
     }
 
     /**

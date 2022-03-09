@@ -89,7 +89,7 @@ class SAPOrderPost
             $insert = array(
                         'doc_entry' => $data['DocEntry'],
                         'doc_num' => $data['DocNum'],
-                        'num_at_card' => $value['NumAtCard'],
+                        'num_at_card' => $data['NumAtCard'],
                         'doc_type' => $data['DocType'],
                         'document_status' => $data['DocumentStatus'],
                         'doc_date' => $data['DocDate'],
@@ -156,7 +156,7 @@ class SAPOrderPost
                                 ],
                                 $fields
                             );
-
+                    return $item_obj;
                 }
             }
         }
@@ -169,7 +169,6 @@ class SAPOrderPost
 
         if(!empty($body)){
             $response = $this->requestSapApi('/b1s/v1/Quotations', "POST", $body);
-            // dd($response);
 
             $status = $response['status'];
             $data = $response['data'];
@@ -181,7 +180,7 @@ class SAPOrderPost
                 $order->doc_num = $data['DocNum'];
                 $order->message = null;
 
-                $this->pushOrderDetailsInDatabase($data);
+                $data = $this->pushOrderDetailsInDatabase($data);
             } else {
                 $order->confirmation_status = 'ERR';
                 $order->message = $data;
