@@ -9,6 +9,8 @@ class ProductItemLine extends Model
 {
     use HasFactory;
 
+    use \Awobaz\Compoships\Compoships;
+    
     protected $fillable = [
         'u_item_line',
         'sap_connection_id',

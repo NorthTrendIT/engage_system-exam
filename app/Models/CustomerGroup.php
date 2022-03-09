@@ -9,6 +9,8 @@ class CustomerGroup extends Model
 {
     use HasFactory;
 
+    use \Awobaz\Compoships\Compoships;
+
     protected $fillable = [
         'code',
     	'name',

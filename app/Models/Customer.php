@@ -10,6 +10,8 @@ class Customer extends Model
 {
     use HasFactory, SoftDeletes;
 
+    use \Awobaz\Compoships\Compoships;
+
     protected $fillable = [
     	'card_code',
     	'card_type',
@@ -59,7 +61,7 @@ class Customer extends Model
 
     public function group()
     {
-        return $this->belongsTo(CustomerGroup::class,'group_code','code')->where('sap_connection_id', $this->sap_connection_id);
+        return $this->belongsTo(CustomerGroup::class, ['group_code', 'sap_connection_id'], ['code', 'sap_connection_id']);
     }
 
     public function sales_specialist(){
