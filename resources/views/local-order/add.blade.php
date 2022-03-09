@@ -352,7 +352,7 @@
         $('body').on('change' ,'#selectCustomers', function(){
             $customer = $('[name="customer_id"]').val();
 
-            @if(is_null($edit))
+            @if(empty($edit))
                 $('#selectAddress').val(null).trigger('change');
             @endif
 
