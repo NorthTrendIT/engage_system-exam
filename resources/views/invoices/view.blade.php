@@ -13,6 +13,9 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
 
+        <!--begin::Button-->
+        <a href="javascript:" class="btn btn-sm btn-primary sync-details mr-10">Sync Details</a>
+
         <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
@@ -122,7 +125,7 @@
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
-                                <span>{{ getOrderStatusByInvoice($data) }}</span>
+                                <span>{!! getOrderStatusBtnHtml(getOrderStatusByInvoice($data)) !!}</span>
                               </div>
                               <!--end::Text-->
                             </div>
@@ -335,6 +338,44 @@
             data: {
                     _token:'{{ csrf_token() }}',
                     id:'',
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              setTimeout(function(){
+                window.location.reload();
+              },500)
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
+    $(document).on('click', '.sync-details', function(event) {
+      event.preventDefault();
+
+      Swal.fire({
+        title: 'Are you sure want to sync details?',
+        text: "It may take some time to sync details.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('invoices.sync-specific-invoices') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                    id:'{{ $data->id }}'
                   }
           })
           .done(function(result) {

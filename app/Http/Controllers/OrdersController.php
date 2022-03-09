@@ -167,8 +167,43 @@ class OrdersController extends Controller
 
             $response = ['status' => true, 'message' => 'Sync Orders successfully !'];
         } catch (\Exception $e) {
-            dd($e);
             $response = ['status' => false, 'message' => 'Something went wrong !'];
+        }
+        return $response;
+    }
+
+    public function syncSpecificOrder(Request $request){
+
+        $response = ['status' => false, 'message' => 'Something went wrong !'];
+        if(@$request->id){
+
+            $quotation = Quotation::find($request->id);
+            if(!is_null($quotation) && !is_null(@$quotation->sap_connection)){
+                try {
+
+                    $sap_connection = @$quotation->sap_connection;
+
+                    // Sync Quotation Data
+                    $sap_quotations = new SAPQuotations($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+                    $sap_quotations->addSpecificQuotationsDataInDatabase(@$quotation->doc_entry);
+
+                    // Sync Order Data
+                    if(@$quotation->order->doc_entry){
+                        $sap_orders = new SAPOrders($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+                        $sap_orders->addSpecificOrdersDataInDatabase(@$quotation->order->doc_entry);
+                    }
+
+                    // Sync Invoice Data
+                    if(@$quotation->order->invoice->doc_entry){
+                        $sap_invoices = new SAPInvoices($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+                        $sap_invoices->addSpecificInvoicesDataInDatabase(@$quotation->order->invoice->doc_entry);
+                    }
+
+                    $response = ['status' => true, 'message' => 'Sync order details successfully !'];
+                } catch (\Exception $e) {
+                    $response = ['status' => false, 'message' => 'Something went wrong !'];
+                }
+            }
         }
         return $response;
     }
@@ -238,7 +273,6 @@ class OrdersController extends Controller
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
-                // $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_type','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");
             });
@@ -251,6 +285,43 @@ class OrdersController extends Controller
         if($request->filter_company != ""){
             $data->where('sap_connection_id',$request->filter_company);
         }
+
+        if($request->filter_status != ""){
+            $status = $request->filter_status;
+
+            if($status == "CL"){ //Cancel
+
+                $data->where(function($query){
+                    $query->orwhere(function($q){
+                        $q->whereHas('order',function($p){
+                            $p->where('cancelled', 'Yes');
+                        });
+                    });
+
+                    $query->orwhere(function($q1){
+                        $q1->whereHas('order.invoice',function($p1){
+                            $p1->where('cancelled', 'Yes');
+                        });
+                    });
+                });
+
+            }elseif($status == "PN"){ //Pending
+
+                $data->has('order', '<', 1);
+
+            }elseif($status == "OP"){ //On Process
+
+                $data->whereHas('order',function($q){
+                    $q->where('document_status', 'bost_Open')->doesntHave('invoice');
+                });
+
+            }else{
+                $data->whereHas('order.invoice',function($q) use ($status){
+                    $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', $status);
+                });
+            }
+        }
+
 
         if($request->filter_date_range != ""){
             $date = explode(" - ", $request->filter_date_range);
@@ -272,7 +343,7 @@ class OrdersController extends Controller
                                 return  @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('status', function($row) {
-                                return getOrderStatus($row);
+                                return getOrderStatusBtnHtml(getOrderStatusByQuotation($row));
                             })
                             ->addColumn('doc_entry', function($row) {
                                 return $row->doc_entry;
@@ -321,7 +392,7 @@ class OrdersController extends Controller
                             ->orderColumn('company', function ($query, $order) {
                                 $query->join('sap_connections', 'quotations.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
-                            ->rawColumns(['action'])
+                            ->rawColumns(['action','status'])
                             ->make(true);
     }
 

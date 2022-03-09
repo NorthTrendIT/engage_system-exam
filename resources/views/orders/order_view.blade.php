@@ -13,6 +13,8 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
 
+        <a href="javascript:" class="btn btn-sm btn-primary sync-details mr-10">Sync Details</a>
+
         <a href="{{ route('orders.index') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
@@ -43,7 +45,6 @@
                           <!--begin::Label-->
                           <!-- <div class="fw-bolder fs-3 text-gray-800 mb-8">Order</div> -->
                           <!--end::Label-->
-
 
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
@@ -122,7 +123,7 @@
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
-                                <span>{{ getOrderStatus($data->id) }}</span>
+                                <span>{!! getOrderStatusBtnHtml(getOrderStatusByQuotation($data)) !!}</span>
                               </div>
                               <!--end::Text-->
                             </div>
@@ -353,6 +354,46 @@
         }
       })
     });
+
+
+    $(document).on('click', '.sync-details', function(event) {
+      event.preventDefault();
+
+      Swal.fire({
+        title: 'Are you sure want to sync details?',
+        text: "It may take some time to sync details.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('orders.sync-specific-orders') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                    id:'{{ $data->id }}'
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              setTimeout(function(){
+                window.location.reload();
+              },500)
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
   });
 
 </script>

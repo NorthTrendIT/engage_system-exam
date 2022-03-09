@@ -798,8 +798,8 @@ span.marker{
   display: block;
   position: relative;
   border-radius: 50%;
-  height: 30px;
-  width: 30px;
+  height: 60px;
+  width: 60px;
   border: 0px solid #AFAFAF;
   background-color: #f7be16;
   margin: 0 auto;
@@ -807,6 +807,21 @@ span.marker{
   -webkit-transition: background 0.25s linear;
   z-index: 2;
 }
+
+.order-tracking .is-cancelled {
+    display: block;
+    position: relative;
+    border-radius: 50%;
+    height: 60px;
+    width: 60px;
+    border: 0px solid #f71616;
+    background-color: #f71616;
+    margin: 0 auto;
+    transition: background 0.25s linear;
+    -webkit-transition: background 0.25s linear;
+    z-index: 2;
+}
+
 .order-tracking .is-complete:after {
   display: block;
   position: absolute;
@@ -827,13 +842,13 @@ span.marker{
   border-width: 0px;
   background-color: #27aa80;
 }
-.order-tracking.completed .is-complete:after {
+/*.order-tracking.completed .is-complete:after {
   border-color: #fff;
   border-width: 0px 3px 3px 0;
   width: 7px;
   left: 11px;
   opacity: 1;
-}
+}*/
 .order-tracking p {
   color: #A4A4A4;
   /*font-size: 16px;*/
@@ -849,10 +864,53 @@ span.marker{
   height: 3px;
   width: calc(100% - 40px);
   background-color: #f7be16;
-  top: 13px;
+  top: 30px;
   position: absolute;
   left: calc(-50% + 20px);
   z-index: 0;
 }
 .order-tracking:first-child:before{display: none;}
 .order-tracking.completed:before{background-color: #27aa80;}
+
+
+
+.hh-grayBox .order-tracking {}
+.hh-grayBox .order-tracking span.is-complete {
+    display: flex;
+    justify-content: center;
+    align-items: center;padding: 13px;
+}
+.hh-grayBox .order-tracking span.is-complete img, .hh-grayBox .order-tracking span.is-complete svg, .hh-grayBox .order-tracking span.is-cancelled img, .hh-grayBox .order-tracking span.is-cancelled svg{
+    padding: 0;
+    max-width: 60px;
+
+    /*max-width: 35px;
+    width: 100%;*/
+}
+
+.hh-grayBox .order-tracking.completed span.is-complete img, .hh-grayBox .order-tracking.completed span.is-complete svg, .hh-grayBox .order-tracking.completed span.is-cancelled img, .hh-grayBox .order-tracking.completed span.is-cancelled svg{
+    filter: brightness(0) invert(1);
+}
+
+
+.order-tracking.cancelled:before {
+    background-color: #f71616 !important;
+}
+
+@media(max-width: 580px) {
+        .hh-grayBox .order-tracking{width: 100%;}
+        .order-tracking::before {
+            height: 100%;
+            width: 3px;
+            left: 50%;
+            z-index: 1;
+            top: 0%;
+            transform: translate(-50%, -50%);
+        }
+        .hh-grayBox .order-tracking p {
+            position: relative;
+            z-index: 11;
+            background: #f8f8f8;
+            padding: 5px 0;margin-bottom: 10px;
+        }
+}

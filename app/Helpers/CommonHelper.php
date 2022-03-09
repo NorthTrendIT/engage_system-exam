@@ -513,32 +513,30 @@ function getOrderStatusByQuotation($data){
 
     if(!empty($data)){
 
-        if($data->cancelled == 'Yes'){
-            $status = getOrderStatusArray('CL');
-        }else{
-            if(!empty(@$data->order)){
+        if(!empty(@$data->order)){
 
-                if($data->order->cancelled == 'Yes'){
-                    $status = getOrderStatusArray('CL');
-                }else{
+            if($data->order->cancelled == 'Yes'){
+                $status = getOrderStatusArray('CL');
+            }else{
 
-                    if($data->document_status == 'bost_Open'){
-                        $status = getOrderStatusArray("OP");
-                    }
+                if($data->order->document_status == 'bost_Open'){
+                    $status = getOrderStatusArray("OP");
+                }
 
-                    if(!empty(@$data->order->invoice)){
+                if(!empty(@$data->order->invoice)){
 
-                        if(@$data->order->invoice->document_status == 'bost_Open' && !empty(@$data->order->invoice->u_sostat)){
-                            $status = getOrderStatusArray(@$data->order->invoice->u_sostat);
-                        }else{
-                            $status = getOrderStatusArray("PN");
-                        }
+                    if($data->order->invoice->cancelled == 'Yes'){
+                        $status = getOrderStatusArray('CL');
+                    }else if(@$data->order->invoice->document_status == 'bost_Open' && !empty(@$data->order->invoice->u_sostat)){
+                        $status = getOrderStatusArray(@$data->order->invoice->u_sostat);
+                    }else{
+                        $status = getOrderStatusArray("PN");
                     }
                 }
             }
+        }else{
+            $status = getOrderStatusArray("PN");
         }
-    }else{
-        $status = getOrderStatusArray("PN");
     }
 
     return $status;
@@ -612,4 +610,40 @@ function getOrderStatusProcessArray($status){
 
 function number_format_value($value){
     return number_format($value,2);
+}
+
+
+function getOrderStatusBtnHtml($status){
+
+    $btn = "";
+    switch ($status) {
+        case "Pending":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#78909c').';background-color:'.convert_hex_to_rgba('#78909c',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "On Process":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#ffa726').';background-color:'.convert_hex_to_rgba('#ffa726',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "For Delivery":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#29b6f6').';background-color:'.convert_hex_to_rgba('#29b6f6',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "Delivered":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#66bb6a').';background-color:'.convert_hex_to_rgba('#66bb6a',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "Confirmed":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#2e7d32').';background-color:'.convert_hex_to_rgba('#2e7d32',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "Completed":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#2e7d32').';background-color:'.convert_hex_to_rgba('#2e7d32',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "Invoiced":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#2e7d32').';background-color:'.convert_hex_to_rgba('#2e7d32',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "Cancelled":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#f44336').';background-color:'.convert_hex_to_rgba('#f44336',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        default:
+            break;
+    }
+
+    return $btn;
 }

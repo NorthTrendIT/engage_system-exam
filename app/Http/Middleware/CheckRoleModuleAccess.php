@@ -251,7 +251,7 @@ class CheckRoleModuleAccess
 
                     }
                 }elseif(in_array($request->route()->getName(), ['orders.sync-orders'])){
-                    if($acces['add-order'] != 1){
+                    if($access['add-order'] != 1){
 
                         $status = false;
                         $message = "Oops ! you have not access for sync orders.";

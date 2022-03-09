@@ -62,11 +62,12 @@ class SAPQuotations
             }
 
         } catch (\Exception $e) {
-
-            add_sap_log([
-                    'status' => "error",
-                    'error_data' => $e->getMessage(),
-                ], $this->log_id);
+            if($this->log_id){
+                add_sap_log([
+                        'status' => "error",
+                        'error_data' => $e->getMessage(),
+                    ], $this->log_id);
+            }
 
             return array(
                                 'status' => false,
@@ -95,15 +96,58 @@ class SAPQuotations
 
             if($data['value']){
 
-                /*foreach ($data['value'] as $value) {
+                $where = array(
+                            'db_name' => $this->database,
+                            'user_name' => $this->username,
+                        );
+
+                $sap_connection = SapConnection::where($where)->first();
+
+                // Store Data of Quotations in database
+                StoreQuotations::dispatch($data['value'],@$sap_connection->id);
+
+                if(!empty($data['odata.nextLink'])){
+                    // dd($data);
+                    SyncNextQuotations::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
+
+                    //$this->addQuotationsDataInDatabase($data['odata.nextLink']);
+                } else {
+                    add_sap_log([
+                        'status' => "completed",
+                    ], $this->log_id);
+                }
+            }
+        }
+    }
+
+
+    // Store Specific Quotations Data
+    public function addSpecificQuotationsDataInDatabase($doc_entry = false)
+    {
+        if($doc_entry){
+            $url = '/b1s/v1/Quotations('.$doc_entry.')';
+            $response = $this->getQuotationData($url);
+
+            if($response['status']){
+                $value = $response['data'];
+
+                if(!empty($value)){
+
+                    $where = array(
+                                'db_name' => $this->database,
+                                'user_name' => $this->username,
+                            );
+
+                    $sap_connection = SapConnection::where($where)->first();
 
                     $insert = array(
                                 'doc_entry' => $value['DocEntry'],
                                 'doc_num' => $value['DocNum'],
                                 'doc_type' => $value['DocType'],
+                                'num_at_card' => $value['NumAtCard'],
                                 'document_status' => $value['DocumentStatus'],
                                 'doc_date' => $value['DocDate'],
-                                'doc_time' => $data['DocTime'],
+                                'doc_time' => $value['DocTime'],
                                 'doc_due_date' => $value['DocDueDate'],
                                 'card_code' => $value['CardCode'],
                                 'card_name' => $value['CardName'],
@@ -124,10 +168,18 @@ class SAPQuotations
                                 'created_at' => $value['CreationDate'],
                                 'updated_at' => $value['UpdateDate'],
                                 //'response' => json_encode($order),
+
+                                'updated_date' => $value['UpdateDate'],
+                                'sap_connection_id' => $sap_connection->id,
                             );
+
+                    if(!empty($value['DocumentLines'])){
+                        array_push($insert, array('base_entry' => $value['DocumentLines'][0]['BaseEntry']));
+                    }
 
                     $obj = Quotation::updateOrCreate([
                                                 'doc_entry' => $value['DocEntry'],
+                                                'sap_connection_id' => $sap_connection->id,
                                             ],
                                             $insert
                                         );
@@ -166,30 +218,13 @@ class SAPQuotations
                                         ],
                                         $fields
                                     );
+
+                            if(!is_null(@$value['BaseEntry'])){
+                                $obj->base_entry = @$value['BaseEntry'];
+                                $obj->save();
+                            }
                         }
-
                     }
-                }*/
-
-                $where = array(
-                            'db_name' => $this->database,
-                            'user_name' => $this->username,
-                        );
-
-                $sap_connection = SapConnection::where($where)->first();
-
-                // Store Data of Quotations in database
-                StoreQuotations::dispatch($data['value'],@$sap_connection->id);
-
-                if(!empty($data['odata.nextLink'])){
-                    // dd($data);
-                    SyncNextQuotations::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
-
-                    //$this->addQuotationsDataInDatabase($data['odata.nextLink']);
-                } else {
-                    add_sap_log([
-                        'status' => "completed",
-                    ], $this->log_id);
                 }
             }
         }
