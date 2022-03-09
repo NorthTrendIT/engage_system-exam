@@ -272,7 +272,6 @@ class CartController extends Controller
                 }
             }
 
-            // return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
             Cart::where('customer_id', $customer_id)->delete();
 
             try{
@@ -289,7 +288,6 @@ class CartController extends Controller
 
             }
         }
-
 
         return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
     }
