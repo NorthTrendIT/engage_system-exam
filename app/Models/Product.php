@@ -10,6 +10,8 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes;
 
+    use \Awobaz\Compoships\Compoships;
+
     protected $fillable = [
     	'item_code',
         'item_name',
@@ -73,17 +75,17 @@ class Product extends Model
 
     public function product_item_line()
     {
-        return $this->belongsTo(ProductItemLine::class,'u_item_line','u_item_line')->where('sap_connection_id', $this->sap_connection_id);
+        return $this->belongsTo(ProductItemLine::class, ['u_item_line','sap_connection_id'], ['u_item_line', 'sap_connection_id']);
     }
 
     public function product_tires_category()
     {
-        return $this->belongsTo(ProductTiresCategory::class,'u_tires','u_tires')->where('sap_connection_id', $this->sap_connection_id);
+        return $this->belongsTo(ProductTiresCategory::class, ['u_tires','sap_connection_id'], ['u_tires', 'sap_connection_id']);
     }
 
     public function group()
     {
-        return $this->belongsTo(ProductGroup::class,'items_group_code','number')->where('sap_connection_id', $this->sap_connection_id);
+        return $this->belongsTo(ProductGroup::class, ['items_group_code','sap_connection_id'], ['number', 'sap_connection_id']);
     }
 
     public function sap_connection(){

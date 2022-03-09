@@ -13,6 +13,9 @@ use App\Models\SapConnection;
 use DataTables;
 use Auth;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\InvoiceExport;
+
 class InvoicesController extends Controller
 {
     public function __construct(){
@@ -347,5 +350,148 @@ class InvoicesController extends Controller
 
         }
         return $response;
+    }
+
+    public function export(Request $request){
+        $filter = collect();
+        if(@$request->data){
+          $filter = json_decode(base64_decode($request->data));
+        }
+
+        $data = Invoice::orderBy('id', 'desc');
+
+        if(userrole() == 4){
+            $data->where('card_code', @Auth::user()->customer->card_code);
+        }elseif(userrole() == 2){
+            $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(userrole() != 1){
+            if (!is_null(@Auth::user()->created_by)) {
+                $data->where('card_code', @Auth::user()->created_by_user->customer->card_code);
+            } else {
+                return DataTables::of(collect())->make(true);;
+            }
+        }
+
+        if(@$filter->filter_search != ""){
+            $data->where(function($q) use ($filter) {
+                // $q->orwhere('card_name','LIKE',"%".$filter->filter_search."%");
+                $q->orwhere('doc_type','LIKE',"%".$filter->filter_search."%");
+                $q->orwhere('doc_entry','LIKE',"%".$filter->filter_search."%");
+            });
+        }
+
+        if(@$filter->filter_brand != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where(function($que) use ($filter) {
+                        $que->whereHas('product_groups', function($q2) use ($filter){
+                            $q2->where('product_group_id', $filter->filter_brand);
+                        });
+                    });
+                });
+            });
+        }
+
+        if(@$filter->filter_class != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where('u_class', $filter->filter_class);
+                });
+            });
+        }
+
+        if(@$filter->filter_sales_specialist != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where(function($que) use ($filter) {
+                        $que->whereHas('sales_specialist', function($q2) use ($filter){
+                            $q2->where('id', $filter->filter_sales_specialist);
+                        });
+                    });
+                });
+            });
+        }
+
+        if(@$filter->filter_market_sector != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where('u_sector', $filter->filter_market_sector);
+                });
+            });
+        }
+
+        if(@$filter->filter_territory != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where('territory', $filter->filter_territory);
+                });
+            });
+        }
+
+        if(@$filter->filter_customer != ""){
+            $data->where('card_code',$filter->filter_customer);
+        }
+
+        if(@$filter->filter_company != ""){
+            $data->where('sap_connection_id',$filter->filter_company);
+        }
+
+        if(@$filter->filter_status != ""){
+            $status = $filter->filter_status;
+
+            if($status == "CL"){ //Cancel
+                $data->where('cancelled', 'Yes');
+
+            }elseif($status == "PN"){ //Pending
+
+                // $data->where('cancelled', 'No');
+
+                $data->where(function($query){
+                    $query->orwhere(function($q){
+                        $q->whereNull('u_sostat');
+                    });
+
+                    $query->orwhere(function($q1){
+                        $q1->where('cancelled', 'No')->whereNotIn('u_sostat', array_keys(getOrderStatusArray()));
+                    });
+                });
+
+            }else{
+                $data->where('document_status', 'bost_Open')->where('u_sostat', $status);
+            }
+        }
+
+
+        if(@$filter->filter_date_range != ""){
+            $date = explode(" - ", $filter->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('doc_date', '>=' , $start);
+            $data->whereDate('doc_date', '<=' , $end);
+        }
+
+
+        $data = $data->get();
+
+        $records = array();
+        foreach($data as $key => $value){
+            $records[] = array(
+                            'no' => $key + 1,
+                            'company' => @$value->sap_connection->company_name ?? "-",
+                            'doc_entry' => $value->doc_entry ?? "-",
+                            'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
+                            'doc_total' => number_format_value($value->doc_total),
+                            'created_at' => date('M d, Y',strtotime($value->doc_date)),
+                            'status' => getOrderStatusByInvoice($value),
+                          );
+        }
+        if(count($records)){
+            $title = 'Invoice Report '.date('dmY').'.xlsx';
+            return Excel::download(new InvoiceExport($records), $title);
+        }
+
+        \Session::flash('error_message', common_error_msg('excel_download'));
+        return redirect()->back();
     }
 }

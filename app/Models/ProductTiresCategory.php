@@ -9,6 +9,8 @@ class ProductTiresCategory extends Model
 {
     use HasFactory;
 
+    use \Awobaz\Compoships\Compoships;
+    
     protected $fillable = [
         'u_tires',
         'sap_connection_id',

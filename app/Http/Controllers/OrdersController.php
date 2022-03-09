@@ -698,6 +698,54 @@ class OrdersController extends Controller
             }
         }
 
+        if(@$filter->filter_brand != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where(function($que) use ($filter) {
+                        $que->whereHas('product_groups', function($q2) use ($filter){
+                            $q2->where('product_group_id', $filter->filter_brand);
+                        });
+                    });
+                });
+            });
+        }
+
+        if(@$filter->filter_class != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where('u_class', $filter->filter_class);
+                });
+            });
+        }
+
+        if(@$filter->filter_sales_specialist != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where(function($que) use ($filter) {
+                        $que->whereHas('sales_specialist', function($q2) use ($filter){
+                            $q2->where('id', $filter->filter_sales_specialist);
+                        });
+                    });
+                });
+            });
+        }
+
+        if(@$filter->filter_market_sector != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where('u_sector', $filter->filter_market_sector);
+                });
+            });
+        }
+
+        if(@$filter->filter_territory != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where('territory', $filter->filter_territory);
+                });
+            });
+        }
+
         if(@$filter->filter_search != ""){
             $data->where(function($q) use ($filter) {
                 $q->orwhere('doc_type','LIKE',"%".$filter->filter_search."%");
@@ -713,6 +761,43 @@ class OrdersController extends Controller
             $data->where('sap_connection_id',$filter->filter_company);
         }
 
+        if(@$filter->filter_status != ""){
+            $status = $filter->filter_status;
+
+            if($status == "CL"){ //Cancel
+
+                $data->where(function($query){
+                    $query->orwhere(function($q){
+                        $q->whereHas('order',function($p){
+                            $p->where('cancelled', 'Yes');
+                        });
+                    });
+
+                    $query->orwhere(function($q1){
+                        $q1->whereHas('order.invoice',function($p1){
+                            $p1->where('cancelled', 'Yes');
+                        });
+                    });
+                });
+
+            }elseif($status == "PN"){ //Pending
+
+                $data->has('order', '<', 1);
+
+            }elseif($status == "OP"){ //On Process
+
+                $data->whereHas('order',function($q){
+                    $q->where('document_status', 'bost_Open')->doesntHave('invoice');
+                });
+
+            }else{
+                $data->whereHas('order.invoice',function($q) use ($status){
+                    $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', $status);
+                });
+            }
+        }
+
+
         if(@$filter->filter_date_range != ""){
             $date = explode(" - ", $filter->filter_date_range);
             $start = date("Y-m-d", strtotime($date[0]));
@@ -721,6 +806,7 @@ class OrdersController extends Controller
             $data->whereDate('doc_date', '>=' , $start);
             $data->whereDate('doc_date', '<=' , $end);
         }
+
 
         $data = $data->get();
 
@@ -733,7 +819,7 @@ class OrdersController extends Controller
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
                             'doc_total' => number_format_value($value->doc_total),
                             'created_at' => date('M d, Y',strtotime($value->doc_date)),
-                            'status' => getOrderStatus($value),
+                            'status' => getOrderStatusByQuotation($value),
                           );
         }
         if(count($records)){
