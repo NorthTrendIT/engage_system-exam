@@ -11,6 +11,7 @@ use App\Models\HelpDeskStatuses;
 use App\Models\HelpDeskUrgencies;
 use App\Models\HelpDeskDepartment;
 use App\Models\Department;
+use App\Models\User;
 use App\Models\Notification;
 use App\Models\NotificationConnection;
 
@@ -88,14 +89,6 @@ class HelpDeskController extends Controller
 
             add_log(50, $ticket->toArray());
 
-            // Assign Support Department
-            HelpDeskDepartment::create(
-                                    [
-                                        'help_desk_id' => $ticket->id,
-                                        'department_id' => 1,
-                                    ]
-                                );
-
             // Start  Images
             /*$help_images_ids = array();
             if(isset($input['help_images'])){
@@ -170,12 +163,14 @@ class HelpDeskController extends Controller
         $data = HelpDesk::findOrFail($id);
 
         // Access only for admin and support department and created by 
-        if(userrole() == 1 || userdepartment() == 1 || $data->user_id == Auth::id()){
+        if(userrole() == 1 || $data->departments->firstWhere('user_id', userid()) || $data->user_id == Auth::id()){
             $status = HelpDeskStatuses::all();
 
             add_log(52, NULL);
 
-            return view('help-desk.view',compact('data','status'));
+            $help_desk_departments = $data->departments;
+
+            return view('help-desk.view',compact('data','status','help_desk_departments'));
         }
 
         return abort(404);
@@ -220,9 +215,10 @@ class HelpDeskController extends Controller
     public function getAll(Request $request)
     {
         $data = HelpDesk::query();
-        // dd($request->all());
-        if(!(userrole() == 1 || userdepartment() == 1)){
-            $data->where('user_id',Auth::id());
+        if(!(userrole() == 1)){
+            $data->whereHas('departments', function($q){
+                $q->where('user_id', userid());
+            });
         }
 
         if($request->filter_user != ""){
@@ -408,7 +404,7 @@ class HelpDeskController extends Controller
     public function updateStatus(Request $request)
     {   
         // Access only for admin and support department
-        if(userrole() == 1 || userdepartment() == 1){
+        if(userrole() == 1 || $data->departments->firstWhere('user_id', userid()) ){
             
             $obj = HelpDesk::find($request->id);
 
@@ -448,7 +444,6 @@ class HelpDeskController extends Controller
 
                     $push = OneSignal::sendPush($fields, $message_text);
                 // End Push Notification to receiver
-
 
             }else{
                 $response = ['status'=>false,'message'=>'Record not found !'];
@@ -569,5 +564,89 @@ class HelpDeskController extends Controller
 
             return response()->json(['output' => $output, 'button' => $button]);
         }
+    }
+
+    public function storeAssignment(Request $request)
+    {   
+        $input = $request->all();
+
+        $rules = array(
+                        'help_desk_id' => 'nullable|exists:help_desks,id',
+                        'department_id' => 'nullable|exists:departments,id',
+                        'user_id' => 'nullable|exists:users,id',
+                  );
+
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+            $obj = HelpDesk::find($input['help_desk_id']);
+
+            // Access only for admin and support department and created by 
+            if(userrole() == 1 || $obj->departments->firstWhere('user_id', userid())){
+
+                // HelpDeskDepartment::where('help_desk_id', $obj->id)->delete();
+
+                HelpDeskDepartment::updateOrCreate(
+                                    [
+                                        'help_desk_id' => $obj->id,
+                                    ],
+                                    [
+                                        'help_desk_id' => $obj->id,
+                                        'department_id' => $input['department_id'],
+                                        'user_id' => $input['user_id'],
+                                    ]
+                                );
+
+                // add_log(54, $comment->toArray());
+
+                $message = "User assigned successfully.";
+                $response = ['status'=>true,'message'=>$message];
+
+            }else{
+                return $response = ['status'=>false,'message'=>'Access Denied !'];
+            }
+        }
+
+        return $response;
+    }
+
+    // Get Department
+    public function getDepartment(Request $request){
+        $search = $request->search;
+
+        $data = Department::select('id','name')->where('is_active',true);
+
+        if($search != ''){
+            $data->where('name', 'like', '%' .$search . '%');
+        }
+
+        $data = $data->orderby('name','asc')->limit(50)->get();
+
+        return response()->json($data);
+    }
+
+    // Get Department User
+    public function getDepartmentUser(Request $request){
+        $search = $request->search;
+
+        if(@$request->department_id){
+            $data = User::with('role')->where('department_id', @$request->department_id)->where('is_active', true)->where('id','!=',@$request->user_id);
+
+            if($search != ''){
+                $data->where(function($q) use ($request) {
+                    $q->orwhere('sales_specialist_name','LIKE',"%".$search."%");
+                    $q->orwhere('email','LIKE',"%".$search."%");
+                });
+            }
+
+            $data = $data->orderby('sales_specialist_name','asc')->limit(50)->get();
+        }else{
+            $data = collect([]);
+        }
+
+        return response()->json($data);
     }
 }

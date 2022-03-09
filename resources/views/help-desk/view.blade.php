@@ -115,6 +115,8 @@
                                     @endif
 
                                   @endforeach
+                                @else
+                                  -
                                 @endif
                               </td>
                             </tr>
@@ -141,7 +143,49 @@
       </div>
 
       <!-- Access only for admin and support department-->
-      @if(userrole() == 1 || userdepartment() == 1)
+      @if(userrole() == 1 || $help_desk_departments->firstWhere('user_id', userid()))
+
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5 min-0">
+              <h5>Assignment</h5>
+            </div>
+            <div class="card-body">
+              <form id="myAssignmentForm" method="post">
+                @csrf
+                <input type="hidden" name="help_desk_id" value="{{ @$data->id }}">
+                <div class="row">
+                  <div class="col-md-4 mt-5">
+                    <div class="form-group">
+                      <label>Department</label>
+                      <select class="form-control form-control-lg form-control-solid" name="department_id" data-control="select2" data-hide-search="false" data-placeholder="Select a department" data-allow-clear="true">
+                        <option value=""></option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-8 mt-5 user_div" @if(empty(@$help_desk_departments)) style="display:none;" @endif>
+                    <div class="form-group">
+                      <label>User</label>
+                      <select class="form-control form-control-lg form-control-solid" name="user_id" data-control="select2" data-hide-search="false" data-placeholder="Select a user" data-allow-clear="true">
+                        <option value=""></option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mt-5">
+                    <div class="form-group">
+                      <button type="submit" class="btn btn-success mt-6">Save</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -343,7 +387,7 @@
       getCommentList($id);
     });
   
-    @if(userrole() == 1 || userdepartment() == 1)
+    @if(userrole() == 1 || $help_desk_departments->firstWhere('user_id', userid()))
       $(document).on('click', '.update_btn', function(event) {
         event.preventDefault();
         $status = $('[name="status"]').find('option:selected').val();
@@ -384,8 +428,153 @@
           }
         })
       });
+
+      $initialDepartmentOptions = [];
+      $initialDepartmentUserOptions = [];
+
+      @if(!empty(@$help_desk_departments))
+        @foreach(@$help_desk_departments as $key => $value)
+          var initialOption = {
+              id: {{ $value->department->id }},
+              text: '{{ $value->department->name }}',
+              selected: true
+          }
+          $initialDepartmentOptions.push(initialOption);
+
+          var initialOption = {
+              id: {{ $value->user->id }},
+              text: '{{ @$value->user->sales_specialist_name }} (Email: {{ @$value->user->email }}, Role: {{ @$value->user->role->name }})',
+              selected: true
+          }
+          $initialDepartmentUserOptions.push(initialOption);
+        @endforeach
+      @endif
+
+      $('#myAssignmentForm [name="department_id"]').select2({
+        ajax: {
+          url: "{{route('help-desk.get-department')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term
+              };
+          },
+          processResults: function (response) {
+            return {
+              results:  $.map(response, function (item) {
+                            return {
+                              text: item.name,
+                              id: item.id
+                            }
+                        })
+            };
+          },
+          cache: true
+        },
+        data: $initialDepartmentOptions
+      });
+
+
+      $('#myAssignmentForm [name="user_id"]').select2({
+        ajax: {
+          url: "{{route('help-desk.get-department-user')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term,
+                  department_id: $('#myAssignmentForm [name="department_id"]').find('option:selected').val(),
+                  user_id: '{{ @$data->user_id }}',
+              };
+          },
+          processResults: function (response) {
+            return {
+              results:  $.map(response, function (item) {
+                            return {
+                              text: item.sales_specialist_name +" (Email: "+item.email+", Role: "+item.role.name+")",
+                              id: item.id
+                            }
+                        })
+            };
+          },
+          cache: true
+        },
+        data: $initialDepartmentUserOptions
+      });
+
+
+      $(document).on('change', '#myAssignmentForm [name="department_id"]', function(event) {
+        event.preventDefault();
+        $('#myAssignmentForm [name="user_id"]').val('').trigger('change');
+
+        if($(this).find('option:selected').val() != ""){
+          $('#myAssignmentForm .user_div').show();
+        }else{
+          $('#myAssignmentForm .user_div').hide();
+        }
+      });
+
+      $('body').on("submit", "#myAssignmentForm", function (e) {
+        e.preventDefault();
+        var validator = validate_assignment_form();
+        
+        if (validator.form() != false) {
+          $('[type="submit"]').prop('disabled', true);
+          $.ajax({
+            url: "{{route('help-desk.store-assignment')}}",
+            type: "POST",
+            data: new FormData($("#myAssignmentForm")[0]),
+            async: false,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+              if (data.status) {
+                toast_success(data.message)
+                setTimeout(function(){
+                  if($('#myAssignmentForm [name="user_id"]').val() == '{{ userid() }}'){
+                    window.location.reload();
+                  }else{
+                    window.location.href = "{{ route('help-desk.index') }}";
+                  }
+                },500)
+              } else {
+                toast_error(data.message);
+                $('[type="submit"]').prop('disabled', false);
+              }
+            },
+            error: function () {
+              toast_error("Something went to wrong !");
+              $('[type="submit"]').prop('disabled', false);
+            },
+          });
+        }
+      });
+
+      function validate_assignment_form(){
+        var validator = $("#myAssignmentForm").validate({
+            errorClass: "is-invalid",
+            validClass: "is-valid",
+            rules: {
+              department_id:{
+                required:true,
+              },
+              user_id:{
+                required:true,
+              },
+            },
+            messages: {
+              
+            },
+        });
+        return validator;
+      }
     @endif
-  
+
   });
 
 </script>
