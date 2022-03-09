@@ -267,20 +267,6 @@ class LocalOrderController extends Controller
 
     public function getProducts(Request $request)
     {
-        /*$search = $request->search;
-
-        $data = Product::orderby('item_name','asc')->where('is_active',true);
-
-        if($search != ''){
-            $data->where('item_name', 'like', '%' .$search . '%');
-        }
-
-        if(isset($request->product_ids) && count($request->product_ids)){
-            $data->whereNotIn('id', $request->product_ids);
-        }
-
-        $data = $data->limit(50)->get();*/
-
         $data = app(ProductListController::class)->getProductData($request);
         $products = $data['products'];
 

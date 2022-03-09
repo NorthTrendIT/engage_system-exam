@@ -349,13 +349,12 @@
             // data: $initialOptions
         });
 
-        @if(isset($edit))
-            $('#selectCustomers').trigger('change');
-        @endif
-
         $('body').on('change' ,'#selectCustomers', function(){
             $customer = $('[name="customer_id"]').val();
-            $('#selectAddress').val(null).trigger('change');
+
+            @if(is_null($edit))
+                $('#selectAddress').val(null).trigger('change');
+            @endif
 
             if($customer){
                 $('#selectAddress').prop('disabled', false);
