@@ -9,6 +9,8 @@ class ProductGroup extends Model
 {
     use HasFactory;
 
+    use \Awobaz\Compoships\Compoships;
+    
     protected $fillable = [
         'number',
         'group_name',

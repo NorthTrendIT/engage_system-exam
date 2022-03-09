@@ -129,6 +129,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('pending-promotion/push-all', 'App\Http\Controllers\OrdersController@pushAllPromotion')->name('orders.push-all-promotion');
 
             // Invoices
+            Route::get('invoices/export', 'App\Http\Controllers\InvoicesController@export')->name('invoices.export');
             Route::resource('invoices','App\Http\Controllers\InvoicesController');
     	    Route::post('invoices/get-all', 'App\Http\Controllers\InvoicesController@getAll')->name('invoices.get-all');
     	    Route::post('invoices/sync-invoices', 'App\Http\Controllers\InvoicesController@syncInvoices')->name('invoices.sync-invoices');
