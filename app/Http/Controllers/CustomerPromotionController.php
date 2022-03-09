@@ -18,6 +18,7 @@ use App\Models\CustomerBpAddress;
 use App\Models\Notification;
 use App\Models\NotificationConnection;
 use App\Models\SapConnection;
+use App\Models\Quotation;
 
 use App\Support\SAPCustomerPromotion;
 
@@ -1312,6 +1313,20 @@ class CustomerPromotionController extends Controller
             $response = ['status'=>false,'message'=>$e->getMessage()];
         }
 
+        return $response;
+    }
+
+
+    public function orderSyncDeliveryStatus(Request $request){
+        $response = app(OrdersController::class)->syncSpecificOrder($request);
+
+        if($response['status']){
+            $quotation = Quotation::find($request->id);
+
+            $status = getOrderStatusByQuotation($quotation);
+            $response['html'] = view('customer-promotion.ajax.delivery-status',compact('status'))->render();
+            $response['message'] = 'Sync delivery status details successfully !';
+        }
         return $response;
     }
 }
