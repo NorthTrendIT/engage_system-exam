@@ -447,13 +447,13 @@
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label>Title <span class="asterisk">*</span></label>
-                                            <input type="text" name="default_pictures[title][1]" class="form-control form-control-solid default_pictures_title" value="Tread Area" readonly>
+                                            <input type="text" name="default_pictures[title][1]" class="form-control form-control-solid default_pictures_title" value="Sidewall area showing the size, pattern, build (mold) number and DOT" readonly>
                                         </div>
                                     </div>
 
                                     @if(isset($edit))
                                         @php
-                                            $default_picture = @$edit->pictures()->where('title','Tread Area')->first();
+                                            $default_picture = @$edit->pictures()->where('title','Sidewall area showing the size, pattern, build (mold) number and DOT')->first();
                                         @endphp
 
                                         <input type="hidden" class="default_pictures_id" name="default_pictures[id][1]" value="{{ @$default_picture->id }}">
@@ -476,17 +476,19 @@
                                     @endif
 
                                 </div>
+
+
                                 <div class="row mb-5 mt-10">
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label>Title <span class="asterisk">*</span></label>
-                                            <input type="text" name="default_pictures[title][2]" class="form-control form-control-solid default_pictures_title" value="Sidewall Area" readonly>
+                                            <input type="text" name="default_pictures[title][2]" class="form-control form-control-solid default_pictures_title" value="Damage area" readonly>
                                         </div>
                                     </div>
 
                                     @if(isset($edit))
                                         @php
-                                            $default_picture = @$edit->pictures()->where('title','Sidewall Area')->first();
+                                            $default_picture = @$edit->pictures()->where('title','Damage area')->first();
                                         @endphp
 
                                         <input type="hidden" class="default_pictures_id" name="default_pictures[id][2]" value="{{ @$default_picture->id }}">
@@ -509,17 +511,18 @@
                                     @endif
 
                                 </div>
+
                                 <div class="row mb-5 mt-10">
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label>Title <span class="asterisk">*</span></label>
-                                            <input type="text" name="default_pictures[title][3]" class="form-control form-control-solid default_pictures_title" value="Bead Area" readonly>
+                                            <input type="text" name="default_pictures[title][3]" class="form-control form-control-solid default_pictures_title" value="Tread Area" readonly>
                                         </div>
                                     </div>
 
                                     @if(isset($edit))
                                         @php
-                                            $default_picture = @$edit->pictures()->where('title','Bead Area')->first();
+                                            $default_picture = @$edit->pictures()->where('title','Tread Area')->first();
                                         @endphp
 
                                         <input type="hidden" class="default_pictures_id" name="default_pictures[id][3]" value="{{ @$default_picture->id }}">
@@ -540,20 +543,20 @@
                                         </div>
                                       </div>
                                     @endif
-                                        
 
                                 </div>
+
                                 <div class="row mb-5 mt-10">
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label>Title <span class="asterisk">*</span></label>
-                                            <input type="text" name="default_pictures[title][4]" class="form-control form-control-solid default_pictures_title" value="Inner Liner Area" readonly>
+                                            <input type="text" name="default_pictures[title][4]" class="form-control form-control-solid default_pictures_title" value="Bead Area" readonly>
                                         </div>
                                     </div>
 
                                     @if(isset($edit))
                                         @php
-                                            $default_picture = @$edit->pictures()->where('title','Inner Liner Area')->first();
+                                            $default_picture = @$edit->pictures()->where('title','Bead Area')->first();
                                         @endphp
 
                                         <input type="hidden" class="default_pictures_id" name="default_pictures[id][4]" value="{{ @$default_picture->id }}">
@@ -564,6 +567,39 @@
                                         <div class="form-group">
                                             <label>Upload Image <span class="asterisk">*</span></label>
                                             <input type="file" name="default_pictures[image][4]" class="form-control form-control-solid default_pictures_image" accept="image/*" capture>
+                                        </div>
+                                    </div>
+
+                                    @if(@$default_picture->image && get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image))
+                                      <div class="col-md-2 image_preview">
+                                        <div class="form-group">
+                                          <a href="{{ get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image) }}" height="100" width="100" class=""></a>
+                                        </div>
+                                      </div>
+                                    @endif
+                                </div>
+
+                                <div class="row mb-5 mt-10">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Title <span class="asterisk">*</span></label>
+                                            <input type="text" name="default_pictures[title][5]" class="form-control form-control-solid default_pictures_title" value="Inner Liner Area" readonly>
+                                        </div>
+                                    </div>
+
+                                    @if(isset($edit))
+                                        @php
+                                            $default_picture = @$edit->pictures()->where('title','Inner Liner Area')->first();
+                                        @endphp
+
+                                        <input type="hidden" class="default_pictures_id" name="default_pictures[id][5]" value="{{ @$default_picture->id }}">
+                                        <input type="hidden" class="default_pictures_image" name="default_pictures[image][5]" value="{{ @$default_picture->image }}">
+                                    @endif
+
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Upload Image <span class="asterisk">*</span></label>
+                                            <input type="file" name="default_pictures[image][5]" class="form-control form-control-solid default_pictures_image" accept="image/*" capture>
                                         </div>
                                     </div>
 

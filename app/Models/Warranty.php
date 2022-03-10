@@ -32,6 +32,7 @@ class Warranty extends Model
         'Treadware',
         'Ride Vibration',
         'Road Hazard',
+        'Tire Deformation',
     ];
 
     public function user(){
