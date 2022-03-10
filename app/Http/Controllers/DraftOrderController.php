@@ -80,16 +80,15 @@ class DraftOrderController extends Controller
                 $order->customer_id = $customer_id;
                 $order->address_id = $input['address_id'];
                 $order->due_date = date('Y-m-d',strtotime($due_date));
-                // $order->sales_specialist_id = Auth::id();
                 $order->placed_by = "S";
                 $order->confirmation_status = "P";
+                $order->sap_connection_id = $customer->sap_connection_id;
                 $order->save();
 
                 if( isset($input['products']) && !empty($input['products']) ){
                     $products = $input['products'];
                     LocalOrderItem::where('local_order_id', $order->id)->delete();
                     foreach($products as $value){
-                        // dd($value['product_id']);
                         $item = new LocalOrderItem();
                         $item->local_order_id = $order->id;
                         $item->product_id = $value['product_id'];
@@ -133,8 +132,6 @@ class DraftOrderController extends Controller
 
             return view('draft-order.view', compact('data'));
         }
-
-
     }
 
     /**
@@ -188,10 +185,11 @@ class DraftOrderController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('sales_specialist_name', function($row) {
-                                if(isset($row->sales_specialist)){
-                                    return $row->sales_specialist->sales_specialist_name;
+                                if(!empty($row->sales_specialist_id)){
+                                    return $row->sales_specialist->sales_specialist_name ?? '-';
+                                } else {
+                                    return "Self";
                                 }
-                                return "";
                             })
                             ->addColumn('confirmation_status', function($row) {
                                 if($row->confirmation_status == 'P' || $row->confirmation_status == 'ERR'){
@@ -214,13 +212,9 @@ class DraftOrderController extends Controller
                                 $query->orderBy('confirmation_status', $order);
                             })
                             ->addColumn('action', function($row) {
-                                $btn = "";
-
-                                if($row->confirmation_status != 'ERR'){
-                                    $btn = ' <a href="' . route('draft-order.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
-                                        <i class="fa fa-eye"></i>
-                                    </a>';
-                                }
+                                $btn = ' <a href="' . route('draft-order.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
+                                </a>';
 
                                 return $btn;
                             })
@@ -307,51 +301,21 @@ class DraftOrderController extends Controller
         if($update['status']){
             $order = LocalOrder::where('id', $id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
-            $obj['CardCode'] = $order->customer->card_code;
-            $obj['DocDueDate'] = $order->due_date;
+            try{
+                $sap_connection = SapConnection::find($order->customer->sap_connection_id);
 
-            $products = array();
-            foreach($order->items as $item){
-                $products[] = array(
-                    'ItemCode' => $item->product->item_code,
-                    'Quantity' => $item->quantity,
-                    'TaxCode' => $order->address->tax_code,
-                    'Price' => get_product_customer_price(@$item->product->item_prices, $order->customer->price_list_num),
-                );
+                if(!is_null($sap_connection)){
+                    $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
 
+                    if($id){
+                        $sap->pushOrder($id);
+                    }
+                }
+            } catch (\Exception $e) {
+                $response = ['status' => false, 'message' => 'Something went wrong !'];
             }
-            $obj['DocumentLines'] = $products;
-
-            $address = array();
-            $address['ShipToStreet'] = $order->address->street;
-            $address['ShipToZipCode'] = $order->address->zip_code;
-            $address['ShipToCity'] = $order->address->city;
-            $address['ShipToCountry'] = $order->address->country;
-            $address['ShipToState'] = $order->address->state;
-            $address['BillToAddressType'] = $order->address->address_type;
-
-            $obj['AddressExtension'] = $address;
         } else {
             return $update;
-        }
-        try {
-            $sap_connection = SapConnection::where('id', @Auth::user()->customer->sap_connection_id)->first();
-            $post = new PostOrder($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
-
-            $post = $post->pushOrder($obj);
-            $order = LocalOrder::where('id', $order->id)->first();
-            if($post['status']){
-                $order->confirmation_status = 'C';
-            } else {
-                $order->confirmation_status = 'ERR';
-                $order->message = $post['message'];
-            }
-            $order->save();
-
-            $response = ['status' => true, 'message' => 'Order Placed successfully !'];
-        } catch (\Exception $e) {
-            // dd($e);
-            $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
         return $response;
     }

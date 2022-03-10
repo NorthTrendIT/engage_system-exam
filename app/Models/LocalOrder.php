@@ -40,7 +40,7 @@ class LocalOrder extends Model
     }
 
     public function quotation(){
-        return $this->hasOne(Quotation::class);
+        return $this->belongsTo(Quotation::class, ['doc_entry','sap_connection_id'], ['doc_entry', 'sap_connection_id']);
     }
 
 }

@@ -13,6 +13,7 @@ use App\Models\CustomerDeliverySchedule;
 use App\Support\PostOrder;
 use App\Support\SAPOrderPost;
 use App\Models\SapConnection;
+use App\Models\Quotation;
 use Validator;
 use Auth;
 use DataTables;
@@ -85,12 +86,14 @@ class LocalOrderController extends Controller
             $due_date = strtr($input['due_date'], '/', '-');
 
             if(!empty($customer) && !empty($address)){
+                $customer = Customer::findOrFail($input['customer_id']);
                 $order->customer_id = $input['customer_id'];
                 $order->address_id = $input['address_id'];
                 $order->due_date = date('Y-m-d',strtotime($due_date));
                 $order->sales_specialist_id = Auth::id();
                 $order->placed_by = "S";
                 $order->confirmation_status = "P";
+                $order->sap_connection_id = $customer->sap_connection_id;
                 $order->save();
 
                 if( isset($input['products']) && !empty($input['products']) ){
@@ -129,7 +132,26 @@ class LocalOrderController extends Controller
      */
     public function show($id)
     {
-        //
+        $local_order = LocalOrder::where('id',$id)->firstOrFail();
+        // dd($local_order);
+        if(empty($local_order->doc_entry)){
+            $total = 0;
+            $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id', $id)->firstOrFail();
+            return view('local-order.pending_order_view', compact('data', 'total'));
+        } else {
+            // dd($id);
+            $data = Quotation::with(['items.product', 'customer'])->where('doc_entry', $local_order->doc_entry);
+            // if(userrole() == 4){
+            //     $data->where('card_code', @Auth::user()->customer->card_code);
+            // }elseif(userrole() == 2){
+            //     $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+            // }elseif(userrole() != 1){
+            //     return abort(404);
+            // }
+            $data = $data->firstOrFail();
+
+            return view('local-order.view', compact('data'));
+        }
     }
 
     /**
@@ -225,9 +247,12 @@ class LocalOrderController extends Controller
                             $query->orderBy('confirmation_status', $order);
                         })
                         ->addColumn('action', function($row) {
-                            $btn = null;
+                            $btn = '<a href="' . route('sales-specialist-orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                    <i class="fa fa-eye"></i>
+                                </a>';
+
                             if($row->confirmation_status == 'P'){
-                                $btn = '<a href="' . route('sales-specialist-orders.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                $btn .= '<a href="' . route('sales-specialist-orders.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                     <i class="fa fa-pencil"></i>
                                     </a>';
                             }

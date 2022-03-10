@@ -13,9 +13,7 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
 
-        <a href="javascript:" class="btn btn-sm btn-primary sync-details mr-10">Sync Details</a>
-
-        <a href="{{ route('orders.index') }}" class="btn btn-sm btn-primary">Back</a>
+        <a href="{{ route('sales-specialist-orders.index') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -45,6 +43,7 @@
                           <!--begin::Label-->
                           <!-- <div class="fw-bolder fs-3 text-gray-800 mb-8">Order</div> -->
                           <!--end::Label-->
+
 
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
@@ -157,7 +156,6 @@
                                     <th class="min-w-80px text-end pb-2">Delivery Date</th>
                                     <th class="min-w-70px text-end pb-2">Quantity</th>
                                     <th class="min-w-80px text-end pb-2">Price</th>
-                                    <th class="min-w-80px text-end pb-2">Price After VAT</th>
                                     <th class="min-w-100px text-end pb-2">Amount</th>
                                   </tr>
                                 </thead>
@@ -167,8 +165,7 @@
                                         <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}</td>
                                         <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
-                                        <td class="pt-6">₱ {{ number_format_value($value->price) }}</td>
-                                        <td class="pt-6">₱ {{ number_format_value($value->price_after_vat) }}</td>
+                                        <td class="pt-6">₱ {{ number_format_value($value->gross_price) }}</td>
                                         <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($value->gross_total) }}</td>
                                     </tr>
                                     @endforeach
@@ -186,7 +183,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format_value(@$data->doc_total) }}</div>
+                                  <div class="text-end fw-bolder fs-5 text-gray-700">₱ {{ number_format_value(@$data->doc_total) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -196,7 +193,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Discount:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">- ₱ 0.00</div>
+                                  <div class="text-end fw-bolder fs-5 text-gray-700">- ₱ 0.00</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item--> --}}
@@ -207,7 +204,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
                                   <!--end::Code-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-5 fw-boldest">₱ {{ number_format_value(@$data->doc_total) }}</div>
+                                  <div class="text-end fs-5 fw-boldest">₱ {{ number_format_value(@$data->doc_total) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -354,46 +351,6 @@
         }
       })
     });
-
-
-    $(document).on('click', '.sync-details', function(event) {
-      event.preventDefault();
-
-      Swal.fire({
-        title: 'Are you sure want to sync details?',
-        text: "It may take some time to sync details.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: '{{ route('orders.sync-specific-orders') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                    id:'{{ $data->id }}'
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              setTimeout(function(){
-                window.location.reload();
-              },500)
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
-    });
-
   });
 
 </script>

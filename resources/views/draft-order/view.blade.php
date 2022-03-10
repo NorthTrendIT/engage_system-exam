@@ -122,7 +122,7 @@
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
-                                <span>{{ !empty($data->doc_entry) ? getOrderStatusByDocEntry($data->doc_entry) : 'Pending' }}</span>
+                                <span>{!! getOrderStatusBtnHtml(getOrderStatusByQuotation($data)) !!}</span>
                               </div>
                               <!--end::Text-->
                             </div>

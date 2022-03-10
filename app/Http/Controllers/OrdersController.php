@@ -219,7 +219,7 @@ class OrdersController extends Controller
             if (!is_null(@Auth::user()->created_by)) {
                 $data->where('card_code', @Auth::user()->created_by_user->customer->card_code);
             } else {
-                return DataTables::of(collect())->make(true);;
+                return DataTables::of(collect())->make(true);
             }
         }
 
@@ -626,11 +626,6 @@ class OrdersController extends Controller
 
             if(!is_null($sap_connection)){
                 SAPAllOrderPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id, $order_id);
-
-                // $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
-
-                // $sap->pushOrder($order_id);
-
             }
 
             return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
@@ -647,7 +642,7 @@ class OrdersController extends Controller
                 $sap_connection = SapConnection::find(@$order->customer->sap_connection_id);
 
                 if(!is_null($sap_connection)){
-                    SAPAllOrderPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, @$order->id, $sap_connection_id);
+                    SAPAllOrderPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id, @$order->id);
                 }
             }
             return $response = ['status' => true, 'message' => 'All Order Placed Successfully!'];
