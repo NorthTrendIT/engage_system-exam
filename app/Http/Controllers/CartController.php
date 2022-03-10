@@ -255,6 +255,7 @@ class CartController extends Controller
                 $order->due_date = date('Y-m-d',strtotime($due_date));
                 $order->placed_by = "C";
                 $order->confirmation_status = "P";
+                $order->sap_connection_id = @Auth::user()->customer->sap_connection_id;
                 $order->save();
 
                 $products = Cart::where('customer_id', $customer_id)->get();
@@ -272,7 +273,7 @@ class CartController extends Controller
                 }
             }
 
-            // Cart::where('customer_id', $customer_id)->delete();
+            Cart::where('customer_id', $customer_id)->delete();
 
             try{
                 $sap_connection = SapConnection::find(@Auth::user()->customer->sap_connection_id);

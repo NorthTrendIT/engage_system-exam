@@ -11,7 +11,7 @@
       </div>
 
       <div class="d-flex align-items-center py-1">
-        <a href="{{ route('draft-order.index') }}" class="btn btn-sm btn-primary">Back</a>
+        <a href="{{ route('sales-specialist-orders.index') }}" class="btn btn-sm btn-primary">Back</a>
       </div>
 
     </div>
