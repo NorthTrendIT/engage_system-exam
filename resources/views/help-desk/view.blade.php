@@ -87,6 +87,24 @@
                               </td>
                             </tr>
 
+                            @if(userrole() != 1 && @$data->status->name == "Closed")
+                            <tr>
+                              <th> <b>Closed Reason:</b> </th>
+                              <td>
+                                <p>{{ @$data->closed_reason }}</p>
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Closed Reason Image:</b> </th>
+                              <td>
+                                @if(@$data->closed_image && get_valid_file_url('sitebucket/help-desk', @$data->closed_image))
+                                  <a href="{{ get_valid_file_url('sitebucket/help-desk',$data->closed_image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/help-desk',$data->closed_image) }}" height="100" width="100" class="mt-5"></a>
+                                @endif
+                              </td>
+                            </tr>
+                            @endif
+
                             <tr>
                               <th> <b>Urgency:</b> </th>
                               <td>
@@ -115,6 +133,8 @@
                                     @endif
 
                                   @endforeach
+                                @else
+                                  -
                                 @endif
                               </td>
                             </tr>
@@ -141,36 +161,106 @@
       </div>
 
       <!-- Access only for admin and support department-->
-      @if(userrole() == 1 || userdepartment() == 1)
+      @if(userrole() == 1 || $help_desk_departments->firstWhere('user_id', userid()))
+
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
-              <h5>Update Status</h5>
+              <h5>Assignment</h5>
             </div>
             <div class="card-body">
-              <div class="row mb-5">
-                <div class="col-md-4">
-                  <div class="form-group">
-                    <select class="form-control form-control-lg form-control-solid" name="status" data-control="select2" data-hide-search="false" data-placeholder="Select a status" data-allow-clear="false">
-                      <option value=""></option>
-                      @foreach($status as $s)
-                      <option value="{{ $s->id }}" @if($data->help_desk_status_id == $s->id) selected="" @endif>{{ $s->name }}</option>
-                      @endforeach
-                    </select>
+              <form id="myAssignmentForm" method="post">
+                @csrf
+                <input type="hidden" name="help_desk_id" value="{{ @$data->id }}">
+                <div class="row">
+                  <div class="col-md-4 mt-5">
+                    <div class="form-group">
+                      <label>Department</label>
+                      <select class="form-control form-control-lg form-control-solid" name="department_id" data-control="select2" data-hide-search="false" data-placeholder="Select a department" data-allow-clear="true">
+                        <option value=""></option>
+                      </select>
+                    </div>
                   </div>
-                </div>
 
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <a href="javascript:" class="btn btn-success  update_btn">Update</a>
+                  <div class="col-md-8 mt-5 user_div" @if(empty(@$help_desk_departments)) style="display:none;" @endif>
+                    <div class="form-group">
+                      <label>User</label>
+                      <select class="form-control form-control-lg form-control-solid" name="user_id" data-control="select2" data-hide-search="false" data-placeholder="Select a user" data-allow-clear="true">
+                        <option value=""></option>
+                      </select>
+                    </div>
                   </div>
+
+                  @if(@$data->status->name != "Closed")
+                  <div class="col-md-4 mt-5">
+                    <div class="form-group">
+                      <button type="submit" class="btn btn-success mt-6">Save</button>
+                    </div>
+                  </div>
+                  @endif
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>
       </div>
+
+        @if(@$data->status->name != "Closed" || userrole() == 1)
+        <div class="row gy-5 g-xl-8">
+          <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+            <div class="card card-xl-stretch mb-5 mb-xl-8">
+              <div class="card-header border-0 pt-5 min-0">
+                <h5>Update Status</h5>
+              </div>
+              <div class="card-body">
+                <form method="post" id="myStatusForm">
+                  @csrf
+                  <input type="hidden" name="help_desk_id" value="{{ @$data->id }}">
+                  <div class="row">
+                    <div class="col-md-6 mt-5">
+                      <div class="form-group">
+                        <label>Select status</label>
+                        <select class="form-control form-control-lg form-control-solid" name="status" data-control="select2" data-hide-search="false" data-placeholder="Select a status" data-allow-clear="false">
+                          <option value=""></option>
+                          @foreach($status as $s)
+                          <option value="{{ $s->id }}" @if($data->help_desk_status_id == $s->id) selected="" @endif>{{ $s->name }}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6 mt-5 closed_status_div">
+                      <div class="form-group">
+                        <label>Closed Reason</label>
+                        <textarea class="form-control form-control-lg form-control-solid" name="closed_reason" placeholder="Enter closed reason">{{ $data->closed_reason }}</textarea>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6 mt-5 closed_status_div">
+                      <div class="form-group">
+                        <label>Upload Image</label>
+                        <input type="file" class="form-control form-control-lg form-control-solid" name="closed_image" accept="image/*"></input>
+
+                        @if(@$data->closed_image && get_valid_file_url('sitebucket/help-desk', @$data->closed_image))
+                          <a href="{{ get_valid_file_url('sitebucket/help-desk',$data->closed_image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/help-desk',$data->closed_image) }}" height="100" width="100" class="mt-5"></a>
+                        @endif
+                      </div>
+                    </div>
+
+                    <div class="col-md-12 mt-5">
+                      <div class="form-group">
+                        <button type="submit" class="btn btn-success mt-6">Update</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        @endif
+
       @endif
 
 
@@ -227,7 +317,13 @@
 @endsection
 
 @push('css')
-
+<style>
+  @if(@$data->status->name != "Closed")
+  .closed_status_div{
+    display: none;
+  }
+  @endif
+</style>
 @endpush
 
 @push('js')
@@ -343,7 +439,7 @@
       getCommentList($id);
     });
   
-    @if(userrole() == 1 || userdepartment() == 1)
+    @if(userrole() == 1 || $help_desk_departments->firstWhere('user_id', userid()))
       $(document).on('click', '.update_btn', function(event) {
         event.preventDefault();
         $status = $('[name="status"]').find('option:selected').val();
@@ -384,8 +480,256 @@
           }
         })
       });
+
+      $initialDepartmentOptions = [];
+      $initialDepartmentUserOptions = [];
+
+      @if(!empty(@$help_desk_departments))
+        @foreach(@$help_desk_departments as $key => $value)
+          var initialOption = {
+              id: {{ @$value->department->id }},
+              text: '{{ @$value->department->name }}',
+              selected: true
+          }
+          $initialDepartmentOptions.push(initialOption);
+
+          var initialOption = {
+              id: {{ @$value->user->id }},
+              text: '{{ @$value->user->sales_specialist_name }} (Email: {{ @$value->user->email }}, Role: {{ @$value->user->role->name }})',
+              selected: true
+          }
+          $initialDepartmentUserOptions.push(initialOption);
+        @endforeach
+      @endif
+
+      $('#myAssignmentForm [name="department_id"]').select2({
+        ajax: {
+          url: "{{route('help-desk.get-department')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term
+              };
+          },
+          processResults: function (response) {
+            return {
+              results:  $.map(response, function (item) {
+                            return {
+                              text: item.name,
+                              id: item.id
+                            }
+                        })
+            };
+          },
+          cache: true
+        },
+        data: $initialDepartmentOptions
+      });
+
+
+      $('#myAssignmentForm [name="user_id"]').select2({
+        ajax: {
+          url: "{{route('help-desk.get-department-user')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term,
+                  department_id: $('#myAssignmentForm [name="department_id"]').find('option:selected').val(),
+                  user_id: '{{ @$data->user_id }}',
+              };
+          },
+          processResults: function (response) {
+            return {
+              results:  $.map(response, function (item) {
+                            return {
+                              text: item.sales_specialist_name +" (Email: "+item.email+", Role: "+item.role.name+")",
+                              id: item.id
+                            }
+                        })
+            };
+          },
+          cache: true
+        },
+        data: $initialDepartmentUserOptions
+      });
+
+
+      $(document).on('change', '#myAssignmentForm [name="department_id"]', function(event) {
+        event.preventDefault();
+        $('#myAssignmentForm [name="user_id"]').val('').trigger('change');
+
+        if($(this).find('option:selected').val() != ""){
+          $('#myAssignmentForm .user_div').show();
+        }else{
+          $('#myAssignmentForm .user_div').hide();
+        }
+      });
+
+      $('body').on("submit", "#myAssignmentForm", function (e) {
+        e.preventDefault();
+        var validator = validate_assignment_form();
+        
+        if (validator.form() != false) {
+
+          Swal.fire({
+            title: 'Are you sure want to assign?',
+            //text: "Once deleted, you will not be able to recover this record!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, update it!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $('[type="submit"]').prop('disabled', true);
+              $.ajax({
+                url: "{{route('help-desk.store-assignment')}}",
+                type: "POST",
+                data: new FormData($("#myAssignmentForm")[0]),
+                async: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                  if (data.status) {
+                    toast_success(data.message)
+                    setTimeout(function(){
+                      if($('#myAssignmentForm [name="user_id"]').val() == '{{ userid() }}' || {{ userid() }} == 1){
+                        window.location.reload();
+                      }else{
+                        window.location.href = "{{ route('help-desk.index') }}";
+                      }
+                    },500)
+                  } else {
+                    toast_error(data.message);
+                    $('[type="submit"]').prop('disabled', false);
+                  }
+                },
+                error: function () {
+                  toast_error("Something went to wrong !");
+                  $('[type="submit"]').prop('disabled', false);
+                },
+              });
+            }
+          });
+        }
+      });
+
+      function validate_assignment_form(){
+        var validator = $("#myAssignmentForm").validate({
+            errorClass: "is-invalid",
+            validClass: "is-valid",
+            rules: {
+              department_id:{
+                required:true,
+              },
+              user_id:{
+                required:true,
+              },
+            },
+            messages: {
+              
+            },
+        });
+        return validator;
+      }
+
+      $('body').on("submit", "#myStatusForm", function (e) {
+        e.preventDefault();
+        var validator = validate_assignment_form();
+        
+        if (validator.form() != false) {
+
+          Swal.fire({
+            title: 'Are you sure want to change status?',
+            //text: "Once deleted, you will not be able to recover this record!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, update it!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $('[type="submit"]').prop('disabled', true);
+              $.ajax({
+                url: "{{route('help-desk.status')}}",
+                type: "POST",
+                data: new FormData($("#myStatusForm")[0]),
+                async: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                  if (data.status) {
+                    toast_success(data.message)
+                    setTimeout(function(){
+                      window.location.reload();
+                    },500)
+                  } else {
+                    toast_error(data.message);
+                    $('[type="submit"]').prop('disabled', false);
+                  }
+                },
+                error: function () {
+                  toast_error("Something went to wrong !");
+                  $('[type="submit"]').prop('disabled', false);
+                },
+              });
+            }
+          });
+        }
+      });
+
+      function validate_assignment_form(){
+        var validator = $("#myStatusForm").validate({
+            errorClass: "is-invalid",
+            validClass: "is-valid",
+            rules: {
+              status:{
+                required:true,
+              },
+              closed_reason:{
+                required: function () {
+                        if($('#myStatusForm [name="status"]').val() == 4){
+                          return true;
+                        }else{
+                          return false;
+                        }
+                      },
+              },
+              closed_image:{
+                required: function () {
+                        if($('#myStatusForm [name="status"]').val() == 4){
+                          return true;
+                        }else{
+                          return false;
+                        }
+                      },
+              },
+            },
+            messages: {
+              
+            },
+        });
+        return validator;
+      }
+
+      $(document).on('change', '#myStatusForm [name="status"]', function(event) {
+        event.preventDefault();
+
+        if($(this).find('option:selected').val() == 4){
+          $('#myStatusForm .closed_status_div').show();
+        }else{
+          $('#myStatusForm .closed_status_div').hide();
+        }
+      });
+
     @endif
-  
+
   });
 
 </script>
