@@ -28,6 +28,9 @@ class HelpDesk extends Model
         'message',
         'type_of_customer_request',
         'other_type_of_customer_request_name',
+        'updated_by',
+        'closed_reason',
+        'closed_image',
     ];
 
     public static $type_of_customer_requests = [

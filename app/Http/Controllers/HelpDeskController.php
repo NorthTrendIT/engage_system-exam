@@ -403,56 +403,88 @@ class HelpDeskController extends Controller
 
     public function updateStatus(Request $request)
     {   
-        // Access only for admin and support department
-        if(userrole() == 1 || $data->departments->firstWhere('user_id', userid()) ){
-            
-            $obj = HelpDesk::find($request->id);
+        $input = $request->all();
 
-            if(!is_null($obj) && $request->status != ""){
-                $obj->help_desk_status_id = $request->status;
-                $obj->save();
-
-                add_log(53, $obj->toArray());
-
-                $response = ['status'=>true,'message'=>'Status update successfully !'];
-
-
-                // Start Push Notification to receiver
-                    $link = route('help-desk.show', $obj->id);
-
-                    // Create Local Notification
-                    $notification = new Notification();
-                    $notification->type = 'HD';
-                    $notification->title = 'Help Desk ticket '.$obj->ticket_number.' status updated.';
-                    $notification->module = 'help-desk';
-                    $notification->sap_connection_id = null;
-                    $notification->message = 'Your Help Desk ticket <a href="'.$link.'"><b>'.$obj->ticket_number.'</b></a> status has been updated to <b>'.@$obj->status->name.'</b>.';
-                    $notification->user_id = userid();
-                    $notification->save();
-
-                    if($notification->id){
-                        $connection = new NotificationConnection();
-                        $connection->notification_id = $notification->id;
-                        $connection->user_id = $obj->user_id;
-                        $connection->record_id = null;
-                        $connection->save();
-                    }
-
-                    // Send One Signal Notification.
-                    $fields['filters'] = array(array("field" => "tag", "key" => "user", "relation"=> "=", "value"=> $obj->user_id));
-                    $message_text = $notification->title;
-
-                    $push = OneSignal::sendPush($fields, $message_text);
-                // End Push Notification to receiver
-
-            }else{
-                $response = ['status'=>false,'message'=>'Record not found !'];
-            }
-
-            return $response;
+        $rules = array(
+                        'status' => 'required|exists:help_desk_statuses,id',
+                        'help_desk_id' => 'required|exists:help_desks,id',
+                  );
+        if($input['status'] == 4){
+            $rules['closed_reason'] = 'required';
+            $rules['closed_image'] = 'required|max:5000|mimes:jpeg,png,jpg,eps,bmp,tif,tiff,webp';
         }else{
-            return $response = ['status'=>false,'message'=>'Access Denied !'];
+            $input['closed_reason'] = null;
+            $input['closed_image'] = null;
         }
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+            $obj = HelpDesk::find($request->help_desk_id);
+            
+            // Access only for admin and support department
+            if(userrole() == 1 || @$obj->departments->firstWhere('user_id', userid()) ){
+
+                if(!is_null($obj) && $request->status != ""){
+
+                    /*Upload Image*/
+                    if (request()->hasFile('closed_image')) {
+                        $file = $request->file('closed_image');
+                        $name = date("YmdHis") . $file->getClientOriginalName();
+                        request()->file('closed_image')->move(public_path() . '/sitebucket/help-desk/', $name);
+                        $input['closed_image'] = $name;
+                    }
+            
+                    $obj->help_desk_status_id = $request->status;
+                    $obj->updated_by = Auth::id();
+                    $obj->closed_reason = $input['closed_reason'];
+                    $obj->closed_image = $input['closed_image'];
+                    $obj->save();
+
+                    add_log(53, $obj->toArray());
+
+                    $response = ['status'=>true,'message'=>'Status update successfully !'];
+
+
+                    // Start Push Notification to receiver
+                        $link = route('help-desk.show', $obj->id);
+
+                        // Create Local Notification
+                        $notification = new Notification();
+                        $notification->type = 'HD';
+                        $notification->title = 'Help Desk ticket '.$obj->ticket_number.' status updated.';
+                        $notification->module = 'help-desk';
+                        $notification->sap_connection_id = null;
+                        $notification->message = 'Your Help Desk ticket <a href="'.$link.'"><b>'.$obj->ticket_number.'</b></a> status has been updated to <b>'.@$obj->status->name.'</b>.';
+                        $notification->user_id = userid();
+                        $notification->save();
+
+                        if($notification->id){
+                            $connection = new NotificationConnection();
+                            $connection->notification_id = $notification->id;
+                            $connection->user_id = $obj->user_id;
+                            $connection->record_id = null;
+                            $connection->save();
+                        }
+
+                        // Send One Signal Notification.
+                        $fields['filters'] = array(array("field" => "tag", "key" => "user", "relation"=> "=", "value"=> $obj->user_id));
+                        $message_text = $notification->title;
+
+                        $push = OneSignal::sendPush($fields, $message_text);
+                    // End Push Notification to receiver
+
+                }else{
+                    $response = ['status'=>false,'message'=>'Record not found !'];
+                }
+            }else{
+                $response = ['status'=>false,'message'=>'Access Denied !'];
+            }
+        }
+
+        return $response;
     }
 
     public function storeComment(Request $request)
@@ -461,7 +493,7 @@ class HelpDeskController extends Controller
 
         $rules = array(
                         'comment' => 'required',
-                        'help_desk_id' => 'nullable|exists:help_desks,id',
+                        'help_desk_id' => 'required|exists:help_desks,id',
                   );
 
 
@@ -571,9 +603,9 @@ class HelpDeskController extends Controller
         $input = $request->all();
 
         $rules = array(
-                        'help_desk_id' => 'nullable|exists:help_desks,id',
-                        'department_id' => 'nullable|exists:departments,id',
-                        'user_id' => 'nullable|exists:users,id',
+                        'help_desk_id' => 'required|exists:help_desks,id',
+                        'department_id' => 'required|exists:departments,id',
+                        'user_id' => 'required|exists:users,id',
                   );
 
 
@@ -604,6 +636,35 @@ class HelpDeskController extends Controller
 
                 $message = "User assigned successfully.";
                 $response = ['status'=>true,'message'=>$message];
+
+
+                // Start Push Notification to receiver
+                    $link = route('help-desk.show', $obj->id);
+
+                    // Create Local Notification
+                    $notification = new Notification();
+                    $notification->type = 'HD';
+                    $notification->title = 'Assigned a new help desk ticket.';
+                    $notification->module = 'help-desk';
+                    $notification->sap_connection_id = null;
+                    $notification->message = 'You have been assigned a new help desk ticket <a href="'.$link.'"><b>'.$obj->ticket_number.'</b></a>.';
+                    $notification->user_id = userid();
+                    $notification->save();
+
+                    if($notification->id){
+                        $connection = new NotificationConnection();
+                        $connection->notification_id = $notification->id;
+                        $connection->user_id = $input['user_id'];
+                        $connection->record_id = null;
+                        $connection->save();
+                    }
+
+                    // Send One Signal Notification.
+                    $fields['filters'] = array(array("field" => "tag", "key" => "user", "relation"=> "=", "value"=> $input['user_id']));
+                    $message_text = $notification->title;
+
+                    $push = OneSignal::sendPush($fields, $message_text);
+                // End Push Notification to receiver
 
             }else{
                 return $response = ['status'=>false,'message'=>'Access Denied !'];
