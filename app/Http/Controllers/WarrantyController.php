@@ -78,14 +78,15 @@ class WarrantyController extends Controller
                         'user_id' => 'required|exists:users,id,role_id,4',
                         // 'sap_connection_id' => 'required|exists:sap_connections,id',
                         'warranty_claim_type' => 'required',
-                        'dealer_name' => 'required',
+                        // 'dealer_name' => 'required',
                         'customer_address' => 'required',
+                        'customer_name' => 'required',
                         'customer_email' => 'required',
                         'customer_phone' => 'required',
                         'customer_location' => 'required',
                         'customer_telephone' => 'required',
-                        'dealer_location' => 'required',
-                        'dealer_telephone' => 'required',
+                        // 'dealer_location' => 'required',
+                        // 'dealer_telephone' => 'required',
                         'vehicle_maker' => 'required',
                         'year' => 'required|integer',
                         'vehicle_model' => 'required',
@@ -458,7 +459,7 @@ class WarrantyController extends Controller
             $data->where(function($q) use ($request) {
                 $q->orwhere('customer_phone','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('customer_email','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('dealer_name','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('customer_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('warranty_claim_type','LIKE',"%".$request->filter_search."%");
             });
         }
@@ -495,8 +496,8 @@ class WarrantyController extends Controller
                             ->addColumn('name', function($row) {
                                 return  @$row->user->sales_specialist_name ?? "-";
                             })
-                            ->addColumn('dealer_name', function($row) {
-                                return  @$row->dealer_name ?? "-";
+                            ->addColumn('customer_name', function($row) {
+                                return  @$row->customer_name ?? "-";
                             })
                             ->addColumn('warranty_claim_type', function($row) {
                                 return  @$row->warranty_claim_type ?? "-";
@@ -538,8 +539,8 @@ class WarrantyController extends Controller
                             ->orderColumn('warranty_claim_type', function ($query, $order) {
                                 $query->orderBy('warranty_claim_type', $order);
                             })
-                            ->orderColumn('dealer_name', function ($query, $order) {
-                                $query->orderBy('dealer_name', $order);
+                            ->orderColumn('customer_name', function ($query, $order) {
+                                $query->orderBy('customer_name', $order);
                             })
                             ->orderColumn('created_at', function ($query, $order) {
                                 $query->orderBy('created_at', $order);

@@ -60,13 +60,15 @@
                                     </div>
                                 </div>
 
+                                <div class="row mb-5">
+                                </div>
 
                                 <div class="row mb-5">
                                     <!-- Customer Name -->
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Name<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" readonly="" disabled="" @if(isset($edit)) value="{{ $edit->user->sales_specialist_name }}" @else value="{{ Auth::user()->sales_specialist_name }}" @endif >
+                                            <input type="text" class="form-control form-control-solid" name="customer_name" placeholder="Enter customer name" @if(isset($edit)) value="{{ $edit->customer_name }}" @endif autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -113,7 +115,7 @@
                                 </div>
 
 
-                                <div class="row mb-5 mt-10">
+                                {{-- <div class="row mb-5 mt-10">
                                     <!-- Dealer's Name -->
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -146,14 +148,14 @@
                                             <input type="text" class="form-control form-control-solid" name="dealer_fax" placeholder="Enter dealer's fax" @if(isset($edit)) value="{{ $edit->dealer_fax }}" @endif >
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
 
                                 <div class="row mb-5 mt-10">
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <h4 class="text-info">Tire & Vehicle Info</h4>
-                                            {{-- <hr> --}}
+                                            <hr>
                                         </div>
                                     </div>
                                 </div>
@@ -371,6 +373,9 @@
                                                         <th>Yes</th>
                                                         <th>No</th>
                                                     </tr>
+                                                    <tr>
+                                                        <th colspan="3"><hr></th>
+                                                    </tr>
                                                 </thead>
                                                 <tbody>
 
@@ -401,6 +406,9 @@
                                                 <thead>
                                                     <tr>
                                                         <th colspan="6"><h4 class="text-info">Tire Manifistation Probable Cause</h4></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th colspan="6"><hr></th>
                                                     </tr>
                                                     <tr>
                                                         <th>No.</th>
@@ -439,6 +447,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <h4 class="text-info">Pictures of the Tire focusing on Damage Areas</h4>
+                                            <hr>
                                         </div>
                                     </div>
                                 </div>
@@ -763,7 +772,11 @@ $(document).ready(function() {
                 warranty_claim_type:{
                   required: true,
                 },
-                dealer_name:{
+                // dealer_name:{
+                //     required: true,
+                //     maxlength: 185,
+                // },
+                customer_name:{
                     required: true,
                     maxlength: 185,
                 },
