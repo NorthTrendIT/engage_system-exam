@@ -216,9 +216,18 @@ class HelpDeskController extends Controller
     {
         $data = HelpDesk::query();
         if(!(userrole() == 1)){
-            $data->whereHas('departments', function($q){
-                $q->where('user_id', userid());
+            $data->where(function($query){
+                $query->orwhere(function($q){
+                    $q->whereHas('departments', function($p){
+                        $p->where('user_id', userid());
+                    });
+                });
+
+                $query->orwhere(function($q1){
+                    $q1->where('user_id',userid());
+                });
             });
+
         }
 
         if($request->filter_user != ""){
@@ -436,7 +445,7 @@ class HelpDeskController extends Controller
                         request()->file('closed_image')->move(public_path() . '/sitebucket/help-desk/', $name);
                         $input['closed_image'] = $name;
                     }
-            
+
                     $obj->help_desk_status_id = $request->status;
                     $obj->updated_by = Auth::id();
                     $obj->closed_reason = $input['closed_reason'];
