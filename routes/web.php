@@ -113,7 +113,8 @@ Route::middleware(['auth'])->group(function(){
     	    Route::get('orders/export', 'App\Http\Controllers\OrdersController@export')->name('orders.export');
             Route::resource('orders','App\Http\Controllers\OrdersController');
             Route::post('orders/get-all', 'App\Http\Controllers\OrdersController@getAll')->name('orders.get-all');
-    	    Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
+            Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
+    	    Route::post('orders/sync-specific-orders', 'App\Http\Controllers\OrdersController@syncSpecificOrder')->name('orders.sync-specific-orders');
             Route::post('orders/get-customer', 'App\Http\Controllers\OrdersController@getCustomer')->name('orders.get-customer');
             Route::post('orders/notify-customer', 'App\Http\Controllers\OrdersController@notifyCustomer')->name('orders.notify-customer');
 
@@ -128,9 +129,11 @@ Route::middleware(['auth'])->group(function(){
             Route::post('pending-promotion/push-all', 'App\Http\Controllers\OrdersController@pushAllPromotion')->name('orders.push-all-promotion');
 
             // Invoices
+            Route::get('invoices/export', 'App\Http\Controllers\InvoicesController@export')->name('invoices.export');
             Route::resource('invoices','App\Http\Controllers\InvoicesController');
     	    Route::post('invoices/get-all', 'App\Http\Controllers\InvoicesController@getAll')->name('invoices.get-all');
     	    Route::post('invoices/sync-invoices', 'App\Http\Controllers\InvoicesController@syncInvoices')->name('invoices.sync-invoices');
+            Route::post('invoices/sync-specific-invoices', 'App\Http\Controllers\InvoicesController@syncSpecificInvoice')->name('invoices.sync-specific-invoices');
             Route::post('invoices/get-customer', 'App\Http\Controllers\InvoicesController@getCustomer')->name('invoices.get-customer');
 
             // Route::resource('location','App\Http\Controllers\LocationController');
@@ -232,7 +235,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('customer-promotion/order/push-in-sap', 'App\Http\Controllers\CustomerPromotionController@orderPushInSap')->name('customer-promotion.order.push-in-sap');
             Route::post('customer-promotion/order/approved', 'App\Http\Controllers\CustomerPromotionController@orderApproved')->name('customer-promotion.order.approved');
             Route::get('customer-promotion/order/export', 'App\Http\Controllers\CustomerPromotionController@orderExport')->name('customer-promotion.order.export');
-
+            Route::post('customer-promotion/order/sync-delivery-status', 'App\Http\Controllers\CustomerPromotionController@orderSyncDeliveryStatus')->name('customer-promotion.order.sync-delivery-status');
 
             // Quotations
             Route::resource('quotation','App\Http\Controllers\QuotationController');
@@ -295,6 +298,7 @@ Route::middleware(['auth'])->group(function(){
                 'create' => 'sales-specialist-orders.create',
                 'store' => 'sales-specialist-orders.store',
                 'edit' => 'sales-specialist-orders.edit',
+                'show' => 'sales-specialist-orders.show',
             ]
         ]);
         Route::post('sales-specialist-orders/get-all', 'App\Http\Controllers\LocalOrderController@getAll')->name('sales-specialist-orders.get-all');
@@ -389,7 +393,9 @@ Route::middleware(['auth'])->group(function(){
     Route::post('help-desk/status', 'App\Http\Controllers\HelpDeskController@updateStatus')->name('help-desk.status');
     Route::post('help-desk/comment/store', 'App\Http\Controllers\HelpDeskController@storeComment')->name('help-desk.comment.store');
     Route::post('help-desk/comment/get-all', 'App\Http\Controllers\HelpDeskController@getAllComment')->name('help-desk.comment.get-all');
-
+    Route::post('help-desk/get-department', 'App\Http\Controllers\HelpDeskController@getDepartment')->name('help-desk.get-department');
+    Route::post('help-desk/get-department-user', 'App\Http\Controllers\HelpDeskController@getDepartmentUser')->name('help-desk.get-department-user');
+    Route::post('help-desk/store-assignment', 'App\Http\Controllers\HelpDeskController@storeAssignment')->name('help-desk.store-assignment');
 
     // Conversation
     Route::resource('conversation','App\Http\Controllers\ConversationController')->except('show');

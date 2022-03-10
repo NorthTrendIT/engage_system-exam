@@ -210,22 +210,51 @@
                                   <tr class="border-bottom fs-6 fw-bolder text-muted">
                                     <th class="min-w-175px pb-2">Product</th>
                                     <th class="min-w-70px text-end pb-2">Quantity</th>
-                                    <th class="min-w-80px text-end pb-2">Price</th>
+                                    <th class="min-w-80px text-end pb-2">Unit Price</th>
                                     <th class="min-w-80px text-end pb-2">Discount</th>
+                                    <th class="min-w-80px text-end pb-2">Price</th>
+                                    @if($is_sap_pushed)
+                                    <th class="min-w-80px text-end pb-2">Price After VAT</th>
+                                    @endif
                                     <th class="min-w-100px text-end pb-2">Amount</th>
                                   </tr>
                                 </thead>
                                 <tbody>
 
+                                  @php
+                                    $total_amount = 0.00;
+                                  @endphp
+
                                   @if(@$data->products)
 
                                     @foreach(@$data->products as $p)
-                                      <tr class="fw-bolder text-gray-700 fs-5 text-end">
+
+                                      @php
+                                        $price = @$p->price - @$p->discount;
+                                        $price_after_vat = $price;
+
+                                        if($is_sap_pushed){
+                                          $delivery = @$p->deliveries()->first();
+                                          $quotation = @$delivery->quotation()->first();
+                                          $quotation_item = @$quotation->items()->first();
+                                          $price_after_vat = @$quotation_item->price_after_vat;
+                                        }
+
+                                        $amount = $price_after_vat * @$p->quantity;
+                                        $total_amount += $amount;
+
+                                      @endphp
+                                      
+                                      <tr class="fw-bolder text-gray-700 fs-7 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ @$p->product->item_name ?? "-" }}</td>
                                         <td class="pt-6">{{ @$p->quantity }}</td>
-                                        <td class="pt-6">₱ {{ number_format(@$p->price,2) }}</td>
-                                        <td class="pt-6">₱ {{ number_format(@$p->discount,2) }}</td>
-                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format(@$p->amount,2) }}</td>
+                                        <td class="pt-6">₱ {{ number_format_value(@$p->price) }}</td>
+                                        <td class="pt-6">₱ {{ number_format_value(@$p->discount) }}</td>
+                                        <td class="pt-6">₱ {{ number_format_value(($price)) }}</td>
+                                        @if($is_sap_pushed)
+                                        <td class="pt-6">₱ {{ number_format_value(@$price_after_vat) }}</td>
+                                        @endif
+                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($amount) }}</td>
                                       </tr>
                                     @endforeach
 
@@ -245,7 +274,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format(@$data->total_price,2) }}</div>
+                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format_value($total_amount) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -255,7 +284,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Discount:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">- ₱ {{ number_format(@$data->total_discount,2) }}</div>
+                                  <div class="text-end fw-bolder fs-6 text-gray-700">- ₱ {{ number_format_value(@$data->total_discount) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -266,7 +295,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
                                   <!--end::Code-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format(@$data->total_amount,2) }}</div>
+                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format_value(($total_amount - @$data->total_discount)) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -312,6 +341,7 @@
                             <!--begin::Content-->
                             <div class="flex-grow-1 mt-20">
                               <h5 class="mb-5"> {{ ordinal($key + 1) }} Product: <i>{{ @$p->product->item_name ?? "-" }}</i></h5>
+
                               <!--begin::Table-->
                               <div class="table-responsive border-bottom mb-9">
                                 <table class="table mb-3">
@@ -319,14 +349,31 @@
                                     <tr class="border-bottom fs-6 fw-bolder text-muted">
                                       <th class="min-w-175px pb-2">Delivery Date</th>
                                       <th class="min-w-70px text-end pb-2">Delivery Quantity</th>
+                                      <th class="min-w-70px text-end pb-2">Sync</th>
                                     </tr>
                                   </thead>
                                   <tbody>
 
                                     @foreach(@$p->deliveries as $d)
-                                      <tr class="fw-bolder text-gray-700 fs-5 text-end">
+                                      <tr class="fw-bolder text-gray-700 fs-7 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ date('F d, Y',strtotime($d->delivery_date)) }}</td>
                                         <td class="pt-6">{{ @$d->delivery_quantity }}</td>
+                                        <td class="pt-6">
+                                          <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm sync-delivery-status" title="Sync Delivery Status" data-id="{{ @$d->quotation->id }}"><i class="fa fa-sync"></i></a>
+                                        </td>
+                                      </tr>
+                                      <tr class="fw-bolder text-gray-700 fs-7 text-center">
+                                        <td colspan="3">
+                                          @php
+                                            $status = getOrderStatusByQuotation(@$d->quotation);
+                                            // $status = "Cancelled";
+                                          @endphp
+
+                                          <div class="delivery_status_div_{{ @$d->quotation->id }}">
+                                            {!! view('customer-promotion.ajax.delivery-status',compact('status')) !!}
+                                          </div>
+                                          
+                                        </td>
                                       </tr>
                                     @endforeach
 
@@ -596,6 +643,46 @@
       });
 
     @endif
+
+
+    $(document).on('click', '.sync-delivery-status', function(event) {
+      event.preventDefault();
+
+      var id = $(this).data('id');
+
+      Swal.fire({
+        title: 'Are you sure want to sync delivery status details?',
+        text: "It may take some time to sync delivery status details.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('customer-promotion.order.sync-delivery-status') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                    id:id,
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              $('.delivery_status_div_'+id).html(result.html);
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
   });
 
 </script>

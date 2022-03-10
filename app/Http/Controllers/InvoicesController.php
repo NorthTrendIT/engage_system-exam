@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Support\SAPInvoices;
+use App\Support\SAPOrders;
+use App\Support\SAPQuotations;
 use App\Jobs\SyncInvoices;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\SapConnection;
 use DataTables;
 use Auth;
+
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\InvoiceExport;
 
 class InvoicesController extends Controller
 {
@@ -60,7 +65,7 @@ class InvoicesController extends Controller
     public function show($id)
     {
         $total = 0;
-        $data = Invoice::with(['items.product', 'customer'])->where('id', $id);
+        $data = Invoice::where('id', $id);
         if(userrole() == 4){
             $data->where('card_code', @Auth::user()->customer->card_code);
         }elseif(userrole() == 2){
@@ -126,9 +131,8 @@ class InvoicesController extends Controller
                 SyncInvoices::dispatch($value->db_name, $value->user_name , $value->password, $invoice_log_id);
             }
 
-            $response = ['status' => true, 'message' => 'Sync Orders successfully !'];
+            $response = ['status' => true, 'message' => 'Sync invoices details successfully !'];
         } catch (\Exception $e) {
-            // dd($e);
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
         return $response;
@@ -259,13 +263,13 @@ class InvoicesController extends Controller
                                 return  @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('status', function($row) {
-                                return getOrderStatusByInvoice($row);
+                                return getOrderStatusBtnHtml(getOrderStatusByInvoice($row));
                             })
                             ->addColumn('doc_entry', function($row) {
                                 return $row->doc_entry;
                             })
                             ->addColumn('total', function($row) {
-                                return '₱ '. number_format($row->doc_total, 2);
+                                return '₱ '. number_format_value($row->doc_total);
                             })
                             ->addColumn('date', function($row) {
                                 return date('M d, Y',strtotime($row->doc_date));
@@ -303,11 +307,191 @@ class InvoicesController extends Controller
                             ->orderColumn('company', function ($query, $order) {
                                 $query->join('sap_connections', 'invoices.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
-                            ->rawColumns(['action'])
+                            ->rawColumns(['action','status'])
                             ->make(true);
     }
 
     public function getCustomer(Request $request){
         return app(CustomerPromotionController::class)->getCustomer($request);
+    }
+
+    public function syncSpecificInvoice(Request $request){
+
+        $response = ['status' => false, 'message' => 'Something went wrong !'];
+        if(@$request->id){
+
+            $invoice = Invoice::find($request->id);
+            if(!is_null($invoice) && !is_null(@$invoice->sap_connection)){
+                try {
+
+                    $sap_connection = @$invoice->sap_connection;
+
+                    // Sync Invoice Data
+                    $sap_invoices = new SAPInvoices($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+                    $sap_invoices->addSpecificInvoicesDataInDatabase(@$invoice->doc_entry);
+
+                    // Sync Order Data
+                    if(@$invoice->order->doc_entry){
+                        $sap_orders = new SAPOrders($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+                        $sap_orders->addSpecificOrdersDataInDatabase(@$invoice->order->doc_entry);
+                    }
+
+                    // Sync Quotation Data
+                    if(@$invoice->order->base_entry){
+                        $sap_quotations = new SAPQuotations($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+                        $sap_quotations->addSpecificQuotationsDataInDatabase(@$invoice->order->base_entry);
+                    }
+
+                    $response = ['status' => true, 'message' => 'Sync invoice details successfully !'];
+                } catch (\Exception $e) {
+                    $response = ['status' => false, 'message' => 'Something went wrong !'];
+                }
+            }
+
+        }
+        return $response;
+    }
+
+    public function export(Request $request){
+        $filter = collect();
+        if(@$request->data){
+          $filter = json_decode(base64_decode($request->data));
+        }
+
+        $data = Invoice::orderBy('id', 'desc');
+
+        if(userrole() == 4){
+            $data->where('card_code', @Auth::user()->customer->card_code);
+        }elseif(userrole() == 2){
+            $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(userrole() != 1){
+            if (!is_null(@Auth::user()->created_by)) {
+                $data->where('card_code', @Auth::user()->created_by_user->customer->card_code);
+            } else {
+                return DataTables::of(collect())->make(true);;
+            }
+        }
+
+        if(@$filter->filter_search != ""){
+            $data->where(function($q) use ($filter) {
+                // $q->orwhere('card_name','LIKE',"%".$filter->filter_search."%");
+                $q->orwhere('doc_type','LIKE',"%".$filter->filter_search."%");
+                $q->orwhere('doc_entry','LIKE',"%".$filter->filter_search."%");
+            });
+        }
+
+        if(@$filter->filter_brand != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where(function($que) use ($filter) {
+                        $que->whereHas('product_groups', function($q2) use ($filter){
+                            $q2->where('product_group_id', $filter->filter_brand);
+                        });
+                    });
+                });
+            });
+        }
+
+        if(@$filter->filter_class != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where('u_class', $filter->filter_class);
+                });
+            });
+        }
+
+        if(@$filter->filter_sales_specialist != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where(function($que) use ($filter) {
+                        $que->whereHas('sales_specialist', function($q2) use ($filter){
+                            $q2->where('id', $filter->filter_sales_specialist);
+                        });
+                    });
+                });
+            });
+        }
+
+        if(@$filter->filter_market_sector != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where('u_sector', $filter->filter_market_sector);
+                });
+            });
+        }
+
+        if(@$filter->filter_territory != ""){
+            $data->where(function($query) use ($filter) {
+                $query->whereHas('customer', function($q) use ($filter) {
+                    $q->where('territory', $filter->filter_territory);
+                });
+            });
+        }
+
+        if(@$filter->filter_customer != ""){
+            $data->where('card_code',$filter->filter_customer);
+        }
+
+        if(@$filter->filter_company != ""){
+            $data->where('sap_connection_id',$filter->filter_company);
+        }
+
+        if(@$filter->filter_status != ""){
+            $status = $filter->filter_status;
+
+            if($status == "CL"){ //Cancel
+                $data->where('cancelled', 'Yes');
+
+            }elseif($status == "PN"){ //Pending
+
+                // $data->where('cancelled', 'No');
+
+                $data->where(function($query){
+                    $query->orwhere(function($q){
+                        $q->whereNull('u_sostat');
+                    });
+
+                    $query->orwhere(function($q1){
+                        $q1->where('cancelled', 'No')->whereNotIn('u_sostat', array_keys(getOrderStatusArray()));
+                    });
+                });
+
+            }else{
+                $data->where('document_status', 'bost_Open')->where('u_sostat', $status);
+            }
+        }
+
+
+        if(@$filter->filter_date_range != ""){
+            $date = explode(" - ", $filter->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('doc_date', '>=' , $start);
+            $data->whereDate('doc_date', '<=' , $end);
+        }
+
+
+        $data = $data->get();
+
+        $records = array();
+        foreach($data as $key => $value){
+            $records[] = array(
+                            'no' => $key + 1,
+                            'company' => @$value->sap_connection->company_name ?? "-",
+                            'doc_entry' => $value->doc_entry ?? "-",
+                            'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
+                            'doc_total' => number_format_value($value->doc_total),
+                            'created_at' => date('M d, Y',strtotime($value->doc_date)),
+                            'status' => getOrderStatusByInvoice($value),
+                          );
+        }
+        if(count($records)){
+            $title = 'Invoice Report '.date('dmY').'.xlsx';
+            return Excel::download(new InvoiceExport($records), $title);
+        }
+
+        \Session::flash('error_message', common_error_msg('excel_download'));
+        return redirect()->back();
     }
 }

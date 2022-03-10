@@ -167,7 +167,7 @@ class CartController extends Controller
                 $total += $subTotal;
             }
 
-            return $response = ['status'=>true,'message'=>"Product quantity updated successfully.", 'total' => number_format($total, 2)];
+            return $response = ['status'=>true,'message'=>"Product quantity updated successfully.", 'total' => number_format_value($total)];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];
@@ -194,7 +194,7 @@ class CartController extends Controller
                 $total += $subTotal;
             }
 
-            return $response = ['status'=>true,'message'=> $message, 'total' => number_format($total, 2), 'count' => count($data), 'cart_count' => $cartCount];
+            return $response = ['status'=>true,'message'=> $message, 'total' => number_format_value($total), 'count' => count($data), 'cart_count' => $cartCount];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];
@@ -212,7 +212,7 @@ class CartController extends Controller
                 $total += $subTotal;
             }
 
-            return $response = ['status'=>true,'message'=>"Product removed from cart.", 'total' => number_format($total, 2), 'count' => count($data)];
+            return $response = ['status' => true,'message' => 'Product removed from cart.', 'total' => number_format($total, 2), 'count' => count($data)];
         }
 
 
@@ -255,6 +255,7 @@ class CartController extends Controller
                 $order->due_date = date('Y-m-d',strtotime($due_date));
                 $order->placed_by = "C";
                 $order->confirmation_status = "P";
+                $order->sap_connection_id = @Auth::user()->customer->sap_connection_id;
                 $order->save();
 
                 $products = Cart::where('customer_id', $customer_id)->get();
@@ -272,7 +273,6 @@ class CartController extends Controller
                 }
             }
 
-            // return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
             Cart::where('customer_id', $customer_id)->delete();
 
             try{
@@ -289,7 +289,6 @@ class CartController extends Controller
 
             }
         }
-
 
         return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
     }

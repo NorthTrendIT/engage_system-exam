@@ -9,6 +9,8 @@ class Quotation extends Model
 {
     use HasFactory;
 
+    use \Awobaz\Compoships\Compoships;
+
     protected $fillable = [
         'base_entry',
         'doc_entry',
@@ -48,15 +50,15 @@ class Quotation extends Model
     }
 
     public function customer(){
-        return $this->hasOne(Customer::class, 'card_code', 'card_code');
+        return $this->hasOne(Customer::class, ['card_code', 'sap_connection_id'], ['card_code', 'sap_connection_id']);
     }
 
     public function sales_specialist(){
-        return $this->belongsTo(User::class, 'sales_person_code','sales_employee_code');
+        return $this->belongsTo(User::class, ['sales_person_code','sap_connection_id'], ['sales_employee_code', 'sap_connection_id']);
     }
 
     public function order(){
-        return $this->hasOne(Order::class, 'base_entry', 'doc_entry');
+        return $this->hasOne(Order::class, ['base_entry', 'sap_connection_id'], ['doc_entry', 'sap_connection_id']);
     }
 
     public function sap_connection(){

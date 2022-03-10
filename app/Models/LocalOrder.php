@@ -20,6 +20,7 @@ class LocalOrder extends Model
         'address_id',
         'doc_entry',
         'doc_num',
+        'sap_connection_id',
     ];
 
     public function customer(){
@@ -36,6 +37,10 @@ class LocalOrder extends Model
 
     public function items(){
         return $this->hasMany(LocalOrderItem::class, 'local_order_id');
+    }
+
+    public function quotation(){
+        return $this->belongsTo(Quotation::class, ['doc_entry','sap_connection_id'], ['doc_entry', 'sap_connection_id']);
     }
 
 }

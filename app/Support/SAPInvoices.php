@@ -62,10 +62,12 @@ class SAPInvoices
 
         } catch (\Exception $e) {
 
-            add_sap_log([
-                    'status' => "error",
-                    'error_data' => $e->getMessage(),
-                ], $this->log_id);
+            if($this->log_id){
+                add_sap_log([
+                        'status' => "error",
+                        'error_data' => $e->getMessage(),
+                    ], $this->log_id);
+            }
 
             return array(
                                 'status' => false,
@@ -94,7 +96,49 @@ class SAPInvoices
 
             if($data['value']){
 
-                /*foreach ($data['value'] as $invoice) {
+                $where = array(
+                            'db_name' => $this->database,
+                            'user_name' => $this->username,
+                        );
+
+                $sap_connection = SapConnection::where($where)->first();
+
+                // Store Data of Invoices in database
+                StoreInvoices::dispatch($data['value'],@$sap_connection->id);
+
+                if(isset($data['odata.nextLink'])){
+
+                    SyncNextInvoices::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
+
+                    //$this->addInvoicesDataInDatabase($data['odata.nextLink']);
+                } else {
+                    add_sap_log([
+                        'status' => "completed",
+                    ], $this->log_id);
+                }
+            }
+        }
+    }
+
+
+    // Store Specific Invoices Data
+    public function addSpecificInvoicesDataInDatabase($doc_entry = false)
+    {
+        if($doc_entry){
+            $url = '/b1s/v1/Invoices('.$doc_entry.')';
+            $response = $this->getInvoiceData($url);
+
+            if($response['status']){
+                $invoice = $response['data'];
+
+                if(!empty($invoice)){
+
+                    $where = array(
+                                'db_name' => $this->database,
+                                'user_name' => $this->username,
+                            );
+
+                    $sap_connection = SapConnection::where($where)->first();
 
                     $insert = array(
                                 'doc_entry' => $invoice['DocEntry'],
@@ -119,12 +163,22 @@ class SAPInvoices
                                 'u_posotime' => $invoice['U_POSOTIME'],
                                 'u_sostat' => $invoice['U_SOSTAT'],
                                 'created_at' => $invoice['CreationDate'],
-                                'updated_at' => $invoice['UpdateDate'],
+                                // 'updated_at' => $invoice['UpdateDate'],
+                                'document_status' => $invoice['DocumentStatus'],
+                                'cancelled' => @$invoice['Cancelled'] == 'tYES' ? 'Yes' : 'No',
                                 //'response' => json_encode($invoice),
+
+                                'updated_date' => $invoice['UpdateDate'],
+                                'sap_connection_id' => $sap_connection->id,
                             );
+
+                    if(!empty($invoice['DocumentLines'])){
+                        array_push($insert, array('base_entry' => $invoice['DocumentLines'][0]['BaseEntry']));
+                    }
 
                     $obj = Invoice::updateOrCreate([
                                                 'doc_entry' => @$invoice['DocEntry'],
+                                                'sap_connection_id' => $sap_connection->id,
                                             ],
                                             $insert
                                         );
@@ -164,30 +218,14 @@ class SAPInvoices
                                         ],
                                         $item
                                     );
+
+                            if(!is_null(@$value['BaseEntry'])){
+                                $obj->base_entry = @$value['BaseEntry'];
+                                $obj->save();
+                            }
                         }
-
                     }
-                }*/
 
-                $where = array(
-                            'db_name' => $this->database,
-                            'user_name' => $this->username,
-                        );
-
-                $sap_connection = SapConnection::where($where)->first();
-
-                // Store Data of Invoices in database
-                StoreInvoices::dispatch($data['value'],@$sap_connection->id);
-
-                if(isset($data['odata.nextLink'])){
-
-                    SyncNextInvoices::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
-
-                    //$this->addInvoicesDataInDatabase($data['odata.nextLink']);
-                } else {
-                    add_sap_log([
-                        'status' => "completed",
-                    ], $this->log_id);
                 }
             }
         }

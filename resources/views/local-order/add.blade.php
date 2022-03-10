@@ -57,7 +57,7 @@
                                         </div>
                                         <div class="col-xl-4 col-lg-4 col-md-4 col-12">
                                             <label class="col-form-label text-right">Delivery Date<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control" placeholder="Delivery Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('m/d/Y',strtotime($edit->due_date))}}" @endif>
+                                            <input type="text" class="form-control" placeholder="Delivery Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('d/m/Y',strtotime($edit->due_date))}}" @endif>
                                         </div>
                                     </div>
                                 </div>
@@ -244,10 +244,17 @@
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {
+                    var product_ids = [];
+                    $('.selectProducts').each(function(){
+                        if(this.value){
+                            product_ids.push(this.value);
+                        }
+                    });
                     return {
                         _token: "{{ csrf_token() }}",
                         filter_search: params.term,
                         customer_id: $('[name="customer_id"]').val(),
+                        product_ids: product_ids,
                     };
                 },
                 processResults: function (response) {
@@ -342,13 +349,12 @@
             // data: $initialOptions
         });
 
-        @if(isset($edit))
-            $('#selectCustomers').trigger('change');
-        @endif
-
         $('body').on('change' ,'#selectCustomers', function(){
             $customer = $('[name="customer_id"]').val();
-            $('#selectAddress').val(null).trigger('change');
+
+            @if(empty($edit))
+                $('#selectAddress').val(null).trigger('change');
+            @endif
 
             if($customer){
                 $('#selectAddress').prop('disabled', false);

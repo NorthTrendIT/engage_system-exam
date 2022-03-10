@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title','Pending Promotions')
+@section('title','Order Details')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Pending Promotion</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Order Details</h1>
       </div>
 
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
 
-        <a href="{{ route('orders.pending-promotion') }}" class="btn btn-sm btn-primary">Back</a>
+        <a href="{{ route('sales-specialist-orders.index') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
       <!--end::Actions-->
@@ -26,9 +26,7 @@
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
-           {{--  <div class="card-header border-0 pt-5">
-              <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
-            </div> --}}
+
             <div class="card-body">
 
               <div class="row mb-5 mt-5">
@@ -43,117 +41,134 @@
                         <!--begin::Wrapper-->
                         <div class="m-0">
                           <!--begin::Label-->
-                          <!-- <div class="fw-bolder fs-3 text-gray-800 mb-8">Invoice</div> -->
+                          <!-- <div class="fw-bolder fs-3 text-gray-800 mb-8">Order</div> -->
                           <!--end::Label-->
 
-                          @if(userrole() == 1)
+
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
-                            <div class="col-sm-9">
+                            <div class="col-sm-5">
                               <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Customer:</div>
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Name:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->card_name ?? '-' }} (Code: {{ $data->customer->card_code ?? '-' }})</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+
+                            <!--end::Col-->
+                            <div class="col-sm-2">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Branch:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->group->name ?? '-' }}</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+
+                            <!--end::Col-->
+                            <div class="col-sm-5">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Delivery Address:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->address ?? '-' }}</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+                          </div>
+
+                          <div class="row g-5 mb-11">
+                            <!--end::Col-->
+                            <div class="col-sm-5">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Sales Specialist:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->sales_specialist->sales_specialist_name ?? "-" }}</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+
+                            <!--end::Col-->
+                            <div class="col-sm-2">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Order #:</div>
                               <!--end::Label-->
                               <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->user->sales_specialist_name ?? "" }}</div>
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->doc_entry ?? "-"  }}</div>
                               <!--end::Col-->
                             </div>
                             <!--end::Col-->
 
-                            @if($data->status == "approved" && $data->is_sap_pushed == false)
                             <!--end::Col-->
                             <div class="col-sm-3">
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Push Details In SAP:</div>
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Order Date:</div>
                               <!--end::Label-->
                               <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">
-                                <a href="javascript:" class="btn btn-sm btn-info btn-inline push-in-sap">Push Details</a>
-                              </div>
-                              <!--end::Col-->
-                            </div>
-                            <!--end::Col-->
-                            @endif
-
-                          </div>
-                          <!--end::Row-->
-                          @endif
-
-                          <!--begin::Row-->
-                          <div class="row g-5 mb-11">
-                            <!--end::Col-->
-                            <div class="col-sm-4">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Claimed Date:</div>
-                              <!--end::Label-->
-                              <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime($data->created_at)) }}</div>
+                              <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime($data->doc_date)) }} {{ $data->doc_time ? date('H:i A',strtotime($data->doc_time)) : "" }}</div>
                               <!--end::Col-->
                             </div>
                             <!--end::Col-->
 
                             <!--end::Col-->
-                            <div class="col-sm-4">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Promotion Details:</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->promotion->title ?? "-" }}</div>
-                              <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
-
-                            <!--end::Col-->
-                            <div class="col-sm-4">
+                            <div class="col-sm-2">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
-
-                                @if($data->status == "approved")
-                                  <a href="javascript:" class="btn btn-sm btn-success btn-inline ">Approved</a>
-                                @elseif($data->status == "pending")
-                                  <a href="javascript:" class="btn btn-sm btn-warning btn-inline ">Pending</a>
-                                @elseif($data->status == "canceled")
-                                  <a href="javascript:" class="btn btn-sm btn-danger btn-inline ">Canceled</a>
-                                @endif
-
+                                <span>{!! getOrderStatusBtnHtml(getOrderStatusByQuotation($data)) !!}</span>
                               </div>
                               <!--end::Text-->
                             </div>
                             <!--end::Col-->
                           </div>
                           <!--end::Row-->
+
+                          <div class="row g-5 mb-11">
+                            <!--end::Col-->
+                            <div class="col-sm-12">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Remarks:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->u_remarks ?? "-" }}</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+                          </div>
+
+                          <hr>
+
                           <!--begin::Content-->
-                          <div class="flex-grow-1">
+                          <div class="flex-grow-1 mt-10">
                             <!--begin::Table-->
                             <div class="table-responsive border-bottom mb-9">
                               <table class="table mb-3">
                                 <thead>
                                   <tr class="border-bottom fs-6 fw-bolder text-muted">
                                     <th class="min-w-175px pb-2">Product</th>
+                                    <th class="min-w-80px text-end pb-2">Delivery Date</th>
                                     <th class="min-w-70px text-end pb-2">Quantity</th>
                                     <th class="min-w-80px text-end pb-2">Price</th>
-                                    <th class="min-w-80px text-end pb-2">Discount</th>
                                     <th class="min-w-100px text-end pb-2">Amount</th>
                                   </tr>
                                 </thead>
                                 <tbody>
-
-                                  @if(@$data->products)
-
-                                    @foreach(@$data->products as $p)
-                                      <tr class="fw-bolder text-gray-700 fs-5 text-end">
-                                        <td class="d-flex align-items-center pt-6">{{ @$p->product->item_name ?? "-" }}</td>
-                                        <td class="pt-6">{{ @$p->quantity }}</td>
-                                        <td class="pt-6">₱ {{ number_format_value(@$p->price) }}</td>
-                                        <td class="pt-6">₱ {{ number_format_value(@$p->discount) }}</td>
-                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value(@$p->amount) }}</td>
-                                      </tr>
+                                    @foreach($data->items as $value)
+                                    <tr class="fw-bolder text-gray-700 fs-5 text-end">
+                                        <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}</td>
+                                        <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
+                                        <td class="pt-6">{{ $value->quantity }}</td>
+                                        <td class="pt-6">₱ {{ number_format_value($value->gross_price) }}</td>
+                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($value->gross_total) }}</td>
+                                    </tr>
                                     @endforeach
-
-                                  @endif
-
                                 </tbody>
                               </table>
                             </div>
@@ -162,13 +177,13 @@
                             <div class="d-flex justify-content-end">
                               <!--begin::Section-->
                               <div class="mw-300px">
-                                <!--begin::Item-->
+                                {{-- <!--begin::Item-->
                                 <div class="d-flex flex-stack mb-3">
                                   <!--begin::Accountname-->
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format_value(@$data->total_price) }}</div>
+                                  <div class="text-end fw-bolder fs-5 text-gray-700">₱ {{ number_format_value(@$data->doc_total) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -178,10 +193,10 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Discount:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">- ₱ {{ number_format_value(@$data->total_discount) }}</div>
+                                  <div class="text-end fw-bolder fs-5 text-gray-700">- ₱ 0.00</div>
                                   <!--end::Label-->
                                 </div>
-                                <!--end::Item-->
+                                <!--end::Item--> --}}
 
                                 <!--begin::Item-->
                                 <div class="d-flex flex-stack">
@@ -189,7 +204,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
                                   <!--end::Code-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format_value(@$data->total_amount) }}</div>
+                                  <div class="text-end fs-5 fw-boldest">₱ {{ number_format_value(@$data->doc_total) }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -201,70 +216,6 @@
                           <!--end::Content-->
                         </div>
                         <!--end::Wrapper-->
-
-
-                        <!--begin::Wrapper-->
-                        <div class="mt-20">
-
-                          <hr>
-
-                          <!--begin::Label-->
-                          <div class="fw-bolder fs-3 text-gray-800 mb-8 mt-2">Delivery details</div>
-                          <!--end::Label-->
-                          <!--begin::Row-->
-                          <div class="row g-5 mb-11">
-
-                            <!--end::Col-->
-                            <div class="col-sm-12">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Address:</div>
-                              <!--end::Label-->
-                              <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->customer_bp_address->address ?? "-" }}</div>
-
-                              <div class="fw-bold fs-7 text-gray-600">{{ @$data->customer_bp_address->street ?? "" }}</div>
-                              <!--end::Col-->
-                            </div>
-                            <!--end::Col-->
-
-                          </div>
-                          <!--end::Row-->
-
-                          @if(@$data->products)
-                            @foreach(@$data->products as $key => $p)
-                            <!--begin::Content-->
-                            <div class="flex-grow-1 mt-20">
-                              <h5 class="mb-5"> {{ ordinal($key + 1) }} Product: <i>{{ @$p->product->item_name ?? "-" }}</i></h5>
-                              <!--begin::Table-->
-                              <div class="table-responsive border-bottom mb-9">
-                                <table class="table mb-3">
-                                  <thead>
-                                    <tr class="border-bottom fs-6 fw-bolder text-muted">
-                                      <th class="min-w-175px pb-2">Delivery Date</th>
-                                      <th class="min-w-70px text-end pb-2">Delivery Quantity</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-
-                                    @foreach(@$p->deliveries as $d)
-                                      <tr class="fw-bolder text-gray-700 fs-5 text-end">
-                                        <td class="d-flex align-items-center pt-6">{{ date('F d, Y',strtotime($d->delivery_date)) }}</td>
-                                        <td class="pt-6">{{ @$d->delivery_quantity }}</td>
-                                      </tr>
-                                    @endforeach
-
-                                  </tbody>
-                                </table>
-                              </div>
-                              <!--end::Table-->
-                            </div>
-                            <!--end::Content-->
-                            @endforeach
-                          @endif
-
-                        </div>
-                        <!--end::Wrapper-->
-
                       </div>
                       <!--end::Invoice 2 content-->
                     </div>
@@ -275,11 +226,15 @@
                 </div>
               </div>
 
+
+
             </div>
           </div>
         </div>
       </div>
 
+
+      <!-- Access only for admin -->
 
     </div>
   </div>
@@ -299,6 +254,7 @@
 <script>
 
   $(document).ready(function() {
+
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
       var validator = validate_form();
@@ -376,7 +332,7 @@
             method: "POST",
             data: {
                     _token:'{{ csrf_token() }}',
-                    id:'{{ @$data->id }}',
+                    id:'',
                   }
           })
           .done(function(result) {

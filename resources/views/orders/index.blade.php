@@ -99,6 +99,16 @@
                 @endif
 
                 <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="false" data-placeholder="Select status" data-allow-clear="true">
+                    <option value=""></option>
+
+                    @foreach(getOrderStatusArray() as $key => $value)
+                      <option value="{{ $key }}">{{ $value }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                
+                <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
                     <span>
@@ -388,9 +398,12 @@
             data.filter_status = $('[name="filter_status"]').find('option:selected').val();
             data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
             data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+            data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+            data.filter_class = $('[name="filter_class"]').find('option:selected').val();
+            data.filter_territory = $('[name="filter_territory"]').find('option:selected').val();
+            data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
+            data.filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
 
-            // console.log((JSON.stringify(data)));
-            // console.log(btoa(JSON.stringify(data)));
             url = url + '?data=' + btoa(JSON.stringify(data));
 
             window.location.href = url;

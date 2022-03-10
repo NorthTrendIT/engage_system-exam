@@ -13,6 +13,8 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
+    use \Awobaz\Compoships\Compoships;
+    
     /**
      * The attributes that are mass assignable.
      *
