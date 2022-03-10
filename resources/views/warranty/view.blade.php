@@ -491,6 +491,52 @@
         </div>
       </div>
 
+
+      <!-- Access only for admin-->
+      @if(userrole() == 1)
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5 min-0">
+              <h5 class="text-info">Assignment</h5>
+            </div>
+            <div class="card-body">
+              <form id="myAssignmentForm" method="post">
+                @csrf
+                <input type="hidden" name="warranty_id" value="{{ @$data->id }}">
+                <div class="row">
+                  <div class="col-md-4 mt-5">
+                    <div class="form-group">
+                      <label>Department</label>
+                      <select class="form-control form-control-lg form-control-solid" name="department_id" data-control="select2" data-hide-search="false" data-placeholder="Select a department" data-allow-clear="true">
+                        <option value=""></option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-8 mt-5 user_div" @if(empty(@$data->assigned_user_id)) style="display:none;" @endif>
+                    <div class="form-group">
+                      <label>User</label>
+                      <select class="form-control form-control-lg form-control-solid" name="user_id" data-control="select2" data-hide-search="false" data-placeholder="Select a user" data-allow-clear="true">
+                        <option value=""></option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mt-5">
+                    <div class="form-group">
+                      <button type="submit" class="btn btn-success mt-6">Save</button>
+                    </div>
+                  </div>
+
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      @endif
+
     </div>
   </div>
 </div>
@@ -501,5 +547,166 @@
 @endpush
 
 @push('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
 
+<script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
+<script>
+  $(document).ready(function() {
+    // <!-- Access only for admin-->
+    @if(userrole() == 1)
+      $initialDepartmentOptions = [];
+      $initialDepartmentUserOptions = [];
+
+      @if(!empty(@$data->assigned_user_id))
+        var initialOption = {
+            id: {{ @$data->assigned_user->department->id }},
+            text: '{{ @$data->assigned_user->department->name }}',
+            selected: true
+        }
+        $initialDepartmentOptions.push(initialOption);
+
+        var initialOption = {
+            id: {{ @$data->assigned_user->id }},
+            text: '{{ @$data->assigned_user->sales_specialist_name }} (Email: {{ @$data->assigned_user->email }}, Role: {{ @$data->assigned_user->role->name }})',
+            selected: true
+        }
+        $initialDepartmentUserOptions.push(initialOption);
+      @endif
+
+      $('#myAssignmentForm [name="department_id"]').select2({
+        ajax: {
+          url: "{{route('warranty.get-department')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term
+              };
+          },
+          processResults: function (response) {
+            return {
+              results:  $.map(response, function (item) {
+                            return {
+                              text: item.name,
+                              id: item.id
+                            }
+                        })
+            };
+          },
+          cache: true
+        },
+        data: $initialDepartmentOptions
+      });
+
+
+      $('#myAssignmentForm [name="user_id"]').select2({
+        ajax: {
+          url: "{{route('warranty.get-department-user')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term,
+                  department_id: $('#myAssignmentForm [name="department_id"]').find('option:selected').val(),
+                  user_id: '{{ @$data->user_id }}',
+              };
+          },
+          processResults: function (response) {
+            return {
+              results:  $.map(response, function (item) {
+                            return {
+                              text: item.sales_specialist_name +" (Email: "+item.email+", Role: "+item.role.name+")",
+                              id: item.id
+                            }
+                        })
+            };
+          },
+          cache: true
+        },
+        data: $initialDepartmentUserOptions
+      });
+
+
+      $(document).on('change', '#myAssignmentForm [name="department_id"]', function(event) {
+        event.preventDefault();
+        $('#myAssignmentForm [name="user_id"]').val('').trigger('change');
+
+        if($(this).find('option:selected').val() != ""){
+          $('#myAssignmentForm .user_div').show();
+        }else{
+          $('#myAssignmentForm .user_div').hide();
+        }
+      });
+
+      $('body').on("submit", "#myAssignmentForm", function (e) {
+        e.preventDefault();
+        var validator = validate_assignment_form();
+        
+        if (validator.form() != false) {
+
+          Swal.fire({
+            title: 'Are you sure want to assign?',
+            //text: "Once deleted, you will not be able to recover this record!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, update it!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $('[type="submit"]').prop('disabled', true);
+              $.ajax({
+                url: "{{route('warranty.store-assignment')}}",
+                type: "POST",
+                data: new FormData($("#myAssignmentForm")[0]),
+                async: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                  if (data.status) {
+                    toast_success(data.message)
+                    setTimeout(function(){
+                      window.location.reload();
+                    },500)
+                  } else {
+                    toast_error(data.message);
+                    $('[type="submit"]').prop('disabled', false);
+                  }
+                },
+                error: function () {
+                  toast_error("Something went to wrong !");
+                  $('[type="submit"]').prop('disabled', false);
+                },
+              });
+            }
+          });
+        }
+      });
+
+      function validate_assignment_form(){
+        var validator = $("#myAssignmentForm").validate({
+            errorClass: "is-invalid",
+            validClass: "is-valid",
+            rules: {
+              department_id:{
+                required:true,
+              },
+              user_id:{
+                required:true,
+              },
+            },
+            messages: {
+              
+            },
+        });
+        return validator;
+      }
+    @endif
+  });
+</script>
 @endpush
