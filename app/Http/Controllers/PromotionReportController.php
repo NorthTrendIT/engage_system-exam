@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SapConnection;
 use App\Models\Promotions;
+use App\Models\CustomerPromotion;
 use Auth;
 
 class PromotionReportController extends Controller
@@ -90,17 +91,64 @@ class PromotionReportController extends Controller
         $company = SapConnection::query();
 
         if($request->filter_company != ""){
-            $data->where('id', $request->filter_company);
+            $company->where('id', $request->filter_company);
         }
 
         $company = $company->get();
 
-        // dd($company);
-
         $outputData = [];
+        $no = 0;
         foreach($company as $key => $item){
-                $outputData[] = ['no' => $key, 'company_name' => $item->company_name, 'status' => $key, 'total_promotion' => 'TP-123', 'total_quantity' => 'TQ-123', 'total_amount' => 'TA-123'];
-                // $totalPromotion = Promotions::where(['is_active' => 1, 'sap_connection_id' => ])->count()
+                $companyName = $item->company_name;
+
+                /** 1. Number of Promo */
+                // Pending
+                $totalPending = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'pending'])->count();
+
+                // Approved
+                $totalApproved = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'approved'])->count();
+
+                // Completed
+
+                /** 2.Total Sales Quantity */
+
+                // Pending
+                $totalPendingQue = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'pending'])->sum('total_quantity');
+
+                // Approved
+                $totalApprovedQue = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'approved'])->sum('total_quantity');
+
+                // Completed
+
+                /** 2.Total Sales Revenue */
+
+                // Pending
+                $totalPendingRev = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'pending'])->sum('total_amount');
+
+                // Approved
+                $totalApprovedRev = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'approved'])->sum('total_amount');
+
+                // Completed
+
+                $pending = [
+                    'no' => ++$no,
+                    'company_name' => $companyName,
+                    'status' => 'Pending',
+                    'total_promotion' => $totalPending,
+                    'total_quantity' => $totalPendingQue,
+                    'total_amount' => $totalPendingRev,
+                ];
+                $approved = [
+                    'no' => ++$no,
+                    'company_name' => $companyName,
+                    'status' => 'Approved',
+                    'total_promotion' => $totalApproved,
+                    'total_quantity' => $totalApprovedQue,
+                    'total_amount' => $totalApprovedRev,
+                ];
+
+                array_push($outputData, $pending);
+                array_push($outputData, $approved);
         }
 
         return ['status' => true, 'data' => $outputData];

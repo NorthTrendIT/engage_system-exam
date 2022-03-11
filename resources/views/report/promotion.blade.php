@@ -67,7 +67,7 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <!--begin::Table container-->
-                    <div class="table-responsive column-left-right-fix-scroll-hidden">
+                    <div class="table-responsive">
                        <!--begin::Table-->
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <!--begin::Table head-->
@@ -75,7 +75,7 @@
                             <tr>
                               <th>No</th>
                               <th>Business Unit</th>
-                              <th>Status<th>
+                              <th>Status</th>
                               <th>No. of Promotion</th>
                               <th>Total Sales Quantity</th>
                               <th>Total Sales Revenue</th>
@@ -129,8 +129,20 @@ $(document).ready(function() {
             { "title": "No. of Promotion", "data": "total_promotion"},
             { "title": "Total Sales Quantity", "data": "total_quantity" },
             { "title": "Total Sales Revenue", "data": "total_amount" }
-        ]
+        ],
+        drawCallback:function(){
+              $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+                $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+              })
+          },
     });
+
+    myTable.on( 'order.dt search.dt', function () {
+        myTable.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+            cell.innerHTML = i+1;
+        } );
+    } ).draw();
     getData();
 
     $('.search').on('click', function(){
@@ -144,7 +156,6 @@ $(document).ready(function() {
         $('[name="filter_sales_specialist"]').val(null).trigger('change'),
         getData();
     });
-
 
     function getData(){
         $.ajax({
@@ -219,6 +230,31 @@ $(document).ready(function() {
             cache: true
         },
         placeholder: 'By Customer Class',
+        // minimumInputLength: 1,
+        multiple: false,
+    });
+
+    $('[name="filter_sales_specialist"]').select2({
+        ajax: {
+            url: "{{route('common.getSalesSpecialist')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'By Sales Specialist',
         // minimumInputLength: 1,
         multiple: false,
     });
