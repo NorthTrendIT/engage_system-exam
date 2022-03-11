@@ -537,6 +537,188 @@
       </div>
       @endif
 
+      @if(userrole() == 1 || ($data->assigned_user_id == userid() && is_null(@$data->diagnostic_report)))
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5 min-0">
+              <h5 class="text-info">Diagnostic Report</h5>
+            </div>
+            <div class="card-body">
+              <form id="myDiagnosticReportForm" method="post">
+                @csrf
+                <input type="hidden" name="warranty_id" value="{{ @$data->id }}">
+                <div class="row mt-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Tire Manifistations</label>
+                      <select class="form-control form-control-lg form-control-solid" name="tire_manifistations[]" data-control="select2" data-hide-search="false" data-placeholder="Select a tire manifistation" data-allow-clear="true" multiple="">
+                        <option value=""></option>
+                        @foreach($tire_manifistations as $value)
+                          <option value="{{$value->id}}" @if(@$data->diagnostic_report->tire_manifistations && in_array($value->id, explode(", ", @$data->diagnostic_report->tire_manifistations))) selected @endif>{{$value->title}}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mt-5 mb-5">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Result</label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <input type="checkbox" class="form-check-input yes_no_checkbox" name="result" value="1" title="Covered" @if(@$data->diagnostic_report->result == '1') checked @endif ><span style="margin-left: 10px;">Covered</span>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <input type="checkbox" class="form-check-input yes_no_checkbox" name="result" value="0" title="Not Covered" @if(@$data->diagnostic_report->result == '0') checked @endif ><span style="margin-left: 10px;">Not Covered</span>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="row mt-5">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Tire Size</label>
+                      <input type="text" name="tire_size" class="form-control form-control-solid" placeholder="Enter tire size" value="{{ @$data->diagnostic_report->tire_size }}">
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Tire Size Selling Price(PHP)</label>
+                      <input type="number" step="any" name="tire_size_selling_price" class="form-control form-control-solid" placeholder="Enter tire size selling price" value="{{ @$data->diagnostic_report->tire_size_selling_price }}">
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Remaining Tread Depth(mm)</label>
+                      <input type="text" name="remaining_tread_depth" class="form-control form-control-solid" placeholder="Enter remaining tread depth" value="{{ @$data->diagnostic_report->remaining_tread_depth }}">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mt-5">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Warranty Claim Adjustment(PHP)</label>
+                      <input type="number" step="any" name="warranty_claim_adjustment" class="form-control form-control-solid" placeholder="Enter warranty claim adjustment" value="{{ @$data->diagnostic_report->warranty_claim_adjustment }}">
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Payment for the new tire replacement(PHP)</label>
+                      <input type="number" step="any" name="payment_for_the_new_tire_replacement" class="form-control form-control-solid" placeholder="Enter payment for the new tire replacement" value="{{ @$data->diagnostic_report->payment_for_the_new_tire_replacement }}">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mt-5">
+                  <div class="col-md-4 ">
+                    <div class="form-group">
+                      <button type="submit" class="btn btn-success mt-6">Save</button>
+                    </div>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      @endif
+
+      @if(userrole() != 1 && !is_null(@$data->diagnostic_report))
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5 min-0">
+              <h5 class="text-info">Diagnostic Report Result</h5>
+            </div>
+            <div class="card-body">
+              
+              <div class="row mb-5">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <!--begin::Table container-->
+                    <div class="table-responsive">
+                       <!--begin::Table-->
+                       <table class="table table-bordered" id="myTable">
+                          <!--begin::Table head-->
+                          <thead>
+                            
+                            <tr>
+                              <th> <b>Tire Manifistations :</b> </th>
+                              <td>
+                                @php
+                                  $tire_manifistations = \App\Models\TireManifistation::whereIn('id', explode(', ', @$data->diagnostic_report->tire_manifistations))->pluck('title')->toArray();
+                                @endphp
+                                {{ implode(", ", $tire_manifistations) }}
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Result :</b> </th>
+                              <td>{{ @$data->diagnostic_report->result == "1" ? "Covered" : "Not Covered" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Tire Size :</b> </th>
+                              <td>{{ @$data->diagnostic_report->tire_size ?? "-" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Tire Size Selling Price(PHP) :</b> </th>
+                              <td>{{ @$data->diagnostic_report->tire_size_selling_price ?? "-" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Remaining Tread Depth(mm) :</b> </th>
+                              <td>{{  @$data->diagnostic_report->remaining_tread_depth ?? "-" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Warranty Claim Adjustment(PHP) :</b> </th>
+                              <td>{{  @$data->diagnostic_report->warranty_claim_adjustment ?? "-" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Payment for the new tire replacement(PHP) :</b> </th>
+                              <td>{{ @$data->diagnostic_report->payment_for_the_new_tire_replacement ?? "-" }}</td>
+                            </tr>
+
+                          </thead>
+                          <!--end::Table head-->
+                          <!--begin::Table body-->
+                          <tbody>
+                            
+                          </tbody>
+                          <!--end::Table body-->
+                       </table>
+                       <!--end::Table-->
+                    </div>
+                    <!--end::Table container-->
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      @endif
+
+
     </div>
   </div>
 </div>
@@ -553,6 +735,11 @@
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script>
   $(document).ready(function() {
+    // Select yes or no 
+    $('.yes_no_checkbox').on('change', function() {
+        $('input[name="' + this.name + '"]').not(this).prop('checked', false);
+    });
+
     // <!-- Access only for admin-->
     @if(userrole() == 1)
       $initialDepartmentOptions = [];
@@ -707,6 +894,83 @@
         return validator;
       }
     @endif
+
+
+    $('body').on("submit", "#myDiagnosticReportForm", function (e) {
+      e.preventDefault();
+
+      var validator = validate_diagnostic_report_form();
+      if (validator.form() != false) {
+
+        Swal.fire({
+          title: 'Are you sure want to update?',
+          text: "Once updated, you will not be able to recover this record!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, update it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $('[type="submit"]').prop('disabled', true);
+            $.ajax({
+              url: "{{route('warranty.store-diagnostic-report')}}",
+              type: "POST",
+              data: new FormData($("#myDiagnosticReportForm")[0]),
+              async: false,
+              processData: false,
+              contentType: false,
+              success: function (data) {
+                if (data.status) {
+                  toast_success(data.message)
+                  setTimeout(function(){
+                    window.location.reload();
+                  },500)
+                } else {
+                  toast_error(data.message);
+                  $('[type="submit"]').prop('disabled', false);
+                }
+              },
+              error: function () {
+                toast_error("Something went to wrong !");
+                $('[type="submit"]').prop('disabled', false);
+              },
+            });
+          }
+        });
+      }
+    });
+
+    function validate_diagnostic_report_form(){
+      var validator = $("#myDiagnosticReportForm").validate({
+          errorClass: "is-invalid",
+          validClass: "is-valid",
+          rules: {
+            tire_size_selling_price:{
+              min:1,
+              number:true
+            },
+            warranty_claim_adjustment:{
+              min:1,
+              number:true
+            },
+            payment_for_the_new_tire_replacement:{
+              min:1,
+              number:true
+            },
+            result:{
+              required:true
+            }
+          },
+          messages: {
+            result:{
+              required: "You must check at least 1 box",
+            }
+          },
+      });
+      return validator;
+    }
+
   });
 </script>
 @endpush

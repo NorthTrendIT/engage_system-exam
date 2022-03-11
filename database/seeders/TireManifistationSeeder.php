@@ -57,7 +57,7 @@ class TireManifistationSeeder extends Seeder
 
             $data = array(
                         array(
-                            'title' => trim(strtolower(str_replace(['.jpg','.JPG',"  "]," ",$value))),
+                            'title' => trim(ucfirst(strtolower(str_replace(['.jpg','.JPG',"  "]," ",$value)))),
                             'image' => $value,
                             'manifistation' => '<p>
                                                     <ul>
