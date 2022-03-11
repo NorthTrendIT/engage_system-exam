@@ -56,4 +56,12 @@ class Warranty extends Model
     public function pictures(){
         return $this->hasMany(WarrantyPicture::class,'warranty_id');
     }
+
+    public function assigned_user(){
+        return $this->belongsTo(User::class,'assigned_user_id');
+    }
+
+    public function diagnostic_report(){
+        return $this->belongsTo(WarrantyDiagnosticReport::class, 'id', 'warranty_id');
+    }
 }

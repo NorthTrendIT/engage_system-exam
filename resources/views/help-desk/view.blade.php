@@ -712,7 +712,9 @@
               },
             },
             messages: {
-              
+              closed_image:{
+                accept:"Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp files.",
+              },
             },
         });
         return validator;
