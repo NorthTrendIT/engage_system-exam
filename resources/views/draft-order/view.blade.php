@@ -152,6 +152,7 @@
                               <table class="table mb-3">
                                 <thead>
                                   <tr class="border-bottom fs-6 fw-bolder text-muted">
+                                    <th class="pb-2">No</th>
                                     <th class="min-w-175px pb-2">Product</th>
                                     <th class="min-w-80px text-end pb-2">Delivery Date</th>
                                     <th class="min-w-70px text-end pb-2">Quantity</th>
@@ -160,8 +161,9 @@
                                   </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($data->items as $value)
+                                    @foreach($data->items as $key => $value)
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
+                                        <td class="pt-6" style="text-align: initial !important;">{{ $key+1 }}</td>
                                         <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}</td>
                                         <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
