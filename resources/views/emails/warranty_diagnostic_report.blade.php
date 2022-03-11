@@ -62,6 +62,11 @@ bgcolor="#f6f6f6">
                                 style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                 valign="top">
                                 
+                                @php
+                                  $tire_manifistations = \App\Models\TireManifistation::whereIn('id', explode(', ', @$data->tire_manifistations))->pluck('title')->toArray();
+                                @endphp
+                                
+                                Tire Manifistations : {{ implode(", ", $tire_manifistations) }}
                                 Result : {{ @$data->result == "1" ? "Covered" : "Not Covered" }} <br>
                                 Tire Size : {{ @$data->tire_size ?? "N/A" }} <br>
                                 Tire Size Selling Price(PHP) : {{ @$data->tire_size_selling_price ?? "N/A" }} <br>
