@@ -13,6 +13,7 @@ class Warranty extends Model
     protected $fillable = [
         'ref_no',
         'user_id',
+        'customer_name',
         'warranty_claim_type',
         'customer_phone',
         'customer_email',
@@ -25,6 +26,7 @@ class Warranty extends Model
         'dealer_fax',
         'created_by',
         'updated_by',
+        'assigned_user_id',
     ];
 
     public static $warranty_claim_types = [
@@ -32,6 +34,7 @@ class Warranty extends Model
         'Treadware',
         'Ride Vibration',
         'Road Hazard',
+        'Tire Deformation',
     ];
 
     public function user(){

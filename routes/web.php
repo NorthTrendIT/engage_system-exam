@@ -389,7 +389,9 @@ Route::middleware(['auth'])->group(function(){
     Route::post('help-desk/status', 'App\Http\Controllers\HelpDeskController@updateStatus')->name('help-desk.status');
     Route::post('help-desk/comment/store', 'App\Http\Controllers\HelpDeskController@storeComment')->name('help-desk.comment.store');
     Route::post('help-desk/comment/get-all', 'App\Http\Controllers\HelpDeskController@getAllComment')->name('help-desk.comment.get-all');
-
+    Route::post('help-desk/get-department', 'App\Http\Controllers\HelpDeskController@getDepartment')->name('help-desk.get-department');
+    Route::post('help-desk/get-department-user', 'App\Http\Controllers\HelpDeskController@getDepartmentUser')->name('help-desk.get-department-user');
+    Route::post('help-desk/store-assignment', 'App\Http\Controllers\HelpDeskController@storeAssignment')->name('help-desk.store-assignment');
 
     // Conversation
     Route::resource('conversation','App\Http\Controllers\ConversationController')->except('show');

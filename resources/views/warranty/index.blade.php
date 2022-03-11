@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="col-md-6 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-placeholder="Select customer" data-allow-clear="true">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-placeholder="Select dealer" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
@@ -91,10 +91,10 @@
                               <th>Ref No.</th>
                               @if(in_array(userrole(),[1,3]))
                               <th>Business Unit</th>
-                              <th>Customer Name</th>
+                              <th>Dealer Name</th>
                               @endif
                               <th>Claim Type</th>
-                              <th>Dealer Name</th>
+                              <th>Customer Name</th>
                               <th>Date Time</th>
                               <th>Action</th>
                             </tr>
@@ -182,7 +182,7 @@
               {data: 'name', name: 'name'},
               @endif
               {data: 'warranty_claim_type', name: 'warranty_claim_type'},
-              {data: 'dealer_name', name: 'dealer_name'},
+              {data: 'customer_name', name: 'customer_name'},
               {data: 'created_at', name: 'created_at'},
               {data: 'action', name: 'action', orderable: false, searchable: false},
           ],

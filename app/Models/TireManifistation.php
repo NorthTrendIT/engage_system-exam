@@ -11,6 +11,7 @@ class TireManifistation extends Model
 
 
     protected $fillable = [
+        'title',
         'image',
         'manifistation',
         'probable_cause',

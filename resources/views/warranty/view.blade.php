@@ -27,7 +27,7 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
-              <h5>View Details</h5>
+              <h5 class="text-info">General Details</h5>
             </div>
             <div class="card-body">
               
@@ -55,61 +55,126 @@
                               <td>{{ @$data->ref_no ?? "-" }}</td>
                             </tr>
 
-                            @if(in_array(userrole(),[1,3]))
+                          </thead>
+                          <!--end::Table head-->
+                          <!--begin::Table body-->
+                          <tbody>
+                            
+                          </tbody>
+                          <!--end::Table body-->
+                       </table>
+                       <!--end::Table-->
+                    </div>
+                    <!--end::Table container-->
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      @if(in_array(userrole(),[1]))
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5 min-0">
+              <h5 class="text-info">Dealer Details</h5>
+            </div>
+            <div class="card-body">
+              
+              <div class="row mb-5">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <!--begin::Table container-->
+                    <div class="table-responsive">
+                       <!--begin::Table-->
+                       <table class="table table-bordered" id="myTable">
+                          <!--begin::Table head-->
+                          <thead>
+                            
+
                             <tr>
                               <th> <b>Business Unit :</b> </th>
                               <td>{{ @$data->user->sap_connection->company_name ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Customer Name :</b> </th>
+                              <th> <b>Name :</b> </th>
                               <td>{{ @$data->user->sales_specialist_name ?? "-" }}</td>
                             </tr>
-                            @endif
 
                             <tr>
-                              <th> <b>Customer Email :</b> </th>
+                              <th> <b>Email :</b> </th>
+                              <td>{{ @$data->user->email ?? "-" }}</td>
+                            </tr>
+
+                          </thead>
+                          <!--end::Table head-->
+                          <!--begin::Table body-->
+                          <tbody>
+                            
+                          </tbody>
+                          <!--end::Table body-->
+                       </table>
+                       <!--end::Table-->
+                    </div>
+                    <!--end::Table container-->
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      @endif
+
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5 min-0">
+              <h5 class="text-info">Customer Details</h5>
+            </div>
+            <div class="card-body">
+              
+              <div class="row mb-5">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <!--begin::Table container-->
+                    <div class="table-responsive">
+                       <!--begin::Table-->
+                       <table class="table table-bordered" id="myTable">
+                          <!--begin::Table head-->
+                          <thead>
+                            
+                            <tr>
+                              <th> <b>Email :</b> </th>
                               <td>{{ @$data->customer_email ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Customer Phone :</b> </th>
+                              <th> <b>Phone :</b> </th>
                               <td>{{ @$data->customer_phone ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Customer Location :</b> </th>
+                              <th> <b>Location :</b> </th>
                               <td>{{ @$data->customer_location ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Customer Telephone :</b> </th>
+                              <th> <b>Telephone :</b> </th>
                               <td>{{ @$data->customer_telephone ?? "-" }}</td>
                             </tr>
 
                             <tr>
-                              <th> <b>Customer Address :</b> </th>
+                              <th> <b>Address :</b> </th>
                               <td>{{ @$data->customer_address ?? "-" }}</td>
-                            </tr>
-
-                            <tr>
-                              <th> <b>Dealer Name :</b> </th>
-                              <td>{{ @$data->dealer_name ?? "-" }}</td>
-                            </tr>
-
-                            <tr>
-                              <th> <b>Dealer Location :</b> </th>
-                              <td>{{ @$data->dealer_location ?? "-" }}</td>
-                            </tr>
-
-                            <tr>
-                              <th> <b>Dealer Telephone :</b> </th>
-                              <td>{{ @$data->dealer_telephone ?? "-" }}</td>
-                            </tr>
-
-                            <tr>
-                              <th> <b>Dealer Fax :</b> </th>
-                              <td>{{ @$data->dealer_fax ?? "-" }}</td>
                             </tr>
 
                           </thead>
@@ -133,11 +198,12 @@
         </div>
       </div>
 
+
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
-              <h5>Tire & Vehicle Info</h5>
+              <h5 class="text-info">Tire & Vehicle Info</h5>
             </div>
             <div class="card-body">
               
@@ -244,7 +310,7 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
-              <h5>Claim Points</h5>
+              <h5 class="text-info">Claim Points</h5>
             </div>
             <div class="card-body">
               
@@ -263,9 +329,8 @@
                           <!--begin::Table body-->
                           <tbody>
                             
-                            <tr>
-                                <td></td>
-                                <td>Answer</td>
+                            <tr class="text-end">
+                              <td colspan="2">Answer</td>
                             </tr>
                             @foreach($claim_points as $key => $point)
                             <tr>
@@ -306,7 +371,7 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
-              <h5>Tire Manifistation Probable Cause</h5>
+              <h5 class="text-info">Tire Manifistation Probable Cause</h5>
             </div>
             <div class="card-body">
               
@@ -372,7 +437,7 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
-              <h5>Pictures of the Tire focusing on Damage Areas</h5>
+              <h5 class="text-info">Pictures of the Tire focusing on Damage Areas</h5>
             </div>
             <div class="card-body">
               

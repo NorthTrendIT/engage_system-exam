@@ -33,42 +33,44 @@
             </div> --}}
             <div class="card-body">
               <div class="row">
-                
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
-                    <option value=""></option>
-                  </select>
-                </div>
 
-                <div class="col-md-3 mt-5 other_filter_div">
-                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_sales_specialist" data-allow-clear="true" data-placeholder="Select sales specialist">
-                    <option value=""></option>
-                  </select>
-                </div>
+                @if(userrole() == 1 || userdepartment() == 1)
+                  <div class="col-md-3 mt-5">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
+                      <option value=""></option>
+                    </select>
+                  </div>
 
-                <div class="col-md-3 mt-5 other_filter_div">
-                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_customer_class" data-allow-clear="true" data-placeholder="Select customer class">
-                    <option value=""></option>
-                  </select>
-                </div>
+                  <div class="col-md-3 mt-5 other_filter_div">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_sales_specialist" data-allow-clear="true" data-placeholder="Select sales specialist">
+                      <option value=""></option>
+                    </select>
+                  </div>
 
-                <div class="col-md-3 mt-5 other_filter_div">
-                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_market_sector" data-allow-clear="true" data-placeholder="Select market sector">
-                    <option value=""></option>
-                  </select>
-                </div>
+                  <div class="col-md-3 mt-5 other_filter_div">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_customer_class" data-allow-clear="true" data-placeholder="Select customer class">
+                      <option value=""></option>
+                    </select>
+                  </div>
 
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_user" data-allow-clear="true" data-placeholder="Select user">
-                    <option value=""></option>
-                  </select>
-                </div>
+                  <div class="col-md-3 mt-5 other_filter_div">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_market_sector" data-allow-clear="true" data-placeholder="Select market sector">
+                      <option value=""></option>
+                    </select>
+                  </div>
 
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_territory" data-allow-clear="true" data-placeholder="Select territory">
-                    <option value=""></option>
-                  </select>
-                </div>
+                  <div class="col-md-3 mt-5">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_user" data-allow-clear="true" data-placeholder="Select user">
+                      <option value=""></option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-3 mt-5">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_territory" data-allow-clear="true" data-placeholder="Select territory">
+                      <option value=""></option>
+                    </select>
+                  </div>
+                @endif
 
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_type_of_customer_request" data-control="select2" data-hide-search="false" data-placeholder="Select a type of customer request" data-allow-clear="true">
