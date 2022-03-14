@@ -314,6 +314,7 @@ Route::middleware(['auth'])->group(function(){
         Route::post('warranty/get-department-user', 'App\Http\Controllers\WarrantyController@getDepartmentUser')->name('warranty.get-department-user');
         Route::post('warranty/store-assignment', 'App\Http\Controllers\WarrantyController@storeAssignment')->name('warranty.store-assignment');
         Route::post('warranty/store-diagnostic-report', 'App\Http\Controllers\WarrantyController@storeDiagnosticReport')->name('warranty.store-diagnostic-report');
+        Route::get('warranty/export-view/{id}', 'App\Http\Controllers\WarrantyController@exportView')->name('warranty.export-view');
 
         // Common Routes
         Route::post('common/get-business-units', 'App\Http\Controllers\CommonController@getBusinessUnits')->name('common.getBusinessUnits');

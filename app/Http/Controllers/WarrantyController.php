@@ -23,6 +23,7 @@ use Auth;
 use Validator;
 use DataTables;
 use OneSignal;
+use PDF;
 
 class WarrantyController extends Controller
 {
@@ -562,6 +563,30 @@ class WarrantyController extends Controller
                             ->make(true);
     }
 
+    public function exportView($id){
+        $data = Warranty::findOrFail($id);
+
+        if(!in_array($data->user_id,[$data->user_id, $data->assigned_user_id, 1])){ // Not a customer
+            return abort(404);
+        }
+
+        $claim_points = ClaimPoint::with('sub_titles')->whereNull('parent_id')->get();
+
+        $tire_manifistations = TireManifistation::all();
+
+        $warranty_claim_points = array_combine(array_column($data->claim_points->toArray(),'claim_point_id'), array_column($data->claim_points->toArray(),'is_yes'));
+
+        $warranty_tire_manifistations = array_combine(array_column($data->tire_manifistations->toArray(),'tire_manifistation_id'), array_column($data->tire_manifistations->toArray(),'is_yes'));
+
+        $title = @$data->ref_no." Warranty Details ".date('dmY');
+        $pdf =  PDF::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
+        
+        // return View('warranty.pdf', compact('claim_points','tire_manifistations','warranty_claim_points','warranty_tire_manifistations','data'));
+
+        $pdf->loadView('warranty.pdf', compact('claim_points','tire_manifistations','warranty_claim_points','warranty_tire_manifistations','data'));
+        return $pdf->stream($title . ".pdf");
+
+    }
 
     public function getCustomer(Request $request){
         $search = $request->search;
@@ -717,6 +742,9 @@ class WarrantyController extends Controller
 
         return $response;
     }
+
+
+
 
     // Get Department
     public function getDepartment(Request $request){
