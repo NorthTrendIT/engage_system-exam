@@ -268,7 +268,7 @@ class PromotionReportController extends Controller
         array_push($data, array('name' => 'Pending Promotion', 'data' => $pendingPromotion));
         array_push($data, array('name' => 'Approved Promotion', 'data' => $approvedPromotion));
         // array_push($data, array('name' => 'Total Revenue', 'data' => $totalRevenue));
-        array_push($data, array('name' => 'Canceled Revenue', 'data' => $cancelPromotion));
+        array_push($data, array('name' => 'Canceled Promotion', 'data' => $cancelPromotion));
 
         return ['status' => true, 'data' => $data, 'category' => $category];
 
