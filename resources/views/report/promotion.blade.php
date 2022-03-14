@@ -55,6 +55,12 @@
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_sales_specialist">
                     </select>
                 </div>
+
+                <!-- Customer -->
+                <div class="col-md-3 mt-5 sales_specialist">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_customer">
+                    </select>
+                </div>
                 @endif
 
                 <div class="col-md-6 mt-5">
@@ -131,11 +137,11 @@ $(document).ready(function() {
             { "title": "Total Sales Revenue", "data": "total_amount" }
         ],
         drawCallback:function(){
-              $(function () {
+            $(function () {
                 $('[data-toggle="tooltip"]').tooltip()
                 $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
-              })
-          },
+            })
+        },
     });
 
     myTable.on( 'order.dt search.dt', function () {
@@ -154,6 +160,7 @@ $(document).ready(function() {
         $('[name="filter_brand"]').val(null).trigger('change'),
         $('[name="filter_customer_class"]').val(null).trigger('change'),
         $('[name="filter_sales_specialist"]').val(null).trigger('change'),
+        $('[name="filter_customer"]').val(null).trigger('change'),
         getData();
     });
 
@@ -168,6 +175,7 @@ $(document).ready(function() {
                 filter_brand: $('[name="filter_brand"]').find('option:selected').val(),
                 filter_customer_class: $('[name="filter_customer_class"]').find('option:selected').val(),
                 filter_sales_specialist: $('[name="filter_sales_specialist"]').find('option:selected').val(),
+                filter_customer: $('[name="filter_customer"]').find('option:selected').val(),
             }
         }).done(function(result) {
             if(result.status == false){
@@ -255,6 +263,31 @@ $(document).ready(function() {
             cache: true
         },
         placeholder: 'By Sales Specialist',
+        // minimumInputLength: 1,
+        multiple: false,
+    });
+
+    $('[name="filter_customer"]').select2({
+        ajax: {
+            url: "{{route('common.getCustomer')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Customer',
         // minimumInputLength: 1,
         multiple: false,
     });

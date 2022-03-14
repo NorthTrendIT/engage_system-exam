@@ -372,4 +372,32 @@ class CommonController extends Controller
 
         return response()->json($response);
     }
+
+    public function getCustomer(Request $request){
+        $response = array();
+        if($request->sap_connection_id){
+            $search = $request->search;
+
+            $data = Customer::where('is_active', true)->orderby('card_name','asc')->select('id', 'card_name')->limit(50);
+
+            if($search != ''){
+                $data->where('card_name', 'like', '%' .$search . '%');
+            }
+
+            if(@$request->sap_connection_id != ''){
+                $data->where('sap_connection_id',@$request->sap_connection_id);
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+                $response[] = array(
+                    "id" => $value->id,
+                    "text" => $value->card_name,
+                );
+            }
+        }
+
+        return response()->json($response);
+    }
 }

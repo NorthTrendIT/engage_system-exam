@@ -247,25 +247,16 @@
            </div>
            @endif
         </div>
-        <!--end::Row-->
-        <!--begin::Row-->
+
         <div class="row gy-5 g-xl-8 pt-6">
             <div class="col-xl-6">
-                <!--begin::Charts Widget 1-->
                 <div class="card card-xl-stretch mb-xl-8">
-                    <!--begin::Header-->
                     <div class="card-header border-0 pt-5">
-                        <!--begin::Title-->
                         <h3 class="card-title align-items-start flex-column">
-                            <span class="card-label fw-bolder fs-3 mb-1">Promotion Report</span>
-                            <!-- <span class="text-muted fw-bold fs-7">More than 400 new members</span> -->
+                            <a href="{{ route('report.promotion.index') }}" class="text-dark text-hover-primary fw-bolder fs-3">Promotion Reports</a>
                         </h3>
-                        <!--end::Title-->
-                        <!--begin::Toolbar-->
-                        <div class="card-toolbar">
-                            <!--begin::Menu-->
+                        <!-- <div class="card-toolbar">
                             <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                <!--begin::Svg Icon | path: icons/duotune/general/gen024.svg-->
                                 <span class="svg-icon svg-icon-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24">
                                         <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -276,40 +267,22 @@
                                         </g>
                                     </svg>
                                 </span>
-                                <!--end::Svg Icon-->
                             </button>
-                            <!--begin::Menu 1-->
                             <div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true" id="kt_menu_622acb65b541a">
-                                <!--begin::Header-->
                                 <div class="px-7 py-5">
                                     <div class="fs-5 text-dark fw-bolder">Filter Options</div>
                                 </div>
-                                <!--end::Header-->
-                                <!--begin::Menu separator-->
+
                                 <div class="separator border-gray-200"></div>
-                                <!--end::Menu separator-->
-                                <!--begin::Form-->
                                 <div class="px-7 py-5">
-                                    <!--begin::Input group-->
                                     <div class="mb-10">
-                                        <!--begin::Label-->
                                         <label class="form-label fw-bold">Business Unit:</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
                                         <div>
-                                            <select class="form-select form-select-solid select2-hidden-accessible" data-kt-select2="true" data-placeholder="Select option" data-dropdown-parent="#kt_menu_622acb65b541a" data-allow-clear="true" data-select2-id="select2-data-10-trsf" tabindex="-1" aria-hidden="true">
-                                                <option value="1" data-select2-id="select2-data-24-doop">APBW</option>
-                                                <option value="2">NTMC</option>
-                                                <option value="3">PHILCREST</option>
-                                                <option value="4">PHILSYN</option>
-                                                <option value="5">TEST_PHILSYN_TEST</option>
+                                            <select class="form-select form-select-solid select2-hidden-accessible" data-kt-select2="true" data-placeholder="Select Business Unit"  data-allow-clear="true" tabindex="-1"  name="filter_company">
                                             </select>
                                         </div>
-                                        <!--end::Input-->
                                     </div>
-                                    <!--end::Input group-->
-                                    <!--begin::Input group-->
-                                    <!-- <div class="mb-10">
+                                    <div class="mb-10">
                                         <label class="form-label fw-bold">Member Type:</label>
                                         <div class="d-flex">
                                             <label class="form-check form-check-sm form-check-custom form-check-solid me-5">
@@ -321,38 +294,28 @@
                                                 <span class="form-check-label">Customer</span>
                                             </label>
                                         </div>
-                                    </div> -->
-                                    <!--end::Input group-->
-                                    <!--begin::Input group-->
-                                    <!-- <div class="mb-10">
+                                    </div>
+
+                                    <div class="mb-10">
                                         <label class="form-label fw-bold">Notifications:</label>
                                         <div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
                                             <input class="form-check-input" type="checkbox" value="" name="notifications" checked="checked">
                                             <label class="form-check-label">Enabled</label>
                                         </div>
-                                    </div> -->
-                                    <!--end::Input group-->
-                                    <!--begin::Actions-->
+                                    </div>
                                     <div class="d-flex justify-content-end">
                                         <button type="reset" class="btn btn-sm btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true">Reset</button>
                                         <button type="submit" class="btn btn-sm btn-primary" data-kt-menu-dismiss="true">Apply</button>
                                     </div>
-                                    <!--end::Actions-->
                                 </div>
-                                <!--end::Form-->
                             </div>
-                            <!--end::Menu 1-->
-                            <!--end::Menu-->
-                        </div>
-                        <!--end::Toolbar-->
+                        </div> -->
                     </div>
-                    <!--end::Header-->
-                    <!--begin::Body-->
+
                     <div class="card-body">
                         <!--begin::Chart-->
-                        <div id="kt_charts_widget_1_chart" style="height: 350px; min-height: 365px;">
-                            <div id="apexchartszshysmv5" class="apexcharts-canvas apexchartszshysmv5 apexcharts-theme-light">
-                            </div>
+                        <div id="promotion_report_cart" style="height: 350px; min-height: 365px;">
+
                         </div>
                         <!--end::Chart-->
                     </div>
@@ -372,41 +335,43 @@
 @push('js')
 @if(@Auth::user()->role_id == 1)
 <script>
-    $(document).on('click', '.push-all-order', function(event) {
-      event.preventDefault();
+    getData();
 
-      Swal.fire({
-        title: 'Are you sure want to push all pending orders?',
-        //text: "Once deleted, you will not be able to recover this record!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: '{{ route('orders.push-all-order') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              setTimeout(function(){
-                window.location.reload();
-              },500)
+    $(document).on('click', '.push-all-order', function(event) {
+        event.preventDefault();
+
+        Swal.fire({
+            title: 'Are you sure want to push all pending orders?',
+            //text: "Once deleted, you will not be able to recover this record!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, do it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route('orders.push-all-order') }}',
+                    method: "POST",
+                    data: {
+                            _token:'{{ csrf_token() }}',
+                        }
+                })
+                .done(function(result) {
+                    if(result.status == false){
+                    toast_error(result.message);
+                    }else{
+                    toast_success(result.message);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },500)
+                    }
+                })
+                .fail(function() {
+                    toast_error("error");
+                });
             }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
+        })
     });
 
     $(document).on('click', '.push-all-promotion', function(event) {
@@ -444,6 +409,105 @@
           });
         }
       })
+    });
+
+    function getData(){
+        $.ajax({
+            url: '{{ route('report.promotion.get-chart-data') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+                render_peomorion_graph(result.data, result.category)
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+    }
+
+    function render_peomorion_graph(data, category){
+
+        var options = {
+            series: data,
+            chart: {
+                type: 'bar',
+                height: 350,
+                toolbar: {
+                    show: false
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '35%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: category,
+            },
+            yaxis: {
+                title: {
+                    text: ''
+                }
+            },
+            fill: {
+                opacity: 1
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return '$' + val + ' thousands'
+                    }
+                }
+            },
+            colors:['#A1A5B7', '#009EF7', '#dc3545']
+        };
+
+        var promotionChart = new ApexCharts(document.querySelector("#promotion_report_cart"), options);
+        if (promotionChart.ohYeahThisChartHasBeenRendered) {
+            promotionChart.destroy();
+        }
+        promotionChart.render();
+    }
+
+    $('[name="filter_company"]').select2({
+        ajax: {
+            url: "{{ route('common.getBusinessUnits') }}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    filter_company: $('[name="filter_company"]').find('option:selected').val(),
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Businnes Unit',
+        // minimumInputLength: 1,
+        multiple: false,
     });
 </script>
 @endif
