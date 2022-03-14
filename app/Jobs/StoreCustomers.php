@@ -44,6 +44,10 @@ class StoreCustomers implements ShouldQueue
 
             foreach ($this->data as $value) {
 
+                if(empty(@$value['U_CardCode'])){
+                    continue;
+                }
+
                 if(@$value['CardType'] != "cCustomer"){
                     continue;
                 }
@@ -179,7 +183,8 @@ class StoreCustomers implements ShouldQueue
                                             //'password' => Hash::make(@$obj->card_code),
                                             'password' => Hash::make($password),
                                             'password_text' => $password,
-                                            'email' => strtolower(@$obj->card_code)."-".$this->sap_connection_id.'@mailinator.com',
+                                            // 'email' => strtolower(@$obj->card_code)."-".$this->sap_connection_id.'@mailinator.com',
+                                            'email' => strtolower(@$obj->u_card_code)."-".$this->sap_connection_id.'@mailinator.com',
                                             'first_login' => true,
                                             'sap_connection_id' => $this->sap_connection_id,
                                             'default_profile_color' => get_hex_color(),
