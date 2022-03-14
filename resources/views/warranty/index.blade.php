@@ -10,7 +10,7 @@
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Warranty</h1>
       </div>
 
-      @if(userrole() == 4)
+      @if(userrole() != 3)
       <div class="d-flex align-items-center py-1">
         <a href="{{ route('warranty.create') }}" class="btn btn-sm btn-primary">Create</a>
       </div>
@@ -210,68 +210,68 @@
       render_table();
     })
 
-    $(document).on('click', '.delete', function(event) {
-      event.preventDefault();
-      $url = $(this).attr('data-url');
-
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "Once deleted, you will not be able to recover this record!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: $url,
-            method: "DELETE",
-            data: {
-                    _token:'{{ csrf_token() }}'
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              render_table();
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
-    });
-
     @if(in_array(userrole(),[1,3]))
-    $('[name="filter_customer"]').select2({
-      ajax: {
-          url: "{{route('warranty.get-customer')}}",
-          type: "post",
-          dataType: 'json',
-          delay: 250,
-          data: function (params) {
+      $(document).on('click', '.delete', function(event) {
+        event.preventDefault();
+        $url = $(this).attr('data-url');
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "Once deleted, you will not be able to recover this record!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: $url,
+              method: "DELETE",
+              data: {
+                      _token:'{{ csrf_token() }}'
+                    }
+            })
+            .done(function(result) {
+              if(result.status == false){
+                toast_error(result.message);
+              }else{
+                toast_success(result.message);
+                render_table();
+              }
+            })
+            .fail(function() {
+              toast_error("error");
+            });
+          }
+        })
+      });
+
+      $('[name="filter_customer"]').select2({
+        ajax: {
+            url: "{{route('warranty.get-customer')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term
+                };
+            },
+            processResults: function (response) {
               return {
-                  _token: "{{ csrf_token() }}",
-                  search: params.term
+                results:  $.map(response, function (item) {
+                              return {
+                                text: item.sales_specialist_name + " (Company: "+item.sap_connection.company_name+" )",
+                                id: item.id
+                              }
+                          })
               };
-          },
-          processResults: function (response) {
-            return {
-              results:  $.map(response, function (item) {
-                            return {
-                              text: item.sales_specialist_name + " (Company: "+item.sap_connection.company_name+" )",
-                              id: item.id
-                            }
-                        })
-            };
-          },
-          cache: true
-      },
-    });
+            },
+            cache: true
+        },
+      });
     @endif
   })
 </script>
