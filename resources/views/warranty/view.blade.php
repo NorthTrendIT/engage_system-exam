@@ -13,6 +13,8 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
+        <a href="{{ route('warranty.export-view',$data->id) }}" target="_blank" class="btn btn-sm btn-primary sync-products mr-10">Download PDF</a>
+
         <a href="{{ route('warranty.index') }}" class="btn btn-sm btn-primary sync-products">Back</a>
         <!--end::Button-->
       </div>
