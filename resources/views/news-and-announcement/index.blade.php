@@ -69,6 +69,7 @@
                     <option value="CP">Claimed Promotion</option>
                     <option value="HD">Help Desk</option>
                     <option value="LC">Live Chat</option>
+                    <option value="WTY">Warranty</option>
                     @endif
                   </select>
                 </div>
@@ -112,6 +113,7 @@
                     <option value="CP">Claimed Promotion</option>
                     <option value="HD">Help Desk</option>
                     <option value="LC">Live Chat</option>
+                    <option value="WTY">Warranty</option>
                     @endif
                   </select>
                 </div>

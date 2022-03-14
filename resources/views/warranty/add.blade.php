@@ -60,13 +60,15 @@
                                     </div>
                                 </div>
 
+                                <div class="row mb-5">
+                                </div>
 
                                 <div class="row mb-5">
                                     <!-- Customer Name -->
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Customer Name<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control form-control-solid" readonly="" disabled="" @if(isset($edit)) value="{{ $edit->user->sales_specialist_name }}" @else value="{{ Auth::user()->sales_specialist_name }}" @endif >
+                                            <input type="text" class="form-control form-control-solid" name="customer_name" placeholder="Enter customer name" @if(isset($edit)) value="{{ $edit->customer_name }}" @endif autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -113,7 +115,7 @@
                                 </div>
 
 
-                                <div class="row mb-5 mt-10">
+                                {{-- <div class="row mb-5 mt-10">
                                     <!-- Dealer's Name -->
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -146,14 +148,14 @@
                                             <input type="text" class="form-control form-control-solid" name="dealer_fax" placeholder="Enter dealer's fax" @if(isset($edit)) value="{{ $edit->dealer_fax }}" @endif >
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
 
                                 <div class="row mb-5 mt-10">
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <h4 class="text-info">Tire & Vehicle Info</h4>
-                                            {{-- <hr> --}}
+                                            <hr>
                                         </div>
                                     </div>
                                 </div>
@@ -371,6 +373,9 @@
                                                         <th>Yes</th>
                                                         <th>No</th>
                                                     </tr>
+                                                    <tr>
+                                                        <th colspan="3"><hr></th>
+                                                    </tr>
                                                 </thead>
                                                 <tbody>
 
@@ -401,6 +406,9 @@
                                                 <thead>
                                                     <tr>
                                                         <th colspan="6"><h4 class="text-info">Tire Manifistation Probable Cause</h4></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th colspan="6"><hr></th>
                                                     </tr>
                                                     <tr>
                                                         <th>No.</th>
@@ -439,6 +447,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <h4 class="text-info">Pictures of the Tire focusing on Damage Areas</h4>
+                                            <hr>
                                         </div>
                                     </div>
                                 </div>
@@ -447,13 +456,13 @@
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label>Title <span class="asterisk">*</span></label>
-                                            <input type="text" name="default_pictures[title][1]" class="form-control form-control-solid default_pictures_title" value="Tread Area" readonly>
+                                            <input type="text" name="default_pictures[title][1]" class="form-control form-control-solid default_pictures_title" value="Sidewall area showing the size, pattern, build (mold) number and DOT" readonly>
                                         </div>
                                     </div>
 
                                     @if(isset($edit))
                                         @php
-                                            $default_picture = @$edit->pictures()->where('title','Tread Area')->first();
+                                            $default_picture = @$edit->pictures()->where('title','Sidewall area showing the size, pattern, build (mold) number and DOT')->first();
                                         @endphp
 
                                         <input type="hidden" class="default_pictures_id" name="default_pictures[id][1]" value="{{ @$default_picture->id }}">
@@ -476,17 +485,19 @@
                                     @endif
 
                                 </div>
+
+
                                 <div class="row mb-5 mt-10">
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label>Title <span class="asterisk">*</span></label>
-                                            <input type="text" name="default_pictures[title][2]" class="form-control form-control-solid default_pictures_title" value="Sidewall Area" readonly>
+                                            <input type="text" name="default_pictures[title][2]" class="form-control form-control-solid default_pictures_title" value="Damage area" readonly>
                                         </div>
                                     </div>
 
                                     @if(isset($edit))
                                         @php
-                                            $default_picture = @$edit->pictures()->where('title','Sidewall Area')->first();
+                                            $default_picture = @$edit->pictures()->where('title','Damage area')->first();
                                         @endphp
 
                                         <input type="hidden" class="default_pictures_id" name="default_pictures[id][2]" value="{{ @$default_picture->id }}">
@@ -509,17 +520,18 @@
                                     @endif
 
                                 </div>
+
                                 <div class="row mb-5 mt-10">
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label>Title <span class="asterisk">*</span></label>
-                                            <input type="text" name="default_pictures[title][3]" class="form-control form-control-solid default_pictures_title" value="Bead Area" readonly>
+                                            <input type="text" name="default_pictures[title][3]" class="form-control form-control-solid default_pictures_title" value="Tread Area" readonly>
                                         </div>
                                     </div>
 
                                     @if(isset($edit))
                                         @php
-                                            $default_picture = @$edit->pictures()->where('title','Bead Area')->first();
+                                            $default_picture = @$edit->pictures()->where('title','Tread Area')->first();
                                         @endphp
 
                                         <input type="hidden" class="default_pictures_id" name="default_pictures[id][3]" value="{{ @$default_picture->id }}">
@@ -540,20 +552,20 @@
                                         </div>
                                       </div>
                                     @endif
-                                        
 
                                 </div>
+
                                 <div class="row mb-5 mt-10">
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label>Title <span class="asterisk">*</span></label>
-                                            <input type="text" name="default_pictures[title][4]" class="form-control form-control-solid default_pictures_title" value="Inner Liner Area" readonly>
+                                            <input type="text" name="default_pictures[title][4]" class="form-control form-control-solid default_pictures_title" value="Bead Area" readonly>
                                         </div>
                                     </div>
 
                                     @if(isset($edit))
                                         @php
-                                            $default_picture = @$edit->pictures()->where('title','Inner Liner Area')->first();
+                                            $default_picture = @$edit->pictures()->where('title','Bead Area')->first();
                                         @endphp
 
                                         <input type="hidden" class="default_pictures_id" name="default_pictures[id][4]" value="{{ @$default_picture->id }}">
@@ -564,6 +576,39 @@
                                         <div class="form-group">
                                             <label>Upload Image <span class="asterisk">*</span></label>
                                             <input type="file" name="default_pictures[image][4]" class="form-control form-control-solid default_pictures_image" accept="image/*" capture>
+                                        </div>
+                                    </div>
+
+                                    @if(@$default_picture->image && get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image))
+                                      <div class="col-md-2 image_preview">
+                                        <div class="form-group">
+                                          <a href="{{ get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image) }}" class="fancybox"><img src="{{ get_valid_file_url('sitebucket/warranty-pictures',$default_picture->image) }}" height="100" width="100" class=""></a>
+                                        </div>
+                                      </div>
+                                    @endif
+                                </div>
+
+                                <div class="row mb-5 mt-10">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Title <span class="asterisk">*</span></label>
+                                            <input type="text" name="default_pictures[title][5]" class="form-control form-control-solid default_pictures_title" value="Inner Liner Area" readonly>
+                                        </div>
+                                    </div>
+
+                                    @if(isset($edit))
+                                        @php
+                                            $default_picture = @$edit->pictures()->where('title','Inner Liner Area')->first();
+                                        @endphp
+
+                                        <input type="hidden" class="default_pictures_id" name="default_pictures[id][5]" value="{{ @$default_picture->id }}">
+                                        <input type="hidden" class="default_pictures_image" name="default_pictures[image][5]" value="{{ @$default_picture->image }}">
+                                    @endif
+
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Upload Image <span class="asterisk">*</span></label>
+                                            <input type="file" name="default_pictures[image][5]" class="form-control form-control-solid default_pictures_image" accept="image/*" capture>
                                         </div>
                                     </div>
 
@@ -727,7 +772,11 @@ $(document).ready(function() {
                 warranty_claim_type:{
                   required: true,
                 },
-                dealer_name:{
+                // dealer_name:{
+                //     required: true,
+                //     maxlength: 185,
+                // },
+                customer_name:{
                     required: true,
                     maxlength: 185,
                 },

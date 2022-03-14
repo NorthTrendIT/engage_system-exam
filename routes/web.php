@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('login');
-    //return view('welcome');
+    // return view('emails.warranty_diagnostic_report');
 });
 
 
@@ -316,6 +316,10 @@ Route::middleware(['auth'])->group(function(){
         Route::resource('warranty','App\Http\Controllers\WarrantyController');
         Route::post('warranty/get-all', 'App\Http\Controllers\WarrantyController@getAll')->name('warranty.get-all');
         Route::post('warranty/get-customer', 'App\Http\Controllers\WarrantyController@getCustomer')->name('warranty.get-customer');
+        Route::post('warranty/get-department', 'App\Http\Controllers\WarrantyController@getDepartment')->name('warranty.get-department');
+        Route::post('warranty/get-department-user', 'App\Http\Controllers\WarrantyController@getDepartmentUser')->name('warranty.get-department-user');
+        Route::post('warranty/store-assignment', 'App\Http\Controllers\WarrantyController@storeAssignment')->name('warranty.store-assignment');
+        Route::post('warranty/store-diagnostic-report', 'App\Http\Controllers\WarrantyController@storeDiagnosticReport')->name('warranty.store-diagnostic-report');
 
         // Common Routes
         Route::post('common/get-business-units', 'App\Http\Controllers\CommonController@getBusinessUnits')->name('common.getBusinessUnits');

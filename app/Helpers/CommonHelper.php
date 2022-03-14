@@ -301,6 +301,8 @@ function getNotificationType($type){
             return 'Help Desk';
         }else if($type == 'CP' || $type == 'cp'){
             return 'Claimed Promotion';
+        }else if($type == 'WTY' || $type == 'wty'){
+            return 'Warranty';
         } else {
             return '-';
         }

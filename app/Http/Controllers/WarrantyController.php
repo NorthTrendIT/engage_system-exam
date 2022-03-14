@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\User;
+use App\Models\Department;
 use App\Models\ClaimPoint;
 use App\Models\TireManifistation;
 use App\Models\SapConnection;
@@ -13,10 +14,15 @@ use App\Models\WarrantyVehicle;
 use App\Models\WarrantyPicture;
 use App\Models\WarrantyClaimPoint;
 use App\Models\WarrantyTireManifistation;
+use App\Models\WarrantyDiagnosticReport;
+use App\Models\Notification;
+use App\Models\NotificationConnection;
 
+use Mail;
 use Auth;
 use Validator;
 use DataTables;
+use OneSignal;
 
 class WarrantyController extends Controller
 {
@@ -78,14 +84,15 @@ class WarrantyController extends Controller
                         'user_id' => 'required|exists:users,id,role_id,4',
                         // 'sap_connection_id' => 'required|exists:sap_connections,id',
                         'warranty_claim_type' => 'required',
-                        'dealer_name' => 'required',
+                        // 'dealer_name' => 'required',
                         'customer_address' => 'required',
+                        'customer_name' => 'required',
                         'customer_email' => 'required',
                         'customer_phone' => 'required',
                         'customer_location' => 'required',
                         'customer_telephone' => 'required',
-                        'dealer_location' => 'required',
-                        'dealer_telephone' => 'required',
+                        // 'dealer_location' => 'required',
+                        // 'dealer_telephone' => 'required',
                         'vehicle_maker' => 'required',
                         'year' => 'required|integer',
                         'vehicle_model' => 'required',
@@ -356,7 +363,8 @@ class WarrantyController extends Controller
     public function show($id)
     {
         $data = Warranty::findOrFail($id);
-        if(!in_array(userrole(),[1,3,4]) || ( !in_array(userrole(),[1,3,4]) && $data->user_id != Auth::id()) ){ // Not a customer
+
+        if(!in_array($data->user_id,[$data->user_id, $data->assigned_user_id, 1])){ // Not a customer
             return abort(404);
         }
 
@@ -458,7 +466,7 @@ class WarrantyController extends Controller
             $data->where(function($q) use ($request) {
                 $q->orwhere('customer_phone','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('customer_email','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('dealer_name','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('customer_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('warranty_claim_type','LIKE',"%".$request->filter_search."%");
             });
         }
@@ -495,8 +503,8 @@ class WarrantyController extends Controller
                             ->addColumn('name', function($row) {
                                 return  @$row->user->sales_specialist_name ?? "-";
                             })
-                            ->addColumn('dealer_name', function($row) {
-                                return  @$row->dealer_name ?? "-";
+                            ->addColumn('customer_name', function($row) {
+                                return  @$row->customer_name ?? "-";
                             })
                             ->addColumn('warranty_claim_type', function($row) {
                                 return  @$row->warranty_claim_type ?? "-";
@@ -538,8 +546,8 @@ class WarrantyController extends Controller
                             ->orderColumn('warranty_claim_type', function ($query, $order) {
                                 $query->orderBy('warranty_claim_type', $order);
                             })
-                            ->orderColumn('dealer_name', function ($query, $order) {
-                                $query->orderBy('dealer_name', $order);
+                            ->orderColumn('customer_name', function ($query, $order) {
+                                $query->orderBy('customer_name', $order);
                             })
                             ->orderColumn('created_at', function ($query, $order) {
                                 $query->orderBy('created_at', $order);
@@ -567,6 +575,182 @@ class WarrantyController extends Controller
         }
 
         $data = $data->limit(50)->get();
+
+        return response()->json($data);
+    }
+
+    public function storeAssignment(Request $request){   
+        $input = $request->all();
+
+        $rules = array(
+                        'warranty_id' => 'required|exists:warranties,id',
+                        'department_id' => 'required|exists:departments,id',
+                        'user_id' => 'required|exists:users,id',
+                  );
+
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+            $obj = Warranty::find($input['warranty_id']);
+
+            // Access only for admin
+            if(userrole() == 1){
+
+                $obj->assigned_user_id = $input['user_id'];
+                $obj->save();
+                // add_log(54, $comment->toArray());
+
+                $message = "User assigned successfully.";
+                $response = ['status'=>true,'message'=>$message];
+
+
+                // Start Push Notification to receiver
+                    $link = route('warranty.show', $obj->id);
+
+                    // Create Local Notification
+                    $notification = new Notification();
+                    $notification->type = 'WTY';
+                    $notification->title = 'Assigned a new warranty ticket.';
+                    $notification->module = 'warranty';
+                    $notification->sap_connection_id = null;
+                    $notification->message = 'You have been assigned a new warranty ticket <a href="'.$link.'"><b>'.$obj->ticket_number.'</b></a>.';
+                    $notification->user_id = userid();
+                    $notification->save();
+
+                    if($notification->id){
+                        $connection = new NotificationConnection();
+                        $connection->notification_id = $notification->id;
+                        $connection->user_id = $input['user_id'];
+                        $connection->record_id = null;
+                        $connection->save();
+                    }
+
+                    // Send One Signal Notification.
+                    $fields['filters'] = array(array("field" => "tag", "key" => "user", "relation"=> "=", "value"=> $input['user_id']));
+                    $message_text = $notification->title;
+
+                    $push = OneSignal::sendPush($fields, $message_text);
+                // End Push Notification to receiver
+
+            }else{
+                return $response = ['status'=>false,'message'=>'Access Denied !'];
+            }
+        }
+
+        return $response;
+    }
+
+    public function storeDiagnosticReport(Request $request){   
+        $input = $request->all();
+
+        $rules = array(
+                        'warranty_id' => 'required|exists:warranties,id',
+                        'result' => 'required',
+                        'tire_manifistations' => 'nullable|array',
+                    );
+
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+            $data = WarrantyDiagnosticReport::findOrNew($input['warranty_id']);
+
+            // Access only for admin
+            if(userrole() == 1){
+
+                if(@$input['tire_manifistations']){
+                    $input['tire_manifistations'] = implode(", ", @$input['tire_manifistations']);
+                }
+
+                $data->fill($input)->save();
+                // add_log(54, $comment->toArray());
+
+                $message = "Warranty diagnostic report saved successfully.";
+                $response = ['status'=>true,'message'=>$message];
+
+
+                Mail::send('emails.warranty_diagnostic_report', compact('data'), function($message) use($data) {
+                    $message->to($data->warranty->customer_email, $data->warranty->customer_name)
+                            ->bcc($data->warranty->user->email, $data->warranty->user->sales_specialist_name )
+                            ->subject('Warranty Diagnostic Report Update');
+                });
+
+
+                // Start Push Notification to receiver
+
+                    $link = route('warranty.show', $data->warranty_id);
+
+                    // Create Local Notification
+                    $notification = new Notification();
+                    $notification->type = 'WTY';
+                    $notification->title = 'Warranty diagnostic report updated.';
+                    $notification->module = 'warranty';
+                    $notification->sap_connection_id = null;
+                    $notification->message = 'Your warranty ticket <a href="'.$link.'"><b>'.$data->ticket_number.'</b></a> diagnostic report has been updated.';
+                    $notification->user_id = userid();
+                    $notification->save();
+
+                    if($notification->id){
+                        $connection = new NotificationConnection();
+                        $connection->notification_id = $notification->id;
+                        $connection->user_id = $data->warranty->user->id;
+                        $connection->record_id = null;
+                        $connection->save();
+                    }
+
+                    // Send One Signal Notification.
+                    $fields['filters'] = array(array("field" => "tag", "key" => "user", "relation"=> "=", "value"=> $data->warranty->user->id));
+                    $message_text = $notification->title;
+
+                    $push = OneSignal::sendPush($fields, $message_text);
+                // End Push Notification to receiver
+
+            }else{
+                return $response = ['status'=>false,'message'=>'Access Denied !'];
+            }
+        }
+
+        return $response;
+    }
+
+    // Get Department
+    public function getDepartment(Request $request){
+        $search = $request->search;
+
+        $data = Department::where('id','!=', 3)->select('id','name')->where('is_active',true);
+
+        if($search != ''){
+            $data->where('name', 'like', '%' .$search . '%');
+        }
+
+        $data = $data->orderby('name','asc')->limit(50)->get();
+
+        return response()->json($data);
+    }
+
+    // Get Department User
+    public function getDepartmentUser(Request $request){
+        $search = $request->search;
+
+        if(@$request->department_id){
+            $data = User::with('role')->where('department_id', @$request->department_id)->where('is_active', true)->where('role_id','!=', 4);
+
+            if($search != ''){
+                $data->where(function($q) use ($request) {
+                    $q->orwhere('sales_specialist_name','LIKE',"%".$search."%");
+                    $q->orwhere('email','LIKE',"%".$search."%");
+                });
+            }
+
+            $data = $data->orderby('sales_specialist_name','asc')->limit(50)->get();
+        }else{
+            $data = collect([]);
+        }
 
         return response()->json($data);
     }
