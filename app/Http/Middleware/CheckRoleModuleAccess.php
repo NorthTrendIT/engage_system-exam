@@ -451,6 +451,63 @@ class CheckRoleModuleAccess
                     }
                 }
 
+
+                // Warranty Module
+                if(in_array($request->route()->getName(), ['warranty.index','warranty.get-all','warranty.show','warranty.export-view'])){
+
+                    if(@$access['view-warranty'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for warranty module.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['warranty.create'])){
+
+                    if(@$access['add-warranty'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for create warranty.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['warranty.store'])){
+
+                    if(isset($request->id)){
+                        if(@$access['edit-warranty'] != 1){
+
+                            $status = false;
+                            $message = "Oops ! you have not access for edit warranty.";
+
+                        }
+                    }else{
+                        if(@$access['add-warranty'] != 1){
+
+                            $status = false;
+                            $message = "Oops ! you have not access for create warranty.";
+
+                        }
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['warranty.edit'])){
+
+                    if(@$access['edit-warranty'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for edit warranty.";
+
+                    }
+
+                }elseif(in_array($request->route()->getName(), ['warranty.destroy'])){
+                    if(@$access['delete-warranty'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for delete warranty.";
+
+                    }
+                }
+
+
             }
 
 

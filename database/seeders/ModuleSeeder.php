@@ -153,6 +153,14 @@ class ModuleSeeder extends Seeder
                             )
                         );
 
+        $warranty = Module::create(
+                            array(
+                                'title' => 'Warranty',
+                                'slug' => 'warranty',
+                                'parent_id' => null,
+                            )
+                        );
+
         // $promotion = Module::create(
         //                     array(
         //                         'title' => 'Promotion',
@@ -368,6 +376,28 @@ class ModuleSeeder extends Seeder
                         'title' => 'View',
                         'slug' => 'view-product-group',
                         'parent_id' => $product_group->id,
+                    ),
+
+
+                    array(
+                        'title' => 'Add',
+                        'slug' => 'add-warranty',
+                        'parent_id' => $warranty->id,
+                    ),
+                    array(
+                        'title' => 'Edit',
+                        'slug' => 'edit-warranty',
+                        'parent_id' => $warranty->id,
+                    ),
+                    array(
+                        'title' => 'View',
+                        'slug' => 'view-warranty',
+                        'parent_id' => $warranty->id,
+                    ),
+                    array(
+                        'title' => 'Delete',
+                        'slug' => 'delete-warranty',
+                        'parent_id' => $warranty->id,
                     ),
 
         		);

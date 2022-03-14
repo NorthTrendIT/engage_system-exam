@@ -54,21 +54,13 @@
 			border-collapse:collapse !important;
 			table-layout:fixed !important;
 		}
-		table table table{
-			table-layout:auto !important;
-			width:100% !important;
-		}
 		table, tr, td, th, tbody, thead, tfoot {
 		    page-break-inside: avoid !important;
 		}
 		thead {
 		    display: table-row-group;
 		}
-		tr {
-		    page-break-before: always;
-		    page-break-after: always;
-		    page-break-inside: avoid;
-		}
+		
 		table {
 		    word-wrap: break-word;
 		}
@@ -270,9 +262,9 @@
 		</tr> 
 
 
-		<tr class="box-detail" style="width: 100%;"> 
+		<tr class="box-detail" style="width: 100%;page-break-before: always;"> 
 			<td>
-				<table style="background: #fdfdfd; padding: 20px 0; border-radius: 7px; border: 1px solid #cfcfcf;margin-top: 25px;width: 100%;table-layout:fixed;">
+				<table style="background: #fdfdfd; padding: 20px 0; border-radius: 7px; border: 1px solid #cfcfcf;margin-top: 25px;width: 100%;table-layout:fixed;page-break-before: always;">
 					<tbody>
       					<tr>
       						<td colspan="2" style="padding: 20px 10px 10px;"><h4 style="color: #7239ea;font-size: 20px;margin-top: 0;margin-bottom: 0px;padding-left: 0;">Claim Points</h4>
@@ -306,9 +298,9 @@
 		</tr> 
 
 
-		<tr class="box-detail" style=""> 
+		<tr class="box-detail" style="page-break-before: always;"> 
 			<td>				
-      			<table style="background: #fdfdfd; padding: 20px 0; border-radius: 7px; border: 1px solid #cfcfcf;margin-top: 0px;width: 100%;">
+      			<table style="background: #fdfdfd; padding: 20px 0; border-radius: 7px; border: 1px solid #cfcfcf;margin-top: 0px;width: 100%;page-break-before: always;">
       				<tbody>
       				<tr style="width: 100%;">
 						<td colspan="5" style="padding: 20px 10px 10px;"><h4 style="color: #7239ea;font-size: 20px;margin-top: 0;margin-bottom: 0px;padding-left: 0;width: 100%;">Tire Manifistation Probable Cause</h4>

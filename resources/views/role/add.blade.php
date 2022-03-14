@@ -636,6 +636,53 @@
                           </ul>
                         </li>
                         @endif
+
+
+                        {{-- warranty --}}
+                        @if(@$modules['warranty']['id'])
+                        <li>
+                          <i class="fa fa-plus"></i>
+                          <label>
+                            <input data-id="{{ @$modules['warranty']['id'] }}" type="checkbox" /> {{ @$modules['warranty']['title'] }}
+                          </label>
+                          <ul>
+
+                            @if(@$modules['add-warranty']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['add-warranty']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-warranty']['id'] }}]" /> {{ @$modules['add-warranty']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['edit-warranty']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['edit-warranty']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-warranty']['id'] }}]" /> {{ @$modules['edit-warranty']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['view-warranty']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['view-warranty']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-warranty']['id'] }}]" /> {{ @$modules['view-warranty']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['delete-warranty']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['delete-warranty']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['delete-warranty']['id'] }}]" /> {{ @$modules['delete-warranty']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                          </ul>
+                        </li>
+                        @endif
+
                       </ul>
                     </div>
 

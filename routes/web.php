@@ -242,18 +242,6 @@ Route::middleware(['auth'])->group(function(){
     	    Route::post('quotation/get-all', 'App\Http\Controllers\QuotationController@getAll')->name('quotation.get-all');
     	    Route::post('quotation/sync-quotation', 'App\Http\Controllers\QuotationController@syncQuotations')->name('quotation.sync-quotation');
 
-            // Company
-            Route::resource('sap-connection','App\Http\Controllers\SapConnectionController', [
-                'names' => [
-                    'index' => 'sap-connection.index',
-                    'store' => 'sap-connection.store',
-                    'edit' => 'sap-connection.edit',
-                ]
-            ]);
-            Route::post('sap-connection/get-all', 'App\Http\Controllers\SapConnectionController@getAll')->name('sap-connection.get-all');
-            Route::get('sap-connection/test/{id}','App\Http\Controllers\SapConnectionController@testAPI')->name('sap-connection.test');
-            Route::post('sap-connection/update-api-url', 'App\Http\Controllers\SapConnectionController@updateApiUrl')->name('sap-connection.update-api-url');
-
             // News and Announcement
             Route::resource('news-and-announcement','App\Http\Controllers\NewsAndAnnouncementController');
             Route::post('news-and-announcement/get-all', 'App\Http\Controllers\NewsAndAnnouncementController@getAll')->name('news-and-announcement.get-all');
@@ -278,6 +266,19 @@ Route::middleware(['auth'])->group(function(){
             Route::get('reports/promotion', 'App\Http\Controllers\PromotionReportController@index')->name('report.promotion.index');
             Route::post('reports/promotion/get-all', 'App\Http\Controllers\PromotionReportController@getAll')->name('report.promotion.get-all');
             Route::post('reports/promotion/get-chart-data', 'App\Http\Controllers\PromotionReportController@getChartData')->name('report.promotion.get-chart-data');
+
+
+            // Warranty
+            Route::resource('warranty','App\Http\Controllers\WarrantyController');
+            Route::post('warranty/get-all', 'App\Http\Controllers\WarrantyController@getAll')->name('warranty.get-all');
+            Route::post('warranty/get-customer', 'App\Http\Controllers\WarrantyController@getCustomer')->name('warranty.get-customer');
+            Route::post('warranty/get-department', 'App\Http\Controllers\WarrantyController@getDepartment')->name('warranty.get-department');
+            Route::post('warranty/get-department-user', 'App\Http\Controllers\WarrantyController@getDepartmentUser')->name('warranty.get-department-user');
+            Route::post('warranty/store-assignment', 'App\Http\Controllers\WarrantyController@storeAssignment')->name('warranty.store-assignment');
+            Route::post('warranty/store-diagnostic-report', 'App\Http\Controllers\WarrantyController@storeDiagnosticReport')->name('warranty.store-diagnostic-report');
+            Route::get('warranty/export-view/{id}', 'App\Http\Controllers\WarrantyController@exportView')->name('warranty.export-view');
+
+
         });
 
         // Customer Orders
@@ -311,16 +312,6 @@ Route::middleware(['auth'])->group(function(){
         Route::post('sales-specialist-orders/get-price/','App\Http\Controllers\LocalOrderController@getPrice')->name('sales-specialist-orders.get-price');
         Route::post('sales-specialist-orders/get-customer-schedule/','App\Http\Controllers\LocalOrderController@getCustomerSchedule')->name('sales-specialist-orders.get-customer-schedule');
 
-
-        // Warranty
-        Route::resource('warranty','App\Http\Controllers\WarrantyController');
-        Route::post('warranty/get-all', 'App\Http\Controllers\WarrantyController@getAll')->name('warranty.get-all');
-        Route::post('warranty/get-customer', 'App\Http\Controllers\WarrantyController@getCustomer')->name('warranty.get-customer');
-        Route::post('warranty/get-department', 'App\Http\Controllers\WarrantyController@getDepartment')->name('warranty.get-department');
-        Route::post('warranty/get-department-user', 'App\Http\Controllers\WarrantyController@getDepartmentUser')->name('warranty.get-department-user');
-        Route::post('warranty/store-assignment', 'App\Http\Controllers\WarrantyController@storeAssignment')->name('warranty.store-assignment');
-        Route::post('warranty/store-diagnostic-report', 'App\Http\Controllers\WarrantyController@storeDiagnosticReport')->name('warranty.store-diagnostic-report');
-        Route::get('warranty/export-view/{id}', 'App\Http\Controllers\WarrantyController@exportView')->name('warranty.export-view');
 
         // Common Routes
         Route::post('common/get-business-units', 'App\Http\Controllers\CommonController@getBusinessUnits')->name('common.getBusinessUnits');
@@ -393,6 +384,20 @@ Route::middleware(['auth'])->group(function(){
         Route::post('customer-delivery-schedule/get-all', 'App\Http\Controllers\CustomerDeliveryScheduleController@getAll')->name('customer-delivery-schedule.get-all');
         Route::post('customer-delivery-schedule/get-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getCustomerList')->name('customer-delivery-schedule.get-customer-list');
         Route::post('customer-delivery-schedule/get-territory/','App\Http\Controllers\CustomerDeliveryScheduleController@getTerritory')->name('customer-delivery-schedule.get-territory');
+
+
+        // Company
+        Route::resource('sap-connection','App\Http\Controllers\SapConnectionController', [
+            'names' => [
+                'index' => 'sap-connection.index',
+                'store' => 'sap-connection.store',
+                'edit' => 'sap-connection.edit',
+            ]
+        ]);
+        Route::post('sap-connection/get-all', 'App\Http\Controllers\SapConnectionController@getAll')->name('sap-connection.get-all');
+        Route::get('sap-connection/test/{id}','App\Http\Controllers\SapConnectionController@testAPI')->name('sap-connection.test');
+        Route::post('sap-connection/update-api-url', 'App\Http\Controllers\SapConnectionController@updateApiUrl')->name('sap-connection.update-api-url');
+            
     });
 
 

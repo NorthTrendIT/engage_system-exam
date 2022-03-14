@@ -52,10 +52,7 @@ class WarrantyController extends Controller
      */
     public function create()
     {
-        if(!in_array(userrole(),[4])){ // Not a customer
-            return abort(404);
-        }
-
+        
         $warranty_claim_types = Warranty::$warranty_claim_types;
         sort($warranty_claim_types);
 
@@ -82,7 +79,7 @@ class WarrantyController extends Controller
         }
 
         $rules = array(
-                        'user_id' => 'required|exists:users,id,role_id,4',
+                        'user_id' => 'required|exists:users,id',
                         // 'sap_connection_id' => 'required|exists:sap_connections,id',
                         'warranty_claim_type' => 'required',
                         // 'dealer_name' => 'required',
@@ -365,7 +362,7 @@ class WarrantyController extends Controller
     {
         $data = Warranty::findOrFail($id);
 
-        if(!in_array($data->user_id,[$data->user_id, $data->assigned_user_id, 1])){ // Not a customer
+        if(!in_array(userid(),[$data->user_id, $data->assigned_user_id, 1])){ // Not a customer
             return abort(404);
         }
 
@@ -392,7 +389,7 @@ class WarrantyController extends Controller
     public function edit($id)
     {
         $edit = Warranty::findOrFail($id);
-        if(!in_array(userrole(),[1,3,4]) || ( !in_array(userrole(),[1,3,4]) && $edit->user_id != Auth::id()) ){ // Not a customer
+        if(!in_array(userid(),[$data->user_id, $data->assigned_user_id, 1])){ // Not a customer
             return abort(404);
         }
         
@@ -457,10 +454,13 @@ class WarrantyController extends Controller
     public function getAll(Request $request){
         $data = Warranty::query();
 
-        if(userrole() == 4){
-            $data->where('user_id', @Auth::user()->id);
-        }elseif(!in_array(userrole(),[1,3])){
-            return DataTables::of(collect())->make(true);;
+        if(!in_array(userrole(),[1,3])){
+
+            $data->where(function($q){
+                $q->orwhere('user_id', userid());
+                $q->orwhere('assigned_user_id', userid());
+            });
+
         }
 
         if($request->filter_search != ""){
@@ -520,9 +520,13 @@ class WarrantyController extends Controller
                                 return @$row->user->sap_connection->company_name ?? "-";
                             })
                             ->addColumn('action', function($row){
-                                $btn = '<a href="' . route('warranty.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
+
+                                $btn = "";
+                                if(in_array(userrole(),[1,3]) || @$row->user_id == userid()){
+                                    $btn .= '<a href="' . route('warranty.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                             <i class="fa fa-pencil"></i>
                                         </a>';
+                                }
 
                                 if(in_array(userrole(),[1,3])){
                                     $btn .= ' <a href="javascript:void(0)" data-url="' . route('warranty.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete mr-10">
@@ -566,7 +570,7 @@ class WarrantyController extends Controller
     public function exportView($id){
         $data = Warranty::findOrFail($id);
 
-        if(!in_array($data->user_id,[$data->user_id, $data->assigned_user_id, 1])){ // Not a customer
+        if(!in_array(userid(),[$data->user_id, $data->assigned_user_id, 1])){ // Not a customer
             return abort(404);
         }
 
@@ -683,10 +687,12 @@ class WarrantyController extends Controller
         if ($validator->fails()) {
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
+            $warranty = Warranty::find($input['warranty_id']);
+
             $data = WarrantyDiagnosticReport::findOrNew($input['warranty_id']);
 
             // Access only for admin
-            if(userrole() == 1){
+            if(userrole() == 1 || @$warranty->assigned_user_id == userid()){
 
                 if(@$input['tire_manifistations']){
                     $input['tire_manifistations'] = implode(", ", @$input['tire_manifistations']);

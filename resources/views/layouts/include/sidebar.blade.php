@@ -518,7 +518,7 @@
 
 
             {{-- Warranty --}}
-            @if(in_array(Auth::user()->role_id,[1,3,4]))
+            @if(Auth::user()->role_id == 1 || (isset($access['view-warranty']) && $access['view-warranty'] == 1))            
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['warranty.index','warranty.show', 'warranty.edit'])) ? 'active' : '' }}" href="{{ route('warranty.index') }}">
                   <span class="menu-icon">
