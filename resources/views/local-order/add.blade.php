@@ -279,6 +279,8 @@
             initEmpty: false,
             show: function () {
                 $(this).slideDown();
+                $(this).find('.price').html('₱ 0.00')
+                $(this).find('.amount').html('₱ 0.00')
                 var product_ids = [];
                 $('.selectProducts').each(function(){
                     if(this.value){
@@ -319,7 +321,19 @@
                 });
             },
             hide: function (deleteElement) {
-                $(this).slideUp(deleteElement);
+                Swal.fire({
+                    title: 'Are you sure you want to delete this product?',
+                    // text: "Syncing process will run in background and it may take some time to sync all products Data.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, do it!'
+                }).then((result) => {
+                    if(result.isConfirmed) {
+                        $(this).slideUp(deleteElement);
+                    }
+                })
             },
             isFirstItemUndeletable: true
         });
