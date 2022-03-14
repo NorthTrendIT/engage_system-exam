@@ -272,6 +272,12 @@ Route::middleware(['auth'])->group(function(){
             Route::post('news-and-announcement/get-all-market-sector', 'App\Http\Controllers\NewsAndAnnouncementController@getAllMarketSector')->name('news-and-announcement.getAllMarketSector');
             Route::post('news-and-announcement/get-all-brands', 'App\Http\Controllers\NewsAndAnnouncementController@getAllBrands')->name('news-and-announcement.getAllBrands');
             Route::post('news-and-announcement/status/{id}', 'App\Http\Controllers\NewsAndAnnouncementController@updateStatus')->name('news-and-announcement.status');
+
+            // Report
+            Route::resource('report', 'App\Http\Controllers\ReportController');
+            Route::get('reports/promotion', 'App\Http\Controllers\PromotionReportController@index')->name('report.promotion.index');
+            Route::post('reports/promotion/get-all', 'App\Http\Controllers\PromotionReportController@getAll')->name('report.promotion.get-all');
+            Route::post('reports/promotion/get-chart-data', 'App\Http\Controllers\PromotionReportController@getChartData')->name('report.promotion.get-chart-data');
         });
 
         // Customer Orders
@@ -330,6 +336,7 @@ Route::middleware(['auth'])->group(function(){
         Route::post('common/get-brands', 'App\Http\Controllers\CommonController@getBrands')->name('common.getBrands');
         Route::post('common/get-users', 'App\Http\Controllers\CommonController@getUsers')->name('common.getUsers');
         Route::post('common/get-promotion-codes', 'App\Http\Controllers\CommonController@getPromotionCodes')->name('common.getPromotionCodes');
+        Route::post('common/get-customers', 'App\Http\Controllers\CommonController@getCustomer')->name('common.getCustomer');
 
     });
 

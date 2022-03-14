@@ -185,7 +185,7 @@ class NewsAndAnnouncementController extends Controller
 
                 if($input['module'] == 'market_sector'){
                     foreach($records as $record_id){
-                        $data = Customer::where(['u_msec' => $record_id, 'sap_connection_id' => $input['sap_connection_id']])->get();
+                        $data = Customer::where(['u_sector' => $record_id, 'sap_connection_id' => $input['sap_connection_id']])->get();
                         foreach($data as $customer){
                             $user = User::where('customer_id', $customer->id)->firstOrFail();
                             $connection = new NotificationConnection();
@@ -651,9 +651,9 @@ class NewsAndAnnouncementController extends Controller
             $search = $request->search;
 
             $data = Customer::where('sap_connection_id',$request->sap_connection_id)
-                                ->orderby('u_msec','asc')
-                                ->select('u_msec')
-                                ->limit(50)->groupBy('u_msec');
+                                ->orderby('u_sector','asc')
+                                ->select('u_sector')
+                                ->limit(50)->groupBy('u_sector');
 
             if($search != ''){
                 $data->where('group_name', 'like', '%' .$search . '%');
@@ -663,8 +663,8 @@ class NewsAndAnnouncementController extends Controller
 
             foreach($data as $value){
                 $response[] = array(
-                    "id" => $value->u_msec,
-                    "text" => $value->u_msec
+                    "id" => $value->u_sector,
+                    "text" => $value->u_sector
                 );
             }
         }
@@ -923,8 +923,7 @@ class NewsAndAnnouncementController extends Controller
                                 return '-';
                             })
                             ->addColumn('market_sector', function($row) {
-                                return @$row->user->customer->u_msec;
-                                // return '-';
+                                return @$row->user->customer->u_sector;
                             })
                             ->addColumn('is_seen', function($row) {
                                 if($row->is_seen){
