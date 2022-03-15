@@ -239,7 +239,7 @@ class LocalOrderController extends Controller
                             }
                         })
                         ->addColumn('total', function($row) {
-                            return $row->total;
+                            return '₱ '. number_format_value($row->total);
                         })
                         ->addColumn('due_date', function($row) {
                             return date('M d, Y',strtotime($row->due_date));

@@ -109,10 +109,10 @@
                                                                 <input type="number" class="form-control quantity" name="quantity" data-price="{{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                                             </td>
                                                             <td style="text-align:right">
-                                                                <span class="price text-primary">₱ {{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}</span>
+                                                                <span class="price text-primary">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices, $customer_price_list_no)) }}</span>
                                                             </td>
                                                             <td style="text-align:right">
-                                                                <span class="amount text-primary" style="font-weight: bold">₱ {{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity }}</span>
+                                                                <span class="amount text-primary" style="font-weight: bold">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity) }}</span>
                                                             </td>
                                                             <td>
                                                                 <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
