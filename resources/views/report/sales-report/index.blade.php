@@ -48,6 +48,35 @@
                   </select>
                 </div>
 
+                <!-- Customer Class -->
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_customer_class" data-control="select2" data-hide-search="false" data-placeholder="Select customer class" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <!-- Sales Specialist -->
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_sales_specialist" data-control="select2" data-hide-search="false" data-placeholder="Select sales specialist" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <!-- Market Sector -->
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_market_sector" data-control="select2" data-hide-search="false" data-placeholder="Select market sector" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <!-- Market Sub Sector -->
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_market_sub_sector" data-control="select2" data-hide-search="false" data-placeholder="Select market sub sector" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+
                 <div class="col-md-3 mt-5 other_filter_div">
                   <select class="form-control form-control-lg form-control-solid" name="filter_product_category" data-control="select2" data-hide-search="false" data-placeholder="Select product category" data-allow-clear="true">
                     <option value=""></option>
@@ -194,6 +223,11 @@
       $filter_product_application = $('[name="filter_product_application"]').find('option:selected').val();
       $filter_product_pattern = $('[name="filter_product_pattern"]').find('option:selected').val();
 
+      $filter_customer_class = $('[name="filter_customer_class"]').find('option:selected').val();
+      $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
+      $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
+      $filter_market_sub_sector = $('[name="filter_market_sub_sector"]').find('option:selected').val();
+
       table.DataTable({
           processing: true,
           serverSide: true,
@@ -224,6 +258,11 @@
                 filter_product_type : $filter_product_type,
                 filter_product_application : $filter_product_application,
                 filter_product_pattern : $filter_product_pattern,
+
+                filter_customer_class : $filter_customer_class,
+                filter_sales_specialist : $filter_sales_specialist,
+                filter_market_sector : $filter_market_sector,
+                filter_market_sub_sector : $filter_market_sub_sector,
               }
           },
           columns: [
@@ -280,6 +319,10 @@
       $('[name="filter_product_type"]').val('').trigger('change');
       $('[name="filter_product_application"]').val('').trigger('change');
       $('[name="filter_product_pattern"]').val('').trigger('change');
+      $('[name="filter_customer_class"]').val('').trigger('change');
+      $('[name="filter_sales_specialist"]').val('').trigger('change');
+      $('[name="filter_market_sector"]').val('').trigger('change');
+      $('[name="filter_market_sub_sector"]').val('').trigger('change');
 
       if($(this).find('option:selected').val() != ""){
         $('.other_filter_div').show();
@@ -307,7 +350,8 @@
             results:  $.map(response, function (item) {
                         return {
                           text: item.group_name,
-                          id: item.number
+                          id: item.number,
+                          data_id: item.id
                         }
                       })
           };
@@ -316,6 +360,99 @@
       },
     });
 
+
+    $('[name="filter_customer_class"]').select2({
+      ajax: {
+          url: "{{route('customer-tagging.get-customer-class')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    brand_id: $('[name="filter_brand"]').select2('data')[0]['data_id'],
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
+    $('[name="filter_sales_specialist"]').select2({
+      ajax: {
+          url: "{{route('customer-tagging.get-sales-specialist')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    brand_id: $('[name="filter_brand"]').select2('data')[0]['data_id'],
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
+
+    $('[name="filter_market_sector"]').select2({
+      ajax: {
+          url: "{{route('customer-tagging.get-market-sector')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    brand_id: $('[name="filter_brand"]').select2('data')[0]['data_id'],
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
+    $('[name="filter_market_sub_sector"]').select2({
+      ajax: {
+          url: "{{route('customer-tagging.get-market-sub-sector')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    brand_id: $('[name="filter_brand"]').select2('data')[0]['data_id'],
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
 
     $('[name="filter_product_category"]').select2({
       ajax: {

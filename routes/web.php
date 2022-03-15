@@ -346,6 +346,7 @@ Route::middleware(['auth'])->group(function(){
         Route::get('customer-tagging', 'App\Http\Controllers\CustomerController@customerTaggingIndex')->name('customer-tagging.index');
         Route::post('customer-tagging/get-territory', 'App\Http\Controllers\CustomerController@customerTaggingGetTerritory')->name('customer-tagging.get-territory');
         Route::post('customer-tagging/get-market-sector', 'App\Http\Controllers\CustomerController@customerTaggingGetMarketSector')->name('customer-tagging.get-market-sector');
+        Route::post('customer-tagging/get-market-sub-sector', 'App\Http\Controllers\CustomerController@customerTaggingGetMarketSubSector')->name('customer-tagging.get-market-sub-sector');
         Route::post('customer-tagging/get-customer-class', 'App\Http\Controllers\CustomerController@customerTaggingGetCustomerClass')->name('customer-tagging.get-customer-class');
         Route::post('customer-tagging/get-sales-specialist', 'App\Http\Controllers\CustomerController@customerTaggingGetSalesSpecialist')->name('customer-tagging.get-sales-specialist');
 
