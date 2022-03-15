@@ -346,6 +346,7 @@ Route::middleware(['auth'])->group(function(){
         Route::get('customer-tagging', 'App\Http\Controllers\CustomerController@customerTaggingIndex')->name('customer-tagging.index');
         Route::post('customer-tagging/get-territory', 'App\Http\Controllers\CustomerController@customerTaggingGetTerritory')->name('customer-tagging.get-territory');
         Route::post('customer-tagging/get-market-sector', 'App\Http\Controllers\CustomerController@customerTaggingGetMarketSector')->name('customer-tagging.get-market-sector');
+        Route::post('customer-tagging/get-market-sub-sector', 'App\Http\Controllers\CustomerController@customerTaggingGetMarketSubSector')->name('customer-tagging.get-market-sub-sector');
         Route::post('customer-tagging/get-customer-class', 'App\Http\Controllers\CustomerController@customerTaggingGetCustomerClass')->name('customer-tagging.get-customer-class');
         Route::post('customer-tagging/get-sales-specialist', 'App\Http\Controllers\CustomerController@customerTaggingGetSalesSpecialist')->name('customer-tagging.get-sales-specialist');
 
@@ -397,6 +398,12 @@ Route::middleware(['auth'])->group(function(){
         Route::post('sap-connection/get-all', 'App\Http\Controllers\SapConnectionController@getAll')->name('sap-connection.get-all');
         Route::get('sap-connection/test/{id}','App\Http\Controllers\SapConnectionController@testAPI')->name('sap-connection.test');
         Route::post('sap-connection/update-api-url', 'App\Http\Controllers\SapConnectionController@updateApiUrl')->name('sap-connection.update-api-url');
+
+
+        Route::prefix('reports')->namespace('App\Http\Controllers\Reports')->name('reports.')->group(function(){
+            Route::resource('sales-report','SalesReportController')->only('index');
+            Route::post('sales-report/get-all', 'SalesReportController@getAll')->name('sales-report.get-all');
+        });
             
     });
 

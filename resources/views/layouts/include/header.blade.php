@@ -141,11 +141,11 @@
                            </div>
                            <!--end::Avatar-->
                            <!--begin::Username-->
-                           <div class="d-flex flex-column">
-                              <div class="fw-bolder d-flex align-items-center fs-5">{{ @Auth::user()->first_name ?? "" }} {{ @Auth::user()->last_name ?? "" }}
+                           <div class="d-flex flex-column align-items-left">
+                              <div class="fw-bolder d-flex align-items-center fs-5" style="max-width: 170px;word-break: break-word;">{{ @Auth::user()->first_name ?? "" }} {{ @Auth::user()->last_name ?? "" }}
                               </div>
-                              <span class="badge badge-light-success fw-bolder fs-8 px-2 py-1 m-1">{{ @Auth::user()->role->name ?? "" }}</span>
-                              <a href="javascript:" class="fw-bold text-muted text-hover-primary fs-7">{{ @Auth::user()->email ?? "" }}</a>
+                              <span class="badge badge-light-success fw-bolder fs-8 px-3 py-1 mt-1 mb-1" style="max-width: 170px;word-break: break-word;white-space: normal;line-height: 1.1;">{{ @Auth::user()->role->name ?? "" }}</span>
+                              <a href="javascript:" class="fw-bold text-muted text-hover-primary fs-7" style="max-width: 170px;word-break: break-word;">{{ @Auth::user()->email ?? "" }}</a>
                            </div>
                            <!--end::Username-->
                         </div>

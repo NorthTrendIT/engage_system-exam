@@ -901,19 +901,76 @@ span.marker{
 }
 
 @media(max-width: 580px) {
-        .hh-grayBox .order-tracking{width: 100%;}
-        .order-tracking::before {
-            height: 100%;
-            width: 3px;
-            left: 50%;
-            z-index: 1;
-            top: 0%;
-            transform: translate(-50%, -50%);
-        }
-        .hh-grayBox .order-tracking p {
-            position: relative;
-            z-index: 11;
-            background: #f8f8f8;
-            padding: 5px 0;margin-bottom: 10px;
-        }
+    .hh-grayBox .order-tracking{width: 100%;}
+    .order-tracking::before {
+        height: 100%;
+        width: 3px;
+        left: 50%;
+        z-index: 1;
+        top: 0%;
+        transform: translate(-50%, -50%);
+    }
+    .hh-grayBox .order-tracking p {
+        position: relative;
+        z-index: 11;
+        background: #f8f8f8;
+        padding: 5px 0;margin-bottom: 10px;
+    }
+}
+
+
+.datepicker .datepicker-months tbody tr > td,
+.datepicker .datepicker-years tbody tr > td,
+.datepicker .datepicker-decades tbody tr > td,
+.datepicker .datepicker-centuries tbody tr > td {
+    width: 100%;
+    height: 100%;
+    white-space: normal;
+    word-break: break-word;
+    padding: 0;
+}
+
+.datepicker .datepicker-months tbody tr > td span,
+.datepicker .datepicker-years tbody tr > td span,
+.datepicker .datepicker-decades tbody tr > td span,
+.datepicker .datepicker-centuries tbody tr > td span {
+    height: 35px;
+    width: 35px;
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 0.42rem;
+    color: #7E8299;
+    font-weight: 400;
+    text-align: center;
+    line-height: 35px;
+    padding: 1px;
+    margin: 0 12px;
+}
+
+.datepicker .datepicker-months tbody tr > td span.disabled,
+.datepicker .datepicker-years tbody tr > td span.disabled,
+.datepicker .datepicker-decades tbody tr > td span.disabled,
+.datepicker .datepicker-centuries tbody tr > td span.disabled {
+    text-decoration: line-through !important;
+}
+
+
+table.dataTable>thead .sorting:after,
+table.dataTable>thead .sorting_asc:after,
+table.dataTable>thead .sorting_asc_disabled:after,
+table.dataTable>thead .sorting_desc:after,
+table.dataTable>thead .sorting_desc_disabled:after {
+    content: "" !important;
+}
+
+table.dataTable>thead .sorting:after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 8' fill='%23A1A5B7'%3e%3cpath fill-rule='evenodd' clip-rule='evenodd' d='M4.42111 5.93537C4.22088 6.03839 3.9637 6.0191 3.78597 5.87137L0.177181 2.87153C-0.046034 2.68598 -0.060261 2.36951 0.145404 2.16468C0.351069 1.95985 0.698744 1.94422 0.921959 2.12977L4.14137 4.80594L7.06417 2.15586C7.27904 1.96104 7.62686 1.96165 7.84105 2.15722C8.05524 2.35279 8.05469 2.66927 7.83982 2.86409L4.54449 5.85194C4.50704 5.8859 4.46541 5.91371 4.42111 5.93537Z'/%3e%3c/svg%3e");
+}
+
+table.dataTable>thead .sorting.sorting_asc:after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 8' fill='%23A1A5B7'%3e%3cpath fill-rule='evenodd' clip-rule='evenodd' d='M4.42111 2.06463C4.22088 1.96161 3.9637 1.9809 3.78597 2.12863L0.177181 5.12847C-0.046034 5.31402 -0.0602611 5.63049 0.145404 5.83532C0.351069 6.04015 0.698744 6.05578 0.921959 5.87023L4.14137 3.19406L7.06417 5.84414C7.27904 6.03896 7.62686 6.03835 7.84105 5.84278C8.05524 5.64721 8.05469 5.33073 7.83982 5.13591L4.54449 2.14806C4.50704 2.1141 4.46541 2.08629 4.42111 2.06463Z'/%3e%3c/svg%3e");
+}
+
+table.dataTable>thead .sorting.sorting_desc:after{
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 8' fill='%23A1A5B7'%3e%3cpath fill-rule='evenodd' clip-rule='evenodd' d='M4.42111 5.93537C4.22088 6.03839 3.9637 6.0191 3.78597 5.87137L0.177181 2.87153C-0.046034 2.68598 -0.060261 2.36951 0.145404 2.16468C0.351069 1.95985 0.698744 1.94422 0.921959 2.12977L4.14137 4.80594L7.06417 2.15586C7.27904 1.96104 7.62686 1.96165 7.84105 2.15722C8.05524 2.35279 8.05469 2.66927 7.83982 2.86409L4.54449 5.85194C4.50704 5.8859 4.46541 5.91371 4.42111 5.93537Z'/%3e%3c/svg%3e");
 }
