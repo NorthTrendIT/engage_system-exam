@@ -400,6 +400,7 @@ class CustomerPromotionController extends Controller
                 if(in_array(userrole(),[2])){ // its a ss
                     $customer_promotion->sales_specialist_id = Auth::id();
                     $customer_promotion->is_approved = false;
+                    $customer_promotion->user_id = $customer_user->id;
                 }else if(!is_null(Auth::user()->created_by)){
                     $customer_promotion->sales_specialist_id = null;
                     $customer_promotion->user_id = $customer_user->id;
