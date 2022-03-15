@@ -150,7 +150,7 @@ class TerritoriesController extends Controller
                                 $query->orderBy('description', $order);
                             })
                             ->orderColumn('status', function ($query, $order) {
-                                $query->orderBy('status', $order);
+                                $query->orderBy('is_active', $order);
                             })
                             ->addColumn('status', function($row) {
 

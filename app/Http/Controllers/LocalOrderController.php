@@ -199,7 +199,6 @@ class LocalOrderController extends Controller
     public function getAll(Request $request){
 
         $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items']);
-        // dd($data);
 
         $data->whereHas(
             'customer', function($q){
@@ -208,8 +207,6 @@ class LocalOrderController extends Controller
                 });
             }
         );
-
-        // dd($data->get());
 
         if($request->filter_search != ""){
             $data->whereHas('customer', function($q) use ($request) {
@@ -237,17 +234,23 @@ class LocalOrderController extends Controller
                                 return "ERR";
                             }
                         })
+                        ->addColumn('total', function($row) {
+                            return $row->total;
+                        })
                         ->addColumn('due_date', function($row) {
                             return date('M d, Y',strtotime($row->due_date));
                         })
                         ->orderColumn('due_date', function ($query, $order) {
                             $query->orderBy('due_date', $order);
                         })
+                        ->orderColumn('total', function ($query, $order) {
+                            $query->orderBy('total', $order);
+                        })
                         ->orderColumn('confirmation_status', function ($query, $order) {
                             $query->orderBy('confirmation_status', $order);
                         })
                         ->addColumn('action', function($row) {
-                            $btn = '<a href="' . route('sales-specialist-orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                            $btn = '<a href="' . route('sales-specialist-orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                     <i class="fa fa-eye"></i>
                                 </a>';
 

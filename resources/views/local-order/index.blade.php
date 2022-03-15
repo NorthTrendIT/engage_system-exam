@@ -62,6 +62,7 @@
                               <th>No.</th>
                               <th>Customer Name</th>
                               <th>Confirmation Status</th>
+                              <th>Total</th>
                               <th>Due Date</th>
                               <th>Action</th>
                             </tr>
@@ -124,6 +125,7 @@ $(document).ready(function() {
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'customer_name', name: 'customer_name'},
               {data: 'confirmation_status', name: 'confirmation_status'},
+              {data: 'total', name: 'total'},
               {data: 'due_date', name: 'due_date'},
               {data: 'action', name: 'action'},
           ],
