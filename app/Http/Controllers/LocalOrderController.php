@@ -96,6 +96,7 @@ class LocalOrderController extends Controller
                 $order->sap_connection_id = $customer->sap_connection_id;
                 $order->save();
 
+                $total = 0;
                 if( isset($input['products']) && !empty($input['products']) ){
                     $products = $input['products'];
                     LocalOrderItem::where('local_order_id', $order->id)->delete();
@@ -110,8 +111,11 @@ class LocalOrderController extends Controller
                         $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num);
                         $item->total = $item->price * $item->quantity;
                         $item->save();
+                        $total += $item->total;
                     }
                 }
+                $order->total = $total;
+                $order->save();
 
                 $response = ['status'=>true,'message'=>$message, 'id' => $order->id];
             } else {
@@ -199,7 +203,6 @@ class LocalOrderController extends Controller
     public function getAll(Request $request){
 
         $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items']);
-        // dd($data);
 
         $data->whereHas(
             'customer', function($q){
@@ -208,8 +211,6 @@ class LocalOrderController extends Controller
                 });
             }
         );
-
-        // dd($data->get());
 
         if($request->filter_search != ""){
             $data->whereHas('customer', function($q) use ($request) {
@@ -237,17 +238,23 @@ class LocalOrderController extends Controller
                                 return "ERR";
                             }
                         })
+                        ->addColumn('total', function($row) {
+                            return '₱ '. number_format_value($row->total);
+                        })
                         ->addColumn('due_date', function($row) {
                             return date('M d, Y',strtotime($row->due_date));
                         })
                         ->orderColumn('due_date', function ($query, $order) {
                             $query->orderBy('due_date', $order);
                         })
+                        ->orderColumn('total', function ($query, $order) {
+                            $query->orderBy('total', $order);
+                        })
                         ->orderColumn('confirmation_status', function ($query, $order) {
                             $query->orderBy('confirmation_status', $order);
                         })
                         ->addColumn('action', function($row) {
-                            $btn = '<a href="' . route('sales-specialist-orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                            $btn = '<a href="' . route('sales-specialist-orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                     <i class="fa fa-eye"></i>
                                 </a>';
 
