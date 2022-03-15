@@ -474,7 +474,10 @@
         $('body').on("click", ".submitForm", function (e) {
             e.preventDefault();
             var validator = validate_form();
-
+            @if(isset($edit))
+                $('[name="address_id"]').removeAttr('disabled');
+            @endif
+            $('[name="address_id"]').removeAttr('disabled');
             if (validator.form() != false) {
                 $('[type="submit"]').prop('disabled', true);
                 $('[name="address_id"]').removeAttr('disabled');
@@ -505,6 +508,9 @@
                     },
                 });
             }
+            @if(isset($edit))
+                $('[name="address_id"]').prop('disabled', false);
+            @endif
         });
 
         $('body').on("click", ".placeOrder", function (e) {
