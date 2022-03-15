@@ -96,6 +96,7 @@ class LocalOrderController extends Controller
                 $order->sap_connection_id = $customer->sap_connection_id;
                 $order->save();
 
+                $total = 0;
                 if( isset($input['products']) && !empty($input['products']) ){
                     $products = $input['products'];
                     LocalOrderItem::where('local_order_id', $order->id)->delete();
@@ -110,8 +111,11 @@ class LocalOrderController extends Controller
                         $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num);
                         $item->total = $item->price * $item->quantity;
                         $item->save();
+                        $total += $item->total;
                     }
                 }
+                $order->total = $total;
+                $order->save();
 
                 $response = ['status'=>true,'message'=>$message, 'id' => $order->id];
             } else {
