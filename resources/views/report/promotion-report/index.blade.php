@@ -166,7 +166,7 @@ $(document).ready(function() {
 
     function getData(){
         $.ajax({
-            url: "{{ route('report.promotion.get-all') }}",
+            url: "{{ route('reports.promotion-report.get-all') }}",
             method: "POST",
             dataType: 'json',
             data: {

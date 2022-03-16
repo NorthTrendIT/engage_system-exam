@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Reports;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SapConnection;
-use App\Models\Promotions;
+use App\Models\Product;
 use App\Models\CustomerPromotion;
 use Auth;
 
-class PromotionReportController extends Controller
+class ProductReportController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +19,7 @@ class PromotionReportController extends Controller
     public function index()
     {
         $company = SapConnection::all();
-        return view('report.promotion', compact('company'));
+        return view('report.promotion-report.index', compact('company'));
     }
 
     /**

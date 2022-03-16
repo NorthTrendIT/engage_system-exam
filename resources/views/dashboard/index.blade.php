@@ -253,7 +253,7 @@
                 <div class="card card-xl-stretch mb-xl-8">
                     <div class="card-header border-0 pt-5">
                         <h3 class="card-title align-items-start flex-column">
-                            <a href="{{ route('report.promotion.index') }}" class="text-dark text-hover-primary fw-bolder fs-3">Promotion Reports</a>
+                            <a href="{{ route('reports.promotion-report.index') }}" class="text-dark text-hover-primary fw-bolder fs-3">Promotion Reports</a>
                         </h3>
                         <!-- <div class="card-toolbar">
                             <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
@@ -413,7 +413,7 @@
 
     function getData(){
         $.ajax({
-            url: '{{ route('report.promotion.get-chart-data') }}',
+            url: '{{ route('reports.promotion-report.get-chart-data') }}',
             method: "POST",
             data: {
                     _token:'{{ csrf_token() }}',
