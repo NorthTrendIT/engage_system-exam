@@ -324,7 +324,7 @@ class SAPCustomerPromotion
 
         // \Log::debug('The updateNumAtCardInOrder called -->'. $doc_entry);
         // \Log::debug('The updateNumAtCardInOrder called -->'. @$this->sap_connection_id);
-        
+
         $quotation = Quotation::where('doc_entry', $doc_entry)->where('sap_connection_id', @$this->sap_connection_id)->first();
         $response = array();
 
@@ -334,6 +334,7 @@ class SAPCustomerPromotion
             $body = array(
                             'NumAtCard' => $num_at_card,
                         );
+            
             $response = $this->requestSapApi('/b1s/v1/Quotations('.$doc_entry.')', "PATCH", $body);
 
             $status = $response['status'];

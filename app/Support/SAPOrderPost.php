@@ -89,7 +89,7 @@ class SAPOrderPost
             $insert = array(
                         'doc_entry' => $data['DocEntry'],
                         'doc_num' => $data['DocNum'],
-                        'num_at_card' => $data['DocEntry'],
+                        'num_at_card' => $data['NumAtCard'],
                         'doc_type' => $data['DocType'],
                         'document_status' => $data['DocumentStatus'],
                         'doc_date' => $data['DocDate'],
