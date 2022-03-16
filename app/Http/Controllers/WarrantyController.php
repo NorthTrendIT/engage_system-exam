@@ -389,7 +389,7 @@ class WarrantyController extends Controller
     public function edit($id)
     {
         $edit = Warranty::findOrFail($id);
-        if(!in_array(userid(),[$data->user_id, $data->assigned_user_id, 1])){ // Not a customer
+        if(!in_array(userid(),[$edit->user_id, $edit->assigned_user_id, 1])){ // Not a customer
             return abort(404);
         }
         

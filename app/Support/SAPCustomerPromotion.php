@@ -313,36 +313,9 @@ class SAPCustomerPromotion
         return $response;
     }
 
+    /*public function updateNumAtCardInOrder($doc_entry){
 
-
-    // Start old code before 16-02-2022
-    public function createOrder1($id){
-        $body = $this->madeSapData($id);
-
-        $response = array();
-
-        if(!empty($body)){
-            $response = $this->requestSapApi('/b1s/v1/Quotations', "POST", $body);
-
-            $status = $response['status'];
-            $data = $response['data'];
-
-            if($status){
-                $customer_promotion = CustomerPromotion::find($id);
-                $customer_promotion->doc_entry = $data['DocEntry'];
-                $customer_promotion->is_sap_pushed = true;
-                $customer_promotion->save();
-
-                $this->pushOrderDetailsInDatabase($data);
-            }
-        }
-
-        return $response;
-    }
-
-    public function updateOrder1($id, $doc_entry){
-        $body = $this->madeSapData($id);
-
+        $quotation = Quotation::where('doc_entry', $doc_entry)->first();
         $response = array();
 
         if(!empty($body)){
@@ -353,126 +326,17 @@ class SAPCustomerPromotion
 
             if($status){
 
-                $customer_promotion = CustomerPromotion::find($id);
-                $customer_promotion->doc_entry = $data['DocEntry'];
-                $customer_promotion->is_sap_pushed = true;
-                $customer_promotion->save();
+                $obj = CustomerPromotionProductDelivery::find($id);
+                $obj->doc_entry = $data['DocEntry'];
+                $obj->is_sap_pushed = true;
+                $obj->sap_connection_id = $this->sap_connection_id;
+                $obj->save();
 
                 $this->pushOrderDetailsInDatabase($data);
             }
         }
 
         return $response;
-    }
-
-    public function cancelOrder1($id, $doc_entry){
-
-        $response = array(
-                            'status' => false,
-                            'data' => []
-                        );
-
-        if(!empty($doc_entry)){
-
-            try {
-                $response = $this->httpClient->request(
-                    "POST",
-                    get_sap_api_url().'/b1s/v1/Quotations('.$doc_entry.')/Cancel',
-                    [
-                        'headers' => $this->headers,
-                        'verify' => false,
-                    ]
-                );
-
-                if(in_array($response->getStatusCode(), [200,201,204])){
-                    $response = json_decode($response->getBody(),true);
-
-                    $customer_promotion = CustomerPromotion::find($id);
-                    $customer_promotion->doc_entry = null;
-                    $customer_promotion->is_sap_pushed = false;
-                    $customer_promotion->save();
-
-
-                    $where = array(
-                                'doc_entry' => $doc_entry,
-                                'customer_promotion_id' => $id,
-                            );
-
-                    $quotation = Quotation::where($where)->first();
-                    $quotation->document_status = "Cancelled";
-                    $quotation->save();
-
-                    return array(
-                                'status' => true,
-                                'data' => []
-                            );
-                }
-
-            } catch (\Exception $e) {
-
-            }
-
-        }
-
-        return $response;
-    }
-
-    public function madeSapData1($id){
-
-        $response = [];
-        $customer_promotion = CustomerPromotion::find($id);
-
-        $this->customer_promotion_id = $id;
-
-        if(!is_null($customer_promotion)){
-
-            if(@$customer_promotion->user->customer->card_code){
-
-                $this->sap_connection_id = @$customer_promotion->sap_connection_id;
-
-                $response['CardCode'] = @$customer_promotion->user->customer->card_code;
-                $response['CardName'] = @$customer_promotion->user->customer->card_name;
-                $response['DocTotal'] = @$customer_promotion->total_amount;
-                $response['Address'] = @$customer_promotion->customer_bp_address->address;
-
-                if(@$customer_promotion->sales_specialist->sales_employee_code && @$customer_promotion->sales_specialist->is_active){
-                    $response['SalesPersonCode'] = @$customer_promotion->sales_specialist->sales_employee_code;
-                }
-
-                $response['DocCurrency'] = "PHP";
-                $response['DocumentLines'] = [];
-
-                if(@$customer_promotion->products){
-
-                    foreach (@$customer_promotion->products as $p) {
-
-                        foreach (@$p->deliveries as $d) {
-
-                            $temp = array(
-
-                                        'ItemCode' => @$p->product->item_code,
-                                        'ItemDescription' => @$p->product->item_name,
-                                        'UnitPrice' => @$p->price - @$p->discount,
-                                        'Price' => @$p->price,
-                                        'Quantity' => @$d->delivery_quantity,
-                                        'ShipDate' => @$d->delivery_date,
-
-                                    );
-
-                            array_push($response['DocumentLines'], $temp);
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-
-
-        return $response;
-    }
-    // End old code before 16-02-2022
+    }*/
 
 }
