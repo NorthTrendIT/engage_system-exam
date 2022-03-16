@@ -109,7 +109,7 @@ class CustomerPromotionController extends Controller
 
                 		}elseif($promotion->promotion_scope == "SS"){ //Sales Specialists
 
-                            $check = $promotion->promotion_data->firstWhere('sales_specialist',@Auth::id());
+                            $check = $promotion->promotion_data->firstWhere('sales_specialist_id',@Auth::id());
 
                             if(is_null($check)){
                                 $is_continue = true;
@@ -400,6 +400,7 @@ class CustomerPromotionController extends Controller
                 if(in_array(userrole(),[2])){ // its a ss
                     $customer_promotion->sales_specialist_id = Auth::id();
                     $customer_promotion->is_approved = false;
+                    $customer_promotion->user_id = $customer_user->id;
                 }else if(!is_null(Auth::user()->created_by)){
                     $customer_promotion->sales_specialist_id = null;
                     $customer_promotion->user_id = $customer_user->id;

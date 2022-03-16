@@ -640,7 +640,7 @@ class CustomerController extends Controller
             foreach($data as $value){
 
 
-                if(isset($response[$value->customer->u_sector])){
+                if(isset($response[$value->customer->u_sector]) || is_null($value->customer->u_sector)){
                    continue;
                 }
 
@@ -656,6 +656,41 @@ class CustomerController extends Controller
         return response()->json($response);
     }
 
+    public function customerTaggingGetMarketSubSector(Request $request){
+
+        $response = array();
+        $search = $request->search;
+
+        if(@$request->sap_connection_id != "" && @$request->brand_id != ""){
+
+            $data = CustomerProductGroup::has('customer')->with('customer')->where('product_group_id', $request->brand_id);
+
+            if($search != ''){
+                $data->where('customer',function($q) use ($search) {
+                    $q->where('u_subsector', 'like', '%' .$search . '%');
+                });
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+
+
+                if(isset($response[$value->customer->u_subsector]) || is_null($value->customer->u_subsector)){
+                   continue;
+                }
+
+                $response[$value->customer->u_subsector] = array(
+                    "id" => $value->customer->u_subsector,
+                    "text" => $value->customer->u_subsector
+                );
+            }
+
+            sort($response);
+        }
+
+        return response()->json($response);
+    }
 
     public function customerTaggingGetCustomerClass(Request $request){
 

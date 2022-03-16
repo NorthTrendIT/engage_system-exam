@@ -349,7 +349,9 @@
                                     <tr class="border-bottom fs-6 fw-bolder text-muted">
                                       <th class="min-w-175px pb-2">Delivery Date</th>
                                       <th class="min-w-70px text-end pb-2">Delivery Quantity</th>
+                                      @if($is_sap_pushed)
                                       <th class="min-w-70px text-end pb-2">Sync</th>
+                                      @endif
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -358,10 +360,13 @@
                                       <tr class="fw-bolder text-gray-700 fs-7 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ date('F d, Y',strtotime($d->delivery_date)) }}</td>
                                         <td class="pt-6">{{ @$d->delivery_quantity }}</td>
+                                        @if($is_sap_pushed)
                                         <td class="pt-6">
                                           <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm sync-delivery-status" title="Sync Delivery Status" data-id="{{ @$d->quotation->id }}"><i class="fa fa-sync"></i></a>
                                         </td>
+                                        @endif
                                       </tr>
+                                      @if($is_sap_pushed)
                                       <tr class="fw-bolder text-gray-700 fs-7 text-center">
                                         <td colspan="3">
                                           @php
@@ -375,6 +380,7 @@
                                           
                                         </td>
                                       </tr>
+                                      @endif
                                     @endforeach
 
                                   </tbody>
