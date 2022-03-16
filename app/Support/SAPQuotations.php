@@ -79,10 +79,18 @@ class SAPQuotations
     // Store All Customer Records In DB
     public function addQuotationsDataInDatabase($url = false)
     {
+        $where = array(
+                    'db_name' => $this->database,
+                    'user_name' => $this->username,
+                );
+
+        $sap_connection = SapConnection::where($where)->first();
+
+
         if($url){
             $response = $this->getQuotationData($url);
         }else{
-            $latestData = Quotation::orderBy('updated_date','DESC')->first();
+            $latestData = Quotation::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
                 $url = '/b1s/v1/Quotations?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
                 $response = $this->getQuotationData($url);
@@ -95,13 +103,6 @@ class SAPQuotations
             $data = $response['data'];
 
             if($data['value']){
-
-                $where = array(
-                            'db_name' => $this->database,
-                            'user_name' => $this->username,
-                        );
-
-                $sap_connection = SapConnection::where($where)->first();
 
                 // Store Data of Quotations in database
                 StoreQuotations::dispatch($data['value'],@$sap_connection->id);
