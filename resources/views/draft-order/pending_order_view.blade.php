@@ -70,7 +70,7 @@
                                 <div class="col-sm-2">
                                     <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
                                     <div class="fw-bolder fs-6 text-gray-800">
-                                        <span>{{ !empty($data->doc_entry) ? getOrderStatusByDocEntry($data->doc_entry) : 'Pending' }}</span>
+                                        <span>{!! getOrderStatusBtnHtml('Pending') !!}</span>
                                     </div>
                                 </div>
                             </div>
@@ -101,9 +101,9 @@
                                                 <td class="pt-6" style="text-align: initial !important;">{{ $key+1 }}</td>
                                                 <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}</td>
                                                 <td class="pt-6">{{ $value->quantity ?? '-' }}</td>
-                                                <td class="pt-6">₱ {{ $value->price ?? '-' }}</td>
+                                                <td class="pt-6">₱ {{ number_format_value($value->price) }}</td>
                                                 <td class="pt-6">₱ 0.00 </td>
-                                                <td class="pt-6 text-dark fw-boldest">₱ {{ $value->total ?? '-' }}</td>
+                                                <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($value->total) }}</td>
                                             </tr>
                                             @endforeach
                                         </tbody>

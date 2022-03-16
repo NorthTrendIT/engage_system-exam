@@ -109,7 +109,7 @@ class CustomerPromotionController extends Controller
 
                 		}elseif($promotion->promotion_scope == "SS"){ //Sales Specialists
 
-                            $check = $promotion->promotion_data->firstWhere('sales_specialist',@Auth::id());
+                            $check = $promotion->promotion_data->firstWhere('sales_specialist_id',@Auth::id());
 
                             if(is_null($check)){
                                 $is_continue = true;
