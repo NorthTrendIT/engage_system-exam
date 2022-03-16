@@ -142,7 +142,15 @@ class DraftOrderController extends Controller
      */
     public function edit($id)
     {
-        //
+        $total = 0;
+        $edit = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id',$id)->firstOrFail();
+        $customer = Customer::findOrFail($edit->customer->id);
+        $customer_price_list_no = @$customer->price_list_num;
+
+        foreach($edit->items as $value){
+            $total += get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity;
+        }
+        return view('draft-order.add',compact(['edit', 'customer_price_list_no', 'total']));
     }
 
     /**
@@ -170,6 +178,7 @@ class DraftOrderController extends Controller
 
     public function getAll(Request $request){
         $customer_id = Auth::user()->customer_id;
+        // dd($customer_id);
         $data = LocalOrder::with('sales_specialist')->where('customer_id', $customer_id);
 
         if($request->filter_search != ""){
@@ -193,17 +202,17 @@ class DraftOrderController extends Controller
                             })
                             ->addColumn('confirmation_status', function($row) {
                                 if($row->confirmation_status == 'P' || $row->confirmation_status == 'ERR'){
-                                    return "Pending";
+                                    return getOrderStatusBtnHtml("Pending");
                                 }
                                 if($row->confirmation_status == 'C'){
-                                    return "Confirmed";
+                                    return getOrderStatusBtnHtml("Confirmed");
                                 }
                             })
                             ->addColumn('due_date', function($row) {
                                 return date('M d, Y',strtotime($row->due_date));
                             })
                             ->addColumn('total', function($row) {
-                                return number_format_value($row->items->sum('total'));
+                                return "<b>₱ ".number_format_value($row->items->sum('total'))."</b>";
                             })
                             ->orderColumn('due_date', function ($query, $order) {
                                 $query->orderBy('due_date', $order);
@@ -216,9 +225,15 @@ class DraftOrderController extends Controller
                                     <i class="fa fa-eye"></i>
                                 </a>';
 
+                                if($row->confirmation_status == "P" && empty($row->doc_entry)){
+                                    $btn .= ' <a href="' . route('draft-order.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                        <i class="fa fa-pen"></i>
+                                    </a>';
+                                }
+
                                 return $btn;
                             })
-                            ->rawColumns(['action'])
+                            ->rawColumns(['action', 'total', 'confirmation_status'])
                             ->make(true);
     }
 

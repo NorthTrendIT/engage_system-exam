@@ -643,6 +643,9 @@ function getOrderStatusBtnHtml($status){
         case "Cancelled":
             $btn = '<b style="color:'.convert_hex_to_rgba('#f44336').';background-color:'.convert_hex_to_rgba('#f44336',0.1).';" class="btn btn-sm">'.$status.'</b>';
             break;
+        case "Error":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#f44336').';background-color:'.convert_hex_to_rgba('#f44336',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
         default:
             break;
     }

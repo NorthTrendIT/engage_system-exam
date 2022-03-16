@@ -106,13 +106,13 @@
                                                                     </div>
                                                                 </td>
                                                                 <td>
-                                                                    <input type="number" class="form-control quantity" name="quantity" data-price="{{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}" placeholder="Enter quantity" value="{{ $value->quantity }}">
+                                                                    <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" placeholder="Enter quantity" value="{{ $value->quantity }}">
                                                                 </td>
                                                                 <td style="text-align:right">
-                                                                    <span class="price text-primary">₱ {{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}</span>
+                                                                    <span class="price text-primary">₱ {{ number_format_value(@$value->price) }}</span>
                                                                 </td>
                                                                 <td style="text-align:right">
-                                                                    <span class="amount text-primary" style="font-weight: bold">₱ {{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity }}</span>
+                                                                    <span class="amount text-primary" style="font-weight: bold">₱ {{ number_format_value(@$value->total) }}</span>
                                                                 </td>
                                                                 <td>
                                                                     <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
@@ -175,7 +175,7 @@
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">sub total</span>
                                             </div>
                                             <div class="col-md-6 mb-3 ">
-                                                <span style="text-align: right; width: 100%;" class="d-block price subTotal text-primary">₱ {{ $total }}</span>
+                                                <span style="text-align: right; width: 100%;" class="d-block price subTotal text-primary">₱ {{ number_format_value($edit->total) }}</span>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">discount</span>
@@ -189,7 +189,7 @@
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">total</span>
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <span style="text-align: right; width: 100%;" class="d-block price grandTotal text-primary">₱ {{ $total }}</span>
+                                                <span style="text-align: right; width: 100%;" class="d-block price grandTotal text-primary">₱ {{ number_format_value($edit->total) }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -199,11 +199,16 @@
                         </div>
                     </div>
 
-                    <div class="row gy-5 g-xl-8">
+                    <div class="row gy-5 g-xl-8 pt-5">
                         <div class="col-xl-12">
                             <div class="d-flex flex-wrap pt-2 text-center justify-content-center">
-                                <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Update">
-                                <input type="button" class="btn btn-lg btn-primary placeOrder" value="Update & Place Order">
+                                <input type="button" class="btn btn-lg btn-primary submitForm" value="Update">
+                                @if(isset($edit))
+                                    <input type="button" class="btn btn-lg btn-primary placeOrder mx-5" value="Confirm">
+                                    <input type="button" class="btn btn-lg btn-primary placeOrder" value="Update & Confirm">
+                                @else
+                                    <input type="button" class="btn btn-lg btn-primary placeOrder mx-5" value="Update & Place Order">
+                                @endif
                             </div>
                         </div>
                     </div>
