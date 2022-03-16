@@ -166,15 +166,9 @@ class LocalOrderController extends Controller
      */
     public function edit($id)
     {
-        $total = 0;
         $edit = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id',$id)->firstOrFail();
-        $customer = Customer::findOrFail($edit->customer->id);
-        $customer_price_list_no = @$customer->price_list_num;
 
-        foreach($edit->items as $value){
-            $total += get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity;
-        }
-        return view('local-order.add',compact(['edit', 'customer_price_list_no', 'total']));
+        return view('local-order.add',compact(['edit']));
     }
 
     /**
@@ -229,17 +223,17 @@ class LocalOrderController extends Controller
                         })
                         ->addColumn('confirmation_status', function($row) {
                             if($row->confirmation_status == 'P'){
-                                return "Pending";
+                                return getOrderStatusBtnHtml("Pending");
                             }
                             if($row->confirmation_status == 'C'){
-                                return "Confirm";
+                                return getOrderStatusBtnHtml("Confirm");
                             }
                             if($row->confirmation_status == 'ERR'){
-                                return "ERR";
+                                return getOrderStatusBtnHtml("Error");
                             }
                         })
                         ->addColumn('total', function($row) {
-                            return '₱ '. number_format_value($row->total);
+                            return '<b>₱ '. number_format_value($row->total).'</b>';
                         })
                         ->addColumn('due_date', function($row) {
                             return date('M d, Y',strtotime($row->due_date));
@@ -265,7 +259,7 @@ class LocalOrderController extends Controller
                             }
                             return $btn;
                         })
-                        ->rawColumns(['action'])
+                        ->rawColumns(['action', 'confirmation_status', 'total'])
                         ->make(true);
     }
 

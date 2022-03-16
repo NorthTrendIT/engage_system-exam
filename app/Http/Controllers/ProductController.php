@@ -407,7 +407,7 @@ class ProductController extends Controller
                               $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
                               $price = '₱ '.(@$prices[12]['Price'] ? @$prices[12]['Price'] : '0');
                             }
-                            
+
                             return $price;
                           })
                           ->addColumn('srp_price', function($row) {
@@ -418,7 +418,7 @@ class ProductController extends Controller
                               $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
                               $price = '₱ '.(@$prices[13]['Price'] ? @$prices[13]['Price'] : '0');
                             }
-                            
+
                             return $price;
                           })
                           ->addColumn('rdlp_price', function($row) {
@@ -429,7 +429,7 @@ class ProductController extends Controller
                               $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
                               $price = '₱ '.(@$prices[14]['Price'] ? @$prices[14]['Price'] : '0');
                             }
-                            
+
                             return $price;
                           })
                           ->addColumn('rdlp2_price', function($row) {
@@ -440,11 +440,11 @@ class ProductController extends Controller
                               $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
                               $price = '₱ '.(@$prices[15]['Price'] ? @$prices[15]['Price'] : '0');
                             }
-                            
+
                             return $price;
                           })
                           ->addColumn('status', function($row) {
-                            
+
                             $btn = "";
                             if($row->is_active){
                               $btn .= '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
@@ -504,7 +504,7 @@ class ProductController extends Controller
                           ->orderColumn('product_technology', function ($query, $order) {
                             $query->orderBy('u_product_tech', $order);
                           })
-                          
+
                           //Tires Category
                           ->orderColumn('u_pattern_type', function ($query, $order) {
                             $query->orderBy('u_pattern_type', $order);
@@ -694,7 +694,7 @@ class ProductController extends Controller
           $temp['item_class'] = $value->item_class ?? "-";
         }
 
-        // Shows Product Pattern 
+        // Shows Product Pattern
         if(in_array($product_category, ["tires"])){
           $temp['u_pattern2'] = $value->u_pattern2 ?? "-";
         }
@@ -706,7 +706,7 @@ class ProductController extends Controller
         $temp['srp_price'] = @$prices[13]['Price'] ?? "-";
         $temp['rdlp_price'] = @$prices[14]['Price'] ?? "-";
         $temp['rdlp2_price'] = @$prices[15]['Price'] ?? "-";
-                        
+
         $records[] = $temp;
       }else{
 
@@ -725,7 +725,7 @@ class ProductController extends Controller
                   'product_application' => $value->u_item_application ?? "-",
                   'product_type' => $value->u_item_type ?? "-",
                 );
-        
+
 
 
         // Hide Product Type
@@ -738,7 +738,7 @@ class ProductController extends Controller
           $temp['item_class'] = $value->item_class ?? "-";
         }
 
-        // Shows Product Pattern 
+        // Shows Product Pattern
         if(in_array($product_category, ["tires"])){
           $temp['u_pattern2'] = $value->u_pattern2 ?? "-";
         }
@@ -794,14 +794,14 @@ class ProductController extends Controller
                       'Product Line',
                       'Product Category'
                     );
-      
+
 
       // Shows Product Class
       if(in_array($product_category, ["lubes","chem","tires"])){
         array_push($headers, 'Product Class');
       }
 
-      // Shows Product Pattern 
+      // Shows Product Pattern
       if(in_array($product_category, ["tires"])){
         array_push($headers, 'Product Pattern');
       }
@@ -831,7 +831,7 @@ class ProductController extends Controller
                 'Product Application',
                 'Product Type',
               );
-      
+
 
 
       // Hide Product Type
@@ -845,7 +845,7 @@ class ProductController extends Controller
         array_push($headers, 'Product Class');
       }
 
-      // Shows Product Pattern 
+      // Shows Product Pattern
       if(in_array($product_category, ["tires"])){
         array_push($headers, 'Pattern');
       }
@@ -926,7 +926,7 @@ class ProductController extends Controller
       if(@$request->search  != ''){
         $data->where('u_tires', 'like', '%' .$request->search . '%');
       }
-      
+
       $data = $data->get()->groupBy('u_tires');
     }
 
@@ -943,7 +943,7 @@ class ProductController extends Controller
       if(@$request->search  != ''){
         $data->where('u_item_line', 'like', '%' .$request->search . '%');
       }
-      
+
       $data = $data->get()->groupBy('u_item_line');
     }
 
@@ -960,7 +960,7 @@ class ProductController extends Controller
       if(@$request->search  != ''){
         $data->where('item_class', 'like', '%' .$request->search . '%');
       }
-      
+
       $data = $data->get()->groupBy('item_class');
     }
 
@@ -977,7 +977,7 @@ class ProductController extends Controller
       if(@$request->search  != ''){
         $data->where('u_item_type', 'like', '%' .$request->search . '%');
       }
-      
+
       $data = $data->get()->groupBy('u_item_type');
     }
 
@@ -994,7 +994,7 @@ class ProductController extends Controller
       if(@$request->search  != ''){
         $data->where('u_item_application', 'like', '%' .$request->search . '%');
       }
-      
+
       $data = $data->get()->groupBy('u_item_application');
     }
 
@@ -1011,7 +1011,7 @@ class ProductController extends Controller
       if(@$request->search  != ''){
         $data->where('u_pattern2', 'like', '%' .$request->search . '%');
       }
-      
+
       $data = $data->get()->groupBy('u_pattern2');
     }
 

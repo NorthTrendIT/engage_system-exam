@@ -70,7 +70,7 @@
                                 <div class="col-sm-2">
                                     <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
                                     <div class="fw-bolder fs-6 text-gray-800">
-                                        <span>{{ !empty($data->doc_entry) ? getOrderStatusByDocEntry($data->doc_entry) : 'Pending' }}</span>
+                                        <span>{!! getOrderStatusBtnHtml('Pending') !!}</span>
                                     </div>
                                 </div>
                             </div>
