@@ -15,6 +15,7 @@ class Order extends Model
     protected $fillable = [
         'base_entry',
         'doc_entry',
+        'num_at_card',
         'doc_num',
         'doc_type',
         'doc_date',
