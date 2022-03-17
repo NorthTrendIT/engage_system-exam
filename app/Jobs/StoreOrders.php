@@ -43,6 +43,7 @@ class StoreOrders implements ShouldQueue
 
                 $insert = array(
                             'doc_entry' => $order['DocEntry'],
+                            'num_at_card' => $order['NumAtCard'],
                             'doc_num' => $order['DocNum'],
                             'doc_type' => $order['DocType'],
                             'doc_date' => $order['DocDate'],

@@ -16,6 +16,7 @@ class Invoice extends Model
         'base_entry',
         'doc_entry',
         'doc_num',
+        'num_at_card',
         'doc_type',
         'doc_date',
         'doc_due_date',
