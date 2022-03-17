@@ -241,7 +241,7 @@ class SAPOrderPost
 
             $status = $response['status'];
             $data = $response['data'];
-            if(!$status){
+            if($data == '204'){
                 $quotation->num_at_card = $num_at_card;
                 $quotation->save();
             }
