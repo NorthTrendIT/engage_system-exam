@@ -32,4 +32,13 @@ class OrderItem extends Model
             'ship_to_description',
             'response',
         ];
+
+
+    public function product(){
+        return $this->hasOne(Product::class, 'item_code', 'item_code');
+    }
+
+    public function order(){
+        return $this->belongsTo(Order::class, 'order_id');
+    }
 }

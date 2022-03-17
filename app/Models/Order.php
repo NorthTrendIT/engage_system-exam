@@ -50,4 +50,8 @@ class Order extends Model
     public function invoice(){
         return $this->hasOne(Invoice::class, ['base_entry', 'sap_connection_id'], ['doc_entry', 'sap_connection_id']);
     }
+
+    public function quotation(){
+        return $this->hasOne(Quotation::class, ['doc_entry', 'sap_connection_id'], ['base_entry', 'sap_connection_id']);
+    }
 }
