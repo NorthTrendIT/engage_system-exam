@@ -100,7 +100,7 @@
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Order #:</div>
                               <!--end::Label-->
                               <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->doc_entry ?? "-"  }}</div>
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->num_at_card ?? "-"  }}</div>
                               <!--end::Col-->
                             </div>
                             <!--end::Col-->
