@@ -23,6 +23,12 @@ class SalesOrderReportController extends Controller
      */
     public function index()
     {
+        $company = SapConnection::all();
+        return view('report.sales-order-report.index', compact('company'));
+    }
+
+    public function getAll(Request $request)
+    {
         // For Pending
         $pending_total_sales_orders = $pending_total_sales_quantity = $pending_total_sales_revenue = 0;
 
@@ -33,7 +39,7 @@ class SalesOrderReportController extends Controller
 
         if(!empty($pending_quotation_item)){
             $pending_total_sales_quantity = array_sum(array_column($pending_quotation_item, 'quantity'));
-            $pending_total_sales_revenue = array_sum(array_column($pending_quotation_item, 'price_after_vat'));
+            $pending_total_sales_revenue = round(array_sum(array_column($pending_quotation_item, 'price_after_vat')), 2);
         }
 
 
@@ -47,7 +53,7 @@ class SalesOrderReportController extends Controller
 
         if(!empty($approved_order_item)){
             $approved_total_sales_quantity = array_sum(array_column($approved_order_item, 'quantity'));
-            $approved_total_sales_revenue = array_sum(array_column($approved_order_item, 'price_after_vat'));
+            $approved_total_sales_revenue = round(array_sum(array_column($approved_order_item, 'price_after_vat')), 2);
         }
 
 
@@ -73,7 +79,7 @@ class SalesOrderReportController extends Controller
 
         if(!empty($disapproved_quotation_item)){
             $disapproved_total_sales_quantity += array_sum(array_column($disapproved_quotation_item, 'quantity'));
-            $disapproved_total_sales_revenue += array_sum(array_column($disapproved_quotation_item, 'price_after_vat'));
+            $disapproved_total_sales_revenue += round(array_sum(array_column($disapproved_quotation_item, 'price_after_vat')), 2);
         }
 
         // order table
@@ -95,9 +101,26 @@ class SalesOrderReportController extends Controller
 
         if(!empty($disapproved_order_item)){
             $disapproved_total_sales_quantity += array_sum(array_column($disapproved_order_item, 'quantity'));
-            $disapproved_total_sales_revenue += array_sum(array_column($disapproved_order_item, 'price_after_vat'));
+            $disapproved_total_sales_revenue += round(array_sum(array_column($disapproved_order_item, 'price_after_vat')), 2);
         }
 
+        $data = compact(
+                            'pending_total_sales_quantity',
+                            'pending_total_sales_revenue', 
+                            'pending_total_sales_orders',
+
+                            'approved_total_sales_quantity',
+                            'approved_total_sales_revenue', 
+                            'approved_total_sales_orders',
+
+                            'disapproved_total_sales_quantity',
+                            'disapproved_total_sales_revenue', 
+                            'disapproved_total_sales_orders',
+                        );
+
+
+        $response = [ 'status' => true, 'data' => $data, 'message' => 'Report fetched successfully!'];
+        return $response;
     }
 
 }
