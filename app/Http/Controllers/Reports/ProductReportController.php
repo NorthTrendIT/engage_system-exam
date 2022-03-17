@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\SapConnection;
 use App\Models\Product;
 use App\Models\CustomerPromotion;
+use App\Models\InvoiceItem;
 use Auth;
+use Carbon\Carbon;
 
 class ProductReportController extends Controller
 {
@@ -19,7 +21,7 @@ class ProductReportController extends Controller
     public function index()
     {
         $company = SapConnection::all();
-        return view('report.promotion-report.index', compact('company'));
+        return view('report.product-report.index', compact('company'));
     }
 
     /**
@@ -102,126 +104,32 @@ class ProductReportController extends Controller
         foreach($company as $key => $item){
                 $companyName = $item->company_name;
 
-                /** 1. Number of Promo */
-                // Pending
-                $totalPending = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'pending']);
+                // Active Products
+                $activeProducts = Product::where('sap_connection_id', $item->id)->where('is_active', 1)->count();
 
-                if($request->filter_customer != ""){
-                    $totalPending->whereHas('user',function($q) use($request){
-                        $q->where('customer_id', $request->filter_customer);
-                    });
-                }
+                // Sleeping Products
+                $sleepingProducts = Product::where('sap_connection_id', $item->id)->where('is_active', 0)->count();
 
-                if($request->filter_sales_specialist != ""){
-                    $totalPending->where('sales_specialist_id', $request->filter_sales_specialist);
-                }
+                // Product Movement
+                $productMovement = Product::where('sap_connection_id', $item->id)->join("invoice_items",function($join){
+                        $join->on('invoice_items.item_code','=','products.item_code');
+                    })
+                    ->where('is_active', 1)
+                    ->where('invoice_items.ship_date', '>=', Carbon::now()->subDays(60)->toDateTimeString())->count();
 
-                $totalPending = $totalPending->count();
+                // dd($productMovement);
 
-                // Approved
-                $totalApproved = CustomerPromotion::with('customer_user')->where(['sap_connection_id' => $item->id, 'status' => 'approved']);
-
-                if($request->filter_customer != ""){
-                    $totalApproved->whereHas('user',function($q) use($request){
-                        $q->where('customer_id', $request->filter_customer);
-                    });
-                }
-
-                if($request->filter_sales_specialist != ""){
-                    $totalApproved->where('sales_specialist_id', $request->filter_sales_specialist);
-                }
-
-                $totalApproved = $totalApproved->count();
-
-                // Completed
-
-                /** 2.Total Sales Quantity */
-
-                // Pending
-                $totalPendingQue = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'pending']);
-
-                if($request->filter_customer != ""){
-                    $totalPendingQue->whereHas('user',function($q) use($request){
-                        $q->where('customer_id', $request->filter_customer);
-                    });
-                }
-
-                if($request->filter_sales_specialist != ""){
-                    $totalPendingQue->where('sales_specialist_id', $request->filter_sales_specialist);
-                }
-
-                $totalPendingQue = $totalPendingQue->sum('total_quantity');
-
-                // Approved
-                $totalApprovedQue = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'approved']);
-
-                if($request->filter_customer != ""){
-                    $totalApprovedQue->whereHas('user',function($q) use($request){
-                        $q->where('customer_id', $request->filter_customer);
-                    });
-                }
-
-                if($request->filter_sales_specialist != ""){
-                    $totalApprovedQue->where('sales_specialist_id', $request->filter_sales_specialist);
-                }
-
-                $totalApprovedQue = $totalApprovedQue->sum('total_quantity');
-
-                // Completed
-
-                /** 2.Total Sales Revenue */
-
-                // Pending
-                $totalPendingRev = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'pending']);
-
-                if($request->filter_customer != ""){
-                    $totalPendingRev->whereHas('user',function($q) use($request){
-                        $q->where('customer_id', $request->filter_customer);
-                    });
-                }
-
-                if($request->filter_sales_specialist != ""){
-                    $totalPendingRev->where('sales_specialist_id', $request->filter_sales_specialist);
-                }
-
-                $totalPendingRev = $totalPendingRev->sum('total_amount');
-
-                // Approved
-                $totalApprovedRev = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'approved']);
-
-                if($request->filter_customer != ""){
-                    $totalApprovedRev->whereHas('user',function($q) use($request){
-                        $q->where('customer_id', $request->filter_customer);
-                    });
-                }
-
-                if($request->filter_sales_specialist != ""){
-                    $totalApprovedRev->where('sales_specialist_id', $request->filter_sales_specialist);
-                }
-
-                $totalApprovedRev = $totalApprovedRev->sum('total_amount');
-
-                // Completed
-
-                $pending = [
+                $row = [
                     'no' => ++$no,
                     'company_name' => $companyName,
-                    'status' => 'Pending',
-                    'total_promotion' => $totalPending,
-                    'total_quantity' => $totalPendingQue,
-                    'total_amount' => number_format($totalPendingRev, 2),
-                ];
-                $approved = [
-                    'no' => ++$no,
-                    'company_name' => $companyName,
-                    'status' => 'Approved',
-                    'total_promotion' => $totalApproved,
-                    'total_quantity' => $totalApprovedQue,
-                    'total_amount' => number_format($totalApprovedRev, 2),
+                    'active_product' => number_format($activeProducts),
+                    'sleeping_product' => number_format($sleepingProducts),
+                    'product_movement' => number_format($productMovement),
                 ];
 
-                array_push($outputData, $pending);
-                array_push($outputData, $approved);
+                // dd($row);
+
+                array_push($outputData, $row);
         }
 
         return ['status' => true, 'data' => $outputData];
@@ -237,39 +145,41 @@ class ProductReportController extends Controller
 
         $company = $company->get();
 
-        $pendingPromotion = [];
-        $approvedPromotion = [];
-        $cancelPromotion = [];
+        $activeProducts = [];
+        $sleepingProducts = [];
+        $productMovement = [];
         $totalRevenue = [];
         $category = [];
 
         foreach($company as $key => $item){
             $companyName = $item->company_name;
 
+            // Company Name
             array_push($category, $companyName);
-            /** 1. Number of Promo */
-            // Pending
-            $totalPending = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'pending'])->count();
-            array_push($pendingPromotion, $totalPending);
 
-            // Approved
-            $totalApproved = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'approved'])->count();
-            array_push($approvedPromotion, $totalApproved);
+            // Active Products
+            $active = Product::where('sap_connection_id', $item->id)->where('is_active', 1)->count();
+            array_push($activeProducts, $active);
 
-            // Revenue
-            $revenue = CustomerPromotion::where('sap_connection_id', '=',$item->id)->sum('total_amount');
-            array_push($totalRevenue, number_format($revenue, 2));
+            // Sleeping Products
+            $sleeping = Product::where('sap_connection_id', $item->id)->where('is_active', 0)->count();
+            array_push($sleepingProducts, $sleeping);
 
-            // Cancel
-            $canceled = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'canceled'])->count();
-            array_push($cancelPromotion, $canceled);
+            // Product Movement
+            $movement = Product::where('sap_connection_id', $item->id)->join("invoice_items",function($join){
+                    $join->on('invoice_items.item_code','=','products.item_code');
+                })
+                ->where('is_active', 1)
+                ->where('invoice_items.ship_date', '>=', Carbon::now()->subDays(60)->toDateTimeString())
+                ->count();
+
+            array_push($productMovement, $movement);
 
         }
         $data = [];
-        array_push($data, array('name' => 'Pending Promotion', 'data' => $pendingPromotion));
-        array_push($data, array('name' => 'Approved Promotion', 'data' => $approvedPromotion));
-        // array_push($data, array('name' => 'Total Revenue', 'data' => $totalRevenue));
-        array_push($data, array('name' => 'Canceled Promotion', 'data' => $cancelPromotion));
+        array_push($data, array('name' => 'Active Product', 'data' => $activeProducts));
+        array_push($data, array('name' => 'Sleeping Products', 'data' => $sleepingProducts));
+        array_push($data, array('name' => 'Product Movements', 'data' => $productMovement));
 
         return ['status' => true, 'data' => $data, 'category' => $category];
 

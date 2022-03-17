@@ -1,13 +1,13 @@
 @extends('layouts.master')
 
-@section('title','Promotion Reports')
+@section('title','Product Reports')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Promotion Reports</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Product Reports</h1>
       </div>
 
       <!--begin::Actions-->
@@ -40,32 +40,51 @@
                 </div>
 
                 <!-- Brand -->
-                <div class="col-md-3 mt-5 brand">
+                <div class="col-md-3 mt-5">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_brand">
                     </select>
                 </div>
 
-                <!-- Customer Class -->
-                <div class="col-md-3 mt-5 customer_class">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_customer_class">
+                <!-- Product Category -->
+                <div class="col-md-3 mt-5">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_category">
                     </select>
                 </div>
 
-                <!-- Sales Specilalist -->
-                <div class="col-md-3 mt-5 sales_specialist">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_sales_specialist">
+                <!-- Product Line -->
+                <div class="col-md-3 mt-5">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_line">
                     </select>
                 </div>
 
-                <!-- Customer -->
+                <!-- Product Class -->
+                <div class="col-md-3 mt-5">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_class">
+                    </select>
+                </div>
+
+                <!-- Product Type -->
                 <div class="col-md-3 mt-5 sales_specialist">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_customer">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_type">
+                    </select>
+                </div>
+
+                <!-- Product Application -->
+                <div class="col-md-3 mt-5 sales_specialist">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_application">
+                    </select>
+                </div>
+
+                <!-- Product Pattern -->
+                <div class="col-md-3 mt-5 sales_specialist">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_pattern">
                     </select>
                 </div>
 
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mr-10">Clear</a>
+                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel mr-10">Export Excel</a>
                 </div>
 
               </div>
@@ -75,7 +94,7 @@
                     <!--begin::Table container-->
                     <div class="table-responsive">
                        <!--begin::Table-->
-                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                       <table class="table table-striped table-row-bordered table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <!--begin::Table head-->
                           <thead>
                             <tr>
@@ -131,10 +150,9 @@ $(document).ready(function() {
         "columns": [
             { "title": "No", "data": "no" },
             { "title": "Business Unit", "data": "company_name" },
-            { "title": "Status", "data": "status" },
-            { "title": "No. of Promotion", "data": "total_promotion"},
-            { "title": "Total Sales Quantity", "data": "total_quantity" },
-            { "title": "Total Sales Revenue", "data": "total_amount" }
+            { "title": "Active Product", "data": "active_product" },
+            { "title": "Sleeping Product", "data": "sleeping_product"},
+            { "title": "Product Movement", "data": "product_movement" },
         ],
         drawCallback:function(){
             $(function () {
@@ -166,7 +184,7 @@ $(document).ready(function() {
 
     function getData(){
         $.ajax({
-            url: "{{ route('report.promotion.get-all') }}",
+            url: "{{ route('reports.product-report.get-all') }}",
             method: "POST",
             dataType: 'json',
             data: {
@@ -192,6 +210,7 @@ $(document).ready(function() {
         });
     }
 
+    // Brand
     $('[name="filter_brand"]').select2({
         ajax: {
             url: "{{ route('common.getBrands') }}",
@@ -217,9 +236,10 @@ $(document).ready(function() {
         multiple: false,
     });
 
-    $('[name="filter_customer_class"]').select2({
+    // Product Category
+    $('[name="filter_product_category"]').select2({
         ajax: {
-            url: "{{route('common.getCustomerClass')}}",
+            url: "{{route('common.getProductCategory')}}",
             type: "post",
             dataType: 'json',
             delay: 250,
@@ -228,6 +248,7 @@ $(document).ready(function() {
                     _token: "{{ csrf_token() }}",
                     search: params.term,
                     sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    items_group_code: $('[name="filter_brand"]').find('option:selected').val()
                 };
             },
             processResults: function (response) {
@@ -237,60 +258,62 @@ $(document).ready(function() {
             },
             cache: true
         },
-        placeholder: 'By Customer Class',
+        placeholder: 'By Product Category',
         // minimumInputLength: 1,
         multiple: false,
     });
 
-    $('[name="filter_sales_specialist"]').select2({
-        ajax: {
-            url: "{{route('common.getSalesSpecialist')}}",
-            type: "post",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    _token: "{{ csrf_token() }}",
-                    search: params.term,
-                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
-                };
-            },
-            processResults: function (response) {
-                return {
-                    results: response
-                };
-            },
-            cache: true
-        },
-        placeholder: 'By Sales Specialist',
-        // minimumInputLength: 1,
-        multiple: false,
-    });
+    // // Product Line
+    // $('[name="filter_sales_specialist"]').select2({
+    //     ajax: {
+    //         url: "{{route('common.getSalesSpecialist')}}",
+    //         type: "post",
+    //         dataType: 'json',
+    //         delay: 250,
+    //         data: function (params) {
+    //             return {
+    //                 _token: "{{ csrf_token() }}",
+    //                 search: params.term,
+    //                 sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+    //             };
+    //         },
+    //         processResults: function (response) {
+    //             return {
+    //                 results: response
+    //             };
+    //         },
+    //         cache: true
+    //     },
+    //     placeholder: 'By Sales Specialist',
+    //     // minimumInputLength: 1,
+    //     multiple: false,
+    // });
 
-    $('[name="filter_customer"]').select2({
-        ajax: {
-            url: "{{route('common.getCustomer')}}",
-            type: "post",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    _token: "{{ csrf_token() }}",
-                    search: params.term,
-                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
-                };
-            },
-            processResults: function (response) {
-                return {
-                    results: response
-                };
-            },
-            cache: true
-        },
-        placeholder: 'Select Customer',
-        // minimumInputLength: 1,
-        multiple: false,
-    });
+    // // Product Class
+    // $('[name="filter_customer"]').select2({
+    //     ajax: {
+    //         url: "{{route('common.getCustomer')}}",
+    //         type: "post",
+    //         dataType: 'json',
+    //         delay: 250,
+    //         data: function (params) {
+    //             return {
+    //                 _token: "{{ csrf_token() }}",
+    //                 search: params.term,
+    //                 sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+    //             };
+    //         },
+    //         processResults: function (response) {
+    //             return {
+    //                 results: response
+    //             };
+    //         },
+    //         cache: true
+    //     },
+    //     placeholder: 'Select Customer',
+    //     // minimumInputLength: 1,
+    //     multiple: false,
+    // });
 });
 </script>
 @endpush

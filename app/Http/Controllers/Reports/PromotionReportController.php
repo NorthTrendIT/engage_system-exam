@@ -207,7 +207,7 @@ class PromotionReportController extends Controller
                     'status' => 'Pending',
                     'total_promotion' => $totalPending,
                     'total_quantity' => $totalPendingQue,
-                    'total_amount' => number_format($totalPendingRev, 2),
+                    'total_amount' => "₱ ".number_format_value($totalPendingRev, 2),
                 ];
                 $approved = [
                     'no' => ++$no,
@@ -215,7 +215,7 @@ class PromotionReportController extends Controller
                     'status' => 'Approved',
                     'total_promotion' => $totalApproved,
                     'total_quantity' => $totalApprovedQue,
-                    'total_amount' => number_format($totalApprovedRev, 2),
+                    'total_amount' => "₱ ".number_format_value($totalApprovedRev, 2),
                 ];
 
                 array_push($outputData, $pending);

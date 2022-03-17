@@ -321,6 +321,7 @@ Route::middleware(['auth'])->group(function(){
         Route::post('common/get-users', 'App\Http\Controllers\CommonController@getUsers')->name('common.getUsers');
         Route::post('common/get-promotion-codes', 'App\Http\Controllers\CommonController@getPromotionCodes')->name('common.getPromotionCodes');
         Route::post('common/get-customers', 'App\Http\Controllers\CommonController@getCustomer')->name('common.getCustomer');
+        Route::post('common/get-product-category', 'App\Http\Controllers\CommonController@getProductCategory')->name('common.getProductCategory');
 
     });
 
@@ -402,6 +403,10 @@ Route::middleware(['auth'])->group(function(){
             Route::resource('promotion-report', 'PromotionReportController')->only('index');
             Route::post('promotion-report/get-all', 'PromotionReportController@getAll')->name('promotion-report.get-all');
             Route::post('promotion-report/get-chart-data', 'PromotionReportController@getChartData')->name('promotion-report.get-chart-data');
+
+            Route::resource('product-report', 'ProductReportController')->only('index');
+            Route::post('product-report/get-all', 'ProductReportController@getAll')->name('product-report.get-all');
+            Route::post('product-report/get-chart-data', 'ProductReportController@getChartData')->name('product-report.get-chart-data');
         });
 
     });

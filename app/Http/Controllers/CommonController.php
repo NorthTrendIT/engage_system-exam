@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\ProductGroup;
 use App\Models\CustomerGroup;
 use App\Models\Promotions;
+use App\Models\Product;
 
 class CommonController extends Controller
 {
@@ -302,7 +303,7 @@ class CommonController extends Controller
             $search = $request->search;
 
             $data = ProductGroup::orderby('group_name','asc')
-                                ->select('id','group_name')
+                                ->select('number','group_name')
                                 ->limit(50);
 
             if($search != ''){
@@ -317,7 +318,7 @@ class CommonController extends Controller
 
             foreach($data as $value){
                 $response[] = array(
-                    "id" => $value->id,
+                    "id" => $value->number,
                     "text" => $value->group_name
                 );
             }
@@ -349,7 +350,6 @@ class CommonController extends Controller
         return response()->json($response);
     }
 
-
     // Get Promotion Code
     public function getPromotionCodes(Request $request){
         $search = $request->search;
@@ -373,6 +373,7 @@ class CommonController extends Controller
         return response()->json($response);
     }
 
+    // Get Customers
     public function getCustomer(Request $request){
         $response = array();
         if($request->sap_connection_id){
@@ -399,5 +400,131 @@ class CommonController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    // Get Product Category
+    public function getProductCategory(Request $request){
+        $response = array();
+        if($request->sap_connection_id != "" && @$request->items_group_code != ""){
+            $data = Product::select('items_group_code', 'u_tires')->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_tires')->orderby('u_tires')->limit(50);
+
+            if(@$request->search  != ''){
+                $data->where('u_tires', 'like', '%' .$request->search . '%');
+            }
+
+            if(@$request->sap_connection_id != ''){
+                $data->where('sap_connection_id',@$request->sap_connection_id);
+            }
+
+            $data = $data->groupBy('u_tires')->get();
+            // dd($data);
+            foreach($data as $value){
+                // dd($value);
+                $response[] = array(
+                    "id" => @$value->u_tires,
+                    "text" => @$value->u_tires,
+                );
+            }
+        }
+
+        return response()->json($response);
+    }
+
+    // Get Product Line
+    public function getProductLineData(Request $request){
+        $response = array();
+
+        if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
+            $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_line')->orderby('u_item_line')->limit(50);
+
+            if(@$request->search  != ''){
+                $data->where('u_item_line', 'like', '%' .$request->search . '%');
+            }
+
+            $data = $data->get()->groupBy('u_item_line');
+            if(@$request->sap_connection_id != ''){
+                $data->where('sap_connection_id',@$request->sap_connection_id);
+            }
+
+            $data = $data->groupBy('u_tires')->get();
+            // dd($data);
+            foreach($data as $value){
+                // dd($value);
+                $response[] = array(
+                    "id" => @$value->u_tires,
+                    "text" => @$value->u_tires,
+                );
+            }
+        }
+
+        return response()->json($response);
+    }
+
+    // Product Class
+    public function getProductClassData(Request $request){
+        $data = collect();
+
+        if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
+          $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('item_class')->orderby('item_class')->limit(50);
+
+          if(@$request->search  != ''){
+            $data->where('item_class', 'like', '%' .$request->search . '%');
+          }
+
+          $data = $data->get()->groupBy('item_class');
+        }
+
+        return response()->json($data);
+    }
+
+    // Product Type
+    public function getProductTypeData(Request $request){
+        $data = collect();
+
+        if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
+          $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_type')->orderby('u_item_type')->limit(50);
+
+          if(@$request->search  != ''){
+            $data->where('u_item_type', 'like', '%' .$request->search . '%');
+          }
+
+          $data = $data->get()->groupBy('u_item_type');
+        }
+
+        return response()->json($data);
+    }
+
+    //
+    public function getProductApplicationData(Request $request){
+        $data = collect();
+
+        if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
+        $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_application')->orderby('u_item_application')->limit(50);
+
+        if(@$request->search  != ''){
+            $data->where('u_item_application', 'like', '%' .$request->search . '%');
+        }
+
+        $data = $data->get()->groupBy('u_item_application');
+        }
+
+        return response()->json($data);
+    }
+
+
+    public function getProductPatternData(Request $request){
+        $data = collect();
+
+        if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
+        $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_pattern2')->orderby('u_pattern2')->limit(50);
+
+        if(@$request->search  != ''){
+            $data->where('u_pattern2', 'like', '%' .$request->search . '%');
+        }
+
+        $data = $data->get()->groupBy('u_pattern2');
+        }
+
+        return response()->json($data);
     }
 }
