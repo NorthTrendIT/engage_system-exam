@@ -100,6 +100,17 @@
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Order #:</div>
                               <!--end::Label-->
                               <!--end::Col-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ '#'.@$data->doc_entry ?? "-"  }}</div>
+                              <!--end::Col-->
+                            </div>
+                            <!--end::Col-->
+
+                            <!--end::Col-->
+                            <div class="col-sm-2">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Reference #:</div>
+                              <!--end::Label-->
+                              <!--end::Col-->
                               <div class="fw-bolder fs-6 text-gray-800">{{ @$data->num_at_card ?? "-"  }}</div>
                               <!--end::Col-->
                             </div>
@@ -116,8 +127,23 @@
                             </div>
                             <!--end::Col-->
 
+                          </div>
+                          <!--end::Row-->
+
+                          <div class="row g-5 mb-11">
                             <!--end::Col-->
-                            <div class="col-sm-2">
+                            <div class="col-sm-9">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Remarks:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->u_remarks ?? "-" }}</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+
+                            <!--end::Col-->
+                            <div class="col-sm-3">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
                               <!--end::Label-->
@@ -125,20 +151,6 @@
                               <div class="fw-bolder fs-6 text-gray-800">
                                 <span>{!! getOrderStatusBtnHtml(getOrderStatusByQuotation($data)) !!}</span>
                               </div>
-                              <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
-                          </div>
-                          <!--end::Row-->
-
-                          <div class="row g-5 mb-11">
-                            <!--end::Col-->
-                            <div class="col-sm-12">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Remarks:</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->u_remarks ?? "-" }}</div>
                               <!--end::Text-->
                             </div>
                             <!--end::Col-->
