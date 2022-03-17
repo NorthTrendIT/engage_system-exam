@@ -4,16 +4,16 @@
 
 	<style type="text/css">
 		body {
-	         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	      }
-	      p, th, td {
-	         font-size: 14px;
-	         line-height: 19px;
-	      }
-         	p a {
-	         color: #000;
-	         text-decoration: none;
-         	}
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+		p, th, td {
+			font-size: 14px;
+			line-height: 19px;
+		}
+		p a {
+			color: #000;
+			text-decoration: none;
+		}
 		
 		.main{width: 1100px;margin: 0 auto;display: block;}
 		.table {
@@ -66,6 +66,12 @@
 		}
 		table td {
 		    word-break: break-all;
+		}
+
+		table td ul {
+			padding-left: 0;
+			border: none;
+			margin-bottom: 0;
 		}
 		@media print {
 			body {
@@ -256,7 +262,7 @@
 						</tr>
 
 
-			        	</tbody>
+			        </tbody>
 				</table>
 			</td>
 		</tr>
@@ -288,7 +294,7 @@
 					              		
 					              		@if(isset($warranty_claim_points) && @$warranty_claim_points[$s_point->id] == 1) Yes @endif
 
-                                  				@if(isset($warranty_claim_points) && @$warranty_claim_points[$s_point->id] == 0) No @endif
+                                  		@if(isset($warranty_claim_points) && @$warranty_claim_points[$s_point->id] == 0) No @endif
 					              	</td>
 				            	</tr>
 				            @endforeach            
@@ -299,46 +305,46 @@
 		</tr>
 	</table>
 
-	<table class="transcript-tbl" width=" 100%" border="0" cellpadding="0" cellspacing="0" style="background: #fdfdfd; padding: 20px 0; border-radius: 7px; border: 1px solid #cfcfcf;margin-top: 0px;width: 100%;page-break-before: always;">
-		<tbody>
-		<tr style="width: 100%;">
-			<td colspan="5" style="padding: 20px 10px 10px;"><h4 style="color: #7239ea;font-size: 20px;margin-top: 0;margin-bottom: 0px;padding-left: 0;width: 100%;">Tire Manifistation Probable Cause</h4>
-			</td>
-		</tr>
+	<table style="background: #fdfdfd; padding: 20px 0; border-radius: 7px; margin-top: 0px;width: 100%;border: 1px solid #cfcfcf;table-layout:fixed;page-break-before: always;border-collapse: collapse;">
+		<tbody >
+			<tr>
+				<td colspan="5" style="padding: 20px 10px 10px;"><h4 style="color: #7239ea;font-size: 20px;margin-top: 0;margin-bottom: 0px;padding-left: 0;width: 100%;">Tire Manifistation Probable Cause</h4>
+				</td>
+			</tr>
 
-		<tr>
-			<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;width: 50px;">No.</th>
-			<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;">Image</th>
-			<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;width: 350px;">Manifistation</th>
-			<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;width: 350px;">Probable Cause(s)</th>
-			<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;width: 80px;">Answer</th>
-		</tr>
+			<tr>
+				<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;width: 50px;">No.</th>
+				<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;">Image</th>
+				<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;width: 350px;">Manifistation</th>
+				<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;width: 350px;">Probable Cause(s)</th>
+				<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;width: 80px;">Answer</th>
+			</tr>
 
-		@foreach($tire_manifistations as $key => $m)
-		<tr>
-			<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;font-weight: normal;border-bottom: 1px solid #cfcfcf;">{{ $key+1}}.</td>
-				<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;font-weight: normal;border-bottom: 1px solid #cfcfcf;">
+			@foreach($tire_manifistations as $key => $m)
+			<tr>
+				<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;font-weight: normal;border: 1px solid #cfcfcf; border-left: none; border-right: none;">{{ $key+1}}.</td>
+				<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;font-weight: normal;border: 1px solid #cfcfcf; border-left: none; border-right: none;">
 					
 					@if($m->image && get_valid_file_url('sitebucket/tire-manifistation',$m->image))
-								<img src="{{ get_valid_file_url('sitebucket/tire-manifistation',$m->image) }}" height="100" width="100">
-							@endif
+						<img src="{{ get_valid_file_url('sitebucket/tire-manifistation',$m->image) }}" height="100" width="100">
+					@endif
 
 				</td>
-				<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;font-weight: normal;border-bottom: 1px solid #cfcfcf;">
+				<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;font-weight: normal;border: 1px solid #cfcfcf; border-left: none; border-right: none;">
 					{!! $m->manifistation !!}
 				</td>
-			<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;font-weight: normal;border-bottom: 1px solid #cfcfcf;">
-					{!! $m->probable_cause !!}
-			</td>
-				<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;font-weight: normal;border-bottom: 1px solid #cfcfcf;">
+				<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;font-weight: normal;border: 1px solid #cfcfcf; border-left: none; border-right: none;">
+						{!! $m->probable_cause !!}
+				</td>
+				<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;font-weight: normal;border: 1px solid #cfcfcf; border-left: none; border-right: none;">
 					<p>
 						@if(isset($warranty_tire_manifistations) && @$warranty_tire_manifistations[$m->id] == 1) Yes @endif
 
-								@if(isset($warranty_tire_manifistations) && @$warranty_tire_manifistations[$m->id] == 0) No @endif
+						@if(isset($warranty_tire_manifistations) && @$warranty_tire_manifistations[$m->id] == 0) No @endif
 					</p>
 				</td>
-		</tr>
-		@endforeach
+			</tr>
+			@endforeach
 		</tbody>
 	</table>
 
@@ -347,27 +353,28 @@
 			<td>
 				<table style="background: #fdfdfd; padding: 20px 0; border-radius: 7px; border: 1px solid #cfcfcf;margin-top: 0px;width: 100%;">
 					<tr style="width: 100%;">
-						<td colspan="3" style="padding: 20px 10px 10px;"><h4 style="color: #7239ea;font-size: 20px;margin-top: 0;margin-bottom: 0px;padding-left: 0;width: 100%;">Pictures of the Tire focusing on Damage Areas</h4>
+						<td colspan="3" style="padding: 20px 10px 10px;">
+							<h4 style="color: #7239ea;font-size: 20px;margin-top: 0;margin-bottom: 0px;padding-left: 0;width: 100%;">Pictures of the Tire focusing on Damage Areas</h4>
 						</td>
-						</tr>
+					</tr>
 
+					<tr>
+						<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;">No.</th>
+						<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;">Title</th>
+						<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;">Image</th>
+					</tr>
+					@foreach($data->pictures as $key => $p)
 						<tr>
-							<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;">No.</th>
-							<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;">Title</th>
-							<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;">Image</th>
-						</tr>
-						@foreach($data->pictures as $key => $p)
-							<tr>
-								<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;font-weight: normal;border-bottom: 1px solid #cfcfcf;">{{ $key+1}}.</td>
-								<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;font-weight: normal;border-bottom: 1px solid #cfcfcf;">{!! $p->title !!}</td>
-								<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;font-weight: normal;border-bottom: 1px solid #cfcfcf;">
+							<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;font-weight: normal;border-bottom: 1px solid #cfcfcf;">{{ $key+1}}.</td>
+							<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;font-weight: normal;border-bottom: 1px solid #cfcfcf;">{!! $p->title !!}</td>
+							<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;border-bottom: 1px solid #cfcfcf;font-weight: normal;border-bottom: 1px solid #cfcfcf;">
 
 								@if($p->image && get_valid_file_url('sitebucket/warranty-pictures',$p->image))
-												<img src="{{ get_valid_file_url('sitebucket/warranty-pictures',$p->image) }}" width="120">
-											@endif
+									<img src="{{ get_valid_file_url('sitebucket/warranty-pictures',$p->image) }}" width="120">
+								@endif
 							</td>
-							</tr>
-							@endforeach
+						</tr>
+					@endforeach
 				</table>
 			</td>
 		</tr> 
