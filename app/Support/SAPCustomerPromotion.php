@@ -253,6 +253,7 @@ class SAPCustomerPromotion
                     $quotation = Quotation::where($where)->first();
                     if(!is_null($quotation)){
                         $quotation->document_status = "Cancelled";
+                        $quotation->cancelled = "Yes";
                         $quotation->save();
                     }
 

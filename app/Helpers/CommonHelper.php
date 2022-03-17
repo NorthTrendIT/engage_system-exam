@@ -515,7 +515,9 @@ function getOrderStatusByQuotation($data){
 
     if(!empty($data)){
 
-        if(!empty(@$data->order)){
+        if($data->cancelled == 'Yes' || @$data->document_status == 'Cancelled'){
+            $status = getOrderStatusArray('CL');
+        }elseif(!empty(@$data->order)){
 
             if($data->order->cancelled == 'Yes'){
                 $status = getOrderStatusArray('CL');
