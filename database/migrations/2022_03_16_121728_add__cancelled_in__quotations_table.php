@@ -13,7 +13,7 @@ class AddCancelledInQuotationsTable extends Migration
      */
     public function up()
     {
-        Schema::table('Quotations', function (Blueprint $table) {
+        Schema::table('quotations', function (Blueprint $table) {
             $table->string('cancelled')->nullable()->default('No');
         });
     }
