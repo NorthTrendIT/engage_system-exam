@@ -113,9 +113,11 @@ class SAPInvoices
 
                     //$this->addInvoicesDataInDatabase($data['odata.nextLink']);
                 } else {
-                    add_sap_log([
-                        'status' => "completed",
-                    ], $this->log_id);
+                    if($this->log_id){
+                        add_sap_log([
+                            'status' => "completed",
+                        ], $this->log_id);
+                    }
                 }
             }
         }
