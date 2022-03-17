@@ -180,6 +180,7 @@ class SAPOrderPost
                 $order->message = null;
 
                 $data = $this->pushOrderDetailsInDatabase($data);
+                $this->updateNumAtCardInOrder($data['DocEntry']);
             } else {
                 $order->confirmation_status = 'ERR';
                 $order->message = $data;
@@ -217,6 +218,32 @@ class SAPOrderPost
                 'ShipDate' => @$order->due_date,
             );
             array_push($response['DocumentLines'], $temp);
+        }
+
+        return $response;
+    }
+
+    public function updateNumAtCardInOrder($doc_entry){
+
+        $quotation = Quotation::where('doc_entry', $doc_entry)->where('sap_connection_id', @$this->sap_connection_id)->first();
+        $response = array();
+
+        if(!empty($quotation)){
+            $num_at_card = "OMS# ".$doc_entry;
+
+            $body = array(
+                            'NumAtCard' => $num_at_card,
+                        );
+
+            $response = $this->requestSapApi('/b1s/v1/Quotations('.$doc_entry.')', "PATCH", $body);
+
+            $status = $response['status'];
+            $data = $response['data'];
+
+            if($status){
+                $quotation->num_at_card = $num_at_card;
+                $quotation->save();
+            }
         }
 
         return $response;
