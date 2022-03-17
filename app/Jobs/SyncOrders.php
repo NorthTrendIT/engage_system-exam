@@ -28,7 +28,7 @@ class SyncOrders implements ShouldQueue
     protected $log_id;
     
 
-    public function __construct($database, $username, $password, $log_id)
+    public function __construct($database, $username, $password, $log_id = false)
     {
         $this->database = $database;
         $this->username = $username;
