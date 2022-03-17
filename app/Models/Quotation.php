@@ -43,6 +43,7 @@ class Quotation extends Model
         'customer_promotion_id',
         'updated_date',
         'num_at_card',
+        'cancelled',
     ];
 
     public function items(){

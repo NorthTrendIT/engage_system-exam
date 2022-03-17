@@ -515,13 +515,15 @@ function getOrderStatusByQuotation($data){
 
     if(!empty($data)){
 
-        if(!empty(@$data->order)){
+        if($data->cancelled == 'Yes' || @$data->document_status == 'Cancelled'){
+            $status = getOrderStatusArray('CL');
+        }elseif(!empty(@$data->order)){
 
             if($data->order->cancelled == 'Yes'){
                 $status = getOrderStatusArray('CL');
             }else{
 
-                if($data->order->document_status == 'bost_Open'){
+                if($data->order->document_status == 'bost_Open' && $data->order->u_sostat == "OP"){
                     $status = getOrderStatusArray("OP");
                 }
 

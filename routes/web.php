@@ -403,6 +403,9 @@ Route::middleware(['auth'])->group(function(){
         Route::prefix('reports')->namespace('App\Http\Controllers\Reports')->name('reports.')->group(function(){
             Route::resource('sales-report','SalesReportController')->only('index');
             Route::post('sales-report/get-all', 'SalesReportController@getAll')->name('sales-report.get-all');
+
+            Route::resource('sales-order-report','SalesOrderReportController')->only('index');
+
         });
             
     });
