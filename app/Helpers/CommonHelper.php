@@ -523,7 +523,7 @@ function getOrderStatusByQuotation($data){
                 $status = getOrderStatusArray('CL');
             }else{
 
-                if($data->order->document_status == 'bost_Open'){
+                if($data->order->document_status == 'bost_Open' && $data->order->u_sostat == "OP"){
                     $status = getOrderStatusArray("OP");
                 }
 
