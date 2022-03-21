@@ -387,6 +387,7 @@
             if (validator.form() != false) {
                 // $('[type="submit"]').prop('disabled', true);
                 // $('[name="address_id"]').removeAttr('disabled');
+                show_loader();
                 $.ajax({
                     url: "{{route('draft-order.store')}}",
                     type: "POST",
@@ -400,9 +401,11 @@
                             setTimeout(function(){
                                 window.location.href = '{{ route('draft-order.index') }}';
                             },1500)
+                            hide_loader();
                         } else {
                             toast_error(data.message);
                             // $('[type="submit"]').prop('disabled', false);
+                            hide_loader();
                         }
                     },
                     error: function () {
@@ -410,6 +413,7 @@
                         // $('[type="submit"]').prop('disabled', false);
                     },
                 });
+                hide_loader();
             }
         });
 
@@ -417,6 +421,7 @@
             e.preventDefault();
             var validator = validate_form();
 
+            show_loader();
             if (validator.form() != false) {
                 $('[type="submit"]').prop('disabled', true);
                 $('[name="address_id"]').removeAttr('disabled');
@@ -432,10 +437,12 @@
                             toast_success(data.message)
                             setTimeout(function(){
                                 window.location.href = '{{ route('draft-order.index') }}';
-                            },1500)
+                            },1500);
+                            hide_loader();
                         } else {
                             toast_error(data.message);
                             $('[type="submit"]').prop('disabled', false);
+                            hide_loader();
                         }
                     },
                     error: function () {
@@ -443,6 +450,7 @@
                         $('[type="submit"]').prop('disabled', false);
                     },
                 });
+                hide_loader();
             }
         });
 
