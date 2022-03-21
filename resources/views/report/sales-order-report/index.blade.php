@@ -193,6 +193,10 @@
           </div>
         </div>
       </div>
+
+      <div id="hover">
+        
+      </div>
     </div>
   </div>
 </div>
@@ -288,9 +292,9 @@
           $('.total_sales_quantity_approved_count').text(result.data.approved_total_sales_quantity);
           $('.total_sales_quantity_disapproved_count').text(result.data.disapproved_total_sales_quantity);
 
-          $('.total_sales_revenue_pending_count').text("₱ " + result.data.pending_total_sales_revenue);
-          $('.total_sales_revenue_approved_count').text("₱ " + result.data.approved_total_sales_revenue);
-          $('.total_sales_revenue_disapproved_count').text("₱ " + result.data.disapproved_total_sales_revenue);
+          $('.total_sales_revenue_pending_count').text("₱ " + get_format_number_value(result.data.pending_total_sales_revenue));
+          $('.total_sales_revenue_approved_count').text("₱ " + get_format_number_value(result.data.approved_total_sales_revenue));
+          $('.total_sales_revenue_disapproved_count').text("₱ " + get_format_number_value(result.data.disapproved_total_sales_revenue));
 
 
           render_pie_chart(result.data);
@@ -302,9 +306,6 @@
       });
     }
 
-    function labelFormatter(label, series) {
-      return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
-    }
 
     function render_pie_chart(result){
 
@@ -330,7 +331,11 @@
         },
         legend: {
           show: false
-        }
+        },
+        grid: {
+          hoverable: true,
+          clickable: true
+        },
       });
 
       if(result.pending_total_sales_orders == 0 && result.approved_total_sales_orders == 0 && result.disapproved_total_sales_orders == 0){
@@ -360,7 +365,11 @@
         },
         legend: {
           show: false
-        }
+        },
+        grid: {
+          hoverable: true,
+          clickable: true
+        },
       });
 
       if(result.pending_total_sales_quantity == 0 && result.approved_total_sales_quantity == 0 && result.disapproved_total_sales_quantity == 0){
@@ -389,12 +398,41 @@
         },
         legend: {
           show: false
-        }
+        },
+        grid: {
+          hoverable: true,
+          clickable: true
+        },
       });
 
       if(result.pending_total_sales_revenue == 0 && result.approved_total_sales_revenue == 0 && result.disapproved_total_sales_revenue == 0){
         $('#total_sales_revenue_pie_chart_div').removeClass('h-500px');
       }
+    }
+
+
+    function labelFormatter(label, series) {
+      return "<div class='default_label' style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
+    }
+
+    $('#total_sales_revenue_pie_chart_div,#total_sales_quantity_pie_chart_div,#number_of_sales_orders_pie_chart_div').bind("plothover", function(event, pos, obj) {
+      if(obj){
+        var percent = Math.round(obj.series.percent);
+        $("#hover").html("<span style='font-weight:bold; color:" + obj.series.color + "'>" + obj.series.label + " (" + percent + "%)</span>");
+        $('#hover').css({'position':'absolute','display':'block','left':pos.pageX,'top':pos.pageY}); 
+      }
+      else {
+        $('#hover').css('display','none');
+      }
+    });
+
+    function get_format_number_value(number) {
+      var formatter = new Intl.NumberFormat('en-US', {
+        // style: 'currency',
+        currency: 'PHL',
+      });
+
+      return formatter.format(number); 
     }
 
     $(document).on('click', '.search', function(event) {
