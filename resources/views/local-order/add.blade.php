@@ -106,13 +106,13 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <input type="number" class="form-control quantity" name="quantity" data-price="{{ get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) }}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                                <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                                             </td>
                                                             <td style="text-align:right">
-                                                                <span class="price text-primary">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices, $customer_price_list_no)) }}</span>
+                                                                <span class="price text-primary">₱ {{ number_format_value(@$value->price) }}</span>
                                                             </td>
                                                             <td style="text-align:right">
-                                                                <span class="amount text-primary" style="font-weight: bold">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity) }}</span>
+                                                                <span class="amount text-primary" style="font-weight: bold">₱ {{ number_format_value(@$value->total) }}</span>
                                                             </td>
                                                             <td>
                                                                 <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
@@ -176,7 +176,7 @@
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">sub total</span>
                                             </div>
                                             <div class="col-md-6 mb-3 ">
-                                                <span style="text-align: right; width: 100%;" class="d-block text-primary price subTotal">@if(isset($edit)) ₱ {{ $total }} @else ₱ 0.00 @endif</span>
+                                                <span style="text-align: right; width: 100%;" class="d-block text-primary price subTotal">@if(isset($edit)) ₱ {{ $edit->total }} @else ₱ 0.00 @endif</span>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">discount</span>
@@ -190,7 +190,7 @@
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">total</span>
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <span style="text-align: right; width: 100%;" class="d-block text-primary price grandTotal">@if(isset($edit)) ₱ {{ $total }} @else ₱ 0.00 @endif</span>
+                                                <span style="text-align: right; width: 100%;" class="d-block text-primary price grandTotal">@if(isset($edit)) ₱ {{ $edit->total }} @else ₱ 0.00 @endif</span>
                                             </div>
                                         </div>
                                     </div>
@@ -671,6 +671,11 @@
             $('.subTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
             $('.grandTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
         });
+
+        @if(isset($edit))
+            $("input[type=number]").first().trigger('change');
+        @endif
     });
+
 </script>
 @endpush
