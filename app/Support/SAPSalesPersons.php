@@ -60,10 +60,12 @@ class SAPSalesPersons
 
         } catch (\Exception $e) {
 
-            add_sap_log([
-                            'status' => "error",
-                            'error_data' => $e->getMessage(),
-                        ], $this->log_id);
+            if($this->log_id){
+                add_sap_log([
+                                'status' => "error",
+                                'error_data' => $e->getMessage(),
+                            ], $this->log_id);
+            }
             
             return array(
                         'status' => false,
@@ -128,9 +130,11 @@ class SAPSalesPersons
                 if(!empty($data['odata.nextLink'])){
                     $this->addSalesPersonsDataInDatabase($data['odata.nextLink']);
                 }else{
-                    add_sap_log([
-                            'status' => "completed",
-                        ], $this->log_id);
+                    if($this->log_id){
+                        add_sap_log([
+                                'status' => "completed",
+                            ], $this->log_id);
+                    }
                 }
             }
         }

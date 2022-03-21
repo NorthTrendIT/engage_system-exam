@@ -26,7 +26,7 @@ class SyncCustomerGroups implements ShouldQueue
     protected $password;
     protected $log_id;
 
-    public function __construct($database, $username, $password, $log_id)
+    public function __construct($database, $username, $password, $log_id = false)
     {
         $this->database = $database;
         $this->username = $username;

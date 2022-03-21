@@ -27,6 +27,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         $schedule->command('sapauth:hourly')->cron('55 * * * *'); 
+        $schedule->command('sync:allmoduledata')->everyFifteenMinutes(); 
     }
 
     /**

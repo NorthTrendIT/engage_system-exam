@@ -60,10 +60,12 @@ class SAPTerritory
 
         } catch (\Exception $e) {
 
-            add_sap_log([
-                            'status' => "error",
-                            'error_data' => $e->getMessage(),
-                        ], $this->log_id);
+            if($this->log_id){
+                add_sap_log([
+                                'status' => "error",
+                                'error_data' => $e->getMessage(),
+                            ], $this->log_id);
+            }
 
             return array(
                                 'status' => false,
@@ -94,9 +96,11 @@ class SAPTerritory
                     SyncNextTerritories::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
 
                 }else{
-                    add_sap_log([
-                            'status' => "completed",
-                        ], $this->log_id);
+                    if($this->log_id){
+                        add_sap_log([
+                                'status' => "completed",
+                            ], $this->log_id);
+                    }
                 }
             }
         }
