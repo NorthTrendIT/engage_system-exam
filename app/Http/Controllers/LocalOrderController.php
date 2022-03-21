@@ -251,7 +251,7 @@ class LocalOrderController extends Controller
                                     <i class="fa fa-eye"></i>
                                 </a>';
 
-                            if($row->confirmation_status == 'P'){
+                            if($row->confirmation_status == 'P' && empty($row->doc_entry)){
                                 $btn .= '<a href="' . route('sales-specialist-orders.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                     <i class="fa fa-pencil"></i>
                                     </a>';
