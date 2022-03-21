@@ -213,6 +213,8 @@ class SAPInvoices
                                 'ship_to_code' => @$value['ShipToCode'],
                                 'ship_to_description' => @$value['ShipToDescription'],
                                 //'response' => json_encode($value),
+
+                                'sap_connection_id' => $sap_connection->id,
                             );
 
                             $item_obj = InvoiceItem::updateOrCreate([

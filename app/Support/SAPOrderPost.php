@@ -148,6 +148,8 @@ class SAPOrderPost
                         'ship_to_code' => @$item['ShipToCode'],
                         'ship_to_description' => @$item['ShipToDescription'],
                         //'response' => json_encode($item),
+
+                        'sap_connection_id' => $this->sap_connection_id,
                     );
 
                     $item_obj = QuotationItem::updateOrCreate([

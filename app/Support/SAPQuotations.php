@@ -214,6 +214,8 @@ class SAPQuotations
                                 'ship_to_code' => @$item['ShipToCode'],
                                 'ship_to_description' => @$item['ShipToDescription'],
                                 //'response' => json_encode($item),
+
+                                'sap_connection_id' => $sap_connection->id,
                             );
 
                             $item_obj = QuotationItem::updateOrCreate([

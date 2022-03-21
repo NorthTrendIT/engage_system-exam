@@ -55,6 +55,14 @@
                   </select>
                 </div>
 
+
+                <!-- Customer -->
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-placeholder="Select customer" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
@@ -100,6 +108,14 @@
                   <a href="javascript:" class="text-danger fw-bold fs-6">Disapproved</a>
                 </div>
               </div>
+
+              <div class="row mb-5">
+                <div class="col-md-12">
+                  <div id="number_of_sales_orders_pie_chart_div" class="h-500px"></div>
+                </div>
+              </div>
+
+
             </div>
           </div>
         </div>
@@ -129,6 +145,13 @@
                   <a href="javascript:" class="text-danger fw-bold fs-6">Disapproved</a>
                 </div>
               </div>
+
+              <div class="row mb-5">
+                <div class="col-md-12">
+                  <div id="total_sales_quantity_pie_chart_div" class="h-500px"></div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -158,6 +181,14 @@
                   <a href="javascript:" class="text-danger fw-bold fs-6">Disapproved</a>
                 </div>
               </div>
+
+
+              <div class="row mb-5">
+                <div class="col-md-12">
+                  <div id="total_sales_revenue_pie_chart_div" class="h-500px"></div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -183,16 +214,29 @@
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
+<script src="{{ asset('assets') }}/assets/plugins/custom/flotcharts/flotcharts.bundle.js"></script>
+{{-- <script src="{{ asset('assets') }}/assets/js/custom/documentation/charts/flotcharts/pie.js"></script> --}}
+
 <script>
   $(document).ready(function() {
-
+    
     render_data();
     function render_data(){
+
+      $filter_company = $('[name="filter_company"]').find('option:selected').val();
+      $filter_date_range = $('[name="filter_date_range"]').val();
+      $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
+      $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
+
       $.ajax({
         url: '{{ route('reports.sales-order-report.get-all') }}',
         method: "POST",
         data: {
-                _token:'{{ csrf_token() }}'
+                _token:'{{ csrf_token() }}',
+                filter_company : $filter_company,
+                filter_date_range : $filter_date_range,
+                filter_customer : $filter_customer,
+                filter_sales_specialist : $filter_sales_specialist,
               }
       })
       .done(function(result) {
@@ -210,11 +254,77 @@
           $('.total_sales_revenue_pending_count').text("₱ " + result.data.pending_total_sales_revenue);
           $('.total_sales_revenue_approved_count').text("₱ " + result.data.approved_total_sales_revenue);
           $('.total_sales_revenue_disapproved_count').text("₱ " + result.data.disapproved_total_sales_revenue);
+
+
+          render_pie_chart(result.data);
+
         }
       })
       .fail(function() {
         toast_error("error");
       });
+    }
+
+
+    function render_pie_chart(result){
+
+      {{-- Number of Sales Orders --}}
+      var data = [
+            { label: "Pending", data: result.pending_total_sales_orders, color: KTUtil.getCssVariableValue("--bs-active-warning") },
+            { label: "Approved", data: result.approved_total_sales_orders, color: KTUtil.getCssVariableValue("--bs-active-success") },
+            { label: "Disapproved", data: result.disapproved_total_sales_orders, color: KTUtil.getCssVariableValue("--bs-active-danger") },
+          ];
+
+      $.plot('#number_of_sales_orders_pie_chart_div', data, {
+        series: {
+          pie: {
+            show: true
+          }
+        }
+      });
+
+      if(result.pending_total_sales_orders == 0 && result.approved_total_sales_orders == 0 && result.disapproved_total_sales_orders == 0){
+        $('#number_of_sales_orders_pie_chart_div').removeClass('h-500px');
+      }
+
+
+      {{-- Total Sales Quantity --}}
+      var data = [
+            { label: "Pending", data: result.pending_total_sales_quantity, color: KTUtil.getCssVariableValue("--bs-active-warning") },
+            { label: "Approved", data: result.approved_total_sales_quantity, color: KTUtil.getCssVariableValue("--bs-active-success") },
+            { label: "Disapproved", data: result.disapproved_total_sales_quantity, color: KTUtil.getCssVariableValue("--bs-active-danger") },
+          ];
+          
+      $.plot('#total_sales_quantity_pie_chart_div', data, {
+        series: {
+          pie: {
+            show: true
+          }
+        }
+      });
+
+      if(result.pending_total_sales_quantity == 0 && result.approved_total_sales_quantity == 0 && result.disapproved_total_sales_quantity == 0){
+        $('#total_sales_quantity_pie_chart_div').removeClass('h-500px');
+      }
+
+      {{-- Total Sales Revenue --}}
+      var data = [
+            { label: "Pending", data: result.pending_total_sales_revenue, color: KTUtil.getCssVariableValue("--bs-active-warning") },
+            { label: "Approved", data: result.approved_total_sales_revenue, color: KTUtil.getCssVariableValue("--bs-active-success") },
+            { label: "Disapproved", data: result.disapproved_total_sales_revenue, color: KTUtil.getCssVariableValue("--bs-active-danger") },
+          ];
+          
+      $.plot('#total_sales_revenue_pie_chart_div', data, {
+        series: {
+          pie: {
+            show: true
+          }
+        }
+      });
+
+      if(result.pending_total_sales_revenue == 0 && result.approved_total_sales_revenue == 0 && result.disapproved_total_sales_revenue == 0){
+        $('#total_sales_revenue_pie_chart_div').removeClass('h-500px');
+      }
     }
 
     $(document).on('click', '.search', function(event) {
@@ -302,6 +412,32 @@
             };
           },
           cache: true
+      },
+    });
+
+    $('[name="filter_customer"]').select2({
+      ajax: {
+        url: "{{route('customer-promotion.get-customer')}}",
+        type: "post",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+            return {
+                _token: "{{ csrf_token() }}",
+                search: params.term
+            };
+        },
+        processResults: function (response) {
+          return {
+            results:  $.map(response, function (item) {
+                          return {
+                            text: item.card_name + " (Code: " + item.card_code + ")",
+                            id: item.id
+                          }
+                      })
+          };
+        },
+        cache: true
       },
     });
 
