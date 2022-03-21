@@ -199,26 +199,51 @@
 @endsection
 
 @push('css')
-<link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
+  <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+  <link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
 
-<style type="text/css">
-  .other_filter_div{
-    display: none;
-  }
-
-  .col-box-4{
-    min-width: 150px;
-    margin-right: 20px;
-  }
-
-  @media (min-width: 768px){
-    .col-box-4  {
-      width: 30%;
+  <style type="text/css">
+    .other_filter_div{
+      display: none;
     }
-  }
-</style>
+
+    .col-box-4{
+      min-width: 150px;
+      margin-right: 20px;
+    }
+
+    .col-box-4{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    /*.col-box-4 a{
+      margin-bottom: -30px;
+    }
+
+    .col-box-4 span.count{
+      margin-top: -30px;
+      font-size: 30px !important;
+    }*/
+
+
+    @media (min-width: 768px){
+      .col-box-4  {
+        width: 30%;
+      }
+    }
+
+    @media screen and (max-width: 991px){
+      .col-box-4  {
+        display: block;
+      }
+
+      .col-box-4 a{
+        display: block;
+      }
+    }
+  </style>
 @endpush
 
 @push('js')
@@ -227,6 +252,7 @@
 <script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/flotcharts/flotcharts.bundle.js"></script>
 {{-- <script src="{{ asset('assets') }}/assets/js/custom/documentation/charts/flotcharts/pie.js"></script> --}}
+<script src="http://www.flotcharts.org/flot/source/jquery.flot.legend.js"></script>
 
 <script>
   $(document).ready(function() {
@@ -276,6 +302,9 @@
       });
     }
 
+    function labelFormatter(label, series) {
+      return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
+    }
 
     function render_pie_chart(result){
 
@@ -289,8 +318,18 @@
       $.plot('#number_of_sales_orders_pie_chart_div', data, {
         series: {
           pie: {
-            show: true
+            show: true,
+            radius: 1,
+            label: {
+              show: true,
+              radius: 3/4,
+              formatter: labelFormatter,
+              threshold: 0.1,
+            }
           }
+        },
+        legend: {
+          show: false
         }
       });
 
@@ -309,8 +348,18 @@
       $.plot('#total_sales_quantity_pie_chart_div', data, {
         series: {
           pie: {
-            show: true
+            show: true,
+            radius: 1,
+            label: {
+              show: true,
+              radius: 3/4,
+              formatter: labelFormatter,
+              threshold: 0.1,
+            }
           }
+        },
+        legend: {
+          show: false
         }
       });
 
@@ -328,8 +377,18 @@
       $.plot('#total_sales_revenue_pie_chart_div', data, {
         series: {
           pie: {
-            show: true
+            show: true,
+            radius: 1,
+            label: {
+              show: true,
+              radius: 3/4,
+              formatter: labelFormatter,
+              threshold: 0.1,
+            }
           }
+        },
+        legend: {
+          show: false
         }
       });
 
