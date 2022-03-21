@@ -550,6 +550,10 @@
             });
         });
 
+        @if(isset($edit))
+        $("input[type=number]").first().trigger('keyup');
+        @endif
+
     });
 </script>
 @endpush
