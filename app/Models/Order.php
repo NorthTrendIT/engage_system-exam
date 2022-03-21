@@ -54,4 +54,8 @@ class Order extends Model
     public function quotation(){
         return $this->hasOne(Quotation::class, ['doc_entry', 'sap_connection_id'], ['base_entry', 'sap_connection_id']);
     }
+
+    public function customer(){
+        return $this->hasOne(Customer::class, ['card_code', 'sap_connection_id'], ['card_code', 'sap_connection_id']);
+    }
 }

@@ -405,7 +405,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('sales-report/get-all', 'SalesReportController@getAll')->name('sales-report.get-all');
 
             Route::resource('sales-order-report','SalesOrderReportController')->only('index');
-
+            Route::post('sales-order-report/get-all', 'SalesOrderReportController@getAll')->name('sales-order-report.get-all');
         });
             
     });
