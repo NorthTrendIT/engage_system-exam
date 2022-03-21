@@ -113,6 +113,8 @@ class StoreOrders implements ShouldQueue
                             'ship_to_code' => @$value['ShipToCode'],
                             'ship_to_description' => @$value['ShipToDescription'],
                             //'response' => json_encode($value),
+
+                            'sap_connection_id' => $this->sap_connection_id,
                         );
 
                         $item_obj = OrderItem::updateOrCreate([

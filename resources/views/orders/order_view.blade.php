@@ -149,9 +149,23 @@
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
-                                <span>{!! getOrderStatusBtnHtml(getOrderStatusByQuotation($data)) !!}</span>
+                                @php
+                                  $status = getOrderStatusByQuotation(@$data);
+                                @endphp
+                                <span>{!! getOrderStatusBtnHtml($status) !!}</span>
                               </div>
                               <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+                          </div>
+
+                          <!--begin::Row-->
+                          <div class="row g-5 mb-11">
+                            <!--end::Col-->
+                            <div class="col-md-12">
+                              
+                              {!! view('customer-promotion.ajax.delivery-status',compact('status')) !!}
+
                             </div>
                             <!--end::Col-->
                           </div>
