@@ -39,7 +39,7 @@
     </div>
   </div>
   @endif
-  <div class="row justify-content-center mt-10">
+  <div class="row justify-content-center mt-10 text-center">
     <span>Delivery Status</span>
   </div>
 </div>
