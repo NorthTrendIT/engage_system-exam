@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\CustomerBpAddress;
 use App\Models\SapConnection;
 use App\Models\Quotation;
+use App\Support\SAPOrderPost;
 use Validator;
 use Auth;
 use DataTables;
@@ -84,6 +85,7 @@ class DraftOrderController extends Controller
                 $order->sap_connection_id = $customer->sap_connection_id;
                 $order->save();
 
+                $total = 0;
                 if( isset($input['products']) && !empty($input['products']) ){
                     $products = $input['products'];
                     LocalOrderItem::where('local_order_id', $order->id)->delete();
@@ -92,9 +94,16 @@ class DraftOrderController extends Controller
                         $item->local_order_id = $order->id;
                         $item->product_id = $value['product_id'];
                         $item->quantity = $value['quantity'];
+
+                        $productData = Product::find(@$value['product_id']);
+                        $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num);
+                        $item->total = $item->price * $item->quantity;
                         $item->save();
+                        $total += $item->total;
                     }
                 }
+                $order->total = $total;
+                $order->save();
             } else {
                 $message = "Something went wrong!";
             }
@@ -325,12 +334,15 @@ class DraftOrderController extends Controller
                         $sap->pushOrder($id);
                     }
                 }
+                $response = ['status' => true, 'message' => 'Order Placed Successfuly'];
             } catch (\Exception $e) {
-                $response = ['status' => false, 'message' => 'Something went wrong !'];
+                // dd($e);
+                $response = ['status' => false, 'message' => 'Order Placed Successfuly'];
             }
         } else {
             return $update;
         }
+
         return $response;
     }
 }

@@ -409,6 +409,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('product-report/get-chart-data', 'ProductReportController@getChartData')->name('product-report.get-chart-data');
 
             Route::resource('sales-order-report','SalesOrderReportController')->only('index');
+            Route::post('sales-order-report/get-all', 'SalesOrderReportController@getAll')->name('sales-order-report.get-all');
         });
 
     });

@@ -279,7 +279,7 @@
       					</tr>
 				            <tr>
 				              	<th style="font-size: 14px;text-align: left;background-color:transparent;padding: 15px 10px;border: none;"></th>
-				              	<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;border-bottom: none;font-weight: normal; text-align: right;">Answer</td>
+				              	<td style="font-size: 14px;text-align: left;padding: 15px 10px;border: none;border-bottom: none;font-weight: normal; text-align: right;"><b>Answer</b></td>
 				            </tr>
 			        
 			    		@foreach($claim_points as $key => $point)

@@ -9,6 +9,8 @@ class QuotationItem extends Model
 {
     use HasFactory;
 
+    use \Awobaz\Compoships\Compoships;
+
     protected $fillable = [
         'quotation_id',
         'line_num',
@@ -31,10 +33,11 @@ class QuotationItem extends Model
         'ship_to_code',
         'ship_to_description',
         'response',
+        'sap_connection_id',
     ];
 
     public function product(){
-        return $this->hasOne(Product::class, 'item_code', 'item_code');
+        return $this->belongsTo(Product::class, ['item_code','sap_connection_id'], ['item_code', 'sap_connection_id']);
     }
 
     public function quotation(){
