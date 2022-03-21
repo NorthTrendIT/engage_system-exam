@@ -225,7 +225,7 @@ class LocalOrderController extends Controller
                                 return getOrderStatusBtnHtml("Pending");
                             }
                             if($row->confirmation_status == 'C'){
-                                return getOrderStatusBtnHtml("Confirm");
+                                return getOrderStatusBtnHtml("Confirmed");
                             }
                             if($row->confirmation_status == 'ERR'){
                                 return getOrderStatusBtnHtml("Error");
