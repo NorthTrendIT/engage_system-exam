@@ -114,7 +114,7 @@
                                     <div class="mw-300px">
                                         <div class="d-flex flex-stack mb-3">
                                             <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
-                                            <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ $data->items()->sum('total'); }}</div>
+                                            <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format_value($data->total) }}</div>
                                         </div>
 
                                         <div class="d-flex flex-stack mb-3">
@@ -124,7 +124,7 @@
 
                                         <div class="d-flex flex-stack">
                                             <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
-                                            <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ $data->items()->sum('total'); }}</div>
+                                            <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format_value($data->total) }}</div>
                                         </div>
                                     </div>
                                 </div>

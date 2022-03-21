@@ -43,6 +43,7 @@ class StoreOrders implements ShouldQueue
 
                 $insert = array(
                             'doc_entry' => $order['DocEntry'],
+                            'num_at_card' => $order['NumAtCard'],
                             'doc_num' => $order['DocNum'],
                             'doc_type' => $order['DocType'],
                             'doc_date' => $order['DocDate'],
@@ -63,7 +64,7 @@ class StoreOrders implements ShouldQueue
                             'u_posodate' => $order['U_POSODATE'],
                             'u_posotime' => $order['U_POSOTIME'],
                             'u_sostat' => $order['U_SOSTAT'],
-                            'cancelled' => ($order['Cancelled'] == 'tNO' ? 'No' : 'Yes'),
+                            'cancelled' => @$order['Cancelled'] == 'tYES' ? 'Yes' : 'No',
                             'cancel_date' => $order['CancelDate'],
                             'created_at' => $order['CreationDate'],
                             'updated_at' => $order['UpdateDate'],

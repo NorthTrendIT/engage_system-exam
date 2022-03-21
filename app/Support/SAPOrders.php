@@ -79,10 +79,17 @@ class SAPOrders
     // Store All Customer Records In DB
     public function addOrdersDataInDatabase($url = false)
     {
+        $where = array(
+                    'db_name' => $this->database,
+                    'user_name' => $this->username,
+                );
+
+        $sap_connection = SapConnection::where($where)->first();
+                
         if($url){
             $response = $this->getOrderData($url);
         }else{
-            $latestData = Order::orderBy('updated_date','DESC')->first();
+            $latestData = Order::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
                 $url = '/b1s/v1/Orders?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
                 $response = $this->getOrderData($url);
@@ -96,13 +103,6 @@ class SAPOrders
 
             if($data['value']){
 
-                $where = array(
-                            'db_name' => $this->database,
-                            'user_name' => $this->username,
-                        );
-
-                $sap_connection = SapConnection::where($where)->first();
-
                 // Store Data of Order in database
                 StoreOrders::dispatch($data['value'], @$sap_connection->id);
 
@@ -112,9 +112,11 @@ class SAPOrders
 
                     //$this->addOrdersDataInDatabase($data['odata.nextLink']);
                 } else {
-                    add_sap_log([
-                        'status' => "completed",
-                    ], $this->log_id);
+                    if($this->log_id){
+                        add_sap_log([
+                            'status' => "completed",
+                        ], $this->log_id);
+                    }
                 }
             }
         }

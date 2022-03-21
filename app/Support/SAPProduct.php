@@ -61,10 +61,12 @@ class SAPProduct
 
         } catch (\Exception $e) {
 
-            add_sap_log([
-                            'status' => "error",
-                            'error_data' => $e->getMessage(),
-                        ], $this->log_id);
+            if($this->log_id){
+                add_sap_log([
+                                'status' => "error",
+                                'error_data' => $e->getMessage(),
+                            ], $this->log_id);                
+            }
 
             return array(
                                 'status' => false,
@@ -76,53 +78,29 @@ class SAPProduct
     // Store All Product Records In DB
     public function addProductDataInDatabase($url = false)
     {
+        $where = array(
+                    'db_name' => $this->database,
+                    'user_name' => $this->username,
+                );
+
+        $sap_connection = SapConnection::where($where)->first();
+                
         if($url){
             $response = $this->getProductData($url);
         }else{
-            // $latestData = Product::orderBy('updated_date','DESC')->first();
-            // if(!empty($latestData)){
-            //     $url = '/b1s/v1/Items?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
-            //     $response = $this->getProductData($url);
-            // } else {
+            $latestData = Product::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
+            if(!empty($latestData)){
+                $url = '/b1s/v1/Items?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
+                $response = $this->getProductData($url);
+            } else {
                 $response = $this->getProductData();
-            // }
+            }
         }
 
         if($response['status']){
             $data = $response['data'];
 
             if($data['value']){
-
-                /*foreach ($data['value'] as $value) {
-
-                    $insert = array(
-
-                                    'item_code' => @$value['ItemCode'],
-                                    'item_name' => @$value['ItemName'],
-                                    'foreign_name' => @$value['ForeignName'],
-                                    'items_group_code' => @$value['ItemsGroupCode'],
-                                    'customs_group_code' => @$value['CustomsGroupCode'],
-                                    'sales_vat_group' => @$value['SalesVATGroup'],
-                                    'purchase_vat_group' => @$value['PurchaseVATGroup'],
-                                    'created_date' => @$value['CreateDate']." ".@$value['CreateTime'],
-                                    'is_active' => @$value['Valid'] == "tYES" ? true : false,
-                                    //'response' => json_encode($value),
-                                );
-
-                    $obj = Product::updateOrCreate(
-                                            [
-                                                'item_code' => @$value['ItemCode'],
-                                            ],
-                                            $insert
-                                        );
-                }*/
-
-                $where = array(
-                            'db_name' => $this->database,
-                            'user_name' => $this->username,
-                        );
-
-                $sap_connection = SapConnection::where($where)->first();
 
                 // Store Data of Product in database
                 StoreProducts::dispatch($data['value'],@$sap_connection->id);
@@ -132,9 +110,11 @@ class SAPProduct
 
                     SyncNextProducts::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
                 }else{
-                    add_sap_log([
-                            'status' => "completed",
-                        ], $this->log_id);
+                    if($this->log_id){
+                        add_sap_log([
+                                'status' => "completed",
+                            ], $this->log_id);
+                    }
                 }
             }
         }

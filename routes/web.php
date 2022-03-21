@@ -407,6 +407,8 @@ Route::middleware(['auth'])->group(function(){
             Route::resource('product-report', 'ProductReportController')->only('index');
             Route::post('product-report/get-all', 'ProductReportController@getAll')->name('product-report.get-all');
             Route::post('product-report/get-chart-data', 'ProductReportController@getChartData')->name('product-report.get-chart-data');
+
+            Route::resource('sales-order-report','SalesOrderReportController')->only('index');
         });
 
     });

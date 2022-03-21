@@ -36,4 +36,8 @@ class QuotationItem extends Model
     public function product(){
         return $this->hasOne(Product::class, 'item_code', 'item_code');
     }
+
+    public function quotation(){
+        return $this->belongsTo(Quotation::class, 'quotation_id');
+    }
 }

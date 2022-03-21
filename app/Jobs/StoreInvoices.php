@@ -43,6 +43,7 @@ class StoreInvoices implements ShouldQueue
 
                 $insert = array(
                             'doc_entry' => $invoice['DocEntry'],
+                            'num_at_card' => $invoice['NumAtCard'],
                             'doc_num' => $invoice['DocNum'],
                             'doc_type' => $invoice['DocType'],
                             'doc_date' => $invoice['DocDate'],

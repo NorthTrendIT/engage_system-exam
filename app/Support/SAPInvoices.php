@@ -78,11 +78,19 @@ class SAPInvoices
 
     // Store All Customer Records In DB
     public function addInvoicesDataInDatabase($url = false)
-    {
+    {   
+
+        $where = array(
+                    'db_name' => $this->database,
+                    'user_name' => $this->username,
+                );
+
+        $sap_connection = SapConnection::where($where)->first();
+                
         if($url){
             $response = $this->getInvoiceData($url);
         }else{
-            $latestData = Invoice::orderBy('updated_date','DESC')->first();
+            $latestData = Invoice::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
                 $url = '/b1s/v1/Invoices?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
                 $response = $this->getInvoiceData($url);
@@ -96,13 +104,6 @@ class SAPInvoices
 
             if($data['value']){
 
-                $where = array(
-                            'db_name' => $this->database,
-                            'user_name' => $this->username,
-                        );
-
-                $sap_connection = SapConnection::where($where)->first();
-
                 // Store Data of Invoices in database
                 StoreInvoices::dispatch($data['value'],@$sap_connection->id);
 
@@ -112,9 +113,11 @@ class SAPInvoices
 
                     //$this->addInvoicesDataInDatabase($data['odata.nextLink']);
                 } else {
-                    add_sap_log([
-                        'status' => "completed",
-                    ], $this->log_id);
+                    if($this->log_id){
+                        add_sap_log([
+                            'status' => "completed",
+                        ], $this->log_id);
+                    }
                 }
             }
         }

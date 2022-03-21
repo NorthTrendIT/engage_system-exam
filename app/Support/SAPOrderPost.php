@@ -89,7 +89,7 @@ class SAPOrderPost
             $insert = array(
                         'doc_entry' => $data['DocEntry'],
                         'doc_num' => $data['DocNum'],
-                        'num_at_card' => $data['DocEntry'],
+                        'num_at_card' => $data['NumAtCard'],
                         'doc_type' => $data['DocType'],
                         'document_status' => $data['DocumentStatus'],
                         'doc_date' => $data['DocDate'],
@@ -179,7 +179,8 @@ class SAPOrderPost
                 $order->doc_num = $data['DocNum'];
                 $order->message = null;
 
-                $data = $this->pushOrderDetailsInDatabase($data);
+                $this->pushOrderDetailsInDatabase($data);
+                return $response = $this->updateNumAtCardInOrder($data['DocEntry']);
             } else {
                 $order->confirmation_status = 'ERR';
                 $order->message = $data;
@@ -217,6 +218,33 @@ class SAPOrderPost
                 'ShipDate' => @$order->due_date,
             );
             array_push($response['DocumentLines'], $temp);
+        }
+
+        return $response;
+    }
+
+    public function updateNumAtCardInOrder($doc_entry){
+        \Log::debug('The updateNumAtCardInOrder called -->'. $doc_entry);
+        \Log::debug('The updateNumAtCardInOrder called -->'. @$this->sap_connection_id);
+
+        $quotation = Quotation::where('doc_entry', $doc_entry)->where('sap_connection_id', @$this->sap_connection_id)->first();
+        $response = array();
+
+        if(!empty($quotation)){
+            $num_at_card = "OMS# ".$doc_entry;
+
+            $body = array(
+                            'NumAtCard' => $num_at_card,
+                        );
+
+            $response = $this->requestSapApi('/b1s/v1/Quotations('.$doc_entry.')', "PATCH", $body);
+
+            $status = $response['status'];
+            $data = $response['data'];
+            if($data == '204'){
+                $quotation->num_at_card = $num_at_card;
+                $quotation->save();
+            }
         }
 
         return $response;

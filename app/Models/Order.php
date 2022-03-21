@@ -15,6 +15,7 @@ class Order extends Model
     protected $fillable = [
         'base_entry',
         'doc_entry',
+        'num_at_card',
         'doc_num',
         'doc_type',
         'doc_date',
@@ -48,5 +49,9 @@ class Order extends Model
 
     public function invoice(){
         return $this->hasOne(Invoice::class, ['base_entry', 'sap_connection_id'], ['doc_entry', 'sap_connection_id']);
+    }
+
+    public function quotation(){
+        return $this->hasOne(Quotation::class, ['doc_entry', 'sap_connection_id'], ['base_entry', 'sap_connection_id']);
     }
 }
