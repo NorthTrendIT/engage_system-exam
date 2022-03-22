@@ -36,7 +36,12 @@ Route::middleware('guest')->group(function(){
 
 Route::middleware(['auth'])->group(function(){
     Route::get('/home','App\Http\Controllers\HomeController@index')->name('home')->middleware('check-login');
-	Route::post('/ckeditor-image-upload','App\Http\Controllers\HomeController@ckeditorImageUpload')->name('ckeditor-image-upload');
+	Route::post('home/get-report-data','App\Http\Controllers\HomeController@getReportData')->name('home.get-report-data');
+
+
+
+    Route::post('/ckeditor-image-upload','App\Http\Controllers\HomeController@ckeditorImageUpload')->name('ckeditor-image-upload');
+
 
 	Route::get('/logout', function () {
         // Add Logout log

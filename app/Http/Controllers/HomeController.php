@@ -5,6 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\LocalOrder;
 use App\Models\CustomerPromotion;
+
+use App\Models\Invoice;
+use App\Models\Quotation;
+use App\Models\QuotationItem;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\SapConnection;
+
 use Auth;
 
 class HomeController extends Controller
@@ -20,7 +28,6 @@ class HomeController extends Controller
 
         if(Auth::user()->role_id != 1){
             $notification = getMyNotifications();
-            // dd($notification);
             return view('dashboard.index', compact('notification'));
         }
     	return view('dashboard.index');
@@ -64,5 +71,32 @@ class HomeController extends Controller
             }
 
         }   
+    }
+
+
+    public function getReportData(Request $request){
+
+        try {
+            $data = Invoice::has('order')->get();
+
+            $days_array = [];
+            foreach($data as $value){
+                $endDate = $value->created_at;
+                $startDate = $value->order->created_at;
+
+                $days = (strtotime($endDate) - strtotime($startDate)) / (60 * 60 * 24);
+                if($days >= 0){
+                  array_push($days_array, $days);
+                }
+            }
+            $sales_order_to_invoice_lead_time = round(array_sum($days_array) / count($days_array));
+
+
+            $data = compact('sales_order_to_invoice_lead_time');
+            return $response = [ 'status' => true, 'message' => "", 'data' => $data ];
+            
+        } catch (\Exception $e) {
+            return $response = [ 'status' => false, 'message' => "Something went wrong !"];
+        }
     }
 }
