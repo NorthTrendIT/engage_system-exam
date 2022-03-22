@@ -396,6 +396,36 @@ class OrdersController extends Controller
                             ->make(true);
     }
 
+    public function cancelOrder(Request $request){
+
+        $response = ['status' => false, 'message' => 'Record not found!'];
+
+        $quotation = Quotation::where('id', $request->id);
+        if(userrole() == 4){
+            $quotation->where('card_code', @Auth::user()->customer->card_code);
+        }elseif(userrole() == 2){
+            $quotation->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(userrole() != 1){
+            return abort(404);
+        }
+
+        $quotation = $quotation->first();
+        if(!empty($quotation)){
+            
+            $sap_connection = @$quotation->sap_connection;
+
+            $sap_quotations = new SAPQuotations(@$sap_connection->db_name, @$sap_connection->user_name, @$sap_connection->password);
+            $response = $sap_quotations->cancelSpecificQuotation($quotation->id, $quotation->doc_entry);
+
+            if(@$response['status']){
+                $response = ['status' => true, 'message' => 'Order canceled successfully!'];
+            }else{
+                $response = ['status' => false, 'message' => 'Something went wrong !'];
+            }
+        }
+        return $response;
+    }
+
     // Notify Customer
     public function notifyCustomer(Request $request){
         $q_id = $request->order_id;
@@ -455,11 +485,8 @@ class OrdersController extends Controller
     public function getAllPendingOrder(Request $request){
 
         $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items']);
-        // dd($data);
-
+        
         $data->where('confirmation_status', 'ERR');
-
-        // dd($data->get());
 
         if($request->filter_search != ""){
             $data->whereHas('customer', function($q) use ($request) {

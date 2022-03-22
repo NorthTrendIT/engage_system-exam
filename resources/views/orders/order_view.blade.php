@@ -153,6 +153,11 @@
                                   $status = getOrderStatusByQuotation(@$data);
                                 @endphp
                                 <span>{!! getOrderStatusBtnHtml($status) !!}</span>
+
+                                @if($status == "Pending")
+                                  <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm cancel-order" title="Cancel Order"><i class="fa fa-times-circle"></i></a>
+                                @endif
+
                               </div>
                               <!--end::Text-->
                             </div>
@@ -419,6 +424,46 @@
         }
       })
     });
+
+    @if($status == "Pending")
+      $(document).on('click', '.cancel-order', function(event) {
+        event.preventDefault();
+
+        Swal.fire({
+          title: 'Are you sure want to cancel order ?',
+          text: "Once canceled, you will not be able to recover this record!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, do it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: '{{ route('orders.cancel-order') }}',
+              method: "POST",
+              data: {
+                      _token:'{{ csrf_token() }}',
+                      id:'{{ $data->id }}'
+                    }
+            })
+            .done(function(result) {
+              if(result.status == false){
+                toast_error(result.message);
+              }else{
+                toast_success(result.message);
+                setTimeout(function(){
+                  window.location.reload();
+                },500)
+              }
+            })
+            .fail(function() {
+              toast_error("error");
+            });
+          }
+        })
+      });
+    @endif
 
   });
 

@@ -117,6 +117,7 @@ Route::middleware(['auth'])->group(function(){
     	    Route::post('orders/sync-specific-orders', 'App\Http\Controllers\OrdersController@syncSpecificOrder')->name('orders.sync-specific-orders');
             Route::post('orders/get-customer', 'App\Http\Controllers\OrdersController@getCustomer')->name('orders.get-customer');
             Route::post('orders/notify-customer', 'App\Http\Controllers\OrdersController@notifyCustomer')->name('orders.notify-customer');
+            Route::post('orders/cancel-order', 'App\Http\Controllers\OrdersController@cancelOrder')->name('orders.cancel-order');
 
             Route::get('pending-orders', 'App\Http\Controllers\OrdersController@pendingOrder')->name('orders.panding-orders');
             Route::get('pending-orders/{id}', 'App\Http\Controllers\OrdersController@pendingOrderView')->name('orders.panding-orders.view');
