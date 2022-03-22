@@ -71,6 +71,7 @@ class StoreInvoices implements ShouldQueue
                             //'response' => json_encode($invoice),
 
                             'updated_date' => $invoice['UpdateDate'],
+                            'end_delivery_date' => $invoice['EndDeliveryDate'],
                             'sap_connection_id' => $this->sap_connection_id,
                         );
 
