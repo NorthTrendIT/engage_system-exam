@@ -234,4 +234,52 @@ class SAPQuotations
             }
         }
     }
+
+    // Cancel Specific Quotations Data
+    public function cancelSpecificQuotation($id, $doc_entry){
+
+        $response = array(
+                            'status' => false,
+                            'data' => []
+                        );
+
+        if(!empty($doc_entry)){
+
+            try {
+                $response = $this->httpClient->request(
+                    "POST",
+                    get_sap_api_url().'/b1s/v1/Quotations('.$doc_entry.')/Cancel',
+                    [
+                        'headers' => $this->headers,
+                        'verify' => false,
+                    ]
+                );
+
+                if(in_array($response->getStatusCode(), [200,201,204])){
+                    $response = json_decode($response->getBody(),true);
+                   
+                    $quotation = Quotation::find($id);
+                    if(!is_null($quotation)){
+                        $quotation->document_status = "Cancelled";
+                        $quotation->cancelled = "Yes";
+                        $quotation->save();
+                    }
+
+                    return array(
+                                'status' => true,
+                                'data' => []
+                            );
+                }
+
+            } catch (\Exception $e) {
+                return array(
+                                'status' => false,
+                                'data' => []
+                            );
+            }
+
+        }
+
+        return $response;
+    }
 }
