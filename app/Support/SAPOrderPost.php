@@ -182,7 +182,7 @@ class SAPOrderPost
                 $order->message = null;
 
                 $this->pushOrderDetailsInDatabase($data);
-                return $response = $this->updateNumAtCardInOrder($data['DocEntry']);
+                $this->updateNumAtCardInOrder($data['DocEntry']);
             } else {
                 $order->confirmation_status = 'ERR';
                 $order->message = $data;
@@ -226,8 +226,8 @@ class SAPOrderPost
     }
 
     public function updateNumAtCardInOrder($doc_entry){
-        \Log::debug('The updateNumAtCardInOrder called -->'. $doc_entry);
-        \Log::debug('The updateNumAtCardInOrder called -->'. @$this->sap_connection_id);
+        // \Log::debug('The updateNumAtCardInOrder called -->'. $doc_entry);
+        // \Log::debug('The updateNumAtCardInOrder called -->'. @$this->sap_connection_id);
 
         $quotation = Quotation::where('doc_entry', $doc_entry)->where('sap_connection_id', @$this->sap_connection_id)->first();
         $response = array();
