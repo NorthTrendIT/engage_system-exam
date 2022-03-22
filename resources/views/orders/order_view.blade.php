@@ -155,7 +155,7 @@
                                 <span>{!! getOrderStatusBtnHtml($status) !!}</span>
 
                                 @if($status == "Pending")
-                                  <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm cancel-order" title="Cancel Order"><i class="fa fa-times-circle"></i></a>
+                                  <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
                                 @endif
 
                               </div>
