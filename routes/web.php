@@ -36,7 +36,12 @@ Route::middleware('guest')->group(function(){
 
 Route::middleware(['auth'])->group(function(){
     Route::get('/home','App\Http\Controllers\HomeController@index')->name('home')->middleware('check-login');
-	Route::post('/ckeditor-image-upload','App\Http\Controllers\HomeController@ckeditorImageUpload')->name('ckeditor-image-upload');
+	Route::post('home/get-report-data','App\Http\Controllers\HomeController@getReportData')->name('home.get-report-data');
+
+
+
+    Route::post('/ckeditor-image-upload','App\Http\Controllers\HomeController@ckeditorImageUpload')->name('ckeditor-image-upload');
+
 
 	Route::get('/logout', function () {
         // Add Logout log
@@ -407,6 +412,10 @@ Route::middleware(['auth'])->group(function(){
 
             Route::resource('sales-order-report','SalesOrderReportController')->only('index');
             Route::post('sales-order-report/get-all', 'SalesOrderReportController@getAll')->name('sales-order-report.get-all');
+
+            Route::resource('overdue-sales-invoice-report','OverdueSalesInvoiceReportController')->only('index');
+            Route::post('overdue-sales-invoice-report/get-all', 'OverdueSalesInvoiceReportController@getAll')->name('overdue-sales-invoice-report.get-all');
+             Route::get('overdue-sales-invoice-report/export', 'OverdueSalesInvoiceReportController@export')->name('overdue-sales-invoice-report.export');
         });
             
     });

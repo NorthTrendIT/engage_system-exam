@@ -211,42 +211,6 @@
     .other_filter_div{
       display: none;
     }
-
-    .col-box-4{
-      min-width: 150px;
-      margin-right: 20px;
-    }
-
-    .col-box-4{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    /*.col-box-4 a{
-      margin-bottom: -30px;
-    }
-
-    .col-box-4 span.count{
-      margin-top: -30px;
-      font-size: 30px !important;
-    }*/
-
-
-    @media (min-width: 768px){
-      .col-box-4  {
-        width: 30%;
-      }
-    }
-
-    @media screen and (max-width: 991px){
-      .col-box-4  {
-        display: block;
-      }
-
-      .col-box-4 a{
-        display: block;
-      }
-    }
   </style>
 @endpush
 

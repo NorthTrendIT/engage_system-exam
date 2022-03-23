@@ -605,7 +605,7 @@
             {{-- Report --}}
             @if(Auth::user()->role_id == 1)
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['report.index', 'report.promotion.index', 'reports.sales-report.index', 'reports.sales-order-report.index'])) ? 'active' : '' }}" href="{{ route('report.index') }}">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['report.index', 'report.promotion.index', 'reports.sales-report.index', 'reports.sales-order-report.index', 'reports.overdue-sales-invoice-report.index'])) ? 'active' : '' }}" href="{{ route('report.index') }}">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
