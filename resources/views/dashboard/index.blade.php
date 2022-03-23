@@ -28,7 +28,7 @@
 
         <!--begin::Row-->
         @if(userrole() == 1)
-        <div class="row gy-5 g-xl-8">
+        {{-- <div class="row gy-5 g-xl-8">
             <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
                 <div class="card card-xl-stretch mb-5 mb-xl-8">
                     <div class="card-body">
@@ -41,7 +41,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
         @endif
 
 
@@ -434,7 +434,7 @@
 
 
     @if(userrole() == 1)
-    render_report_data();
+    // render_report_data();
     function render_report_data(){
 
         $.ajax({
