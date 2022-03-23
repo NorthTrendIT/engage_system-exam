@@ -3,14 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Support\SAPOrders;
-use App\Support\SAPInvoices;
-use App\Support\SAPQuotations;
-use App\Jobs\SyncOrders;
-use App\Jobs\SyncInvoices;
-use App\Jobs\SyncQuotations;
-use App\Jobs\SAPAllOrderPost;
-use App\Jobs\SAPAllCustomerPromotionPost;
 use App\Models\Order;
 use App\Models\Quotation;
 use App\Models\Invoice;
@@ -20,7 +12,20 @@ use App\Models\SapConnection;
 use App\Models\User;
 use App\Models\Notification;
 use App\Models\NotificationConnection;
+
+use App\Support\SAPOrders;
+use App\Support\SAPInvoices;
+use App\Support\SAPQuotations;
+use App\Support\SAPCreditNote;
 use App\Support\SAPOrderPost;
+
+use App\Jobs\SyncOrders;
+use App\Jobs\SyncInvoices;
+use App\Jobs\SyncQuotations;
+use App\Jobs\SyncCreditNote;
+use App\Jobs\SAPAllOrderPost;
+use App\Jobs\SAPAllCustomerPromotionPost;
+
 use Mail;
 use DataTables;
 use Auth;
@@ -160,14 +165,25 @@ class OrdersController extends Controller
                                         'sap_connection_id' => $value->id,
                                     ]);
 
+                $credit_note_log_id = add_sap_log([
+                                        'ip_address' => userip(),
+                                        'activity_id' => 59,
+                                        'user_id' => userid(),
+                                        'data' => null,
+                                        'type' => "S",
+                                        'status' => "in progress",
+                                        'sap_connection_id' => $value->id,
+                                    ]);
+
                 SyncQuotations::dispatch($value->db_name, $value->user_name , $value->password, $quotation_log_id);
                 SyncOrders::dispatch($value->db_name, $value->user_name , $value->password, $order_log_id);
                 SyncInvoices::dispatch($value->db_name, $value->user_name , $value->password, $invoice_log_id);
+                SyncCreditNote::dispatch($value->db_name, $value->user_name , $value->password, $credit_note_log_id);
             }
 
             $response = ['status' => true, 'message' => 'Sync Orders successfully !'];
         } catch (\Exception $e) {
-            $response = ['status' => false, 'message' => 'Something went wrong !'];
+            $response = ['status' => false, 'message' => $e->getMessage()];
         }
         return $response;
     }
