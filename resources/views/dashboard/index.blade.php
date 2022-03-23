@@ -16,104 +16,6 @@
            <!--end::Title-->
         </div>
         <!--end::Page title-->
-        <!--begin::Actions-->
-        <div class="d-flex align-items-center py-1">
-           <!--begin::Wrapper-->
-           <div class="me-4">
-              <!--begin::Menu-->
-              <a href="#" class="btn btn-sm btn-flex btn-light btn-active-primary fw-bolder" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-              <!--begin::Svg Icon | path: icons/duotune/general/gen031.svg-->
-              <span class="svg-icon svg-icon-5 svg-icon-gray-500 me-1">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                 <path fill-rule="evenodd" clip-rule="evenodd" d="M11 16.9656L11.3892 16.6653C11.8265 16.328 12.4544 16.409 12.7918 16.8463C13.1291 17.2836 13.0481 17.9115 12.6108 18.2489L10.6277 19.7787C10.5675 19.8274 10.5025 19.8682 10.4342 19.901C10.3808 19.928 10.309 19.9545 10.234 19.9725C10.1375 19.9951 10.0448 20.0033 9.95295 19.9989C9.81197 19.9924 9.6786 19.9567 9.55877 19.8976C9.4931 19.8654 9.43047 19.8257 9.37226 19.7787L7.38919 18.2489C6.9519 17.9115 6.87088 17.2836 7.20823 16.8463C7.54557 16.409 8.17353 16.328 8.61081 16.6653L9 16.9656V6.45711C9 5.90482 9.44772 5.45711 10 5.45711C10.5523 5.45711 11 5.90482 11 6.45711V16.9656ZM10.5 0C13.0609 0 15.2376 1.76105 15.8369 4.17236C18.2436 4.77356 20 6.95407 20 9.518C20 12.3327 17.8828 14.6868 15.1101 14.9939C14.5612 15.0547 14.0669 14.659 14.0061 14.1101C13.9453 13.5612 14.341 13.0669 14.8899 13.0061C16.6514 12.8109 18 11.3114 18 9.518C18 7.71741 16.6408 6.21401 14.8706 6.02783C14.4009 5.97843 14.0298 5.60718 13.9806 5.13748C13.7947 3.36183 12.2947 2 10.5 2C8.70372 2 7.20292 3.36415 7.01891 5.14171C6.96154 5.69596 6.46222 6.0964 5.90874 6.03205C5.77394 6.01638 5.63757 6.00847 5.5 6.00847C3.56748 6.00847 2 7.57926 2 9.518C2 11.3114 3.34862 12.8109 5.11011 13.0061C5.65903 13.0669 6.05473 13.5612 5.99392 14.1101C5.93311 14.659 5.43882 15.0547 4.88989 14.9939C2.11715 14.6868 0 12.3327 0 9.518C0 6.57497 2.30383 4.17018 5.20435 4.01629C5.85706 1.68561 7.99449 0 10.5 0Z" fill="#92929D"/>
-                 </svg>
-
-              </span>
-              <!--end::Svg Icon--></a>
-              <!--begin::Menu 1-->
-              <div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true" id="kt_menu_616838fb2edc9">
-                 <!--begin::Header-->
-                 <div class="px-7 py-5">
-                    <div class="fs-5 text-dark fw-bolder">Filter Options</div>
-                 </div>
-                 <!--end::Header-->
-                 <!--begin::Menu separator-->
-                 <div class="separator border-gray-200"></div>
-                 <!--end::Menu separator-->
-                 <!--begin::Form-->
-                 <div class="px-7 py-5">
-                    <!--begin::Input group-->
-                    <div class="mb-10">
-                       <!--begin::Label-->
-                       <label class="form-label fw-bold">Status:</label>
-                       <!--end::Label-->
-                       <!--begin::Input-->
-                       <div>
-                          <select class="form-select form-select-solid" data-kt-select2="true" data-placeholder="Select option" data-dropdown-parent="#kt_menu_616838fb2edc9" data-allow-clear="true">
-                             <option></option>
-                             <option value="1">Approved</option>
-                             <option value="2">Pending</option>
-                             <option value="2">In Process</option>
-                             <option value="2">Rejected</option>
-                          </select>
-                       </div>
-                       <!--end::Input-->
-                    </div>
-                    <!--end::Input group-->
-                    <!--begin::Input group-->
-                    <div class="mb-10">
-                       <!--begin::Label-->
-                       <label class="form-label fw-bold">Member Type:</label>
-                       <!--end::Label-->
-                       <!--begin::Options-->
-                       <div class="d-flex">
-                          <!--begin::Options-->
-                          <label class="form-check form-check-sm form-check-custom form-check-solid me-5">
-                             <input class="form-check-input" type="checkbox" value="1" />
-                             <span class="form-check-label">Author</span>
-                          </label>
-                          <!--end::Options-->
-                          <!--begin::Options-->
-                          <label class="form-check form-check-sm form-check-custom form-check-solid">
-                             <input class="form-check-input" type="checkbox" value="2" checked="checked" />
-                             <span class="form-check-label">Customer</span>
-                          </label>
-                          <!--end::Options-->
-                       </div>
-                       <!--end::Options-->
-                    </div>
-                    <!--end::Input group-->
-                    <!--begin::Input group-->
-                    <div class="mb-10">
-                       <!--begin::Label-->
-                       <label class="form-label fw-bold">Notifications:</label>
-                       <!--end::Label-->
-                       <!--begin::Switch-->
-                       <div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                          <input class="form-check-input" type="checkbox" value="" name="notifications" checked="checked" />
-                          <label class="form-check-label">Enabled</label>
-                       </div>
-                       <!--end::Switch-->
-                    </div>
-                    <!--end::Input group-->
-                    <!--begin::Actions-->
-                    <div class="d-flex justify-content-end">
-                       <button type="reset" class="btn btn-sm btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true">Reset</button>
-                       <button type="submit" class="btn btn-sm btn-primary" data-kt-menu-dismiss="true">Apply</button>
-                    </div>
-                    <!--end::Actions-->
-                 </div>
-                 <!--end::Form-->
-              </div>
-              <!--end::Menu 1-->
-              <!--end::Menu-->
-           </div>
-           <!--end::Wrapper-->
-           <!--begin::Button-->
-           <a href="#" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_create_app" id="kt_toolbar_primary_button">Create</a>
-           <!--end::Button-->
-        </div>
-        <!--end::Actions-->
      </div>
      <!--end::Container-->
   </div>
@@ -123,6 +25,26 @@
      <!--begin::Container-->
      <div id="kt_content_container" class="container-xxl">
         <!--begin::Row-->
+
+        <!--begin::Row-->
+        @if(userrole() == 1)
+        {{-- <div class="row gy-5 g-xl-8">
+            <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+                <div class="card card-xl-stretch mb-5 mb-xl-8">
+                    <div class="card-body">
+                        <div class="row mb-5">
+                            <div class="col-md-4 bg-light-warning px-6 py-8 rounded-2 me-7 min-w-150 col-box-4">
+                              <a href="javascript:" class="text-warning fw-bold fs-6">Sales Order to Invoice Lead time </a>
+                              <span class="count text-warning fw-bold fs-1 sales_order_to_invoice_lead_time_count">0 Day(s)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> --}}
+        @endif
+
+
         <div class="row gy-5 g-xl-8">
             @if(Auth::user()->role_id != 1)
             <!--begin::Col-->
@@ -660,6 +582,33 @@
         // minimumInputLength: 1,
         multiple: false,
     });
+
+
+    @if(userrole() == 1)
+    // render_report_data();
+    function render_report_data(){
+
+        $.ajax({
+            url: '{{ route('home.get-report-data') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                }
+        })
+        .done(function(result) {
+            if(result.status){
+                toast_success(result.message);
+
+                $('.sales_order_to_invoice_lead_time_count').text(result.data.sales_order_to_invoice_lead_time + " Day(s)");
+            }else{
+                toast_error(result.message);
+            }
+        })
+        .fail(function() {
+            toast_error("error");
+        });
+    }
+    @endif
 </script>
 @endif
 @endpush

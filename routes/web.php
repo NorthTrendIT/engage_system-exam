@@ -36,7 +36,12 @@ Route::middleware('guest')->group(function(){
 
 Route::middleware(['auth'])->group(function(){
     Route::get('/home','App\Http\Controllers\HomeController@index')->name('home')->middleware('check-login');
-	Route::post('/ckeditor-image-upload','App\Http\Controllers\HomeController@ckeditorImageUpload')->name('ckeditor-image-upload');
+	Route::post('home/get-report-data','App\Http\Controllers\HomeController@getReportData')->name('home.get-report-data');
+
+
+
+    Route::post('/ckeditor-image-upload','App\Http\Controllers\HomeController@ckeditorImageUpload')->name('ckeditor-image-upload');
+
 
 	Route::get('/logout', function () {
         // Add Logout log
@@ -117,6 +122,7 @@ Route::middleware(['auth'])->group(function(){
     	    Route::post('orders/sync-specific-orders', 'App\Http\Controllers\OrdersController@syncSpecificOrder')->name('orders.sync-specific-orders');
             Route::post('orders/get-customer', 'App\Http\Controllers\OrdersController@getCustomer')->name('orders.get-customer');
             Route::post('orders/notify-customer', 'App\Http\Controllers\OrdersController@notifyCustomer')->name('orders.notify-customer');
+            Route::post('orders/cancel-order', 'App\Http\Controllers\OrdersController@cancelOrder')->name('orders.cancel-order');
 
             Route::get('pending-orders', 'App\Http\Controllers\OrdersController@pendingOrder')->name('orders.panding-orders');
             Route::get('pending-orders/{id}', 'App\Http\Controllers\OrdersController@pendingOrderView')->name('orders.panding-orders.view');
@@ -416,6 +422,10 @@ Route::middleware(['auth'])->group(function(){
 
             Route::resource('sales-order-report','SalesOrderReportController')->only('index');
             Route::post('sales-order-report/get-all', 'SalesOrderReportController@getAll')->name('sales-order-report.get-all');
+
+            Route::resource('overdue-sales-invoice-report','OverdueSalesInvoiceReportController')->only('index');
+            Route::post('overdue-sales-invoice-report/get-all', 'OverdueSalesInvoiceReportController@getAll')->name('overdue-sales-invoice-report.get-all');
+             Route::get('overdue-sales-invoice-report/export', 'OverdueSalesInvoiceReportController@export')->name('overdue-sales-invoice-report.export');
         });
 
     });

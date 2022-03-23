@@ -46,6 +46,21 @@
                           <!-- <div class="fw-bolder fs-3 text-gray-800 mb-8">Order</div> -->
                           <!--end::Label-->
 
+                          @php
+                            $status = getOrderStatusByQuotation(@$data);
+                          @endphp
+
+                          <!--begin::Row-->
+                          <div class="row g-5 mb-1">
+                            <!--end::Col-->
+                            <div class="col-md-12">
+                              
+                              {!! view('customer-promotion.ajax.delivery-status',compact('status')) !!}
+
+                            </div>
+                            <!--end::Col-->
+                          </div>
+                          
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
@@ -149,23 +164,15 @@
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
-                                @php
-                                  $status = getOrderStatusByQuotation(@$data);
-                                @endphp
+                                
                                 <span>{!! getOrderStatusBtnHtml($status) !!}</span>
+
+                                @if($status == "Pending")
+                                  <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
+                                @endif
+
                               </div>
                               <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
-                          </div>
-
-                          <!--begin::Row-->
-                          <div class="row g-5 mb-11">
-                            <!--end::Col-->
-                            <div class="col-md-12">
-                              
-                              {!! view('customer-promotion.ajax.delivery-status',compact('status')) !!}
-
                             </div>
                             <!--end::Col-->
                           </div>
@@ -419,6 +426,46 @@
         }
       })
     });
+
+    @if($status == "Pending")
+      $(document).on('click', '.cancel-order', function(event) {
+        event.preventDefault();
+
+        Swal.fire({
+          title: 'Are you sure want to cancel order ?',
+          text: "Once canceled, you will not be able to recover this record!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, do it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: '{{ route('orders.cancel-order') }}',
+              method: "POST",
+              data: {
+                      _token:'{{ csrf_token() }}',
+                      id:'{{ $data->id }}'
+                    }
+            })
+            .done(function(result) {
+              if(result.status == false){
+                toast_error(result.message);
+              }else{
+                toast_success(result.message);
+                setTimeout(function(){
+                  window.location.reload();
+                },500)
+              }
+            })
+            .fail(function() {
+              toast_error("error");
+            });
+          }
+        })
+      });
+    @endif
 
   });
 

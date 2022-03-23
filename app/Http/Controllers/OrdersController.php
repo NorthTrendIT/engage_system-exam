@@ -3,14 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Support\SAPOrders;
-use App\Support\SAPInvoices;
-use App\Support\SAPQuotations;
-use App\Jobs\SyncOrders;
-use App\Jobs\SyncInvoices;
-use App\Jobs\SyncQuotations;
-use App\Jobs\SAPAllOrderPost;
-use App\Jobs\SAPAllCustomerPromotionPost;
 use App\Models\Order;
 use App\Models\Quotation;
 use App\Models\Invoice;
@@ -20,7 +12,20 @@ use App\Models\SapConnection;
 use App\Models\User;
 use App\Models\Notification;
 use App\Models\NotificationConnection;
+
+use App\Support\SAPOrders;
+use App\Support\SAPInvoices;
+use App\Support\SAPQuotations;
+use App\Support\SAPCreditNote;
 use App\Support\SAPOrderPost;
+
+use App\Jobs\SyncOrders;
+use App\Jobs\SyncInvoices;
+use App\Jobs\SyncQuotations;
+use App\Jobs\SyncCreditNote;
+use App\Jobs\SAPAllOrderPost;
+use App\Jobs\SAPAllCustomerPromotionPost;
+
 use Mail;
 use DataTables;
 use Auth;
@@ -160,14 +165,25 @@ class OrdersController extends Controller
                                         'sap_connection_id' => $value->id,
                                     ]);
 
+                $credit_note_log_id = add_sap_log([
+                                        'ip_address' => userip(),
+                                        'activity_id' => 59,
+                                        'user_id' => userid(),
+                                        'data' => null,
+                                        'type' => "S",
+                                        'status' => "in progress",
+                                        'sap_connection_id' => $value->id,
+                                    ]);
+
                 SyncQuotations::dispatch($value->db_name, $value->user_name , $value->password, $quotation_log_id);
                 SyncOrders::dispatch($value->db_name, $value->user_name , $value->password, $order_log_id);
                 SyncInvoices::dispatch($value->db_name, $value->user_name , $value->password, $invoice_log_id);
+                SyncCreditNote::dispatch($value->db_name, $value->user_name , $value->password, $credit_note_log_id);
             }
 
             $response = ['status' => true, 'message' => 'Sync Orders successfully !'];
         } catch (\Exception $e) {
-            $response = ['status' => false, 'message' => 'Something went wrong !'];
+            $response = ['status' => false, 'message' => $e->getMessage()];
         }
         return $response;
     }
@@ -396,6 +412,36 @@ class OrdersController extends Controller
                             ->make(true);
     }
 
+    public function cancelOrder(Request $request){
+
+        $response = ['status' => false, 'message' => 'Record not found!'];
+
+        $quotation = Quotation::where('id', $request->id);
+        if(userrole() == 4){
+            $quotation->where('card_code', @Auth::user()->customer->card_code);
+        }elseif(userrole() == 2){
+            $quotation->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(userrole() != 1){
+            return abort(404);
+        }
+
+        $quotation = $quotation->first();
+        if(!empty($quotation)){
+            
+            $sap_connection = @$quotation->sap_connection;
+
+            $sap_quotations = new SAPQuotations(@$sap_connection->db_name, @$sap_connection->user_name, @$sap_connection->password);
+            $response = $sap_quotations->cancelSpecificQuotation($quotation->id, $quotation->doc_entry);
+
+            if(@$response['status']){
+                $response = ['status' => true, 'message' => 'Order canceled successfully!'];
+            }else{
+                $response = ['status' => false, 'message' => 'Something went wrong !'];
+            }
+        }
+        return $response;
+    }
+
     // Notify Customer
     public function notifyCustomer(Request $request){
         $q_id = $request->order_id;
@@ -455,11 +501,8 @@ class OrdersController extends Controller
     public function getAllPendingOrder(Request $request){
 
         $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items']);
-        // dd($data);
-
+        
         $data->where('confirmation_status', 'ERR');
-
-        // dd($data->get());
 
         if($request->filter_search != ""){
             $data->whereHas('customer', function($q) use ($request) {
