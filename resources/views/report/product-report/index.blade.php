@@ -42,42 +42,49 @@
                 <!-- Brand -->
                 <div class="col-md-3 mt-5">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_brand">
+                        <option value=""></option>
                     </select>
                 </div>
 
                 <!-- Product Category -->
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3 mt-5 product_filter">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_category">
+                        <option value=""></option>
                     </select>
                 </div>
 
                 <!-- Product Line -->
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3 mt-5 product_filter">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_line">
+                        <option value=""></option>
                     </select>
                 </div>
 
                 <!-- Product Class -->
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3 mt-5 product_filter">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_class">
+                        <option value=""></option>
                     </select>
                 </div>
 
                 <!-- Product Type -->
-                <div class="col-md-3 mt-5 sales_specialist">
+                <div class="col-md-3 mt-5 product_filter">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_type">
+                        <option value=""></option>
                     </select>
                 </div>
 
                 <!-- Product Application -->
-                <div class="col-md-3 mt-5 sales_specialist">
+                <div class="col-md-3 mt-5 product_filter">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_application">
+                        <option value=""></option>
                     </select>
                 </div>
 
                 <!-- Product Pattern -->
-                <div class="col-md-3 mt-5 sales_specialist">
+                <div class="col-md-3 mt-5 product_filter">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_pattern">
+                        <option value=""></option>
                     </select>
                 </div>
 
@@ -130,6 +137,12 @@
 
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+  .product_filter{
+    display: none;
+  }
+</style>
 @endpush
 
 @push('js')
@@ -174,11 +187,14 @@ $(document).ready(function() {
     });
 
     $('.clear-search').on('click', function(){
-        $('[name="filter_company"]').val(null).trigger('change'),
-        $('[name="filter_brand"]').val(null).trigger('change'),
-        $('[name="filter_customer_class"]').val(null).trigger('change'),
-        $('[name="filter_sales_specialist"]').val(null).trigger('change'),
-        $('[name="filter_customer"]').val(null).trigger('change'),
+        $('[name="filter_company"]').val(null).trigger('change');
+        $('[name="filter_brand"]').val(null).trigger('change');
+        $('[name="filter_product_category"]').val(null).trigger('change');
+        $('[name="filter_product_line"]').val(null).trigger('change');
+        $('[name="filter_product_class"]').val(null).trigger('change');
+        $('[name="filter_product_type"]').val(null).trigger('change');
+        $('[name="filter_product_application"]').val(null).trigger('change');
+        $('[name="filter_product_pattern"]').val(null).trigger('change');
         getData();
     });
 
@@ -191,9 +207,12 @@ $(document).ready(function() {
                 _token:'{{ csrf_token() }}',
                 filter_company: $('[name="filter_company"]').find('option:selected').val(),
                 filter_brand: $('[name="filter_brand"]').find('option:selected').val(),
-                filter_customer_class: $('[name="filter_customer_class"]').find('option:selected').val(),
-                filter_sales_specialist: $('[name="filter_sales_specialist"]').find('option:selected').val(),
-                filter_customer: $('[name="filter_customer"]').find('option:selected').val(),
+                filter_product_category: $('[name="filter_product_category"]').find('option:selected').val(),
+                filter_product_line: $('[name="filter_product_line"]').find('option:selected').val(),
+                filter_product_class: $('[name="filter_product_class"]').find('option:selected').val(),
+                filter_product_type: $('[name="filter_product_type"]').find('option:selected').val(),
+                filter_product_application: $('[name="filter_product_application"]').find('option:selected').val(),
+                filter_product_pattern: $('[name="filter_product_pattern"]').find('option:selected').val(),
             }
         }).done(function(result) {
             if(result.status == false){
@@ -209,6 +228,22 @@ $(document).ready(function() {
             toast_error("error");
         });
     }
+
+    $(document).on('change', '[name="filter_brand"]', function(event) {
+        event.preventDefault();
+        $('[name="filter_product_category"]').val('').trigger('change');
+        $('[name="filter_product_line"]').val('').trigger('change');
+        $('[name="filter_product_class"]').val('').trigger('change');
+        $('[name="filter_product_type"]').val('').trigger('change');
+        $('[name="filter_product_application"]').val('').trigger('change');
+        $('[name="filter_product_pattern"]').val('').trigger('change');
+
+        if($(this).find('option:selected').val() != ""){
+            $('.product_filter').show();
+        }else{
+            $('.product_filter').hide();
+        }
+    });
 
     // Brand
     $('[name="filter_brand"]').select2({
@@ -258,62 +293,165 @@ $(document).ready(function() {
             },
             cache: true
         },
-        placeholder: 'By Product Category',
+        placeholder: 'Select Product Category',
         // minimumInputLength: 1,
         multiple: false,
     });
 
-    // // Product Line
-    // $('[name="filter_sales_specialist"]').select2({
-    //     ajax: {
-    //         url: "{{route('common.getSalesSpecialist')}}",
-    //         type: "post",
-    //         dataType: 'json',
-    //         delay: 250,
-    //         data: function (params) {
-    //             return {
-    //                 _token: "{{ csrf_token() }}",
-    //                 search: params.term,
-    //                 sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
-    //             };
-    //         },
-    //         processResults: function (response) {
-    //             return {
-    //                 results: response
-    //             };
-    //         },
-    //         cache: true
-    //     },
-    //     placeholder: 'By Sales Specialist',
-    //     // minimumInputLength: 1,
-    //     multiple: false,
-    // });
+    // Product Line
+    $('[name="filter_product_line"]').select2({
+        ajax: {
+            url: "{{route('common.getProductLine')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    items_group_code: $('[name="filter_brand"]').find('option:selected').val()
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Product Line',
+        // minimumInputLength: 1,
+        multiple: false,
+    });
 
-    // // Product Class
-    // $('[name="filter_customer"]').select2({
-    //     ajax: {
-    //         url: "{{route('common.getCustomer')}}",
-    //         type: "post",
-    //         dataType: 'json',
-    //         delay: 250,
-    //         data: function (params) {
-    //             return {
-    //                 _token: "{{ csrf_token() }}",
-    //                 search: params.term,
-    //                 sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
-    //             };
-    //         },
-    //         processResults: function (response) {
-    //             return {
-    //                 results: response
-    //             };
-    //         },
-    //         cache: true
-    //     },
-    //     placeholder: 'Select Customer',
-    //     // minimumInputLength: 1,
-    //     multiple: false,
-    // });
+    // Product Class
+    $('[name="filter_product_class"]').select2({
+        ajax: {
+            url: "{{route('common.getProductClass')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    items_group_code: $('[name="filter_brand"]').find('option:selected').val()
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Product Class',
+        // minimumInputLength: 1,
+        multiple: false,
+    });
+
+    // Product Type
+    $('[name="filter_product_type"]').select2({
+        ajax: {
+            url: "{{route('common.getProductType')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    items_group_code: $('[name="filter_brand"]').find('option:selected').val()
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Product Type',
+        // minimumInputLength: 1,
+        multiple: false,
+    });
+
+    // Product Application
+    $('[name="filter_product_application"]').select2({
+        ajax: {
+            url: "{{route('common.getProductApplication')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    items_group_code: $('[name="filter_brand"]').find('option:selected').val()
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Product Application',
+        // minimumInputLength: 1,
+        multiple: false,
+    });
+
+    // Product Pattern
+    $('[name="filter_product_pattern"]').select2({
+        ajax: {
+            url: "{{route('common.getProductPattern')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    items_group_code: $('[name="filter_brand"]').find('option:selected').val()
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Product Pattern',
+        // minimumInputLength: 1,
+        multiple: false,
+    });
+
+    // Export Report
+    $(document).on("click", ".download_excel", function(e) {
+        var url = "{{route('reports.product-report.export')}}";
+
+        var data = {};
+        data.filter_search = $('[name="filter_search"]').val();
+        data.filter_company = $('[name="filter_company"]').find('option:selected').val(),
+        data.filter_brand = $('[name="filter_brand"]').find('option:selected').val(),
+        data.filter_product_category = $('[name="filter_product_category"]').find('option:selected').val(),
+        data.filter_product_line = $('[name="filter_product_line"]').find('option:selected').val(),
+        data.filter_product_class = $('[name="filter_product_class"]').find('option:selected').val(),
+        data.filter_product_type = $('[name="filter_product_type"]').find('option:selected').val(),
+        data.filter_product_application = $('[name="filter_product_application"]').find('option:selected').val(),
+        data.filter_product_pattern = $('[name="filter_product_pattern"]').find('option:selected').val(),
+
+        url = url + '?data=' + btoa(JSON.stringify(data));
+
+        window.location.href = url;
+    });
 });
 </script>
 @endpush
