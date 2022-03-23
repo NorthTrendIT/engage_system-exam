@@ -71,9 +71,10 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mr-10">Clear</a>
+                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
                 </div>
 
               </div>
@@ -94,13 +95,13 @@
             <div class="card-body">
               <div class="row mb-5">
                 <div class="col-md-6 bg-light-dark px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4">
-                  <a href="javascript:" class="text-dark fw-bold fs-6">Pending </a>
-                  <span class="count text-dark fw-bold fs-1 number_of_sales_orders_pending_count">0</span>
+                  <a href="javascript:" class="text-dark fw-bold fs-6">Number of Overdue Invoices </a>
+                  <span class="count text-dark fw-bold fs-1 number_of_overdue_invoices_count">0</span>
                 </div>
 
                 <div class="col-md-6 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4">
-                  <a href="javascript:" class="text-success fw-bold fs-6">Approved</a>
-                  <span class="count text-success fw-bold fs-1 number_of_sales_orders_approved_count">0</span>
+                  <a href="javascript:" class="text-success fw-bold fs-6">Total Amount of Overdue Invoices</a>
+                  <span class="count text-success fw-bold fs-1 total_amount_of_overdue_invoices_count">0</span>
                 </div>
 
               </div>
@@ -118,7 +119,35 @@
             </div>
             <div class="card-body">
               <div class="row mb-5">
-                
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <!--begin::Table container-->
+                    <div class="table-responsive column-left-right-fix-scroll-hidden">
+                       <!--begin::Table-->
+                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                          <!--begin::Table head-->
+                          <thead>
+                            <tr>
+                              <th>No</th>
+                              <th>Invoice #</th>
+                              <th>Business Unit</th>
+                              <th>Customer Name</th>
+                              <th>Total</th>
+                              <th>Created Date</th>
+                            </tr>
+                          </thead>
+                          <!--end::Table head-->
+                          <!--begin::Table body-->
+                          <tbody>
+                            
+                          </tbody>
+                          <!--end::Table body-->
+                       </table>
+                       <!--end::Table-->
+                    </div>
+                    <!--end::Table container-->
+                  </div>
+                </div>
               </div>
 
             </div>
@@ -134,7 +163,7 @@
 
 @push('css')
   <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
-  
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
 
   <style type="text/css">
     .other_filter_div{
@@ -156,34 +185,29 @@
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
+      $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
 
       $.ajax({
-        url: '{{ route('reports.sales-order-report.get-all') }}',
+        url: '{{ route('reports.overdue-sales-invoice-report.get-all') }}',
         method: "POST",
         data: {
                 _token:'{{ csrf_token() }}',
                 filter_company : $filter_company,
                 filter_date_range : $filter_date_range,
                 filter_customer : $filter_customer,
+                filter_brand : $filter_brand,
                 filter_sales_specialist : $filter_sales_specialist,
               }
       })
       .done(function(result) {
         if(result.status){
           toast_success(result.message);
+          
+          render_table(result.data.table.original.data);
 
-          $('.number_of_sales_orders_pending_count').text(result.data.pending_total_sales_orders);
-          $('.number_of_sales_orders_approved_count').text(result.data.approved_total_sales_orders);
-          $('.number_of_sales_orders_disapproved_count').text(result.data.disapproved_total_sales_orders);
-
-          $('.total_sales_quantity_pending_count').text(result.data.pending_total_sales_quantity);
-          $('.total_sales_quantity_approved_count').text(result.data.approved_total_sales_quantity);
-          $('.total_sales_quantity_disapproved_count').text(result.data.disapproved_total_sales_quantity);
-
-          $('.total_sales_revenue_pending_count').text("₱ " + get_format_number_value(result.data.pending_total_sales_revenue));
-          $('.total_sales_revenue_approved_count').text("₱ " + get_format_number_value(result.data.approved_total_sales_revenue));
-          $('.total_sales_revenue_disapproved_count').text("₱ " + get_format_number_value(result.data.disapproved_total_sales_revenue));
+          $('.number_of_overdue_invoices_count').text(result.data.number_of_overdue_invoices);
+          $('.total_amount_of_overdue_invoices_count').text("₱ " + get_format_number_value(result.data.total_amount_of_overdue_invoices))
         }
       })
       .fail(function() {
@@ -198,6 +222,40 @@
       });
 
       return formatter.format(number); 
+    }
+
+    function render_table(jsonData){
+      var table = $("#myTable");
+      table.DataTable().destroy();
+
+      table.DataTable({
+        scrollX: true,
+        scrollY: "800px",
+        scrollCollapse: true,
+        paging: true,
+        fixedColumns:   {
+          left: 2,  
+          right: 0
+        },
+        order: [],
+        data: jsonData,
+        columns: [
+            {data: 'DT_RowIndex' ,orderable:false,searchable:false},
+            {data: 'doc_entry', name: 'doc_entry' ,orderable:false,searchable:false},
+            {data: 'company', name: 'company' ,orderable:false,searchable:false},
+            {data: 'name', name: 'name' ,orderable:false,searchable:false},
+            {data: 'total', name: 'total' ,orderable:false,searchable:false},
+            {data: 'date', name: 'date' ,orderable:false,searchable:false}
+        ],
+        drawCallback:function(){
+            $(function () {
+              $('[data-toggle="tooltip"]').tooltip()
+              $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+            })
+        },
+        initComplete: function () {
+        }
+      });
     }
 
     $(document).on('click', '.search', function(event) {
@@ -254,7 +312,7 @@
             results:  $.map(response, function (item) {
                         return {
                           text: item.group_name,
-                          id: item.number,
+                          id: item.id,
                           data_id: item.id
                         }
                       })
@@ -312,6 +370,24 @@
         },
         cache: true
       },
+      tags: true,
+      minimumInputLength: 2,
+    });
+
+
+    $(document).on("click", ".download_excel", function(e) {
+      var url = "{{route('reports.overdue-sales-invoice-report.export')}}";
+
+      var data = {};
+      data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+      data.filter_date_range = $('[name="filter_date_range"]').val();
+      data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
+      data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+      data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
+
+      url = url + '?data=' + btoa(JSON.stringify(data));
+
+      window.location.href = url;
     });
 
   })
