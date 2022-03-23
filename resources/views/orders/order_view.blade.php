@@ -46,6 +46,21 @@
                           <!-- <div class="fw-bolder fs-3 text-gray-800 mb-8">Order</div> -->
                           <!--end::Label-->
 
+                          @php
+                            $status = getOrderStatusByQuotation(@$data);
+                          @endphp
+
+                          <!--begin::Row-->
+                          <div class="row g-5 mb-1">
+                            <!--end::Col-->
+                            <div class="col-md-12">
+                              
+                              {!! view('customer-promotion.ajax.delivery-status',compact('status')) !!}
+
+                            </div>
+                            <!--end::Col-->
+                          </div>
+                          
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
@@ -149,9 +164,7 @@
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
-                                @php
-                                  $status = getOrderStatusByQuotation(@$data);
-                                @endphp
+                                
                                 <span>{!! getOrderStatusBtnHtml($status) !!}</span>
 
                                 @if($status == "Pending")
@@ -160,17 +173,6 @@
 
                               </div>
                               <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
-                          </div>
-
-                          <!--begin::Row-->
-                          <div class="row g-5 mb-11">
-                            <!--end::Col-->
-                            <div class="col-md-12">
-                              
-                              {!! view('customer-promotion.ajax.delivery-status',compact('status')) !!}
-
                             </div>
                             <!--end::Col-->
                           </div>
