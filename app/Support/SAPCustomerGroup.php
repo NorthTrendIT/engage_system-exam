@@ -106,6 +106,7 @@ class SAPCustomerGroup
                                     'name' => @$value['Name'],
                                     'type' => @$value['Type'],
                                     'sap_connection_id' => @$sap_connection->id,
+                                    'last_sync_at' => current_datetime(),
                                 );
 
                     $obj = CustomerGroup::updateOrCreate(

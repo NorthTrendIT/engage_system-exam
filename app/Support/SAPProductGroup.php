@@ -100,6 +100,7 @@ class SAPProductGroup
                                     'number' => @$value['Number'],
                                     'group_name' => @$value['GroupName'],
                                     'sap_connection_id' => @$sap_connection->id,
+                                    'last_sync_at' => current_datetime(),
                                 );
 
                     $obj = ProductGroup::updateOrCreate(

@@ -111,6 +111,7 @@ class SAPOrderPost
                         'u_posotime' => $data['U_POSOTIME'],
                         'created_at' => $data['CreationDate'],
                         'updated_at' => $data['UpdateDate'],
+                        'last_sync_at' => current_datetime(),
                         'sap_connection_id' => $this->sap_connection_id,
                     );
 

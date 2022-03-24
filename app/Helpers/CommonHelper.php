@@ -654,3 +654,7 @@ function getOrderStatusBtnHtml($status){
 
     return $btn;
 }
+
+function current_datetime(){
+    return date("Y-m-d H:i:s");
+}

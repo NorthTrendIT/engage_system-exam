@@ -95,6 +95,7 @@ class StoreProducts implements ShouldQueue
                                 'sales_unit' => @$value['SalesUnit'],
 
                                 'updated_date' => $value['UpdateDate'],
+                                'last_sync_at' => current_datetime(),
                                 'sap_connection_id' => $this->sap_connection_id,
                             );
 

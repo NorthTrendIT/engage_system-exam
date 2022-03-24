@@ -173,6 +173,7 @@ class SAPOrders
                                 //'response' => json_encode($order),
 
                                 'updated_date' => $order['UpdateDate'],
+                                'last_sync_at' => current_datetime(),
                                 'sap_connection_id' => $sap_connection->id,
                             );
 
