@@ -45,6 +45,7 @@ class Order extends Model
         'updated_date',
         'sap_connection_id',
         'document_status',
+        'last_sync_at',
     ];
 
     public function invoice(){

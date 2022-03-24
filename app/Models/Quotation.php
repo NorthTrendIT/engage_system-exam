@@ -44,6 +44,7 @@ class Quotation extends Model
         'updated_date',
         'num_at_card',
         'cancelled',
+        'last_sync_at',
     ];
 
     public function items(){

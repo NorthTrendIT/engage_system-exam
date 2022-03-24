@@ -115,6 +115,8 @@ class SAPSalesPersons
                                     'sap_connection_id' => @$sap_connection->id,
                                     'first_login' => true,
                                     'default_profile_color' => get_hex_color(),
+
+                                    'last_sync_at' => current_datetime(),
                                 );
 
                     $obj = User::updateOrCreate(

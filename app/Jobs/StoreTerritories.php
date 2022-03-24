@@ -43,6 +43,7 @@ class StoreTerritories implements ShouldQueue
                             'description' => @$value['Description'],
                             'location_index' => @$value['LocationIndex'],
                             'is_active' => @$value['Inactive'] == "tYES" ? false : true,
+                            'last_sync_at' => current_datetime(),
                             //'response' => json_encode($value),
                         );
 

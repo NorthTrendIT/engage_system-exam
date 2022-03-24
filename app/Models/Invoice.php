@@ -44,6 +44,8 @@ class Invoice extends Model
         'document_status',
         'cancelled',
         'end_delivery_date',
+        'u_delivery',
+        'last_sync_at',
     ];
 
     public function items(){

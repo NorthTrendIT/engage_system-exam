@@ -3,6 +3,10 @@
 @section('title','Order Details')
 
 @section('content')
+@php
+  $status = getOrderStatusByQuotation(@$data);
+@endphp
+
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
@@ -13,8 +17,10 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
 
+        @if($status != "Cancelled")
         <a href="javascript:" class="btn btn-sm btn-primary sync-details mr-10">Sync Details</a>
-
+        @endif
+        
         <a href="{{ route('orders.index') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
@@ -46,9 +52,7 @@
                           <!-- <div class="fw-bolder fs-3 text-gray-800 mb-8">Order</div> -->
                           <!--end::Label-->
 
-                          @php
-                            $status = getOrderStatusByQuotation(@$data);
-                          @endphp
+                          
 
                           <!--begin::Row-->
                           <div class="row g-5 mb-1">

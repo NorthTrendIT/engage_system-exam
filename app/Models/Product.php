@@ -66,6 +66,7 @@ class Product extends Model
         'u_btotalweight',
         'u_product_tech',
         'sales_unit',
+        'last_sync_at',
     ];
 
     public function product_images()

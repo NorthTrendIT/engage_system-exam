@@ -72,6 +72,7 @@ class StoreOrders implements ShouldQueue
                             //'response' => json_encode($order),
 
                             'updated_date' => $order['UpdateDate'],
+                            'last_sync_at' => current_datetime(),
                             'sap_connection_id' => $this->sap_connection_id,
                         );
 

@@ -52,6 +52,7 @@ class Customer extends Model
         'u_card_code',
         'u_classification',
         'updated_date',
+        'last_sync_at',
     ];
 
     public function bp_addresses()
