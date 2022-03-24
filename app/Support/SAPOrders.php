@@ -62,7 +62,7 @@ class SAPOrders
 
         } catch (\Exception $e) {
 
-            if($this->log_id){
+            if(!empty($this->log_id)){
                 add_sap_log([
                         'status' => "error",
                         'error_data' => $e->getMessage(),
@@ -112,7 +112,7 @@ class SAPOrders
 
                     //$this->addOrdersDataInDatabase($data['odata.nextLink']);
                 } else {
-                    if($this->log_id){
+                    if(!empty($this->log_id)){
                         add_sap_log([
                             'status' => "completed",
                         ], $this->log_id);

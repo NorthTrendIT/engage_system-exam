@@ -60,7 +60,7 @@ class SAPTerritory
 
         } catch (\Exception $e) {
 
-            if($this->log_id){
+            if(!empty($this->log_id)){
                 add_sap_log([
                                 'status' => "error",
                                 'error_data' => $e->getMessage(),
@@ -96,7 +96,7 @@ class SAPTerritory
                     SyncNextTerritories::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
 
                 }else{
-                    if($this->log_id){
+                    if(!empty($this->log_id)){
                         add_sap_log([
                                 'status' => "completed",
                             ], $this->log_id);

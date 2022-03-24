@@ -65,7 +65,7 @@ class SAPCustomer
 
         } catch (\Exception $e) {
 
-            if($this->log_id){
+            if(!empty($this->log_id)){
                 add_sap_log([
                                 'status' => "error",
                                 'error_data' => $e->getMessage(),
@@ -114,7 +114,7 @@ class SAPCustomer
                     SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
                     //$this->addCustomerDataInDatabase($data['odata.nextLink']);
                 }else{
-                    if($this->log_id){
+                    if(!empty($this->log_id)){
                         add_sap_log([
                                 'status' => "completed",
                             ], $this->log_id);

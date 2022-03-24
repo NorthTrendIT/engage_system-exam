@@ -60,7 +60,7 @@ class SAPSalesPersons
 
         } catch (\Exception $e) {
 
-            if($this->log_id){
+            if(!empty($this->log_id))
                 add_sap_log([
                                 'status' => "error",
                                 'error_data' => $e->getMessage(),
@@ -130,7 +130,7 @@ class SAPSalesPersons
                 if(!empty($data['odata.nextLink'])){
                     $this->addSalesPersonsDataInDatabase($data['odata.nextLink']);
                 }else{
-                    if($this->log_id){
+                    if(!empty($this->log_id))
                         add_sap_log([
                                 'status' => "completed",
                             ], $this->log_id);
