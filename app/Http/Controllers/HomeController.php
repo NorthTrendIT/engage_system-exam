@@ -79,20 +79,34 @@ class HomeController extends Controller
         try {
             $data = Invoice::has('order')->get();
 
-            $days_array = [];
+            $so_to_il_days_array = $i_to_dl_days_array = [];
             foreach($data as $value){
+
+                //Sales Order to Invoice Lead Time
                 $endDate = $value->created_at;
                 $startDate = $value->order->created_at;
 
                 $days = (strtotime($endDate) - strtotime($startDate)) / (60 * 60 * 24);
                 if($days >= 0){
-                  array_push($days_array, $days);
+                    array_push($so_to_il_days_array, $days);
+                }
+
+                // Invoice to Delivery Lead Time
+                $startDate = $value->created_at;
+                $endDate = $value->u_delivery;
+
+                if(!is_null($value->u_delivery)){
+                    $days = (strtotime($endDate) - strtotime($startDate)) / (60 * 60 * 24);
+                    if($days >= 0){
+                        array_push($i_to_dl_days_array, $days);
+                    }
                 }
             }
-            $sales_order_to_invoice_lead_time = round(array_sum($days_array) / count($days_array));
+            $sales_order_to_invoice_lead_time = round(array_sum($so_to_il_days_array) / count($so_to_il_days_array));
+            $invoice_to_delivery_lead_time = round(array_sum($i_to_dl_days_array) / count($i_to_dl_days_array));
 
 
-            $data = compact('sales_order_to_invoice_lead_time');
+            $data = compact('sales_order_to_invoice_lead_time','invoice_to_delivery_lead_time');
             return $response = [ 'status' => true, 'message' => "", 'data' => $data ];
             
         } catch (\Exception $e) {
