@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\SapConnection;
 use App\Models\Product;
 use App\Models\CustomerPromotion;
-use App\Models\InvoiceItem;
 use Auth;
 use Carbon\Carbon;
 
@@ -255,7 +254,7 @@ class ProductReportController extends Controller
             array_push($sleepingProducts, $sleeping);
 
             // Product Movement
-            $movement = Product::where('sap_connection_id', $item->id)->join("invoice_items",function($join){
+            $movement = Product::where('products.sap_connection_id', $item->id)->join("invoice_items",function($join){
                     $join->on('invoice_items.item_code','=','products.item_code');
                 })
                 ->where('is_active', 1)
