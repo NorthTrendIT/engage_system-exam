@@ -370,12 +370,14 @@
                                       <tr class="fw-bolder text-gray-700 fs-7 text-center">
                                         <td colspan="3">
                                           @php
-                                            $status = getOrderStatusByQuotation(@$d->quotation);
+                                            $status = getOrderStatusByQuotation(@$d->quotation, true);
+                                            $date_array = @$status['date_array'];
+                                            $status = @$status['status'];
                                             // $status = "Cancelled";
                                           @endphp
 
                                           <div class="delivery_status_div_{{ @$d->quotation->id }}">
-                                            {!! view('customer-promotion.ajax.delivery-status',compact('status')) !!}
+                                            {!! view('customer-promotion.ajax.delivery-status',compact('status', 'date_array')) !!}
                                           </div>
                                           
                                         </td>

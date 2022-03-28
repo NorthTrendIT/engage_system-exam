@@ -93,7 +93,7 @@ class OrdersController extends Controller
         }
 
         $data = $data->firstOrFail();
-
+        
         return view('orders.order_view', compact('data'));
     }
 
@@ -446,6 +446,32 @@ class OrdersController extends Controller
         return $response;
     }
 
+    public function completeOrder(Request $request){
+
+        $response = ['status' => false, 'message' => 'Record not found!'];
+
+        $quotation = Quotation::where('id', $request->id);
+        if(userrole() == 4){
+            $quotation->where('card_code', @Auth::user()->customer->card_code);
+        }elseif(userrole() == 2){
+            $quotation->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(userrole() != 1){
+            return abort(404);
+        }
+
+        $quotation = $quotation->first();
+        if(!empty($quotation)){
+            
+            if(@$quotation->order->invoice){
+
+                $quotation->order->invoice->completed_date = date('Y-m-d H:i:s');
+                $quotation->order->invoice->save();
+
+                $response = ['status' => true, 'message' => 'Order completed successfully!'];
+            }
+        }
+        return $response;
+    }
     // Notify Customer
     public function notifyCustomer(Request $request){
         $q_id = $request->order_id;

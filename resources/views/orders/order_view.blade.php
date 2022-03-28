@@ -4,7 +4,10 @@
 
 @section('content')
 @php
-  $status = getOrderStatusByQuotation(@$data);
+  $status = getOrderStatusByQuotation(@$data, true);
+  $date_array = @$status['date_array'];
+  $status = @$status['status'];
+  
 @endphp
 
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
@@ -59,7 +62,7 @@
                             <!--end::Col-->
                             <div class="col-md-12">
                               
-                              {!! view('customer-promotion.ajax.delivery-status',compact('status')) !!}
+                              {!! view('customer-promotion.ajax.delivery-status',compact('status', 'date_array')) !!}
 
                             </div>
                             <!--end::Col-->
@@ -151,7 +154,7 @@
 
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
-                            <div class="col-sm-9">
+                            <div class="col-sm-7">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Remarks:</div>
                               <!--end::Label-->
@@ -162,7 +165,7 @@
                             <!--end::Col-->
 
                             <!--end::Col-->
-                            <div class="col-sm-3">
+                            <div class="col-sm-5">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
                               <!--end::Label-->
@@ -173,6 +176,10 @@
 
                                 @if($status == "Pending")
                                   <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
+                                @endif
+
+                                @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[$data->customer->id,1]))
+                                  <a href="javascript:" class="btn btn-info btn-sm mark-as-completed-order" title="Mark as Completed">Mark as Completed</a>
                                 @endif
 
                               </div>
@@ -471,6 +478,45 @@
       });
     @endif
 
+    @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[$data->customer->id,1]))
+      $(document).on('click', '.mark-as-completed-order', function(event) {
+        event.preventDefault();
+
+        Swal.fire({
+          title: 'Are you sure want to complete order ?',
+          text: "Once completed, you will not be able to recover this record!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, do it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: '{{ route('orders.complete-order') }}',
+              method: "POST",
+              data: {
+                      _token:'{{ csrf_token() }}',
+                      id:'{{ $data->id }}'
+                    }
+            })
+            .done(function(result) {
+              if(result.status == false){
+                toast_error(result.message);
+              }else{
+                toast_success(result.message);
+                setTimeout(function(){
+                  window.location.reload();
+                },500)
+              }
+            })
+            .fail(function() {
+              toast_error("error");
+            });
+          }
+        })
+      });
+    @endif
   });
 
 </script>
