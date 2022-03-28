@@ -268,13 +268,6 @@ Route::middleware(['auth'])->group(function(){
             Route::post('news-and-announcement/get-all-brands', 'App\Http\Controllers\NewsAndAnnouncementController@getAllBrands')->name('news-and-announcement.getAllBrands');
             Route::post('news-and-announcement/status/{id}', 'App\Http\Controllers\NewsAndAnnouncementController@updateStatus')->name('news-and-announcement.status');
 
-            // Report
-            Route::resource('report', 'App\Http\Controllers\ReportController');
-            Route::get('reports/promotion', 'App\Http\Controllers\PromotionReportController@index')->name('report.promotion.index');
-            Route::post('reports/promotion/get-all', 'App\Http\Controllers\PromotionReportController@getAll')->name('report.promotion.get-all');
-            Route::post('reports/promotion/get-chart-data', 'App\Http\Controllers\PromotionReportController@getChartData')->name('report.promotion.get-chart-data');
-
-
             // Warranty
             Route::resource('warranty','App\Http\Controllers\WarrantyController');
             Route::post('warranty/get-all', 'App\Http\Controllers\WarrantyController@getAll')->name('warranty.get-all');
@@ -335,6 +328,12 @@ Route::middleware(['auth'])->group(function(){
         Route::post('common/get-users', 'App\Http\Controllers\CommonController@getUsers')->name('common.getUsers');
         Route::post('common/get-promotion-codes', 'App\Http\Controllers\CommonController@getPromotionCodes')->name('common.getPromotionCodes');
         Route::post('common/get-customers', 'App\Http\Controllers\CommonController@getCustomer')->name('common.getCustomer');
+        Route::post('common/get-product-category', 'App\Http\Controllers\CommonController@getProductCategory')->name('common.getProductCategory');
+        Route::post('common/get-product-line', 'App\Http\Controllers\CommonController@getProductLine')->name('common.getProductLine');
+        Route::post('common/get-product-class', 'App\Http\Controllers\CommonController@getProductClass')->name('common.getProductClass');
+        Route::post('common/get-product-type', 'App\Http\Controllers\CommonController@getProductType')->name('common.getProductType');
+        Route::post('common/get-product-application', 'App\Http\Controllers\CommonController@getProductApplication')->name('common.getProductApplication');
+        Route::post('common/get-product-pattern', 'App\Http\Controllers\CommonController@getProductPattern')->name('common.getProductPattern');
 
     });
 
@@ -407,9 +406,20 @@ Route::middleware(['auth'])->group(function(){
         Route::post('sap-connection/update-api-url', 'App\Http\Controllers\SapConnectionController@updateApiUrl')->name('sap-connection.update-api-url');
 
 
+        // Report
+        Route::resource('report', 'App\Http\Controllers\ReportController');
         Route::prefix('reports')->namespace('App\Http\Controllers\Reports')->name('reports.')->group(function(){
             Route::resource('sales-report','SalesReportController')->only('index');
             Route::post('sales-report/get-all', 'SalesReportController@getAll')->name('sales-report.get-all');
+
+            Route::resource('promotion-report', 'PromotionReportController')->only('index');
+            Route::post('promotion-report/get-all', 'PromotionReportController@getAll')->name('promotion-report.get-all');
+            Route::post('promotion-report/get-chart-data', 'PromotionReportController@getChartData')->name('promotion-report.get-chart-data');
+
+            Route::resource('product-report', 'ProductReportController')->only('index');
+            Route::post('product-report/get-all', 'ProductReportController@getAll')->name('product-report.get-all');
+            Route::post('product-report/get-chart-data', 'ProductReportController@getChartData')->name('product-report.get-chart-data');
+            Route::get('product-report/export', 'ProductReportController@export')->name('product-report.export');
 
             Route::resource('sales-order-report','SalesOrderReportController')->only('index');
             Route::post('sales-order-report/get-all', 'SalesOrderReportController@getAll')->name('sales-order-report.get-all');
@@ -418,10 +428,15 @@ Route::middleware(['auth'])->group(function(){
             Route::post('overdue-sales-invoice-report/get-all', 'OverdueSalesInvoiceReportController@getAll')->name('overdue-sales-invoice-report.get-all');
             Route::get('overdue-sales-invoice-report/export', 'OverdueSalesInvoiceReportController@export')->name('overdue-sales-invoice-report.export');
 
+            Route::resource('product-sales-report', 'ProductSalesReportController')->only('index');
+            Route::post('product-sales-report/get-all', 'ProductSalesReportController@getAll')->name('product-sales-report.get-all');
+            Route::post('product-sales-report/get-chart-data', 'ProductSalesReportController@getChartData')->name('product-sales-report.get-chart-data');
+            Route::get('product-sales-report/export', 'ProductSalesReportController@export')->name('product-sales-report.export');
+
             Route::resource('back-order-report','BackOrderReportController')->only('index');
             Route::post('back-order-report/get-all', 'BackOrderReportController@getAll')->name('back-order-report.get-all');
         });
-            
+
     });
 
 
