@@ -178,7 +178,7 @@
                                   <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
                                 @endif
 
-                                @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[$data->customer->id,1]))
+                                @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->id,1]))
                                   <a href="javascript:" class="btn btn-info btn-sm mark-as-completed-order" title="Mark as Completed">Mark as Completed</a>
                                 @endif
 
@@ -478,7 +478,7 @@
       });
     @endif
 
-    @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[$data->customer->id,1]))
+    @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->id,1]))
       $(document).on('click', '.mark-as-completed-order', function(event) {
         event.preventDefault();
 
