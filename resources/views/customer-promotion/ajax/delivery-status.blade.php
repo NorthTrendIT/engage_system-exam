@@ -1,4 +1,7 @@
-<div class="hh-grayBox pt45 pb20">
+<div class="hh-grayBox pb20">
+  <div class="row justify-content-center mb-10 text-center">
+    <h2><u>Delivery Status</u></h2>
+  </div>
   @if($status == "Cancelled")
   <div class="row justify-content-center">
     <div class="order-tracking completed">
@@ -67,7 +70,4 @@
     </div>
   </div>
   @endif
-  <div class="row justify-content-center mt-10 text-center">
-    <span>Delivery Status</span>
-  </div>
 </div>
