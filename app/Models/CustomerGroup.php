@@ -16,6 +16,7 @@ class CustomerGroup extends Model
     	'name',
     	'type',
         'sap_connection_id',
+        'last_sync_at',
     ];
 
     public function sap_connection()

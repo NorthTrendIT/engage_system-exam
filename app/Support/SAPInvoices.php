@@ -62,7 +62,7 @@ class SAPInvoices
 
         } catch (\Exception $e) {
 
-            if($this->log_id){
+            if(!empty($this->log_id)){
                 add_sap_log([
                         'status' => "error",
                         'error_data' => $e->getMessage(),
@@ -113,7 +113,7 @@ class SAPInvoices
 
                     //$this->addInvoicesDataInDatabase($data['odata.nextLink']);
                 } else {
-                    if($this->log_id){
+                    if(!empty($this->log_id)){
                         add_sap_log([
                             'status' => "completed",
                         ], $this->log_id);
@@ -173,6 +173,8 @@ class SAPInvoices
 
                                 'updated_date' => $invoice['UpdateDate'],
                                 'end_delivery_date' => $invoice['EndDeliveryDate'],
+                                'u_delivery' => $invoice['U_DELIVERY'],
+                                'last_sync_at' => current_datetime(),
                                 'sap_connection_id' => $sap_connection->id,
                             );
 

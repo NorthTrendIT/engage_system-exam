@@ -309,6 +309,10 @@ class OrdersController extends Controller
 
                 $data->where(function($query){
                     $query->orwhere(function($q){
+                        $q->where('cancelled', 'Yes');
+                    });
+
+                    $query->orwhere(function($q){
                         $q->whereHas('order',function($p){
                             $p->where('cancelled', 'Yes');
                         });

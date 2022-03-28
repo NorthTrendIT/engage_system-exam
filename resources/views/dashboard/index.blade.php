@@ -28,20 +28,32 @@
 
         <!--begin::Row-->
         @if(userrole() == 1)
-        {{-- <div class="row gy-5 g-xl-8">
+        <div class="row gy-5 g-xl-8">
             <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
                 <div class="card card-xl-stretch mb-5 mb-xl-8">
                     <div class="card-body">
                         <div class="row mb-5">
                             <div class="col-md-4 bg-light-warning px-6 py-8 rounded-2 me-7 min-w-150 col-box-4">
-                              <a href="javascript:" class="text-warning fw-bold fs-6">Sales Order to Invoice Lead time </a>
-                              <span class="count text-warning fw-bold fs-1 sales_order_to_invoice_lead_time_count">0 Day(s)</span>
+                              <a href="javascript:" class="text-warning fw-bold fs-6">Sales Order to Invoice Lead Time </a>
+                              <span class="count text-warning fw-bold fs-1">
+                                <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
+                                <span class="sales_order_to_invoice_lead_time_count"></span>
+                              </span>
                             </div>
+
+                            <div class="col-md-4 bg-light-success px-6 py-8 rounded-2 me-7 min-w-150 col-box-4">
+                              <a href="javascript:" class="text-success fw-bold fs-6">Invoice to Delivery Lead Time </a>
+                              <span class="count text-success fw-bold fs-1">
+                                <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="invoice_to_delivery_lead_time_loader_img"> 
+                                <span class="invoice_to_delivery_lead_time_count"></span>
+                              </span>
+                            </div>
+
                         </div>
                     </div>
                 </div>
             </div>
-        </div> --}}
+        </div>
         @endif
 
 
@@ -585,9 +597,9 @@
 
 
     @if(userrole() == 1)
-    // render_report_data();
+    render_report_data();
     function render_report_data(){
-
+        $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').show();
         $.ajax({
             url: '{{ route('home.get-report-data') }}',
             method: "POST",
@@ -597,16 +609,20 @@
         })
         .done(function(result) {
             if(result.status){
-                toast_success(result.message);
+                // toast_success(result.message);
 
                 $('.sales_order_to_invoice_lead_time_count').text(result.data.sales_order_to_invoice_lead_time + " Day(s)");
+                $('.invoice_to_delivery_lead_time_count').text(result.data.invoice_to_delivery_lead_time + " Day(s)");
             }else{
                 toast_error(result.message);
             }
+            $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
         })
         .fail(function() {
             toast_error("error");
+            $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
         });
+        
     }
     @endif
 </script>

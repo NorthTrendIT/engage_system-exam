@@ -109,6 +109,7 @@ class StoreCustomers implements ShouldQueue
                                 'u_card_code' => @$value['U_CardCode'],
 
                                 'updated_date' => $value['UpdateDate'],
+                                'last_sync_at' => current_datetime(),
                                 'sap_connection_id' => $this->sap_connection_id,
                             );
 

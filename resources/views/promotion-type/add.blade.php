@@ -194,7 +194,7 @@
                             </div>
                           </div>
 
-                          <div class="col-md-3 mt-5">
+                          <div class="col-md-6 mt-5">
                             <div class="form-group">
                               <label>Product<span class="asterisk">*</span></label>
                               <select class="form-control form-control-lg form-control-solid product_id" name="product_id">
@@ -239,7 +239,7 @@
                           </div>
                         </div>
 
-                        <div class="col-md-3 mt-5">
+                        <div class="col-md-6 mt-5">
                           <div class="form-group">
                             <label>Product<span class="asterisk">*</span></label>
                             <select class="form-control form-control-lg form-control-solid product_id" name="product_id">

@@ -16,6 +16,7 @@ class Territory extends Model
         'location_index',
         'is_active',
         'response',
+        'last_sync_at',
     ];
 
 }

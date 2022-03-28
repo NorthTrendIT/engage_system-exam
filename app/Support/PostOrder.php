@@ -117,6 +117,8 @@ class PostOrder
                             'created_at' => $data['CreationDate'],
                             'updated_at' => $data['UpdateDate'],
                             //'response' => json_encode($order),
+
+                            'last_sync_at' => current_datetime(),
                         );
 
                 $obj = Quotation::updateOrCreate([

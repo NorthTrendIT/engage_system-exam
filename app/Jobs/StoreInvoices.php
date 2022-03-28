@@ -72,6 +72,8 @@ class StoreInvoices implements ShouldQueue
 
                             'updated_date' => $invoice['UpdateDate'],
                             'end_delivery_date' => $invoice['EndDeliveryDate'],
+                            'u_delivery' => $invoice['U_DELIVERY'],
+                            'last_sync_at' => current_datetime(),
                             'sap_connection_id' => $this->sap_connection_id,
                         );
 

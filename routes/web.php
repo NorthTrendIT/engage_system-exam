@@ -431,6 +431,9 @@ Route::middleware(['auth'])->group(function(){
             Route::post('product-sales-report/get-all', 'ProductSalesReportController@getAll')->name('product-sales-report.get-all');
             Route::post('product-sales-report/get-chart-data', 'ProductSalesReportController@getChartData')->name('product-sales-report.get-chart-data');
             Route::get('product-sales-report/export', 'ProductSalesReportController@export')->name('product-sales-report.export');
+
+            Route::resource('back-order-report','BackOrderReportController')->only('index');
+            Route::post('back-order-report/get-all', 'BackOrderReportController@getAll')->name('back-order-report.get-all');
         });
 
     });
