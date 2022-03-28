@@ -10,7 +10,7 @@ class InvoiceItem extends Model
     use HasFactory;
 
     use \Awobaz\Compoships\Compoships;
-    
+
     protected $fillable = [
             'invoice_id',
             'line_num',

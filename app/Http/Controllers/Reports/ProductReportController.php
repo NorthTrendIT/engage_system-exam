@@ -110,10 +110,6 @@ class ProductReportController extends Controller
                 // Active Products
                 $activeProducts = Product::where('sap_connection_id', $item->id)->where('is_active', 1);
 
-                if($request->filter_company != ""){
-                    $activeProducts->where('sap_connection_id',$request->filter_company);
-                }
-
                 if($request->filter_brand != ""){
                     $activeProducts->where('items_group_code',$request->filter_brand);
                 }
@@ -147,10 +143,6 @@ class ProductReportController extends Controller
 
                 // Sleeping Products
                 $sleepingProducts = Product::where('sap_connection_id', $item->id)->where('is_active', 0);
-
-                if($request->filter_company != ""){
-                    $sleepingProducts->where('sap_connection_id',$request->filter_company);
-                }
 
                 if($request->filter_brand != ""){
                     $sleepingProducts->where('items_group_code',$request->filter_brand);
@@ -189,10 +181,6 @@ class ProductReportController extends Controller
                     ->where('is_active', 1)
                     ->where('invoice_items.ship_date', '>=', Carbon::now()->subDays(60)->toDateTimeString());
 
-                if($request->filter_company != ""){
-                    $productMovement->where('sap_connection_id',$request->filter_company);
-                }
-
                 if($request->filter_brand != ""){
                     $productMovement->where('items_group_code',$request->filter_brand);
                 }
@@ -222,8 +210,6 @@ class ProductReportController extends Controller
                 }
 
                 $productMovement = $productMovement->count();
-
-
 
                 $row = [
                     'no' => ++$no,

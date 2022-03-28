@@ -425,7 +425,12 @@ Route::middleware(['auth'])->group(function(){
 
             Route::resource('overdue-sales-invoice-report','OverdueSalesInvoiceReportController')->only('index');
             Route::post('overdue-sales-invoice-report/get-all', 'OverdueSalesInvoiceReportController@getAll')->name('overdue-sales-invoice-report.get-all');
-             Route::get('overdue-sales-invoice-report/export', 'OverdueSalesInvoiceReportController@export')->name('overdue-sales-invoice-report.export');
+            Route::get('overdue-sales-invoice-report/export', 'OverdueSalesInvoiceReportController@export')->name('overdue-sales-invoice-report.export');
+
+            Route::resource('product-sales-report', 'ProductSalesReportController')->only('index');
+            Route::post('product-sales-report/get-all', 'ProductSalesReportController@getAll')->name('product-sales-report.get-all');
+            Route::post('product-sales-report/get-chart-data', 'ProductSalesReportController@getChartData')->name('product-sales-report.get-chart-data');
+            Route::get('product-sales-report/export', 'ProductSalesReportController@export')->name('product-sales-report.export');
         });
 
     });
