@@ -75,7 +75,7 @@
                     <!--begin::Table container-->
                     <div class="table-responsive">
                        <!--begin::Table-->
-                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                       <table class="table table-striped table-row-bordered table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <!--begin::Table head-->
                           <thead>
                             <tr>
@@ -119,16 +119,13 @@
 <script>
 $(document).ready(function() {
     var myTable = $('#myTable').DataTable({
-        "processing": true,
-        "serverSide": false,
-        "paging": true,
-        "lengthChange": true,
-        "searching": false,
-        "ordering": true,
-        "info": true,
-        "autoWidth": true,
-        "data": [],
-        "columns": [
+        processing: true,
+        serverSide: false,
+        scrollY: "800px",
+        scrollCollapse: true,
+        paging: false,
+        data: [],
+        columns: [
             { "title": "No", "data": "no" },
             { "title": "Business Unit", "data": "company_name" },
             { "title": "Status", "data": "status" },
@@ -142,6 +139,8 @@ $(document).ready(function() {
                 $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
             })
         },
+        initComplete: function () {
+        }
     });
 
     myTable.on( 'order.dt search.dt', function () {
@@ -166,7 +165,7 @@ $(document).ready(function() {
 
     function getData(){
         $.ajax({
-            url: "{{ route('report.promotion.get-all') }}",
+            url: "{{ route('reports.promotion-report.get-all') }}",
             method: "POST",
             dataType: 'json',
             data: {

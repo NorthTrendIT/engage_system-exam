@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Reports;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SapConnection;
 use App\Models\Promotions;
@@ -18,7 +19,7 @@ class PromotionReportController extends Controller
     public function index()
     {
         $company = SapConnection::all();
-        return view('report.promotion', compact('company'));
+        return view('report.promotion-report.index', compact('company'));
     }
 
     /**
@@ -200,15 +201,13 @@ class PromotionReportController extends Controller
 
                 $totalApprovedRev = $totalApprovedRev->sum('total_amount');
 
-                // Completed
-
                 $pending = [
                     'no' => ++$no,
                     'company_name' => $companyName,
                     'status' => 'Pending',
                     'total_promotion' => $totalPending,
                     'total_quantity' => $totalPendingQue,
-                    'total_amount' => number_format($totalPendingRev, 2),
+                    'total_amount' => "₱ ".number_format_value($totalPendingRev, 2),
                 ];
                 $approved = [
                     'no' => ++$no,
@@ -216,7 +215,7 @@ class PromotionReportController extends Controller
                     'status' => 'Approved',
                     'total_promotion' => $totalApproved,
                     'total_quantity' => $totalApprovedQue,
-                    'total_amount' => number_format($totalApprovedRev, 2),
+                    'total_amount' => "₱ ".number_format_value($totalApprovedRev, 2),
                 ];
 
                 array_push($outputData, $pending);
