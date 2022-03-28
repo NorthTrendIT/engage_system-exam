@@ -76,7 +76,7 @@
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Name:</div>
                               <!--end::Label-->
                               <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->card_name ?? '-' }} (Code: {{ $data->customer->card_code ?? '-' }})</div>
+                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->card_name ?? @$data->card_name ?? "-" }} (Code: {{ $data->customer->card_code ?? @$data->card_code ?? '-' }})</div>
                               <!--end::Text-->
                             </div>
                             <!--end::Col-->

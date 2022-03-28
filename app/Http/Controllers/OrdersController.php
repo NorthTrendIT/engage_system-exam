@@ -91,7 +91,7 @@ class OrdersController extends Controller
         }elseif(userrole() != 1){
             return abort(404);
         }
-
+        
         $data = $data->firstOrFail();
         
         return view('orders.order_view', compact('data'));
