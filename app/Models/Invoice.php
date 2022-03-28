@@ -46,6 +46,7 @@ class Invoice extends Model
         'end_delivery_date',
         'u_delivery',
         'last_sync_at',
+        'completed_date',
     ];
 
     public function items(){

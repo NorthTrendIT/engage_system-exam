@@ -510,17 +510,20 @@ function getOrderStatusByInvoice($data){
 }
 
 // Start Status
-function getOrderStatusByQuotation($data){
+function getOrderStatusByQuotation($data, $with_date = false){
+
     $status = getOrderStatusArray("PN");
 
     if(!empty($data)){
 
         if($data->cancelled == 'Yes' || @$data->document_status == 'Cancelled'){
             $status = getOrderStatusArray('CL');
+
         }elseif(!empty(@$data->order)){
 
             if($data->order->cancelled == 'Yes'){
                 $status = getOrderStatusArray('CL');
+
             }else{
 
                 if($data->order->document_status == 'bost_Open' && $data->order->u_sostat == "OP"){
@@ -531,6 +534,7 @@ function getOrderStatusByQuotation($data){
 
                     if($data->order->invoice->cancelled == 'Yes'){
                         $status = getOrderStatusArray('CL');
+
                     }else if(@$data->order->invoice->document_status == 'bost_Open' && !empty(@$data->order->invoice->u_sostat)){
                         $status = getOrderStatusArray(@$data->order->invoice->u_sostat);
                     }else{
@@ -543,7 +547,21 @@ function getOrderStatusByQuotation($data){
         }
     }
 
+    if($with_date){
+        $date_array = array(
+                            'Pending' => @$data->created_at ?? null,
+                            'On Process' => @$data->order->created_at ?? null,
+                            'For Delivery' => @$data->order->invoice->created_at ?? null,
+                            'Delivered' => @$data->order->invoice->u_delivery ?? null,
+                            'Completed' => @$data->order->invoice->completed_date ?? null,
+                            'Cancelled' => @$data->order->invoice->cancel_date ?? @$data->order->cancel_date ?? @$data->cancel_date,
+                        );
+
+        return [ 'status' => $status, 'date_array' => $date_array];
+    }
+
     return $status;
+    
 }
 
 
@@ -582,6 +600,17 @@ function getOrderStatusProcessArray($status){
                             'On Process',
                         );
             break;
+        case "Invoiced":
+            $array = array(
+                            'Pending',
+                            'On Process',
+                            'For Delivery',
+                            'Confirmed',
+                            // 'Delivered',
+                            // 'Completed',
+                            'Invoiced',
+                        );
+            break;
         case "Completed":
             $array = array(
                             'Pending',
@@ -590,17 +619,6 @@ function getOrderStatusProcessArray($status){
                             'Delivered',
                             'Confirmed',
                             'Completed',
-                        );
-            break;
-        case "Invoiced":
-            $array = array(
-                            'Pending',
-                            'On Process',
-                            'For Delivery',
-                            'Delivered',
-                            'Confirmed',
-                            'Completed',
-                            'Invoiced',
                         );
             break;
         case "Cancelled":
