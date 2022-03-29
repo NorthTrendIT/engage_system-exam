@@ -92,6 +92,7 @@ class NewsAndAnnouncementController extends Controller
             if(in_array($input['module'], ['brand', 'customer_class', 'territory', 'market_sector'])){
                 $notification->request_payload = json_encode($input['record_id']);
             }
+
             $notification->save();
 
             if(isset($input['id'])){
@@ -100,12 +101,12 @@ class NewsAndAnnouncementController extends Controller
 
             if($input['module'] == 'all'){
                 $data = Customer::where('sap_connection_id', $input['sap_connection_id'])->get();
-                foreach($data as $item){
-                    $user = User::where('customer_id', $item->id)->firstOrFail();
+                foreach($data as $customer){
+                    $user = User::where('customer_id', $customer->id)->firstOrFail();
                     $connection = new NotificationConnection();
                     $connection->notification_id = $notification->id;
                     $connection->user_id = $user->id;
-                    $connection->record_id = $item->id;
+                    $connection->record_id = $customer->id;
                     $connection->save();
                 }
             }
@@ -129,12 +130,12 @@ class NewsAndAnnouncementController extends Controller
                 }
 
                 if($input['module'] == 'customer'){
-                    foreach($records as $record_id){
-                        $data = User::where('customer_id', $record_id)->firstOrFail();
+                    foreach($records as $customer_id){
+                        $user = User::where('customer_id', $customer_id)->firstOrFail();
                         $connection = new NotificationConnection();
                         $connection->notification_id = $notification->id;
-                        $connection->user_id = $data->id;
-                        $connection->record_id = $record_id;
+                        $connection->user_id = $user->id;
+                        $connection->record_id = $customer_id;
                         $connection->save();
                     }
                 }
@@ -147,7 +148,7 @@ class NewsAndAnnouncementController extends Controller
                             $connection = new NotificationConnection();
                             $connection->notification_id = $notification->id;
                             $connection->user_id = $user->id;
-                            $connection->record_id = $record_id;
+                            $connection->record_id = $customer->id;
                             $connection->save();
                         }
                     }
@@ -160,10 +161,11 @@ class NewsAndAnnouncementController extends Controller
                         })->get();
 
                         foreach($data as $customer){
+                            $user = User::where('customer_id', $customer->id)->firstOrFail();
                             $connection = new NotificationConnection();
                             $connection->notification_id = $notification->id;
-                            $connection->user_id = $record_id;
-                            $connection->record_id = $record_id;
+                            $connection->user_id = $user->id;
+                            $connection->record_id = $customer->id;
                             $connection->save();
                         }
                     }
@@ -177,7 +179,7 @@ class NewsAndAnnouncementController extends Controller
                             $connection = new NotificationConnection();
                             $connection->notification_id = $notification->id;
                             $connection->user_id = $user->id;
-                            $connection->record_id = $record_id;
+                            $connection->record_id = $customer->id;
                             $connection->save();
                         }
                     }
@@ -782,7 +784,7 @@ class NewsAndAnnouncementController extends Controller
                             ->addIndexColumn()
                             ->addColumn('user_name', function($row) {
                                 if($row->user->role_id == 2){
-                                    return $row->user->sales_specialist_name;
+                                    return $row->user->customer->card_code;
                                 }
                                 if($row->user->role_id == 4){
                                     return $row->user->first_name.' '.$row->user->last_name;
