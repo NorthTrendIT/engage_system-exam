@@ -219,9 +219,15 @@ $(document).ready(function() {
     });
 
     $(document).on('click', '.clear-search', function(event) {
-      $('input').val('');
-      $('select').val('').trigger('change');
-      render_table();
+        $('[name="filter_company"]').val(null).trigger('change');
+        $('[name="filter_brand"]').val(null).trigger('change');
+        $('[name="filter_product_category"]').val(null).trigger('change');
+        $('[name="filter_product_line"]').val(null).trigger('change');
+        $('[name="filter_product_class"]').val(null).trigger('change');
+        $('[name="filter_product_type"]').val(null).trigger('change');
+        $('[name="filter_product_application"]').val(null).trigger('change');
+        $('[name="filter_product_pattern"]').val(null).trigger('change');
+        render_table();
     })
 
     $(document).on('change', '[name="filter_brand"]', function(event) {
