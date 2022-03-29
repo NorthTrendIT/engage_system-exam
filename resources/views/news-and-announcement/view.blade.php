@@ -152,12 +152,14 @@
                                         <table class="table table-bordered" id="myDataTable">
                                             <thead>
                                                 <th>No.</th>
-                                                @if(@$data->module == 'customer' || @$data->module == 'customer_class' || @$data->module == 'territory' || @$data->module == 'market_sector' || @$data->module == 'brand' || @$data->module == 'all')
+                                                @if(@$data->module == 'customer' || @$data->module == 'customer_class' || @$data->module == 'territory' || @$data->module == 'market_sector' || @$data->module == 'brand' || @$data->module == 'all' || @$data->module == 'sales_specialist')
                                                 <th>Customer Name</th>
                                                 @endif
+                                                {{--
                                                 @if(@$data->module == 'sales_specialist')
                                                 <th>Sales Specialist Name</th>
                                                 @endif
+                                                --}}
                                                 @if(@$data->module == 'market_sector')
                                                 <th>Market Sector</th>
                                                 @endif
