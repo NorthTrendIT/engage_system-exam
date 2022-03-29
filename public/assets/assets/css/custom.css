@@ -900,6 +900,11 @@ span.marker{
     background-color: #f71616 !important;
 }
 
+.delivery-date {
+    font-size: 12px !important;
+    color: gray;
+}
+
 @media(max-width: 580px) {
     .hh-grayBox .order-tracking{width: 100%;}
     .order-tracking::before {

@@ -70,6 +70,7 @@ class StoreQuotations implements ShouldQueue
                             'created_at' => $value['CreationDate'],
                             'updated_at' => $value['UpdateDate'],
                             'cancelled' => @$value['Cancelled'] == 'tYES' ? 'Yes' : 'No',
+                            'cancel_date' => $value['CancelDate'],
                             //'response' => json_encode($order),
 
                             'updated_date' => $value['UpdateDate'],
