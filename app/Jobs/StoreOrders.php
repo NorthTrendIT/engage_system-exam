@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Customer;
 
 class StoreOrders implements ShouldQueue
 {
@@ -23,11 +24,13 @@ class StoreOrders implements ShouldQueue
     protected $data;
 
     protected $sap_connection_id;
+    protected $real_sap_connection_id;
 
     public function __construct($data, $sap_connection_id)
     {
         $this->data = $data;
         $this->sap_connection_id = $sap_connection_id;
+        $this->real_sap_connection_id = $sap_connection_id;
     }
 
     /**
@@ -40,6 +43,15 @@ class StoreOrders implements ShouldQueue
         if(!empty($this->data)){
 
             foreach ($this->data as $order) {
+
+                if($this->real_sap_connection_id == 1){ // GROUP Cagayan, Davao NEED TO STORE in Solid Trend 
+                    $customer = Customer::where('card_code', $order['CardCode'])->where('sap_connection_id', 5)->first();
+                    if(!empty($customer)){
+                        $this->sap_connection_id = 5;
+                    }else{
+                        $this->sap_connection_id = 1;
+                    }
+                }
 
                 $insert = array(
                             'doc_entry' => $order['DocEntry'],

@@ -182,7 +182,7 @@ class ProductController extends Controller
       // // Save Data of Product in database
       // SyncProducts::dispatch('TEST-APBW', 'manager', 'test');
 
-      $sap_connections = SapConnection::all();
+      $sap_connections = SapConnection::where('id', '!=', 5)->get();
       foreach ($sap_connections as $value) {
 
         $log_id = add_sap_log([
@@ -215,7 +215,11 @@ class ProductController extends Controller
     }
 
     if($request->filter_company != ""){
-      $data->where('sap_connection_id',$request->filter_company);
+      $filter_company = $request->filter_company;
+      if($request->filter_company == 5){ //Solid Trend
+        $filter_company = 1;
+      }
+      $data->where('sap_connection_id',$filter_company);
     }
 
     if($request->filter_brand != ""){
@@ -385,7 +389,11 @@ class ProductController extends Controller
                           ->addColumn('created_date', function($row) {
                             return date('M d, Y',strtotime($row->created_date));
                           })
-                          ->addColumn('company', function($row) {
+                          ->addColumn('company', function($row) use ($request){
+                            if(@$request->filter_company == 5){ //Solid Trend
+                              return "SOLID TREND";
+                            }
+
                             return @$row->sap_connection->company_name ?? "-";
                           })
                           ->addColumn('online_price', function($row) {
@@ -607,8 +615,16 @@ class ProductController extends Controller
       $data->where('is_active',$filter->filter_status);
     }
 
-    if(@$filter->filter_company != ""){
+    /*if(@$filter->filter_company != ""){
       $data->where('sap_connection_id',$filter->filter_company);
+    }*/
+
+    if($filter->filter_company != ""){
+      $filter_company = $filter->filter_company;
+      if($filter->filter_company == 5){ //Solid Trend
+        $filter_company = 1;
+      }
+      $data->where('sap_connection_id',$filter_company);
     }
 
     if(@$filter->filter_brand != ""){
@@ -678,9 +694,15 @@ class ProductController extends Controller
       }
 
       if(@$filter->module_type != "product-tagging"){
+
+        $filter_company = @$value->sap_connection->company_name ?? "-";
+        if($filter->filter_company == 5){ //Solid Trend
+          $filter_company = 'SOLID TREND';
+        }
+
         $temp = array(
                   'no' => $key + 1,
-                  'company' => @$value->sap_connection->company_name ?? "-",
+                  'company' => $filter_company,
                   'item_name' => $value->item_name ?? "-",
                   'brand' => @$value->group->group_name ?? "",
                   'item_code' => $value->item_code ?? "-",
@@ -710,9 +732,14 @@ class ProductController extends Controller
         $records[] = $temp;
       }else{
 
+        $filter_company = @$value->sap_connection->company_name ?? "-";
+        if($filter->filter_company == 5){ //Solid Trend
+          $filter_company = 'SOLID TREND';
+        }
+        
         $temp = array(
                   'no' => $key + 1,
-                  'company' => @$value->sap_connection->company_name ?? "-",
+                  'company' => $filter_company,
                   'item_name' => $value->item_name ?? "-",
                   'brand' => @$value->group->group_name ?? "-",
                   'item_code' => $value->item_code ?? "-",
@@ -905,7 +932,13 @@ class ProductController extends Controller
     $data = collect();
 
     if(@$request->sap_connection_id != ""){
-      $data = ProductGroup::where('sap_connection_id', $request->sap_connection_id)->orderby('group_name')->limit(50);
+
+      $sap_connection_id = $request->sap_connection_id;
+      if($request->sap_connection_id == 5){ //Solid Trend
+        $sap_connection_id = 1;
+      }
+
+      $data = ProductGroup::where('sap_connection_id', $sap_connection_id)->orderby('group_name')->limit(50);
 
       if(@$request->search  != ''){
         $data->where('group_name', 'like', '%' .$request->search . '%');
@@ -921,7 +954,13 @@ class ProductController extends Controller
     $data = collect();
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
-      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_tires')->orderby('u_tires')->limit(50);
+      
+      $sap_connection_id = $request->sap_connection_id;
+      if($request->sap_connection_id == 5){ //Solid Trend
+        $sap_connection_id = 1;
+      }
+
+      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_tires')->orderby('u_tires')->limit(50);
 
       if(@$request->search  != ''){
         $data->where('u_tires', 'like', '%' .$request->search . '%');
@@ -938,7 +977,13 @@ class ProductController extends Controller
     $data = collect();
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
-      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_line')->orderby('u_item_line')->limit(50);
+      
+      $sap_connection_id = $request->sap_connection_id;
+      if($request->sap_connection_id == 5){ //Solid Trend
+        $sap_connection_id = 1;
+      }
+
+      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_item_line')->orderby('u_item_line')->limit(50);
 
       if(@$request->search  != ''){
         $data->where('u_item_line', 'like', '%' .$request->search . '%');
@@ -955,7 +1000,13 @@ class ProductController extends Controller
     $data = collect();
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
-      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('item_class')->orderby('item_class')->limit(50);
+      
+      $sap_connection_id = $request->sap_connection_id;
+      if($request->sap_connection_id == 5){ //Solid Trend
+        $sap_connection_id = 1;
+      }
+
+      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('item_class')->orderby('item_class')->limit(50);
 
       if(@$request->search  != ''){
         $data->where('item_class', 'like', '%' .$request->search . '%');
@@ -972,7 +1023,13 @@ class ProductController extends Controller
     $data = collect();
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
-      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_type')->orderby('u_item_type')->limit(50);
+      
+      $sap_connection_id = $request->sap_connection_id;
+      if($request->sap_connection_id == 5){ //Solid Trend
+        $sap_connection_id = 1;
+      }
+
+      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_item_type')->orderby('u_item_type')->limit(50);
 
       if(@$request->search  != ''){
         $data->where('u_item_type', 'like', '%' .$request->search . '%');
@@ -989,7 +1046,13 @@ class ProductController extends Controller
     $data = collect();
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
-      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_application')->orderby('u_item_application')->limit(50);
+      
+      $sap_connection_id = $request->sap_connection_id;
+      if($request->sap_connection_id == 5){ //Solid Trend
+        $sap_connection_id = 1;
+      }
+
+      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_item_application')->orderby('u_item_application')->limit(50);
 
       if(@$request->search  != ''){
         $data->where('u_item_application', 'like', '%' .$request->search . '%');
@@ -1006,7 +1069,13 @@ class ProductController extends Controller
     $data = collect();
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
-      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_pattern2')->orderby('u_pattern2')->limit(50);
+      
+      $sap_connection_id = $request->sap_connection_id;
+      if($request->sap_connection_id == 5){ //Solid Trend
+        $sap_connection_id = 1;
+      }
+
+      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_pattern2')->orderby('u_pattern2')->limit(50);
 
       if(@$request->search  != ''){
         $data->where('u_pattern2', 'like', '%' .$request->search . '%');

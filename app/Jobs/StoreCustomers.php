@@ -26,11 +26,13 @@ class StoreCustomers implements ShouldQueue
     protected $data;
 
     protected $sap_connection_id;
+    protected $real_sap_connection_id;
 
     public function __construct($data, $sap_connection_id)
     {
         $this->data = $data;
         $this->sap_connection_id = $sap_connection_id;
+        $this->real_sap_connection_id = $sap_connection_id;
     }
 
     /**
@@ -54,6 +56,15 @@ class StoreCustomers implements ShouldQueue
 
                 if(@$value['GroupCode'] == "111"){ // GROUP EMPLOYEE NO NEED TO STORE
                     continue;
+                }
+
+
+                if($this->real_sap_connection_id == 1){ // GROUP Cagayan, Davao NEED TO STORE in Solid Trend 
+                    if(in_array(@$value['GroupCode'], [103, 105])){
+                        $this->sap_connection_id = 5;
+                    }else{
+                        $this->sap_connection_id = 1;
+                    }
                 }
 
                 if(!is_null(@$value['U_CLASS'])){

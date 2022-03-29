@@ -5,11 +5,13 @@ namespace App\Support;
 use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
-use App\Models\Invoice;
-use App\Models\InvoiceItem;
 use App\Jobs\StoreInvoices;
 use App\Jobs\SyncNextInvoices;
+
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\SapConnection;
+use App\Models\Customer;
 
 class SAPInvoices
 {
@@ -142,6 +144,14 @@ class SAPInvoices
                             );
 
                     $sap_connection = SapConnection::where($where)->first();
+                    $sap_connection_id = $sap_connection->id;
+
+                    if($sap_connection->id == 1){ // GROUP Cagayan, Davao NEED TO STORE in Solid Trend 
+                        $customer = Customer::where('card_code', $invoice['CardCode'])->where('sap_connection_id', 5)->first();
+                        if(!empty($customer)){
+                            $sap_connection_id = 5;
+                        }
+                    }
 
                     $insert = array(
                                 'doc_entry' => $invoice['DocEntry'],
@@ -175,7 +185,7 @@ class SAPInvoices
                                 'end_delivery_date' => $invoice['EndDeliveryDate'],
                                 'u_delivery' => $invoice['U_DELIVERY'],
                                 'last_sync_at' => current_datetime(),
-                                'sap_connection_id' => $sap_connection->id,
+                                'sap_connection_id' => $sap_connection_id,
                             );
 
                     if(!empty($invoice['DocumentLines'])){
@@ -184,7 +194,7 @@ class SAPInvoices
 
                     $obj = Invoice::updateOrCreate([
                                                 'doc_entry' => @$invoice['DocEntry'],
-                                                'sap_connection_id' => $sap_connection->id,
+                                                'sap_connection_id' => $sap_connection_id,
                                             ],
                                             $insert
                                         );
@@ -217,7 +227,7 @@ class SAPInvoices
                                 'ship_to_description' => @$value['ShipToDescription'],
                                 //'response' => json_encode($value),
 
-                                'sap_connection_id' => $sap_connection->id,
+                                'sap_connection_id' => $sap_connection_id,
                             );
 
                             $item_obj = InvoiceItem::updateOrCreate([
