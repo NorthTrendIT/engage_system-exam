@@ -45,18 +45,18 @@
 
                 <!-- Select Customer By -->
                 <div class="col-md-3 mt-5">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectModule" data-hide-search="false" data-allow-clear="true" data-placeholder="Select Customer By" name="module">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectModule" data-hide-search="false" data-allow-clear="true" data-placeholder="Select customer by" name="module">
                         <option value=""></option>
-                        <option value="brand">By Brand</option>
-                        <option value="customer_class">By Class</option>
-                        <option value="sales_specialist">By Sales Specialist</option>
-                        <option value="territory">By Territory</option>
-                        <option value="market_sector">By Market Sector</option>
+                        <option value="brand">By brand</option>
+                        <option value="customer_class">By class</option>
+                        <option value="sales_specialist">By sales specialist</option>
+                        <option value="territory">By territory</option>
+                        <option value="market_sector">By market sector</option>
                     </select>
                 </div>
                 <!-- Brand -->
                 <div class="col-md-3 mt-5 brand" style="display:none">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectBrand" data-hide-search="false" data-allow-clear="true" name="filter_brand" data-placeholder="Select Brand">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectBrand" data-hide-search="false" data-allow-clear="true" name="filter_brand" data-placeholder="Select brand">
                         <option value=""></option>
                     </select>
                 </div>
@@ -332,7 +332,8 @@
             data: function (params) {
                 return {
                     _token: "{{ csrf_token() }}",
-                    search: params.term
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
                 };
             },
             processResults: function (response) {
@@ -476,7 +477,7 @@
                 },
                 cache: true
             },
-            placeholder: 'Select Brand',
+            placeholder: 'Select brand',
             // minimumInputLength: 1,
             multiple: false,
         });
@@ -502,7 +503,7 @@
                 },
                 cache: true
             },
-            placeholder: 'Select Customer Class',
+            placeholder: 'Select customer class',
             // minimumInputLength: 2,
             multiple: false,
         });
@@ -528,7 +529,7 @@
                 },
                 cache: true
             },
-            placeholder: 'Select Sales Specialist',
+            placeholder: 'Select sales specialist',
             // minimumInputLength: 2,
             multiple: false,
         });
@@ -554,7 +555,7 @@
                 },
                 cache: true
             },
-            placeholder: 'Select Territory',
+            placeholder: 'Select territory',
             // minimumInputLength: 2,
             multiple: false,
         });
@@ -580,7 +581,7 @@
                 },
                 cache: true
             },
-            placeholder: 'Select Market Sector',
+            placeholder: 'Select market sector',
             // minimumInputLength: 2,
             multiple: false,
         });
