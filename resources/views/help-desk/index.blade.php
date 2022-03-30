@@ -60,27 +60,12 @@
                   </div>
 
                   <div class="col-md-3 mt-5">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_user" data-allow-clear="true" data-placeholder="Select user">
-                      <option value=""></option>
-                    </select>
-                  </div>
-
-                  <div class="col-md-3 mt-5">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_territory" data-allow-clear="true" data-placeholder="Select territory">
                       <option value=""></option>
                     </select>
                   </div>
                 @endif
-
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_type_of_customer_request" data-control="select2" data-hide-search="false" data-placeholder="Select a type of customer request" data-allow-clear="true">
-                    <option value=""></option>
-                    @foreach(\App\Models\HelpDesk::$type_of_customer_requests as $key => $value)
-                    <option value="{{ $value }}">{{ $value }}</option>
-                    @endforeach
-                  </select>
-                </div>
-
+                
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_urgency" data-control="select2" data-hide-search="true" data-placeholder="Select a urgency" data-allow-clear="true">
                     <option value=""></option>
@@ -106,6 +91,23 @@
                     </span>
                   </div>
                 </div>
+
+                <div class="col-md-4 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_type_of_customer_request" data-control="select2" data-hide-search="false" data-placeholder="Select a type of customer request" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach(\App\Models\HelpDesk::$type_of_customer_requests as $key => $value)
+                    <option value="{{ $value }}">{{ $value }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                @if(userrole() == 1 || userdepartment() == 1)
+                <div class="col-md-4 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_user" data-allow-clear="true" data-placeholder="Select user">
+                    <option value=""></option>
+                  </select>
+                </div>
+                @endif
 
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
@@ -295,7 +297,8 @@
           data: function (params) {
               return {
                 _token: "{{ csrf_token() }}",
-                search: params.term
+                search: params.term,
+                sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
               };
           },
           processResults: function (response) {

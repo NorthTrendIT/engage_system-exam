@@ -75,7 +75,7 @@
                 </div>
 
 
-                <div class="col-md-3 mt-5 other_filter_div">
+                <div class="col-md-6 mt-5 other_filter_div">
                   <select class="form-control form-control-lg form-control-solid" name="filter_product_application" data-control="select2" data-hide-search="false" data-placeholder="Select product application" data-allow-clear="true">
                     <option value=""></option>
                   </select>

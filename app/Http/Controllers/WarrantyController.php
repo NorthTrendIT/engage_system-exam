@@ -603,6 +603,10 @@ class WarrantyController extends Controller
             });
         }
 
+        if(@$request->sap_connection_id != ''){
+            $data->where('sap_connection_id',@$request->sap_connection_id);
+        }
+
         $data = $data->limit(50)->get();
 
         return response()->json($data);
