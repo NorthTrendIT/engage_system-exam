@@ -624,7 +624,14 @@ class PromotionsController extends Controller
             $data->where('sales_specialist_name', 'like', '%' .$search . '%');
         }
 
-        $data->where('sap_connection_id',@$request->sap_connection_id);
+        $sap_connection_id = @$request->sap_connection_id;
+        if($request->sap_connection_id == 5){ //Solid Trend
+            $sap_connection_id = 1;
+        }
+
+        if(@$request->sap_connection_id != ''){
+            $data->where('sap_connection_id',@$sap_connection_id);
+        }
 
         $data = $data->limit(50)->get();
 
@@ -707,7 +714,14 @@ class PromotionsController extends Controller
             $data->where('group_name', 'like', '%' .$search . '%');
         }
 
-        $data->where('sap_connection_id',@$request->sap_connection_id);
+        $sap_connection_id = @$request->sap_connection_id;
+        if($request->sap_connection_id == 5){ //Solid Trend
+            $sap_connection_id = 1;
+        }
+
+        if(@$request->sap_connection_id != ''){
+            $data->where('sap_connection_id',@$sap_connection_id);
+        }
 
         $data = $data->limit(50)->get();
 
