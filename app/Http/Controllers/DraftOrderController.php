@@ -187,7 +187,7 @@ class DraftOrderController extends Controller
     public function getAll(Request $request){
         $customer_id = Auth::user()->customer_id;
         // dd($customer_id);
-        $data = LocalOrder::with('sales_specialist')->where('customer_id', $customer_id);
+        $data = LocalOrder::where('customer_id', $customer_id);
 
         if($request->filter_search != ""){
             $data->whereHas('sales_specialist', function($q) use ($request) {
@@ -216,6 +216,13 @@ class DraftOrderController extends Controller
                                     return getOrderStatusBtnHtml("Confirmed");
                                 }
                             })
+                            ->addColumn('order_status', function($row) {
+                                if(!empty($row->doc_entry)){
+                                    return getOrderStatusBtnHtml(getOrderStatusByQuotation(@$row->quotation));
+                                } else {
+                                    return "<b>-</b>";
+                                }
+                            })
                             ->addColumn('due_date', function($row) {
                                 return date('M d, Y',strtotime($row->due_date));
                             })
@@ -241,7 +248,7 @@ class DraftOrderController extends Controller
 
                                 return $btn;
                             })
-                            ->rawColumns(['action', 'total', 'confirmation_status'])
+                            ->rawColumns(['action', 'total', 'confirmation_status', 'order_status'])
                             ->make(true);
     }
 
