@@ -91,6 +91,8 @@ class SAPCustomerGroup
         $sap_connection = SapConnection::where($where)->first();
 
         if($response['status']){
+            $sap_connection_id = @$sap_connection->id;
+
             $data = $response['data'];
 
             if($data['value']){
@@ -100,19 +102,27 @@ class SAPCustomerGroup
                     if(@$value['Type'] != "bbpgt_CustomerGroup"){
                         continue;
                     }
-                
+                    
+                    if($sap_connection->id == 1){ // GROUP Cagayan, Davao NEED TO STORE in Solid Trend 
+                        if(in_array(@$value['Code'], [103, 105])){
+                            $sap_connection_id = 5;
+                        }else{
+                            $sap_connection_id = 1;
+                        }
+                    }
+
                     $insert = array(
                                     'code' => @$value['Code'],
                                     'name' => @$value['Name'],
                                     'type' => @$value['Type'],
-                                    'sap_connection_id' => @$sap_connection->id,
+                                    'sap_connection_id' => @$sap_connection_id,
                                     'last_sync_at' => current_datetime(),
                                 );
 
                     $obj = CustomerGroup::updateOrCreate(
                                             [
                                                 'code' => @$value['Code'],
-                                                'sap_connection_id' => @$sap_connection->id,
+                                                'sap_connection_id' => @$sap_connection_id,
                                             ],
                                             $insert
                                         );

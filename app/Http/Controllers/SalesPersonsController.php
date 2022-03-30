@@ -96,7 +96,7 @@ class SalesPersonsController extends Controller
             // // Save Data of sales persons in database
             // SyncSalesPersons::dispatch('TEST-APBW', 'manager', 'test');
 
-            $sap_connections = SapConnection::all();
+            $sap_connections = SapConnection::where('id', '!=', 5)->get();
             foreach ($sap_connections as $value) {
 
                 $log_id = add_sap_log([

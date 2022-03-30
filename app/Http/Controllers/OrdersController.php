@@ -134,7 +134,7 @@ class OrdersController extends Controller
     public function syncOrders(){
         try {
 
-            $sap_connections = SapConnection::all();
+            $sap_connections = SapConnection::where('id', '!=', 5)->get();
             foreach ($sap_connections as $value) {
 
                 $order_log_id = add_sap_log([

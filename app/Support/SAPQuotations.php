@@ -5,12 +5,13 @@ namespace App\Support;
 use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
+use App\Jobs\StoreQuotations;
+use App\Jobs\SyncNextQuotations;
+
 use App\Models\Quotation;
 use App\Models\QuotationItem;
 use App\Models\SapConnection;
-
-use App\Jobs\StoreQuotations;
-use App\Jobs\SyncNextQuotations;
+use App\Models\Customer;
 
 class SAPQuotations
 {
@@ -142,6 +143,14 @@ class SAPQuotations
                             );
 
                     $sap_connection = SapConnection::where($where)->first();
+                    $sap_connection_id = $sap_connection->id;
+
+                    if($sap_connection->id == 1){ // GROUP Cagayan, Davao NEED TO STORE in Solid Trend 
+                        $customer = Customer::where('card_code', $value['CardCode'])->where('sap_connection_id', 5)->first();
+                        if(!empty($customer)){
+                            $sap_connection_id = 5;
+                        }
+                    }
 
                     $insert = array(
                                 'doc_entry' => $value['DocEntry'],
@@ -176,7 +185,7 @@ class SAPQuotations
 
                                 'updated_date' => $value['UpdateDate'],
                                 'last_sync_at' => current_datetime(),
-                                'sap_connection_id' => $sap_connection->id,
+                                'sap_connection_id' => $sap_connection_id,
                             );
 
                     if(!empty($value['DocumentLines'])){
@@ -185,7 +194,7 @@ class SAPQuotations
 
                     $obj = Quotation::updateOrCreate([
                                                 'doc_entry' => $value['DocEntry'],
-                                                'sap_connection_id' => $sap_connection->id,
+                                                'sap_connection_id' => $sap_connection_id,
                                             ],
                                             $insert
                                         );
@@ -218,7 +227,7 @@ class SAPQuotations
                                 'ship_to_description' => @$item['ShipToDescription'],
                                 //'response' => json_encode($item),
 
-                                'sap_connection_id' => $sap_connection->id,
+                                'sap_connection_id' => $sap_connection_id,
                             );
 
                             $item_obj = QuotationItem::updateOrCreate([

@@ -52,6 +52,11 @@ class PromotionTypeController extends Controller
 
         $input = $request->all();
 
+        $sap_connection_id = $input['sap_connection_id'];
+        if($input['sap_connection_id'] == 5){ //Solid Trend
+            $sap_connection_id = 1;
+        }
+
         $rules = array(
                         'title' => 'required|max:185|unique:promotion_types,title,NULL,id,deleted_at,NULL',
                         'scope' => 'required',
@@ -63,15 +68,15 @@ class PromotionTypeController extends Controller
                         'percentage' => 'required_if:scope,P,U',
                         'fixed_price' => 'required_if:scope,U',
 
-                        'is_total_fixed_quantity' => 'required_if:is_fixed_quantity,1',
-                        'total_fixed_quantity' => 'required_if:is_total_fixed_quantity,1',
+                        // 'is_total_fixed_quantity' => 'required_if:is_fixed_quantity,1',
+                        // 'total_fixed_quantity' => 'required_if:is_total_fixed_quantity,1',
 
                         'sap_connection_id' => 'required|exists:sap_connections,id',
 
                         'product_list' => 'required|array',
-                        'product_list.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.$input['sap_connection_id'],
+                        'product_list.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.$sap_connection_id,
 
-                        'product_list.*.brand_id' => 'required|exists:product_groups,id,sap_connection_id,'.$input['sap_connection_id'],
+                        'product_list.*.brand_id' => 'required|exists:product_groups,id,sap_connection_id,'.$sap_connection_id,
 
                   );
 
@@ -382,8 +387,14 @@ class PromotionTypeController extends Controller
         $brand = ProductGroup::find($request->brand_id);
 
         if(@$request->sap_connection_id && @$brand){
+
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
             $where = array(
-                            'sap_connection_id' => $request->sap_connection_id,
+                            'sap_connection_id' => $sap_connection_id,
                             'items_group_code' => $brand->number,
                             'is_active' => true,
                         );
@@ -411,7 +422,12 @@ class PromotionTypeController extends Controller
         $data = collect();
 
         if(@$request->sap_connection_id){
-            $data = ProductGroup::orderby('group_name','asc')->where('sap_connection_id',$request->sap_connection_id);
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+            
+            $data = ProductGroup::orderby('group_name','asc')->where('sap_connection_id',$sap_connection_id);
 
             if($search != ''){
                 $data->where('group_name', 'like', '%' .$search . '%');

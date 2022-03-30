@@ -5,11 +5,13 @@ namespace App\Support;
 use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
+use App\Jobs\StoreOrders;
+use App\Jobs\SyncNextOrders;
+
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\SapConnection;
-use App\Jobs\StoreOrders;
-use App\Jobs\SyncNextOrders;
+use App\Models\Customer;
 
 class SAPOrders
 {
@@ -141,6 +143,14 @@ class SAPOrders
                             );
 
                     $sap_connection = SapConnection::where($where)->first();
+                    $sap_connection_id = $sap_connection->id;
+
+                    if($sap_connection->id == 1){ // GROUP Cagayan, Davao NEED TO STORE in Solid Trend 
+                        $customer = Customer::where('card_code', $order['CardCode'])->where('sap_connection_id', 5)->first();
+                        if(!empty($customer)){
+                            $sap_connection_id = 5;
+                        }
+                    }
 
                     
                     $insert = array(
@@ -174,7 +184,7 @@ class SAPOrders
 
                                 'updated_date' => $order['UpdateDate'],
                                 'last_sync_at' => current_datetime(),
-                                'sap_connection_id' => $sap_connection->id,
+                                'sap_connection_id' => $sap_connection_id,
                             );
 
                     if(!empty($order['DocumentLines'])){
@@ -183,7 +193,7 @@ class SAPOrders
 
                     $obj = Order::updateOrCreate([
                                                 'doc_entry' => $order['DocEntry'],
-                                                'sap_connection_id' => $sap_connection->id,
+                                                'sap_connection_id' => $sap_connection_id,
                                             ],
                                             $insert
                                         );
@@ -216,7 +226,7 @@ class SAPOrders
                                 'ship_to_description' => @$value['ShipToDescription'],
                                 //'response' => json_encode($value),
 
-                                'sap_connection_id' => $sap_connection->id,
+                                'sap_connection_id' => $sap_connection_id,
                             );
 
                             $item_obj = OrderItem::updateOrCreate([

@@ -520,7 +520,7 @@
             {{-- Warranty --}}
             @if(Auth::user()->role_id == 1 || (isset($access['view-warranty']) && $access['view-warranty'] == 1))            
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['warranty.index','warranty.show', 'warranty.edit'])) ? 'active' : '' }}" href="{{ route('warranty.index') }}">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['warranty.index','warranty.show', 'warranty.edit', 'warranty.create'])) ? 'active' : '' }}" href="{{ route('warranty.index') }}">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">

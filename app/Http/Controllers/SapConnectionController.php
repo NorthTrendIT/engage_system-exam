@@ -72,6 +72,13 @@ class SapConnectionController extends Controller
 
             $connection->fill($input)->save();
 
+            // Solid Trend
+            if(@$connection->id == 1){
+                unset($input['company_name']);
+                $obj = SapConnection::find(5);
+                $obj->fill($input)->save();
+            }
+
             $response = ['status'=>true,'message'=>$message];
         }
         return $response;
@@ -96,7 +103,7 @@ class SapConnectionController extends Controller
      */
     public function edit($id)
     {
-        $edit = SapConnection::findOrFail($id);
+        $edit = SapConnection::where('id', '!=', 5)->where('id', $id)->firstOrFail();
 
         return view('sap-connection.add', compact('edit'));
     }
@@ -126,7 +133,7 @@ class SapConnectionController extends Controller
 
     public function testAPI($id)
     {
-        $data = SapConnection::findOrFail($id);
+        $data = SapConnection::where('id', '!=', 5)->where('id', $id)->firstOrFail();
         try {
 
             $testAPI = new SAPTestAPI($data->db_name, $data->user_name, $data->password);
@@ -145,7 +152,7 @@ class SapConnectionController extends Controller
 
     public function getAll(Request $request){
 
-        $data = SapConnection::query();
+        $data = SapConnection::where('id', '!=', 5);
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
