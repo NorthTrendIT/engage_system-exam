@@ -296,7 +296,7 @@ class SAPCustomerPromotion
             if(@$customer_promotion->user->customer->card_code){
 
                 $this->sap_connection_id = @$customer_promotion->sap_connection_id;
-                $this->real_sap_connection_id = @$customer_promotion->real_sap_connection_id;
+                $this->real_sap_connection_id = @$customer_promotion->user->customer->real_sap_connection_id;
 
                 $response['CardCode'] = @$customer_promotion->user->customer->card_code;
                 $response['CardName'] = @$customer_promotion->user->customer->card_name;
