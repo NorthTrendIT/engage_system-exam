@@ -122,6 +122,7 @@ class StoreCustomers implements ShouldQueue
                                 'updated_date' => $value['UpdateDate'],
                                 'last_sync_at' => current_datetime(),
                                 'sap_connection_id' => $this->sap_connection_id,
+                                'real_sap_connection_id' => $this->real_sap_connection_id,
                             );
 
                 $obj = Customer::updateOrCreate(
@@ -199,6 +200,7 @@ class StoreCustomers implements ShouldQueue
                                             'email' => strtolower(@$obj->u_card_code)."-".$this->sap_connection_id.'@mailinator.com',
                                             'first_login' => true,
                                             'sap_connection_id' => $this->sap_connection_id,
+                                            'real_sap_connection_id' => $this->real_sap_connection_id,
                                             'default_profile_color' => get_hex_color(),
                                         );
 

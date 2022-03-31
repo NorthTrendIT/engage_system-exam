@@ -86,6 +86,7 @@ class StoreOrders implements ShouldQueue
                             'updated_date' => $order['UpdateDate'],
                             'last_sync_at' => current_datetime(),
                             'sap_connection_id' => $this->sap_connection_id,
+                            'real_sap_connection_id' => $this->real_sap_connection_id,
                         );
 
                 if(!empty($order['DocumentLines'])){
@@ -128,6 +129,7 @@ class StoreOrders implements ShouldQueue
                             //'response' => json_encode($value),
 
                             'sap_connection_id' => $this->sap_connection_id,
+                            'real_sap_connection_id' => $this->real_sap_connection_id,
                         );
 
                         $item_obj = OrderItem::updateOrCreate([

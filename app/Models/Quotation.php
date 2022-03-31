@@ -40,6 +40,7 @@ class Quotation extends Model
         'created_at',
         'updated_at',
         'sap_connection_id',
+        'real_sap_connection_id',
         'customer_promotion_id',
         'updated_date',
         'num_at_card',

@@ -185,6 +185,7 @@ class SAPOrders
                                 'updated_date' => $order['UpdateDate'],
                                 'last_sync_at' => current_datetime(),
                                 'sap_connection_id' => $sap_connection_id,
+                                'real_sap_connection_id' => $sap_connection->id,
                             );
 
                     if(!empty($order['DocumentLines'])){
@@ -227,6 +228,7 @@ class SAPOrders
                                 //'response' => json_encode($value),
 
                                 'sap_connection_id' => $sap_connection_id,
+                                'real_sap_connection_id' => $sap_connection->id,
                             );
 
                             $item_obj = OrderItem::updateOrCreate([

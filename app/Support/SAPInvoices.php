@@ -186,6 +186,7 @@ class SAPInvoices
                                 'u_delivery' => $invoice['U_DELIVERY'],
                                 'last_sync_at' => current_datetime(),
                                 'sap_connection_id' => $sap_connection_id,
+                                'real_sap_connection_id' => $sap_connection->id,
                             );
 
                     if(!empty($invoice['DocumentLines'])){
@@ -228,6 +229,7 @@ class SAPInvoices
                                 //'response' => json_encode($value),
 
                                 'sap_connection_id' => $sap_connection_id,
+                                'real_sap_connection_id' => $sap_connection->id,
                             );
 
                             $item_obj = InvoiceItem::updateOrCreate([

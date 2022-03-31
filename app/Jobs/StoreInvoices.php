@@ -87,6 +87,7 @@ class StoreInvoices implements ShouldQueue
                             'u_delivery' => $invoice['U_DELIVERY'],
                             'last_sync_at' => current_datetime(),
                             'sap_connection_id' => $this->sap_connection_id,
+                            'real_sap_connection_id' => $this->real_sap_connection_id,
                         );
 
                 if(!empty($invoice['DocumentLines'])){
@@ -129,6 +130,7 @@ class StoreInvoices implements ShouldQueue
                             //'response' => json_encode($value),
 
                             'sap_connection_id' => $this->sap_connection_id,
+                            'real_sap_connection_id' => $this->real_sap_connection_id,
                         );
 
                         $item_obj = InvoiceItem::updateOrCreate([
