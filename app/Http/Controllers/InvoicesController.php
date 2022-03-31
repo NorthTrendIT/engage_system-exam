@@ -116,7 +116,7 @@ class InvoicesController extends Controller
     public function syncInvoices(){
         try {
 
-            $sap_connections = SapConnection::all();
+            $sap_connections = SapConnection::where('id', '!=', 5)->get();
             foreach ($sap_connections as $value) {
                 $invoice_log_id = add_sap_log([
                                         'ip_address' => userip(),

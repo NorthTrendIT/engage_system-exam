@@ -248,8 +248,13 @@ class CommonController extends Controller
                 $data->where('sales_specialist_name', 'like', '%' .$search . '%');
             }
 
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
             if(@$request->sap_connection_id != ''){
-                $data->where('sap_connection_id',@$request->sap_connection_id);
+                $data->where('sap_connection_id',@$sap_connection_id);
             }
 
             $data = $data->get();
@@ -310,8 +315,13 @@ class CommonController extends Controller
                 $data->where('group_name', 'like', '%' .$search . '%');
             }
 
-            if($request->sap_connection_id != ''){
-                $data->where('sap_connection_id',$request->sap_connection_id);
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
+            if(@$request->sap_connection_id != ''){
+                $data->where('sap_connection_id',@$sap_connection_id);
             }
 
             $data = $data->get();
@@ -335,6 +345,10 @@ class CommonController extends Controller
 
         if($search != ''){
             $data = $data->where('sales_specialist_name', 'like', '%' .$search . '%');
+        }
+        
+        if(@$request->sap_connection_id != ''){
+            $data->where('sap_connection_id',@$request->sap_connection_id);
         }
 
         $data = $data->orderby('sales_specialist_name','asc')->limit(50)->get();
@@ -412,8 +426,13 @@ class CommonController extends Controller
                 $data->where('u_tires', 'like', '%' .$request->search . '%');
             }
 
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
             if(@$request->sap_connection_id != ''){
-                $data->where('sap_connection_id',@$request->sap_connection_id);
+                $data->where('sap_connection_id',@$sap_connection_id);
             }
 
             $data = $data->groupBy('u_tires')->get();
@@ -441,8 +460,13 @@ class CommonController extends Controller
                 $data->where('u_item_line', 'like', '%' .$request->search . '%');
             }
 
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
             if(@$request->sap_connection_id != ''){
-                $data->where('sap_connection_id',@$request->sap_connection_id);
+                $data->where('sap_connection_id',@$sap_connection_id);
             }
 
             $data = $data->groupBy('u_item_line')->get();
@@ -469,8 +493,13 @@ class CommonController extends Controller
                 $data->where('item_class', 'like', '%' .$request->search . '%');
             }
 
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
             if(@$request->sap_connection_id != ''){
-                $data->where('sap_connection_id',@$request->sap_connection_id);
+                $data->where('sap_connection_id',@$sap_connection_id);
             }
 
             $data = $data->groupBy('item_class')->get();
@@ -497,8 +526,13 @@ class CommonController extends Controller
                 $data->where('u_item_type', 'like', '%' .$request->search . '%');
             }
 
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
             if(@$request->sap_connection_id != ''){
-                $data->where('sap_connection_id',@$request->sap_connection_id);
+                $data->where('sap_connection_id',@$sap_connection_id);
             }
 
             $data = $data->groupBy('u_item_type')->get();
@@ -525,8 +559,13 @@ class CommonController extends Controller
                 $data->where('u_item_application', 'like', '%' .$request->search . '%');
             }
 
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
             if(@$request->sap_connection_id != ''){
-                $data->where('sap_connection_id',@$request->sap_connection_id);
+                $data->where('sap_connection_id',@$sap_connection_id);
             }
 
             $data = $data->groupBy('u_item_application')->get();
@@ -553,8 +592,13 @@ class CommonController extends Controller
                 $data->where('u_pattern2', 'like', '%' .$request->search . '%');
             }
 
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
             if(@$request->sap_connection_id != ''){
-                $data->where('sap_connection_id',@$request->sap_connection_id);
+                $data->where('sap_connection_id',@$sap_connection_id);
             }
 
             $data = $data->groupBy('u_pattern2')->get();

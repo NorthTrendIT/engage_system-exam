@@ -98,7 +98,7 @@ class CustomerGroupController extends Controller
             // SyncCustomerGroups::dispatch('TEST-APBW', 'manager', 'test');
 
 
-            $sap_connections = SapConnection::all();
+            $sap_connections = SapConnection::where('id', '!=', 5)->get();
             foreach ($sap_connections as $value) {
 
                 $log_id = add_sap_log([

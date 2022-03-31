@@ -296,6 +296,11 @@ class ProductListController extends Controller
 
         }
 
+
+        if($sap_connection_id == 5){ //Solid Trend
+            $sap_connection_id = 1;
+        }
+
         // Is Customer
         if($customer_id){
 
@@ -432,7 +437,7 @@ class ProductListController extends Controller
     public function getProducts(Request $request)
     {
         $data = $this->getProductData($request);
-        if(count($data['products'])){
+        if(count($data['products']->get())){
             $products = $data['products']->get();
         }else{
             $products = collect();
@@ -493,6 +498,11 @@ class ProductListController extends Controller
 
         }
 
+
+        if($sap_connection_id == 5){ //Solid Trend
+            $sap_connection_id = 1;
+        }
+        
         // Is Customer
         if($customer_id){
 

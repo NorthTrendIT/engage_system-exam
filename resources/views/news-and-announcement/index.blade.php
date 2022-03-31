@@ -38,15 +38,15 @@
                 @endif
 
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_module" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select Customer By">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_module" data-control="select2" data-hide-search="true" data-allow-clear="true" data-placeholder="Select customer by">
                     <option value=""></option>
                     <option value="all">All</option>
-                    <option value="brand">By Brand</option>
-                    <option value="customer_class">By Class</option>
-                    <option value="customer">By Customer</option>
-                    <option value="sales_specialist">By Sales Specialist</option>
-                    <option value="territory">By Territory</option>
-                    <option value="market_sector">By Market Sector</option>
+                    <option value="brand">By brand</option>
+                    <option value="customer_class">By class</option>
+                    <option value="customer">By customer</option>
+                    <option value="sales_specialist">By sales specialist</option>
+                    <option value="territory">By territory</option>
+                    <option value="market_sector">By market sector</option>
                   </select>
                 </div>
 

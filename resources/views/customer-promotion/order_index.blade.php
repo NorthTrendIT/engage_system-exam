@@ -74,7 +74,7 @@
                 @endif
 
                 @if(in_array(userrole(),[1,2]))
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3 mt-5 {{ (in_array(userrole(),[1])) ? "other_filter_div" : "" }}">
                   <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-placeholder="Select customer" data-allow-clear="true">
                     <option value=""></option>
                   </select>
@@ -283,7 +283,10 @@
             data: function (params) {
                 return {
                     _token: "{{ csrf_token() }}",
-                    search: params.term
+                    search: params.term,
+                    @if(in_array(userrole(),[1]))
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    @endif
                 };
             },
             processResults: function (response) {
@@ -330,6 +333,7 @@
         $('[name="filter_customer_class"]').val('').trigger('change');
         $('[name="filter_sales_specialist"]').val('').trigger('change');
         $('[name="filter_market_sector"]').val('').trigger('change');
+        $('[name="filter_customer"]').val('').trigger('change');
         
         if($(this).find('option:selected').val() != ""){
           $('.other_filter_div').show();
