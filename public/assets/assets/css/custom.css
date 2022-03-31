@@ -1012,7 +1012,7 @@ table.dataTable>thead .sorting.sorting_desc:after{
 
 @media (min-width: 992px){
     .table-responsive div::-webkit-scrollbar, .table-responsive ol::-webkit-scrollbar, .table-responsive pre::-webkit-scrollbar, .table-responsive span::-webkit-scrollbar, .table-responsive ul::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+        width: 12px;
+        height: 12px;
     }
 }
