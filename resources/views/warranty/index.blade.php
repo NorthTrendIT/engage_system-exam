@@ -256,7 +256,8 @@
             data: function (params) {
                 return {
                     _token: "{{ csrf_token() }}",
-                    search: params.term
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
                 };
             },
             processResults: function (response) {

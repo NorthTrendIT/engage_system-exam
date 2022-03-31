@@ -45,6 +45,12 @@ class SapConnectionSeeder extends Seeder
                         'db_name' => 'TEST-PHILSYN',
                         'password' => 'test',
                     ),
+                    array(
+                        'company_name' => 'SOLID TREND',
+                        'user_name' => 'manager',
+                        'db_name' => 'TEST-APBW',
+                        'password' => 'test',
+                    ),
         		);
         SapConnection::insert($data);
 

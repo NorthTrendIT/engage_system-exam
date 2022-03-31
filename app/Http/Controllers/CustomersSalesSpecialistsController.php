@@ -55,7 +55,11 @@ class CustomersSalesSpecialistsController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-        // dd($input);
+        
+        $sap_connection_id = $input['company_id'];
+        if($input['company_id'] == 5){ //Solid Trend
+            $sap_connection_id = 1;
+        }
 
         $rules = array(
 
@@ -65,16 +69,16 @@ class CustomersSalesSpecialistsController extends Controller
                     'customer_ids.*' => 'required|exists:customers,id,sap_connection_id,'.$input['company_id'],
 
                     'ss_ids' => 'required',
-                    'ss_ids.*' => 'required|exists:users,id,sap_connection_id,'.$input['company_id'],
+                    'ss_ids.*' => 'required|exists:users,id,sap_connection_id,'.$sap_connection_id,
 
                     'product_group_id' => 'nullable|array',
-                    'product_group_id.*' => 'exists:product_groups,id,sap_connection_id,'.$input['company_id'],
+                    'product_group_id.*' => 'exists:product_groups,id,sap_connection_id,'.$sap_connection_id,
 
                     'product_tires_category_id' => 'nullable|array',
-                    'product_tires_category_id.*' => 'exists:product_tires_categories,id,sap_connection_id,'.$input['company_id'],
+                    'product_tires_category_id.*' => 'exists:product_tires_categories,id,sap_connection_id,'.$sap_connection_id,
 
                     'product_item_line_id' => 'nullable|array',
-                    'product_item_line_id.*' => 'exists:product_item_lines,id,sap_connection_id,'.$input['company_id'],
+                    'product_item_line_id.*' => 'exists:product_item_lines,id,sap_connection_id,'.$sap_connection_id,
                 );
 
         $message = array(
@@ -361,8 +365,13 @@ class CustomersSalesSpecialistsController extends Controller
         $response = array();
         if($request->sap_connection_id){
             $search = $request->search;
+            
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
 
-            $data = User::where('sap_connection_id',$request->sap_connection_id)
+            $data = User::where('sap_connection_id', $sap_connection_id)
                             ->where('role_id',2)
                             ->where('is_active',1)
                             ->orderby('sales_specialist_name','asc')
@@ -425,7 +434,12 @@ class CustomersSalesSpecialistsController extends Controller
         if($request->sap_connection_id){
             $search = $request->search;
 
-            $data = ProductGroup::where('sap_connection_id',$request->sap_connection_id)
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
+            $data = ProductGroup::where('sap_connection_id',$sap_connection_id)
                                 ->orderby('group_name','asc')
                                 ->select('id','group_name')
                                 ->limit(50);
@@ -453,7 +467,12 @@ class CustomersSalesSpecialistsController extends Controller
         if($request->sap_connection_id){
             $search = $request->search;
 
-            $data = ProductItemLine::where('sap_connection_id',$request->sap_connection_id)
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
+            $data = ProductItemLine::where('sap_connection_id',$sap_connection_id)
                                 ->orderby('u_item_line','asc')
                                 ->select('id','u_item_line')
                                 ->limit(50);
@@ -481,7 +500,12 @@ class CustomersSalesSpecialistsController extends Controller
         if($request->sap_connection_id){
             $search = $request->search;
 
-            $data = ProductTiresCategory::where('sap_connection_id',$request->sap_connection_id)
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
+            $data = ProductTiresCategory::where('sap_connection_id',$sap_connection_id)
                                         ->orderby('u_tires','asc')
                                         ->select('id','u_tires')
                                         ->limit(50);

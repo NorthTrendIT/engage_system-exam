@@ -332,18 +332,23 @@ class CustomerPromotionController extends Controller
         }
 
         if(!$customer_user->customer->sap_connection_id){
-            return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
+            return $response = ['status'=>false,'message'=>"Oops! Customer not found in our database."];
+        }
+
+        $sap_connection_id = @$customer_user->customer->sap_connection_id;
+        if($sap_connection_id == 5){ //Solid Trend
+            $sap_connection_id = 1;
         }
 
         $rules = array(
                     'promotion_id' => 'required|exists:promotions,id',
                     'customer_bp_address_id' => 'required|exists:customer_bp_addresses,id',
                     'products' => 'required|array',
-                    'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@$customer_user->customer->sap_connection_id,
+                    'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@$sap_connection_id,
                 );
 
         $messages = array(
-                        'products.*.product_id.exists' => "Oops! Customer or Items can not be located in the DataBase.",
+                        'products.*.product_id.exists' => "Oops! Customer or Items can not be located in the database.",
                         'customer_id.exists' => "Oops! Customer not found.",
                     );
 
@@ -1085,6 +1090,10 @@ class CustomerPromotionController extends Controller
             return response()->json($data);
         }
 
+        if(@$request->sap_connection_id != ''){
+            $data->where('sap_connection_id',$request->sap_connection_id);
+        }
+            
         if($search != ''){
             $data->where(function($q) use ($search){
                 $q->orwhere('card_name', 'like', '%' .$search . '%');
