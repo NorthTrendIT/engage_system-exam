@@ -20,6 +20,7 @@ class SAPCustomerPromotion
 	protected $headers;
 
     protected $sap_connection_id;
+    protected $real_sap_connection_id;
     protected $customer_promotion_id;
 
 	protected $database;
@@ -36,7 +37,7 @@ class SAPCustomerPromotion
 
         $this->httpClient = new Client();
 
-        $this->sap_connection_id = $this->customer_promotion_id = null;
+        $this->sap_connection_id = $this->real_sap_connection_id = $this->customer_promotion_id = null;
     }
 
     public function requestSapApi($url = '/b1s/v1/Quotations', $method = "POST", $body = "")
@@ -109,6 +110,8 @@ class SAPCustomerPromotion
                         //'response' => json_encode($order),
 
                         'sap_connection_id' => $this->sap_connection_id,
+                        'real_sap_connection_id' => $this->real_sap_connection_id,
+
                         'customer_promotion_id' => $this->customer_promotion_id,
 
                     );
@@ -148,6 +151,7 @@ class SAPCustomerPromotion
                         //'response' => json_encode($item),
 
                         'sap_connection_id' => $this->sap_connection_id,
+                        'real_sap_connection_id' => $this->real_sap_connection_id,
                     );
 
                     $item_obj = QuotationItem::updateOrCreate([
@@ -180,6 +184,7 @@ class SAPCustomerPromotion
                 $obj->doc_entry = $data['DocEntry'];
                 $obj->is_sap_pushed = true;
                 $obj->sap_connection_id = $this->sap_connection_id;
+                $obj->real_sap_connection_id = $this->real_sap_connection_id;
                 $obj->save();
 
                 $this->pushOrderDetailsInDatabase($data);
@@ -208,6 +213,7 @@ class SAPCustomerPromotion
                 $obj->doc_entry = $data['DocEntry'];
                 $obj->is_sap_pushed = true;
                 $obj->sap_connection_id = $this->sap_connection_id;
+                $obj->real_sap_connection_id = $this->real_sap_connection_id;
                 $obj->save();
 
                 $this->pushOrderDetailsInDatabase($data);
@@ -245,6 +251,7 @@ class SAPCustomerPromotion
                     $obj->doc_entry = null;
                     $obj->is_sap_pushed = false;
                     $obj->sap_connection_id = $this->sap_connection_id;
+                    $obj->real_sap_connection_id = $this->real_sap_connection_id;
                     $obj->save();
 
 
@@ -289,6 +296,7 @@ class SAPCustomerPromotion
             if(@$customer_promotion->user->customer->card_code){
 
                 $this->sap_connection_id = @$customer_promotion->sap_connection_id;
+                $this->real_sap_connection_id = @$customer_promotion->real_sap_connection_id;
 
                 $response['CardCode'] = @$customer_promotion->user->customer->card_code;
                 $response['CardName'] = @$customer_promotion->user->customer->card_name;

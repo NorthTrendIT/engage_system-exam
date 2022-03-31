@@ -88,6 +88,7 @@ class StoreQuotations implements ShouldQueue
                             'updated_date' => $value['UpdateDate'],
                             'last_sync_at' => current_datetime(),
                             'sap_connection_id' => $this->sap_connection_id,
+                            'real_sap_connection_id' => $this->real_sap_connection_id,
                         );
 
                 if(!empty($value['DocumentLines'])){
@@ -130,6 +131,7 @@ class StoreQuotations implements ShouldQueue
                             //'response' => json_encode($item),
 
                             'sap_connection_id' => $this->sap_connection_id,
+                            'real_sap_connection_id' => $this->real_sap_connection_id,
                         );
 
                         $item_obj = QuotationItem::updateOrCreate([

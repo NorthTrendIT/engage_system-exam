@@ -44,6 +44,7 @@ class Customer extends Model
         'territory',
 
         'sap_connection_id',
+        'real_sap_connection_id',
         'u_mkt_segment',
         'u_cust_segment',
         'u_sector',
