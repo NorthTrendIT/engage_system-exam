@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\CreditNote;
 use App\Models\CreditNoteItem;
+use App\Models\Customer;
 
 class StoreCreditNote implements ShouldQueue
 {
@@ -23,11 +24,13 @@ class StoreCreditNote implements ShouldQueue
     protected $data;
 
     protected $sap_connection_id;
+    protected $real_sap_connection_id;
 
     public function __construct($data, $sap_connection_id)
     {
         $this->data = $data;
         $this->sap_connection_id = $sap_connection_id;
+        $this->real_sap_connection_id = $sap_connection_id;
     }
 
     /**
@@ -40,6 +43,15 @@ class StoreCreditNote implements ShouldQueue
         if(!empty($this->data)){
 
             foreach ($this->data as $value) {
+
+                if($this->real_sap_connection_id == 1){ // GROUP Cagayan, Davao NEED TO STORE in Solid Trend 
+                    $customer = Customer::where('card_code', $value['CardCode'])->where('sap_connection_id', 5)->first();
+                    if(!empty($customer)){
+                        $this->sap_connection_id = 5;
+                    }else{
+                        $this->sap_connection_id = 1;
+                    }
+                }
 
                 $insert = array(
                             'doc_entry' => $value['DocEntry'],
@@ -74,6 +86,7 @@ class StoreCreditNote implements ShouldQueue
                             'updated_date' => $value['UpdateDate'],
                             'last_sync_at' => current_datetime(),
                             'sap_connection_id' => $this->sap_connection_id,
+                            'real_sap_connection_id' => $this->real_sap_connection_id,
                         );
 
                 if(!empty($value['DocumentLines'])){
@@ -115,6 +128,7 @@ class StoreCreditNote implements ShouldQueue
                             'ship_to_description' => @$item['ShipToDescription'],
 
                             'sap_connection_id' => $this->sap_connection_id,
+                            'real_sap_connection_id' => $this->real_sap_connection_id,
                         );
 
                         $item_obj = CreditNoteItem::updateOrCreate([

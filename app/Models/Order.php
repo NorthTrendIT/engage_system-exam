@@ -44,6 +44,7 @@ class Order extends Model
         'updated_at',
         'updated_date',
         'sap_connection_id',
+        'real_sap_connection_id',
         'document_status',
         'last_sync_at',
     ];

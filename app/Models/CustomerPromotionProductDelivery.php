@@ -22,6 +22,7 @@ class CustomerPromotionProductDelivery extends Model
         'doc_entry',
         'is_sap_pushed',
         'sap_connection_id',
+        'real_sap_connection_id',
     ];
 
     public function customer_promotion_product(){

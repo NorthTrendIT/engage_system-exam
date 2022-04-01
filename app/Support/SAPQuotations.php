@@ -186,6 +186,7 @@ class SAPQuotations
                                 'updated_date' => $value['UpdateDate'],
                                 'last_sync_at' => current_datetime(),
                                 'sap_connection_id' => $sap_connection_id,
+                                'real_sap_connection_id' => $sap_connection->id,
                             );
 
                     if(!empty($value['DocumentLines'])){
@@ -228,6 +229,7 @@ class SAPQuotations
                                 //'response' => json_encode($item),
 
                                 'sap_connection_id' => $sap_connection_id,
+                                'real_sap_connection_id' => $sap_connection->id,
                             );
 
                             $item_obj = QuotationItem::updateOrCreate([

@@ -174,7 +174,7 @@ class ProductReportController extends Controller
                 $sleepingProducts = $sleepingProducts->count();
 
                 // Product Movement
-                $productMovement = Product::where('sap_connection_id', $item->id)->join("invoice_items",function($join){
+                $productMovement = Product::where('products.sap_connection_id', $item->id)->join("invoice_items",function($join){
                         $join->on('invoice_items.item_code','=','products.item_code');
                     })
                     ->where('is_active', 1)

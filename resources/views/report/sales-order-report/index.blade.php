@@ -231,6 +231,7 @@
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
+      $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
 
       $.ajax({
@@ -240,6 +241,7 @@
                 _token:'{{ csrf_token() }}',
                 filter_company : $filter_company,
                 filter_date_range : $filter_date_range,
+                filter_brand : $filter_brand,
                 filter_customer : $filter_customer,
                 filter_sales_specialist : $filter_sales_specialist,
               }

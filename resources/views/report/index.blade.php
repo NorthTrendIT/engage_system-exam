@@ -57,18 +57,6 @@
                                     <rect x="3" y="13" width="3" height="6" rx="1.5" fill="black"></rect>
                                     </svg>
                                 </span>
-                                <a href="{{ route('reports.product-report.index') }}" class="text-success fw-bold fs-6">Product Report </a>
-                            </div>
-
-                            <div class="col-md-3 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150">
-                                <span class="svg-icon svg-icon-3x svg-icon-success d-block my-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <rect x="8" y="9" width="3" height="10" rx="1.5" fill="black"></rect>
-                                    <rect opacity="0.5" x="13" y="5" width="3" height="14" rx="1.5" fill="black"></rect>
-                                    <rect x="18" y="11" width="3" height="8" rx="1.5" fill="black"></rect>
-                                    <rect x="3" y="13" width="3" height="6" rx="1.5" fill="black"></rect>
-                                    </svg>
-                                </span>
                                 <a href="{{ route('reports.sales-order-report.index') }}" class="text-success fw-bold fs-6">Sales Order Report </a>
                             </div>
 
@@ -106,6 +94,18 @@
                                     </svg>
                                 </span>
                                 <a href="{{ route('reports.product-sales-report.index') }}" class="text-warning fw-bold fs-6">Product Sales Report</a>
+                            </div>
+
+                            <div class="col-md-3 bg-light-primary px-6 py-8 rounded-2 me-7 mb-7 min-w-150">
+                                <span class="svg-icon svg-icon-3x svg-icon-primary d-block my-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect x="8" y="9" width="3" height="10" rx="1.5" fill="black"></rect>
+                                    <rect opacity="0.5" x="13" y="5" width="3" height="14" rx="1.5" fill="black"></rect>
+                                    <rect x="18" y="11" width="3" height="8" rx="1.5" fill="black"></rect>
+                                    <rect x="3" y="13" width="3" height="6" rx="1.5" fill="black"></rect>
+                                    </svg>
+                                </span>
+                                <a href="{{ route('reports.product-report.index') }}" class="text-primary fw-bold fs-6">Product Report </a>
                             </div>
 
                         </div>

@@ -26,7 +26,7 @@ class SalesReportController extends Controller
     public function getAll(Request $request){
         $data = InvoiceItem::join('invoices', 'invoices.id','=','invoice_items.invoice_id')
                             ->join("products",function($join){
-                                $join->on('products.item_code','=','invoice_items.item_code')->on('products.sap_connection_id','=', 'invoices.sap_connection_id');
+                                $join->on('products.item_code','=','invoice_items.item_code')->on('products.sap_connection_id','=', 'invoices.real_sap_connection_id');
                             })
                             ->join("product_groups",function($join){
                                 $join->on('product_groups.number','=','products.items_group_code')->on('product_groups.sap_connection_id','=', 'products.sap_connection_id');
@@ -34,7 +34,8 @@ class SalesReportController extends Controller
                             ->join('sap_connections','sap_connections.id','=', 'invoices.sap_connection_id')
                             ->where('invoices.document_status', 'bost_Open')
                             ->where('invoices.cancelled', 'No')
-                            ->whereIn('invoices.u_sostat', ['CM','IN'])
+                            // ->whereIn('invoices.u_sostat', ['CM','IN'])
+                            ->whereIn('invoices.u_sostat', ['CM'])
                             ->select(
                                 DB::raw("count(invoice_items.id) as total_id"),
                                 DB::raw("sum(invoice_items.quantity) as total_quantity"),
@@ -49,7 +50,7 @@ class SalesReportController extends Controller
 
 
         if($request->filter_company != ""){
-            $data->where('products.sap_connection_id',$request->filter_company);
+            $data->where('sap_connections.id',$request->filter_company);
         }
 
         if($request->filter_brand != ""){
@@ -128,7 +129,7 @@ class SalesReportController extends Controller
 
         
 
-        $data->groupBy('invoice_items.item_code', 'products.sap_connection_id');
+        $data->groupBy('invoice_items.item_code', 'invoice_items.sap_connection_id');
                             
         return DataTables::of($data)
                             ->addIndexColumn()

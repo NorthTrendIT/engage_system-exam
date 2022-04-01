@@ -34,10 +34,15 @@ class QuotationItem extends Model
         'ship_to_description',
         'response',
         'sap_connection_id',
+        'real_sap_connection_id',
     ];
 
     public function product(){
         return $this->belongsTo(Product::class, ['item_code','sap_connection_id'], ['item_code', 'sap_connection_id']);
+    }
+
+    public function product1(){
+        return $this->belongsTo(Product::class, ['item_code','real_sap_connection_id'], ['item_code', 'sap_connection_id']);
     }
 
     public function quotation(){

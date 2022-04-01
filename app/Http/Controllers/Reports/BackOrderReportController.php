@@ -26,7 +26,7 @@ class BackOrderReportController extends Controller
     public function getAll(Request $request){
         $data = OrderItem::join('orders','orders.id','=', 'order_items.order_id')
                             ->join("products",function($join){
-                                $join->on('products.item_code','=','order_items.item_code')->on('products.sap_connection_id','=', 'orders.sap_connection_id');
+                                $join->on('products.item_code','=','order_items.item_code')->on('products.sap_connection_id','=', 'orders.real_sap_connection_id');
                             })
                             ->join("product_groups",function($join){
                                 $join->on('product_groups.number','=','products.items_group_code')->on('product_groups.sap_connection_id','=', 'products.sap_connection_id');
@@ -49,7 +49,7 @@ class BackOrderReportController extends Controller
 
 
         if($request->filter_company != ""){
-            $data->where('products.sap_connection_id',$request->filter_company);
+            $data->where('sap_connections.id',$request->filter_company);
         }
 
         if($request->filter_brand != ""){
@@ -93,7 +93,7 @@ class BackOrderReportController extends Controller
             $data->where('customers_sales_specialists.ss_id', $request->filter_sales_specialist);
         }
 
-        $data->groupBy('order_items.item_code', 'products.sap_connection_id');
+        $data->groupBy('order_items.item_code', 'order_items.sap_connection_id');
 
         return DataTables::of($data)
                             ->addIndexColumn()
