@@ -34,7 +34,8 @@ class SalesReportController extends Controller
                             ->join('sap_connections','sap_connections.id','=', 'invoices.sap_connection_id')
                             ->where('invoices.document_status', 'bost_Open')
                             ->where('invoices.cancelled', 'No')
-                            ->whereIn('invoices.u_sostat', ['CM','IN'])
+                            // ->whereIn('invoices.u_sostat', ['CM','IN'])
+                            ->whereIn('invoices.u_sostat', ['CM'])
                             ->select(
                                 DB::raw("count(invoice_items.id) as total_id"),
                                 DB::raw("sum(invoice_items.quantity) as total_quantity"),
