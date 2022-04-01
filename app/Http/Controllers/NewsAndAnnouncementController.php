@@ -536,6 +536,11 @@ class NewsAndAnnouncementController extends Controller
 
     public function getCustomer(Request $request){
         $search = $request->search;
+        $sap_connection_id = $request->sap_connection_id;
+
+        if($sap_connection_id == 5){
+            $sap_connection_id = 1;
+        }
 
         if($search == ''){
             $data = Customer::orderby('card_name','asc')->select('id','card_name')->limit(50)->get();
@@ -558,6 +563,10 @@ class NewsAndAnnouncementController extends Controller
         $search = $request->search;
         $sap_connection_id = $request->sap_connection_id;
 
+        if($sap_connection_id == 5){
+            $sap_connection_id = 1;
+        }
+
         if($search == ''){
             $data = Classes::orderby('name','asc')->select('id','name')->where('module', 'C')->limit(50)->get();
         }else{
@@ -578,6 +587,10 @@ class NewsAndAnnouncementController extends Controller
     public function getSalesSpecialist(Request $request){
         $search = $request->search;
         $sap_connection_id = $request->sap_connection_id;
+
+        if($sap_connection_id == 5){
+            $sap_connection_id = 1;
+        }
 
         if($search == ''){
             $data = User::orderby('sales_specialist_name','asc')->select('id','sales_specialist_name')->where(['role_id' => 2, 'is_active' => true, 'sap_connection_id' => $sap_connection_id])->limit(50)->get();
@@ -624,6 +637,10 @@ class NewsAndAnnouncementController extends Controller
         if($request->sap_connection_id){
             $search = $request->search;
 
+            if($request->sap_connection_id == 5){
+                $request->sap_connection_id = 1;
+            }
+
             $data = ProductGroup::where('sap_connection_id',$request->sap_connection_id)
                                 ->orderby('group_name','asc')
                                 ->select('id','group_name')
@@ -651,6 +668,10 @@ class NewsAndAnnouncementController extends Controller
         $response = array();
         if($request->sap_connection_id){
             $search = $request->search;
+
+            if($request->sap_connection_id == 5){
+                $request->sap_connection_id = 1;
+            }
 
             $data = Customer::where('sap_connection_id',$request->sap_connection_id)
                                 ->orderby('u_sector','asc')

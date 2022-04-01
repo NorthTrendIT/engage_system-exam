@@ -346,7 +346,7 @@ class CommonController extends Controller
         if($search != ''){
             $data = $data->where('sales_specialist_name', 'like', '%' .$search . '%');
         }
-        
+
         if(@$request->sap_connection_id != ''){
             $data->where('sap_connection_id',@$request->sap_connection_id);
         }
@@ -569,7 +569,7 @@ class CommonController extends Controller
             }
 
             $data = $data->groupBy('u_item_application')->get();
-
+            $response[] = array('id' => '', 'text' => 'All');
             foreach($data as $value){
                 $response[] = array(
                     "id" => @$value->u_item_application,
