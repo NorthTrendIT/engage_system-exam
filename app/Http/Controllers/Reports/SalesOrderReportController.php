@@ -69,7 +69,7 @@ class SalesOrderReportController extends Controller
 
         if($request->filter_brand != ""){
             $pending_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('product.group', function($q1) use ($request){
+                $query->whereHas('product1.group', function($q1) use ($request){
                     $q1->where('id', $request->filter_brand);
                 });
             });
@@ -123,7 +123,7 @@ class SalesOrderReportController extends Controller
 
         if($request->filter_brand != ""){
             $approved_order_item->where(function($query) use ($request) {
-                $query->whereHas('product.group', function($q1) use ($request){
+                $query->whereHas('product1.group', function($q1) use ($request){
                     $q1->where('id', $request->filter_brand);
                 });
             });
@@ -189,7 +189,7 @@ class SalesOrderReportController extends Controller
 
         if($request->filter_brand != ""){
             $disapproved_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('product.group', function($q1) use ($request){
+                $query->whereHas('product1.group', function($q1) use ($request){
                     $q1->where('id', $request->filter_brand);
                 });
             });
@@ -250,7 +250,7 @@ class SalesOrderReportController extends Controller
 
         if($request->filter_brand != ""){
             $disapproved_order_item->where(function($query) use ($request) {
-                $query->whereHas('product.group', function($q1) use ($request){
+                $query->whereHas('product1.group', function($q1) use ($request){
                     $q1->where('id', $request->filter_brand);
                 });
             });

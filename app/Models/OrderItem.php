@@ -41,6 +41,10 @@ class OrderItem extends Model
         return $this->belongsTo(Product::class, ['item_code','sap_connection_id'], ['item_code', 'sap_connection_id']);
     }
 
+    public function product1(){
+        return $this->belongsTo(Product::class, ['item_code','real_sap_connection_id'], ['item_code', 'sap_connection_id']);
+    }
+
     public function order(){
         return $this->belongsTo(Order::class, 'order_id');
     }
