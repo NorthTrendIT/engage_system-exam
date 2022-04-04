@@ -149,6 +149,7 @@
                               @if(userrole() != 4)
                               <th>Customer Name</th>
                               @endif
+                              <th>Order Type</th>
                               @if(in_array(userrole(),[1]))
                               <th>Business Unit</th>
                               @endif
@@ -253,6 +254,7 @@
               @if(userrole() != 4)
               {data: 'name', name: 'name'},
               @endif
+              {data: 'order_type', name: 'order_type', orderable:false},
               @if(in_array(userrole(),[1]))
               {data: 'company', name: 'company'},
               @endif

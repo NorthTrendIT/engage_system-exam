@@ -224,6 +224,19 @@ class CartController extends Controller
         }
 
         $data = $request->all();
+
+        $total_amount = 0;
+        $products = Cart::where('customer_id', @Auth::user()->customer_id)->get();
+        if( !empty($products) ){
+            foreach($products as $value){
+                $total_amount += get_product_customer_price(@$value->product->item_prices, @Auth::user()->customer->price_list_num);
+            }
+        }
+
+        if($total_amount < 1){
+            return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
+        }
+        
         $rules = array(
                 'address_id' => 'required|string|max:185',
                 'due_date' => 'required',
