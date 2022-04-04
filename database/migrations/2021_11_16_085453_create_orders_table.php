@@ -15,8 +15,8 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('doc_entry');
-            $table->unsignedBigInteger('doc_num');
+            $table->unsignedBigInteger('doc_entry')->index();
+            $table->unsignedBigInteger('doc_num')->index();
             $table->string('doc_type');
             $table->date('doc_date')->nullable();
             $table->date('doc_due_date')->nullable();

@@ -9,6 +9,8 @@ class CreditNote extends Model
 {
     use HasFactory;
 
+    use \Awobaz\Compoships\Compoships;
+
     protected $fillable = [
         'base_entry',
         'doc_entry',
@@ -44,6 +46,24 @@ class CreditNote extends Model
         'real_sap_connection_id',
         'document_status',
         'last_sync_at',
+        'u_class',
     ];
+
+
+    public function items(){
+        return $this->hasMany(InvoiceItem::class, 'invoice_id', 'id');
+    }
+
+    public function customer(){
+        return $this->hasOne(Customer::class, ['card_code', 'sap_connection_id'], ['card_code', 'sap_connection_id']);
+    }
+
+    public function sales_specialist(){
+        return $this->belongsTo(User::class, ['sales_person_code','sap_connection_id'], ['sales_employee_code', 'sap_connection_id']);
+    }
+
+    public function sap_connection(){
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
+    }
 
 }

@@ -97,7 +97,7 @@ class OverdueSalesInvoiceReportController extends Controller
                             'company' => @$value->sap_connection->company_name ?? "-",
                             'doc_entry' => $value->doc_entry ?? "-",
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
-                            'doc_total' => number_format_value($value->doc_total),
+                            'doc_total' => $value->doc_total,
                             'created_at' => date('M d, Y',strtotime($value->doc_date)),
                           );
         }

@@ -14,7 +14,7 @@ class AddCustomerPromotionIdInQuotations extends Migration
     public function up()
     {
         Schema::table('quotations', function (Blueprint $table) {
-            $table->unsignedBigInteger('customer_promotion_id')->nullable();
+            $table->unsignedBigInteger('customer_promotion_id')->nullable()->index();
         });
     }
 
