@@ -14,7 +14,7 @@ class AddBaseEntryInQuotationsTable extends Migration
     public function up()
     {
         Schema::table('quotations', function (Blueprint $table) {
-            $table->unsignedBigInteger('base_entry')->after('id')->nullable();
+            $table->unsignedBigInteger('base_entry')->after('id')->nullable()->index();
         });
     }
 
