@@ -208,7 +208,7 @@
                                 <tbody>
                                     @foreach($data->items as $value)
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
-                                        <td class="d-flex align-items-center pt-6">{{ @$value->product->item_name ?? '-' }}</td>
+                                        <td class="d-flex align-items-center pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
                                         <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
                                         <td class="pt-6">₱ {{ number_format_value($value->price) }}</td>

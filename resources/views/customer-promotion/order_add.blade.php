@@ -274,7 +274,7 @@
                   <div class="col-md-4">
                     <div class="form-group">
                       <label>Total Amount</label>
-                      <input type="number" class="form-control form-control-solid total_amount" readonly="" disabled="">
+                      <input name="total_amount" type="number" class="form-control form-control-solid total_amount" readonly="" disabled="">
                     </div>
                   </div>
                 </div>
@@ -308,7 +308,7 @@
                 <div class="row mb-5 mt-10">
                   <div class="col-md-12">
                     <div class="form-group">
-                      <input type="submit" value="{{ isset($edit) ? "Update" : "Save" }}" class="btn btn-primary">
+                      <input type="submit" value="{{ isset($edit) ? "Update" : "Save" }}" class="btn btn-primary submit_btn" style="display:none;">
                     </div>
                   </div>
                 </div>
@@ -476,7 +476,11 @@
       });
       $('.total_amount').val(sum);
 
-
+      if(sum > 0){
+        $('.submit_btn').show();
+      }else{
+        $('.submit_btn').hide();
+      }
       // Show error message
       @if(@$promotion->promotion_type->is_total_fixed_quantity)
         

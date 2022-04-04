@@ -36,7 +36,7 @@ class SAPOrderPost
 
         $this->sap_connection_id = $sap_connection_id;
         if($sap_connection_id == 5){
-            $this->real_sap_connection_id = $sap_connection_id;
+            $this->real_sap_connection_id = 1;
         } else {
             $this->real_sap_connection_id = $sap_connection_id;
         }
