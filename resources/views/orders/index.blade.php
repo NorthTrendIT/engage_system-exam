@@ -59,7 +59,6 @@
                 <div class="col-md-3 mt-5 brand" style="display:none">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectBrand" data-hide-search="false" data-allow-clear="true" name="filter_brand" data-placeholder="Select brand">
                         <option value=""></option>
-                        <option value="all">All</option>
                     </select>
                 </div>
 
@@ -67,7 +66,6 @@
                 <div class="col-md-3 mt-5 customer_class" style="display:none">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectCustomerClass" data-hide-search="false" data-allow-clear="true" name="filter_customer_class">
                       <option value=""></option>
-                      <option value="all">All</option>
                     </select>
                 </div>
 
@@ -75,7 +73,6 @@
                 <div class="col-md-3 mt-5 sales_specialist" style="display:none">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectSalesSpecialist" data-hide-search="false" data-allow-clear="true" name="filter_sales_specialist">
                       <option value=""></option>
-                      <option value="all">All</option>
                     </select>
                 </div>
 
@@ -83,7 +80,6 @@
                 <div class="col-md-3 mt-5 territory" style="display:none">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectTerritory" data-hide-search="false" data-allow-clear="true" name="filter_territory">
                       <option value=""></option>
-                      <option value="all">All</option>
                     </select>
                 </div>
 
@@ -91,7 +87,6 @@
                 <div class="col-md-3 mt-5 market_sector" style="display:none">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectMarketSector" data-hide-search="false" data-allow-clear="true" name="filter_market_sector">
                       <option value=""></option>
-                      <option value="all">All</option>
                     </select>
                 </div>
                 @endif

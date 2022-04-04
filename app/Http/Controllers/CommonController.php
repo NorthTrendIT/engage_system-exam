@@ -399,8 +399,14 @@ class CommonController extends Controller
                 $data->where('card_name', 'like', '%' .$search . '%');
             }
 
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){
+                //Solid Trend
+                $sap_connection_id = 1;
+            }
+
             if(@$request->sap_connection_id != ''){
-                $data->where('sap_connection_id',@$request->sap_connection_id);
+                $data->where('sap_connection_id',@$sap_connection_id);
             }
 
             $data = $data->get();
@@ -426,12 +432,15 @@ class CommonController extends Controller
                 $data->where('u_tires', 'like', '%' .$request->search . '%');
             }
 
-            $sap_connection_id = $request->sap_connection_id;
-            if($request->sap_connection_id == 5){ //Solid Trend
-                $sap_connection_id = 1;
-            }
 
             if(@$request->sap_connection_id != ''){
+                $sap_connection_id = $request->sap_connection_id;
+
+                if($request->sap_connection_id == 5){
+                    //Solid Trend
+                    $sap_connection_id = 1;
+                }
+
                 $data->where('sap_connection_id',@$sap_connection_id);
             }
 
