@@ -53,14 +53,19 @@ class LocalOrderController extends Controller
         $address = CustomerBpAddress::find($input['address_id']);
 
         if(!$customer->sap_connection_id){
-            return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
+            return $response = ['status'=>false,'message'=>"Oops! Customer not found in our database."];
         }
-        // dd($input);
+
+        $sap_connection_id = @$customer->sap_connection_id;
+        if($sap_connection_id == 5){ //Solid Trend
+            $sap_connection_id = 1;
+        }
+
         $rules = array(
                 'customer_id' => 'required',
                 'address_id' => 'required|string|max:185',
                 'due_date' => 'required',
-                'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@$customer->sap_connection_id,
+                'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.$sap_connection_id,
             );
 
         $messages = array(

@@ -46,12 +46,18 @@ class DraftOrderController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-        // dd($input);
+        
         $customer_id = Auth::user()->customer_id;
+
+        $sap_connection_id = @Auth::user()->customer->sap_connection_id;
+        if($sap_connection_id == 5){ //Solid Trend
+            $sap_connection_id = 1;
+        }
+
         $rules = array(
                 'address_id' => 'required|string|max:185',
                 'due_date' => 'required',
-                'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@Auth::user()->customer->sap_connection_id,
+                'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.$sap_connection_id,
             );
 
         $messages = array(
@@ -275,10 +281,15 @@ class DraftOrderController extends Controller
     function getProducts(Request $request){
         $search = $request->search;
 
+        $sap_connection_id = @Auth::user()->customer->sap_connection_id;
+        if($sap_connection_id == 5){ //Solid Trend
+            $sap_connection_id = 1;
+        }
+
         if($search == ''){
-            $data = Product::where(['is_active' => 1, 'sap_connection_id' => @Auth::user()->customer->sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
+            $data = Product::where(['is_active' => 1, 'sap_connection_id' => $sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
         }else{
-            $data = Product::where(['is_active' => 1, 'sap_connection_id' => @Auth::user()->customer->sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
+            $data = Product::where(['is_active' => 1, 'sap_connection_id' => $sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
         }
 
         $response = array();

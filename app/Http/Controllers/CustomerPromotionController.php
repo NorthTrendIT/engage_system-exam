@@ -43,6 +43,10 @@ class CustomerPromotionController extends Controller
 
             $where = array('is_active' => true);
 
+            if(@Auth::user()->sap_connection_id){
+                $where['sap_connection_id'] = @Auth::user()->sap_connection_id;
+            }
+
             $now = date("Y-m-d");
             // $now = "2021-12-24";
 
@@ -191,7 +195,13 @@ class CustomerPromotionController extends Controller
 
     public function show($id)
     {
-        $data = Promotions::where('is_active',true)->where('id',$id)->firstOrFail();
+        $where = array('is_active' => true);
+
+        if(@Auth::user()->sap_connection_id){
+            $where['sap_connection_id'] = @Auth::user()->sap_connection_id;
+        }
+
+        $data = Promotions::where($where)->where('id',$id)->firstOrFail();
 
         $now = date("Y-m-d");
         // $now = "2021-12-12";
@@ -307,6 +317,10 @@ class CustomerPromotionController extends Controller
     public function orderStore(Request $request){
 
         $input = $request->all();
+        if(@$request->total_amount < 1){
+            unset($input['total_amount']);
+            return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
+        }
 
         $rules = [];
         if(userrole() != 4){ // If its not a customer
