@@ -7,7 +7,7 @@
   $status = getOrderStatusByQuotation(@$data, true);
   $date_array = @$status['date_array'];
   $status = @$status['status'];
-  
+
 @endphp
 
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
@@ -23,7 +23,7 @@
         @if($status != "Cancelled")
         <a href="javascript:" class="btn btn-sm btn-primary sync-details mr-10">Sync Details</a>
         @endif
-        
+
         <a href="{{ route('orders.index') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
@@ -55,19 +55,19 @@
                           <!-- <div class="fw-bolder fs-3 text-gray-800 mb-8">Order</div> -->
                           <!--end::Label-->
 
-                          
+
 
                           <!--begin::Row-->
                           <div class="row g-5 mb-1">
                             <!--end::Col-->
                             <div class="col-md-12">
-                              
+
                               {!! view('customer-promotion.ajax.delivery-status',compact('status', 'date_array')) !!}
 
                             </div>
                             <!--end::Col-->
                           </div>
-                          
+
                           <!--begin::Row-->
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
@@ -171,7 +171,7 @@
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
-                                
+
                                 <span>{!! getOrderStatusBtnHtml($status) !!}</span>
 
                                 @if($status == "Pending")
@@ -208,7 +208,7 @@
                                 <tbody>
                                     @foreach($data->items as $value)
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
-                                        <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}</td>
+                                        <td class="d-flex align-items-center pt-6">{{ @$value->product->item_name ?? '-' }}</td>
                                         <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
                                         <td class="pt-6">₱ {{ number_format_value($value->price) }}</td>

@@ -48,6 +48,7 @@
                 <div class="col-md-3 mt-5">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectModule" data-hide-search="false" data-allow-clear="true" data-placeholder="Select customer by" name="module">
                         <option value=""></option>
+                        <option value="all">All</option>
                         <option value="brand">By brand</option>
                         <option value="customer_class">By class</option>
                         <option value="sales_specialist">By sales specialist</option>
@@ -220,7 +221,7 @@
           scrollCollapse: true,
           paging: true,
           fixedColumns:   {
-            left: 2,  
+            left: 2,
             right: 0
           },
           order: [],
@@ -234,13 +235,13 @@
                 filter_search : $filter_search,
                 filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
-                filter_customer : $filter_customer,
                 filter_company : $filter_company,
-                filter_brand : $filter_brand,
-                filter_class : $filter_class,
-                filter_sales_specialist : $filter_sales_specialist,
-                filter_market_sector : $filter_market_sector,
-                filter_territory : $filter_territory,
+                filter_customer : $filter_customer == 'all' ? '' : $filter_customer,
+                filter_brand : $filter_brand == 'all' ? '' : $filter_brand,
+                filter_class : $filter_class == 'all' ? '' : $filter_class,
+                filter_sales_specialist : $filter_sales_specialist == 'all' ? '' : $filter_sales_specialist,
+                filter_market_sector : $filter_market_sector == 'all' ? '' : $filter_market_sector,
+                filter_territory : $filter_territory == 'all' ? '' : $filter_territory,
               }
           },
           columns: [
@@ -469,9 +470,13 @@
                   };
               },
               processResults: function (response) {
-                  return {
-                      results: response
-                  };
+                    $options = [{ id: 'all', text: 'All'}];
+                    response.forEach(function(value, key) {
+                        $options.push(value);
+                    })
+                    return {
+                        results: $options
+                    };
               },
               cache: true
           },
@@ -495,9 +500,13 @@
                   };
               },
               processResults: function (response) {
-                  return {
-                      results: response
-                  };
+                    $options = [{ id: 'all', text: 'All'}];
+                    response.forEach(function(value, key) {
+                        $options.push(value);
+                    })
+                    return {
+                        results: $options
+                    };
               },
               cache: true
           },
@@ -521,9 +530,13 @@
                   };
               },
               processResults: function (response) {
-                  return {
-                      results: response
-                  };
+                    $options = [{ id: 'all', text: 'All'}];
+                    response.forEach(function(value, key) {
+                        $options.push(value);
+                    })
+                    return {
+                        results: $options
+                    };
               },
               cache: true
           },
@@ -547,9 +560,13 @@
                   };
               },
               processResults: function (response) {
-                  return {
-                      results: response
-                  };
+                    $options = [{ id: 'all', text: 'All'}];
+                    response.forEach(function(value, key) {
+                        $options.push(value);
+                    })
+                    return {
+                        results: $options
+                    };
               },
               cache: true
           },
@@ -573,9 +590,13 @@
                   };
               },
               processResults: function (response) {
-                  return {
-                      results: response
-                  };
+                    $options = [{ id: 'all', text: 'All'}];
+                    response.forEach(function(value, key) {
+                        $options.push(value);
+                    })
+                    return {
+                        results: $options
+                    };
               },
               cache: true
           },

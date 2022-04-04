@@ -18,6 +18,7 @@ class SAPOrderPost
 	protected $headers;
 
     protected $sap_connection_id;
+    protected $real_sap_connection_id;
 
 	protected $database;
 	protected $username;
@@ -34,6 +35,11 @@ class SAPOrderPost
         $this->httpClient = new Client();
 
         $this->sap_connection_id = $sap_connection_id;
+        if($sap_connection_id == 5){
+            $this->real_sap_connection_id = $sap_connection_id;
+        } else {
+            $this->real_sap_connection_id = $sap_connection_id;
+        }
     }
 
     public function requestSapApi($url = '/b1s/v1/Quotations', $method = "POST", $body = ""){
@@ -112,7 +118,9 @@ class SAPOrderPost
                         'created_at' => $data['CreationDate'],
                         'updated_at' => $data['UpdateDate'],
                         'last_sync_at' => current_datetime(),
+
                         'sap_connection_id' => $this->sap_connection_id,
+                        'real_sap_connection_id' => $this->real_sap_connection_id,
                     );
 
             $obj = Quotation::updateOrCreate([
@@ -151,6 +159,7 @@ class SAPOrderPost
                         //'response' => json_encode($item),
 
                         'sap_connection_id' => $this->sap_connection_id,
+                        'real_sap_connection_id' => $this->real_sap_connection_id,
                     );
 
                     $item_obj = QuotationItem::updateOrCreate([

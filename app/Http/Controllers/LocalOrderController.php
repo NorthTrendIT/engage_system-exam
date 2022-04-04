@@ -231,6 +231,13 @@ class LocalOrderController extends Controller
                                 return getOrderStatusBtnHtml("Error");
                             }
                         })
+                        ->addColumn('order_status', function($row) {
+                            if(!empty($row->doc_entry)){
+                                return getOrderStatusBtnHtml(getOrderStatusByQuotation(@$row->quotation));
+                            } else {
+                                return "<b>-</b>";
+                            }
+                        })
                         ->addColumn('total', function($row) {
                             return '<b>₱ '. number_format_value($row->total).'</b>';
                         })
@@ -258,7 +265,7 @@ class LocalOrderController extends Controller
                             }
                             return $btn;
                         })
-                        ->rawColumns(['action', 'confirmation_status', 'total'])
+                        ->rawColumns(['action', 'confirmation_status', 'total', 'order_status'])
                         ->make(true);
     }
 
