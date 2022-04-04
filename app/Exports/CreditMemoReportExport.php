@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class OverdueSalesInvoiceReportExport implements FromCollection,WithHeadings,WithTitle,ShouldAutoSize
+class CreditMemoReportExport implements FromCollection,WithHeadings,WithTitle,ShouldAutoSize
 {
     protected $records;
 
@@ -27,16 +27,16 @@ class OverdueSalesInvoiceReportExport implements FromCollection,WithHeadings,Wit
     {
         return [
             'No.',
-            'Business Unit',
-            'Invoice #',
+            'Customer Code',
             'Customer Name',
-            'Total',
-            'Created Date',
+            'Business Unit',
+            'Open Amount',
+            'Used Amount',
         ];
     }
 
     public function title(): string
     {
-        return "Overdue Sales Invoice Report";
+        return "Credit Memo Report";
     }
 }

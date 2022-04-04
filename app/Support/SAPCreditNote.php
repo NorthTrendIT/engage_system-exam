@@ -92,6 +92,7 @@ class SAPCreditNote
             $latestData = CreditNote::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
                 $url = '/b1s/v1/CreditNotes?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
+                // $url = '/b1s/v1/CreditNotes?$filter=DocEntry eq 17855';
                 $response = $this->getCreditNoteData($url);
             } else {
                 $response = $this->getCreditNoteData();

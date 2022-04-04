@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddBaseEntryInQuotationsTable extends Migration
+class AddUClassInCreditNotesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddBaseEntryInQuotationsTable extends Migration
      */
     public function up()
     {
-        Schema::table('quotations', function (Blueprint $table) {
-            $table->unsignedBigInteger('base_entry')->after('id')->nullable()->index();
+        Schema::table('credit_notes', function (Blueprint $table) {
+            $table->string('u_class')->nullable();
         });
     }
 
@@ -25,7 +25,7 @@ class AddBaseEntryInQuotationsTable extends Migration
      */
     public function down()
     {
-        Schema::table('quotations', function (Blueprint $table) {
+        Schema::table('credit_notes', function (Blueprint $table) {
             //
         });
     }

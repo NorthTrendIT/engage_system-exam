@@ -16,7 +16,7 @@ class CreateQuotationItemsTable extends Migration
         Schema::create('quotation_items', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('quotation_id');
-            $table->integer('line_num');
+            $table->integer('line_num')->index();
             $table->string('item_code')->nullable();
             $table->string('item_description')->nullable();
             $table->double('quantity', 10, 3);

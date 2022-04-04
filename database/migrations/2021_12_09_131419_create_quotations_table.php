@@ -15,13 +15,13 @@ class CreateQuotationsTable extends Migration
     {
         Schema::create('quotations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('doc_entry');
-            $table->unsignedBigInteger('doc_num');
+            $table->unsignedBigInteger('doc_entry')->index();
+            $table->unsignedBigInteger('doc_num')->index();
             $table->string('doc_type');
             $table->string('document_status', 64)->nullable();
             $table->date('doc_date')->nullable();
             $table->date('doc_due_date')->nullable();
-            $table->string('card_code');
+            $table->string('card_code')->index();
             $table->string('card_name');
             $table->string('address')->nullable();
             $table->double('doc_total', 10, 3)->default(0.0);

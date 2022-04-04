@@ -82,6 +82,7 @@ class StoreCreditNote implements ShouldQueue
                             'updated_at' => $value['UpdateDate'],
                             'document_status' => $value['DocumentStatus'],
                             'comments' => $value['Comments'],
+                            'u_class' => $value['U_CLASS'],
 
                             'updated_date' => $value['UpdateDate'],
                             'last_sync_at' => current_datetime(),
@@ -104,28 +105,28 @@ class StoreCreditNote implements ShouldQueue
 
                     $items = @$value['DocumentLines'];
 
-                    foreach($items as $item){
+                    foreach($items as $d_item){
                         $item = array(
                             'credit_note_id' => $obj->id,
-                            'line_num' => @$item['LineNum'],
-                            'item_code' => @$item['ItemCode'],
-                            'item_description' => @$item['ItemDescription'],
-                            'quantity' => @$item['Quantity'],
-                            'ship_date' => @$item['ShipDate'],
-                            'price' => @$item['Price'],
-                            'price_after_vat' => @$item['PriceAfterVAT'],
-                            'currency' => @$item['Currency'],
-                            'rate' => @$item['Rate'],
-                            'discount_percent' => @$item['DiscountPercent'] != null ? @$item['DiscountPercent'] : 0.0,
-                            'werehouse_code' => @$item['WarehouseCode'],
-                            'sales_person_code' => @$item['SalesPersonCode'],
-                            'gross_price' => @$item['GrossPrice'],
-                            'gross_total' => @$item['GrossTotal'],
-                            'gross_total_fc' => @$item['GrossTotalFC'],
-                            'gross_total_sc' => @$item['GRossTotalSC'] != null ? @$item['GRossTotalSC'] : 0.0,
-                            'ncm_code' => @$item['NCMCode'],
-                            'ship_to_code' => @$item['ShipToCode'],
-                            'ship_to_description' => @$item['ShipToDescription'],
+                            'line_num' => @$d_item['LineNum'],
+                            'item_code' => @$d_item['ItemCode'],
+                            'item_description' => @$d_item['ItemDescription'],
+                            'quantity' => @$d_item['Quantity'],
+                            'ship_date' => @$d_item['ShipDate'],
+                            'price' => @$d_item['Price'],
+                            'price_after_vat' => @$d_item['PriceAfterVAT'],
+                            'currency' => @$d_item['Currency'],
+                            'rate' => @$d_item['Rate'],
+                            'discount_percent' => @$d_item['DiscountPercent'] != null ? @$d_item['DiscountPercent'] : 0.0,
+                            'werehouse_code' => @$d_item['WarehouseCode'],
+                            'sales_person_code' => @$d_item['SalesPersonCode'],
+                            'gross_price' => @$d_item['GrossPrice'],
+                            'gross_total' => @$d_item['GrossTotal'],
+                            'gross_total_fc' => @$d_item['GrossTotalFC'],
+                            'gross_total_sc' => @$d_item['GRossTotalSC'] != null ? @$d_item['GRossTotalSC'] : 0.0,
+                            'ncm_code' => @$d_item['NCMCode'],
+                            'ship_to_code' => @$d_item['ShipToCode'],
+                            'ship_to_description' => @$d_item['ShipToDescription'],
 
                             'sap_connection_id' => $this->sap_connection_id,
                             'real_sap_connection_id' => $this->real_sap_connection_id,
@@ -133,13 +134,13 @@ class StoreCreditNote implements ShouldQueue
 
                         $item_obj = CreditNoteItem::updateOrCreate([
                                         'credit_note_id' => $obj->id,
-                                        'item_code' => @$item['ItemCode'],
+                                        'item_code' => @$d_item['ItemCode'],
                                     ],
                                     $item
                                 );
 
-                        if(!is_null(@$item['BaseEntry'])){
-                            $obj->base_entry = @$item['BaseEntry'];
+                        if(!is_null(@$d_item['BaseEntry'])){
+                            $obj->base_entry = @$d_item['BaseEntry'];
                             $obj->save();
                         }
                     }

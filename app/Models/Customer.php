@@ -105,4 +105,14 @@ class Customer extends Model
     {
         return $this->belongsTo(SapConnection::class,'sap_connection_id');
     }
+
+
+    public function credit_memo_reports(){
+        return $this->hasMany(CreditNote::class, ['card_code', 'sap_connection_id'], ['card_code', 'sap_connection_id'])->where('doc_type', 'dDocument_Service')->where('document_status', 'bost_Open')->where('doc_total', '>', 0);
+    }
+
+
+    public function debit_memo_reports(){
+        return $this->hasMany(CreditNote::class, ['card_code', 'sap_connection_id'], ['card_code', 'sap_connection_id'])->where('doc_type', 'dDocument_Service')->where('document_status', 'bost_Open')->where('doc_total', '<', 0);
+    }
 }
