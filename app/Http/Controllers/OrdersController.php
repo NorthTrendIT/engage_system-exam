@@ -343,6 +343,15 @@ class OrdersController extends Controller
         }
 
 
+        if($request->filter_order_type != ""){
+            if($request->filter_order_type == "Standard"){
+                $data->whereNull('customer_promotion_id');
+            }elseif($request->filter_order_type == "Promotion"){
+                $data->whereNotNull('customer_promotion_id');
+            }
+        }
+
+
         if($request->filter_date_range != ""){
             $date = explode(" - ", $request->filter_date_range);
             $start = date("Y-m-d", strtotime($date[0]));
@@ -883,7 +892,14 @@ class OrdersController extends Controller
             $data->whereDate('doc_date', '<=' , $end);
         }
 
-
+        if(@$filter->filter_order_type != ""){
+            if(@$filter->filter_order_type == "Standard"){
+                $data->whereNull('customer_promotion_id');
+            }elseif(@$filter->filter_order_type == "Promotion"){
+                $data->whereNotNull('customer_promotion_id');
+            }
+        }
+        
         $data = $data->get();
 
         $records = array();

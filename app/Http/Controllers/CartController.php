@@ -220,7 +220,7 @@ class CartController extends Controller
 
     public function placeOrder(Request $request){
         if(!@Auth::user()->customer->sap_connection_id){
-            return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
+            return $response = ['status'=>false,'message'=>"Oops! Customer not found in our database."];
         }
 
         $data = $request->all();

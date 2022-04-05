@@ -190,6 +190,7 @@
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">total</span>
                                             </div>
                                             <div class="col-md-6 mb-3">
+                                                <input type="hidden" name="total_amount" @if(isset($edit)) value="{{ $edit->total }}" @else value="0" @endif>
                                                 <span style="text-align: right; width: 100%;" class="d-block text-primary price grandTotal">@if(isset($edit)) ₱ {{ $edit->total }} @else ₱ 0.00 @endif</span>
                                             </div>
                                         </div>
@@ -253,7 +254,7 @@
                     return {
                         _token: "{{ csrf_token() }}",
                         filter_search: params.term,
-                        customer_id: $('[name="customer_id"]').val(),
+                        customer_id: $('[name="customer_id"]').find('option:selected').val(),
                         product_ids: product_ids,
                     };
                 },
@@ -659,7 +660,7 @@
             }
             $(this).parent().parent().find('td .amount').html('₱ '+ number_format($amount.toFixed(2)));
 
-            $grandTotal = 0;
+            /*$grandTotal = 0;
             $("tr[name='items']").each(function(){
                 $subPrice = parseFloat($(this).find('.quantity').data('price'));
                 $subQty = parseFloat($(this).find('.quantity').val());
@@ -669,12 +670,30 @@
             });
 
             $('.subTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
-            $('.grandTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
+            $('.grandTotal').html('₱ '+number_format($grandTotal.toFixed(2)));*/
+
+            calculateTotalAmount();
         });
 
         @if(isset($edit))
             $("input[type=number]").first().trigger('change');
         @endif
+
+        function calculateTotalAmount() {
+            $grandTotal = 0;
+            $(".quantity").each(function(){
+                $subPrice = parseFloat($(this).attr('data-price'));
+                $subQty = parseFloat($(this).val());
+
+                if(!isNaN($subQty) && $subQty != "" && $subQty > 0){
+                    $grandTotal += $subPrice * $subQty;
+                }
+            });
+
+            $('.subTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
+            $('.grandTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
+            $('[name="total_amount"]').val($grandTotal.toFixed(2));
+        }
     });
 
 </script>
