@@ -343,6 +343,15 @@ class OrdersController extends Controller
         }
 
 
+        if($request->filter_order_type != ""){
+            if($request->filter_order_type == "Standard"){
+                $data->whereNull('customer_promotion_id');
+            }elseif($request->filter_order_type == "Promotion"){
+                $data->whereNotNull('customer_promotion_id');
+            }
+        }
+
+
         if($request->filter_date_range != ""){
             $date = explode(" - ", $request->filter_date_range);
             $start = date("Y-m-d", strtotime($date[0]));
@@ -380,6 +389,14 @@ class OrdersController extends Controller
                             ->addColumn('company', function($row) {
                                 return @$row->sap_connection->company_name ?? "-";
                             })
+                            ->addColumn('order_type', function($row) {
+                                $type = "Standard";
+                                if(!is_null($row->customer_promotion_id)){
+                                    $type = "Promotion";
+                                }
+
+                                return $type;
+                            })
                             ->addColumn('action', function($row){
                                 $btn = '<a href="' . route('orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm mr-10">
                                             <i class="fa fa-eye"></i>
@@ -412,7 +429,7 @@ class OrdersController extends Controller
                             ->orderColumn('company', function ($query, $order) {
                                 $query->join('sap_connections', 'quotations.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
-                            ->rawColumns(['action','status'])
+                            ->rawColumns(['action', 'status', 'order_type'])
                             ->make(true);
     }
 
@@ -875,15 +892,29 @@ class OrdersController extends Controller
             $data->whereDate('doc_date', '<=' , $end);
         }
 
-
+        if(@$filter->filter_order_type != ""){
+            if(@$filter->filter_order_type == "Standard"){
+                $data->whereNull('customer_promotion_id');
+            }elseif(@$filter->filter_order_type == "Promotion"){
+                $data->whereNotNull('customer_promotion_id');
+            }
+        }
+        
         $data = $data->get();
 
         $records = array();
         foreach($data as $key => $value){
+
+            $type = "Standard";
+            if(!is_null($value->customer_promotion_id)){
+                $type = "Promotion";
+            }
+                                
             $records[] = array(
                             'no' => $key + 1,
                             'company' => @$value->sap_connection->company_name ?? "-",
                             'doc_entry' => $value->doc_entry ?? "-",
+                            'type' => $type,
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
                             'doc_total' => number_format_value($value->doc_total),
                             'created_at' => date('M d, Y',strtotime($value->doc_date)),

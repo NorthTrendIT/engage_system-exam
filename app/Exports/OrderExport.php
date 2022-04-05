@@ -29,6 +29,7 @@ class OrderExport implements FromCollection,WithHeadings,WithTitle,ShouldAutoSiz
             'No.',
             'Business Unit',
             'Order #',
+            'Order Type',
             'Customer Name',
             'Total',
             'Created Date',

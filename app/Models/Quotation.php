@@ -68,4 +68,8 @@ class Quotation extends Model
     public function sap_connection(){
         return $this->belongsTo(SapConnection::class,'sap_connection_id');
     }
+
+    public function customer_promotion(){
+        return $this->belongsTo(CustomerPromotion::class,'customer_promotion_id');
+    }
 }

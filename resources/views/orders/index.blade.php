@@ -110,6 +110,15 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_order_type" data-control="select2" data-hide-search="false" data-placeholder="Select order type" data-allow-clear="true">
+                    <option value=""></option>
+                    <option value="Standard">Standard</option>
+                    <option value="Promotion">Promotion</option>
+                  </select>
+                </div>
+
+
+                <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
                     <span>
@@ -149,6 +158,7 @@
                               @if(userrole() != 4)
                               <th>Customer Name</th>
                               @endif
+                              <th>Order Type</th>
                               @if(in_array(userrole(),[1]))
                               <th>Business Unit</th>
                               @endif
@@ -204,6 +214,7 @@
       $filter_search = $('[name="filter_search"]').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_order_type = $('[name="filter_order_type"]').find('option:selected').val();
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
@@ -238,6 +249,7 @@
                 filter_search : $filter_search,
                 filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
+                filter_order_type : $filter_order_type,
                 filter_company : $filter_company,
                 filter_customer : $filter_customer == 'all' ? '' : $filter_customer,
                 filter_brand : $filter_brand == 'all' ? '' : $filter_brand,
@@ -253,6 +265,7 @@
               @if(userrole() != 4)
               {data: 'name', name: 'name'},
               @endif
+              {data: 'order_type', name: 'order_type', orderable:false},
               @if(in_array(userrole(),[1]))
               {data: 'company', name: 'company'},
               @endif
@@ -398,6 +411,7 @@
             data.filter_search = $('[name="filter_search"]').val();
             data.filter_date_range = $('[name="filter_date_range"]').val();
             data.filter_status = $('[name="filter_status"]').find('option:selected').val();
+            data.filter_order_type = $('[name="filter_order_type"]').find('option:selected').val();
             data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
             data.filter_company = $('[name="filter_company"]').find('option:selected').val();
             data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();

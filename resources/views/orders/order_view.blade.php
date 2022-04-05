@@ -69,6 +69,8 @@
                           </div>
 
                           <!--begin::Row-->
+
+
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
                             <div class="col-sm-5">
@@ -152,6 +154,46 @@
                           </div>
                           <!--end::Row-->
 
+
+                          <div class="row g-5 mb-11">
+                            
+
+                            @if(!is_null($data->customer_promotion_id))
+                            <!--end::Col-->
+                            <div class="col-sm-5">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Promotion Title:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer_promotion->promotion->title ?? '-' }}</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+
+                            <!--end::Col-->
+                            <div class="col-sm-5">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Promotion Code:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer_promotion->promotion->code ?? '-' }}</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+                            @endif
+
+                            <!--end::Col-->
+                            <div class="col-sm-2">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Order Type:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ (!is_null($data->customer_promotion_id)) ? "Standard" : "Promotion" }}</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+                            
+                          </div>
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
                             <div class="col-sm-7">

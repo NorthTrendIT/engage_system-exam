@@ -80,7 +80,7 @@ class TerritorySalesSpecialistController extends Controller
                 TerritorySalesSpecialist::where('user_id', $input['id'])->delete();
             }
 
-            $user = User::where('id', $input['sales_specialist_id'])->where('role_id', 2)->first();
+            $user = User::where('id', $input['sales_specialist_id'])->where('is_active', 1)->where('role_id', 2)->first();
 
             if($user){
                 
@@ -138,7 +138,7 @@ class TerritorySalesSpecialistController extends Controller
      */
     public function edit($id)
     {
-        $edit = User::where('id', $id)->where('role_id', 2)->firstOrFail();
+        $edit = User::where('id', $id)->where('role_id', 2)->where('is_active', 1)->firstOrFail();
 
         return view('territory-sales-specialist.add',compact('edit'));
     }
@@ -163,7 +163,7 @@ class TerritorySalesSpecialistController extends Controller
      */
     public function destroy($id)
     {
-        $user = User::where('id', $id)->where('role_id', 2)->firstOrFail();
+        $user = User::where('id', $id)->where('role_id', 2)->where('is_active', 1)->firstOrFail();
         if(!is_null($user)){
             TerritorySalesSpecialist::where('user_id', $user->id)->delete();
 

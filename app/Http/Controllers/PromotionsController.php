@@ -525,9 +525,9 @@ class PromotionsController extends Controller
         $search = $request->search;
 
         if($search == ''){
-            $data = Product::orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
+            $data = Product::where('is_active', true)->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
         }else{
-            $data = Product::orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
+            $data = Product::where('is_active', true)->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
         }
 
         $response = array();
@@ -619,7 +619,7 @@ class PromotionsController extends Controller
     public function getSalesSpecialist(Request $request){
         $search = $request->search;
 
-        $data = User::orderby('sales_specialist_name','asc')->where('role_id',2)->select('id','sales_specialist_name');
+        $data = User::orderby('sales_specialist_name','asc')->where('is_active', 1)->where('role_id',2)->select('id','sales_specialist_name');
         if($search != ''){
             $data->where('sales_specialist_name', 'like', '%' .$search . '%');
         }
@@ -723,6 +723,8 @@ class PromotionsController extends Controller
             $data->where('sap_connection_id',@$sap_connection_id);
         }
 
+        $data->whereNotIn('group_name', ['Items', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT']);
+        
         $data = $data->limit(50)->get();
 
         return response()->json($data);

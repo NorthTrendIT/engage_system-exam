@@ -49,6 +49,11 @@ class LocalOrderController extends Controller
     {
         $input = $request->all();
 
+        if(@$request->total_amount < 1){
+            unset($input['total_amount']);
+            return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
+        }
+        
         $customer = Customer::find($input['customer_id']);
         $address = CustomerBpAddress::find($input['address_id']);
 

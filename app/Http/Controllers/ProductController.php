@@ -279,6 +279,10 @@ class ProductController extends Controller
       $q->orderBy('created_date', 'desc');
     });
 
+    $data->whereHas('group', function($q){
+      $q->whereNotIn('group_name', ['Items', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT']);
+    });
+
     return DataTables::of($data)
                           ->addIndexColumn()
                           ->addColumn('item_name', function($row) {
@@ -940,6 +944,8 @@ class ProductController extends Controller
 
       $data = ProductGroup::where('sap_connection_id', $sap_connection_id)->orderby('group_name')->limit(50);
 
+      $data->whereNotIn('group_name', ['Items', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT']);
+
       if(@$request->search  != ''){
         $data->where('group_name', 'like', '%' .$request->search . '%');
       }
@@ -960,7 +966,7 @@ class ProductController extends Controller
         $sap_connection_id = 1;
       }
 
-      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_tires')->orderby('u_tires')->limit(50);
+      $data = Product::where('is_active', true)->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_tires')->orderby('u_tires')->limit(50);
 
       if(@$request->search  != ''){
         $data->where('u_tires', 'like', '%' .$request->search . '%');
@@ -983,7 +989,7 @@ class ProductController extends Controller
         $sap_connection_id = 1;
       }
 
-      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_item_line')->orderby('u_item_line')->limit(50);
+      $data = Product::where('is_active', true)->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_item_line')->orderby('u_item_line')->limit(50);
 
       if(@$request->search  != ''){
         $data->where('u_item_line', 'like', '%' .$request->search . '%');
@@ -1006,7 +1012,7 @@ class ProductController extends Controller
         $sap_connection_id = 1;
       }
 
-      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('item_class')->orderby('item_class')->limit(50);
+      $data = Product::where('is_active', true)->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('item_class')->orderby('item_class')->limit(50);
 
       if(@$request->search  != ''){
         $data->where('item_class', 'like', '%' .$request->search . '%');
@@ -1029,7 +1035,7 @@ class ProductController extends Controller
         $sap_connection_id = 1;
       }
 
-      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_item_type')->orderby('u_item_type')->limit(50);
+      $data = Product::where('is_active', true)->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_item_type')->orderby('u_item_type')->limit(50);
 
       if(@$request->search  != ''){
         $data->where('u_item_type', 'like', '%' .$request->search . '%');
@@ -1052,7 +1058,7 @@ class ProductController extends Controller
         $sap_connection_id = 1;
       }
 
-      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_item_application')->orderby('u_item_application')->limit(50);
+      $data = Product::where('is_active', true)->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_item_application')->orderby('u_item_application')->limit(50);
 
       if(@$request->search  != ''){
         $data->where('u_item_application', 'like', '%' .$request->search . '%');
@@ -1075,7 +1081,7 @@ class ProductController extends Controller
         $sap_connection_id = 1;
       }
 
-      $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_pattern2')->orderby('u_pattern2')->limit(50);
+      $data = Product::where('is_active', true)->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_pattern2')->orderby('u_pattern2')->limit(50);
 
       if(@$request->search  != ''){
         $data->where('u_pattern2', 'like', '%' .$request->search . '%');

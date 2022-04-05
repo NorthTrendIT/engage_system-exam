@@ -324,6 +324,8 @@ class CommonController extends Controller
                 $data->where('sap_connection_id',@$sap_connection_id);
             }
 
+            $data->whereNotIn('group_name', ['Items', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT']);
+            
             $data = $data->get();
 
             foreach($data as $value){
@@ -426,7 +428,7 @@ class CommonController extends Controller
     public function getProductCategory(Request $request){
         $response = array();
         if($request->sap_connection_id != "" && @$request->items_group_code != ""){
-            $data = Product::select('items_group_code', 'u_tires')->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_tires')->orderby('u_tires')->limit(50);
+            $data = Product::where('is_active', true)->select('items_group_code', 'u_tires')->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_tires')->orderby('u_tires')->limit(50);
 
             if(@$request->search  != ''){
                 $data->where('u_tires', 'like', '%' .$request->search . '%');
@@ -463,7 +465,7 @@ class CommonController extends Controller
         $response = array();
 
         if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
-            $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_line')->orderby('u_item_line')->limit(50);
+            $data = Product::where('is_active', true)->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_line')->orderby('u_item_line')->limit(50);
 
             if(@$request->search  != ''){
                 $data->where('u_item_line', 'like', '%' .$request->search . '%');
@@ -496,7 +498,7 @@ class CommonController extends Controller
         $response = array();
 
         if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
-            $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('item_class')->orderby('item_class')->limit(50);
+            $data = Product::where('is_active', true)->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('item_class')->orderby('item_class')->limit(50);
 
             if(@$request->search  != ''){
                 $data->where('item_class', 'like', '%' .$request->search . '%');
@@ -529,7 +531,7 @@ class CommonController extends Controller
         $response = array();
 
         if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
-            $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_type')->orderby('u_item_type')->limit(50);
+            $data = Product::where('is_active', true)->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_type')->orderby('u_item_type')->limit(50);
 
             if(@$request->search  != ''){
                 $data->where('u_item_type', 'like', '%' .$request->search . '%');
@@ -562,7 +564,7 @@ class CommonController extends Controller
         $response = array();
 
         if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
-            $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_application')->orderby('u_item_application')->limit(50);
+            $data = Product::where('is_active', true)->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_item_application')->orderby('u_item_application')->limit(50);
 
             if(@$request->search  != ''){
                 $data->where('u_item_application', 'like', '%' .$request->search . '%');
@@ -595,7 +597,7 @@ class CommonController extends Controller
         $response = array();
 
         if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
-            $data = Product::where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_pattern2')->orderby('u_pattern2')->limit(50);
+            $data = Product::where('is_active', true)->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_pattern2')->orderby('u_pattern2')->limit(50);
 
             if(@$request->search  != ''){
                 $data->where('u_pattern2', 'like', '%' .$request->search . '%');

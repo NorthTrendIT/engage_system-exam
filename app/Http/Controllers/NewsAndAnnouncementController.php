@@ -650,6 +650,8 @@ class NewsAndAnnouncementController extends Controller
                 $data->where('group_name', 'like', '%' .$search . '%');
             }
 
+            $data->whereNotIn('group_name', ['Items', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT']);
+            
             $data = $data->get();
 
             foreach($data as $value){

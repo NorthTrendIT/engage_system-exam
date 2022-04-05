@@ -373,7 +373,7 @@ class CustomersSalesSpecialistsController extends Controller
 
             $data = User::where('sap_connection_id', $sap_connection_id)
                             ->where('role_id',2)
-                            ->where('is_active',1)
+                            ->where('is_active', 1)
                             ->orderby('sales_specialist_name','asc')
                             ->select('id','sales_specialist_name')
                             ->limit(50);
@@ -448,6 +448,8 @@ class CustomersSalesSpecialistsController extends Controller
                 $data->where('group_name', 'like', '%' .$search . '%');
             }
 
+            $data->whereNotIn('group_name', ['Items', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT']);
+            
             $data = $data->get();
 
             foreach($data as $value){

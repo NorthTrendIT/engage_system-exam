@@ -274,7 +274,7 @@
                   <div class="col-md-4">
                     <div class="form-group">
                       <label>Total Amount</label>
-                      <input name="total_amount" type="number" class="form-control form-control-solid total_amount" readonly="" disabled="">
+                      <input name="total_amount" type="number" class="form-control form-control-solid total_amount" readonly="">
                     </div>
                   </div>
                 </div>

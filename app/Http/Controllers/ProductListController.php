@@ -471,7 +471,7 @@ class ProductListController extends Controller
             $sap_connection_id = @Auth::user()->sap_connection_id;
             $customer_price_list_no = @Auth::user()->customer->price_list_num;
 
-        }elseif (!is_null(@Auth::user()->created_by) || isset($request->customer_id)) {
+        }elseif (!is_null(@Auth::user()->created_by) || (isset($request->customer_id) && !empty($request->customer_id)) ) {
 
             if(@$request->customer_id){
                 $where = array(
@@ -497,7 +497,6 @@ class ProductListController extends Controller
             $sap_connection_id = @Auth::user()->sap_connection_id;
 
         }
-
 
         if($sap_connection_id == 5){ //Solid Trend
             $sap_connection_id = 1;
