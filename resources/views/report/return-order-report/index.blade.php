@@ -94,7 +94,7 @@
                           <thead>
                             <tr>
                               <th>No</th>
-                              <th>#</th>
+                              <th>Doc #</th>
                               <th>Customer Code</th>
                               <th>Customer Name</th>
                               <th>Business Unit</th>

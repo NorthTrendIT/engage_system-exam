@@ -27,7 +27,7 @@ class ReturnOrderReportExport implements FromCollection,WithHeadings,WithTitle,S
     {
         return [
             'No.',
-            '#',
+            'Doc #',
             'Customer Code',
             'Customer Name',
             'Business Unit',
