@@ -144,7 +144,7 @@ class CreditMemoReportController extends Controller
         }
 
         if(@$request->filter_company != ""){
-            $data->where('sap_connection_id',$request->filter_company);
+            $data->where('sap_connection_id', $request->filter_company);
         }
 
         return $data;

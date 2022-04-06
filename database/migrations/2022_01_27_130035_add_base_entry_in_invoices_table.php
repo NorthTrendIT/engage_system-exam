@@ -14,7 +14,7 @@ class AddBaseEntryInInvoicesTable extends Migration
     public function up()
     {
         Schema::table('invoices', function (Blueprint $table) {
-            $table->unsignedBigInteger('base_entry')->after('id')->nullable();
+            $table->unsignedBigInteger('base_entry')->after('id')->nullable()->index();
         });
     }
 

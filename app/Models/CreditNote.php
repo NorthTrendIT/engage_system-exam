@@ -51,7 +51,7 @@ class CreditNote extends Model
 
 
     public function items(){
-        return $this->hasMany(InvoiceItem::class, 'invoice_id', 'id');
+        return $this->hasMany(CreditNoteItem::class, 'credit_note_id', 'id');
     }
 
     public function customer(){
@@ -60,6 +60,10 @@ class CreditNote extends Model
 
     public function sales_specialist(){
         return $this->belongsTo(User::class, ['sales_person_code','sap_connection_id'], ['sales_employee_code', 'sap_connection_id']);
+    }
+
+    public function invoice(){
+        return $this->hasOne(Invoice::class, ['doc_entry', 'sap_connection_id'], ['base_entry', 'sap_connection_id']);
     }
 
     public function sap_connection(){

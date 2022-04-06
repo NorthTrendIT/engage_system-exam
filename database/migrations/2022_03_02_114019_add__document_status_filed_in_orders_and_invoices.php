@@ -14,11 +14,11 @@ class AddDocumentStatusFiledInOrdersAndInvoices extends Migration
     public function up()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->string('document_status')->nullable();
+            $table->string('document_status')->nullable()->index();
         });
 
         Schema::table('invoices', function (Blueprint $table) {
-            $table->string('document_status')->nullable();
+            $table->string('document_status')->nullable()->index();
         });
     }
 
