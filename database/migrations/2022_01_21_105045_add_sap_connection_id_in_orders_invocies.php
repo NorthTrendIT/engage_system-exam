@@ -14,11 +14,11 @@ class AddSapConnectionIdInOrdersInvocies extends Migration
     public function up()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->unsignedBigInteger('sap_connection_id')->nullable();
+            $table->unsignedBigInteger('sap_connection_id')->nullable()->index();
         });
 
         Schema::table('invoices', function (Blueprint $table) {
-            $table->unsignedBigInteger('sap_connection_id')->nullable();
+            $table->unsignedBigInteger('sap_connection_id')->nullable()->index();
         });
     }
 

@@ -445,6 +445,10 @@ Route::middleware(['auth'])->group(function(){
             Route::resource('debit-memo-report','DebitMemoReportController')->only('index');
             Route::post('debit-memo-report/get-all', 'DebitMemoReportController@getAll')->name('debit-memo-report.get-all');
             Route::get('debit-memo-report/export', 'DebitMemoReportController@export')->name('debit-memo-report.export');
+
+            Route::resource('return-order-report','ReturnOrderReportController')->only('index');
+            Route::post('return-order-report/get-all', 'ReturnOrderReportController@getAll')->name('return-order-report.get-all');
+            Route::get('return-order-report/export', 'ReturnOrderReportController@export')->name('return-order-report.export');
         });
 
     });

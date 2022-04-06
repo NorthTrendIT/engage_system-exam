@@ -14,7 +14,7 @@ class AddUSostatInInvoicesTable extends Migration
     public function up()
     {
         Schema::table('invoices', function (Blueprint $table) {
-            $table->string('u_sostat')->after('u_posotime')->nullable();
+            $table->string('u_sostat')->after('u_posotime')->nullable()->index();
         });
     }
 
