@@ -409,8 +409,10 @@ Route::middleware(['auth'])->group(function(){
         // Report
         Route::resource('report', 'App\Http\Controllers\ReportController');
         Route::prefix('reports')->namespace('App\Http\Controllers\Reports')->name('reports.')->group(function(){
+
             Route::resource('sales-report','SalesReportController')->only('index');
             Route::post('sales-report/get-all', 'SalesReportController@getAll')->name('sales-report.get-all');
+            Route::get('sales-report/export', 'SalesReportController@export')->name('sales-report.export');
 
             Route::resource('promotion-report', 'PromotionReportController')->only('index');
             Route::post('promotion-report/get-all', 'PromotionReportController@getAll')->name('promotion-report.get-all');
