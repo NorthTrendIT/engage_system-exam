@@ -225,6 +225,8 @@ class SAPOrders
                                 'ncm_code' => @$value['NCMCode'],
                                 'ship_to_code' => @$value['ShipToCode'],
                                 'ship_to_description' => @$value['ShipToDescription'],
+                                'open_amount' => @$value['OpenAmount'],
+                                'remaining_open_quantity' => @$value['RemainingOpenQuantity'],
                                 //'response' => json_encode($value),
 
                                 'sap_connection_id' => $sap_connection_id,

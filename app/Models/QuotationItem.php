@@ -35,6 +35,8 @@ class QuotationItem extends Model
         'response',
         'sap_connection_id',
         'real_sap_connection_id',
+        'open_amount',
+        'remaining_open_quantity',
     ];
 
     public function product(){

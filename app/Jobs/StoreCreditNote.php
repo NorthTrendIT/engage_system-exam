@@ -127,6 +127,8 @@ class StoreCreditNote implements ShouldQueue
                             'ncm_code' => @$d_item['NCMCode'],
                             'ship_to_code' => @$d_item['ShipToCode'],
                             'ship_to_description' => @$d_item['ShipToDescription'],
+                            'open_amount' => @$d_item['OpenAmount'],
+                            'remaining_open_quantity' => @$d_item['RemainingOpenQuantity'],
 
                             'sap_connection_id' => $this->sap_connection_id,
                             'real_sap_connection_id' => $this->real_sap_connection_id,
