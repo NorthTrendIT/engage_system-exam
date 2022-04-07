@@ -435,7 +435,7 @@ Route::middleware(['auth'])->group(function(){
 
             Route::resource('back-order-report','BackOrderReportController')->only('index');
             Route::post('back-order-report/get-all', 'BackOrderReportController@getAll')->name('back-order-report.get-all');
-
+            Route::get('back-order-report/export', 'BackOrderReportController@export')->name('back-order-report.export');
 
             Route::resource('credit-memo-report','CreditMemoReportController')->only('index');
             Route::post('credit-memo-report/get-all', 'CreditMemoReportController@getAll')->name('credit-memo-report.get-all');
