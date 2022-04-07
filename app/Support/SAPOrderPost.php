@@ -156,6 +156,8 @@ class SAPOrderPost
                         'ncm_code' => @$item['NCMCode'],
                         'ship_to_code' => @$item['ShipToCode'],
                         'ship_to_description' => @$item['ShipToDescription'],
+                        'open_amount' => @$item['OpenAmount'],
+                        'remaining_open_quantity' => @$item['RemainingOpenQuantity'],
                         //'response' => json_encode($item),
 
                         'sap_connection_id' => $this->sap_connection_id,
