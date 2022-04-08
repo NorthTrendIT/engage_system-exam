@@ -70,11 +70,11 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 mt-5">
+                {{-- <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
                   </div>
-                </div>
+                </div> --}}
 
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
@@ -94,13 +94,19 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>SO No.</th>
+                              <th>SO Date</th>
+                              <th>Business Unit</th>
+                              <th>Customer Name</th>
+                              <th>Sales Person</th>
+                              <th>Brand</th>
                               <th>Product Code</th>
                               <th>Product Name</th>
-                              <th>Brand</th>
-                              <th>Business Unit</th>
-                              <th>Total Quantity</th>
-                              <th>Total Price</th>
-                              <th>Total Price After VAT</th>
+                              <th>Quantity Ordered</th>
+                              <th>Remaining Open Quantity</th>
+                              <th>Price</th>
+                              <th>Price After VAT</th>
+                              <th>Open Amount</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -170,7 +176,7 @@
           scrollCollapse: true,
           paging: true,
           fixedColumns:   {
-            left: 2,
+            left: 3,
             right: 0
           },
           order: [],
@@ -191,13 +197,20 @@
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'doc_entry', name: 'doc_entry',orderable:false,searchable:false},
+              {data: 'doc_date', name: 'doc_date',orderable:false,searchable:false},
+              {data: 'company', name: 'company',orderable:false,searchable:false},
+              {data: 'customer', name: 'customer',orderable:false,searchable:false},
+              {data: 'sales_specialist', name: 'sales_specialist',orderable:false,searchable:false},
+
+              {data: 'brand', name: 'brand',orderable:false,searchable:false},
               {data: 'item_code', name: 'item_code',orderable:false,searchable:false},
               {data: 'item_name', name: 'item_name',orderable:false,searchable:false},
-              {data: 'brand', name: 'brand',orderable:false,searchable:false},
-              {data: 'company', name: 'company',orderable:false,searchable:false},
-              {data: 'total_quantity', name: 'total_quantity',orderable:false,searchable:false},
-              {data: 'total_price', name: 'total_price',orderable:false,searchable:false},
-              {data: 'total_price_after_vat', name: 'total_price_after_vat',orderable:false,searchable:false},
+              {data: 'quantity', name: 'quantity',orderable:false,searchable:false},
+              {data: 'remaining_open_quantity', name: 'remaining_open_quantity',orderable:false,searchable:false},
+              {data: 'price', name: 'price',orderable:false,searchable:false},
+              {data: 'price_after_vat', name: 'price_after_vat',orderable:false,searchable:false},
+              {data: 'open_amount', name: 'open_amount',orderable:false,searchable:false},
           ],
           drawCallback:function(){
               $(function () {
@@ -308,7 +321,8 @@
         data: function (params) {
             return {
                 _token: "{{ csrf_token() }}",
-                search: params.term
+                search: params.term,
+                sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
             };
         },
         processResults: function (response) {

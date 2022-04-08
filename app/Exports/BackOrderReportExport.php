@@ -27,13 +27,19 @@ class BackOrderReportExport implements FromCollection,WithHeadings,WithTitle,Sho
     {
         return [
             'No.',
+            'SO No.',
+            'SO Date',
+            'Business Unit',
+            'Customer Name',
+            'Sales Person',
+            'Brand',
             'Product Code',
             'Product Name',
-            'Brand',
-            'Business Unit',
-            'Total Quantity',
-            'Total Price',
-            'Total Price After VAT',
+            'Quantity Ordered',
+            'Remaining Open Quantity',
+            'Price',
+            'Price After VAT',
+            'Open Amount',
         ];
     }
 
