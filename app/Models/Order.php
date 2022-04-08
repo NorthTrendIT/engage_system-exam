@@ -60,4 +60,8 @@ class Order extends Model
     public function customer(){
         return $this->hasOne(Customer::class, ['card_code', 'sap_connection_id'], ['card_code', 'sap_connection_id']);
     }
+
+    public function sales_specialist(){
+        return $this->belongsTo(User::class, ['sales_person_code','real_sap_connection_id'], ['sales_employee_code', 'sap_connection_id']);
+    }
 }

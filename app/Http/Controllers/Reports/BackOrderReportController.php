@@ -27,47 +27,22 @@ class BackOrderReportController extends Controller
     }
 
     public function getAll(Request $request){
-        $data = OrderItem::join('orders','orders.id','=', 'order_items.order_id')
-                            ->join("products",function($join){
-                                $join->on('products.item_code','=','order_items.item_code')->on('products.sap_connection_id','=', 'orders.real_sap_connection_id');
-                            })
-                            ->join("product_groups",function($join){
-                                $join->on('product_groups.number','=','products.items_group_code')->on('product_groups.sap_connection_id','=', 'products.sap_connection_id');
-                            })
-                            ->join('sap_connections','sap_connections.id','=', 'orders.sap_connection_id')
-                            ->where('orders.document_status', 'bost_Open')
-                            ->where('orders.cancelled', 'No')
-                            ->whereIn('orders.u_sostat', ['OP'])
-                            ->select(
-                                DB::raw("count(order_items.id) as total_id"),
-                                DB::raw("sum(order_items.quantity) as total_quantity"),
-                                DB::raw("sum(order_items.price) as total_price"),
-                                DB::raw("sum(order_items.price_after_vat) as total_price_after_vat"),
-                                'products.*',
-                                'product_groups.group_name as brand',
-                                'sap_connections.company_name as company',
-                                // 'order_items.*',
-                            )
-                            ->orderBy('orders.id','DESC');
+        $data = OrderItem::orderBy('id','DESC');
+
+        $data->whereHas('order', function($q){
+            $q->where('document_status', 'bost_Open');
+            $q->where('cancelled', 'No');
+            $q->whereIn('u_sostat', ['OP']);
+        });
 
 
         if($request->filter_company != ""){
-            $data->where('sap_connections.id',$request->filter_company);
+            $data->where('sap_connection_id',$request->filter_company);
         }
 
         if($request->filter_brand != ""){
-            $data->where('products.items_group_code',$request->filter_brand);
-        }
-
-        if($request->filter_search != ""){
-            $data->where(function($q) use ($request) {
-                $q->orwhere('products.item_code','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('products.item_name','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('products.u_pattern2','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('products.u_item_application','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('products.u_item_type','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('products.u_tires','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('product_groups.group_name','LIKE',"%".$request->filter_search."%");
+            $data->whereHas('product.group', function($q) use ($request) {
+                $q->where('items_group_code', $request->filter_brand);
             });
         }
 
@@ -76,62 +51,80 @@ class BackOrderReportController extends Controller
             $start = date("Y-m-d", strtotime($date[0]));
             $end = date("Y-m-d", strtotime($date[1]));
 
-            $data->whereDate('orders.doc_date', '>=' , $start);
-            $data->whereDate('orders.doc_date', '<=' , $end);
-        }
-
-
-        if($request->filter_customer != "" || $request->filter_sales_specialist != ""){
-            $data->join("customers",function($join){
-                $join->on('customers.card_code','=','orders.card_code')->on('customers.sap_connection_id','=', 'orders.sap_connection_id');
+            $data->whereHas('order', function($q) use ($start, $end){
+                $q->whereDate('doc_date', '>=' , $start);
+                $q->whereDate('doc_date', '<=' , $end);
             });
         }
 
         if($request->filter_customer != ""){
-            $data->where('customers.id', $request->filter_customer);
+            $data->whereHas('order.customer', function($q) use ($request) {
+                $q->where('id', $request->filter_customer);
+            });
         }
 
         if($request->filter_sales_specialist != ""){
-            $data->join('customers_sales_specialists','customers_sales_specialists.customer_id','=', 'customers.id');
-            $data->where('customers_sales_specialists.ss_id', $request->filter_sales_specialist);
+            $data->whereHas('order.sales_specialist', function($q) use ($request) {
+                $q->where('id', $request->filter_sales_specialist);
+            });
         }
-
-        $data->groupBy('order_items.item_code', 'order_items.sap_connection_id');
 
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('item_name', function($row) {
-                                return @$row->item_name ?? "-";
+                                return @$row->product1->item_name ?? @$row->item_description ?? "-";
                             })
                             ->addColumn('item_code', function($row) {
-                                return @$row->item_code ?? "-";
+                                return @$row->product1->item_code ?? @$row->item_code ?? "-";
+                            })
+                            ->addColumn('customer', function($row) {
+                                return @$row->order->customer->card_name ?? @$row->order->card_name ?? "-";
+                            })
+                            ->addColumn('sales_specialist', function($row) {
+                                return @$row->order->sales_specialist->sales_specialist_name ?? "-";
                             })
                             ->addColumn('brand', function($row) {
-                                return @$row->brand ?? "-";
+                                return @$row->product1->group->group_name ?? "-";
                             })
                             ->addColumn('company', function($row) {
-                                return @$row->company ?? "-";
+                                return @$row->sap_connection->company_name ?? "-";
                             })
-                            ->addColumn('total_quantity', function($row) {
-                                return @$row->total_quantity ?? "-";
+                            ->addColumn('doc_entry', function($row) {
+                                return @$row->order->doc_entry ?? "-";
                             })
-                            ->addColumn('total_price', function($row) {
-
+                            ->addColumn('doc_date', function($row) {
+                                return date('M d, Y',strtotime(@$row->order->doc_date));
+                            })
+                            ->addColumn('quantity', function($row) {
+                                return @$row->quantity ?? "-";
+                            })
+                            ->addColumn('price', function($row) {
                                 $html = '₱ '. "0.00";
-                                if(@$row->total_price){
-                                    $html = '₱ '.number_format_value(@$row->total_price, 2);
+                                if(@$row->price){
+                                    $price = @$row->price * @$row->quantity;
+                                    $html = '₱ '.number_format_value(@$price, 2);
                                 }
                                 return $html;
                             })
-                            ->addColumn('total_price_after_vat', function($row) {
-
+                            ->addColumn('price_after_vat', function($row) {
                                 $html = '₱ '. "0.00";
-                                if(@$row->total_price_after_vat){
-                                    $html = '₱ '.number_format_value(@$row->total_price_after_vat, 2);
+                                if(@$row->price_after_vat){
+                                    $price = @$row->price_after_vat * @$row->quantity;
+                                    $html = '₱ '.number_format_value(@$price, 2);
                                 }
                                 return $html;
                             })
-                            ->rawColumns(['status','action','total_price','total_price_after_vat'])
+                            ->addColumn('remaining_open_quantity', function($row) {
+                                return @$row->remaining_open_quantity ?? "0.00";
+                            })
+                            ->addColumn('open_amount', function($row) {
+                                $html = '₱ '. "0.00";
+                                if(@$row->open_amount){
+                                    $html = '₱ '.number_format_value(@$row->open_amount, 2);
+                                }
+                                return $html;
+                            })
+                            ->rawColumns(['status','action','price','price_after_vat'])
                             ->make(true);
     }
 
@@ -142,47 +135,22 @@ class BackOrderReportController extends Controller
           $filter = json_decode(base64_decode($request->data));
         }
 
-        $data = OrderItem::join('orders','orders.id','=', 'order_items.order_id')
-                            ->join("products",function($join){
-                                $join->on('products.item_code','=','order_items.item_code')->on('products.sap_connection_id','=', 'orders.real_sap_connection_id');
-                            })
-                            ->join("product_groups",function($join){
-                                $join->on('product_groups.number','=','products.items_group_code')->on('product_groups.sap_connection_id','=', 'products.sap_connection_id');
-                            })
-                            ->join('sap_connections','sap_connections.id','=', 'orders.sap_connection_id')
-                            ->where('orders.document_status', 'bost_Open')
-                            ->where('orders.cancelled', 'No')
-                            ->whereIn('orders.u_sostat', ['OP'])
-                            ->select(
-                                DB::raw("count(order_items.id) as total_id"),
-                                DB::raw("sum(order_items.quantity) as total_quantity"),
-                                DB::raw("sum(order_items.price) as total_price"),
-                                DB::raw("sum(order_items.price_after_vat) as total_price_after_vat"),
-                                'products.*',
-                                'product_groups.group_name as brand',
-                                'sap_connections.company_name as company',
-                                // 'order_items.*',
-                            )
-                            ->orderBy('orders.id','DESC');
+        $data = OrderItem::orderBy('id','DESC');
+
+        $data->whereHas('order', function($q){
+            $q->where('document_status', 'bost_Open');
+            $q->where('cancelled', 'No');
+            $q->whereIn('u_sostat', ['OP']);
+        });
 
 
         if(@$filter->filter_company != ""){
-            $data->where('sap_connections.id',$filter->filter_company);
+            $data->where('sap_connection_id',$filter->filter_company);
         }
 
         if(@$filter->filter_brand != ""){
-            $data->where('products.items_group_code',$filter->filter_brand);
-        }
-
-        if(@$filter->filter_search != ""){
-            $data->where(function($q) use ($filter) {
-                $q->orwhere('products.item_code','LIKE',"%".$filter->filter_search."%");
-                $q->orwhere('products.item_name','LIKE',"%".$filter->filter_search."%");
-                $q->orwhere('products.u_pattern2','LIKE',"%".$filter->filter_search."%");
-                $q->orwhere('products.u_item_application','LIKE',"%".$filter->filter_search."%");
-                $q->orwhere('products.u_item_type','LIKE',"%".$filter->filter_search."%");
-                $q->orwhere('products.u_tires','LIKE',"%".$filter->filter_search."%");
-                $q->orwhere('product_groups.group_name','LIKE',"%".$filter->filter_search."%");
+            $data->whereHas('product.group', function($q) use ($filter) {
+                $q->where('items_group_code', $filter->filter_brand);
             });
         }
 
@@ -191,27 +159,23 @@ class BackOrderReportController extends Controller
             $start = date("Y-m-d", strtotime($date[0]));
             $end = date("Y-m-d", strtotime($date[1]));
 
-            $data->whereDate('orders.doc_date', '>=' , $start);
-            $data->whereDate('orders.doc_date', '<=' , $end);
-        }
-
-
-        if(@$filter->filter_customer != "" || $filter->filter_sales_specialist != ""){
-            $data->join("customers",function($join){
-                $join->on('customers.card_code','=','orders.card_code')->on('customers.sap_connection_id','=', 'orders.sap_connection_id');
+            $data->whereHas('order', function($q) use ($start, $end){
+                $q->whereDate('doc_date', '>=' , $start);
+                $q->whereDate('doc_date', '<=' , $end);
             });
         }
 
         if(@$filter->filter_customer != ""){
-            $data->where('customers.id', $filter->filter_customer);
+            $data->whereHas('order.customer', function($q) use ($filter) {
+                $q->where('id', $filter->filter_customer);
+            });
         }
 
         if(@$filter->filter_sales_specialist != ""){
-            $data->join('customers_sales_specialists','customers_sales_specialists.customer_id','=', 'customers.id');
-            $data->where('customers_sales_specialists.ss_id', $filter->filter_sales_specialist);
+            $data->whereHas('order.sales_specialist', function($q) use ($filter) {
+                $q->where('id', $filter->filter_sales_specialist);
+            });
         }
-
-        $data->groupBy('order_items.item_code', 'order_items.sap_connection_id');
 
         $data = $data->get();
 
@@ -220,13 +184,19 @@ class BackOrderReportController extends Controller
 
             $records[] = array(
                             'no' => $key + 1,
-                            'item_name' => $value->item_name ?? "-",
-                            'item_code' => $value->item_code ?? "-",
-                            'brand' => @$value->brand ?? "-",
-                            'company' => @$value->company ?? "-",
-                            'total_quantity' => @$value->total_quantity ?? "-",
-                            'total_price' => @$value->total_price ?? "-",
-                            'total_price_after_vat' => @$value->total_price_after_vat ?? "-",
+                            'so_no' =>@$value->order->doc_entry,
+                            'so_date' => @$value->order->doc_date,
+                            'business_unit' => @$value->sap_connection->company_name ?? "-",
+                            'customer_name' => @$value->order->customer->card_name ?? @$value->order->card_name ?? "-",
+                            'sales_person' => @$value->order->sales_specialist->sales_specialist_name ?? "-",
+                            'brand' => @$value->product1->group->group_name ?? "-",
+                            'product_code' => @$value->product1->item_code ?? @$value->item_code ?? "-",
+                            'product_name' => @$value->product1->item_name ?? @$value->item_description ?? "-",
+                            'quantity_ordered' => @$value->quantity,
+                            'remaining_open_quantity' => @$value->remaining_open_quantity ?? "0.00",
+                            'price' => @$value->price * @$value->quantity,
+                            'price_after_vat' => @$value->price_after_vat * @$value->quantity,
+                            'open_amount' => @$value->open_amount,
                           );
         }
         if(count($records)){

@@ -50,4 +50,9 @@ class OrderItem extends Model
     public function order(){
         return $this->belongsTo(Order::class, 'order_id');
     }
+
+    public function sap_connection()
+    {
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
+    }
 }
