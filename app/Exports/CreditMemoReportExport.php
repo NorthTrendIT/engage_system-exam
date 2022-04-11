@@ -26,12 +26,17 @@ class CreditMemoReportExport implements FromCollection,WithHeadings,WithTitle,Sh
     public function headings(): array
     {
         return [
-            'No.',
-            'Customer Code',
+            'No',
             'Customer Name',
             'Business Unit',
-            'Open Amount',
-            'Used Amount',
+            'Date',
+            'Document No',
+            'Sales Specialist',
+            'Total Amount',
+            'Description',
+            'Price After VAT',
+            'GrossTotal',
+            'Remarks',
         ];
     }
 

@@ -9,6 +9,8 @@ class CreditNoteItem extends Model
 {
     use HasFactory;
 
+    use \Awobaz\Compoships\Compoships;
+    
     protected $fillable = [
         'credit_note_id',
         'line_num',
@@ -36,4 +38,22 @@ class CreditNoteItem extends Model
         'open_amount',
         'remaining_open_quantity',
     ];
+
+
+    public function product(){
+        return $this->belongsTo(Product::class, ['item_code','sap_connection_id'], ['item_code', 'sap_connection_id']);
+    }
+
+    public function product1(){
+        return $this->belongsTo(Product::class, ['item_code','real_sap_connection_id'], ['item_code', 'sap_connection_id']);
+    }
+
+    public function credit_note(){
+        return $this->belongsTo(CreditNote::class, 'credit_note_id');
+    }
+
+    public function sap_connection()
+    {
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
+    }
 }
