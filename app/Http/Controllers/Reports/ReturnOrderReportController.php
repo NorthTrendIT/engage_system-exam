@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\CreditNote;
+use App\Models\CreditNoteItem;
 use App\Models\SapConnection;
 
 use DB;
@@ -42,49 +43,58 @@ class ReturnOrderReportController extends Controller
     public function getAll(Request $request){
         
         $data = $this->getReportResultData($request);
+        $grand_total_of_quantity = $data->sum('quantity');
+        $grand_total_of_amount = '₱ '. number_format_value($data->sum('price_after_vat'));
 
         $table = DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('card_name', function($row) {
-                                return @$row->card_name ?? "-";
+                                return @$row->credit_note->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('card_code', function($row) {
-                                return @$row->card_code ?? "-";
+                                return @$row->credit_note->customer->card_code ?? @$row->card_code ?? "-";
                             })
                             ->addColumn('date', function($row) {
-                                return date('M d, Y',strtotime($row->doc_date));
+                                return date('M d, Y',strtotime(@$row->credit_note->doc_date));
                             })
-                            ->addColumn('doc_entry', function($row) {
-                                $html = @$row->doc_entry ?? "-";
+                            ->addColumn('doc_num', function($row) {
+                                return @$row->credit_note->doc_num ?? "-";
+                            })
+                            ->addColumn('sales_specialist', function($row) {
+                                return @$row->credit_note->sales_specialist->sales_specialist_name ?? "-";
+                            })
+                            // ->addColumn('doc_entry', function($row) {
+                            //     $html = @$row->doc_entry ?? "-";
 
-                                if(!empty($row->invoice)){
-                                    $html = "<a href='".route('invoices.show',@$row->invoice->id)."' target='_blank' title='View Invoice'>".@$row->doc_entry."</a>";
-                                }
-                                return $html;
-                            })
+                            //     if(!empty($row->invoice)){
+                            //         $html = "<a href='".route('invoices.show',@$row->invoice->id)."' target='_blank' title='View Invoice'>".@$row->doc_entry."</a>";
+                            //     }
+                            //     return $html;
+                            // })
                             ->addColumn('company', function($row) {
                                 return @$row->sap_connection->company_name ?? "-";
                             })
-                            ->addColumn('total_quantity', function($row) {
-                                return $row->items()->sum('quantity');
-                            })
-                            ->addColumn('total_amount', function($row) {
-                                $amount = $row->items()->sum('gross_total');
+                            ->addColumn('doc_total', function($row) {
+                                $amount = @$row->credit_note->doc_total ?? "0.00";
                                 return '₱ '. number_format_value($amount);
                             })
-                            // ->addColumn('total_price', function($row) {
-                            //     $amount = $row->items()->sum('price');
-                            //     return '₱ '. number_format_value($amount);
-                            // })
-                            // ->addColumn('total_price_after_vat', function($row) {
-                            //     $amount = $row->items()->sum('price_after_vat');
-                            //     return '₱ '. number_format_value($amount);
-                            // })
+                            ->addColumn('price_after_vat', function($row) {
+                                $amount = @$row->price_after_vat ?? "0.00";
+                                return '₱ '. number_format_value($amount);
+                            })
+                            ->addColumn('quantity', function($row) {
+                                return @$row->quantity ?? "0.00";
+                            })
+                            ->addColumn('comments', function($row) {
+                                return @$row->credit_note->comments ?? "-";
+                            })
                             ->rawColumns(['action','status','name','doc_entry'])
                             ->make(true);
 
         $data = compact(
                         'table',
+                        'grand_total_of_quantity',
+                        'grand_total_of_amount',
                     );
 
         return $response = [ 'status' => true , 'message' => 'Report details fetched successfully !' , 'data' => $data ];
@@ -104,18 +114,19 @@ class ReturnOrderReportController extends Controller
         $records = array();
         foreach($data as $key => $value){
 
-            $total_quantity = $value->items()->sum('quantity');
-            $total_amount = $value->items()->sum('gross_total');
-
             $records[] = array(
                             'no' => $key + 1,
-                            'doc_entry' => $value->doc_entry ?? "-",
-                            'card_code' => $value->card_code ?? "-",
-                            'card_name' => $value->card_name ?? "-",
-                            'company' => @$value->sap_connection->company_name ?? "-",
-                            'total_quantity' => $total_quantity,
-                            'total_amount' => $total_amount,
-                            'date' => $value->doc_date,
+                            'customer_name' => @$value->credit_note->customer->card_name ?? @$value->card_name ?? "-",
+                            'business_unit' => @$value->sap_connection->company_name ?? "-",
+                            'return_date' => @$value->credit_note->doc_date ?? "-",
+                            'return_no' => @$value->credit_note->doc_num ?? "-",
+                            'sales_specialist' => @$value->credit_note->sales_specialist->sales_specialist_name ?? "-",
+                            'return_amount' => @$value->credit_note->doc_total ?? "0.00",
+                            'item_code' => $value->item_code ?? "-",
+                            'item_description' => $value->item_description ?? "-",
+                            'item_price' => $value->price_after_vat ?? "-",
+                            'qty_returned' => $value->quantity ?? "-",
+                            'remarks' => @$value->credit_note->comments ?? "-",
                           );
         }
         if(count($records)){
@@ -129,27 +140,31 @@ class ReturnOrderReportController extends Controller
 
     public function getReportResultData($request){
 
-        $data = CreditNote::where('doc_type', 'dDocument_Items')->orderBy('doc_date', 'DESC');
+        $data = CreditNoteItem::orderBy('credit_note_id', 'DESC');
+
+        $data->whereHas('credit_note', function($q){
+            $q->where('doc_type', 'dDocument_Items')->where('u_class', 'RETURNS');
+        });
 
         if(@$request->filter_customer != ""){
             $data->where(function($query) use ($request) {
-                $query->orwhereHas('customer', function($q1) use ($request){
-                    $q1->where('id', $request->filter_customer);
-                });
+                $query->whereHas('credit_note', function($q) use ($request) {
+                    $q->orwhereHas('customer', function($q1) use ($request){
+                        $q1->where('id', $request->filter_customer);
+                    });
 
-                $query->orwhere(function($q1) use ($request){
-                    $q1->where('card_name','LIKE',"%".$request->filter_customer."%");
+                    $q->orwhere(function($q1) use ($request){
+                        $q1->where('card_name','LIKE',"%".$request->filter_customer."%");
+                    });
                 });
             });
         }
 
         if(@$request->filter_brand != ""){
             $data->where(function($query) use ($request) {
-                $query->whereHas('customer', function($q) use ($request) {
-                    $q->where(function($que) use ($request) {
-                        $que->whereHas('product_groups', function($q2) use ($request){
-                            $q2->where('product_group_id', $request->filter_brand);
-                        });
+                $query->whereHas('product1', function($que) use ($request) {
+                    $que->whereHas('group', function($q2) use ($request){
+                        $q2->where('id', $request->filter_brand);
                     });
                 });
             });
@@ -157,11 +172,9 @@ class ReturnOrderReportController extends Controller
 
         if(@$request->filter_sales_specialist != ""){
             $data->where(function($query) use ($request) {
-                $query->whereHas('customer', function($q) use ($request) {
-                    $q->where(function($que) use ($request) {
-                        $que->whereHas('sales_specialist', function($q2) use ($request){
-                            $q2->where('id', $request->filter_sales_specialist);
-                        });
+                $query->whereHas('credit_note', function($q) use ($request) {
+                    $q->whereHas('sales_specialist', function($q2) use ($request){
+                        $q2->where('id', $request->filter_sales_specialist);
                     });
                 });
             });

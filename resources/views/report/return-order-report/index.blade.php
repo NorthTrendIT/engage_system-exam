@@ -81,8 +81,21 @@
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
               <h5 class="text-info">List Of Records</h5>
+
             </div>
             <div class="card-body">
+              <div class="row mb-5">
+                <div class="col-md-12 form-group">
+                  <h6>Grand Total Of Quantity: 
+                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
+                    <span class="grand_total_of_quantity_count text-primary "></span>
+                  </h6>
+                  <h6>Grand Total Of Amount: 
+                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
+                    <span class="grand_total_of_amount_count text-primary "></span>
+                  </h6>
+                </div>
+              </div>
               <div class="row mb-5">
                 <div class="col-md-12">
                   <div class="form-group">
@@ -94,13 +107,17 @@
                           <thead>
                             <tr>
                               <th>No</th>
-                              <th>Doc #</th>
-                              <th>Customer Code</th>
                               <th>Customer Name</th>
                               <th>Business Unit</th>
-                              <th>Total Quantity</th>
-                              <th>Total Amount</th>
-                              <th>Date</th>
+                              <th>Return Date</th>
+                              <th>Return No</th>
+                              <th>Sales Specialist</th>
+                              <th>Return Amount</th>
+                              <th>Item Code</th>
+                              <th>Item Description</th>
+                              <th>Item Price</th>
+                              <th>Qty Returned</th>
+                              <th>Remarks</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -149,6 +166,10 @@
     render_data();
     function render_data(){
 
+      $('.loader_img').show();
+      $('.grand_total_of_quantity_count').text("");
+      $('.grand_total_of_amount_count').text("");
+
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
@@ -169,12 +190,19 @@
         if(result.status){
           toast_success(result.message);
           
+          $('.loader_img').hide();
+          $('.grand_total_of_quantity_count').text(result.data.grand_total_of_quantity);
+          $('.grand_total_of_amount_count').text(result.data.grand_total_of_amount);
+
           render_table(result.data.table.original.data);
         }
       })
       .fail(function() {
+        $('.loader_img').hide();
         toast_error("error");
       });
+
+
     }
 
     function render_table(jsonData){
@@ -194,13 +222,17 @@
         data: jsonData,
         columns: [
             {data: 'DT_RowIndex' ,orderable:false,searchable:false},
-            {data: 'doc_entry', name: 'doc_entry' ,orderable:false,searchable:false},
-            {data: 'card_code', name: 'card_code' ,orderable:false,searchable:false},
             {data: 'card_name', name: 'card_name' ,orderable:false,searchable:false},
             {data: 'company', name: 'company' ,orderable:false,searchable:false},
-            {data: 'total_quantity', name: 'total_quantity' ,orderable:false,searchable:false},
-            {data: 'total_amount', name: 'total_amount' ,orderable:false,searchable:false},
             {data: 'date', name: 'date' ,orderable:false,searchable:false},
+            {data: 'doc_num', name: 'doc_num' ,orderable:false,searchable:false},
+            {data: 'sales_specialist', name: 'sales_specialist' ,orderable:false,searchable:false},
+            {data: 'doc_total', name: 'doc_total' ,orderable:false,searchable:false},
+            {data: 'item_code', name: 'item_code' ,orderable:false,searchable:false},
+            {data: 'item_description', name: 'item_description' ,orderable:false,searchable:false},
+            {data: 'price_after_vat', name: 'price_after_vat' ,orderable:false,searchable:false},
+            {data: 'quantity', name: 'quantity' ,orderable:false,searchable:false},
+            {data: 'comments', name: 'comments' ,orderable:false,searchable:false},
         ],
         drawCallback:function(){
             $(function () {

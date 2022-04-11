@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Reports;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\Customer;
+use App\Models\CreditNoteItem;
 use App\Models\SapConnection;
 
 use DB;
@@ -45,25 +45,43 @@ class DebitMemoReportController extends Controller
 
         $table = DataTables::of($data)
                             ->addIndexColumn()
-                            ->addColumn('name', function($row) {
-                                $name = "<a href='".route('customer.show',@$row->id)."' target='_blank'>".@$row->card_name."</a>";
-                                return  $name;
+                            ->addColumn('card_name', function($row) {
+                                return @$row->credit_note->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('card_code', function($row) {
-                                return @$row->card_code ?? "-";
+                                return @$row->credit_note->customer->card_code ?? @$row->card_code ?? "-";
+                            })
+                            ->addColumn('date', function($row) {
+                                return date('M d, Y',strtotime(@$row->credit_note->doc_date));
+                            })
+                            ->addColumn('doc_num', function($row) {
+                                return @$row->credit_note->doc_num ?? "-";
+                            })
+                            ->addColumn('sales_specialist', function($row) {
+                                return @$row->credit_note->sales_specialist->sales_specialist_name ?? "-";
                             })
                             ->addColumn('company', function($row) {
                                 return @$row->sap_connection->company_name ?? "-";
                             })
-                            ->addColumn('open_amount', function($row) {
-                                $amount = $row->debit_memo_reports()->where('u_class', '!=', 'Rebate')->sum('doc_total');
+                            ->addColumn('doc_total', function($row) {
+                                $amount = @$row->credit_note->doc_total ?? "0.00";
                                 return '₱ '. number_format_value($amount);
                             })
-                            ->addColumn('used_amount', function($row) {
-                                $amount = $row->debit_memo_reports()->where('u_class', 'Rebate')->sum('doc_total');
+                            ->addColumn('price_after_vat', function($row) {
+                                $amount = @$row->price_after_vat ?? "0.00";
                                 return '₱ '. number_format_value($amount);
                             })
-                            ->rawColumns(['action','status','name'])
+                            ->addColumn('gross_total', function($row) {
+                                $amount = @$row->gross_total ?? "0.00";
+                                return '₱ '. number_format_value($amount);
+                            })
+                            ->addColumn('quantity', function($row) {
+                                return @$row->quantity ?? "0.00";
+                            })
+                            ->addColumn('comments', function($row) {
+                                return @$row->credit_note->comments ?? "-";
+                            })
+                            ->rawColumns(['action','status','name','doc_entry'])
                             ->make(true);
 
 
@@ -87,17 +105,19 @@ class DebitMemoReportController extends Controller
 
         $records = array();
         foreach($data as $key => $value){
-
-            $open_amount = $value->debit_memo_reports()->where('u_class', '!=', 'Rebate')->sum('doc_total');
-            $used_amount = $value->debit_memo_reports()->where('u_class', 'Rebate')->sum('doc_total');
-
+            
             $records[] = array(
                             'no' => $key + 1,
-                            'card_code' => $value->card_code ?? "-",
-                            'card_name' => $value->card_name ?? "-",
-                            'company' => @$value->sap_connection->company_name ?? "-",
-                            'open_amount' => $open_amount,
-                            'used_amount' => $used_amount,
+                            'customer_name' => @$value->credit_note->customer->card_name ?? @$value->card_name ?? "-",
+                            'business_unit' => @$value->sap_connection->company_name ?? "-",
+                            'date' => @$value->credit_note->doc_date ?? "-",
+                            'document_no' => @$value->credit_note->doc_num ?? "-",
+                            'sales_specialist' => @$value->credit_note->sales_specialist->sales_specialist_name ?? "-",
+                            'amount' => @$value->credit_note->doc_total ?? "0.00",
+                            'item_description' => $value->item_description ?? "-",
+                            'item_price' => $value->price_after_vat ?? "-",
+                            'gross_total' => $value->gross_total ?? "-",
+                            'remarks' => @$value->credit_note->comments ?? "-",
                           );
         }
         if(count($records)){
@@ -111,33 +131,42 @@ class DebitMemoReportController extends Controller
 
     public function getReportResultData($request){
 
-        $data = Customer::has('debit_memo_reports')->with('debit_memo_reports')->orderBy('created_at', 'DESC');
+        $data = CreditNoteItem::orderBy('credit_note_id', 'DESC');
+
+        $data->whereHas('credit_note', function($q){
+            $q->where('doc_type', 'dDocument_Service')->where('document_status', 'bost_Open')->where('doc_total', '<', 0);
+        });
 
         if(@$request->filter_customer != ""){
             $data->where(function($query) use ($request) {
-                $query->orwhere(function($q1) use ($request){
-                    $q1->where('id', $request->filter_customer);
-                });
+                $query->whereHas('credit_note', function($q) use ($request) {
+                    $q->orwhereHas('customer', function($q1) use ($request){
+                        $q1->where('id', $request->filter_customer);
+                    });
 
-                $query->orwhere(function($q1) use ($request){
-                    $q1->where('card_name','LIKE',"%".$request->filter_customer."%");
+                    $q->orwhere(function($q1) use ($request){
+                        $q1->where('card_name','LIKE',"%".$request->filter_customer."%");
+                    });
                 });
-
             });
         }
 
         if(@$request->filter_brand != ""){
             $data->where(function($query) use ($request) {
-                $que->whereHas('product_groups', function($q2) use ($request){
-                    $q2->where('product_group_id', $request->filter_brand);
+                $query->whereHas('product1', function($que) use ($request) {
+                    $que->whereHas('group', function($q2) use ($request){
+                        $q2->where('id', $request->filter_brand);
+                    });
                 });
             });
         }
 
         if(@$request->filter_sales_specialist != ""){
             $data->where(function($query) use ($request) {
-                $que->whereHas('sales_specialist', function($q2) use ($request){
-                    $q2->where('id', $request->filter_sales_specialist);
+                $query->whereHas('credit_note', function($q) use ($request) {
+                    $q->whereHas('sales_specialist', function($q2) use ($request){
+                        $q2->where('id', $request->filter_sales_specialist);
+                    });
                 });
             });
         }

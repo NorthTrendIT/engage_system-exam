@@ -94,11 +94,16 @@
                           <thead>
                             <tr>
                               <th>No</th>
-                              <th>Customer Code</th>
                               <th>Customer Name</th>
                               <th>Business Unit</th>
-                              <th>Open Amount</th>
-                              <th>Used Amount</th>
+                              <th>Date</th>
+                              <th>Credit Memo No</th>
+                              <th>Sales Specialist</th>
+                              <th>Total Amount</th>
+                              <th>Description</th>
+                              <th>Price After VAT</th>
+                              <th>Gross Total</th>
+                              <th>Remarks</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -192,11 +197,16 @@
         data: jsonData,
         columns: [
             {data: 'DT_RowIndex' ,orderable:false,searchable:false},
-            {data: 'card_code', name: 'card_code' ,orderable:false,searchable:false},
-            {data: 'name', name: 'name' ,orderable:false,searchable:false},
+            {data: 'card_name', name: 'card_name' ,orderable:false,searchable:false},
             {data: 'company', name: 'company' ,orderable:false,searchable:false},
-            {data: 'open_amount', name: 'open_amount' ,orderable:false,searchable:false},
-            {data: 'used_amount', name: 'used_amount' ,orderable:false,searchable:false}
+            {data: 'date', name: 'date' ,orderable:false,searchable:false},
+            {data: 'doc_num', name: 'doc_num' ,orderable:false,searchable:false},
+            {data: 'sales_specialist', name: 'sales_specialist' ,orderable:false,searchable:false},
+            {data: 'doc_total', name: 'doc_total' ,orderable:false,searchable:false},
+            {data: 'item_description', name: 'item_description' ,orderable:false,searchable:false},
+            {data: 'price_after_vat', name: 'price_after_vat' ,orderable:false,searchable:false},
+            {data: 'gross_total', name: 'gross_total' ,orderable:false,searchable:false},
+            {data: 'comments', name: 'comments' ,orderable:false,searchable:false},
         ],
         drawCallback:function(){
             $(function () {

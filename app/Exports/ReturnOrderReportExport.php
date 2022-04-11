@@ -26,14 +26,18 @@ class ReturnOrderReportExport implements FromCollection,WithHeadings,WithTitle,S
     public function headings(): array
     {
         return [
-            'No.',
-            'Doc #',
-            'Customer Code',
+            'No',
             'Customer Name',
             'Business Unit',
-            'Total Quantity',
-            'Total Amount',
-            'Date',
+            'Return Date',
+            'Return No',
+            'Sales Specialist',
+            'Return Amount',
+            'Item Code',
+            'Item Description',
+            'Item Price',
+            'Qty Returned',
+            'Remarks',
         ];
     }
 
