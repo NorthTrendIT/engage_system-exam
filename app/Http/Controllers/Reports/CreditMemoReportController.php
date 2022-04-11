@@ -47,7 +47,7 @@ class CreditMemoReportController extends Controller
 
         $table = DataTables::of($data)
                             ->addIndexColumn()
-                           ->addColumn('card_name', function($row) {
+                            ->addColumn('card_name', function($row) {
                                 return @$row->credit_note->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('card_code', function($row) {
@@ -113,7 +113,7 @@ class CreditMemoReportController extends Controller
                             'customer_name' => @$value->credit_note->customer->card_name ?? @$value->card_name ?? "-",
                             'business_unit' => @$value->sap_connection->company_name ?? "-",
                             'date' => @$value->credit_note->doc_date ?? "-",
-                            'document_no' => @$value->credit_note->doc_num ?? "-",
+                            'credit_memo_no' => @$value->credit_note->doc_num ?? "-",
                             'sales_specialist' => @$value->credit_note->sales_specialist->sales_specialist_name ?? "-",
                             'amount' => @$value->credit_note->doc_total ?? "0.00",
                             'item_description' => $value->item_description ?? "-",
@@ -136,7 +136,7 @@ class CreditMemoReportController extends Controller
         $data = CreditNoteItem::orderBy('credit_note_id', 'DESC');
 
         $data->whereHas('credit_note', function($q){
-            $q->where('doc_type', 'dDocument_Service')->where('document_status', 'bost_Open');
+            $q->where('doc_type', 'dDocument_Service')->where('document_status', 'bost_Open')->where('doc_total', '>', 0);
         });
 
         if(@$request->filter_customer != ""){

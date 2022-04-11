@@ -30,7 +30,7 @@ class CreditMemoReportExport implements FromCollection,WithHeadings,WithTitle,Sh
             'Customer Name',
             'Business Unit',
             'Date',
-            'Document No',
+            'Credit Memo No',
             'Sales Specialist',
             'Total Amount',
             'Description',
