@@ -93,17 +93,17 @@
             </div>
             <div class="card-body">
               <div class="row mb-5">
-                <div class="col-md-4 bg-light-warning px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4">
+                <div class="col-md-4 bg-light-warning px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
                   <a href="javascript:" class="text-warning fw-bold fs-6">Pending </a>
                   <span class="count text-warning fw-bold fs-1 number_of_sales_orders_pending_count">0</span>
                 </div>
 
-                <div class="col-md-4 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4">
+                <div class="col-md-4 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
                   <a href="javascript:" class="text-success fw-bold fs-6">Approved</a>
                   <span class="count text-success fw-bold fs-1 number_of_sales_orders_approved_count">0</span>
                 </div>
 
-                <div class="col-md-4 bg-light-danger px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4">
+                <div class="col-md-4 bg-light-danger px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
                   <a href="javascript:" class="text-danger fw-bold fs-6">Disapproved</a>
                   <span class="count text-danger fw-bold fs-1 number_of_sales_orders_disapproved_count">0</span>
                 </div>
@@ -130,17 +130,17 @@
             </div>
             <div class="card-body">
               <div class="row mb-5">
-                <div class="col-md-4 bg-light-warning px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4">
+                <div class="col-md-4 bg-light-warning px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
                   <a href="javascript:" class="text-warning fw-bold fs-6">Pending </a>
                   <span class="count text-warning fw-bold fs-1 total_sales_quantity_pending_count">0</span>
                 </div>
 
-                <div class="col-md-4 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4">
+                <div class="col-md-4 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
                   <a href="javascript:" class="text-success fw-bold fs-6">Approved</a>
                   <span class="count text-success fw-bold fs-1 total_sales_quantity_approved_count">0</span>
                 </div>
 
-                <div class="col-md-4 bg-light-danger px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4">
+                <div class="col-md-4 bg-light-danger px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
                   <a href="javascript:" class="text-danger fw-bold fs-6">Disapproved</a>
                   <span class="count text-danger fw-bold fs-1 total_sales_quantity_disapproved_count">0</span>
                 </div>
@@ -166,17 +166,17 @@
             </div>
             <div class="card-body">
               <div class="row mb-5">
-                <div class="col-md-4 bg-light-warning px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4">
+                <div class="col-md-4 bg-light-warning px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
                   <a href="javascript:" class="text-warning fw-bold fs-6">Pending </a>
                   <span class="count text-warning fw-bold fs-1 total_sales_revenue_pending_count">0</span>
                 </div>
 
-                <div class="col-md-4 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4">
+                <div class="col-md-4 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
                   <a href="javascript:" class="text-success fw-bold fs-6">Approved</a>
                   <span class="count text-success fw-bold fs-1 total_sales_revenue_approved_count">0</span>
                 </div>
 
-                <div class="col-md-4 bg-light-danger px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4">
+                <div class="col-md-4 bg-light-danger px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
                   <a href="javascript:" class="text-danger fw-bold fs-6">Disapproved</a>
                   <span class="count text-danger fw-bold fs-1 total_sales_revenue_disapproved_count">0</span>
                 </div>
