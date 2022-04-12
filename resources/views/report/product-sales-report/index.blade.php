@@ -27,112 +27,128 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-body">
-              <div class="row">
+                <div class="row">
 
-                <!-- Business Unit-->
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
-                    <option value=""></option>
-                    @foreach($company as $c)
-                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
-                    @endforeach
-                  </select>
-                </div>
-
-                <!-- Brand -->
-                <div class="col-md-3 mt-5">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_brand">
+                    <!-- Business Unit-->
+                    <div class="col-md-3 mt-5">
+                      <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                         <option value=""></option>
-                    </select>
-                </div>
-
-                <!-- Product Category -->
-                <div class="col-md-3 mt-5 product_filter">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_category">
-                        <option value=""></option>
-                    </select>
-                </div>
-
-                <!-- Product Line -->
-                <div class="col-md-3 mt-5 product_filter">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_line">
-                        <option value=""></option>
-                    </select>
-                </div>
-
-                <!-- Product Class -->
-                <div class="col-md-3 mt-5 product_filter">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_class">
-                        <option value=""></option>
-                    </select>
-                </div>
-
-                <!-- Product Type -->
-                <div class="col-md-3 mt-5 product_filter">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_type">
-                        <option value=""></option>
-                    </select>
-                </div>
-
-                <!-- Product Application -->
-                <div class="col-md-3 mt-5 product_filter">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_application">
-                        <option value=""></option>
-                    </select>
-                </div>
-
-                <!-- Product Pattern -->
-                <div class="col-md-3 mt-5 product_filter">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_pattern">
-                        <option value=""></option>
-                    </select>
-                </div>
-
-                <div class="col-md-6 mt-5">
-                  <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
-                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mr-10">Clear</a>
-                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel mr-10">Export Excel</a>
-                </div>
-
-              </div>
-              <div class="row mb-5 mt-5">
-                <div class="col-md-12">
-                  <div class="form-group">
-                    <!--begin::Table container-->
-                    <div class="table-responsive">
-                       <!--begin::Table-->
-                       <table class="table table-striped table-row-bordered table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
-                          <!--begin::Table head-->
-                          <thead>
-                            <tr>
-                              <th>No</th>
-                              <th>Product Code</th>
-                              <th>Product Name</th>
-                              <th>Brand</th>
-                              <th>Business Unit</th>
-                              <th>Total Quantity</th>
-                              <th>Total Price</th>
-                              <th>Total Price After VAT</th>
-                            </tr>
-                          </thead>
-                          <tbody class="report-data">
-
-                          </tbody>
-                          <!--end::Table body-->
-                       </table>
-                       <!--end::Table-->
+                        @foreach($company as $c)
+                          <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                        @endforeach
+                      </select>
                     </div>
-                    <!--end::Table container-->
 
-                  </div>
+                    <!-- Brand -->
+                    <div class="col-md-3 mt-5">
+                        <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_brand">
+                            <option value=""></option>
+                        </select>
+                    </div>
+
+                    <!-- Product Category -->
+                    <div class="col-md-3 mt-5 product_filter">
+                        <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_category">
+                            <option value=""></option>
+                        </select>
+                    </div>
+
+                    <!-- Product Line -->
+                    <div class="col-md-3 mt-5 product_filter">
+                        <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_line">
+                            <option value=""></option>
+                        </select>
+                    </div>
+
+                    <!-- Product Class -->
+                    <div class="col-md-3 mt-5 product_filter">
+                        <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_class">
+                            <option value=""></option>
+                        </select>
+                    </div>
+
+                    <!-- Product Type -->
+                    <div class="col-md-3 mt-5 product_filter">
+                        <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_type">
+                            <option value=""></option>
+                        </select>
+                    </div>
+
+                    <!-- Product Application -->
+                    <div class="col-md-3 mt-5 product_filter">
+                        <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_application">
+                            <option value=""></option>
+                        </select>
+                    </div>
+
+                    <!-- Product Pattern -->
+                    <div class="col-md-3 mt-5 product_filter">
+                        <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_pattern">
+                            <option value=""></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mt-5">
+                      <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
+                      <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mr-10">Clear</a>
+                      <a href="javascript:" class="btn btn-success font-weight-bold download_excel mr-10">Export Excel</a>
+                    </div>
 
                 </div>
-              </div>
 
             </div>
           </div>
         </div>
       </div>
+
+
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5">
+              <h5 class="text-info">List Of Records</h5>
+            </div>
+            <div class="card-body">
+                
+                <div class="row mb-5 mt-5">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <!--begin::Table container-->
+                        <div class="table-responsive">
+                           <!--begin::Table-->
+                           <table class="table table-striped table-row-bordered table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                              <!--begin::Table head-->
+                              <thead>
+                                <tr>
+                                  <th>No</th>
+                                  <th>Product Code</th>
+                                  <th>Product Name</th>
+                                  <th>Brand</th>
+                                  <th>Business Unit</th>
+                                  <th>Total Quantity</th>
+                                  <th>Total Price</th>
+                                  <th>Total Price After VAT</th>
+                                </tr>
+                              </thead>
+                              <tbody class="report-data">
+
+                              </tbody>
+                              <!--end::Table body-->
+                           </table>
+                           <!--end::Table-->
+                        </div>
+                        <!--end::Table container-->
+
+                      </div>
+
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
     </div>
   </div>
 </div>

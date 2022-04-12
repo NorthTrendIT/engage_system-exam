@@ -94,9 +94,9 @@
             </div> --}}
             <div class="card-body">
               <div class="row mb-5">
-                <div class="col-md-6 bg-light-dark px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
-                  <a href="javascript:" class="text-dark fw-bold fs-6">Number of Overdue Invoices </a>
-                  <span class="count text-dark fw-bold fs-1 number_of_overdue_invoices_count">0</span>
+                <div class="col-md-6 bg-light-danger px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
+                  <a href="javascript:" class="text-danger fw-bold fs-6">Number of Overdue Invoices </a>
+                  <span class="count text-danger fw-bold fs-1 number_of_overdue_invoices_count">0</span>
                 </div>
 
                 <div class="col-md-6 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
