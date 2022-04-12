@@ -38,12 +38,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class="fas fa-tachometer-alt"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -56,12 +51,7 @@
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['news-and-announcement.index', 'news-and-announcement.edit', 'news-and-announcement.create', 'news-and-announcement.show'])) ? 'active' : '' }}" href="{{ route('news-and-announcement.index') }}">
                   <span class="menu-icon">
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class="fas fa-file-alt"></i>
                      </span>
                   </span>
                   <span class="menu-title">News & Announcement</span>
@@ -76,10 +66,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/layouts/lay010.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <path opacity="0.3" d="M20 21H3C2.4 21 2 20.6 2 20V10C2 9.4 2.4 9 3 9H20C20.6 9 21 9.4 21 10V20C21 20.6 20.6 21 20 21Z" fill="black"></path>
-                           <path d="M20 7H3C2.4 7 2 6.6 2 6V3C2 2.4 2.4 2 3 2H20C20.6 2 21 2.4 21 3V6C21 6.6 20.6 7 20 7Z" fill="black"></path>
-                        </svg>
+                     <i class="fab fa-product-hunt"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -134,10 +121,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/layouts/lay010.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <path opacity="0.3" d="M20 21H3C2.4 21 2 20.6 2 20V10C2 9.4 2.4 9 3 9H20C20.6 9 21 9.4 21 10V20C21 20.6 20.6 21 20 21Z" fill="black"></path>
-                           <path d="M20 7H3C2.4 7 2 6.6 2 6V3C2 2.4 2.4 2 3 2H20C20.6 2 21 2.4 21 3V6C21 6.6 20.6 7 20 7Z" fill="black"></path>
-                        </svg>
+                     <i class="fas fa-bullhorn"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -185,12 +169,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class="fas fa-shopping-bag"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -206,12 +185,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class="fas fa-file-invoice-dollar"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -227,10 +201,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/layouts/lay010.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <path opacity="0.3" d="M20 21H3C2.4 21 2 20.6 2 20V10C2 9.4 2.4 9 3 9H20C20.6 9 21 9.4 21 10V20C21 20.6 20.6 21 20 21Z" fill="black"></path>
-                           <path d="M20 7H3C2.4 7 2 6.6 2 6V3C2 2.4 2.4 2 3 2H20C20.6 2 21 2.4 21 3V6C21 6.6 20.6 7 20 7Z" fill="black"></path>
-                        </svg>
+                     <i class="fas fa-user"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -315,12 +286,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class='fas fa-dolly-flatbed'></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -337,10 +303,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/layouts/lay010.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <path opacity="0.3" d="M20 21H3C2.4 21 2 20.6 2 20V10C2 9.4 2.4 9 3 9H20C20.6 9 21 9.4 21 10V20C21 20.6 20.6 21 20 21Z" fill="black"></path>
-                           <path d="M20 7H3C2.4 7 2 6.6 2 6V3C2 2.4 2.4 2 3 2H20C20.6 2 21 2.4 21 3V6C21 6.6 20.6 7 20 7Z" fill="black"></path>
-                        </svg>
+                     <i class="fas fa-users"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -436,12 +399,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class="fas fa-list"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -458,12 +416,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class='fas fa-envelope-open-text'></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -480,12 +433,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class="fas fa-shopping-cart"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -502,12 +450,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class="fab fa-firstdraft"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -524,12 +467,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class="fas fa-file-certificate"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -545,12 +483,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class="fas fa-user-headset"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -564,12 +497,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class="fas fa-comment-dots"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -587,12 +515,7 @@
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['sap-connection.index', 'sap-connection.edit', 'sap-connection.create'])) ? 'active' : '' }}" href="{{ route('sap-connection.index') }}">
                   <span class="menu-icon">
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class="fas fa-ethernet"></i>
                      </span>
                   </span>
                   <span class="menu-title">SAP API Connection</span>
@@ -605,16 +528,11 @@
             {{-- Report --}}
             @if(Auth::user()->role_id == 1)
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['report.index', 'report.promotion.index', 'reports.sales-report.index', 'reports.sales-order-report.index', 'reports.overdue-sales-invoice-report.index', 'reports.back-order-report.index', 'reports.credit-memo-report.index', 'reports.debit-memo-report.index', 'reports.return-order-report.index', 'reports.product-report.index', 'reports.product-sales-report.index'])) ? 'active' : '' }}" href="{{ route('report.index') }}">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['report.index', 'report.promotion.index', 'reports.sales-report.index', 'reports.sales-order-report.index', 'reports.overdue-sales-invoice-report.index', 'reports.back-order-report.index', 'reports.credit-memo-report.index', 'reports.debit-memo-report.index', 'reports.return-order-report.index', 'reports.product-report.index', 'reports.product-sales-report.index', 'reports.sales-order-to-invoice-lead-time-report.index', 'reports.invoice-to-delivery-lead-time-report.index'])) ? 'active' : '' }}" href="{{ route('report.index') }}">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class="far fa-chart-bar"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
@@ -631,12 +549,7 @@
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <rect x="2" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                           <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black"></rect>
-                        </svg>
+                     <i class="fas fa-history"></i>
                      </span>
                      <!--end::Svg Icon-->
                   </span>
