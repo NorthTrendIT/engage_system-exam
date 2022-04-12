@@ -25,38 +25,6 @@
      <!--begin::Container-->
      <div id="kt_content_container" class="container-xxl">
         <!--begin::Row-->
-
-        <!--begin::Row-->
-        @if(userrole() == 1)
-        <div class="row gy-5 g-xl-8">
-            <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
-                <div class="card card-xl-stretch mb-5 mb-xl-8">
-                    <div class="card-body">
-                        <div class="row mb-5">
-                            <div class="col-md-4 bg-light-warning px-6 py-8 rounded-2 me-7 min-w-150 col-box-4">
-                              <a href="javascript:" class="text-warning fw-bold fs-6">Sales Order to Invoice Lead Time </a>
-                              <span class="count text-warning fw-bold fs-1">
-                                <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
-                                <span class="sales_order_to_invoice_lead_time_count"></span>
-                              </span>
-                            </div>
-
-                            <div class="col-md-4 bg-light-success px-6 py-8 rounded-2 me-7 min-w-150 col-box-4">
-                              <a href="javascript:" class="text-success fw-bold fs-6">Invoice to Delivery Lead Time </a>
-                              <span class="count text-success fw-bold fs-1">
-                                <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="invoice_to_delivery_lead_time_loader_img"> 
-                                <span class="invoice_to_delivery_lead_time_count"></span>
-                              </span>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
-
-
         <div class="row gy-5 g-xl-8">
             @if(Auth::user()->role_id != 1)
             <!--begin::Col-->
@@ -64,7 +32,7 @@
                 <!--begin::List Widget 6-->
                 <div class="card card-xl-stretch mb-xl-8">
                     <!--begin::Header-->
-                    <div class="card-header border-0">
+                    <div class="card-header border-0 mt-5">
                         <h3 class="card-title fw-bolder text-dark">Notifications</h3>
                         <div class="card-toolbar">
                             @if(isset($notification) && count($notification) > 0)
@@ -179,6 +147,32 @@
                     </div>
                 </div>
            </div>
+
+            <div class="col-xl-8 col-md-8 col-lg-8 col-sm-8">
+                <div class="card mb-5 mb-xl-8">
+                    <div class="card-body">
+                        <div class="row mb-5">
+                            <div class="col-md-5 bg-light-warning px-6 py-8 rounded-2 me-7 min-w-150 col-box-5 position-relative">
+                              <a href="javascript:" class="text-warning fw-bold fs-6">Sales Order to Invoice Lead Time </a>
+                              <span class="count text-warning fw-bold fs-1">
+                                <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
+                                <span class="sales_order_to_invoice_lead_time_count"></span>
+                              </span>
+                            </div>
+
+                            <div class="col-md-5 bg-light-success px-6 py-8 rounded-2 me-7 min-w-150 col-box-5 position-relative">
+                              <a href="javascript:" class="text-success fw-bold fs-6">Invoice to Delivery Lead Time </a>
+                              <span class="count text-success fw-bold fs-1">
+                                <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="invoice_to_delivery_lead_time_loader_img"> 
+                                <span class="invoice_to_delivery_lead_time_count"></span>
+                              </span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
            @endif
         </div>
 

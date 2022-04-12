@@ -448,9 +448,19 @@ Route::middleware(['auth'])->group(function(){
             Route::post('debit-memo-report/get-all', 'DebitMemoReportController@getAll')->name('debit-memo-report.get-all');
             Route::get('debit-memo-report/export', 'DebitMemoReportController@export')->name('debit-memo-report.export');
 
+
             Route::resource('return-order-report','ReturnOrderReportController')->only('index');
             Route::post('return-order-report/get-all', 'ReturnOrderReportController@getAll')->name('return-order-report.get-all');
             Route::get('return-order-report/export', 'ReturnOrderReportController@export')->name('return-order-report.export');
+
+            Route::resource('sales-order-to-invoice-lead-time-report','SalesOrderToInvoiceLeadTimeReportController')->only('index');
+            Route::post('sales-order-to-invoice-lead-time-report/get-all', 'SalesOrderToInvoiceLeadTimeReportController@getAll')->name('sales-order-to-invoice-lead-time-report.get-all');
+            Route::get('sales-order-to-invoice-lead-time-report/export', 'SalesOrderToInvoiceLeadTimeReportController@export')->name('sales-order-to-invoice-lead-time-report.export');
+
+
+            Route::resource('invoice-to-delivery-lead-time-report','InvoiceToDeliveryLeadTimeReportController')->only('index');
+            Route::post('invoice-to-delivery-lead-time-report/get-all', 'InvoiceToDeliveryLeadTimeReportController@getAll')->name('invoice-to-delivery-lead-time-report.get-all');
+            Route::get('invoice-to-delivery-lead-time-report/export', 'InvoiceToDeliveryLeadTimeReportController@export')->name('invoice-to-delivery-lead-time-report.export');
         });
 
     });

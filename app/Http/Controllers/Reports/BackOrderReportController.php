@@ -27,7 +27,7 @@ class BackOrderReportController extends Controller
     }
 
     public function getAll(Request $request){
-        $data = OrderItem::orderBy('id','DESC');
+        $data = OrderItem::where('remaining_open_quantity', '>', 0)->orderBy('id','DESC');
 
         $data->whereHas('order', function($q){
             $q->where('document_status', 'bost_Open');
@@ -135,7 +135,7 @@ class BackOrderReportController extends Controller
           $filter = json_decode(base64_decode($request->data));
         }
 
-        $data = OrderItem::orderBy('id','DESC');
+        $data = OrderItem::where('remaining_open_quantity', '>', 0)->orderBy('id','DESC');
 
         $data->whereHas('order', function($q){
             $q->where('document_status', 'bost_Open');

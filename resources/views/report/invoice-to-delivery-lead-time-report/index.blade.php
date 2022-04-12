@@ -1,13 +1,13 @@
 @extends('layouts.master')
 
-@section('title','Overdue Sales Invoice Report')
+@section('title','Invoice To Delivery Lead Time Report')
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Overdue Sales Invoice Report</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Invoice To Delivery Lead Time Report</h1>
       </div>
 
       <!--begin::Actions-->
@@ -63,45 +63,10 @@
                   </select>
                 </div>
 
-                <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
-                    <span>
-                    </span>
-                  </div>
-                </div>
-
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mr-10">Clear</a>
                   <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
-                </div>
-
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      {{-- Number of Sales Orders --}}
-      <div class="row gy-5 g-xl-8">
-        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
-          <div class="card card-xl-stretch mb-5 mb-xl-8">
-            {{-- <div class="card-header border-0 pt-5 min-0">
-              <h5 class="text-info">Number of Sales Orders</h5>
-            </div> --}}
-            <div class="card-body">
-              <div class="row mb-5">
-                <div class="col-md-6 bg-light-dark px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
-                  <a href="javascript:" class="text-dark fw-bold fs-6">Number of Overdue Invoices </a>
-                  <span class="count text-dark fw-bold fs-1 number_of_overdue_invoices_count">0</span>
-                </div>
-
-                <div class="col-md-6 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
-                  <a href="javascript:" class="text-success fw-bold fs-6">Total Amount of Overdue Invoices</a>
-                  <span class="count text-success fw-bold fs-1 total_amount_of_overdue_invoices_count">0</span>
                 </div>
 
               </div>
@@ -129,11 +94,15 @@
                           <thead>
                             <tr>
                               <th>No</th>
-                              <th>Invoice #</th>
-                              <th>Business Unit</th>
                               <th>Customer Name</th>
-                              <th>Total</th>
-                              <th>Created Date</th>
+                              <th>Business Unit</th>
+                              <th>Invoice Date</th>
+                              <th>Invoice No</th>
+                              <th>Sales Specialist</th>
+                              <th>Delivery Date</th>
+                              <th>Delivery Status</th>
+                              <th>Reference/Order No</th>
+                              <th>Lead Time</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -183,18 +152,16 @@
     function render_data(){
 
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
-      $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
 
       $.ajax({
-        url: '{{ route('reports.overdue-sales-invoice-report.get-all') }}',
+        url: '{{ route('reports.invoice-to-delivery-lead-time-report.get-all') }}',
         method: "POST",
         data: {
                 _token:'{{ csrf_token() }}',
                 filter_company : $filter_company,
-                filter_date_range : $filter_date_range,
                 filter_customer : $filter_customer,
                 filter_brand : $filter_brand,
                 filter_sales_specialist : $filter_sales_specialist,
@@ -205,23 +172,11 @@
           toast_success(result.message);
           
           render_table(result.data.table.original.data);
-
-          $('.number_of_overdue_invoices_count').text(result.data.number_of_overdue_invoices);
-          $('.total_amount_of_overdue_invoices_count').text("₱ " + get_format_number_value(result.data.total_amount_of_overdue_invoices))
         }
       })
       .fail(function() {
         toast_error("error");
       });
-    }
-
-    function get_format_number_value(number) {
-      var formatter = new Intl.NumberFormat('en-US', {
-        // style: 'currency',
-        currency: 'PHL',
-      });
-
-      return formatter.format(number); 
     }
 
     function render_table(jsonData){
@@ -241,11 +196,15 @@
         data: jsonData,
         columns: [
             {data: 'DT_RowIndex' ,orderable:false,searchable:false},
-            {data: 'doc_entry', name: 'doc_entry' ,orderable:false,searchable:false},
+            {data: 'card_name', name: 'card_name' ,orderable:false,searchable:false},
             {data: 'company', name: 'company' ,orderable:false,searchable:false},
-            {data: 'name', name: 'name' ,orderable:false,searchable:false},
-            {data: 'total', name: 'total' ,orderable:false,searchable:false},
-            {data: 'date', name: 'date' ,orderable:false,searchable:false}
+            {data: 'invoice_date', name: 'date' ,orderable:false,searchable:false},
+            {data: 'invoice_doc_num', name: 'doc_num' ,orderable:false,searchable:false},
+            {data: 'sales_specialist', name: 'sales_specialist' ,orderable:false,searchable:false},
+            {data: 'u_delivery', name: 'u_delivery' ,orderable:false,searchable:false},
+            {data: 'u_sostat', name: 'u_sostat' ,orderable:false,searchable:false},
+            {data: 'num_at_card', name: 'num_at_card' ,orderable:false,searchable:false},
+            {data: 'lead_time', name: 'lead_time' ,orderable:false,searchable:false},
         ],
         drawCallback:function(){
             $(function () {
@@ -279,7 +238,6 @@
         $('.filter_brand_div').hide();
         $('.other_filter_div').hide();
       }
-
     });
 
     $(document).on('change', '[name="filter_brand"]', function(event) {
@@ -376,11 +334,10 @@
 
 
     $(document).on("click", ".download_excel", function(e) {
-      var url = "{{route('reports.overdue-sales-invoice-report.export')}}";
+      var url = "{{route('reports.invoice-to-delivery-lead-time-report.export')}}";
 
       var data = {};
       data.filter_company = $('[name="filter_company"]').find('option:selected').val();
-      data.filter_date_range = $('[name="filter_date_range"]').val();
       data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
