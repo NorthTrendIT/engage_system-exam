@@ -95,6 +95,21 @@
                 </div>
 
               </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5">
+              <h5 class="text-info">List Of Records</h5>
+            </div>
+            <div class="card-body">
+              
               <div class="row mb-5 mt-5">
                 <div class="col-md-12">
                   <div class="form-group">
@@ -130,6 +145,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
