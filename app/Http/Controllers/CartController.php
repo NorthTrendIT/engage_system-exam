@@ -268,6 +268,7 @@ class CartController extends Controller
                 $order->placed_by = "C";
                 $order->confirmation_status = "P";
                 $order->sap_connection_id = @Auth::user()->customer->sap_connection_id;
+                $order->total = $total_amount;
                 $order->save();
 
                 $products = Cart::where('customer_id', $customer_id)->get();
