@@ -268,9 +268,9 @@ class CartController extends Controller
                 $order->placed_by = "C";
                 $order->confirmation_status = "P";
                 $order->sap_connection_id = @Auth::user()->customer->sap_connection_id;
-                $order->total = $total_amount;
                 $order->save();
 
+                $total = 0;
                 $products = Cart::where('customer_id', $customer_id)->get();
                 if( !empty($products) ){
                     foreach($products as $value){
@@ -282,8 +282,13 @@ class CartController extends Controller
                         $item->price = get_product_customer_price(@$value->product->item_prices,@$order->customer->price_list_num);
                         $item->total = $item->price * $item->quantity;
                         $item->save();
+                        
+                        $total += $item->total;
                     }
                 }
+
+                $order->total = $total;
+                $order->save();
             }
 
             Cart::where('customer_id', $customer_id)->delete();
