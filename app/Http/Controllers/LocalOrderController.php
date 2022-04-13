@@ -111,7 +111,6 @@ class LocalOrderController extends Controller
                     $products = $input['products'];
                     LocalOrderItem::where('local_order_id', $order->id)->delete();
                     foreach($products as $value){
-                        // dd($value);
                         $item = new LocalOrderItem();
                         $item->local_order_id = $order->id;
                         $item->product_id = @$value['product_id'];
