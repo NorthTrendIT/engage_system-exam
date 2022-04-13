@@ -50,7 +50,7 @@ class LocalOrderController extends Controller
         $input = $request->all();
 
         if(@$request->total_amount < 1){
-            unset($input['total_amount']);
+            // unset($input['total_amount']);
             return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
         }
         
@@ -103,6 +103,7 @@ class LocalOrderController extends Controller
                 $order->placed_by = "S";
                 $order->confirmation_status = "P";
                 $order->sap_connection_id = $customer->sap_connection_id;
+                $order->total = $input['total_amount'];
                 $order->save();
 
                 $total = 0;
@@ -249,7 +250,8 @@ class LocalOrderController extends Controller
                             }
                         })
                         ->addColumn('total', function($row) {
-                            return '<b>₱ '. number_format_value($row->total).'</b>';
+                            $amount = @$row->quotation->doc_total ?? @$row->total ?? 0.00;
+                            return '<b>₱ '. number_format_value($amount).'</b>';
                         })
                         ->addColumn('due_date', function($row) {
                             return date('M d, Y',strtotime($row->due_date));

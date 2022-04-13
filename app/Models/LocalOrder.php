@@ -15,6 +15,7 @@ class LocalOrder extends Model
         'placed_by',
         'confirmation_status',
         'due_date',
+        'total',
         'card_code',
         'card_name',
         'address_id',
