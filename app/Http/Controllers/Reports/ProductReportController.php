@@ -242,8 +242,8 @@ class ProductReportController extends Controller
         foreach($company as $key => $item){
             $companyName = $item->company_name;
 
-            // Company Name
-            array_push($category, $companyName);
+            // // Company Name
+            // array_push($category, $companyName);
 
             // Active Products
             $active = Product::where('sap_connection_id', $item->id)->where('is_active', 1)->count();
@@ -262,6 +262,11 @@ class ProductReportController extends Controller
                 ->count();
 
             array_push($productMovement, $movement);
+
+
+            // Company Name
+            $companyName .= " (".($active+$sleeping+$movement).")";
+            array_push($category, $companyName);
 
         }
         $data = [];

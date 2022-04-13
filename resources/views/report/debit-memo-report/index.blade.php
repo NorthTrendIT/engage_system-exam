@@ -84,6 +84,26 @@
             </div>
             <div class="card-body">
               <div class="row mb-5">
+                <div class="col-md-12 form-group">
+                  
+                  <h6>Grand Total Of Amount: 
+                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
+                    <span class="grand_total_of_amount_count text-primary "></span>
+                  </h6>
+
+                  <h6>Grand Total Of Price After VAT: 
+                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
+                    <span class="grand_total_of_price_after_vat_count text-primary "></span>
+                  </h6>
+
+                  <h6>Grand Total Of Gross Total: 
+                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
+                    <span class="grand_total_of_gross_total_count text-primary "></span>
+                  </h6>
+                </div>
+              </div>
+
+              <div class="row mb-5">
                 <div class="col-md-12">
                   <div class="form-group">
                     <!--begin::Table container-->
@@ -152,6 +172,11 @@
     render_data();
     function render_data(){
 
+      $('.loader_img').show();
+      $('.grand_total_of_amount_count').text("");
+      $('.grand_total_of_price_after_vat_count').text("");
+      $('.grand_total_of_gross_total_count').text("");
+
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
@@ -172,10 +197,17 @@
         if(result.status){
           toast_success(result.message);
           
+          $('.loader_img').hide();
+
+          $('.grand_total_of_amount_count').text(result.data.grand_total_of_amount);
+          $('.grand_total_of_price_after_vat_count').text(result.data.grand_total_of_price_after_vat);
+          $('.grand_total_of_gross_total_count').text(result.data.grand_total_of_gross_total);
+          
           render_table(result.data.table.original.data);
         }
       })
       .fail(function() {
+        $('.loader_img').hide();
         toast_error("error");
       });
     }

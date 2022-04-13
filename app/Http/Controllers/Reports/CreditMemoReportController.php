@@ -45,6 +45,20 @@ class CreditMemoReportController extends Controller
         
         $data = $this->getReportResultData($request);
 
+        $doc_totals = array_value_recursive('doc_total', $data->get()->toArray());
+        if($doc_totals != null){
+            $grand_total_of_amount = '₱ '. number_format_value(
+                                            array_sum(
+                                                $doc_totals
+                                            )
+                                        );
+        }else{
+            $grand_total_of_amount = '₱ 0.00';
+        }
+        $grand_total_of_price_after_vat = '₱ '. number_format_value($data->sum('price_after_vat'));
+        $grand_total_of_gross_total = '₱ '. number_format_value($data->sum('gross_total'));
+
+
         $table = DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('card_name', function($row) {
@@ -89,6 +103,9 @@ class CreditMemoReportController extends Controller
 
         $data = compact(
                         'table',
+                        'grand_total_of_amount',
+                        'grand_total_of_price_after_vat',
+                        'grand_total_of_gross_total',
                     );
 
         return $response = [ 'status' => true , 'message' => 'Report details fetched successfully !' , 'data' => $data ];
@@ -133,7 +150,7 @@ class CreditMemoReportController extends Controller
 
     public function getReportResultData($request){
 
-        $data = CreditNoteItem::orderBy('credit_note_id', 'DESC');
+        $data = CreditNoteItem::with('credit_note')->orderBy('credit_note_id', 'DESC');
 
         $data->whereHas('credit_note', function($q){
             $q->where('doc_type', 'dDocument_Service')->where('document_status', 'bost_Open')->where('doc_total', '>', 0);
