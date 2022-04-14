@@ -465,6 +465,10 @@ class OrdersController extends Controller
 
     public function completeOrder(Request $request){
 
+        if(!@$request->is_accept){
+            return $response = ['status' => false, 'message' => 'Please accept the checkbox of mark the order as completed.'];
+        }
+
         $response = ['status' => false, 'message' => 'Record not found!'];
 
         $quotation = Quotation::where('id', $request->id);
@@ -478,10 +482,10 @@ class OrdersController extends Controller
 
         $quotation = $quotation->first();
         if(!empty($quotation)){
-            
             if(@$quotation->order->invoice){
 
                 $quotation->order->invoice->completed_date = date('Y-m-d H:i:s');
+                $quotation->order->invoice->completed_remarks = @$request->remarks;
                 $quotation->order->invoice->save();
 
                 $response = ['status' => true, 'message' => 'Order completed successfully!'];

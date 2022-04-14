@@ -220,9 +220,9 @@
                                   <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
                                 @endif
 
-                                @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->id,1]))
+                                {{-- @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->id,1]))
                                   <a href="javascript:" class="btn btn-info btn-sm mark-as-completed-order" title="Mark as Completed">Mark as Completed</a>
-                                @endif
+                                @endif --}}
 
                               </div>
                               <!--end::Text-->
@@ -315,15 +315,76 @@
                 </div>
               </div>
 
-
-
             </div>
           </div>
         </div>
       </div>
 
+      @if(empty(@$data->order->invoice->completed_date) && userrole() == 1)
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5 min-0">
+              <h5 class="text-info">Customer Order Remarks</h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <p>{{ @$data->order->invoice->completed_remarks }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      @endif
+      
+      <!-- Access only for admin-->
+      @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->id,1]) && @$data->order->invoice->id && empty(@$data->order->invoice->completed_date))
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-5 min-0">
+              <h5 class="text-info">Complete Order</h5>
+            </div>
+            <div class="card-body">
+              <form id="myForm" method="post">
+                @csrf
+                <input type="hidden" name="id" value="{{ @$data->id }}">
+                <div class="row">
+                  <div class="col-md-6 mt-5">
+                    <div class="form-group">
+                      <label><input type="checkbox" name="is_accept" class="form-check-input mr-10" value="1" title="Mark the Order as Completed" checked>Mark the Order as Completed.<span class="asterisk">*</span></label>
+                    </div>
+                  </div>
+                  
+                </div>
 
-      <!-- Access only for admin -->
+                <div class="row">
+                  <div class="col-md-6 mt-5">
+                    <div class="form-group">
+                      <label>Remarks</label>
+                      <textarea class="form-control form-control-lg form-control-solid" name="remarks" placeholder="Enter your remarks"></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mt-5">
+                    <div class="form-group">
+                      <button type="submit" class="btn btn-success mt-6">Save</button>
+                    </div>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      @endif
 
     </div>
   </div>
@@ -344,64 +405,6 @@
 
   $(document).ready(function() {
 
-    $('body').on("submit", "#myForm", function (e) {
-      e.preventDefault();
-      var validator = validate_form();
-
-      if (validator.form() != false) {
-
-        $('[type="submit"]').prop('disabled', true);
-        $.ajax({
-          url: "{{route('customer-promotion.order.status')}}",
-          type: "POST",
-          data: new FormData($("#myForm")[0]),
-          async: false,
-          processData: false,
-          contentType: false,
-          success: function (data) {
-            if (data.status) {
-              toast_success(data.message)
-              setTimeout(function(){
-                window.location.reload();
-              },500)
-            } else {
-              toast_error(data.message);
-              $('[type="submit"]').prop('disabled', false);
-            }
-          },
-          error: function () {
-            toast_error("Something went to wrong !");
-            $('[type="submit"]').prop('disabled', false);
-          },
-        });
-      }
-    });
-
-
-    function validate_form(){
-      var validator = $("#myForm").validate({
-          errorClass: "is-invalid",
-          validClass: "is-valid",
-          rules: {
-            status:{
-              required:true,
-            },
-            cancel_reason:{
-              required: function () {
-                        if($('[name="status"]').find('option:selected').val() == 'canceled'){
-                          return true;
-                        }else{
-                          return false;
-                        }
-                    },
-            }
-          },
-          messages: {
-
-          },
-      });
-      return validator;
-    }
 
     $(document).on('click', '.push-in-sap', function(event) {
       event.preventDefault();
@@ -520,8 +523,8 @@
       });
     @endif
 
-    @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->id,1]))
-      $(document).on('click', '.mark-as-completed-order', function(event) {
+    @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->id,1]) && @$data->order->invoice->id && empty(@$data->order->invoice->completed_date))
+      /*$(document).on('click', '.mark-as-completed-order', function(event) {
         event.preventDefault();
 
         Swal.fire({
@@ -535,11 +538,11 @@
         }).then((result) => {
           if (result.isConfirmed) {
             $.ajax({
-              url: '{{ route('orders.complete-order') }}',
+              url: '{{--{{ route('orders.complete-order') }} --}}',
               method: "POST",
               data: {
-                      _token:'{{ csrf_token() }}',
-                      id:'{{ $data->id }}'
+                      _token:'{{--{{ csrf_token() }} --}}',
+                      id:'{{--{{ $data->id }} --}}'
                     }
             })
             .done(function(result) {
@@ -557,8 +560,74 @@
             });
           }
         })
+      });*/
+
+      $('body').on("submit", "#myForm", function (e) {
+        e.preventDefault();
+        var validator = validate_form();
+        
+        if (validator.form() != false) {
+
+          Swal.fire({
+            title: 'Are you sure want to complete order ?',
+            text: "Once completed, you will not be able to recover this record!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, update it!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $('[type="submit"]').prop('disabled', true);
+              $.ajax({
+                url: "{{route('orders.complete-order')}}",
+                type: "POST",
+                data: new FormData($("#myForm")[0]),
+                async: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                  if (data.status) {
+                    toast_success(data.message)
+                    setTimeout(function(){
+                      window.location.reload();
+                    },500)
+                  } else {
+                    toast_error(data.message);
+                    $('[type="submit"]').prop('disabled', false);
+                  }
+                },
+                error: function () {
+                  toast_error("Something went to wrong !");
+                  $('[type="submit"]').prop('disabled', false);
+                },
+              });
+            }
+          });
+        }
       });
+
+      function validate_form(){
+        var validator = $("#myForm").validate({
+            errorClass: "is-invalid",
+            validClass: "is-valid",
+            rules: {
+              department_id:{
+                required:true,
+              },
+              remarks:{
+                maxlength:300,
+              },
+            },
+            messages: {
+              
+            },
+        });
+        return validator;
+      }
+
     @endif
+
   });
 
 </script>
