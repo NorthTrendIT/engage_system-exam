@@ -167,6 +167,14 @@
                      </div>
                      <!--end::Menu item-->
 
+                     @if(userrole() == 1)
+                     <!--begin::Menu item-->
+                     <div class="menu-item px-5">
+                        <a href="{{ asset('assets/files/OMS_DOCUMENT.pdf') }}" class="menu-link px-5" target="_blank"><i class="fa fa-file text-success mr-10"></i> <span>Documentation</span></a>
+                     </div>
+                     <!--end::Menu item-->
+                     @endif
+
                      <!--begin::Menu item-->
                      <div class="menu-item px-5">
                         <a href="{{ route('logout') }}" class="menu-link px-5"><i class="fa fa-sign-out-alt text-danger mr-10"></i> Sign Out</a>
