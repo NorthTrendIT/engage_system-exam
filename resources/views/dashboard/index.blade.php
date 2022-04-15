@@ -113,8 +113,8 @@
                         @endif
                     </div>
                 </div>
-</div>
-<div class="col-xl-6">
+            </div>
+            <div class="col-xl-6">
                 <!-- Pending Promotion -->
                 <div class="card card-custom gutter-b">
                     <div class="card-header border-0 pt-5">
@@ -147,41 +147,44 @@
                         @endif
                     </div>
                 </div>
-           </div>
+            </div>
 
             <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
                 <div class="card mb-5 mb-xl-8">
                     <div class="card-body">
-                        <div class="row mb-5">
-                            <div class="col-md-6">
-                               <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center">
-                                 <a href="{{ route('reports.sales-order-to-invoice-lead-time-report.index') }}" class="text-warning fw-bold fs-6">Sales Order to Invoice Lead Time </a>
-                                 <span class="count text-warning fw-bold fs-1">
-                                 <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
-                                 <span class="sales_order_to_invoice_lead_time_count"></span>
-                                 </span>
-                              </div>
+                        <div class="row mb-5 ">
+                            <div class="col-md-12 d-flex justify-content-end">
+                                <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm sync-lead-time" title="Sync" ><i class="fa fa-sync"></i></a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-sm-5 mb-md-0 mb-lg-0">
+                                <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center">
+                                    <a href="{{ route('reports.sales-order-to-invoice-lead-time-report.index') }}" class="text-warning fw-bold fs-6">Sales Order to Invoice Lead Time </a>
+                                    <span class="count text-warning fw-bold fs-1">
+                                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
+                                    <span class="sales_order_to_invoice_lead_time_count">{{ @$sales_order_to_invoice_lead_time->value ? @$sales_order_to_invoice_lead_time->value." Day(s)" : "" }}</span>
+                                    </span>
+                                </div>
                             </div>
 
                             <div class="col-md-6">
-                               <div class="bg-light-success px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center">
-                                 <a href="{{ route('reports.invoice-to-delivery-lead-time-report.index') }}" class="text-success fw-bold fs-6">Invoice to Delivery Lead Time </a>
-                                 <span class="count text-success fw-bold fs-1">
-                                 <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="invoice_to_delivery_lead_time_loader_img"> 
-                                 <span class="invoice_to_delivery_lead_time_count"></span>
-                                 </span>
+                                <div class="bg-light-success px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center">
+                                    <a href="{{ route('reports.invoice-to-delivery-lead-time-report.index') }}" class="text-success fw-bold fs-6">Invoice to Delivery Lead Time </a>
+                                    <span class="count text-success fw-bold fs-1">
+                                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="invoice_to_delivery_lead_time_loader_img"> 
+                                    <span class="invoice_to_delivery_lead_time_count">{{ @$invoice_to_delivery_lead_time->value ? @$invoice_to_delivery_lead_time->value." Day(s)" : "" }}</span>
+                                    </span>
                               </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
-
            @endif
         </div>
 
-        <div class="row gy-5 g-xl-8 pt-6">
+        <div class="row gy-5 g-xl-8">
             <!-- Promotion Report -->
             <div class="col-xl-6">
                 <div class="card card-xl-stretch mb-xl-8">
@@ -189,61 +192,7 @@
                         <h3 class="card-title align-items-start flex-column">
                             <a href="{{ route('reports.promotion-report.index') }}" class="text-dark text-hover-primary fw-bolder fs-3">Promotion Reports</a>
                         </h3>
-                        <!-- <div class="card-toolbar">
-                            <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                <span class="svg-icon svg-icon-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24">
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <rect x="5" y="5" width="5" height="5" rx="1" fill="#000000"></rect>
-                                            <rect x="14" y="5" width="5" height="5" rx="1" fill="#000000" opacity="0.3"></rect>
-                                            <rect x="5" y="14" width="5" height="5" rx="1" fill="#000000" opacity="0.3"></rect>
-                                            <rect x="14" y="14" width="5" height="5" rx="1" fill="#000000" opacity="0.3"></rect>
-                                        </g>
-                                    </svg>
-                                </span>
-                            </button>
-                            <div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true" id="kt_menu_622acb65b541a">
-                                <div class="px-7 py-5">
-                                    <div class="fs-5 text-dark fw-bolder">Filter Options</div>
-                                </div>
-
-                                <div class="separator border-gray-200"></div>
-                                <div class="px-7 py-5">
-                                    <div class="mb-10">
-                                        <label class="form-label fw-bold">Business Unit:</label>
-                                        <div>
-                                            <select class="form-select form-select-solid select2-hidden-accessible" data-kt-select2="true" data-placeholder="Select Business Unit"  data-allow-clear="true" tabindex="-1"  name="filter_company">
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="mb-10">
-                                        <label class="form-label fw-bold">Member Type:</label>
-                                        <div class="d-flex">
-                                            <label class="form-check form-check-sm form-check-custom form-check-solid me-5">
-                                                <input class="form-check-input" type="checkbox" value="1">
-                                                <span class="form-check-label">Author</span>
-                                            </label>
-                                            <label class="form-check form-check-sm form-check-custom form-check-solid">
-                                                <input class="form-check-input" type="checkbox" value="2" checked="checked">
-                                                <span class="form-check-label">Customer</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-10">
-                                        <label class="form-label fw-bold">Notifications:</label>
-                                        <div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                            <input class="form-check-input" type="checkbox" value="" name="notifications" checked="checked">
-                                            <label class="form-check-label">Enabled</label>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <button type="reset" class="btn btn-sm btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true">Reset</button>
-                                        <button type="submit" class="btn btn-sm btn-primary" data-kt-menu-dismiss="true">Apply</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
+                        
                     </div>
 
                     <div class="card-body">
@@ -265,61 +214,7 @@
                         <h3 class="card-title align-items-start flex-column">
                             <a href="{{ route('reports.product-report.index') }}" class="text-dark text-hover-primary fw-bolder fs-3">Product Reports</a>
                         </h3>
-                        <!-- <div class="card-toolbar">
-                            <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                <span class="svg-icon svg-icon-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24">
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <rect x="5" y="5" width="5" height="5" rx="1" fill="#000000"></rect>
-                                            <rect x="14" y="5" width="5" height="5" rx="1" fill="#000000" opacity="0.3"></rect>
-                                            <rect x="5" y="14" width="5" height="5" rx="1" fill="#000000" opacity="0.3"></rect>
-                                            <rect x="14" y="14" width="5" height="5" rx="1" fill="#000000" opacity="0.3"></rect>
-                                        </g>
-                                    </svg>
-                                </span>
-                            </button>
-                            <div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true" id="kt_menu_622acb65b541a">
-                                <div class="px-7 py-5">
-                                    <div class="fs-5 text-dark fw-bolder">Filter Options</div>
-                                </div>
-
-                                <div class="separator border-gray-200"></div>
-                                <div class="px-7 py-5">
-                                    <div class="mb-10">
-                                        <label class="form-label fw-bold">Business Unit:</label>
-                                        <div>
-                                            <select class="form-select form-select-solid select2-hidden-accessible" data-kt-select2="true" data-placeholder="Select Business Unit"  data-allow-clear="true" tabindex="-1"  name="filter_company">
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="mb-10">
-                                        <label class="form-label fw-bold">Member Type:</label>
-                                        <div class="d-flex">
-                                            <label class="form-check form-check-sm form-check-custom form-check-solid me-5">
-                                                <input class="form-check-input" type="checkbox" value="1">
-                                                <span class="form-check-label">Author</span>
-                                            </label>
-                                            <label class="form-check form-check-sm form-check-custom form-check-solid">
-                                                <input class="form-check-input" type="checkbox" value="2" checked="checked">
-                                                <span class="form-check-label">Customer</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-10">
-                                        <label class="form-label fw-bold">Notifications:</label>
-                                        <div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                            <input class="form-check-input" type="checkbox" value="" name="notifications" checked="checked">
-                                            <label class="form-check-label">Enabled</label>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <button type="reset" class="btn btn-sm btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true">Reset</button>
-                                        <button type="submit" class="btn btn-sm btn-primary" data-kt-menu-dismiss="true">Apply</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
+                        
                     </div>
 
                     <div class="card-body">
@@ -596,33 +491,56 @@
 
 
     @if(userrole() == 1)
-    render_report_data();
-    function render_report_data(){
-        $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').show();
-        $.ajax({
-            url: '{{ route('home.get-report-data') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                }
-        })
-        .done(function(result) {
-            if(result.status){
-                // toast_success(result.message);
 
-                $('.sales_order_to_invoice_lead_time_count').text(result.data.sales_order_to_invoice_lead_time + " Day(s)");
-                $('.invoice_to_delivery_lead_time_count').text(result.data.invoice_to_delivery_lead_time + " Day(s)");
-            }else{
-                toast_error(result.message);
-            }
-            $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
-        })
-        .fail(function() {
-            toast_error("error");
-            $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
+        @if(is_null(@$sales_order_to_invoice_lead_time->value) || is_null(@$invoice_to_delivery_lead_time->value))
+            render_report_data();
+        @endif
+
+        function render_report_data(){
+            $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').show();
+            $('.sales_order_to_invoice_lead_time_count, .invoice_to_delivery_lead_time_count').text("");
+            $.ajax({
+                url: '{{ route('home.get-report-data') }}',
+                method: "POST",
+                data: {
+                        _token:'{{ csrf_token() }}',
+                    }
+            })
+            .done(function(result) {
+                if(result.status){
+                    // toast_success(result.message);
+
+                    $('.sales_order_to_invoice_lead_time_count').text(result.data.sales_order_to_invoice_lead_time + " Day(s)");
+                    $('.invoice_to_delivery_lead_time_count').text(result.data.invoice_to_delivery_lead_time + " Day(s)");
+                }else{
+                    toast_error(result.message);
+                }
+                $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
+            })
+            .fail(function() {
+                toast_error("error");
+                $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
+            });  
+        }
+
+
+        $(document).on('click', '.sync-lead-time', function(event) {
+            event.preventDefault();
+
+            Swal.fire({
+                title: 'Are you sure want to sync details?',
+                text: "It may take some time to sync details.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, do it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    render_report_data();
+                }
+            })
         });
-        
-    }
     @endif
 </script>
 @endif

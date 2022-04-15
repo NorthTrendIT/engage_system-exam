@@ -81,25 +81,25 @@
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-body">
               <div class="row">
-                <div class="col-md-4">
-                  <div class="bg-light-warning px-6 py-8 mb-sm-5 mb-md-0 rounded-2 min-w-150 position-relative">
-                    <h6 class="d-flex justify-content-between align-items-center m-0">Grand Total Of Amount: 
+                <div class="col-md-4 mb-sm-5 mb-md-0">
+                  <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative h-100">
+                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Amount: 
                       <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
                       <span class="grand_total_of_amount_count text-primary "></span>
                     </h6>
                   </div>
                 </div>
-                <div class="col-md-4">
-                  <div class="bg-light-chocolate px-6 py-8 mb-sm-5 mb-md-0 rounded-2 min-w-150 position-relative">
-                    <h6 class="d-flex justify-content-between align-items-center m-0">Grand Total Of Price After VAT: 
+                <div class="col-md-4 mb-sm-5 mb-md-0">
+                  <div class="bg-light-chocolate px-6 py-8 rounded-2 min-w-150 position-relative h-100">
+                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Price After VAT: 
                       <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
                       <span class="grand_total_of_price_after_vat_count text-primary "></span>
                     </h6>
                   </div>
                 </div>
                 <div class="col-md-4">
-                  <div class="bg-light-red px-6 py-8 rounded-2 min-w-150 position-relative">
-                    <h6 class="d-flex justify-content-between align-items-center m-0">Grand Total Of Gross Total: 
+                  <div class="bg-light-red px-6 py-8 rounded-2 min-w-150 position-relative h-100">
+                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Gross Total: 
                       <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
                       <span class="grand_total_of_gross_total_count text-primary "></span>
                     </h6>
