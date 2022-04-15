@@ -335,14 +335,16 @@
                 };
             },
             processResults: function (response) {
-              return {
-                results:  $.map(response, function (item) {
-                              return {
-                                text: item.card_name + " (Code: " + item.card_code + ")",
-                                id: item.card_code
-                              }
-                          })
-              };
+                $options = [{ id: 'all', text: 'All'}];
+                response.forEach(function(value, key) {
+                    $options.push({
+                                text: value.card_name + " (Code: " + value.card_code + ")",
+                                id: value.card_code
+                            });
+                })
+                return {
+                    results: $options
+                };
             },
             cache: true
         },
@@ -396,8 +398,8 @@
         data.filter_search = $('[name="filter_search"]').val();
         data.filter_date_range = $('[name="filter_date_range"]').val();
         data.filter_status = $('[name="filter_status"]').find('option:selected').val();
-        data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
         data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+        data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
         data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
         data.filter_class = $('[name="filter_class"]').find('option:selected').val();
         data.filter_territory = $('[name="filter_territory"]').find('option:selected').val();
