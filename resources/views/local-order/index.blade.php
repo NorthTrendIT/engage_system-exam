@@ -37,14 +37,13 @@
                   </div>
                 </div>
 
-
-                <!-- <div class="col-md-3">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
-                    <option value="">Select status</option>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
-                  </select>
-                </div> -->
+                <div class="col-md-3">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
+                    </span>
+                  </div>
+                </div>
 
                 <div class="col-md-3">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
@@ -105,6 +104,7 @@ $(document).ready(function() {
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_date_range = $('[name="filter_date_range"]').val();
 
       table.DataTable({
           processing: true,

@@ -53,7 +53,7 @@ class LocalOrderController extends Controller
             // unset($input['total_amount']);
             return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
         }
-        
+
         $customer = Customer::find($input['customer_id']);
         $address = CustomerBpAddress::find($input['address_id']);
 
@@ -219,6 +219,15 @@ class LocalOrderController extends Controller
             $data->whereHas('customer', function($q) use ($request) {
                 $q->where('card_name','LIKE',"%".$request->filter_search."%");
             });
+        }
+
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('created_date', '>=' , $start);
+            $data->whereDate('created_date', '<=' , $end);
         }
 
         $data->when(!isset($request->order), function ($q) {
