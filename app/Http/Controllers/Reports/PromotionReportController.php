@@ -270,6 +270,5 @@ class PromotionReportController extends Controller
         array_push($data, array('name' => 'Canceled Promotion', 'data' => $cancelPromotion));
 
         return ['status' => true, 'data' => $data, 'category' => $category];
-
     }
 }
