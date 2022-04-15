@@ -184,7 +184,7 @@
            @endif
         </div>
 
-        <div class="row gy-5 g-xl-8 pt-6">
+        <div class="row gy-5 g-xl-8">
             <!-- Promotion Report -->
             <div class="col-xl-6">
                 <div class="card card-xl-stretch mb-xl-8">
@@ -192,61 +192,7 @@
                         <h3 class="card-title align-items-start flex-column">
                             <a href="{{ route('reports.promotion-report.index') }}" class="text-dark text-hover-primary fw-bolder fs-3">Promotion Reports</a>
                         </h3>
-                        <!-- <div class="card-toolbar">
-                            <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                <span class="svg-icon svg-icon-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24">
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <rect x="5" y="5" width="5" height="5" rx="1" fill="#000000"></rect>
-                                            <rect x="14" y="5" width="5" height="5" rx="1" fill="#000000" opacity="0.3"></rect>
-                                            <rect x="5" y="14" width="5" height="5" rx="1" fill="#000000" opacity="0.3"></rect>
-                                            <rect x="14" y="14" width="5" height="5" rx="1" fill="#000000" opacity="0.3"></rect>
-                                        </g>
-                                    </svg>
-                                </span>
-                            </button>
-                            <div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true" id="kt_menu_622acb65b541a">
-                                <div class="px-7 py-5">
-                                    <div class="fs-5 text-dark fw-bolder">Filter Options</div>
-                                </div>
-
-                                <div class="separator border-gray-200"></div>
-                                <div class="px-7 py-5">
-                                    <div class="mb-10">
-                                        <label class="form-label fw-bold">Business Unit:</label>
-                                        <div>
-                                            <select class="form-select form-select-solid select2-hidden-accessible" data-kt-select2="true" data-placeholder="Select Business Unit"  data-allow-clear="true" tabindex="-1"  name="filter_company">
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="mb-10">
-                                        <label class="form-label fw-bold">Member Type:</label>
-                                        <div class="d-flex">
-                                            <label class="form-check form-check-sm form-check-custom form-check-solid me-5">
-                                                <input class="form-check-input" type="checkbox" value="1">
-                                                <span class="form-check-label">Author</span>
-                                            </label>
-                                            <label class="form-check form-check-sm form-check-custom form-check-solid">
-                                                <input class="form-check-input" type="checkbox" value="2" checked="checked">
-                                                <span class="form-check-label">Customer</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-10">
-                                        <label class="form-label fw-bold">Notifications:</label>
-                                        <div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                            <input class="form-check-input" type="checkbox" value="" name="notifications" checked="checked">
-                                            <label class="form-check-label">Enabled</label>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <button type="reset" class="btn btn-sm btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true">Reset</button>
-                                        <button type="submit" class="btn btn-sm btn-primary" data-kt-menu-dismiss="true">Apply</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
+                        
                     </div>
 
                     <div class="card-body">
@@ -268,61 +214,7 @@
                         <h3 class="card-title align-items-start flex-column">
                             <a href="{{ route('reports.product-report.index') }}" class="text-dark text-hover-primary fw-bolder fs-3">Product Reports</a>
                         </h3>
-                        <!-- <div class="card-toolbar">
-                            <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                <span class="svg-icon svg-icon-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24">
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <rect x="5" y="5" width="5" height="5" rx="1" fill="#000000"></rect>
-                                            <rect x="14" y="5" width="5" height="5" rx="1" fill="#000000" opacity="0.3"></rect>
-                                            <rect x="5" y="14" width="5" height="5" rx="1" fill="#000000" opacity="0.3"></rect>
-                                            <rect x="14" y="14" width="5" height="5" rx="1" fill="#000000" opacity="0.3"></rect>
-                                        </g>
-                                    </svg>
-                                </span>
-                            </button>
-                            <div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true" id="kt_menu_622acb65b541a">
-                                <div class="px-7 py-5">
-                                    <div class="fs-5 text-dark fw-bolder">Filter Options</div>
-                                </div>
-
-                                <div class="separator border-gray-200"></div>
-                                <div class="px-7 py-5">
-                                    <div class="mb-10">
-                                        <label class="form-label fw-bold">Business Unit:</label>
-                                        <div>
-                                            <select class="form-select form-select-solid select2-hidden-accessible" data-kt-select2="true" data-placeholder="Select Business Unit"  data-allow-clear="true" tabindex="-1"  name="filter_company">
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="mb-10">
-                                        <label class="form-label fw-bold">Member Type:</label>
-                                        <div class="d-flex">
-                                            <label class="form-check form-check-sm form-check-custom form-check-solid me-5">
-                                                <input class="form-check-input" type="checkbox" value="1">
-                                                <span class="form-check-label">Author</span>
-                                            </label>
-                                            <label class="form-check form-check-sm form-check-custom form-check-solid">
-                                                <input class="form-check-input" type="checkbox" value="2" checked="checked">
-                                                <span class="form-check-label">Customer</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-10">
-                                        <label class="form-label fw-bold">Notifications:</label>
-                                        <div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                            <input class="form-check-input" type="checkbox" value="" name="notifications" checked="checked">
-                                            <label class="form-check-label">Enabled</label>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <button type="reset" class="btn btn-sm btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true">Reset</button>
-                                        <button type="submit" class="btn btn-sm btn-primary" data-kt-menu-dismiss="true">Apply</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
+                        
                     </div>
 
                     <div class="card-body">

@@ -129,7 +129,7 @@ class SalesOrderToInvoiceLeadTimeReportController extends Controller
 
     public function getReportResultData($request){
 
-        $data = Invoice::has('order')->orderby('doc_date', 'desc');
+        $data = Invoice::has('order')->orderby('doc_date', 'desc')->take(500);
 
         if(@$request->filter_customer != ""){
             $data->where(function($q) use ($request) {
