@@ -351,14 +351,16 @@
                 };
             },
             processResults: function (response) {
-              return {
-                results:  $.map(response, function (item) {
-                              return {
-                                text: item.card_name + " (Code: " + item.card_code + ")",
-                                id: item.card_code
-                              }
-                          })
-              };
+                $options = [{ id: 'all', text: 'All'}];
+                response.forEach(function(value, key) {
+                    $options.push({
+                                text: value.card_name + " (Code: " + value.card_code + ")",
+                                id: value.card_code
+                            });
+                })
+                return {
+                    results: $options
+                };
             },
             cache: true
         },
