@@ -73,7 +73,7 @@
 
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
-                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mr-10">Clear</a>
+                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
                   <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
                 </div>
 
@@ -88,20 +88,24 @@
       {{-- Number of Sales Orders --}}
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
-          <div class="card card-xl-stretch mb-5 mb-xl-8">
+          <div class="card card-xl-stretch mb-5 mb-xl-12">
             {{-- <div class="card-header border-0 pt-5 min-0">
               <h5 class="text-info">Number of Sales Orders</h5>
             </div> --}}
             <div class="card-body">
               <div class="row mb-5">
-                <div class="col-md-6 bg-light-danger px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
+                <div class="col-md-6">
+                  <div class="bg-light-danger px-6 py-8 rounded-2 mb-7 min-w-150 position-relative d-flex justify-content-between align-items-center">
                   <a href="javascript:" class="text-danger fw-bold fs-6">Number of Overdue Invoices </a>
                   <span class="count text-danger fw-bold fs-1 number_of_overdue_invoices_count">0</span>
+            </div>
                 </div>
 
-                <div class="col-md-6 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
+                <div class="col-md-6">
+                  <div class="bg-light-success px-6 py-8 rounded-2 mb-7 min-w-150 position-relative d-flex justify-content-between align-items-center">
                   <a href="javascript:" class="text-success fw-bold fs-6">Total Amount of Overdue Invoices</a>
                   <span class="count text-success fw-bold fs-1 total_amount_of_overdue_invoices_count">0</span>
+            </div>
                 </div>
 
               </div>

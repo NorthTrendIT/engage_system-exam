@@ -12,9 +12,6 @@
 .detail-view-table .card .card-body tr th{width: 25%;padding-right: 10px !important;}
 .detail-view-table .card .card-body tr th, .detail-view-table .card .card-body tr td{border-bottom: 1px solid #f1f1f1;padding: 20px 0;vertical-align: middle;font-size: 14px;}
 .detail-view-table .card .card-body tr td p{margin-bottom: 0;}
-.position-relative{position: relative;}
-.position-relative a{margin-top: 40px;}
-span.count{position: absolute;top: 10px;right: 10px;}
 .reports .box{display: flex;flex-direction: column;height: 100%;flex: 1;}
 .reports .box .svg-icon object{height: 45px;}
 .aside-dark .menu .menu-item .menu-link .menu-icon i{font-size: 18px;}

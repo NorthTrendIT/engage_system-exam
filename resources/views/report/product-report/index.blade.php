@@ -90,8 +90,8 @@
 
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
-                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mr-10">Clear</a>
-                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel mr-10">Export Excel</a>
+                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
+                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel">Export Excel</a>
                 </div>
 
               </div>
