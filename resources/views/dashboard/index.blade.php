@@ -80,7 +80,7 @@
             @endif
            <!--begin::Col-->
            @if(Auth::user()->role_id == 1)
-           <div class="col-xl-4">
+           <div class="col-xl-6">
                 <!-- Pending Orders -->
                 <div class="card card-custom gutter-b">
                     <div class="card-header border-0 pt-5">
@@ -113,9 +113,10 @@
                         @endif
                     </div>
                 </div>
-
+</div>
+<div class="col-xl-6">
                 <!-- Pending Promotion -->
-                <div class="card card-custom gutter-b mt-5">
+                <div class="card card-custom gutter-b">
                     <div class="card-header border-0 pt-5">
                         <h3 class="card-title align-items-start flex-column mb-5">
                             @if(count($promotion) > 0)
@@ -148,24 +149,28 @@
                 </div>
            </div>
 
-            <div class="col-xl-8 col-md-8 col-lg-8 col-sm-8">
+            <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
                 <div class="card mb-5 mb-xl-8">
                     <div class="card-body">
                         <div class="row mb-5">
-                            <div class="col-md-5 bg-light-warning px-6 py-8 rounded-2 me-7 min-w-150 col-box-5 position-relative">
-                              <a href="{{ route('reports.sales-order-to-invoice-lead-time-report.index') }}" class="text-warning fw-bold fs-6">Sales Order to Invoice Lead Time </a>
-                              <span class="count text-warning fw-bold fs-1">
-                                <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
-                                <span class="sales_order_to_invoice_lead_time_count"></span>
-                              </span>
+                            <div class="col-md-6">
+                               <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center">
+                                 <a href="{{ route('reports.sales-order-to-invoice-lead-time-report.index') }}" class="text-warning fw-bold fs-6">Sales Order to Invoice Lead Time </a>
+                                 <span class="count text-warning fw-bold fs-1">
+                                 <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
+                                 <span class="sales_order_to_invoice_lead_time_count"></span>
+                                 </span>
+                              </div>
                             </div>
 
-                            <div class="col-md-5 bg-light-success px-6 py-8 rounded-2 me-7 min-w-150 col-box-5 position-relative">
-                              <a href="{{ route('reports.invoice-to-delivery-lead-time-report.index') }}" class="text-success fw-bold fs-6">Invoice to Delivery Lead Time </a>
-                              <span class="count text-success fw-bold fs-1">
-                                <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="invoice_to_delivery_lead_time_loader_img"> 
-                                <span class="invoice_to_delivery_lead_time_count"></span>
-                              </span>
+                            <div class="col-md-6">
+                               <div class="bg-light-success px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center">
+                                 <a href="{{ route('reports.invoice-to-delivery-lead-time-report.index') }}" class="text-success fw-bold fs-6">Invoice to Delivery Lead Time </a>
+                                 <span class="count text-success fw-bold fs-1">
+                                 <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="invoice_to_delivery_lead_time_loader_img"> 
+                                 <span class="invoice_to_delivery_lead_time_count"></span>
+                                 </span>
+                              </div>
                             </div>
 
                         </div>

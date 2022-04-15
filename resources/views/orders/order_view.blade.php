@@ -214,7 +214,7 @@
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
 
-                                <span>{!! getOrderStatusBtnHtml($status) !!}</span>
+                                <span class="mr-10">{!! getOrderStatusBtnHtml($status) !!}</span>
 
                                 @if($status == "Pending")
                                   <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
