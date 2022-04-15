@@ -229,6 +229,30 @@
                 <!--end::Charts Widget 1-->
             </div>
         </div>
+
+        <div class="row gy-5 g-xl-8">
+            <!-- Back Order Report-->
+            <div class="col-xl-12">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <a href="{{ route('reports.back-order-report.get-chart-data') }}" class="text-dark text-hover-primary fw-bolder fs-3">Back Order Report</a>
+                        </h3>
+                        
+                    </div>
+
+                    <div class="card-body">
+                        <!--begin::Chart-->
+                        <div id="back_order_report_cart" style="height: 350px; min-height: 365px;">
+
+                        </div>
+                        <!--end::Chart-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Charts Widget 1-->
+            </div>
+        </div>
      </div>
      <!--end::Container-->
   </div>
@@ -354,6 +378,26 @@
         .fail(function() {
             toast_error("error");
         });
+
+
+        // Get Back Order Report Chart Data
+        $.ajax({
+            url: '{{ route('reports.back-order-report.get-chart-data') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                }
+        })
+        .done(function(result) {
+            if(result.status == false){
+                toast_error(result.message);
+            }else{
+                render_back_order_graph(result.data, result.category)
+            }
+        })
+        .fail(function() {
+            toast_error("error");
+        });
     }
 
     function render_promotion_graph(data, category){
@@ -462,6 +506,60 @@
             productChart.destroy();
         }
         productChart.render();
+    }
+
+    function render_back_order_graph(data, category){
+
+        var options = {
+            series: data,
+            chart: {
+                type: 'bar',
+                height: 350,
+                toolbar: {
+                    show: false
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '35%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: category,
+            },
+            yaxis: {
+                title: {
+                    text: ''
+                }
+            },
+            fill: {
+                opacity: 1
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return  val
+                    }
+                }
+            },
+            colors:['#A1A5B7', '#009EF7', '#dc3545']
+        };
+
+        var backOrderChart = new ApexCharts(document.querySelector("#back_order_report_cart"), options);
+        if (backOrderChart.ohYeahThisChartHasBeenRendered) {
+            backOrderChart.destroy();
+        }
+        backOrderChart.render();
     }
 
     $('[name="filter_company"]').select2({
