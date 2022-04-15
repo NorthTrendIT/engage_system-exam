@@ -12,6 +12,7 @@ use App\Models\QuotationItem;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\SapConnection;
+use App\Models\SystemSetting;
 
 use Auth;
 
@@ -23,13 +24,18 @@ class HomeController extends Controller
         if(Auth::user()->role_id == 1){
             $local_order = LocalOrder::where('confirmation_status', 'ERR')->get();
             $promotion =  CustomerPromotion::where(['is_sap_pushed' => 0, 'status' => 'approved'])->get();
-            return view('dashboard.index', compact('local_order', 'promotion'));
+
+            $sales_order_to_invoice_lead_time = SystemSetting::where('key', 'sales_order_to_invoice_lead_time')->first();
+            $invoice_to_delivery_lead_time = SystemSetting::where('key', 'invoice_to_delivery_lead_time')->first();
+
+            return view('dashboard.index', compact('sales_order_to_invoice_lead_time','invoice_to_delivery_lead_time','local_order','promotion'));
         }
 
         if(Auth::user()->role_id != 1){
             $notification = getMyNotifications();
             return view('dashboard.index', compact('notification'));
         }
+
     	return view('dashboard.index');
     }
 
@@ -105,6 +111,26 @@ class HomeController extends Controller
             $sales_order_to_invoice_lead_time = round(array_sum($so_to_il_days_array) / count($so_to_il_days_array));
             $invoice_to_delivery_lead_time = round(array_sum($i_to_dl_days_array) / count($i_to_dl_days_array));
 
+
+            SystemSetting::updateOrCreate(
+                                        [
+                                            'key' => 'sales_order_to_invoice_lead_time',
+                                        ],
+                                        [
+                                            'key' => 'sales_order_to_invoice_lead_time',
+                                            'value' => $sales_order_to_invoice_lead_time,
+                                        ],
+                                    );
+
+            SystemSetting::updateOrCreate(
+                                        [
+                                            'key' => 'invoice_to_delivery_lead_time',
+                                        ],
+                                        [
+                                            'key' => 'invoice_to_delivery_lead_time',
+                                            'value' => $invoice_to_delivery_lead_time,
+                                        ],
+                                    );
 
             $data = compact('sales_order_to_invoice_lead_time','invoice_to_delivery_lead_time');
             return $response = [ 'status' => true, 'message' => "", 'data' => $data ];

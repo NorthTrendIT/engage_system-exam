@@ -113,8 +113,8 @@
                         @endif
                     </div>
                 </div>
-</div>
-<div class="col-xl-6">
+            </div>
+            <div class="col-xl-6">
                 <!-- Pending Promotion -->
                 <div class="card card-custom gutter-b">
                     <div class="card-header border-0 pt-5">
@@ -147,37 +147,40 @@
                         @endif
                     </div>
                 </div>
-           </div>
+            </div>
 
             <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
                 <div class="card mb-5 mb-xl-8">
                     <div class="card-body">
-                        <div class="row mb-5">
-                            <div class="col-md-6">
-                               <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center">
-                                 <a href="{{ route('reports.sales-order-to-invoice-lead-time-report.index') }}" class="text-warning fw-bold fs-6">Sales Order to Invoice Lead Time </a>
-                                 <span class="count text-warning fw-bold fs-1">
-                                 <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
-                                 <span class="sales_order_to_invoice_lead_time_count"></span>
-                                 </span>
-                              </div>
+                        <div class="row mb-5 ">
+                            <div class="col-md-12 d-flex justify-content-end">
+                                <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm sync-lead-time" title="Sync" ><i class="fa fa-sync"></i></a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-sm-5 mb-md-0 mb-lg-0">
+                                <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center">
+                                    <a href="{{ route('reports.sales-order-to-invoice-lead-time-report.index') }}" class="text-warning fw-bold fs-6">Sales Order to Invoice Lead Time </a>
+                                    <span class="count text-warning fw-bold fs-1">
+                                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
+                                    <span class="sales_order_to_invoice_lead_time_count">{{ @$sales_order_to_invoice_lead_time->value ? @$sales_order_to_invoice_lead_time->value." Day(s)" : "" }}</span>
+                                    </span>
+                                </div>
                             </div>
 
                             <div class="col-md-6">
-                               <div class="bg-light-success px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center">
-                                 <a href="{{ route('reports.invoice-to-delivery-lead-time-report.index') }}" class="text-success fw-bold fs-6">Invoice to Delivery Lead Time </a>
-                                 <span class="count text-success fw-bold fs-1">
-                                 <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="invoice_to_delivery_lead_time_loader_img"> 
-                                 <span class="invoice_to_delivery_lead_time_count"></span>
-                                 </span>
+                                <div class="bg-light-success px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center">
+                                    <a href="{{ route('reports.invoice-to-delivery-lead-time-report.index') }}" class="text-success fw-bold fs-6">Invoice to Delivery Lead Time </a>
+                                    <span class="count text-success fw-bold fs-1">
+                                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="invoice_to_delivery_lead_time_loader_img"> 
+                                    <span class="invoice_to_delivery_lead_time_count">{{ @$invoice_to_delivery_lead_time->value ? @$invoice_to_delivery_lead_time->value." Day(s)" : "" }}</span>
+                                    </span>
                               </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
-
            @endif
         </div>
 
@@ -596,33 +599,56 @@
 
 
     @if(userrole() == 1)
-    render_report_data();
-    function render_report_data(){
-        $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').show();
-        $.ajax({
-            url: '{{ route('home.get-report-data') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                }
-        })
-        .done(function(result) {
-            if(result.status){
-                // toast_success(result.message);
 
-                $('.sales_order_to_invoice_lead_time_count').text(result.data.sales_order_to_invoice_lead_time + " Day(s)");
-                $('.invoice_to_delivery_lead_time_count').text(result.data.invoice_to_delivery_lead_time + " Day(s)");
-            }else{
-                toast_error(result.message);
-            }
-            $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
-        })
-        .fail(function() {
-            toast_error("error");
-            $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
+        @if(is_null(@$sales_order_to_invoice_lead_time->value) || is_null(@$invoice_to_delivery_lead_time->value))
+            render_report_data();
+        @endif
+
+        function render_report_data(){
+            $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').show();
+            $('.sales_order_to_invoice_lead_time_count, .invoice_to_delivery_lead_time_count').text("");
+            $.ajax({
+                url: '{{ route('home.get-report-data') }}',
+                method: "POST",
+                data: {
+                        _token:'{{ csrf_token() }}',
+                    }
+            })
+            .done(function(result) {
+                if(result.status){
+                    // toast_success(result.message);
+
+                    $('.sales_order_to_invoice_lead_time_count').text(result.data.sales_order_to_invoice_lead_time + " Day(s)");
+                    $('.invoice_to_delivery_lead_time_count').text(result.data.invoice_to_delivery_lead_time + " Day(s)");
+                }else{
+                    toast_error(result.message);
+                }
+                $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
+            })
+            .fail(function() {
+                toast_error("error");
+                $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
+            });  
+        }
+
+
+        $(document).on('click', '.sync-lead-time', function(event) {
+            event.preventDefault();
+
+            Swal.fire({
+                title: 'Are you sure want to sync details?',
+                text: "It may take some time to sync details.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, do it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    render_report_data();
+                }
+            })
         });
-        
-    }
     @endif
 </script>
 @endif
