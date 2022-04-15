@@ -93,19 +93,19 @@
               <h5 class="text-info">Number of Sales Orders</h5>
             </div> --}}
             <div class="card-body">
-              <div class="row mb-5">
+              <div class="row">
                 <div class="col-md-6">
-                  <div class="bg-light-danger px-6 py-8 rounded-2 mb-7 min-w-150 position-relative d-flex justify-content-between align-items-center">
-                  <a href="javascript:" class="text-danger fw-bold fs-6">Number of Overdue Invoices </a>
-                  <span class="count text-danger fw-bold fs-1 number_of_overdue_invoices_count">0</span>
-            </div>
+                  <div class="bg-light-danger px-6 py-8 rounded-2 mb-sm-5 mb-md-0 min-w-150 position-relative d-flex justify-content-between align-items-center">
+                    <a href="javascript:" class="text-danger fw-bold fs-6">Number of Overdue Invoices </a>
+                    <span class="count text-danger fw-bold fs-1 number_of_overdue_invoices_count">0</span>
+                  </div>
                 </div>
 
                 <div class="col-md-6">
-                  <div class="bg-light-success px-6 py-8 rounded-2 mb-7 min-w-150 position-relative d-flex justify-content-between align-items-center">
-                  <a href="javascript:" class="text-success fw-bold fs-6">Total Amount of Overdue Invoices</a>
-                  <span class="count text-success fw-bold fs-1 total_amount_of_overdue_invoices_count">0</span>
-            </div>
+                  <div class="bg-light-success px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center">
+                    <a href="javascript:" class="text-success fw-bold fs-6">Total Amount of Overdue Invoices</a>
+                    <span class="count text-success fw-bold fs-1 total_amount_of_overdue_invoices_count">0</span>
+                  </div>
                 </div>
 
               </div>

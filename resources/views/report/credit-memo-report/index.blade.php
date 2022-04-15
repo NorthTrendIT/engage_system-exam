@@ -82,7 +82,7 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-md-4">
-                  <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative">
+                  <div class="bg-light-warning px-6 py-8 mb-sm-5 mb-md-0 rounded-2 min-w-150 position-relative">
                     <h6 class="d-flex justify-content-between align-items-center m-0">Grand Total Of Amount: 
                       <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
                       <span class="grand_total_of_amount_count text-primary "></span>
@@ -90,7 +90,7 @@
                   </div>
                 </div>
                 <div class="col-md-4">
-                  <div class="bg-light-chocolate px-6 py-8 rounded-2 min-w-150 position-relative">
+                  <div class="bg-light-chocolate px-6 py-8 mb-sm-5 mb-md-0 rounded-2 min-w-150 position-relative">
                     <h6 class="d-flex justify-content-between align-items-center m-0">Grand Total Of Price After VAT: 
                       <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
                       <span class="grand_total_of_price_after_vat_count text-primary "></span>
@@ -110,7 +110,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
