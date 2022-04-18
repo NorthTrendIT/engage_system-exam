@@ -320,7 +320,7 @@
         </div>
       </div>
 
-      @if(empty(@$data->order->invoice->completed_date) && userrole() == 1)
+      @if(!empty(@$data->order->invoice->completed_date) && userrole() == 1)
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -342,7 +342,7 @@
       @endif
       
       <!-- Access only for admin-->
-      @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->id,1]) && @$data->order->invoice->id && empty(@$data->order->invoice->completed_date))
+      @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->id]) && @$data->order->invoice->id && empty(@$data->order->invoice->completed_date))
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
