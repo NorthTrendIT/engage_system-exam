@@ -146,6 +146,40 @@
         </div>
       </div>
 
+      <div class="row gy-5 g-xl-8">
+        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+          <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-4 mb-sm-5 mb-md-0">
+                  <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative h-100">
+                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Quantity: 
+                      <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
+                      <span class="grand_total_of_total_quantity_count text-primary "></span>
+                    </h6>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-sm-5 mb-md-0">
+                  <div class="bg-light-chocolate px-6 py-8 rounded-2 min-w-150 position-relative h-100">
+                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Price: 
+                      <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
+                      <span class="grand_total_of_total_price_count text-primary "></span>
+                    </h6>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="bg-light-red px-6 py-8 rounded-2 min-w-150 position-relative h-100">
+                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Price After VAT: 
+                      <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
+                      <span class="grand_total_of_total_price_after_vat_count text-primary "></span>
+                    </h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
@@ -154,7 +188,6 @@
               <h5 class="text-info">List Of Records</h5>
             </div>
             <div class="card-body">
-              
               <div class="row mb-5">
                 <div class="col-md-12">
                   <div class="form-group">
@@ -222,11 +255,13 @@
 <script>
   $(document).ready(function() {
 
-    render_table();
+    render_data();
+    function render_data(){
 
-    function render_table(){
-      var table = $("#myTable");
-      table.DataTable().destroy();
+      $('.loader_img').show();
+      $('.grand_total_of_total_quantity_count').text("");
+      $('.grand_total_of_total_price_count').text("");
+      $('.grand_total_of_total_price_after_vat_count').text("");
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
@@ -245,25 +280,11 @@
       $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
       $filter_market_sub_sector = $('[name="filter_market_sub_sector"]').find('option:selected').val();
 
-      table.DataTable({
-          processing: true,
-          serverSide: true,
-          scrollX: true,
-          scrollY: "800px",
-          scrollCollapse: true,
-          paging: true,
-          fixedColumns:   {
-            left: 2,
-            right: 0
-          },
-          order: [],
-          ajax: {
-              'url': "{{ route('reports.sales-report.get-all') }}",
-              'type': 'POST',
-              headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-              },
-              data:{
+      $.ajax({
+        url: '{{ route('reports.sales-report.get-all') }}',
+        method: "POST",
+        data: {
+                _token:'{{ csrf_token() }}',
                 filter_search : $filter_search,
                 filter_company : $filter_company,
                 filter_brand : $filter_brand,
@@ -281,7 +302,41 @@
                 filter_market_sector : $filter_market_sector,
                 filter_market_sub_sector : $filter_market_sub_sector,
               }
+      })
+      .done(function(result) {
+        if(result.status){
+          toast_success(result.message);
+          
+          $('.loader_img').hide();
+
+          $('.grand_total_of_total_quantity_count').text(result.data.grand_total_of_total_quantity);
+          $('.grand_total_of_total_price_count').text(result.data.grand_total_of_total_price);
+          $('.grand_total_of_total_price_after_vat_count').text(result.data.grand_total_of_total_price_after_vat);
+          
+          render_table(result.data.table.original.data);
+        }
+      })
+      .fail(function() {
+        $('.loader_img').hide();
+        toast_error("error");
+      });
+    }
+
+    function render_table(jsonData){
+      var table = $("#myTable");
+      table.DataTable().destroy();
+
+      table.DataTable({
+          scrollX: true,
+          scrollY: "800px",
+          scrollCollapse: true,
+          paging: true,
+          fixedColumns:   {
+            left: 2,
+            right: 0
           },
+          order: [],
+          data: jsonData,
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'item_code', name: 'item_code',orderable:false,searchable:false},
@@ -305,13 +360,13 @@
     }
 
     $(document).on('click', '.search', function(event) {
-      render_table();
+      render_data();
     });
 
     $(document).on('click', '.clear-search', function(event) {
       $('input').val('');
       $('select').val('').trigger('change');
-      render_table();
+      render_data();
     })
 
 

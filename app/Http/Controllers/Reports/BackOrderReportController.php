@@ -27,49 +27,14 @@ class BackOrderReportController extends Controller
     }
 
     public function getAll(Request $request){
-        $data = OrderItem::where('remaining_open_quantity', '>', 0)->orderBy('id','DESC');
+        
+        $data = $this->getReportResultData($request);
 
-        $data->whereHas('order', function($q){
-            $q->where('document_status', 'bost_Open');
-            $q->where('cancelled', 'No');
-            $q->whereIn('u_sostat', ['OP']);
-        });
+        $grand_total_of_quantity_ordered = '₱ '. number_format_value($data->sum('quantity'));
+        $grand_total_of_remaining_open_quantity = '₱ '. number_format_value($data->sum('remaining_open_quantity'));
+        $grand_total_of_open_amount = '₱ '. number_format_value($data->sum('open_amount'));
 
-
-        if($request->filter_company != ""){
-            $data->where('sap_connection_id',$request->filter_company);
-        }
-
-        if($request->filter_brand != ""){
-            $data->whereHas('product.group', function($q) use ($request) {
-                $q->where('items_group_code', $request->filter_brand);
-            });
-        }
-
-        if($request->filter_date_range != ""){
-            $date = explode(" - ", $request->filter_date_range);
-            $start = date("Y-m-d", strtotime($date[0]));
-            $end = date("Y-m-d", strtotime($date[1]));
-
-            $data->whereHas('order', function($q) use ($start, $end){
-                $q->whereDate('doc_date', '>=' , $start);
-                $q->whereDate('doc_date', '<=' , $end);
-            });
-        }
-
-        if($request->filter_customer != ""){
-            $data->whereHas('order.customer', function($q) use ($request) {
-                $q->where('id', $request->filter_customer);
-            });
-        }
-
-        if($request->filter_sales_specialist != ""){
-            $data->whereHas('order.sales_specialist', function($q) use ($request) {
-                $q->where('id', $request->filter_sales_specialist);
-            });
-        }
-
-        return DataTables::of($data)
+        $table = DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('item_name', function($row) {
                                 return @$row->product1->item_name ?? @$row->item_description ?? "-";
@@ -126,6 +91,15 @@ class BackOrderReportController extends Controller
                             })
                             ->rawColumns(['status','action','price','price_after_vat'])
                             ->make(true);
+
+        $data = compact(
+                        'table',
+                        'grand_total_of_quantity_ordered',
+                        'grand_total_of_remaining_open_quantity',
+                        'grand_total_of_open_amount',
+                    );
+
+        return $response = [ 'status' => true , 'message' => 'Report details fetched successfully !' , 'data' => $data ];
     }
 
 
@@ -135,47 +109,7 @@ class BackOrderReportController extends Controller
           $filter = json_decode(base64_decode($request->data));
         }
 
-        $data = OrderItem::where('remaining_open_quantity', '>', 0)->orderBy('id','DESC');
-
-        $data->whereHas('order', function($q){
-            $q->where('document_status', 'bost_Open');
-            $q->where('cancelled', 'No');
-            $q->whereIn('u_sostat', ['OP']);
-        });
-
-
-        if(@$filter->filter_company != ""){
-            $data->where('sap_connection_id',$filter->filter_company);
-        }
-
-        if(@$filter->filter_brand != ""){
-            $data->whereHas('product.group', function($q) use ($filter) {
-                $q->where('items_group_code', $filter->filter_brand);
-            });
-        }
-
-        if(@$filter->filter_date_range != ""){
-            $date = explode(" - ", $filter->filter_date_range);
-            $start = date("Y-m-d", strtotime($date[0]));
-            $end = date("Y-m-d", strtotime($date[1]));
-
-            $data->whereHas('order', function($q) use ($start, $end){
-                $q->whereDate('doc_date', '>=' , $start);
-                $q->whereDate('doc_date', '<=' , $end);
-            });
-        }
-
-        if(@$filter->filter_customer != ""){
-            $data->whereHas('order.customer', function($q) use ($filter) {
-                $q->where('id', $filter->filter_customer);
-            });
-        }
-
-        if(@$filter->filter_sales_specialist != ""){
-            $data->whereHas('order.sales_specialist', function($q) use ($filter) {
-                $q->where('id', $filter->filter_sales_specialist);
-            });
-        }
+        $data = $this->getReportResultData($filter);
 
         $data = $data->get();
 
@@ -254,5 +188,52 @@ class BackOrderReportController extends Controller
         array_push($data, array('name' => 'Total Open Amount', 'data' => $total_open_amount));
 
         return ['status' => true, 'data' => $data, 'category' => $category];
+    }
+
+
+    public function getReportResultData($request){
+        $data = OrderItem::where('remaining_open_quantity', '>', 0)->orderBy('id','DESC');
+
+        $data->whereHas('order', function($q){
+            $q->where('document_status', 'bost_Open');
+            $q->where('cancelled', 'No');
+            $q->whereIn('u_sostat', ['OP']);
+        });
+
+
+        if(@$request->filter_company != ""){
+            $data->where('sap_connection_id',$request->filter_company);
+        }
+
+        if(@$request->filter_brand != ""){
+            $data->whereHas('product.group', function($q) use ($request) {
+                $q->where('items_group_code', $request->filter_brand);
+            });
+        }
+
+        if(@$request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereHas('order', function($q) use ($start, $end){
+                $q->whereDate('doc_date', '>=' , $start);
+                $q->whereDate('doc_date', '<=' , $end);
+            });
+        }
+
+        if(@$request->filter_customer != ""){
+            $data->whereHas('order.customer', function($q) use ($request) {
+                $q->where('id', $request->filter_customer);
+            });
+        }
+
+        if(@$request->filter_sales_specialist != ""){
+            $data->whereHas('order.sales_specialist', function($q) use ($request) {
+                $q->where('id', $request->filter_sales_specialist);
+            });
+        }
+
+        return $data;
     }
 }
