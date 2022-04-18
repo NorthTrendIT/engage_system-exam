@@ -236,7 +236,7 @@
                 <div class="card card-xl-stretch mb-xl-8">
                     <div class="card-header border-0 pt-5">
                         <h3 class="card-title align-items-start flex-column">
-                            <a href="{{ route('reports.back-order-report.get-chart-data') }}" class="text-dark text-hover-primary fw-bolder fs-3">Back Order Report</a>
+                            <a href="{{ route('reports.back-order-report.index') }}" class="text-dark text-hover-primary fw-bolder fs-3">Back Order Report</a>
                         </h3>
                         
                     </div>

@@ -250,8 +250,8 @@ class BackOrderReportController extends Controller
 
         $data = [];
         array_push($data, array('name' => 'Total Quantity', 'data' => $total_quantity));
-        array_push($data, array('name' => 'Total Open Amount', 'data' => $total_open_amount));
         array_push($data, array('name' => 'Remaining Open Quantity', 'data' => $total_remaining_open_quantity));
+        array_push($data, array('name' => 'Total Open Amount', 'data' => $total_open_amount));
 
         return ['status' => true, 'data' => $data, 'category' => $category];
     }
