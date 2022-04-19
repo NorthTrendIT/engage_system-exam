@@ -220,7 +220,7 @@
                                   <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
                                 @endif
 
-                                {{-- @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->id,1]))
+                                {{-- @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->user->id,1]))
                                   <a href="javascript:" class="btn btn-info btn-sm mark-as-completed-order" title="Mark as Completed">Mark as Completed</a>
                                 @endif --}}
 
@@ -342,7 +342,7 @@
       @endif
       
       <!-- Access only for admin-->
-      @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->id]) && @$data->order->invoice->id && empty(@$data->order->invoice->completed_date))
+      @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->user->id]) && @$data->order->invoice->id && empty(@$data->order->invoice->completed_date))
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -523,7 +523,7 @@
       });
     @endif
 
-    @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->id,1]) && @$data->order->invoice->id && empty(@$data->order->invoice->completed_date))
+    @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->user->id,1]) && @$data->order->invoice->id && empty(@$data->order->invoice->completed_date))
       /*$(document).on('click', '.mark-as-completed-order', function(event) {
         event.preventDefault();
 
