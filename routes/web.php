@@ -254,6 +254,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('news-and-announcement/get-all', 'App\Http\Controllers\NewsAndAnnouncementController@getAll')->name('news-and-announcement.get-all');
             Route::post('news-and-announcement/get-roles/','App\Http\Controllers\NewsAndAnnouncementController@getRoles')->name('news-and-announcement.getRoles');
             Route::post('news-and-announcement/get-customer', 'App\Http\Controllers\NewsAndAnnouncementController@getCustomer')->name('news-and-announcement.getCustomer');
+            Route::post('news-and-announcement/get-class-customer', 'App\Http\Controllers\NewsAndAnnouncementController@getClassCustomer')->name('news-and-announcement.getClassCustomer');
             Route::post('news-and-announcement/get-customer-class', 'App\Http\Controllers\NewsAndAnnouncementController@getCustomerClass')->name('news-and-announcement.getCustomerClass');
             Route::post('news-and-announcement/get-sales-specialist', 'App\Http\Controllers\NewsAndAnnouncementController@getSalesSpecialist')->name('news-and-announcement.getSalesSpecialist');
             Route::post('news-and-announcement/get-territory', 'App\Http\Controllers\NewsAndAnnouncementController@getTerritory')->name('news-and-announcement.getTerritory');

@@ -88,6 +88,7 @@ class NewsAndAnnouncementController extends Controller
             $notification->user_id = Auth::user()->id;
             $notification->start_date = date('Y-m-d',strtotime($input['start_date']));
             $notification->end_date = date('Y-m-d',strtotime($input['end_date']));
+            $notification->customer_selection = @$input['select_class_customer'];
 
             if(in_array($input['module'], ['brand', 'customer_class', 'territory', 'market_sector'])){
                 $notification->request_payload = json_encode($input['record_id']);
@@ -142,7 +143,14 @@ class NewsAndAnnouncementController extends Controller
 
                 if($input['module'] == 'customer_class'){
                     foreach($records as $record_id){
-                        $data = Customer::where(['class_id' => $record_id, 'sap_connection_id' => $input['sap_connection_id']])->get();
+                        $data = Customer::where(['class_id' => $record_id, 'sap_connection_id' => $input['sap_connection_id']]);
+
+                        if(@$request->select_class_customer == "specific" && !empty(@$request->class_customer)){
+                            $data->whereIn('id', @$request->class_customer);
+                        }
+
+                        $data = $data->get();
+
                         foreach($data as $customer){
                             $user = User::where('customer_id', $customer->id)->firstOrFail();
                             $connection = new NotificationConnection();
@@ -543,9 +551,9 @@ class NewsAndAnnouncementController extends Controller
         }
 
         if($search == ''){
-            $data = Customer::orderby('card_name','asc')->select('id','card_name')->limit(50)->get();
+            $data = Customer::orderby('card_name','asc')->where('sap_connection_id', $sap_connection_id)->select('id','card_name')->limit(50)->get();
         }else{
-            $data = Customer::orderby('card_name','asc')->select('id','card_name')->where('card_name', 'like', '%' .$search . '%')->limit(50)->get();
+            $data = Customer::orderby('card_name','asc')->where('sap_connection_id', $sap_connection_id)->select('id','card_name')->where('card_name', 'like', '%' .$search . '%')->limit(50)->get();
         }
 
         $response = array();
@@ -554,6 +562,35 @@ class NewsAndAnnouncementController extends Controller
                 "id"=>$value->id,
                 "text"=>$value->card_name
             );
+        }
+
+        return response()->json($response);
+    }
+
+    public function getClassCustomer(Request $request){
+        $search = $request->search;
+        $sap_connection_id = $request->sap_connection_id;
+
+        $response = array();
+        if($sap_connection_id){
+            if($sap_connection_id == 5){
+                $sap_connection_id = 1;
+            }
+
+
+            $data = Customer::orderby('card_name','asc')->where('sap_connection_id', $sap_connection_id)->select('id','card_name')->limit(50)->whereIn('class_id', $request->class_id);
+            if($search != ''){
+                $data->where('card_name', 'like', '%' .$search . '%');
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+                $response[] = array(
+                    "id"=>$value->id,
+                    "text"=>$value->card_name
+                );
+            }
         }
 
         return response()->json($response);

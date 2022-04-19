@@ -68,6 +68,13 @@
                                             <td>@if(@$data->module != 'all') By @endif {{ ucwords(str_replace("_"," ",@$data->module)) ?? "" }}</td>
                                         </tr>
 
+                                        @if(@$data->module == 'customer_class')
+                                            <tr>
+                                                <th> <b>Customer Selection:</b> </th>
+                                                <td>{{ @$data->customer_selection == "all" ? "All" : "Specific"}} Customers</td>
+                                            </tr>
+                                        @endif
+
                                         @if(@$data->module == 'market_sector')
                                             @if(!empty(@$data->request_payload))
                                             <tr>
