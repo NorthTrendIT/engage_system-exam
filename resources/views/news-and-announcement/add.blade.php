@@ -109,24 +109,24 @@
                     </div>
                 </div>
 
-                <div class="row mb-5">
-                    <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Select Customer<span class="asterisk">*</span></label>
-                                <select class="form-select form-select-solid" data-control="select2" id="selectModule" data-hide-search="false" name="module">
-                                    <option value="">Select Customer</option>
-                                    <option value="all" @if(isset($edit->module) && $edit->module == 'all') selected @endif>All</option>
-                                    <option value="brand" @if(isset($edit->module) && $edit->module == 'role') selected @endif>By Brand</option>
-                                    <option value="customer_class" @if(isset($edit->module) && $edit->module == 'customer_class') selected @endif>By Class</option>
-                                    <option value="sales_specialist" @if(isset($edit->module) && $edit->module == 'sales_specialist') selected @endif>By Sales Specialist</option>
-                                    <option value="territory" @if(isset($edit->module) && $edit->module == 'territory') selected @endif>By Territory</option>
-                                    <option value="market_sector" @if(isset($edit->module) && $edit->module == 'territory') selected @endif>By Market Sector</option>
-                                    <option value="customer" @if(isset($edit->module) && $edit->module == 'customer') selected @endif>By Customer</option>
-                                </select>
-                            </div>
+                <div class="row">
+                    <div class="col-md-6 mb-5">
+                        <div class="form-group">
+                            <label>Select Customer<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" id="selectModule" data-hide-search="false" name="module">
+                                <option value="">Select Customer</option>
+                                <option value="all" @if(isset($edit->module) && $edit->module == 'all') selected @endif>All</option>
+                                <option value="brand" @if(isset($edit->module) && $edit->module == 'role') selected @endif>By Brand</option>
+                                <option value="customer_class" @if(isset($edit->module) && $edit->module == 'customer_class') selected @endif>By Class</option>
+                                <option value="sales_specialist" @if(isset($edit->module) && $edit->module == 'sales_specialist') selected @endif>By Sales Specialist</option>
+                                <option value="territory" @if(isset($edit->module) && $edit->module == 'territory') selected @endif>By Territory</option>
+                                <option value="market_sector" @if(isset($edit->module) && $edit->module == 'territory') selected @endif>By Market Sector</option>
+                                <option value="customer" @if(isset($edit->module) && $edit->module == 'customer') selected @endif>By Customer</option>
+                            </select>
+                        </div>
                     </div>
                     <!-- Brand -->
-                    <div class="col-md-6 brand" style="display:none">
+                    <div class="col-md-6 mb-5 brand" style="display:none">
                         <div class="form-group">
                             <label>Select Brand<span class="asterisk">*</span></label>
                             <select class="form-select form-select-solid" data-control="select2" id="selectBrand" data-hide-search="false" name="record_id[]">
@@ -135,7 +135,7 @@
                     </div>
 
                     <!-- Customer -->
-                    <div class="col-md-6 customer" style="display:none">
+                    <div class="col-md-6 mb-5 customer" style="display:none">
                         <div class="form-group">
                             <label>Select Customer<span class="asterisk">*</span></label>
                             <select class="form-select form-select-solid" data-control="select2" id="selectCustomer" data-hide-search="false" name="record_id[]">
@@ -144,7 +144,7 @@
                     </div>
 
                     <!-- Customer Class -->
-                    <div class="col-md-6 customer_class" style="display:none">
+                    <div class="col-md-6 mb-5 customer_class" style="display:none">
                         <div class="form-group">
                             <label>Select Customer Class<span class="asterisk">*</span></label>
                             <select class="form-select form-select-solid" data-control="select2" id="selectCustomerClass" data-hide-search="false" name="record_id[]">
@@ -153,7 +153,7 @@
                     </div>
 
                     <!-- Sales Specilalist -->
-                    <div class="col-md-6 sales_specialist" style="display:none">
+                    <div class="col-md-6 mb-5 sales_specialist" style="display:none">
                         <div class="form-group">
                             <label>Select Sales Specialist<span class="asterisk">*</span></label>
                             <select class="form-select form-select-solid" data-control="select2" id="selectSalesSpecialist" data-hide-search="false" name="record_id[]">
@@ -162,7 +162,7 @@
                     </div>
 
                     <!-- Territory -->
-                    <div class="col-md-6 territory" style="display:none">
+                    <div class="col-md-6 mb-5 territory" style="display:none">
                         <div class="form-group">
                             <label>Select Territory<span class="asterisk">*</span></label>
                             <select class="form-select form-select-solid" data-control="select2" id="selectTerritory" data-hide-search="false" name="record_id[]">
@@ -171,16 +171,34 @@
                     </div>
 
                     <!-- Market Sector -->
-                    <div class="col-md-6 market_sector" style="display:none">
+                    <div class="col-md-6 mb-5 market_sector" style="display:none">
                         <div class="form-group">
                             <label>Select Market Sector<span class="asterisk">*</span></label>
                             <select class="form-select form-select-solid" data-control="select2" id="selectMarketSector" data-hide-search="false" name="record_id[]">
                             </select>
                         </div>
                     </div>
-                </div>
 
-                <div class="row mb-5 mt-10">
+                    <div class="col-md-6 mb-5 select_class_customer_div" style="display:none">
+                        <div class="form-group">
+                            <label>Customer Selection<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" id="selectClassCustomer" data-hide-search="false" name="select_class_customer" data-placeholder="Select Class Customer">
+                                <option value=""></option>
+                                <option value="all">All Customers</option>
+                                <option value="specific">Specific Customers</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <!-- Customer -->
+                    <div class="col-md-6 mb-5 class_customer_div" style="display:none">
+                        <div class="form-group">
+                            <label>Select Customer<span class="asterisk">*</span></label>
+                            <select class="form-select form-select-solid" data-control="select2" id="classCustomer" data-hide-search="false" name="class_customer[]">
+                            </select>
+                        </div>
+                    </div>
 
                 </div>
 
@@ -339,6 +357,10 @@
         $('.sales_specialist').hide();
         $('.territory').hide();
         $('.market_sector').hide();
+        $('.select_class_customer_div').hide();
+        $('.class_customer_div').hide();
+
+
         // Dissable all.
         $('#selectrBrand').prop('disabled', true);
         $('#selectCustomer').prop('disabled', true);
@@ -346,6 +368,9 @@
         $('#selectSalesSpecialist').prop('disabled', true);
         $('#selectTerritory').prop('disabled', true);
         $('#selectMarketSector').prop('disabled', true);
+        $('#selectClassCustomer').prop('disabled', true);
+        $('#classCustomer').prop('disabled', true);
+
         // Set null value to all.
         $('#selectBrand').val(null).trigger("change");
         $('#selectCustomer').val(null).trigger("change");
@@ -353,6 +378,8 @@
         $('#selectSalesSpecialist').val(null).trigger("change");
         $('#selectTerritory').val(null).trigger("change");
         $('#selectMarketSector').val(null).trigger("change");
+        // $('#selectClassCustomer').val(null).trigger("change");
+        $('#classCustomer').val(null).trigger("change");
 
         // Show and enable according to Module selection.
         if($module == "brand"){
@@ -364,6 +391,10 @@
         } else if($module == "customer_class"){
             $('.customer_class').show();
             $('#selectCustomerClass').prop('disabled', false);
+
+            $('.select_class_customer_div').show();
+            $('#selectClassCustomer').prop('disabled', false);
+
         } else if($module == "sales_specialist"){
             $('.sales_specialist').show();
             $('#selectSalesSpecialist').prop('disabled', false);
@@ -375,6 +406,17 @@
             $('#selectMarketSector').prop('disabled', false);
         }
     });
+
+    $('body').on('change' ,'#selectClassCustomer', function(){
+        if($(this).val() != "all" && $('[name="module"]').val() == "customer_class"){
+            $('.class_customer_div').show();
+            $('#classCustomer').prop('disabled', false);
+        }else{
+            $('.class_customer_div').hide();
+            $('#classCustomer').prop('disabled', true);
+        }
+    });
+
 
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
@@ -445,6 +487,24 @@
             },
             is_important:{
               required:true,
+            },
+            select_class_customer:{
+              required: function () {
+                        if($('#selectModule').find('option:selected').val() == 'customer_class'){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    },
+            },
+            'class_customer[]':{
+              required: function () {
+                        if($('#selectModule').find('option:selected').val() == 'customer_class' || $('#selectClassCustomer').find('option:selected').val() == "specific"){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    },
             },
           },
           messages: {
@@ -663,6 +723,34 @@
             cache: true
         },
         placeholder: 'Select Market Sector',
+        // minimumInputLength: 2,
+        multiple: true,
+    });
+
+
+    // getCustomer
+    $("#classCustomer").select2({
+        ajax: {
+            url: "{{route('news-and-announcement.getClassCustomer')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('.bussinesUnit').val(),
+                    class_id: $('#selectCustomerClass').find('option:selected').toArray().map(item => item.value),
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Class Customer',
         // minimumInputLength: 2,
         multiple: true,
     });
