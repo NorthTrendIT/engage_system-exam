@@ -15,9 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('login');
-    // return view('emails.warranty_diagnostic_report');
 });
-
 
 Route::middleware('guest')->group(function(){
     Route::get('/login','App\Http\Controllers\LoginController@index')->name('login');
@@ -484,6 +482,18 @@ Route::middleware(['auth'])->group(function(){
     Route::post('conversation/update-message','App\Http\Controllers\ConversationController@updateMessage')->name('conversation.update-message');
     Route::post('conversation/get-conversation-list','App\Http\Controllers\ConversationController@getConversationList')->name('conversation.get-conversation-list');
     Route::post('conversation/get-conversation-message-list','App\Http\Controllers\ConversationController@getConversationMessageList')->name('conversation.get-conversation-message-list');
+
+
+
+    Route::get('/documentation', function () {
+        $file = 'OMS_DOCUMENT.pdf';
+        $path = public_path('assets/files/'. $file);
+        $header = [
+           'Content-Type' => 'application/pdf',
+           'Content-Disposition' => 'inline; filename="' . $file . '"'
+        ];
+        return response()->file($path, $header);
+    })->name('documentation')->middleware('super-admin');
 });
 
 Route::get('clear-cache', function () {

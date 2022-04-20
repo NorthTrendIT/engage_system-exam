@@ -170,7 +170,7 @@
                      @if(userrole() == 1)
                      <!--begin::Menu item-->
                      <div class="menu-item px-5">
-                        <a href="{{ asset('assets/files/OMS_DOCUMENT.pdf') }}" class="menu-link px-5" target="_blank"><i class="fa fa-file text-success mr-10"></i> <span>Documentation</span></a>
+                        <a href="{{ route('documentation') }}" class="menu-link px-5" target="_blank"><i class="fa fa-file text-success mr-10"></i> <span>Documentation</span></a>
                      </div>
                      <!--end::Menu item-->
                      @endif
