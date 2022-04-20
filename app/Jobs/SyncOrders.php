@@ -33,7 +33,7 @@ class SyncOrders implements ShouldQueue
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
-        $this->$log_id  = $log_id;
+        $this->log_id  = $log_id;
     }
 
     /**
