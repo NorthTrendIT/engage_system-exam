@@ -154,6 +154,8 @@
                         <span class="bullet bullet-dot"></span>
                         </span>
                         <span class="menu-title">Claimed Promotions</span>
+
+                        <span class="badge badge-circle badge-light-warning new-message" aria-hidden="true" >{{ get_un_read_customer_promotion_count() }}</span>
                      </a>
                   </div>
 

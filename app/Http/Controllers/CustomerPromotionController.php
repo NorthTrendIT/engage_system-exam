@@ -816,6 +816,12 @@ class CustomerPromotionController extends Controller
             $is_sap_pushed = false;
         }
 
+
+        if(userrole() == 1){
+            $data->is_admin_read = true;
+            $data->save();
+        }
+
         return view('customer-promotion.order_view',compact('data','is_sap_pushed'));
     }
 

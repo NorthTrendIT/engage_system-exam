@@ -12,6 +12,7 @@ use App\Models\Notification;
 use App\Models\LocalOrderItem;
 use App\Models\SapApiUrl;
 use App\Models\ConversationMessage;
+use App\Models\CustomerPromotion;
 
 use Auth as Auth;
 
@@ -675,4 +676,10 @@ function getOrderStatusBtnHtml($status){
 
 function current_datetime(){
     return date("Y-m-d H:i:s");
+}
+
+function get_un_read_customer_promotion_count(){
+    $count = CustomerPromotion::where('is_admin_read', false)->count();
+
+    return $count;
 }
