@@ -155,7 +155,7 @@
                         </span>
                         <span class="menu-title">Claimed Promotions</span>
 
-                        <span class="badge badge-circle badge-light-warning new-message" aria-hidden="true" >{{ get_un_read_customer_promotion_count() }}</span>
+                        <span class="badge badge-circle badge-light-primary bg-dark border border-primary new-message" aria-hidden="true" >{{ get_un_read_customer_promotion_count() }}</span>
                      </a>
                   </div>
 
