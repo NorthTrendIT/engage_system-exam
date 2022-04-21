@@ -4,7 +4,7 @@ function toast_error(msg) {
     toastr.options = {
         closeButton: false,
         debug: false,
-        newestOnTop: true,
+        newestOnTop: false,
         progressBar: true,
         positionClass: "toast-top-center",
         position: 'top-center',
@@ -18,7 +18,6 @@ function toast_error(msg) {
         hideEasing: "linear",
         showMethod: "fadeIn",
         hideMethod: "fadeOut",
-        stack: false
     };
     toastr.error(msg);
 }
@@ -26,7 +25,7 @@ function toast_success(msg) {
     toastr.options = {
         closeButton: false,
         debug: false,
-        newestOnTop: true,
+        newestOnTop: false,
         progressBar: true,
         positionClass: "toast-top-center",
         position: 'top-center',
@@ -40,7 +39,6 @@ function toast_success(msg) {
         hideEasing: "linear",
         showMethod: "fadeIn",
         hideMethod: "fadeOut",
-        stack: false
     };
     toastr.success(msg);
 }
