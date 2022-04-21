@@ -4,20 +4,21 @@ function toast_error(msg) {
     toastr.options = {
         closeButton: false,
         debug: false,
-        newestOnTop: false,
+        newestOnTop: true,
         progressBar: true,
         //positionClass: "toast-top-right",
-        position: 'top-right',
+        position: 'top-center',
         preventDuplicates: false,
         onclick: null,
         showDuration: "300",
         hideDuration: "1000",
         timeOut: "4000",
-        extendedTimeOut: "3500",
+        extendedTimeOut: "1500",
         showEasing: "swing",
         hideEasing: "linear",
         showMethod: "fadeIn",
         hideMethod: "fadeOut",
+        stack: false
     };
     toastr.error(msg);
 }
@@ -25,20 +26,21 @@ function toast_success(msg) {
     toastr.options = {
         closeButton: false,
         debug: false,
-        newestOnTop: false,
+        newestOnTop: true,
         progressBar: true,
         //positionClass: "toast-top-right",
-        position: 'top-right',
+        position: 'top-center',
         preventDuplicates: false,
         onclick: null,
         showDuration: "300",
         hideDuration: "1000",
         timeOut: "4000",
-        extendedTimeOut: "3500",
+        extendedTimeOut: "1500",
         showEasing: "swing",
         hideEasing: "linear",
         showMethod: "fadeIn",
         hideMethod: "fadeOut",
+        stack: false
     };
     toastr.success(msg);
 }
