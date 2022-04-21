@@ -31,6 +31,7 @@ class CustomerPromotion extends Model
         'sales_specialist_id',
         'is_approved',
         'customer_user_id',
+        'is_admin_read',
     ];
 
     public function promotion()
