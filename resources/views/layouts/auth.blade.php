@@ -34,6 +34,12 @@
 			    background-repeat: no-repeat;
 			}
 			
+			.toast-top-center { 
+			    top: 12px !important;   
+			    margin: 0 auto !important;  
+			    left: 50% !important;   
+			    margin-left: -150px !important;
+			}
 		</style>
 		@stack('css')
 	</head>

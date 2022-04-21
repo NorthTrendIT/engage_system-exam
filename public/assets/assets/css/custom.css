@@ -1065,3 +1065,10 @@ table.dataTable>thead .sorting.sorting_desc:after{
         height: 12px;
     }
 }
+
+.toast-top-center { 
+    top: 12px !important;   
+    margin: 0 auto !important;  
+    left: 50% !important;   
+    margin-left: -150px !important;
+}
