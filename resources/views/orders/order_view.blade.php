@@ -188,7 +188,7 @@
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Order Type:</div>
                               <!--end::Label-->
                               <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ (!is_null($data->customer_promotion_id)) ? "Standard" : "Promotion" }}</div>
+                              <div class="fw-bolder fs-6 text-gray-800">{{ (!is_null($data->customer_promotion_id)) ? "Promotion" : "Standard" }}</div>
                               <!--end::Text-->
                             </div>
                             <!--end::Col-->
