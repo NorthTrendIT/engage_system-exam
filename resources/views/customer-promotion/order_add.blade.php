@@ -108,6 +108,9 @@
                         }
 
                         $amount = get_product_customer_price(@$p->product->item_prices, 14);
+
+                        $original_amount = get_product_customer_price(@$p->product->item_prices, @$customer_user->customer->price_list_num);
+
                         $total_amount = $discount_amount = get_product_customer_price(@$p->product->item_prices, 14,$discount_percentage,@$discount_fix_amount);
 
                         $discount_amount = $amount - $discount_amount;
@@ -132,6 +135,22 @@
                           <div class="form-group">
                             <label>Brand</label>
                             <input type="text" class="form-control form-control-solid" readonly="" disabled="" value="{{ @$p->product->group->group_name }}" >
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row mb-5">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label>Actual Product Price</label>
+                            <input type="text" class="form-control form-control-solid actual_product_price" readonly="" disabled="" value="{{ $original_amount }}" >
+                          </div>
+                        </div>
+
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label>Promotion Price</label>
+                            <input type="text" class="form-control form-control-solid promotion_price" readonly="" disabled="" value="{{ $amount }}" >
                           </div>
                         </div>
                       </div>
@@ -257,29 +276,50 @@
                 @endif
 
                 <div class="row">
-                  <div class="col-md-4">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <b class=""><i class="text-danger">Note: The gross discount is applied on gross promotion amount.</i></b>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mt-5">
                     <div class="form-group">
                       <label>Total Quantity</label>
                       <input type="number" class="form-control form-control-solid total_quantity" readonly="" disabled="">
                     </div>
                   </div>
 
-                  <div class="col-md-4">
+                  <div class="col-md-4 mt-5">
                     <div class="form-group">
-                      <label>Total Discount</label>
+                      <label>Gross Product Amount</label>
+                      <input name="total_product_amount" type="number" class="form-control form-control-solid total_product_amount" readonly="">
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mt-5">
+                    <div class="form-group">
+                      <label>Gross Promotion Amount</label>
+                      <input name="total_promotion_amount" type="number" class="form-control form-control-solid total_promotion_amount" readonly="">
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mt-5">
+                    <div class="form-group">
+                      <label>Gross Discount</label>
                       <input type="number" class="form-control form-control-solid total_discount" readonly="" disabled="">
                     </div>
                   </div>
 
-                  <div class="col-md-4">
+                  <div class="col-md-4 mt-5">
                     <div class="form-group">
-                      <label>Total Amount</label>
+                      <label>Final Amount</label>
                       <input name="total_amount" type="number" class="form-control form-control-solid total_amount" readonly="">
                     </div>
                   </div>
+
                 </div>
 
-                <div class="row mb-5 mt-5 total_quantity_error_div" style="display: none;">
+                <div class="row mb-5 mt-10 total_quantity_error_div" style="display: none;">
                   <div class="col-md-12">
                     <span class="is-invalid" >Oops! the total quantity is not the same as the total fix quantity.</span>
                     <hr>
@@ -468,17 +508,26 @@
     total_details_update();
     function total_details_update() {
       var sum = 0;
+      var sum1 = 0;
+      var sum2 = 0;
       $('.quantity').each(function(){
         if(this.value != ""){
           sum += parseFloat(this.value);
+
+          sum1 += ( parseFloat(this.value) * parseFloat($(this).closest('.product_list').find('.actual_product_price').val()));
+
+          var unit_price = $(this).closest('.product_list').find('.unit_price').val();
+          sum2 += ( parseFloat(this.value) * $(this).closest('.product_list').find('.unit_price').val() );
         }
       });
       $('.total_quantity').val(sum);
+      $('.total_product_amount').val(sum1);
+      $('.total_promotion_amount').val(sum2);
 
       var sum = 0;
       $('.discount_amount').each(function(){
         if(this.value != ""){
-          sum += parseFloat(this.value);
+          sum += ( parseFloat(this.value) * parseFloat($(this).closest('.product_list').find('.quantity').val()));
         }
       });
       $('.total_discount').val(sum);
