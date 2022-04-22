@@ -68,7 +68,7 @@ class PromotionsController extends Controller
                     'sales_specialist_ids'=> 'required_if:promotion_scope,==,SS',
                     'brand_ids'=> 'required_if:promotion_scope,==,B',
                     'market_sector_ids'=> 'required_if:promotion_scope,==,MS',
-                    'promo_image'=> 'required|max:5000|mimes:jpeg,png,jpg,eps,bmp,tif,tiff,webp',
+                    // 'promo_image'=> 'required|max:5000|mimes:jpeg,png,jpg,eps,bmp,tif,tiff,webp',
                 );
 
         if(isset($input['id'])){
