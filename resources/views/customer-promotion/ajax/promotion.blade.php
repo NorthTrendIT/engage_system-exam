@@ -25,7 +25,7 @@
           @if($promotion->promo_image && get_valid_file_url('sitebucket/promotion',$promotion->promo_image))
             <img class="pic-1" src="{{ get_valid_file_url('sitebucket/promotion',$promotion->promo_image) }}">
           @else
-           <img class="pic-1" src="{{ asset('assets') }}/assets/media/img-1.jpg">
+           <img class="pic-1" src="{{ asset('assets') }}/assets/media/promotion-placeholder.png">
           @endif
       	</a>
     </div>

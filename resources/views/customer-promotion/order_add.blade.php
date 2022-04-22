@@ -295,7 +295,7 @@
 
 
                 <div class="row mb-5 mt-5">
-                  <div class="col-md-6 is_total_fixed_quantity_div">
+                  <div class="col-md-6">
                     <div class="form-group">
                       <label>Address<span class="asterisk">*</span></label>
                       <select class="form-control form-control-lg form-control-solid" name="customer_bp_address_id" data-control="select2" data-hide-search="false" data-placeholder="Select Address" data-allow-clear="true">
@@ -303,6 +303,21 @@
                       </select>
                     </div>
                   </div>
+
+                </div>
+
+                <div class="row mb-5 mt-5 address_details_div" style="display:none;">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="">Address:</label><span class="text-muted address_span"></span><br>
+                      <label class="mt-1">Street:</label><span class="text-muted street_span"></span><br>
+                      <label class="mt-1">Zipcode:</label><span class="text-muted zip_code_span"></span><br>
+                      <label class="mt-1">City:</label><span class="text-muted city_span"></span><br>
+                      <label class="mt-1">State:</label><span class="text-muted state_span"></span><br>
+                      <label class="mt-1">Country:</label><span class="text-muted country_span"></span><br>
+                    </div>
+                  </div>
+
                 </div>
 
                 <div class="row mb-5 mt-10">
@@ -622,7 +637,13 @@
               results:  $.map(response, function (item) {
                             return {
                               text: item.address,
-                              id: item.id
+                              id: item.id,
+                              "data-address": item.address,
+                              "data-street": item.street,
+                              "data-zip_code": item.zip_code,
+                              "data-city": item.city,
+                              "data-state": item.state,
+                              "data-country": item.country,
                             }
                         })
             };
@@ -643,6 +664,32 @@
 
 
     @endif
+
+
+    $("body").on("change", '[name="customer_bp_address_id"]', function (e) {
+      e.preventDefault();
+      var data = $(this).select2('data')[0];
+
+      if($(this).find('option:selected').val() != ""){
+        $('.address_span').text(" " + (data['data-address'] ? data['data-address'] : ""));
+        $('.street_span').text(" " + (data['data-street'] ? data['data-street'] : ""));
+        $('.zip_code_span').text(" " + (data['data-zip_code'] ? data['data-zip_code'] : ""));
+        $('.city_span').text(" " + (data['data-city'] ? data['data-city'] : ""));
+        $('.state_span').text(" " + (data['data-state'] ? data['data-state'] : ""));
+        $('.country_span').text(" " + (data['data-country'] ? data['data-country'] : ""));
+
+        $('.address_details_div').show();
+      }else{
+        $('.address_span').text("");
+        $('.street_span').text("");
+        $('.zip_code_span').text("");
+        $('.city_span').text("");
+        $('.state_span').text("");
+        $('.country_span').text("");
+
+        $('.address_details_div').hide();
+      }
+    });
   
   });
 </script>
