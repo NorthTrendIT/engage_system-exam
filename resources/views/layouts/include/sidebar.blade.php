@@ -155,7 +155,14 @@
                         </span>
                         <span class="menu-title">Claimed Promotions</span>
 
-                        <span class="badge badge-circle badge-light-primary bg-dark border border-primary new-message" aria-hidden="true" >{{ get_un_read_customer_promotion_count() }}</span>
+                        @php
+                           $count = get_un_read_customer_promotion_count();
+                        @endphp
+
+                        @if($count > 0)
+                        <span class="badge badge-circle badge-light-primary bg-dark border border-primary new-message" aria-hidden="true" >{{ $count }}</span>
+                        @endif
+
                      </a>
                   </div>
 
@@ -505,7 +512,13 @@
                   </span>
                   <span class="menu-title">Live Chat</span>
 
-                  <span class="badge badge-circle badge-light-success new-message" aria-hidden="true" style="display: none;">{{ get_login_user_un_read_message_count() }}</span>
+                  @php
+                     $count = get_login_user_un_read_message_count();
+                  @endphp
+
+                  @if($count > 0)
+                  <span class="badge badge-circle badge-light-success new-message" aria-hidden="true" style="display: none;">{{ $count }}</span>
+                  @endif
                   {{-- <i class="fa fa-circle new-message text-primary" aria-hidden="true" style="display: none;"></i> --}}
                </a>
             </div>
