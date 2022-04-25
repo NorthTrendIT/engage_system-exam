@@ -178,7 +178,6 @@ class SAPOrderPost
 
     public function pushOrder($id){
         $body = $this->madeSapData($id);
-        dd(json_encode($body));
         $response = array();
 
         if(!empty($body)){
