@@ -184,6 +184,7 @@
            @endif
         </div>
 
+        @if(@Auth::user()->role_id == 1)
         <div class="row gy-5 g-xl-8">
             <!-- Promotion Report -->
             <div class="col-xl-6">
@@ -253,6 +254,7 @@
                 <!--end::Charts Widget 1-->
             </div>
         </div>
+        @endif
      </div>
      <!--end::Container-->
   </div>

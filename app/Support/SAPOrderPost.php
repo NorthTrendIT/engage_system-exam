@@ -178,6 +178,7 @@ class SAPOrderPost
 
     public function pushOrder($id){
         $body = $this->madeSapData($id);
+        dd(json_encode($body));
         $response = array();
 
         if(!empty($body)){
@@ -216,9 +217,9 @@ class SAPOrderPost
         $response['DocCurrency'] = 'PHP';
         $response['Address'] = @$order->address->address;
 
-        // if(@$order->sales_specialist->sales_employee_code && @$order->sales_specialist->is_active){
-        //     $response['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
-        // }
+        if(@$order->sales_specialist->sales_employee_code && @$order->sales_specialist->is_active){
+            $response['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
+        }
 
         $response['DocumentLines'] = [];
 
