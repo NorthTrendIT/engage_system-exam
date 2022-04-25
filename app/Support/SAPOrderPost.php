@@ -215,10 +215,15 @@ class SAPOrderPost
         $response['DocDueDate'] = @$order->due_date;
         $response['DocCurrency'] = 'PHP';
 
-        $response['Address'] = @$order->address->address;
-        if(!empty(@$order->address->street)){
-            $response['Address'] .= ", ".@$order->address->street;
+        if(strtolower(@$order->address->street) == strtolower(@$order->customer->card_name)){
+            $response['Address'] = @$order->address->street;
+        }else{
+            $response['Address'] = @$order->address->address;
+            if(!empty(@$order->address->street)){
+                $response['Address'] .= ", ".@$order->address->street;
+            }
         }
+                
         if(!empty(@$order->address->city)){
             $response['Address'] .= ", ".@$order->address->city;
         }
