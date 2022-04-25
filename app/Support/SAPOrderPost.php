@@ -215,7 +215,23 @@ class SAPOrderPost
         $response['CardName'] = @$order->customer->card_name;
         $response['DocDueDate'] = @$order->due_date;
         $response['DocCurrency'] = 'PHP';
+
         $response['Address'] = @$order->address->address;
+        if(!empty(@$order->address->street)){
+            $response['Address'] .= ", ".@$order->address->street;
+        }
+        if(!empty(@$order->address->city)){
+            $response['Address'] .= ", ".@$order->address->city;
+        }
+        if(!empty(@$order->address->state)){
+            $response['Address'] .= ", ".@$order->address->state;
+        }
+        if(!empty(@$order->address->zip_code)){
+            $response['Address'] .= ", ".@$order->address->zip_code;
+        }
+        if(!empty(@$order->address->country)){
+            $response['Address'] .= ", ".@$order->address->country;
+        }
 
         if(@$order->sales_specialist->sales_employee_code && @$order->sales_specialist->is_active){
             $response['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
