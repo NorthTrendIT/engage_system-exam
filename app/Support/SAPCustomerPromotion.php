@@ -303,7 +303,24 @@ class SAPCustomerPromotion
                 $response['CardCode'] = @$customer_promotion->user->customer->card_code;
                 $response['CardName'] = @$customer_promotion->user->customer->card_name;
                 // $response['DocTotal'] = @$customer_promotion->total_amount;
+
                 $response['Address'] = @$customer_promotion->customer_bp_address->address;
+                if(!empty(@$customer_promotion->customer_bp_address->street)){
+                    $response['Address'] .= ", ".@$customer_promotion->customer_bp_address->street;
+                }
+                if(!empty(@$customer_promotion->customer_bp_address->city)){
+                    $response['Address'] .= ", ".@$customer_promotion->customer_bp_address->city;
+                }
+                if(!empty(@$customer_promotion->customer_bp_address->state)){
+                    $response['Address'] .= ", ".@$customer_promotion->customer_bp_address->state;
+                }
+                if(!empty(@$customer_promotion->customer_bp_address->zip_code)){
+                    $response['Address'] .= ", ".@$customer_promotion->customer_bp_address->zip_code;
+                }
+                if(!empty(@$customer_promotion->customer_bp_address->country)){
+                    $response['Address'] .= ", ".@$customer_promotion->customer_bp_address->country;
+                }
+                
 
                 if(@$customer_promotion->sales_specialist->sales_employee_code && @$customer_promotion->sales_specialist->is_active){
                     $response['SalesPersonCode'] = @$customer_promotion->sales_specialist->sales_employee_code;
