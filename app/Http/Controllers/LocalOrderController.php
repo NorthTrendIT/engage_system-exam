@@ -146,14 +146,14 @@ class LocalOrderController extends Controller
     public function show($id)
     {
         $local_order = LocalOrder::where('id',$id)->firstOrFail();
-        // dd($local_order);
         if(empty($local_order->doc_entry)){
             $total = 0;
             $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id', $id)->firstOrFail();
             return view('local-order.pending_order_view', compact('data', 'total'));
         } else {
-            // dd($id);
-            $data = Quotation::with(['items.product', 'customer'])->where('doc_entry', $local_order->doc_entry);
+
+            $data = $local_order->quotation;
+            
             // if(userrole() == 4){
             //     $data->where('card_code', @Auth::user()->customer->card_code);
             // }elseif(userrole() == 2){
@@ -161,7 +161,6 @@ class LocalOrderController extends Controller
             // }elseif(userrole() != 1){
             //     return abort(404);
             // }
-            $data = $data->firstOrFail();
 
             return view('local-order.view', compact('data'));
         }
