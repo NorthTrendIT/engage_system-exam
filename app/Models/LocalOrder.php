@@ -9,6 +9,8 @@ class LocalOrder extends Model
 {
     use HasFactory;
 
+    use \Awobaz\Compoships\Compoships;
+
     protected $fillable = [
         'customer_id',
         'sales_specialist_id',
@@ -22,6 +24,7 @@ class LocalOrder extends Model
         'doc_entry',
         'doc_num',
         'sap_connection_id',
+        'real_sap_connection_id'
     ];
 
     public function customer(){
