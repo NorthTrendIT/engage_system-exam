@@ -16,6 +16,7 @@ class ProductGroup extends Model
         'group_name',
         'sap_connection_id',
         'last_sync_at',
+        'is_active'
     ];
 
     public function sap_connection()

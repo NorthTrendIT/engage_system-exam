@@ -304,10 +304,15 @@ class SAPCustomerPromotion
                 $response['CardName'] = @$customer_promotion->user->customer->card_name;
                 // $response['DocTotal'] = @$customer_promotion->total_amount;
 
-                $response['Address'] = @$customer_promotion->customer_bp_address->address;
-                if(!empty(@$customer_promotion->customer_bp_address->street)){
-                    $response['Address'] .= ", ".@$customer_promotion->customer_bp_address->street;
+                if(strtolower(@$customer_promotion->customer_bp_address->street) == strtolower(@$customer_promotion->user->customer->card_name)){
+                    $response['Address'] = @$customer_promotion->customer_bp_address->street;
+                }else{
+                    $response['Address'] = @$customer_promotion->customer_bp_address->address;
+                    if(!empty(@$customer_promotion->customer_bp_address->street)){
+                        $response['Address'] .= ", ".@$customer_promotion->customer_bp_address->street;
+                    }
                 }
+
                 if(!empty(@$customer_promotion->customer_bp_address->city)){
                     $response['Address'] .= ", ".@$customer_promotion->customer_bp_address->city;
                 }

@@ -96,11 +96,17 @@ class SAPProductGroup
 
                 foreach ($data['value'] as $value) {
                     
+                    $status = true;
+                    if(substr(@$value['GroupName'], -3) == "-NA"){
+                        $status = false;
+                    }
+
                     $insert = array(
                                     'number' => @$value['Number'],
                                     'group_name' => @$value['GroupName'],
                                     'sap_connection_id' => @$sap_connection->id,
                                     'last_sync_at' => current_datetime(),
+                                    'is_active' => $status
                                 );
 
                     $obj = ProductGroup::updateOrCreate(
