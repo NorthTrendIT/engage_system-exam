@@ -402,7 +402,7 @@ class PromotionTypeController extends Controller
             $data = Product::orderby('item_name','asc')->where($where);
 
             $data->whereHas('group', function($q){
-                $q->whereNotIn('is_active', true);
+                $q->where('is_active', true);
             });
             
             if($search != ''){

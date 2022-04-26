@@ -436,7 +436,7 @@ class CommonController extends Controller
             }
 
             $data->whereHas('group', function($q){
-                $q->whereNotIn('is_active', true);
+                $q->where('is_active', true);
             });
 
             if(@$request->sap_connection_id != ''){
@@ -476,7 +476,7 @@ class CommonController extends Controller
             }
 
             $data->whereHas('group', function($q){
-                $q->whereNotIn('is_active', true);
+                $q->where('is_active', true);
             });
 
             $sap_connection_id = $request->sap_connection_id;
@@ -513,7 +513,7 @@ class CommonController extends Controller
             }
 
             $data->whereHas('group', function($q){
-                $q->whereNotIn('is_active', true);
+                $q->where('is_active', true);
             });
 
             $sap_connection_id = $request->sap_connection_id;
@@ -550,7 +550,7 @@ class CommonController extends Controller
             }
 
             $data->whereHas('group', function($q){
-                $q->whereNotIn('is_active', true);
+                $q->where('is_active', true);
             });
 
             $sap_connection_id = $request->sap_connection_id;
@@ -587,7 +587,7 @@ class CommonController extends Controller
             }
 
             $data->whereHas('group', function($q){
-                $q->whereNotIn('is_active', true);
+                $q->where('is_active', true);
             });
 
             $sap_connection_id = $request->sap_connection_id;
@@ -624,7 +624,7 @@ class CommonController extends Controller
             }
 
             $data->whereHas('group', function($q){
-                $q->whereNotIn('is_active', true);
+                $q->where('is_active', true);
             });
             
             $sap_connection_id = $request->sap_connection_id;

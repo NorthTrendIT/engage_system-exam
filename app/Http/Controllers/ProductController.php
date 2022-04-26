@@ -275,7 +275,7 @@ class ProductController extends Controller
       }
 
       $data->whereHas('group', function($q){
-        $q->whereNotIn('is_active', true);
+        $q->where('is_active', true);
       });
 
     }
