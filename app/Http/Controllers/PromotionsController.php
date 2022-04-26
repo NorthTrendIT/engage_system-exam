@@ -525,10 +525,16 @@ class PromotionsController extends Controller
         $search = $request->search;
 
         if($search == ''){
-            $data = Product::where('is_active', true)->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
+            $data = Product::where('is_active', true)->orderby('item_name','asc')->select('id','item_name')->limit(50);
         }else{
-            $data = Product::where('is_active', true)->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
+            $data = Product::where('is_active', true)->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50);
         }
+
+        $data->whereHas('group', function($q){
+            $q->whereNotIn('is_active', true);
+        });
+
+        $data = $data->get();
 
         $response = array();
         foreach($data as $value){
@@ -709,7 +715,7 @@ class PromotionsController extends Controller
     public function getBrands(Request $request){
         $search = $request->search;
 
-        $data = ProductGroup::orderby('group_name','asc')->select('id','group_name');
+        $data = ProductGroup::orderby('group_name','asc')->select('id','group_name')->where('is_active', true);
         if($search != ''){
             $data->where('group_name', 'like', '%' .$search . '%');
         }

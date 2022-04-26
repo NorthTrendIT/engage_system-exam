@@ -287,10 +287,16 @@ class DraftOrderController extends Controller
         }
 
         if($search == ''){
-            $data = Product::where(['is_active' => 1, 'sap_connection_id' => $sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->limit(50)->get();
+            $data = Product::where(['is_active' => 1, 'sap_connection_id' => $sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->limit(50);
         }else{
-            $data = Product::where(['is_active' => 1, 'sap_connection_id' => $sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50)->get();
+            $data = Product::where(['is_active' => 1, 'sap_connection_id' => $sap_connection_id])->orderby('item_name','asc')->select('id','item_name')->where('item_name', 'like', '%' .$search . '%')->limit(50);
         }
+
+        $data->whereHas('group', function($q){
+            $q->whereNotIn('is_active', true);
+        });
+
+        $data = $data->get();
 
         $response = array();
         foreach($data as $value){
