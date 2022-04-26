@@ -67,14 +67,14 @@ class StoreCustomers implements ShouldQueue
                     }
                 }
 
-                if(!is_null(@$value['U_CLASS'])){
+                if(!is_null(@$value['U_Classification']) || @$value['U_Classification'] == "-" ){
                     $obj_class = Classes::updateOrCreate(
                                             [
-                                                'name' => @$value['U_CLASS'],
+                                                'name' => @$value['U_Classification'],
                                                 'module' => 'C',
                                             ],
                                             [
-                                                'name' => @$value['U_CLASS'],
+                                                'name' => @$value['U_Classification'],
                                                 'module' => 'C',
                                             ]
                                         );
@@ -110,7 +110,8 @@ class StoreCustomers implements ShouldQueue
                                 'price_list_num' => @$value['PriceListNum'],
                                 'territory' => @$value['Territory'],
 
-                                'class_id' => !is_null(@$value['U_CLASS']) ? @$obj_class->id : NULL,
+                                'class_id' => !is_null(@$value['U_Classification']) ? @$obj_class->id : NULL,
+                                'u_classification' => @$value['U_Classification'],
 
                                 'u_mkt_segment' => @$value['U_MktSegment'],
                                 'u_cust_segment' => @$value['U_CustSegment'],

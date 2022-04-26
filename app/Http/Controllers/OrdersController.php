@@ -254,7 +254,7 @@ class OrdersController extends Controller
         if($request->filter_class != ""){
             $data->where(function($query) use ($request) {
                 $query->whereHas('customer', function($q) use ($request) {
-                    $q->where('u_class', $request->filter_class);
+                    $q->where('u_classification', $request->filter_class);
                 });
             });
         }
@@ -375,7 +375,7 @@ class OrdersController extends Controller
                                 return getOrderStatusBtnHtml(getOrderStatusByQuotation($row));
                             })
                             ->addColumn('doc_entry', function($row) {
-                                return $row->doc_entry;
+                                return '<a href="' . route('orders.show',$row->id). '" title="View details">'.$row->doc_entry.'</a>';
                             })
                             ->addColumn('total', function($row) {
                                 return '₱ '. number_format_value($row->doc_total);
@@ -429,7 +429,7 @@ class OrdersController extends Controller
                             ->orderColumn('company', function ($query, $order) {
                                 $query->join('sap_connections', 'quotations.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
-                            ->rawColumns(['action', 'status', 'order_type'])
+                            ->rawColumns(['action', 'status', 'order_type','doc_entry'])
                             ->make(true);
     }
 
@@ -802,7 +802,7 @@ class OrdersController extends Controller
         if(@$filter->filter_class != ""){
             $data->where(function($query) use ($filter) {
                 $query->whereHas('customer', function($q) use ($filter) {
-                    $q->where('u_class', $filter->filter_class);
+                    $q->where('u_classification', $filter->filter_class);
                 });
             });
         }

@@ -642,7 +642,7 @@ class CustomerPromotionController extends Controller
                 $query->orwhere(function($query1) use ($request) {
                     $query1->whereHas('user', function($q) use ($request){
                         $q->whereHas('customer', function($q1) use ($request){
-                            $q1->where('u_class', $request->filter_customer_class);
+                            $q1->where('u_classification', $request->filter_customer_class);
                         });
                     });
                 });
@@ -650,7 +650,7 @@ class CustomerPromotionController extends Controller
                 $query->orwhere(function($query1) use ($request) {
                     $query1->whereHas('user', function($q) use ($request){
                         $q->whereHas('created_by_user.customer', function($q1) use ($request){
-                            $q1->where('u_class', $request->filter_customer_class);
+                            $q1->where('u_classification', $request->filter_customer_class);
                         });
                     });
                 });
@@ -1185,7 +1185,7 @@ class CustomerPromotionController extends Controller
                 $query->orwhere(function($query1) use ($filter) {
                     $query1->whereHas('user', function($q) use ($filter){
                         $q->whereHas('customer', function($q1) use ($filter){
-                            $q1->where('u_class', $filter->filter_customer_class);
+                            $q1->where('u_classification', $filter->filter_customer_class);
                         });
                     });
                 });
@@ -1193,7 +1193,7 @@ class CustomerPromotionController extends Controller
                 $query->orwhere(function($query1) use ($filter) {
                     $query1->whereHas('user', function($q) use ($filter){
                         $q->whereHas('created_by_user.customer', function($q1) use ($filter){
-                            $q1->where('u_class', $filter->filter_customer_class);
+                            $q1->where('u_classification', $filter->filter_customer_class);
                         });
                     });
                 });

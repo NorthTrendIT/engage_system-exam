@@ -202,7 +202,7 @@ class CustomerController extends Controller
         }
 
         if($request->filter_customer_class != ""){
-            $data->where('u_class',$request->filter_customer_class);
+            $data->where('u_classification',$request->filter_customer_class);
         }
 
         if($request->filter_search != ""){
@@ -293,7 +293,7 @@ class CustomerController extends Controller
                                 return $btn;
                             })
                             ->addColumn('class', function($row) {
-                                return @$row->u_class ?? "-";
+                                return @$row->u_classification ?? "-";
                             })
                             ->addColumn('credit_limit', function($row) {
                                 if(userrole() == 1){
@@ -357,7 +357,7 @@ class CustomerController extends Controller
                                 $query->orderBy('is_active', $order);
                             })
                             ->orderColumn('class', function ($query, $order) {
-                                $query->orderBy('u_class', $order);
+                                $query->orderBy('u_classification', $order);
                             })
                             ->orderColumn('u_cust_segment', function ($query, $order) {
                                 $query->orderBy('u_cust_segment', $order);
@@ -494,7 +494,7 @@ class CustomerController extends Controller
         }
 
         if(@$filter->filter_customer_class != ""){
-            $data->where('u_class',$filter->filter_customer_class);
+            $data->where('u_classification',$filter->filter_customer_class);
         }
 
         if(@$filter->filter_search != ""){
@@ -538,7 +538,7 @@ class CustomerController extends Controller
                                     'no' => $key + 1,
                                     'card_code' => $value->card_code ?? "-",
                                     'card_name' => $value->card_name ?? "-",
-                                    'class' => @$value->u_class ?? "-",
+                                    'class' => @$value->u_classification ?? "-",
                                     'customer_segment' => @$value->u_cust_segment ?? "-",
                                     'market_sector' => @$value->u_sector ?? "-",
                                     'market_sub_sector' => @$value->u_subsector ?? "-",
@@ -558,7 +558,7 @@ class CustomerController extends Controller
                                     'credit_limit' => $value->credit_limit ?? "-",
                                     'group_name' => @$value->group->name ?? "-",
                                     'territory' => @$value->territories->description ?? "-",
-                                    'class' => @$value->u_class ?? "-",
+                                    'class' => @$value->u_classification ?? "-",
                                     'created_at' => date('M d, Y',strtotime($value->created_date)),
                                     // 'status' => $value->is_active ? "Active" : "Inctive",
                                 );
@@ -703,7 +703,7 @@ class CustomerController extends Controller
 
             if($search != ''){
                 $data->where('customer',function($q) use ($search) {
-                    $q->where('u_class', 'like', '%' .$search . '%');
+                    $q->where('u_classification', 'like', '%' .$search . '%');
                 });
             }
 
@@ -711,13 +711,13 @@ class CustomerController extends Controller
 
             foreach($data as $value){
 
-                if(isset($response[$value->customer->u_class])){
+                if(isset($response[$value->customer->u_classification])){
                    continue;
                 }
 
-                $response[$value->customer->u_class] = array(
-                    "id" => $value->customer->u_class,
-                    "text" => $value->customer->u_class
+                $response[$value->customer->u_classification] = array(
+                    "id" => $value->customer->u_classification,
+                    "text" => $value->customer->u_classification
                 );
             }
 

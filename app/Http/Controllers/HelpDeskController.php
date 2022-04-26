@@ -279,7 +279,7 @@ class HelpDeskController extends Controller
                 $query->orwhere(function($query1) use ($request) {
                     $query1->whereHas('user', function($q) use ($request){
                         $q->whereHas('customer', function($q1) use ($request){
-                            $q1->where('u_class', $request->filter_customer_class);
+                            $q1->where('u_classification', $request->filter_customer_class);
                         });
                     });
                 });
@@ -287,7 +287,7 @@ class HelpDeskController extends Controller
                 $query->orwhere(function($query1) use ($request) {
                     $query1->whereHas('user', function($q) use ($request){
                         $q->whereHas('created_by_user.customer', function($q1) use ($request){
-                            $q1->where('u_class', $request->filter_customer_class);
+                            $q1->where('u_classification', $request->filter_customer_class);
                         });
                     });
                 });
