@@ -70,7 +70,7 @@ class ProductListController extends Controller
             $brand_product = Product::where('is_active', true)->whereIn('items_group_code', $product_groups);
 
             $brand_product->whereHas('group', function($q){
-                $q->whereNotIn('is_active', true);
+                $q->where('is_active', true);
             });   
             
             $brand_product = $brand_product->get()->toArray();
@@ -131,7 +131,7 @@ class ProductListController extends Controller
             $products = Product::where($where)->orderBy('id', 'DESC')->limit(12);
 
             $products->whereHas('group', function($q){
-                $q->whereNotIn('is_active', true);
+                $q->where('is_active', true);
             });
 
             if ($request->id > 0) {
@@ -217,7 +217,7 @@ class ProductListController extends Controller
             $last = Product::where($where)->select('id');
 
             $last->whereHas('group', function($q){
-                $q->whereNotIn('is_active', true);
+                $q->where('is_active', true);
             });
 
             if($request->filter_search != ""){
@@ -472,7 +472,7 @@ class ProductListController extends Controller
         $products = Product::where($where)->limit(50);
 
         $products->whereHas('group', function($q){
-            $q->whereNotIn('is_active', true);
+            $q->where('is_active', true);
         });
 
         if($request->filter_search != ""){
