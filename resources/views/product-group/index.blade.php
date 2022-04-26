@@ -30,8 +30,8 @@
               <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
             </div> --}}
             <div class="card-body">
-              <div class="row mt-5">
-                <div class="col-md-3">
+              <div class="row">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid filter_company" name="filter_company" data-control="select2" data-hide-search="true" data-placeholder="Select business unit" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($company as $c)
@@ -40,13 +40,23 @@
                   </select>
                 </div>
 
-                <div class="col-md-6">
+                @if(userrole() == 1)
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
+                    <option value="">Select status</option>
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                  </select>
+                </div>
+                @endif
+
+                <div class="col-md-6 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
                   </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -116,6 +126,7 @@
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_company = $('[name="filter_company"]').val();
+      $filter_status = $('[name="filter_status"]').val();
 
       table.DataTable({
           processing: true,
@@ -131,6 +142,7 @@
               data:{
                 filter_search : $filter_search,
                 filter_company : $filter_company,
+                filter_status : $filter_status,
               }
           },
           columns: [
@@ -162,6 +174,7 @@
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
       $('[name="filter_company"]').val('').trigger('change');
+      $('[name="filter_status"]').val('').trigger('change');
       render_table();
     })
 

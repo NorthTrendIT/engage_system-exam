@@ -148,12 +148,16 @@ class ProductGroupController extends Controller
             $data->where('sap_connection_id',$request->filter_company);
         }
 
+        if($request->filter_status != ""){
+            $data->where('is_active',$request->filter_status);
+        }
+
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
         });
 
         if(userrole() != 1){
-            $data->where('status', true);
+            $data->where('is_active', true);
         }
         // $data->whereNotIn('group_name', ['Items', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT']);
 

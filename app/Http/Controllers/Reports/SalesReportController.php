@@ -201,7 +201,7 @@ class SalesReportController extends Controller
         }
 
         if(@$request->filter_customer_class != ""){
-            $data->where('customers.u_class',$request->filter_customer_class);
+            $data->where('customers.u_classification',$request->filter_customer_class);
         }
 
         if(@$request->filter_market_sector != ""){

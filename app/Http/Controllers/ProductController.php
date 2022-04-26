@@ -219,41 +219,41 @@ class ProductController extends Controller
       if($request->filter_company == 5){ //Solid Trend
         $filter_company = 1;
       }
-      $data->where('sap_connection_id',$filter_company);
+      $data->where('products.sap_connection_id',$filter_company);
     }
 
     if($request->filter_brand != ""){
-      $data->where('items_group_code',$request->filter_brand);
+      $data->where('products.items_group_code',$request->filter_brand);
     }
 
     if($request->filter_product_category != ""){
-      $data->where('u_tires',$request->filter_product_category);
+      $data->where('products.u_tires',$request->filter_product_category);
     }
 
     if($request->filter_product_line != ""){
-      $data->where('u_item_line',$request->filter_product_line);
+      $data->where('products.u_item_line',$request->filter_product_line);
     }
 
     if($request->filter_product_class != ""){
-      $data->where('item_class',$request->filter_product_class);
+      $data->where('products.item_class',$request->filter_product_class);
     }
 
     if($request->filter_product_type != ""){
-      $data->where('u_item_type',$request->filter_product_type);
+      $data->where('products.u_item_type',$request->filter_product_type);
     }
 
     if($request->filter_product_application != ""){
-      $data->where('u_item_application',$request->filter_product_application);
+      $data->where('products.u_item_application',$request->filter_product_application);
     }
 
     if($request->filter_product_pattern != ""){
-      $data->where('u_pattern2',$request->filter_product_pattern);
+      $data->where('products.u_pattern2',$request->filter_product_pattern);
     }
 
     if($request->filter_search != ""){
       $data->where(function($q) use ($request) {
-        $q->orwhere('item_code','LIKE',"%".$request->filter_search."%");
-        $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
+        $q->orwhere('products.item_code','LIKE',"%".$request->filter_search."%");
+        $q->orwhere('products.item_name','LIKE',"%".$request->filter_search."%");
       });
     }
 
@@ -268,10 +268,10 @@ class ProductController extends Controller
 
 
     if(userrole() != 1){
-      $data->where('is_active', true);
+      $data->where('products.is_active', true);
 
       if(@Auth::user()->sap_connection_id){
-        $data->where('sap_connection_id', @Auth::user()->sap_connection_id);
+        $data->where('products.sap_connection_id', @Auth::user()->sap_connection_id);
       }
 
       $data->whereHas('group', function($q){
@@ -281,7 +281,7 @@ class ProductController extends Controller
     }
 
     $data->when(!isset($request->order), function ($q) {
-      $q->orderBy('created_date', 'desc');
+      $q->orderBy('products.created_date', 'desc');
     });
 
     
@@ -631,35 +631,35 @@ class ProductController extends Controller
       if($filter->filter_company == 5){ //Solid Trend
         $filter_company = 1;
       }
-      $data->where('sap_connection_id',$filter_company);
+      $data->where('products.sap_connection_id',$filter_company);
     }
 
     if(@$filter->filter_brand != ""){
-      $data->where('items_group_code',$filter->filter_brand);
+      $data->where('products.items_group_code',$filter->filter_brand);
     }
 
     if(@$filter->filter_product_category != ""){
-      $data->where('u_tires',$filter->filter_product_category);
+      $data->where('products.u_tires',$filter->filter_product_category);
     }
 
     if(@$filter->filter_product_line != ""){
-      $data->where('u_item_line',$filter->filter_product_line);
+      $data->where('products.u_item_line',$filter->filter_product_line);
     }
 
     if(@$filter->filter_product_class != ""){
-      $data->where('item_class',$filter->filter_product_class);
+      $data->where('products.item_class',$filter->filter_product_class);
     }
 
     if(@$filter->filter_product_type != ""){
-      $data->where('u_item_type',$filter->filter_product_type);
+      $data->where('products.u_item_type',$filter->filter_product_type);
     }
 
     if(@$filter->filter_product_application != ""){
-      $data->where('u_item_application',$filter->filter_product_application);
+      $data->where('products.u_item_application',$filter->filter_product_application);
     }
 
     if(@$filter->filter_product_pattern != ""){
-      $data->where('u_pattern2',$filter->filter_product_pattern);
+      $data->where('products.u_pattern2',$filter->filter_product_pattern);
     }
 
     if(@$filter->filter_search != ""){
@@ -680,10 +680,10 @@ class ProductController extends Controller
 
 
     if(userrole() != 1){
-      $data->where('is_active', true);
+      $data->where('products.is_active', true);
 
       if(@Auth::user()->sap_connection_id){
-        $data->where('sap_connection_id', @Auth::user()->sap_connection_id);
+        $data->where('products.sap_connection_id', @Auth::user()->sap_connection_id);
       }
     }
 
