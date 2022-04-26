@@ -401,6 +401,10 @@ class PromotionTypeController extends Controller
 
             $data = Product::orderby('item_name','asc')->where($where);
 
+            $data->whereHas('group', function($q){
+                $q->whereNotIn('is_active', true);
+            });
+            
             if($search != ''){
                 $data->where('item_name', 'like', '%' .$search . '%');
             }
@@ -427,7 +431,7 @@ class PromotionTypeController extends Controller
                 $sap_connection_id = 1;
             }
             
-            $data = ProductGroup::orderby('group_name','asc')->where('sap_connection_id',$sap_connection_id);
+            $data = ProductGroup::orderby('group_name','asc')->where('is_active', true)->where('sap_connection_id',$sap_connection_id);
 
             if($search != ''){
                 $data->where('group_name', 'like', '%' .$search . '%');

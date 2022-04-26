@@ -295,7 +295,7 @@ class NewsAndAnnouncementController extends Controller
         $data = Notification::with(['user', 'documents', 'connections'])->where('id', $id)->firstOrFail();
         if(@$data->module == 'brand' && !empty(@$data->request_payload)){
             $brand_ids = json_decode(@$data->request_payload);
-            $brands = ProductGroup::whereIn('id', $brand_ids)->orderby('group_name','asc')->pluck('group_name');
+            $brands = ProductGroup::whereIn('id', $brand_ids)->orderby('group_name','asc')->where('is_active', true)->pluck('group_name');
         }
         if(@$data->module == 'territory' && !empty(@$data->request_payload)){
             $territory_ids = json_decode(@$data->request_payload);
@@ -318,7 +318,7 @@ class NewsAndAnnouncementController extends Controller
         $sap_connections = SapConnection::all();
         if(@$edit->module == 'brand' && !empty(@$edit->request_payload)){
             $brand_ids = json_decode(@$edit->request_payload);
-            $brands = ProductGroup::whereIn('id', $brand_ids)->orderby('group_name','asc')->pluck('group_name');
+            $brands = ProductGroup::whereIn('id', $brand_ids)->orderby('group_name','asc')->where('is_active', true)->pluck('group_name');
         }
         if(@$edit->module == 'territory' && !empty(@$edit->request_payload)){
             $territory_ids = json_decode(@$edit->request_payload);
@@ -681,6 +681,7 @@ class NewsAndAnnouncementController extends Controller
             $data = ProductGroup::where('sap_connection_id',$request->sap_connection_id)
                                 ->orderby('group_name','asc')
                                 ->select('id','group_name')
+                                ->where('is_active', true)
                                 ->limit(50);
 
             if($search != ''){

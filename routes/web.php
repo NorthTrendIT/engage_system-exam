@@ -111,6 +111,7 @@ Route::middleware(['auth'])->group(function(){
             Route::resource('product-group','App\Http\Controllers\ProductGroupController');
             Route::post('product-group/get-all', 'App\Http\Controllers\ProductGroupController@getAll')->name('product-group.get-all');
             Route::post('product-group/sync-product-groups', 'App\Http\Controllers\ProductGroupController@syncProductGroups')->name('product-group.sync-product-groups');
+            Route::post('product-group/status/{id}', 'App\Http\Controllers\ProductGroupController@updateStatus')->name('product-group.status');
 
             // Orders
     	    Route::get('orders/export', 'App\Http\Controllers\OrdersController@export')->name('orders.export');

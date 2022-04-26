@@ -67,7 +67,15 @@ class ProductListController extends Controller
 
 
 
-            $brand_product = Product::where('is_active', true)->whereIn('items_group_code', $product_groups)->get()->toArray();
+            $brand_product = Product::where('is_active', true)->whereIn('items_group_code', $product_groups);
+
+            $brand_product->whereHas('group', function($q){
+                $q->whereNotIn('is_active', true);
+            });   
+            
+            $brand_product = $brand_product->get()->toArray();
+
+
             $c_product_line = array_unique(
                                         array_filter(
                                                 array_merge($c_product_line,
@@ -121,6 +129,11 @@ class ProductListController extends Controller
             $where = array('is_active' => 1);
 
             $products = Product::where($where)->orderBy('id', 'DESC')->limit(12);
+
+            $products->whereHas('group', function($q){
+                $q->whereNotIn('is_active', true);
+            });
+
             if ($request->id > 0) {
                 $products->where('id', '<', $request->id);
             }
@@ -202,6 +215,11 @@ class ProductListController extends Controller
             $products = $products->get();
 
             $last = Product::where($where)->select('id');
+
+            $last->whereHas('group', function($q){
+                $q->whereNotIn('is_active', true);
+            });
+
             if($request->filter_search != ""){
                 $last->where(function($q) use ($request) {
                     $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
@@ -452,6 +470,10 @@ class ProductListController extends Controller
         $where = array('is_active' => true);
 
         $products = Product::where($where)->limit(50);
+
+        $products->whereHas('group', function($q){
+            $q->whereNotIn('is_active', true);
+        });
 
         if($request->filter_search != ""){
             $products->where(function($q) use ($request) {

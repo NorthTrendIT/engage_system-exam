@@ -442,6 +442,7 @@ class CustomersSalesSpecialistsController extends Controller
             $data = ProductGroup::where('sap_connection_id',$sap_connection_id)
                                 ->orderby('group_name','asc')
                                 ->select('id','group_name')
+                                ->where('is_active', true)
                                 ->limit(50);
 
             if($search != ''){

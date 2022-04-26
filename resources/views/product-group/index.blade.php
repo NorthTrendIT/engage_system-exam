@@ -68,6 +68,9 @@
                               @endif
                               <th>Number</th>
                               <th>Name</th>
+                              @if(in_array(userrole(),[1]))
+                              <th>Status</th>
+                              @endif
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -97,6 +100,7 @@
 
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css" />
 @endpush
 
 @push('js')
@@ -106,7 +110,6 @@
   $(document).ready(function() {
 
     render_table();
-
     function render_table(){
       var table = $("#myTable");
       table.DataTable().destroy();
@@ -137,6 +140,9 @@
               @endif
               {data: 'number', name: 'number'},
               {data: 'group_name', name: 'group_name'},
+              @if(in_array(userrole(),[1]))
+              {data: 'status', name: 'status'},
+              @endif
           ],
           drawCallback:function(){
               $(function () {
@@ -193,6 +199,46 @@
         }
       })
     });
+
+
+    @if(userrole() == 1)
+      $(document).on('click', '.status', function(event) {
+        event.preventDefault();
+        $url = $(this).attr('data-url');
+
+        Swal.fire({
+          title: 'Are you sure want to change status?',
+          //text: "Once deleted, you will not be able to recover this record!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, change it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: $url,
+              method: "POST",
+              data: {
+                      _token:'{{ csrf_token() }}'
+                    }
+            })
+            .done(function(result) {
+              if(result.status == false){
+                toast_error(result.message);
+              }else{
+                toast_success(result.message);
+                render_table();
+              }
+            })
+            .fail(function() {
+              toast_error("error");
+            });
+          }
+        })
+      });
+    @endif
+
   })
 </script>
 @endpush

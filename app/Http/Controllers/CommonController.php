@@ -309,6 +309,7 @@ class CommonController extends Controller
 
             $data = ProductGroup::orderby('group_name','asc')
                                 ->select('number','group_name')
+                                ->where('is_active', true)
                                 ->limit(50);
 
             if($search != ''){
@@ -434,6 +435,9 @@ class CommonController extends Controller
                 $data->where('u_tires', 'like', '%' .$request->search . '%');
             }
 
+            $data->whereHas('group', function($q){
+                $q->whereNotIn('is_active', true);
+            });
 
             if(@$request->sap_connection_id != ''){
                 $sap_connection_id = $request->sap_connection_id;
@@ -471,6 +475,10 @@ class CommonController extends Controller
                 $data->where('u_item_line', 'like', '%' .$request->search . '%');
             }
 
+            $data->whereHas('group', function($q){
+                $q->whereNotIn('is_active', true);
+            });
+
             $sap_connection_id = $request->sap_connection_id;
             if($request->sap_connection_id == 5){ //Solid Trend
                 $sap_connection_id = 1;
@@ -503,6 +511,10 @@ class CommonController extends Controller
             if(@$request->search  != ''){
                 $data->where('item_class', 'like', '%' .$request->search . '%');
             }
+
+            $data->whereHas('group', function($q){
+                $q->whereNotIn('is_active', true);
+            });
 
             $sap_connection_id = $request->sap_connection_id;
             if($request->sap_connection_id == 5){ //Solid Trend
@@ -537,6 +549,10 @@ class CommonController extends Controller
                 $data->where('u_item_type', 'like', '%' .$request->search . '%');
             }
 
+            $data->whereHas('group', function($q){
+                $q->whereNotIn('is_active', true);
+            });
+
             $sap_connection_id = $request->sap_connection_id;
             if($request->sap_connection_id == 5){ //Solid Trend
                 $sap_connection_id = 1;
@@ -569,6 +585,10 @@ class CommonController extends Controller
             if(@$request->search  != ''){
                 $data->where('u_item_application', 'like', '%' .$request->search . '%');
             }
+
+            $data->whereHas('group', function($q){
+                $q->whereNotIn('is_active', true);
+            });
 
             $sap_connection_id = $request->sap_connection_id;
             if($request->sap_connection_id == 5){ //Solid Trend
@@ -603,6 +623,10 @@ class CommonController extends Controller
                 $data->where('u_pattern2', 'like', '%' .$request->search . '%');
             }
 
+            $data->whereHas('group', function($q){
+                $q->whereNotIn('is_active', true);
+            });
+            
             $sap_connection_id = $request->sap_connection_id;
             if($request->sap_connection_id == 5){ //Solid Trend
                 $sap_connection_id = 1;

@@ -273,15 +273,18 @@ class ProductController extends Controller
       if(@Auth::user()->sap_connection_id){
         $data->where('sap_connection_id', @Auth::user()->sap_connection_id);
       }
+
+      $data->whereHas('group', function($q){
+        $q->whereNotIn('is_active', true);
+      });
+
     }
 
     $data->when(!isset($request->order), function ($q) {
       $q->orderBy('created_date', 'desc');
     });
 
-    $data->whereHas('group', function($q){
-      $q->whereNotIn('group_name', ['Items', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT']);
-    });
+    
 
     return DataTables::of($data)
                           ->addIndexColumn()
@@ -942,7 +945,7 @@ class ProductController extends Controller
         $sap_connection_id = 1;
       }
 
-      $data = ProductGroup::where('sap_connection_id', $sap_connection_id)->orderby('group_name')->limit(50);
+      $data = ProductGroup::where('sap_connection_id', $sap_connection_id)->orderby('group_name')->where('is_active', true)->limit(50);
 
       $data->whereNotIn('group_name', ['Items', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT']);
 

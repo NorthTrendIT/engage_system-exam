@@ -119,6 +119,19 @@ class ProductGroupController extends Controller
         return $response;
     }
 
+    public function updateStatus($id){
+
+        $data = ProductGroup::where('id', $id)->first();
+
+        if(!is_null($data)){
+            $data->is_active = !$data->is_active;
+            $data->save();
+            $response = ['status'=>true,'message'=>'Status update successfully !'];
+        }else{
+            $response = ['status'=>false,'message'=>'Record not found !'];
+        }
+        return $response;
+    }
 
     public function getAll(Request $request){
 
@@ -157,6 +170,33 @@ class ProductGroupController extends Controller
                                 }
                                 return $name;
                             })
+                            ->addColumn('status', function($row) {
+
+                                $btn = "";
+                                if($row->is_active){
+                                    $btn .= '<div class="form-group">
+                                    <div class="col-3">
+                                     <span class="switch">
+                                      <label>
+                                       <input type="checkbox" checked="checked" name="status" class="status" data-url="' . route('product-group.status', $row->id) . '"/>
+                                       <span></span>
+                                      </label>
+                                     </span>
+                                    </div>';
+                                }else{
+                                    $btn .= '<div class="form-group">
+                                    <div class="col-3">
+                                     <span class="switch">
+                                      <label>
+                                       <input type="checkbox" name="status" class="status" data-url="' . route('product-group.status', $row->id) . '"/>
+                                       <span></span>
+                                      </label>
+                                     </span>
+                                    </div>';
+                                }
+
+                                return $btn;
+                            })
                             ->orderColumn('group_name', function ($query, $order) {
                                 $query->orderBy('group_name', $order);
                             })
@@ -166,7 +206,12 @@ class ProductGroupController extends Controller
                             ->orderColumn('company', function ($query, $order) {
                                 $query->join('sap_connections', 'product_groups.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
-                            ->rawColumns(['group_name', 'number','company'])
+                            ->orderColumn('status', function ($query, $order) {
+                                $query->orderBy('is_active', $order);
+                            })
+                            ->rawColumns(['group_name', 'number', 'company', 'status'])
                             ->make(true);
     }
+
+
 }
