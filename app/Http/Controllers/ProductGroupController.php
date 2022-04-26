@@ -152,8 +152,10 @@ class ProductGroupController extends Controller
             $q->orderBy('id', 'desc');
         });
 
-
-        $data->whereNotIn('group_name', ['Items', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT']);
+        if(userrole() != 1){
+            $data->where('status', true);
+        }
+        // $data->whereNotIn('group_name', ['Items', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT']);
 
         return DataTables::of($data)
                             ->addIndexColumn()
