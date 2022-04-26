@@ -280,6 +280,10 @@ class ProductListController extends Controller
 
         $products = Product::where($where);
 
+        $products->whereHas('group', function($q){
+            $q->where('is_active', true);
+        });
+        
         if($request->filter_search != ""){
             $products->where(function($q) use ($request) {
                 $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
