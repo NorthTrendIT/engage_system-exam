@@ -90,10 +90,11 @@ class SAPProduct
         }else{
             $latestData = Product::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
-                $url = '/b1s/v1/Items?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
+                $url = '/b1s/v1/Items?$filter=ItemType ge \''.'I'.'\'&$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
                 $response = $this->getProductData($url);
             } else {
-                $response = $this->getProductData();
+                $url = '/b1s/v1/Items?$filter=ItemType ge \''.'I'.'\'';
+                $response = $this->getProductData($url);
             }
         }
 
