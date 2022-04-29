@@ -174,8 +174,15 @@
 
                 </div>
 
+                <div class="row mt-15">
 
-                <div class="mt-5 multi_product_div" >
+                  <div class="col-md-12">
+                    <h3 class="text-info">Product Details</h3>
+                  </div>
+
+                </div>
+
+                <div class="multi_product_div" >
 
                   <div data-repeater-list="product_list">
 
@@ -184,6 +191,10 @@
                       @foreach($edit->products as $key => $p)
 
                         <div class="row" data-repeater-item>
+                          <div class="col-md-12 mt-5">
+                            <hr>
+                          </div>
+
                           <div class="col-md-3 mt-5">
                             <div class="form-group">
                               <label>Brand<span class="asterisk">*</span></label>
@@ -194,7 +205,40 @@
                             </div>
                           </div>
 
-                          <div class="col-md-6 mt-5">
+                          <div class="col-md-3 mt-5 product_option_div">
+                            <div class="form-group">
+                              <label>Product Option<span class="asterisk">*</span></label>
+                              <select class="form-control form-control-lg form-control-solid product_option" name="product_option" data-hide-search="true" data-placeholder="Select product option" data-allow-clear="true">
+                                <option value=""></option>
+                                <option value="pattern" @if(@$p->product_option == "pattern") selected="" @endif >By Pattern</option>
+                                <option value="category" @if(@$p->product_option == "category") selected="" @endif >By Category</option>
+                                <option value="product" @if(@$p->product_option == "product") selected="" @endif >By Product</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="col-md-6 mt-5 category_div" @if(in_array(@$p->product_option, ['pattern', 'product'])) style="display:none;" @endif >
+                            <div class="form-group">
+                              <label>Category<span class="asterisk">*</span></label>
+                              <select class="form-control form-control-lg form-control-solid category" name="category">
+                                <option value=""></option>
+                                <option value="{{ @$p->category }}" selected="">{{ @$p->category }}</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="col-md-6 mt-5 pattern_div" @if(in_array(@$p->product_option, ['category', 'product'])) style="display:none;" @endif >
+                            <div class="form-group">
+                              <label>Pattern<span class="asterisk">*</span></label>
+                              <select class="form-control form-control-lg form-control-solid pattern" name="pattern">
+                                <option value=""></option>
+                                <option value="{{ @$p->pattern }}" selected="">{{ @$p->pattern }}</option>
+                              </select>
+                            </div>
+                          </div>
+
+
+                          <div class="col-md-6 mt-5 product_div">
                             <div class="form-group">
                               <label>Product<span class="asterisk">*</span></label>
                               <select class="form-control form-control-lg form-control-solid product_id" name="product_id">
@@ -230,6 +274,10 @@
 
                     @else
                       <div class="row" data-repeater-item>
+                        <div class="col-md-12 mt-5">
+                          <hr>
+                        </div>
+
                         <div class="col-md-3 mt-5">
                           <div class="form-group">
                             <label>Brand<span class="asterisk">*</span></label>
@@ -239,7 +287,37 @@
                           </div>
                         </div>
 
-                        <div class="col-md-6 mt-5">
+                        <div class="col-md-3 mt-5 product_option_div">
+                          <div class="form-group">
+                            <label>Product Option<span class="asterisk">*</span></label>
+                            <select class="form-control form-control-lg form-control-solid product_option" name="product_option" data-hide-search="true" data-placeholder="Select product option" data-allow-clear="true">
+                              <option value=""></option>
+                              <option value="pattern">By Pattern</option>
+                              <option value="category">By Category</option>
+                              <option value="product">By Product</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="col-md-6 mt-5 category_div" style="display:none;">
+                          <div class="form-group">
+                            <label>Category<span class="asterisk">*</span></label>
+                            <select class="form-control form-control-lg form-control-solid category" name="category">
+                              <option value=""></option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="col-md-6 mt-5 pattern_div" style="display:none;">
+                          <div class="form-group">
+                            <label>Pattern<span class="asterisk">*</span></label>
+                            <select class="form-control form-control-lg form-control-solid pattern" name="pattern">
+                              <option value=""></option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="col-md-6 mt-5 product_div" style="display:none;">
                           <div class="form-group">
                             <label>Product<span class="asterisk">*</span></label>
                             <select class="form-control form-control-lg form-control-solid product_id" name="product_id">
@@ -315,6 +393,7 @@
 
 <script>
   $(document).ready(function() {
+    $('.product_option').select2();
 
     @if(isset($edit))
       show_loader();
@@ -414,68 +493,6 @@
         $('.product_fixed_quantity_div').hide();
       }
 
-    });
-
-
-    $('.brand_id').select2({
-      ajax: {
-        url: "{{route('promotion-type.get-brands')}}",
-        type: "post",
-        dataType: 'json',
-        delay: 250,
-        data: function (params) {
-            return {
-                _token: "{{ csrf_token() }}",
-                search: params.term,
-                sap_connection_id: $('[name="sap_connection_id"]').val()
-            };
-        },
-        processResults: function (response) {
-          return {
-            results:  $.map(response, function (item) {
-                          return {
-                            text: item.group_name,
-                            id: item.id
-                          }
-                      })
-          };
-        },
-        cache: true
-      },
-      placeholder: 'Select a brand',
-      allowClear: true,
-      multiple: false,
-    });
-
-    $('.product_id').select2({
-      ajax: {
-        url: "{{route('promotion-type.get-products')}}",
-        type: "post",
-        dataType: 'json',
-        delay: 250,
-        data: function (params) {
-            return {
-                _token: "{{ csrf_token() }}",
-                search: params.term,
-                sap_connection_id: $('[name="sap_connection_id"]').val(),
-                brand_id: $(this).closest('.row').find('.brand_id').val(),
-            };
-        },
-        processResults: function (response) {
-          return {
-            results:  $.map(response, function (item) {
-                          return {
-                            text: item.item_name,
-                            id: item.id
-                          }
-                      })
-          };
-        },
-        cache: true
-      },
-      placeholder: 'Select a product',
-      allowClear: true,
-      multiple: false,
     });
 
     $('body').on("submit", "#myForm", function (e) {
@@ -635,6 +652,24 @@
         });
       });
 
+      $('.product_option').each(function() {
+        $(this).rules('add', {
+          required:true,
+        });
+      });
+
+      $('.category').each(function() {
+        $(this).rules('add', {
+          required:true,
+        });
+      });
+
+      $('.pattern').each(function() {
+        $(this).rules('add', {
+          required:true,
+        });
+      });
+
       $('.discount_percentage').each(function() {
         if(parseFloat($('#min_percentage').val()) && parseFloat($('#max_percentage').val())){
           $(this).rules('add', {
@@ -657,12 +692,139 @@
       return validator;
     }
 
+    $('.brand_id').select2({
+      ajax: {
+        url: "{{route('promotion-type.get-brands')}}",
+        type: "post",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+            return {
+                _token: "{{ csrf_token() }}",
+                search: params.term,
+                sap_connection_id: $('[name="sap_connection_id"]').val()
+            };
+        },
+        processResults: function (response) {
+          return {
+            results:  $.map(response, function (item) {
+                          return {
+                            text: item.group_name,
+                            id: item.id
+                          }
+                      })
+          };
+        },
+        cache: true
+      },
+      placeholder: 'Select a brand',
+      allowClear: true,
+      multiple: false,
+    });
+
+    $('.product_id').select2({
+      ajax: {
+        url: "{{route('promotion-type.get-products')}}",
+        type: "post",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+            return {
+                _token: "{{ csrf_token() }}",
+                search: params.term,
+                sap_connection_id: $('[name="sap_connection_id"]').val(),
+                brand_id: $(this).closest('.row').find('.brand_id').val(),
+                category: $(this).closest('.row').find('.category').val(),
+                pattern: $(this).closest('.row').find('.pattern').val(),
+                product_option: $(this).closest('.row').find('.product_option').val(),
+            };
+        },
+        processResults: function (response) {
+          return {
+            results:  $.map(response, function (item) {
+                          return {
+                            text: item.item_name,
+                            id: item.id
+                          }
+                      })
+          };
+        },
+        cache: true
+      },
+      placeholder: 'Select a product',
+      allowClear: true,
+      multiple: false,
+    });
+
+    $('.category').select2({
+      ajax: {
+        url: "{{route('promotion-type.get-categories')}}",
+        type: "post",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+            return {
+                _token: "{{ csrf_token() }}",
+                search: params.term,
+                sap_connection_id: $('[name="sap_connection_id"]').val(),
+                brand_id: $(this).closest('.row').find('.brand_id').val(),
+            };
+        },
+        processResults: function (response) {
+          return {
+            results:  $.map(response, function (item) {
+                          return {
+                            text: item,
+                            id: item
+                          }
+                      })
+          };
+        },
+        cache: true
+      },
+      placeholder: 'Select a category',
+      allowClear: true,
+      multiple: false,
+    });
+
+    $('.pattern').select2({
+      ajax: {
+        url: "{{route('promotion-type.get-patterns')}}",
+        type: "post",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+            return {
+                _token: "{{ csrf_token() }}",
+                search: params.term,
+                sap_connection_id: $('[name="sap_connection_id"]').val(),
+                brand_id: $(this).closest('.row').find('.brand_id').val(),
+            };
+        },
+        processResults: function (response) {
+          return {
+            results:  $.map(response, function (item) {
+                          return {
+                            text: item,
+                            id: item
+                          }
+                      })
+          };
+        },
+        cache: true
+      },
+      placeholder: 'Select a pattern',
+      allowClear: true,
+      multiple: false,
+    });
+
     $('#myForm').repeater({
       initEmpty: false,
       show: function () {
         
         $(this).slideDown();
         $(this).find('.product_discount_div').hide();
+        $(this).find('.product_div, .category_div, .pattern_div').hide();
         $(this).find('.delete_btn_div').show();
 
         if($('[name="scope"]').find('option:selected').val() == "R"){
@@ -678,6 +840,7 @@
 
         $('.multi_product_div').find('.select2-container').remove();
 
+        $('.product_option').select2();
 
         $('.brand_id').select2({
           ajax: {
@@ -729,6 +892,9 @@
                     search: params.term,
                     sap_connection_id: $('[name="sap_connection_id"]').val(),
                     brand_id: $(this).closest('.row').find('.brand_id').val(),
+                    category: $(this).closest('.row').find('.category').val(),
+                    pattern: $(this).closest('.row').find('.pattern').val(),
+                    product_option: $(this).closest('.row').find('.product_option').val(),
                     product_ids: product_ids,
                 };
             },
@@ -745,6 +911,69 @@
             cache: true
           },
           placeholder: 'Select a product',
+          allowClear: true,
+          multiple: false,
+        });
+
+
+        $('.category').select2({
+          ajax: {
+            url: "{{route('promotion-type.get-categories')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="sap_connection_id"]').val(),
+                    brand_id: $(this).closest('.row').find('.brand_id').val(),
+                };
+            },
+            processResults: function (response) {
+              return {
+                results:  $.map(response, function (item) {
+                              return {
+                                text: item,
+                                id: item
+                              }
+                          })
+              };
+            },
+            cache: true
+          },
+          placeholder: 'Select a category',
+          allowClear: true,
+          multiple: false,
+        });
+
+        $('.pattern').select2({
+          ajax: {
+            url: "{{route('promotion-type.get-patterns')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="sap_connection_id"]').val(),
+                    brand_id: $(this).closest('.row').find('.brand_id').val(),
+                };
+            },
+            processResults: function (response) {
+              return {
+                results:  $.map(response, function (item) {
+                              return {
+                                text: item,
+                                id: item
+                              }
+                          })
+              };
+            },
+            cache: true
+          },
+          placeholder: 'Select a pattern',
           allowClear: true,
           multiple: false,
         });
@@ -773,21 +1002,57 @@
         }
       });
       $this.val(value);
-
     });
 
-
-    $(document).on('change', '.brand_id', function(event) {
-      event.preventDefault();
-      $(this).closest('.row').find('.product_id').val('').trigger('change');
-    });
 
     $(document).on('change', '[name="sap_connection_id"]', function(event) {
       event.preventDefault();
       $('.product_id').val('').trigger('change');
       $('.brand_id').val('').trigger('change');
     });
-  
+
+    $(document).on('change', '.brand_id', function(event) {
+      event.preventDefault();
+      $(this).closest('.row').find('.product_id').val('').trigger('change');
+    });
+
+    $(document).on('change', '.product_option', function(event) {
+      event.preventDefault();
+      $(this).closest('.row').find('.product_id').val('').trigger('change');
+
+      $(this).closest('.row').find('.category_div').hide();
+      $(this).closest('.row').find('.pattern_div').hide();
+
+      if($(this).val() == "category") {
+        $(this).closest('.row').find('.category_div').show();
+        $(this).closest('.row').find('.pattern').val('').trigger('change');
+        $(this).closest('.row').find('.product_div').show();
+      }else if($(this).val() == "pattern") {
+        $(this).closest('.row').find('.pattern_div').show();
+        $(this).closest('.row').find('.category').val('').trigger('change');
+        $(this).closest('.row').find('.product_div').show();
+      }else if($(this).val() == "product") {
+        $(this).closest('.row').find('.pattern').val('').trigger('change');
+        $(this).closest('.row').find('.category').val('').trigger('change');
+        $(this).closest('.row').find('.product_div').show();
+      }else{
+        $(this).closest('.row').find('.pattern').val('').trigger('change');
+        $(this).closest('.row').find('.category').val('').trigger('change');
+      }
+    });
+
+    $(document).on('change', '.category, .pattern', function(event) {
+      event.preventDefault();
+      $(this).closest('.row').find('.product_id').val('').trigger('change');
+
+      if($(this).val() == "") {
+        $(this).closest('.row').find('.product_div').hide();
+      }else{
+        $(this).closest('.row').find('.product_div').show();
+      }
+    });
+
+
   });
 </script>
 @endpush

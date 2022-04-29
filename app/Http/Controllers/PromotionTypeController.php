@@ -154,6 +154,9 @@ class PromotionTypeController extends Controller
                         $insert = [
                                         'promotion_type_id' => $obj->id,
                                         'brand_id' => $value['brand_id'],
+                                        'product_option' => @$value['product_option'],
+                                        'category' => @$value['category'],
+                                        'pattern' => @$value['pattern'],
                                         'product_id' => $value['product_id'],
                                         'fixed_quantity' => $value['fixed_quantity'],
                                         'discount_percentage' => $value['discount_percentage'],
@@ -386,7 +389,7 @@ class PromotionTypeController extends Controller
 
         $brand = ProductGroup::find($request->brand_id);
 
-        if(@$request->sap_connection_id && @$brand){
+        if(@$request->sap_connection_id && @$brand && !empty(@$request->product_option)){
 
             $sap_connection_id = $request->sap_connection_id;
             if($request->sap_connection_id == 5){ //Solid Trend
@@ -407,6 +410,12 @@ class PromotionTypeController extends Controller
             
             if($search != ''){
                 $data->where('item_name', 'like', '%' .$search . '%');
+            }
+
+            if($request->product_option == "pattern"){
+                $data->where('u_pattern2', $request->pattern);
+            }elseif($request->product_option == "category"){
+                $data->where('u_tires', $request->category);
             }
 
             if(isset($request->product_ids) && count($request->product_ids)){
@@ -445,6 +454,80 @@ class PromotionTypeController extends Controller
         return $data;
     }
 
+    public function getCategories(Request $request)
+    {
+        $search = $request->search;
+
+        $data = collect();
+
+        $brand = ProductGroup::find($request->brand_id);
+
+        if(@$request->sap_connection_id && @$brand){
+
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
+            $where = array(
+                            'sap_connection_id' => $sap_connection_id,
+                            'items_group_code' => $brand->number,
+                            'is_active' => true,
+                        );
+
+            $data = Product::whereNotNull('u_tires')->select('u_tires')->orderby('u_tires','asc')->where($where);
+
+            $data->whereHas('group', function($q){
+                $q->where('is_active', true);
+            });
+            
+            if($search != ''){
+                $data->where('u_tires', 'like', '%' .$search . '%');
+            }
+
+            $data = $data->limit(50)->groupBy('u_tires')->pluck('u_tires','u_tires');
+        }
+
+        return $data;
+    }
+
+
+    public function getPatterns(Request $request)
+    {
+        $search = $request->search;
+
+        $data = collect();
+
+        $brand = ProductGroup::find($request->brand_id);
+
+        if(@$request->sap_connection_id && @$brand){
+
+            $sap_connection_id = $request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
+            $where = array(
+                            'sap_connection_id' => $sap_connection_id,
+                            'items_group_code' => $brand->number,
+                            'is_active' => true,
+                        );
+
+            $data = Product::whereNotNull('u_pattern2')->select('u_pattern2')->orderby('u_pattern2','asc')->where($where);
+
+            $data->whereHas('group', function($q){
+                $q->where('is_active', true);
+            });
+            
+            if($search != ''){
+                $data->where('u_pattern2', 'like', '%' .$search . '%');
+            }
+
+            $data = $data->limit(50)->groupBy('u_pattern2')->pluck('u_pattern2','u_pattern2');
+        }
+
+        return $data;
+    }
 
     public function export(Request $request){
         $filter = collect();

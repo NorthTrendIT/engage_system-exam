@@ -363,6 +363,8 @@ Route::middleware(['auth'])->group(function(){
         Route::post('promotion-type/status/{id}', 'App\Http\Controllers\PromotionTypeController@updateStatus')->name('promotion-type.status');
         Route::post('promotion-type/get-products/','App\Http\Controllers\PromotionTypeController@getProducts')->name('promotion-type.get-products');
         Route::post('promotion-type/get-brands/','App\Http\Controllers\PromotionTypeController@getBrands')->name('promotion-type.get-brands');
+        Route::post('promotion-type/get-categories/','App\Http\Controllers\PromotionTypeController@getCategories')->name('promotion-type.get-categories');
+        Route::post('promotion-type/get-patterns/','App\Http\Controllers\PromotionTypeController@getPatterns')->name('promotion-type.get-patterns');
 
 
         // Pramotions

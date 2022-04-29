@@ -165,6 +165,8 @@
 
                               <tr>
                                 <th> <b>Brand</b> </th>
+
+                                <th> <b>Product Option</b> </th>
                                 
                                 <th> <b>Product</b> </th>
 
@@ -181,6 +183,14 @@
                               @foreach($data->products as $p)
                                 <tr>
                                   <td>{{ @$p->brand->group_name }}</td>
+
+                                  <td>By {{ @$p->product_option }}
+                                    @if( @$p->product_option == "category")
+                                      {{ "(".$p->category.")" }}
+                                    @elseif( @$p->product_option == "pattern")
+                                      {{ "(".$p->pattern.")" }}
+                                    @endif
+                                  </td>
 
                                   <td>{{ @$p->product->item_name }}</td>
 

@@ -55,6 +55,7 @@ class PromotionsController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
+        // dd($input);
 
         $rules = array(
                     'title' => 'required|max:185|unique:promotions,title,NULL,id,deleted_at,NULL',
@@ -62,14 +63,23 @@ class PromotionsController extends Controller
                     'promotion_type_id' => 'required|exists:promotion_types,id',
                     'sap_connection_id' => 'required|exists:sap_connections,id',
                     'promotion_scope' => 'required',
-                    'customer_ids'=> 'required_if:promotion_scope,==,C',
-                    'territories_ids'=> 'required_if:promotion_scope,==,T',
-                    'class_ids'=> 'required_if:promotion_scope,==,CL',
-                    'sales_specialist_ids'=> 'required_if:promotion_scope,==,SS',
-                    'brand_ids'=> 'required_if:promotion_scope,==,B',
-                    'market_sector_ids'=> 'required_if:promotion_scope,==,MS',
+                    // 'customer_ids'=> 'required_if:promotion_scope,==,C',
+                    // 'territories_ids'=> 'required_if:promotion_scope,==,T',
+                    // 'class_ids'=> 'required_if:promotion_scope,==,CL',
+                    // 'sales_specialist_ids'=> 'required_if:promotion_scope,==,SS',
+                    // 'brand_ids'=> 'required_if:promotion_scope,==,B',
+                    // 'market_sector_ids'=> 'required_if:promotion_scope,==,MS',
                     // 'promo_image'=> 'required|max:5000|mimes:jpeg,png,jpg,eps,bmp,tif,tiff,webp',
                 );
+
+        if(@$input['promotion_scope_selection'] == "specific" && @$input['promotion_scope'] != "A"){
+            $rules['customer_ids'] = 'required_if:promotion_scope,==,C';
+            $rules['territories_ids'] = 'required_if:promotion_scope,==,T';
+            $rules['class_ids'] = 'required_if:promotion_scope,==,CL';
+            $rules['sales_specialist_ids'] = 'required_if:promotion_scope,==,SS';
+            $rules['brand_ids'] = 'required_if:promotion_scope,==,B';
+            $rules['market_sector_ids'] = 'required_if:promotion_scope,==,MS';
+        }
 
         if(isset($input['id'])){
             unset($rules['promo_image']);
@@ -172,69 +182,143 @@ class PromotionsController extends Controller
             $promotion->save();
 
             PromotionFor::where('promotion_id', $promotion->id)->delete();
-            if($input['promotion_scope'] == 'C' && isset($input['customer_ids']) ){
-                $c_ids = $input['customer_ids'];
-                foreach($c_ids as $value){
-                    $promotionFor = PromotionFor::create([
-                                'promotion_id' => $promotion->id,
-                                'customer_id' => $value,
-                            ]
-                        );
+
+            $sap_connection_id = @$request->sap_connection_id;
+            if($request->sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
+            if($input['promotion_scope'] == 'C'){
+
+                if(@$input['promotion_scope_selection'] != "specific"){
+                    $c_ids = Customer::where('sap_connection_id', $sap_connection_id)->pluck('id')->toArray();
+                    foreach($c_ids as $value){
+                        $promotionFor = PromotionFor::create([
+                                    'promotion_id' => $promotion->id,
+                                    'customer_id' => $value,
+                                ]
+                            );
+                    }
+                }else if(isset($input['customer_ids'])){
+                    $c_ids = $input['customer_ids'];
+                    foreach($c_ids as $value){
+                        $promotionFor = PromotionFor::create([
+                                    'promotion_id' => $promotion->id,
+                                    'customer_id' => $value,
+                                ]
+                            );
+                    }
                 }
             }
 
-            if($input['promotion_scope'] == 'T' && isset($input['territories_ids']) ){
-                $c_ids = $input['territories_ids'];
-                foreach($c_ids as $value){
-                    $promotionFor = PromotionFor::create([
-                                'promotion_id' => $promotion->id,
-                                'territory_id' => $value,
-                            ]
-                        );
+            if($input['promotion_scope'] == 'T'){
+                if(@$input['promotion_scope_selection'] != "specific"){
+                    $c_ids = Territory::pluck('id')->toArray();
+                    foreach($c_ids as $value){
+                        $promotionFor = PromotionFor::create([
+                                    'promotion_id' => $promotion->id,
+                                    'territory_id' => $value,
+                                ]
+                            );
+                    }
+                }else if(isset($input['territories_ids'])){
+                    $c_ids = $input['territories_ids'];
+                    foreach($c_ids as $value){
+                        $promotionFor = PromotionFor::create([
+                                    'promotion_id' => $promotion->id,
+                                    'territory_id' => $value,
+                                ]
+                            );
+                    }
                 }
             }
 
-            if($input['promotion_scope'] == 'CL' && isset($input['class_ids']) ){
-                $c_ids = $input['class_ids'];
-                foreach($c_ids as $value){
-                    $promotionFor = PromotionFor::create([
-                                'promotion_id' => $promotion->id,
-                                'class_id' => $value,
-                            ]
-                        );
+            if($input['promotion_scope'] == 'CL'){
+                if(@$input['promotion_scope_selection'] != "specific"){
+                    $c_ids = Classes::pluck('id')->toArray();
+                    foreach($c_ids as $value){
+                        $promotionFor = PromotionFor::create([
+                                    'promotion_id' => $promotion->id,
+                                    'class_id' => $value,
+                                ]
+                            );
+                    }
+                }else if(isset($input['class_ids'])){
+                    $c_ids = $input['class_ids'];
+                    foreach($c_ids as $value){
+                        $promotionFor = PromotionFor::create([
+                                    'promotion_id' => $promotion->id,
+                                    'class_id' => $value,
+                                ]
+                            );
+                    }
                 }
             }
 
-            if($input['promotion_scope'] == 'SS' && isset($input['sales_specialist_ids']) ){
-                $c_ids = $input['sales_specialist_ids'];
-                foreach($c_ids as $value){
-                    $promotionFor = PromotionFor::create([
-                                'promotion_id' => $promotion->id,
-                                'sales_specialist_id' => $value,
-                            ]
-                        );
+            if($input['promotion_scope'] == 'SS'){
+                if(@$input['promotion_scope_selection'] != "specific"){
+                    $c_ids = User::where('role_id', 2)->where('sap_connection_id', $sap_connection_id)->where('is_active', true)->pluck('id')->toArray();
+                    foreach($c_ids as $value){
+                        $promotionFor = PromotionFor::create([
+                                    'promotion_id' => $promotion->id,
+                                    'sales_specialist_id' => $value,
+                                ]
+                            );
+                    }
+                }else if(isset($input['sales_specialist_ids'])){
+                    $c_ids = $input['sales_specialist_ids'];
+                    foreach($c_ids as $value){
+                        $promotionFor = PromotionFor::create([
+                                    'promotion_id' => $promotion->id,
+                                    'sales_specialist_id' => $value,
+                                ]
+                            );
+                    }
                 }
             }
 
-            if($input['promotion_scope'] == 'B' && isset($input['brand_ids']) ){
-                $c_ids = $input['brand_ids'];
-                foreach($c_ids as $value){
-                    $promotionFor = PromotionFor::create([
-                                'promotion_id' => $promotion->id,
-                                'brand_id' => $value,
-                            ]
-                        );
+            if($input['promotion_scope'] == 'B'){
+
+                if(@$input['promotion_scope_selection'] != "specific"){
+                    $c_ids = ProductGroup::where('sap_connection_id', $sap_connection_id)->where('is_active', true)->pluck('id')->toArray();
+                    foreach($c_ids as $value){
+                        $promotionFor = PromotionFor::create([
+                                    'promotion_id' => $promotion->id,
+                                    'brand_id' => $value,
+                                ]
+                            );
+                    }
+                }else if(isset($input['brand_ids'])){
+                    $c_ids = $input['brand_ids'];
+                    foreach($c_ids as $value){
+                        $promotionFor = PromotionFor::create([
+                                    'promotion_id' => $promotion->id,
+                                    'brand_id' => $value,
+                                ]
+                            );
+                    }
                 }
             }
 
-            if($input['promotion_scope'] == 'MS' && isset($input['market_sector_ids']) ){
-                $c_ids = $input['market_sector_ids'];
-                foreach($c_ids as $value){
-                    $promotionFor = PromotionFor::create([
-                                'promotion_id' => $promotion->id,
-                                'market_sector' => $value,
-                            ]
-                        );
+            if($input['promotion_scope'] == 'MS'){
+                if(@$input['promotion_scope_selection'] != "specific"){
+                    $c_ids = Customer::whereNotNull('u_sector')->where('sap_connection_id', $sap_connection_id)->pluck('u_sector')->toArray();
+                    foreach($c_ids as $value){
+                        $promotionFor = PromotionFor::create([
+                                    'promotion_id' => $promotion->id,
+                                    'market_sector' => $value,
+                                ]
+                            );
+                    }
+                }else if(isset($input['market_sector_ids'])){
+                    $c_ids = $input['market_sector_ids'];
+                    foreach($c_ids as $value){
+                        $promotionFor = PromotionFor::create([
+                                    'promotion_id' => $promotion->id,
+                                    'market_sector' => $value,
+                                ]
+                            );
+                    }
                 }
             }
 

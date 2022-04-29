@@ -10,7 +10,10 @@ class PromotionTypeProduct extends Model
     use HasFactory;
 
     protected $fillable = [
-		'promotion_type_id',
+        'promotion_type_id',
+        'product_option',
+        'category',
+		'pattern',
 		'product_id',
         'brand_id',
         'fixed_quantity',
