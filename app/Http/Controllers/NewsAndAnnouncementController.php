@@ -88,7 +88,7 @@ class NewsAndAnnouncementController extends Controller
             $notification->user_id = Auth::user()->id;
             $notification->start_date = date('Y-m-d',strtotime($input['start_date']));
             $notification->end_date = date('Y-m-d',strtotime($input['end_date']));
-            $notification->customer_selection = @$input['select_class_customer'];
+            $notification->customer_selection = @$input['select_class_customer'] ?? 'all';
 
             if(in_array($input['module'], ['brand', 'customer_class', 'territory', 'market_sector'])){
                 $notification->request_payload = json_encode($input['record_id']);

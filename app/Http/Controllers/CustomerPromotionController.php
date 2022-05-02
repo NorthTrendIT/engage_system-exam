@@ -106,7 +106,16 @@ class CustomerPromotionController extends Controller
 
                     			if(is_null($check)){
                     				$is_continue = true;
-                    			}
+                    			}else{
+                                    if($promotion->customer_selection == "specific"){
+                                        $check = $promotion->promotion_data->firstWhere('customer_id',@Auth::user()->customer_id);
+                                        if(is_null($check)){
+                                            $is_continue = true;
+                                        }
+                                    }
+                                }
+
+
                             }else{
                                 $is_continue = true;
                             }
