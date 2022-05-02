@@ -24,6 +24,7 @@ class Promotions extends Model
     'is_active',
     'sap_connection_id',
     'promotion_scope_selection',
+    'customer_selection',
   ];
 
   public function promotion_data()

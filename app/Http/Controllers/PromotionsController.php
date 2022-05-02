@@ -176,9 +176,11 @@ class PromotionsController extends Controller
             $promotion->code = strtoupper($input['code']);
             $promotion->description = $input['description'];
             $promotion->promotion_scope = $input['promotion_scope'];
+            $promotion->promotion_scope_selection = $input['promotion_scope_selection'];
             $promotion->promotion_start_date = date('Y-m-d',strtotime($input['promotion_start_date']));
             $promotion->promotion_end_date = date('Y-m-d',strtotime($input['promotion_end_date']));
             $promotion->sap_connection_id = $input['sap_connection_id'];
+            $promotion->customer_selection = @$input['select_class_customer'] ?? 'all';
             $promotion->save();
 
             PromotionFor::where('promotion_id', $promotion->id)->delete();
@@ -243,6 +245,7 @@ class PromotionsController extends Controller
                                 ]
                             );
                     }
+
                 }else if(isset($input['class_ids'])){
                     $c_ids = $input['class_ids'];
                     foreach($c_ids as $value){
@@ -252,6 +255,18 @@ class PromotionsController extends Controller
                                 ]
                             );
                     }
+
+                    if($promotion->customer_selection == "specific"){
+                        $c_ids = $input['class_customer_ids'];
+                        foreach($c_ids as $value){
+                            $promotionFor = PromotionFor::create([
+                                        'promotion_id' => $promotion->id,
+                                        'customer_id' => $value,
+                                    ]
+                                );
+                        }
+                    }
+
                 }
             }
 
@@ -633,9 +648,13 @@ class PromotionsController extends Controller
 
     public function getPromotionData(Request $request){
         $scope = $request->scope;
-        // $data = PromotionFor::where('id', $request->id);
+        // $promotion = PromotionFor::where('id', $request->id);
 
-        $data = PromotionFor::where('promotion_id', $request->id)->get();
+        $data = PromotionFor::where('promotion_id', $request->id);
+
+        if($scope == 'CL'){
+            $data->whereNotNull('class_id');
+        }
 
         return DataTables::of($data)
                 ->addIndexColumn()
@@ -656,6 +675,17 @@ class PromotionsController extends Controller
                 })
                 ->addColumn('is_interested', function($row) {
                     return "-";
+                })
+                ->make(true);
+    }
+
+    public function getPromotionClassCustomerData(Request $request){
+        $data = PromotionFor::where('promotion_id', $request->id)->whereNull('class_id');
+
+        return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('name', function($row) {
+                    return @$row->customer->card_name ?? "-";
                 })
                 ->make(true);
     }
@@ -701,6 +731,35 @@ class PromotionsController extends Controller
                 "id"=>$value->id,
                 "text"=>$value->name
             );
+        }
+
+        return response()->json($response);
+    }
+
+
+    public function getClassCustomer(Request $request){
+        $search = $request->search;
+        $sap_connection_id = $request->sap_connection_id;
+
+        $response = array();
+        if($sap_connection_id){
+            if($sap_connection_id == 5){
+                $sap_connection_id = 1;
+            }
+
+            $data = Customer::orderby('card_name','asc')->where('sap_connection_id', $sap_connection_id)->select('id','card_name')->limit(50)->whereIn('class_id', $request->class_id);
+            if($search != ''){
+                $data->where('card_name', 'like', '%' .$search . '%');
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+                $response[] = array(
+                    "id"=>$value->id,
+                    "text"=>$value->card_name
+                );
+            }
         }
 
         return response()->json($response);

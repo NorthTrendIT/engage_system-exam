@@ -105,6 +105,15 @@
 
                                     </div>
                                 </div>
+
+                                @if($data->promotion_scope == 'CL' && $data->promotion_scope_selection == 'specific')
+                                <div class="col-md-6" >
+                                    <div class="form-group">
+                                        <label>Customer Selection</label>
+                                        <input type="text" class="form-control form-control-solid" value="{{ ucfirst($data->customer_selection) }}" disabled="disabled">
+                                    </div>
+                                </div>
+                                @endif
                             </div>
 
                             <div class="row mb-5">
@@ -186,7 +195,7 @@
                                       <thead>
                                         <tr>
                                             <th>No.</th>
-                                           <th>Name</th>
+                                            <th>Name</th>
                                         </tr>
                                       </thead>
                                       <!--end::Table head-->
@@ -208,6 +217,54 @@
                     </div>
                 </div>
             </div>
+
+
+            @if($data->promotion_scope_selection == 'specific' && $data->customer_selection == 'specific' && $data->promotion_scope == 'CL')
+                <div class="row gy-5 g-xl-8">
+                    <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+                        <div class="card card-xl-stretch mb-5 mb-xl-8">
+                            <div class="card-header border-0  pt-5">
+                                <h1 class="text-dark fw-bolder fs-3 my-1">
+                                    Class Customer List
+                                </h1>
+                            </div>
+
+                            <div class="card-body">
+
+                              <div class="row mb-5">
+                                <div class="col-md-12">
+                                  <div class="form-group">
+                                    <!--begin::Table container-->
+                                    <div class="table-responsive">
+                                       <!--begin::Table-->
+                                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTableClassCustomer">
+                                          <!--begin::Table head-->
+                                          <thead>
+                                            <tr>
+                                                <th>No.</th>
+                                                <th>Name</th>
+                                            </tr>
+                                          </thead>
+                                          <!--end::Table head-->
+                                          <!--begin::Table body-->
+                                          <tbody>
+
+                                          </tbody>
+                                          <!--end::Table body-->
+                                       </table>
+                                       <!--end::Table-->
+                                    </div>
+                                    <!--end::Table container-->
+
+                                  </div>
+
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
 
             <div class="row gy-5 g-xl-8">
@@ -312,8 +369,8 @@
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script>
 $(document).ready(function() {
-    render_table();
 
+    render_table();
     function render_table(){
       var table = $("#myTable");
       table.DataTable().destroy();
@@ -349,8 +406,45 @@ $(document).ready(function() {
         });
     }
 
-    render_interested_table();
 
+    @if($data->promotion_scope_selection == 'specific' && $data->customer_selection == 'specific' && $data->promotion_scope == 'CL')
+    render_class_customer_table();
+    function render_class_customer_table(){
+        var table = $("#myTableClassCustomer");
+        table.DataTable().destroy();
+
+        table.DataTable({
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          order: [],
+          ajax: {
+              'url': "{{ route('promotion.get-promotion-class-customer-data') }}",
+              'type': 'POST',
+              headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+              },
+              data:{
+                id : {{ $data->id }},
+              }
+          },
+          columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+              {data: 'name', name: 'name'},
+          ],
+          drawCallback:function(){
+              $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+                $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+              })
+          },
+          initComplete: function () {
+          }
+        });
+    }
+    @endif
+
+    render_interested_table();
     function render_interested_table(){
       var table = $("#myTableInterested");
       table.DataTable().destroy();

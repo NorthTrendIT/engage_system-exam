@@ -375,8 +375,10 @@ Route::middleware(['auth'])->group(function(){
         Route::post('promotion/get-customers/','App\Http\Controllers\PromotionsController@getCustomers')->name('promotion.getCustomers');
         Route::post('promotion/get-products/','App\Http\Controllers\PromotionsController@getProducts')->name('promotion.getProducts');
         Route::post('promotion/get-promotion-data', 'App\Http\Controllers\PromotionsController@getPromotionData')->name('promotion.get-promotion-data');
+        Route::post('promotion/get-promotion-class-customer-data', 'App\Http\Controllers\PromotionsController@getPromotionClassCustomerData')->name('promotion.get-promotion-class-customer-data');
         Route::post('promotion/get-territories/','App\Http\Controllers\PromotionsController@getTerritories')->name('promotion.getTerritories');
         Route::post('promotion/get-classes/','App\Http\Controllers\PromotionsController@getClasses')->name('promotion.getClasses');
+        Route::post('promotion/get-class-customer/','App\Http\Controllers\PromotionsController@getClassCustomer')->name('promotion.getClassCustomer');
         Route::post('promotion/get-sales-specialist/','App\Http\Controllers\PromotionsController@getSalesSpecialist')->name('promotion.getSalesSpecialist');
         Route::post('promotion/get-promotion-interest-data/','App\Http\Controllers\PromotionsController@getPromotionInterestData')->name('promotion.get-promotion-interest-data');
         Route::post('promotion/get-promotion-claimed-data/','App\Http\Controllers\PromotionsController@getPromotionClaimedData')->name('promotion.get-promotion-claimed-data');

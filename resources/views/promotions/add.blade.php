@@ -106,19 +106,19 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6 mb-5" id= "promotion_scope_selection_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection == 'A' ? '' : 'none') : 'none'}}">
+                                    <div class="col-md-6 mb-5" id= "promotion_scope_selection_block" style="display: {{ isset($edit) ? ($edit->promotion_scope != 'A' ? '' : 'none') : 'none'}}">
                                         <div class="form-group">
                                             <label id="promotion_scope_selection_label">Customer Group Selection</label><span class="asterisk">*</span>
                                             <select class="form-select form-select-solid" data-control="select2" id="promotionScopeSelection" data-hide-search="false" name="promotion_scope_selection" data-placeholder="Select Class Customer">
                                                 <option value=""></option>
-                                                <option value="all">All</option>
-                                                <option value="specific">Specific</option>
+                                                <option value="all" @if(isset($edit) && $edit->promotion_scope_selection == 'all' ) selected @endif >All</option>
+                                                <option value="specific" @if(isset($edit) && $edit->promotion_scope_selection == 'specific' ) selected @endif >Specific</option>
                                             </select>
                                         </div>
                                     </div>
 
                                     <!-- Customers -->
-                                    <div class="col-md-6 mb-5" id="customer_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection != 'all' && $edit->promotion_scope == 'C' ? '' : 'none') : 'none'}}">
+                                    <div class="col-md-6 mb-5" id="customer_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection == 'specific' && $edit->promotion_scope == 'C' ? '' : 'none') : 'none'}}">
                                         <div class="form-group">
                                             <label>Select Customer<span class="asterisk">*</span></label>
                                             <select class="form-select form-select-solid" id='selectCustomers' multiple="multiple" data-control="select2" data-hide-search="false" name="customer_ids[]" data-placeholder="Select Customers" >
@@ -128,7 +128,7 @@
 
 
                                     <!-- Territory -->
-                                    <div class="col-md-6 mb-5" id="territories_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection != 'all' && $edit->promotion_scope == 'T' ? '' : 'none') : 'none'}}">
+                                    <div class="col-md-6 mb-5" id="territories_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection == 'specific' && $edit->promotion_scope == 'T' ? '' : 'none') : 'none'}}">
                                         <div class="form-group">
                                             <label>Select Territory<span class="asterisk">*</span></label>
                                             <select class="form-select form-select-solid" id='selectTerritories' multiple="multiple" data-control="select2" data-hide-search="false" name="territories_ids[]" data-placeholder="Select Territory" >
@@ -137,7 +137,7 @@
                                     </div>
 
                                     <!-- Class -->
-                                    <div class="col-md-6 mb-5" id="class_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection != 'all' && $edit->promotion_scope == 'CL' ? '' : 'none') : 'none'}}">
+                                    <div class="col-md-6 mb-5" id="class_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection == 'specific' && $edit->promotion_scope == 'CL' ? '' : 'none') : 'none'}}">
                                         <div class="form-group">
                                             <label>Select Class<span class="asterisk">*</span></label>
                                             <select class="form-select form-select-solid" id='selectClasses' multiple="multiple" data-control="select2" data-hide-search="false" name="class_ids[]" data-placeholder="Select Class">
@@ -145,8 +145,31 @@
                                         </div>
                                     </div>
 
+
+                                    <div class="col-md-6 mb-5" id="select_class_customer_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection == 'specific' && $edit->promotion_scope == 'CL' ? '' : 'none') : 'none'}}">
+                                        <div class="form-group">
+                                            <label>Customer Selection<span class="asterisk">*</span></label>
+                                            <select class="form-select form-select-solid" data-control="select2" id="selectClassCustomer" data-hide-search="false" name="select_class_customer" data-placeholder="Select Class Customer">
+                                                <option value=""></option>
+                                                <option value="all" @if(isset($edit) && $edit->customer_selection == 'all' ) selected @endif >All Customers</option>
+                                                <option value="specific" @if(isset($edit) && $edit->customer_selection == 'specific' ) selected @endif >Specific Customers</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- Customer -->
+                                    <div class="col-md-6 mb-5" id = "class_customer_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection == 'specific' && $edit->customer_selection == 'specific' && $edit->promotion_scope == 'CL' ? '' : 'none') : 'none'}}">
+                                        <div class="form-group">
+                                            <label>Select Customer<span class="asterisk">*</span></label>
+                                            <select class="form-select form-select-solid" data-control="select2" id="classCustomer" data-hide-search="false" name="class_customer_ids[]">
+                                            </select>
+                                        </div>
+                                    </div>
+
+
                                     <!-- sales_specialist-->
-                                    <div class="col-md-6 mb-5" id="sales_specialist_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection != 'all' && $edit->promotion_scope == 'SS' ? '' : 'none') : 'none'}}">
+                                    <div class="col-md-6 mb-5" id="sales_specialist_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection == 'specific' && $edit->promotion_scope == 'SS' ? '' : 'none') : 'none'}}">
                                         <div class="form-group">
                                             <label>Select Sales Specialist<span class="asterisk">*</span></label>
                                             <select class="form-select form-select-solid" id='selectSalesSpecialist' multiple="multiple" data-control="select2" data-hide-search="false" name="sales_specialist_ids[]" data-placeholder="Select Sales Specialist">
@@ -155,7 +178,7 @@
                                     </div>
 
                                     <!-- Brand -->
-                                    <div class="col-md-6 mb-5" id="brand_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection != 'all' && $edit->promotion_scope == 'B' ? '' : 'none') : 'none'}}">
+                                    <div class="col-md-6 mb-5" id="brand_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection == 'specific' && $edit->promotion_scope == 'B' ? '' : 'none') : 'none'}}">
                                         <div class="form-group">
                                             <label>Select Brand<span class="asterisk">*</span></label>
                                             <select class="form-select form-select-solid" id='selectBrand' multiple="multiple" data-control="select2" data-hide-search="false" name="brand_ids[]" data-placeholder="Select Brand">
@@ -164,7 +187,7 @@
                                     </div>
 
                                     <!-- Market Sector -->
-                                    <div class="col-md-6 mb-5" id="market_sector_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection != 'all' && $edit->promotion_scope == 'MS' ? '' : 'none') : 'none'}}">
+                                    <div class="col-md-6 mb-5" id="market_sector_block" style="display: {{ isset($edit) ? ($edit->promotion_scope_selection == 'specific' && $edit->promotion_scope == 'MS' ? '' : 'none') : 'none'}}">
                                         <div class="form-group">
                                             <label>Select Market Sector<span class="asterisk">*</span></label>
                                             <select class="form-select form-select-solid" id='selectMarketSector' multiple="multiple" data-control="select2" data-hide-search="false" name="market_sector_ids[]" data-placeholder="Select Market Sector">
@@ -330,6 +353,15 @@
                         }
                     },
             },
+            select_class_customer:{
+                required: function () {
+                        if($('[name="promotion_scope"]').find('option:selected').val() == 'CL' && $('[name="promotion_scope_selection"]').find('option:selected').val() == 'specific'){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    },
+            },
             {{-- @if(!isset($edit)) --}}
             // promo_image:{
             //   required: true,
@@ -389,6 +421,15 @@
                         }
                     },
             },
+            'class_customer_ids[]':{
+                required: function () {
+                        if($('[name="promotion_scope"]').find('option:selected').val() == 'CL' && $('[name="promotion_scope_selection"]').find('option:selected').val() == 'specific' && $('[name="select_class_customer"]').find('option:selected').val() == 'specific'){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    },
+            },
           },
           messages: {
             title:{
@@ -423,13 +464,24 @@
     $(document).on('change' ,'[name="promotion_scope_selection"]', function(){
         $promo_scope = $('[name="promotion_scope"]').find('option:selected').val();
 
+
+        $('#selectCustomers').val('').trigger('change');
+        $('#selectClasses').val('').trigger('change');
+        $('#selectBrand').val('').trigger('change');
+        $('#selectMarketSector').val('').trigger('change');
+        $('#selectSalesSpecialist').val('').trigger('change');
+        $('#selectTerritories').val('').trigger('change');
+        
         $('#customer_block').hide();
         $('#territories_block').hide();
         $('#class_block').hide();
+        $('#select_class_customer_block').hide();
         $('#sales_specialist_block').hide();
         $('#brand_block').hide();
         $('#market_sector_block').hide();
 
+        $('[name="select_class_customer"]').val(null).trigger("change");
+        $('#classCustomer').val('').trigger('change');
 
         if($(this).val() == "specific"){
             if($promo_scope == "C"){
@@ -438,6 +490,7 @@
                 $('#territories_block').show();
             } else if($promo_scope == "CL"){
                 $('#class_block').show();
+                $('#select_class_customer_block').show();
             } else if($promo_scope == "SS"){
                 $('#sales_specialist_block').show();
             }else if($promo_scope == "B"){
@@ -449,9 +502,29 @@
     });
 
 
+    $(document).on('change' ,'[name="select_class_customer"]', function(){
+        $promo_scope = $('[name="promotion_scope"]').find('option:selected').val();
+        $promotion_scope_selection = $('[name="promotion_scope_selection"]').find('option:selected').val();
+
+        $('#class_customer_block').hide();
+        $('#classCustomer').val('').trigger('change');
+
+        if($(this).val() == "specific"){
+            if($promotion_scope_selection == "specific"){
+                if($promo_scope == "C"){
+                    $('#class_customer_block').show();
+                }else{
+                    $('#class_customer_block').show();
+                }
+            }
+        }
+    });
+
     $('body').on('change' ,'#promotion_scope', function(){
 
         $('[name="promotion_scope_selection"]').val(null).trigger("change");
+        $('[name="select_class_customer"]').val(null).trigger("change");
+        $('#classCustomer').val('').trigger('change');
 
         $promo_scope = $('[name="promotion_scope"]').val();
 
@@ -491,6 +564,7 @@
     });
 
     $initialOptions = [];
+    $initialClassCustomerOptions = [];
 
     @if(isset($edit) && $edit->promotion_scope == 'C')
         @foreach ($edit->promotion_data as $data)
@@ -516,12 +590,22 @@
 
     @if(isset($edit) && $edit->promotion_scope == 'CL')
         @foreach ($edit->promotion_data as $data)
-            var initialOption = {
-                id: {{ $data->class_id }},
-                text: '{!! $data->class->name !!}',
-                selected: true
-            }
-            $initialOptions.push(initialOption);
+            @if($data->class_id != "")
+                var initialOption = {
+                    id: {{ $data->class_id }},
+                    text: '{!! $data->class->name !!}',
+                    selected: true
+                }
+                $initialOptions.push(initialOption);
+            @elseif($data->customer_id != "")
+                var initialOption = {
+                    id: {{ $data->customer_id }},
+                    text: '{!! $data->customer->card_name !!}',
+                    selected: true
+                }
+                $initialClassCustomerOptions.push(initialOption);
+            @endif
+
         @endforeach
     @endif
 
@@ -774,6 +858,7 @@
         $('#selectMarketSector').val('').trigger('change');
         $('#selectSalesSpecialist').val('').trigger('change');
         $('#selectTerritories').val('').trigger('change');
+        $('[name="promotion_scope_selection"]').val('').trigger('change');
     });
 
     $(document).on('change', '[name="title"]', function(event) {
@@ -808,6 +893,61 @@
         }
     });
 
+
+    // getCustomer
+    $("#classCustomer").select2({
+        ajax: {
+            url: "{{route('promotion.getClassCustomer')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="sap_connection_id"]').val(),
+                    class_id: $('#selectClasses').find('option:selected').toArray().map(item => item.value),
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Class Customer',
+        // minimumInputLength: 2,
+        multiple: true,
+        @if(isset($edit) && $edit->promotion_scope == 'CL')
+        data: $initialClassCustomerOptions
+        @endif
+    });
+
+
+    @if(isset($edit) && $edit->promotion_scope != "A")
+        @php
+            $label = '';
+            if($edit->promotion_scope == "C"){
+                $label = 'Customer Selection';
+            } else if($edit->promotion_scope == "T"){
+                $label = 'Territory Selection';
+            } else if($edit->promotion_scope == "CL"){
+                $label = 'Class Selection';
+            } else if($edit->promotion_scope == "SS"){
+                $label = 'Sales Specialist Selection';
+            }else if($edit->promotion_scope == "B"){
+                $label = 'Brand Selection';
+            }else if($edit->promotion_scope == "MS"){
+                $label = 'Market Sector Selection';
+            }
+        @endphp
+
+
+        $('#promotion_scope_selection_label').text('{{ @$label }}');
+
+        $('#select2-promotionScopeSelection-container').find('.select2-selection__placeholder').text('Select '+ '{{ @$label }}');
+    @endif
 });
 </script>
 @endpush
