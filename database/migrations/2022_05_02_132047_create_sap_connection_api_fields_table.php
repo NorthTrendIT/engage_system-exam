@@ -16,9 +16,10 @@ class CreateSapConnectionApiFieldsTable extends Migration
         Schema::create('sap_connection_api_fields', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('sap_connection_id')->nullable();
+            $table->unsignedBigInteger('real_sap_connection_id')->nullable();
             $table->string('field')->nullable();
-            $table->string('field_id')->nullable();
-            $table->string('table_name')->nullable();
+            $table->string('sap_field_id')->nullable();
+            $table->string('sap_table_name')->nullable();
             $table->timestamps();
         });
     }

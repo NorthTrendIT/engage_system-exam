@@ -11,9 +11,10 @@ class SapConnectionApiField extends Model
 
     protected $fillable = [
         'sap_connection_id',
+        'real_sap_connection_id',
         'field',
-        'field_id',
-        'table_name',
+        'sap_field_id',
+        'sap_table_name',
     ];
 
     public static $fields = [
