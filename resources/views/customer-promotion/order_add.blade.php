@@ -538,7 +538,7 @@
           sum += parseFloat(this.value);
         }
       });
-      $('.total_amount').val(sum);
+      $('.total_amount').val(sum.toFixed(2));
 
       if(sum > 0){
         $('.submit_btn').show();
