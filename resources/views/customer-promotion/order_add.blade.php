@@ -143,14 +143,14 @@
                         <div class="col-md-6">
                           <div class="form-group">
                             <label>Actual Product Price</label>
-                            <input type="text" class="form-control form-control-solid actual_product_price" readonly="" disabled="" value="{{ $original_amount }}" >
+                            <input type="text" class="form-control form-control-solid actual_product_price" readonly="" disabled="" value="{{ round($original_amount,2) }}" >
                           </div>
                         </div>
 
                         <div class="col-md-6">
                           <div class="form-group">
                             <label>Promotion Price</label>
-                            <input type="text" class="form-control form-control-solid promotion_price" readonly="" disabled="" value="{{ $amount }}" >
+                            <input type="text" class="form-control form-control-solid promotion_price" readonly="" disabled="" value="{{ round($amount,2) }}" >
                           </div>
                         </div>
                       </div>
@@ -173,21 +173,21 @@
                         <div class="col-md-3">
                           <div class="form-group">
                             <label>Unit Price</label>
-                            <input type="text" class="form-control form-control-solid unit_price" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ $edit_products[@$p->product->id]['price'] }}" @else value="{{ $amount }}" @endif name="unit_price" >
+                            <input type="text" class="form-control form-control-solid unit_price" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ round($edit_products[@$p->product->id]['price'], 2) }}" @else value="{{ round($amount, 2) }}" @endif name="unit_price" >
                           </div>
                         </div>
 
                         <div class="col-md-3">
                           <div class="form-group">
                             <label>Discount</label>
-                            <input type="text" class="form-control form-control-solid discount_amount" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ $edit_products[@$p->product->id]['discount'] * $edit_products[@$p->product->id]['quantity'] }}" @else value="{{ $discount_amount }}" @endif data-value="{{ $discount_percentage }}" name="discount_amount">
+                            <input type="text" class="form-control form-control-solid discount_amount" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ round($edit_products[@$p->product->id]['discount'] * $edit_products[@$p->product->id]['quantity'], 2) }}" @else value="{{ round($discount_amount, 2) }}" @endif data-value="{{ round($discount_percentage, 2) }}" name="discount_amount">
                           </div>
                         </div>
 
                         <div class="col-md-3">
                           <div class="form-group">
                             <label>Amount</label>
-                            <input type="text" class="form-control form-control-solid amount" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ $edit_products[@$p->product->id]['amount'] }}" @else value="{{ $total_amount }}" @endif name="amount">
+                            <input type="text" class="form-control form-control-solid amount" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ round($edit_products[@$p->product->id]['amount'], 2) }}" @else value="{{ round($total_amount, 2) }}" @endif name="amount">
                           </div>
                         </div>
 
@@ -495,13 +495,13 @@
 
       amount = ( amount - discount_amount );
 
-      $(this).closest('.product_list').find('.discount_amount').val(discount_amount);
+      $(this).closest('.product_list').find('.discount_amount').val(discount_amount.toFixed(2));
 
-      $(this).closest('.product_list').find('.amount').val(amount);
+      $(this).closest('.product_list').find('.amount').val(amount.toFixed(2));
 
       total_details_update();
 
-      $(this).closest('.product_list').find('.delivery_quantity').val(0);
+      $(this).closest('.product_list').find('.delivery_quantity').val("");
 
     });
 
@@ -520,9 +520,9 @@
           sum2 += ( parseFloat(this.value) * $(this).closest('.product_list').find('.unit_price').val() );
         }
       });
-      $('.total_quantity').val(sum);
-      $('.total_product_amount').val(sum1);
-      $('.total_promotion_amount').val(sum2);
+      $('.total_quantity').val(sum.toFixed(2));
+      $('.total_product_amount').val(sum1.toFixed(2));
+      $('.total_promotion_amount').val(sum2.toFixed(2));
 
       var sum = 0;
       $('.discount_amount').each(function(){
@@ -530,7 +530,7 @@
           sum += ( parseFloat(this.value) * parseFloat($(this).closest('.product_list').find('.quantity').val()));
         }
       });
-      $('.total_discount').val(sum);
+      $('.total_discount').val(sum.toFixed(2));
 
       var sum = 0;
       $('.amount').each(function(){
