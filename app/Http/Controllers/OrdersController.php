@@ -651,7 +651,7 @@ class OrdersController extends Controller
                                             })
                                             ->get();
 
-        if(!empty($not_pushed_promotion)){
+        if(count($not_pushed_promotion)){
 
             $not_pushed_promotion = array_map( function ( $ar ) {
                        return $ar['customer_promotion_id'];
@@ -682,6 +682,8 @@ class OrdersController extends Controller
                     $q->orderBy('customer_promotions.id', 'desc');
                 });
             }
+        }else{
+             return DataTables::of($data)->make(true);
         }
         
         return DataTables::of($data)
