@@ -176,7 +176,7 @@ class PromotionsController extends Controller
             $promotion->code = strtoupper($input['code']);
             $promotion->description = $input['description'];
             $promotion->promotion_scope = $input['promotion_scope'];
-            $promotion->promotion_scope_selection = $input['promotion_scope_selection'];
+            $promotion->promotion_scope_selection = @$input['promotion_scope_selection'] ?? 'all';
             $promotion->promotion_start_date = date('Y-m-d',strtotime($input['promotion_start_date']));
             $promotion->promotion_end_date = date('Y-m-d',strtotime($input['promotion_end_date']));
             $promotion->sap_connection_id = $input['sap_connection_id'];

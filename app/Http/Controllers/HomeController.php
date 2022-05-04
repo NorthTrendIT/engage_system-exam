@@ -13,6 +13,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\SapConnection;
 use App\Models\SystemSetting;
+use App\Models\CustomerPromotionProductDelivery;
 
 use Auth;
 
@@ -22,8 +23,29 @@ class HomeController extends Controller
     {
 
         if(Auth::user()->role_id == 1){
+
+            $promotion = collect([]);
+            $not_pushed_promotion = CustomerPromotionProductDelivery::has('customer_promotion_product')
+                                                ->where('is_sap_pushed', false)
+                                                ->with('customer_promotion_product')
+                                                ->whereHas('customer_promotion_product.customer_promotion', function($q){
+                                                    $q->where('status', 'approved');
+                                                })
+                                                ->get();
+
+            if(!empty($not_pushed_promotion)){
+
+                $not_pushed_promotion = array_map( function ( $ar ) {
+                           return $ar['customer_promotion_id'];
+                        }, array_column( $not_pushed_promotion->toArray(), 'customer_promotion_product' ) );
+
+                if(!empty($not_pushed_promotion)){
+                    $promotion =  CustomerPromotion::whereIn('id', $not_pushed_promotion)->get();
+                }
+            }
+
             $local_order = LocalOrder::where('confirmation_status', 'ERR')->get();
-            $promotion =  CustomerPromotion::where(['is_sap_pushed' => 0, 'status' => 'approved'])->get();
+            // $promotion =  CustomerPromotion::where(['is_sap_pushed' => 0, 'status' => 'approved'])->get();
 
             $sales_order_to_invoice_lead_time = SystemSetting::where('key', 'sales_order_to_invoice_lead_time')->first();
             $invoice_to_delivery_lead_time = SystemSetting::where('key', 'invoice_to_delivery_lead_time')->first();

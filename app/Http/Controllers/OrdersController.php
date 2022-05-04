@@ -12,6 +12,7 @@ use App\Models\SapConnection;
 use App\Models\User;
 use App\Models\Notification;
 use App\Models\NotificationConnection;
+use App\Models\CustomerPromotionProductDelivery;
 
 use App\Support\SAPOrders;
 use App\Support\SAPInvoices;
@@ -626,35 +627,65 @@ class OrdersController extends Controller
 
         $data = $data->firstOrFail();
 
+        $sap_pushed = CustomerPromotionProductDelivery::has('customer_promotion_product')
+                                                ->where('is_sap_pushed', false)
+                                                ->whereHas('customer_promotion_product', function($q) use($id){
+                                                    $q->where('customer_promotion_id', $id);
+                                                })
+                                                ->count();
+        if($sap_pushed == 0){
+            abort(404);
+        }
+
         return view('orders.pending_promotion_view',compact('data'));
     }
 
     public function getAllPendingPromotion(Request $request){
 
-        $data = CustomerPromotion::where(['is_sap_pushed' => 0, 'status' => 'approved']);
+        $data = collect([]);
+        $not_pushed_promotion = CustomerPromotionProductDelivery::has('customer_promotion_product')
+                                            ->where('is_sap_pushed', false)
+                                            ->with('customer_promotion_product')
+                                            ->whereHas('customer_promotion_product.customer_promotion', function($q){
+                                                $q->where('status', 'approved');
+                                            })
+                                            ->get();
 
-        if(Auth::id() != 1){
-            $data->where('customer_promotions.user_id',Auth::id());
-        }
+        if(count($not_pushed_promotion)){
 
-        if($request->filter_status != ""){
-            $data->where('customer_promotions.status',$request->filter_status);
-        }
+            $not_pushed_promotion = array_map( function ( $ar ) {
+                       return $ar['customer_promotion_id'];
+                    }, array_column( $not_pushed_promotion->toArray(), 'customer_promotion_product' ) );
 
-        if($request->filter_search != ""){
-            $data->where(function($query) use ($request) {
+            if(!empty($not_pushed_promotion)){
+                $data =  CustomerPromotion::whereIn('id', $not_pushed_promotion);
 
-                $query->whereHas('promotion',function($q) use ($request) {
-                    $q->where('title','LIKE',"%".$request->filter_search."%");
+                if(Auth::id() != 1){
+                    $data->where('customer_promotions.user_id',Auth::id());
+                }
+
+                if($request->filter_status != ""){
+                    $data->where('customer_promotions.status',$request->filter_status);
+                }
+
+                if($request->filter_search != ""){
+                    $data->where(function($query) use ($request) {
+
+                        $query->whereHas('promotion',function($q) use ($request) {
+                            $q->where('title','LIKE',"%".$request->filter_search."%");
+                        });
+
+                    });
+                }
+
+                $data->when(!isset($request->order), function ($q) {
+                    $q->orderBy('customer_promotions.id', 'desc');
                 });
-
-            });
+            }
+        }else{
+             return DataTables::of($data)->make(true);
         }
-
-        $data->when(!isset($request->order), function ($q) {
-            $q->orderBy('customer_promotions.id', 'desc');
-        });
-
+        
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('promotion', function($row) {
@@ -750,14 +781,37 @@ class OrdersController extends Controller
     }
 
     public function pushAllPromotion(Request $request){
-        $data = CustomerPromotion::where(['is_sap_pushed' => 0, 'status' => 'approved'])->get();
-        // dd($data);
+        $data = collect([]);
+        $not_pushed_promotion = CustomerPromotionProductDelivery::has('customer_promotion_product')
+                                            ->where('is_sap_pushed', false)
+                                            ->with('customer_promotion_product')
+                                            ->whereHas('customer_promotion_product.customer_promotion', function($q){
+                                                $q->where('status', 'approved');
+                                            })
+                                            ->get();
+
+        if(!empty($not_pushed_promotion)){
+
+            $not_pushed_promotion = array_map( function ( $ar ) {
+                       return $ar['customer_promotion_id'];
+                    }, array_column( $not_pushed_promotion->toArray(), 'customer_promotion_product' ) );
+
+            if(!empty($not_pushed_promotion)){
+                $data = CustomerPromotion::whereIn('id', $not_pushed_promotion)->get();
+            }
+        }
+
         if(!empty($data)){
             foreach($data as $item){
                 $sap_connection = SapConnection::find(@$item->sap_connection_id);
 
                 if(!is_null($sap_connection)){
-                    SAPAllCustomerPromotionPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, @$item->id);
+
+                    foreach (@$item->products as $p) {
+                        foreach (@$p->deliveries as $d) {
+                            SAPAllCustomerPromotionPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, @$d->id);
+                        }
+                    }
                 }
             }
             return $response = ['status' => true, 'message' => 'All Promotion Pushed Successfully!'];

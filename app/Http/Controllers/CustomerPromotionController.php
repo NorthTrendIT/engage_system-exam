@@ -56,6 +56,10 @@ class CustomerPromotionController extends Controller
             						->where('promotion_end_date','>=',$now)
             						->limit(12);
 
+            if(userrole() == 2 && Auth::user()->sap_connection_id == 1){
+                $promotions->orwhere('sap_connection_id', 5);
+            }
+
             if ($request->id > 0) {
                 $promotions->where('id', '<', $request->id);
             }
@@ -69,8 +73,13 @@ class CustomerPromotionController extends Controller
             $last = Promotions::where($where)
                                 ->where('promotion_start_date','<=',$now)
                                 ->where('promotion_end_date','>=',$now)
-                                ->select('id')
-                                ->first();
+                                ->select('id');
+
+            if(userrole() == 2 && Auth::user()->sap_connection_id == 1){
+                $last->orwhere('sap_connection_id', 5);
+            }
+
+            $last = $last->first();
 
             if (!$promotions->isEmpty()) {
 
@@ -210,7 +219,13 @@ class CustomerPromotionController extends Controller
             $where['sap_connection_id'] = @Auth::user()->sap_connection_id;
         }
 
-        $data = Promotions::where($where)->where('id',$id)->firstOrFail();
+        $data = Promotions::where($where)->where('id',$id);
+
+        if(userrole() == 2 && @Auth::user()->sap_connection_id == 1){
+            $data->orwhere('sap_connection_id', 5);
+        }
+
+        $data = $data->firstOrFail();
 
         $now = date("Y-m-d");
         // $now = "2021-12-12";
