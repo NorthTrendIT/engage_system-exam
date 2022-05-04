@@ -536,12 +536,18 @@
                   <span class="menu-title">SAP API Connection</span>
                </a>
             </div>
-            @endif
 
+            <div class="menu-item">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['sap-connection-api-field.index', 'sap-connection-api-field.edit', 'sap-connection-api-field.create'])) ? 'active' : '' }}" href="{{ route('sap-connection-api-field.index') }}">
+                  <span class="menu-icon">
+                     <span class="svg-icon svg-icon-2">
+                     <i class="fas fa-cabinet-filing"></i>
+                     </span>
+                  </span>
+                  <span class="menu-title">SAP API Connection Field</span>
+               </a>
+            </div>
 
-
-            {{-- Report --}}
-            @if(Auth::user()->role_id == 1)
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['report.index', 'report.promotion.index', 'reports.sales-report.index', 'reports.sales-order-report.index', 'reports.overdue-sales-invoice-report.index', 'reports.back-order-report.index', 'reports.credit-memo-report.index', 'reports.debit-memo-report.index', 'reports.return-order-report.index', 'reports.product-report.index', 'reports.product-sales-report.index', 'reports.sales-order-to-invoice-lead-time-report.index', 'reports.invoice-to-delivery-lead-time-report.index', 'reports.promotion-report.index' ])) ? 'active' : '' }}" href="{{ route('report.index') }}">
                   <span class="menu-icon">
@@ -554,11 +560,7 @@
                   <span class="menu-title">Reports</span>
                </a>
             </div>
-            @endif
 
-
-            {{-- Activity Log --}}
-            @if(Auth::user()->role_id == 1)
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['activitylog.index'])) ? 'active' : '' }}" href="{{ route('activitylog.index') }}">
                   <span class="menu-icon">

@@ -18,7 +18,10 @@ class CreateSapConnectionApiFieldValuesTable extends Migration
             $table->unsignedBigInteger('sap_connection_api_field_id')->nullable();
             $table->string('key')->nullable();
             $table->string('value')->nullable();
+            $table->unsignedBigInteger('sap_connection_id')->nullable();
+            $table->unsignedBigInteger('real_sap_connection_id')->nullable();
             $table->timestamps();
+            $table->timestamp('last_sync_at')->nullable();
         });
     }
 

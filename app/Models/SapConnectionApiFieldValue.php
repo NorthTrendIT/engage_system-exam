@@ -13,6 +13,9 @@ class SapConnectionApiFieldValue extends Model
         'sap_connection_api_field_id',
         'key',
         'value',
+        'sap_connection_id',
+        'real_sap_connection_id',
+        'last_sync_at',
     ];
 
     public function sap_connection_api_field(){

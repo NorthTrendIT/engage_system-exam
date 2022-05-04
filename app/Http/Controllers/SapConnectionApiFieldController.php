@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Support\SAPTestAPI;
+use App\Jobs\SyncSapApiField;
 use App\Models\SapConnection;
 use App\Models\SapConnectionApiField;
 use DataTables;
@@ -154,22 +154,35 @@ class SapConnectionApiFieldController extends Controller
         //
     }
 
-    public function testAPI($id)
-    {
-        $data = SapConnectionApiField::where('id', '!=', 5)->where('id', $id)->firstOrFail();
+    public function syncAll(){
         try {
 
-            $testAPI = new SAPTestAPI($data->db_name, $data->user_name, $data->password);
+            $data = SapConnectionApiField::all();
+            foreach ($data as $value) {
 
-            $result = $testAPI->checkLogin();
+                // $sap = new \App\Support\SAPApiField($value->sap_connection->db_name, $value->sap_connection->user_name, $value->sap_connection->password);
+                // dd($sap->addApiFieldInDatabase($value));
 
-            $response = ['status' => $result['status'], 'message' => $result['message']];
+                $sap_connection = $value->sap_connection;
+
+                $log_id = add_sap_log([
+                                'ip_address' => userip(),
+                                'activity_id' => 60,
+                                'user_id' => userid(),
+                                'data' => null,
+                                'type' => "S",
+                                'status' => "in progress",
+                                'sap_connection_id' => $sap_connection->id,
+                            ]);
+
+                // Save Data of API Field in database
+                SyncSapApiField::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $value, $log_id);
+            }
+
+            $response = ['status' => true, 'message' => 'Sync SAP Connection API Fields Successfully !'];
         } catch (\Exception $e) {
             $response = ['status' => false, 'message' => 'Something went wrong !'];
         }
-
-        // add_log(58, $data->toArray());
-
         return $response;
     }
 

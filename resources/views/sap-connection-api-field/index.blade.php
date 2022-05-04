@@ -13,6 +13,9 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
+        <!--begin::Button-->
+        <a href="javascript:" class="btn btn-sm btn-primary sync-all mx-2">Sync All</a>
+        <!--end::Button-->
 
         <a href="{{ route('sap-connection-api-field.create') }}" class="btn btn-sm btn-primary">Create</a>
         <!--end::Button-->
@@ -169,6 +172,43 @@
       $('[name="filter_field"]').val('').trigger('change');
       render_table();
     })
+
+
+    $(document).on('click', '.sync-all', function(event) {
+      event.preventDefault();
+
+      Swal.fire({
+        title: 'Are you sure you want to Sync All?',
+        text: "Syncing process will run in background and it may take some time to sync all field Data.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('sap-connection-api-field.sync-all') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}'
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              render_table();
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
+
   })
 </script>
 @endpush
