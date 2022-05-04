@@ -22,14 +22,14 @@ class SAPAllCustomerPromotionPost implements ShouldQueue
     protected $database;
     protected $username;
     protected $password;
-    protected $promotion_id;
+    protected $id;
 
-    public function __construct($database, $username, $password, $promotion_id)
+    public function __construct($database, $username, $password, $id)
     {
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
-        $this->promotion_id = $promotion_id;
+        $this->id = $id;
     }
 
     /**
@@ -40,6 +40,6 @@ class SAPAllCustomerPromotionPost implements ShouldQueue
     public function handle()
     {
         $sap = new SAPCustomerPromotion($this->database, $this->username, $this->password);
-        $sap->createOrder($this->promotion_id);
+        $sap->createOrder($this->id);
     }
 }
