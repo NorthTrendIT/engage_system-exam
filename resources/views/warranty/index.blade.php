@@ -10,7 +10,7 @@
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Warranty</h1>
       </div>
 
-      @if(userrole() != 3)
+      @if(!in_array(userrole(),[1,3]))
       <div class="d-flex align-items-center py-1">
         <a href="{{ route('warranty.create') }}" class="btn btn-sm btn-primary">Create</a>
       </div>

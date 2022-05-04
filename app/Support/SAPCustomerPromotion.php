@@ -42,7 +42,7 @@ class SAPCustomerPromotion
 
     public function requestSapApi($url = '/b1s/v1/Quotations', $method = "POST", $body = "")
     {
-        \Log::debug('The requestSapApi called.');
+        // \Log::debug('The requestSapApi called.');
     	try {
             $response = $this->httpClient->request(
                 $method,
@@ -78,7 +78,7 @@ class SAPCustomerPromotion
 
     public function pushOrderDetailsInDatabase($data)
     {
-        \Log::debug('The pushOrderDetailsInDatabase called.');
+        // \Log::debug('The pushOrderDetailsInDatabase called.');
 
         if($data){
             $insert = array(
@@ -170,7 +170,7 @@ class SAPCustomerPromotion
 
 
     public function createOrder($id){
-        \Log::debug('The createOrder called -->'. $id);
+        // \Log::debug('The createOrder called -->'. $id);
 
         $body = $this->madeSapData($id);
 
@@ -226,7 +226,7 @@ class SAPCustomerPromotion
     }
 
     public function cancelOrder($id, $doc_entry){
-        \Log::debug('The cancelOrder called -->'. $id);
+        // \Log::debug('The cancelOrder called -->'. $id);
 
 
         $response = array(

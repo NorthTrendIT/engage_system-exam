@@ -375,7 +375,7 @@
                   </div>
                   @endif
 
-                  @if(Auth::user()->role_id == 1)
+                  {{-- @if(Auth::user()->role_id == 1)
                   <div class="menu-item">
                      <a class="menu-link {{ (in_array(request()->route()->getName(), ['territory-sales-specialist.index','territory-sales-specialist.create','territory-sales-specialist.edit'])) ? 'active' : '' }}" href="{{ route('territory-sales-specialist.index') }}">
                         <span class="menu-bullet">
@@ -384,7 +384,7 @@
                         <span class="menu-title">Territory Assignment</span>
                      </a>
                   </div>
-                  @endif
+                  @endif --}}
 
                   @if(Auth::user()->role_id == 1)
                   <div class="menu-item">

@@ -52,6 +52,9 @@ class WarrantyController extends Controller
      */
     public function create()
     {
+        if(in_array(userrole(),[1,3])){
+            abort(404);
+        }
         
         $warranty_claim_types = Warranty::$warranty_claim_types;
         sort($warranty_claim_types);
