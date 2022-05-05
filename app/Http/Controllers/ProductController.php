@@ -298,7 +298,7 @@ class ProductController extends Controller
                             return @$row->group->group_name ?? "-";
                           })
                           ->addColumn('u_item_line', function($row) {
-                            return @$row->u_item_line ?? "-";
+                            return @$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-";
                           })
                           ->addColumn('u_tires', function($row) {
                             return @$row->u_tires ?? "-";
@@ -307,10 +307,10 @@ class ProductController extends Controller
                             return @$row->item_class ?? "-";
                           })
                           ->addColumn('u_item_type', function($row) {
-                            return @$row->u_item_type ?? "-";
+                            return @$row->u_item_type_sap_value->value ?? @$row->u_item_type ?? "-";
                           })
                           ->addColumn('u_item_application', function($row) {
-                            return @$row->u_item_application ?? "-";
+                            return @$row->u_item_application_sap_value->value ?? @$row->u_item_application ?? "-";
                           })
                           ->addColumn('u_pattern2', function($row) {
                             return @$row->u_pattern2 ?? "-";
@@ -713,7 +713,7 @@ class ProductController extends Controller
                   'item_name' => $value->item_name ?? "-",
                   'brand' => @$value->group->group_name ?? "",
                   'item_code' => $value->item_code ?? "-",
-                  'product_line' => $value->u_item_line ?? "-",
+                  'product_line' => @$value->u_item_line_sap_value->value ?? @$value->u_item_line ?? "-",
                   'product_category' => $value->u_tires ?? "-",
                 );
 
@@ -750,14 +750,14 @@ class ProductController extends Controller
                   'item_name' => $value->item_name ?? "-",
                   'brand' => @$value->group->group_name ?? "-",
                   'item_code' => $value->item_code ?? "-",
-                  'product_line' => $value->u_item_line ?? "-",
+                  'product_line' => @$value->u_item_line_sap_value->value ?? $value->u_item_line ?? "-",
                   'product_category' => $value->u_tires ?? "-",
                   'unit' => $value->sales_unit ?? "-",
                   'rdlp_price' => @$prices[14]['Price'] ?? "-",
                   'commercial_price' => @$prices[12]['Price'] ?? "-",
                   'srp_price' => @$prices[13]['Price'] ?? "-",
-                  'product_application' => $value->u_item_application ?? "-",
-                  'product_type' => $value->u_item_type ?? "-",
+                  'product_application' => @$value->u_item_application_sap_value->value ?? $value->u_item_application ?? "-",
+                  'product_type' => @$value->u_item_type_sap_value->value ?? $value->u_item_type ?? "-",
                 );
 
 
@@ -852,12 +852,12 @@ class ProductController extends Controller
     }else{
       $headers = array(
                 'No.',
-                'Product Code',
+                'Business Unit',
                 'Product Name',
                 'Brand',
-                'Product Category',
-                'Business Unit',
+                'Product Code',
                 'Product Line',
+                'Product Category',
                 'Unit',
                 'RDLP',
                 'Commercial Price',
@@ -960,7 +960,7 @@ class ProductController extends Controller
   }
 
   public function getProductCategoryData(Request $request){
-    $data = collect();
+    $response = array();
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
       
@@ -975,15 +975,22 @@ class ProductController extends Controller
         $data->where('u_tires', 'like', '%' .$request->search . '%');
       }
 
-      $data = $data->get()->groupBy('u_tires');
+      $data = $data->groupBy('u_tires')->get();
+
+      foreach($data as $value){
+        $response[] = array(
+          "id" => @$value->u_tires,
+          "text" => @$value->u_tires,
+        );
+      }
     }
 
-    return response()->json($data);
+    return response()->json($response);
   }
 
 
   public function getProductLineData(Request $request){
-    $data = collect();
+    $response = array();
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
       
@@ -998,15 +1005,22 @@ class ProductController extends Controller
         $data->where('u_item_line', 'like', '%' .$request->search . '%');
       }
 
-      $data = $data->get()->groupBy('u_item_line');
+      $data = $data->groupBy('u_item_line')->get();
+
+      foreach($data as $value){
+        $response[] = array(
+          "id" => @$value->u_item_line,
+          "text" => @$value->u_item_line_sap_value->value ?? @$value->u_item_line,
+        );
+      }
     }
 
-    return response()->json($data);
+    return response()->json($response);
   }
 
 
   public function getProductClassData(Request $request){
-    $data = collect();
+    $response = array();
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
       
@@ -1021,15 +1035,23 @@ class ProductController extends Controller
         $data->where('item_class', 'like', '%' .$request->search . '%');
       }
 
-      $data = $data->get()->groupBy('item_class');
+      $data = $data->groupBy('item_class')->get();
+
+      foreach($data as $value){
+        $response[] = array(
+          "id" => @$value->item_class,
+          "text" => @$value->item_class,
+        );
+      }
+
     }
 
-    return response()->json($data);
+    return response()->json($response);
   }
 
 
   public function getProductTypeData(Request $request){
-    $data = collect();
+    $response = array();
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
       
@@ -1044,15 +1066,23 @@ class ProductController extends Controller
         $data->where('u_item_type', 'like', '%' .$request->search . '%');
       }
 
-      $data = $data->get()->groupBy('u_item_type');
+      $data = $data->groupBy('u_item_type')->get();
+
+      foreach($data as $value){
+        $response[] = array(
+          "id" => @$value->u_item_type,
+          "text" => @$value->u_item_type_sap_value->value ?? @$value->u_item_type,
+        );
+      }
+
     }
 
-    return response()->json($data);
+    return response()->json($response);
   }
 
 
   public function getProductApplicationData(Request $request){
-    $data = collect();
+    $response = array();
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
       
@@ -1067,15 +1097,22 @@ class ProductController extends Controller
         $data->where('u_item_application', 'like', '%' .$request->search . '%');
       }
 
-      $data = $data->get()->groupBy('u_item_application');
+      $data = $data->groupBy('u_item_application')->get();
+
+      foreach($data as $value){
+        $response[] = array(
+          "id" => @$value->u_item_application,
+          "text" => @$value->u_item_application_sap_value->value ?? @$value->u_item_application,
+        );
+      }
     }
 
-    return response()->json($data);
+    return response()->json($response);
   }
 
 
   public function getProductPatternData(Request $request){
-    $data = collect();
+    $response = array();
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
       
@@ -1090,10 +1127,18 @@ class ProductController extends Controller
         $data->where('u_pattern2', 'like', '%' .$request->search . '%');
       }
 
-      $data = $data->get()->groupBy('u_pattern2');
+      $data = $data->groupBy('u_pattern2')->get();
+
+      foreach($data as $value){
+        $response[] = array(
+          "id" => @$value->u_pattern2,
+          "text" => @$value->u_pattern2,
+        );
+      }
+
     }
 
-    return response()->json($data);
+    return response()->json($response);
   }
 
 

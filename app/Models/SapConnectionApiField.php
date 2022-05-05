@@ -22,6 +22,7 @@ class SapConnectionApiField extends Model
         'subsector' => 'SubSector',
         'province' => 'Province',
         'sector' => 'Sector',
+        'classification' => 'Classification',
         'product-line' => 'Product Line',
         'product-type' => 'Product Type',
         'product-application' => 'Product Application',

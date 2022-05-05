@@ -167,6 +167,43 @@ class SapConnectionApiFieldSeeder extends Seeder
                             'sap_field_id' => 141,
                             'sap_table_name' => 'OCRD',
                         ),
+
+
+                        array(
+                            'sap_connection_id' => 1,
+                            'real_sap_connection_id' => 1,
+                            'field' => 'classification',
+                            'sap_field_id' => 140,
+                            'sap_table_name' => 'OCRD',
+                        ),
+                        array(
+                            'sap_connection_id' => 2,
+                            'real_sap_connection_id' => 2,
+                            'field' => 'classification',
+                            'sap_field_id' => 107,
+                            'sap_table_name' => 'OCRD',
+                        ),
+                        array(
+                            'sap_connection_id' => 3,
+                            'real_sap_connection_id' => 3,
+                            'field' => 'classification',
+                            'sap_field_id' => 102,
+                            'sap_table_name' => 'OCRD',
+                        ),
+                        array(
+                            'sap_connection_id' => 4,
+                            'real_sap_connection_id' => 4,
+                            'field' => 'classification',
+                            'sap_field_id' => 95,
+                            'sap_table_name' => 'OCRD',
+                        ),
+                        array(
+                            'sap_connection_id' => 5,
+                            'real_sap_connection_id' => 1,
+                            'field' => 'classification',
+                            'sap_field_id' => 140,
+                            'sap_table_name' => 'OCRD',
+                        ),
                     // End - Customers
 
 

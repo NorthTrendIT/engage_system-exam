@@ -9,6 +9,8 @@ class SapConnectionApiFieldValue extends Model
 {
     use HasFactory;
 
+    use \Awobaz\Compoships\Compoships;
+
     protected $fillable = [
         'sap_connection_api_field_id',
         'key',

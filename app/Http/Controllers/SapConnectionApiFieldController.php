@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Support\SAPApiField;
 use App\Jobs\SyncSapApiField;
 use App\Models\SapConnection;
 use App\Models\SapConnectionApiField;
@@ -186,6 +187,33 @@ class SapConnectionApiFieldController extends Controller
         return $response;
     }
 
+    public function syncSpecific(Request $request){
+
+        $input = $request->all();
+
+        $rules = array(
+                    'id' => 'required|exists:sap_connection_api_fields,id',
+                );
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            $response = ['status'=>false,'message'=>$validator->errors()->first()];
+        }else{
+            try {
+                $data = SapConnectionApiField::find($request->id);
+
+                $sap = new SAPApiField($data->sap_connection->db_name, $data->sap_connection->user_name, $data->sap_connection->password);
+                $sap->addApiFieldInDatabase($data);
+
+                $response = ['status' => true, 'message' => 'Sync SAP Connection API Field Data Successfully !'];
+            } catch (\Exception $e) {
+                $response = ['status' => false, 'message' => 'Something went wrong !'];
+            }
+        }
+
+        return $response;
+    }
+
     public function getAll(Request $request){
 
         $data = SapConnectionApiField::query();
@@ -228,6 +256,11 @@ class SapConnectionApiFieldController extends Controller
                                 $btn = '<a href="' . route('sap-connection-api-field.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                             <i class="fa fa-pencil"></i>
                                         </a>';
+
+                                $btn .= '<a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10 sync-details" data-id="'.$row->id.'" title="Sync details">
+                                            <i class="fa fa-sync"></i>
+                                        </a>';
+
                                 return $btn;
                             })
                             ->orderColumn('field', function ($query, $order) {

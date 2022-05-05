@@ -92,4 +92,24 @@ class Product extends Model
     public function sap_connection(){
         return $this->belongsTo(SapConnection::class,'sap_connection_id');
     }
+
+
+    public function u_item_line_sap_value() {
+        return $this->belongsTo(SapConnectionApiFieldValue::class, ['u_item_line', 'sap_connection_id'], ['key', 'sap_connection_id'])->whereHas('sap_connection_api_field', function($q) {
+                $q->where('field', 'product-line');
+            });
+    }
+
+
+    public function u_item_type_sap_value() {
+        return $this->belongsTo(SapConnectionApiFieldValue::class, ['u_item_type', 'sap_connection_id'], ['key', 'sap_connection_id'])->whereHas('sap_connection_api_field', function($q) {
+                $q->where('field', 'product-type');
+            });
+    }
+
+    public function u_item_application_sap_value() {
+        return $this->belongsTo(SapConnectionApiFieldValue::class, ['u_item_application', 'sap_connection_id'], ['key', 'sap_connection_id'])->whereHas('sap_connection_api_field', function($q) {
+                $q->where('field', 'product-application');
+            });
+    }
 }
