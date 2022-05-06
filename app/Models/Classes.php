@@ -15,4 +15,8 @@ class Classes extends Model
     	'name',
     	'module',
     ];
+
+    public function sap_value() {
+        return $this->belongsTo(SapConnectionApiFieldValue::class, 'name', 'key');
+    }
 }

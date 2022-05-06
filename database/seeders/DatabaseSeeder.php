@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SapConnectionSeeder::class);
         $this->call(ClaimPointSeeder::class);
         $this->call(TireManifistationSeeder::class);
+        $this->call(SapConnectionApiFieldSeeder::class);
         // \App\Models\User::factory(10)->create();
     }
 }

@@ -315,19 +315,19 @@ class CustomerController extends Controller
                                 return @$row->city ?? "-";
                             })
                             ->addColumn('u_cust_segment', function($row) {
-                                return @$row->u_cust_segment ?? "-";
+                                return @$row->u_cust_segment_sap_value->value ?? @$row->u_cust_segment ?? "-";
                             })
                             ->addColumn('u_sector', function($row) {
-                                return @$row->u_sector ?? "-";
+                                return @$row->u_sector_sap_value->value ?? @$row->u_sector ?? "-";
                             })
                             ->addColumn('u_subsector', function($row) {
-                                return @$row->u_subsector ?? "-";
+                                return @$row->u_subsector_sap_value->value ?? @$row->u_subsector ?? "-";
                             })
                             ->addColumn('u_rgn', function($row) {
                                 return @$row->u_rgn ?? "-";
                             })
                             ->addColumn('u_province', function($row) {
-                                return @$row->u_province ?? "-";
+                                return @$row->u_province_sap_value->value ?? @$row->u_province ?? "-";
                             })
                             ->addColumn('created_at', function($row) {
                                 return date('M d, Y',strtotime($row->created_date));
@@ -539,11 +539,11 @@ class CustomerController extends Controller
                                     'card_code' => $value->card_code ?? "-",
                                     'card_name' => $value->card_name ?? "-",
                                     'class' => @$value->u_classification ?? "-",
-                                    'customer_segment' => @$value->u_cust_segment ?? "-",
-                                    'market_sector' => @$value->u_sector ?? "-",
-                                    'market_sub_sector' => @$value->u_subsector ?? "-",
+                                    'customer_segment' => @$value->u_cust_segment_sap_value->value ?? @$value->u_cust_segment ?? "-",
+                                    'market_sector' => @$value->u_sector_sap_value->value ?? @$value->u_sector ?? "-",
+                                    'market_sub_sector' => @$value->u_subsector_sap_value->value ?? @$value->u_subsector ?? "-",
                                     'region' => @$value->u_rgn ?? "-",
-                                    'province' => @$value->u_province ?? "-",
+                                    'province' => @$value->u_province_sap_value->value ?? @$value->u_province ?? "-",
                                     'territory' => @$value->territories->description ?? "-",
                                     'city' => @$value->city ?? "-",
                                 );
@@ -646,7 +646,7 @@ class CustomerController extends Controller
 
                 $response[$value->customer->u_sector] = array(
                     "id" => $value->customer->u_sector,
-                    "text" => $value->customer->u_sector
+                    "text" => @$value->customer->u_sector_sap_value->value ?? $value->customer->u_sector
                 );
             }
 
@@ -682,7 +682,7 @@ class CustomerController extends Controller
 
                 $response[$value->customer->u_subsector] = array(
                     "id" => $value->customer->u_subsector,
-                    "text" => $value->customer->u_subsector
+                    "text" => @$value->customer->u_subsector_sap_value->value ?? $value->customer->u_subsector
                 );
             }
 

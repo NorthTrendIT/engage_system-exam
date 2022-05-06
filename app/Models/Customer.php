@@ -115,4 +115,38 @@ class Customer extends Model
     public function debit_memo_reports(){
         return $this->hasMany(CreditNote::class, ['card_code', 'sap_connection_id'], ['card_code', 'sap_connection_id'])->where('doc_type', 'dDocument_Service')->where('document_status', 'bost_Open')->where('doc_total', '<', 0);
     }
+
+    
+    public function u_sector_sap_value() {
+        return $this->belongsTo(SapConnectionApiFieldValue::class, ['u_sector', 'sap_connection_id'], ['key', 'sap_connection_id'])->whereHas('sap_connection_api_field', function($q) {
+                $q->where('field', 'sector');
+            });
+    }
+
+
+    /*public function u_mkt_segment_sap_value() {
+        return $this->belongsTo(SapConnectionApiFieldValue::class, ['u_mkt_segment', 'sap_connection_id'], ['key', 'sap_connection_id'])->whereHas('sap_connection_api_field', function($q) {
+                $q->where('field', 'sector');
+            });
+    }*/
+
+
+    public function u_cust_segment_sap_value() {
+        return $this->belongsTo(SapConnectionApiFieldValue::class, ['u_cust_segment', 'sap_connection_id'], ['key', 'sap_connection_id'])->whereHas('sap_connection_api_field', function($q) {
+                $q->where('field', 'segment');
+            });
+    }
+
+
+    public function u_subsector_sap_value() {
+        return $this->belongsTo(SapConnectionApiFieldValue::class, ['u_subsector', 'sap_connection_id'], ['key', 'sap_connection_id'])->whereHas('sap_connection_api_field', function($q) {
+                $q->where('field', 'subsector');
+            });
+    }
+
+    public function u_province_sap_value() {
+        return $this->belongsTo(SapConnectionApiFieldValue::class, ['u_province', 'sap_connection_id'], ['key', 'sap_connection_id'])->whereHas('sap_connection_api_field', function($q) {
+                $q->where('field', 'province');
+            });
+    }
 }

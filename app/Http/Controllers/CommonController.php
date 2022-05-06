@@ -82,7 +82,7 @@ class CommonController extends Controller
             foreach($data as $value){
                 $response[] = array(
                     "id" => $value->u_sector,
-                    "text" => $value->u_sector
+                    "text" => @$value->u_sector_sap_value->value ?? $value->u_sector
                 );
             }
         }
@@ -111,7 +111,7 @@ class CommonController extends Controller
             foreach($data as $value){
                 $response[] = array(
                     "id" => $value->u_subsector,
-                    "text" => $value->u_subsector
+                    "text" => @$value->u_subsector_sap_value->value ?? $value->u_subsector
                 );
             }
         }
@@ -169,7 +169,7 @@ class CommonController extends Controller
             foreach($data as $value){
                 $response[] = array(
                     "id" => $value->u_province,
-                    "text" => $value->u_province,
+                    "text" => @$value->u_province_sap_value->value ?? $value->u_province,
                 );
             }
         }
@@ -493,7 +493,7 @@ class CommonController extends Controller
             foreach($data as $value){
                 $response[] = array(
                     "id" => @$value->u_item_line,
-                    "text" => @$value->u_item_line,
+                    "text" => @$value->u_item_line_sap_value->value ?? @$value->u_item_line,
                 );
             }
         }
@@ -567,7 +567,7 @@ class CommonController extends Controller
             foreach($data as $value){
                 $response[] = array(
                     "id" => @$value->u_item_type,
-                    "text" => @$value->u_item_type,
+                    "text" => @$value->u_item_type_sap_value->value ?? @$value->u_item_type,
                 );
             }
         }
@@ -604,7 +604,7 @@ class CommonController extends Controller
             foreach($data as $value){
                 $response[] = array(
                     "id" => @$value->u_item_application,
-                    "text" => @$value->u_item_application,
+                    "text" => @$value->u_item_application_sap_value->value ?? @$value->u_item_application,
                 );
             }
         }

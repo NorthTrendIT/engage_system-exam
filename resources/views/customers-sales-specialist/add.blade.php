@@ -244,7 +244,7 @@ $(document).ready(function() {
       @foreach ($edit->product_item_lines as $data)
         var initialOption = {
             id: {{ $data->product_item_line_id }},
-            text: '{!! $data->product_item_line->u_item_line !!}',
+            text: '{!! @$data->product_item_line->u_item_line_sap_value->value ?? $data->product_item_line->u_item_line !!}',
             selected: true
         }
         $initialProductLine.push(initialOption);

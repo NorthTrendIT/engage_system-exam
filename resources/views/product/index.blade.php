@@ -454,12 +454,7 @@
         },
         processResults: function (response) {
           return {
-            results:  $.map(response, function (item, index) {
-                        return {
-                          text: index,
-                          id: index
-                        }
-                      })
+            results:  response
           };
         },
         cache: true
@@ -483,12 +478,7 @@
         },
         processResults: function (response) {
           return {
-            results:  $.map(response, function (item, index) {
-                        return {
-                          text: index,
-                          id: index
-                        }
-                      })
+            results:  response
           };
         },
         cache: true
@@ -512,12 +502,7 @@
         },
         processResults: function (response) {
           return {
-            results:  $.map(response, function (item, index) {
-                        return {
-                          text: index,
-                          id: index
-                        }
-                      })
+            results:  response
           };
         },
         cache: true
@@ -541,12 +526,7 @@
         },
         processResults: function (response) {
           return {
-            results:  $.map(response, function (item, index) {
-                        return {
-                          text: index,
-                          id: index
-                        }
-                      })
+            results:  response
           };
         },
         cache: true
@@ -570,12 +550,7 @@
         },
         processResults: function (response) {
           return {
-            results:  $.map(response, function (item, index) {
-                        return {
-                          text: index,
-                          id: index
-                        }
-                      })
+            results:  response
           };
         },
         cache: true
@@ -599,12 +574,7 @@
         },
         processResults: function (response) {
           return {
-            results:  $.map(response, function (item, index) {
-                        return {
-                          text: index,
-                          id: index
-                        }
-                      })
+            results:  response
           };
         },
         cache: true

@@ -409,6 +409,11 @@ Route::middleware(['auth'])->group(function(){
         Route::get('sap-connection/test/{id}','App\Http\Controllers\SapConnectionController@testAPI')->name('sap-connection.test');
         Route::post('sap-connection/update-api-url', 'App\Http\Controllers\SapConnectionController@updateApiUrl')->name('sap-connection.update-api-url');
 
+        // Sap Connection Field
+        Route::resource('sap-connection-api-field', 'App\Http\Controllers\SapConnectionApiFieldController');
+        Route::post('sap-connection-api-field/get-all', 'App\Http\Controllers\SapConnectionApiFieldController@getAll')->name('sap-connection-api-field.get-all');
+        Route::post('sap-connection-api-field/sync-all', 'App\Http\Controllers\SapConnectionApiFieldController@syncAll')->name('sap-connection-api-field.sync-all');
+        Route::post('sap-connection-api-field/sync-specific', 'App\Http\Controllers\SapConnectionApiFieldController@syncSpecific')->name('sap-connection-api-field.sync-specific');
 
         // Report
         Route::resource('report', 'App\Http\Controllers\ReportController');

@@ -266,6 +266,12 @@ class ActivityMasterSeeder extends Seeder
                         'id' => 59,
                         'name' => 'Sync Credit Note Data'
                     ),
+
+
+                    array(
+                        'id' => 60,
+                        'name' => 'Sync SAP API Connection Field Data'
+                    ),
         		);
         ActivityMaster::insert($data);
     }
