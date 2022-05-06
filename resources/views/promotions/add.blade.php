@@ -632,10 +632,17 @@
     @endif
 
     @if(isset($edit) && $edit->promotion_scope == 'MS')
-        @foreach ($edit->promotion_data as $data)
+
+        @php
+            $sap_market_sector = \App\Models\SapConnectionApiFieldValue::whereHas('sap_connection_api_field', function($q) use($edit) {
+                $q->where('field', 'sector')->where('sap_connection_id', $edit->sap_connection_id);
+            })->whereIn('key', $edit->promotion_data()->pluck('market_sector')->toArray())->get();
+        @endphp
+
+        @foreach ($sap_market_sector as $data)
             var initialOption = {
-                id: '{{ $data->market_sector }}',
-                text: '{!! $data->market_sector !!}',
+                id: '{{ $data->key }}',
+                text: '{!! $data->value !!}',
                 selected: true
             }
             $initialOptions.push(initialOption);
@@ -834,12 +841,7 @@
             },
             processResults: function (response) {
                 return {
-                    results:  $.map(response, function (item) {
-                                return {
-                                  text: item.u_sector,
-                                  id: item.u_sector
-                                }
-                            })
+                    results:  response
                 };
             },
             cache: true

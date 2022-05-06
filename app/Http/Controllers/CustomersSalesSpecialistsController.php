@@ -489,7 +489,7 @@ class CustomersSalesSpecialistsController extends Controller
             foreach($data as $value){
                 $response[] = array(
                     "id" => $value->id,
-                    "text" => $value->u_item_line
+                    "text" => @$value->u_item_line_sap_value->value ?? @$value->u_item_line
                 );
             }
         }

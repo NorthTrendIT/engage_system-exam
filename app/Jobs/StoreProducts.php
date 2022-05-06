@@ -107,7 +107,7 @@ class StoreProducts implements ShouldQueue
                                         $insert
                                     );
 
-                if(!is_null(@$value['U_TIRES'])){
+                if(!is_null(@$value['U_TIRES']) && !empty(@$value['U_TIRES'])){
                     $obj_t = ProductTiresCategory::updateOrCreate(
                                             [
                                                 'u_tires' => @$value['U_TIRES'],
@@ -121,7 +121,7 @@ class StoreProducts implements ShouldQueue
                 }
 
 
-                if(!is_null(@$value['U_ItemLine'])){
+                if(!is_null(@$value['U_ItemLine']) && !empty(@$value['U_ItemLine'])){
                     $obj_i = ProductItemLine::updateOrCreate(
                                             [
                                                 'u_item_line' => @$value['U_ItemLine'],

@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\PromotionFor;
 use App\Models\PromotionInterest;
 use App\Models\CustomerPromotion;
+use App\Models\SapConnectionApiFieldValue;
 use App\Models\Territory;
 use App\Models\Classes;
 use App\Models\User;
@@ -656,6 +657,23 @@ class PromotionsController extends Controller
             $data->whereNotNull('class_id');
         }
 
+
+        if($scope == 'MS'){
+            $promotion = Promotions::find($request->id);
+
+            $sap_market_sector = SapConnectionApiFieldValue::whereHas('sap_connection_api_field', function($q) use($promotion) {
+                $q->where('field', 'sector')->where('sap_connection_id', $promotion->sap_connection_id);
+            })->whereIn('key', $data->pluck('market_sector')->toArray())->get();
+
+
+            return DataTables::of($sap_market_sector)
+                ->addIndexColumn()
+                ->addColumn('name', function($row) use ($scope) {
+                    return $row->value;
+                })
+                ->make(true);
+        }
+
         return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('name', function($row) use ($scope) {
@@ -880,6 +898,8 @@ class PromotionsController extends Controller
     }
 
     public function getMarketSectors(Request $request){
+        $response = array();
+
         $search = $request->search;
 
         $data = Customer::orderby('u_sector','asc')->whereNotNull('u_sector')->select('id','u_sector');
@@ -889,9 +909,18 @@ class PromotionsController extends Controller
 
         $data->where('sap_connection_id',@$request->sap_connection_id);
 
-        $data = $data->get()->unique('u_sector');
+        // $data = $data->get()->unique('u_sector');
 
-        return response()->json($data);
+        $data = $data->limit(50)->groupBy('u_sector')->get();
+
+        foreach($data as $value){
+            $response[] = array(
+                "id" => $value->u_sector,
+                "text" => @$value->u_sector_sap_value->value ?? $value->u_sector
+            );
+        }
+
+        return response()->json($response);
     }
 
     public function checkTitle(Request $request){

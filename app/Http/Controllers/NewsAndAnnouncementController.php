@@ -727,7 +727,7 @@ class NewsAndAnnouncementController extends Controller
             foreach($data as $value){
                 $response[] = array(
                     "id" => $value->u_sector,
-                    "text" => $value->u_sector
+                    "text" => @$value->u_sector_sap_value->value ?? $value->u_sector
                 );
             }
         }
@@ -986,7 +986,7 @@ class NewsAndAnnouncementController extends Controller
                                 return '-';
                             })
                             ->addColumn('market_sector', function($row) {
-                                return @$row->user->customer->u_sector;
+                                return @$row->user->customer->u_sector_sap_value->value ?? @$row->user->customer->u_sector;
                             })
                             ->addColumn('is_seen', function($row) {
                                 if($row->is_seen){

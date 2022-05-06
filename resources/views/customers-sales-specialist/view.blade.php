@@ -93,7 +93,7 @@
                   <div class="form-group">
                     <ul>
                       @foreach (@$data->product_item_lines as $d)
-                        <li>{!! $d->product_item_line->u_item_line !!}</li>
+                        <li>{!! @$d->product_item_line->u_item_line_sap_value->value ?? @$d->product_item_line->u_item_line !!}</li>
                       @endforeach
                     </ul> 
                   </div>
