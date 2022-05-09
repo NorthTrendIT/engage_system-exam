@@ -214,10 +214,64 @@ class LocalOrderController extends Controller
             }
         );
 
+
+        if($request->filter_status != ""){
+            $status = $request->filter_status;
+
+            if($status == "CL"){ //Cancel
+                $data->whereHas('quotation',function($dq){
+                    $dq->where(function($query){
+                        $query->orwhere(function($q){
+                            $q->where('cancelled', 'Yes');
+                        });
+
+                        $query->orwhere(function($q){
+                            $q->whereHas('order',function($p){
+                                $p->where('cancelled', 'Yes');
+                            });
+                        });
+
+                        $query->orwhere(function($q1){
+                            $q1->whereHas('order.invoice',function($p1){
+                                $p1->where('cancelled', 'Yes');
+                            });
+                        });
+                    });
+                });
+
+
+            }elseif($status == "PN"){ //Pending
+
+                $data->whereHas('quotation',function($dq){
+                    $dq->has('order', '<', 1);
+                });
+
+
+            }elseif($status == "OP"){ //On Process
+                $data->whereHas('quotation',function($dq){
+                    $dq->whereHas('order',function($q){
+                        $q->where('document_status', 'bost_Open')->doesntHave('invoice');
+                    });
+                });
+
+            }else{
+                $data->whereHas('quotation',function($dq){
+                    $dq->whereHas('order.invoice',function($q) use ($status){
+                        $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', $status);
+                    });
+                });
+            }
+        }
+
+
         if($request->filter_search != ""){
             $data->whereHas('customer', function($q) use ($request) {
                 $q->where('card_name','LIKE',"%".$request->filter_search."%");
             });
+        }
+
+        if($request->filter_confirmation_status != ""){
+            $data->where('confirmation_status', $request->filter_confirmation_status);
         }
 
         if($request->filter_date_range != ""){
@@ -225,8 +279,8 @@ class LocalOrderController extends Controller
             $start = date("Y-m-d", strtotime($date[0]));
             $end = date("Y-m-d", strtotime($date[1]));
 
-            $data->whereDate('created_date', '>=' , $start);
-            $data->whereDate('created_date', '<=' , $end);
+            $data->whereDate('created_at', '>=' , $start);
+            $data->whereDate('created_at', '<=' , $end);
         }
 
         $data->when(!isset($request->order), function ($q) {
@@ -263,9 +317,17 @@ class LocalOrderController extends Controller
                         ->addColumn('due_date', function($row) {
                             return date('M d, Y',strtotime($row->due_date));
                         })
+                        ->addColumn('created_at', function($row) {
+                            return date('M d, Y',strtotime($row->created_at));
+                        })
+
+                        ->orderColumn('created_at', function ($query, $order) {
+                            $query->orderBy('created_at', $order);
+                        })
                         ->orderColumn('due_date', function ($query, $order) {
                             $query->orderBy('due_date', $order);
                         })
+
                         ->orderColumn('total', function ($query, $order) {
                             $query->orderBy('total', $order);
                         })
