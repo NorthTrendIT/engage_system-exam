@@ -64,13 +64,13 @@
       @if(@$discount_percentage)
         <div class="price">₱ 
           @if(get_product_customer_price(@$product->item_prices,14) > 0)
-            <span>{{ get_product_customer_price(@$product->item_prices,14) }}</span> 
+            <span>{{ number_format_value(get_product_customer_price(@$product->item_prices,14), 2) }}</span> 
           @endif
 
-          {{ get_product_customer_price(@$product->item_prices,14,@$discount_percentage,@$discount_fix_amount) }}
+          {{ number_format_value(get_product_customer_price(@$product->item_prices,14,@$discount_percentage,@$discount_fix_amount), 2) }}
         </div>
       @else
-        <div class="price">₱ {{ get_product_customer_price(@$product->item_prices,14) }}</div>
+        <div class="price">₱ {{ number_format_value(get_product_customer_price(@$product->item_prices,14), 2) }}</div>
       @endif
 
       <a class="add-to-cart view-product-a" data-href="{{ route('customer-promotion.product-detail',['id' => @$promotion_type_product->id, 'promotion_id' => $promotion_id]) }}" href="javascript:">View more</a>
