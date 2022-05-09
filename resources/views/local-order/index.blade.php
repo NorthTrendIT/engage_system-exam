@@ -27,8 +27,8 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-body">
-              <div class="row mt-5">
-                <div class="col-md-3">
+              <div class="row">
+                <div class="col-md-4 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -37,7 +37,26 @@
                   </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-4 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_confirmation_status" data-placeholder= "Select confirmation status">
+                    <option value=""></option>
+                    <option value="P">Pending</option>
+                    <option value="C">Confirmed</option>
+                    <option value="ERR">Error</option>
+                  </select>
+                </div>
+
+                <div class="col-md-4 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="false" data-placeholder="Select order status" data-allow-clear="true">
+                    <option value=""></option>
+
+                    @foreach(getOrderStatusArray() as $key => $value)
+                      <option value="{{ $key }}">{{ $value }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-4 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
                     <span>
@@ -45,7 +64,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-4 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -63,7 +82,7 @@
                               <th>Confirmation Status</th>
                               <th>Order Status</th>
                               <th>Total</th>
-                              <th>Due Date</th>
+                              <th>Created Date</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -104,6 +123,7 @@ $(document).ready(function() {
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_confirmation_status = $('[name="filter_confirmation_status"]').find('option:selected').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
 
       table.DataTable({
@@ -120,6 +140,8 @@ $(document).ready(function() {
               data:{
                 filter_search : $filter_search,
                 filter_status : $filter_status,
+                filter_confirmation_status : $filter_confirmation_status,
+                filter_date_range : $filter_date_range,
               }
           },
           columns: [
@@ -128,7 +150,7 @@ $(document).ready(function() {
               {data: 'confirmation_status', name: 'confirmation_status'},
               {data: 'order_status', name: 'order_status', orderable:false,searchable:false},
               {data: 'total', name: 'total'},
-              {data: 'due_date', name: 'due_date'},
+              {data: 'created_at', name: 'created_at'},
               {data: 'action', name: 'action'},
           ],
           drawCallback:function(){
@@ -148,7 +170,9 @@ $(document).ready(function() {
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
+      $('[name="filter_date_range"]').val('');
       $('[name="filter_status"]').val('').trigger('change');
+      $('[name="filter_confirmation_status"]').val('').trigger('change');
       render_table();
     })
 
