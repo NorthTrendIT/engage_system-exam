@@ -280,7 +280,11 @@ class CommonController extends Controller
             $data = Customer::where('is_active', true)->orderby('u_classification','asc')->select('u_classification')->limit(50)->groupBy('u_classification');
 
             if($search != ''){
-                $data->where('u_classification', 'like', '%' .$search . '%');
+                //$data->where('u_classification', 'like', '%' .$search . '%');
+
+                $data->whereHas('u_classification_sap_value', function($q) use ($search) {
+                    $q->where('value','LIKE',"%".$search."%");
+                });
             }
 
             if(@$request->sap_connection_id != ''){
@@ -292,7 +296,7 @@ class CommonController extends Controller
             foreach($data as $value){
                 $response[] = array(
                     "id" => $value->u_classification,
-                    "text" => $value->u_classification,
+                    "text" => $value->u_classification_sap_value->value ?? $value->u_classification,
                 );
             }
         }

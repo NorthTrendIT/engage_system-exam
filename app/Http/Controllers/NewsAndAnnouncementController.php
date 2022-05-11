@@ -604,19 +604,32 @@ class NewsAndAnnouncementController extends Controller
             $sap_connection_id = 1;
         }
 
-        if($search == ''){
-            $data = Classes::orderby('name','asc')->select('id','name')->where('module', 'C')->limit(50)->get();
-        }else{
-            $data = Classes::orderby('name','asc')->select('id','name')->where('module', 'C')->where('name', 'like', '%' .$search . '%')->limit(50)->get();
+        $data = Classes::where('module', 'C')->limit(50);
+
+        if($search != ''){
+            $data->whereHas('name_sap_value', function($q) use ($search) {
+                $q->where('value','LIKE',"%".$search."%");
+            });
         }
+
+        if(@$request->sap_connection_id != ''){
+            $data->where('sap_connection_id', @$request->sap_connection_id);
+        }
+
+        $data = $data->get();
 
         $response = array();
         foreach($data as $value){
-            $response[] = array(
+
+            $text = @$value->name_sap_value->value ?? $value->name;
+
+            $response[$text] = array(
                 "id"=>$value->id,
-                "text"=>$value->name
+                "text"=> $text
             );
         }
+
+        sort($response);
 
         return response()->json($response);
     }
@@ -897,7 +910,7 @@ class NewsAndAnnouncementController extends Controller
                                 return '-';
                             })
                             ->addColumn('class_name', function($row) {
-                                return $row->user->customer->classes->name;
+                                return @$row->user->customer->u_classification_sap_value->value ?? @$row->user->customer->classes->name;
                             })
                             ->addColumn('is_seen', function($row) {
                                 if($row->is_seen){

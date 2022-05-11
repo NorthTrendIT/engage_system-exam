@@ -593,7 +593,7 @@
             @if($data->class_id != "")
                 var initialOption = {
                     id: {{ $data->class_id }},
-                    text: '{!! $data->class->name !!}',
+                    text: '{!! $data->class->name_sap_value->value ?? $data->class->name !!}',
                     selected: true
                 }
                 $initialOptions.push(initialOption);

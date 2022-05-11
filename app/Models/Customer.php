@@ -149,4 +149,10 @@ class Customer extends Model
                 $q->where('field', 'province');
             });
     }
+
+    public function u_classification_sap_value() {
+        return $this->belongsTo(SapConnectionApiFieldValue::class, ['u_classification', 'sap_connection_id'], ['key', 'sap_connection_id'])->whereHas('sap_connection_api_field', function($q) {
+                $q->where('field', 'classification');
+            });
+    }
 }

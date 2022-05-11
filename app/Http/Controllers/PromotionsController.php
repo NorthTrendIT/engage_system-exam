@@ -682,7 +682,7 @@ class PromotionsController extends Controller
                     }else if($scope == 'T'){
                         return $row->territory->description;
                     }else if($scope == 'CL'){
-                        return $row->class->name;
+                        return @$row->class->name_sap_value->value ?? $row->class->name;
                     }else if($scope == 'SS'){
                         return $row->sales_specialist->sales_specialist_name;
                     }else if($scope == 'B'){
@@ -734,12 +734,15 @@ class PromotionsController extends Controller
     public function getClasses(Request $request){
         $search = $request->search;
 
-        $data = Classes::orderby('name','asc')->select('id','name');
+        $data = Classes::query();
+
         if($search != ''){
-            $data->where('name', 'like', '%' .$search . '%');
+            $data->whereHas('name_sap_value', function($q) use ($search) {
+                $q->where('value','LIKE',"%".$search."%");
+            });
         }
 
-        // $data->where('sap_connection_id',@$request->sap_connection_id);
+        $data->where('sap_connection_id',@$request->sap_connection_id);
 
         $data = $data->limit(50)->get();
 
@@ -747,7 +750,7 @@ class PromotionsController extends Controller
         foreach($data as $value){
             $response[] = array(
                 "id"=>$value->id,
-                "text"=>$value->name
+                "text"=>@$value->name_sap_value->value ?? $value->name
             );
         }
 
