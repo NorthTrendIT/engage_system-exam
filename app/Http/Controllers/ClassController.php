@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Classes;
+use App\Models\SapConnection;
 use DataTables;
 
 class ClassController extends Controller
@@ -15,7 +16,8 @@ class ClassController extends Controller
      */
     public function index()
     {
-        return view('class.index');
+        $company = SapConnection::all();
+        return view('class.index', compact('company'));
     }
 
     /**
@@ -91,7 +93,15 @@ class ClassController extends Controller
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
                 $q->orwhere('name','LIKE',"%".$request->filter_search."%");
+
+                $q->orwhereHas('name_sap_value', function($q1) use ($request) {
+                    $q1->where('value','LIKE',"%".$request->filter_search."%");
+                });
             });
+        }
+
+        if($request->filter_company != ""){
+            $data->where('sap_connection_id',$request->filter_company);
         }
 
         $data->when(!isset($request->order), function ($q) {
@@ -101,10 +111,16 @@ class ClassController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('name', function($row) {
-                                return @$row->name ?? "-";
+                                return @$row->name_sap_value->value ?? @$row->name ?? "-";
+                            })
+                            ->addColumn('company', function($row) {
+                                return @$row->sap_connection->company_name ?? "-";
                             })
                             ->orderColumn('name', function ($query, $order) {
                                 $query->orderBy('name', $order);
+                            })
+                            ->orderColumn('company', function ($query, $order) {
+                                $query->join('sap_connections', 'classes.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
                             ->rawColumns(['name'])
                             ->make(true);

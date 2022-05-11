@@ -22,8 +22,18 @@
               <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
             </div> --}}
             <div class="card-body">
-              <div class="row mt-5">
-                <div class="col-md-3">
+              <div class="row">
+
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid filter_company" name="filter_company" data-control="select2" data-hide-search="false" data-placeholder="Select business unit" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($company as $c)
+                    <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name = "filter_search">
                     <span>
@@ -32,7 +42,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -49,6 +59,7 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>Business Unit</th>
                               <th>Name</th>
                             </tr>
                           </thead>
@@ -93,6 +104,7 @@
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_search"]').val();
+      $filter_company = $('[name="filter_company"]').val();
 
       table.DataTable({
           processing: true,
@@ -107,10 +119,12 @@
               },
               data:{
                 filter_search : $filter_search,
+                filter_company : $filter_company,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'company', name: 'company'},
               {data: 'name', name: 'name'},
           ],
           drawCallback:function(){
@@ -130,6 +144,7 @@
 
     $(document).on('click', '.clear-search', function(event) {
       $('[name="filter_search"]').val('');
+      $('[name="filter_company"]').val('').trigger('change');
       render_table();
     })
   })

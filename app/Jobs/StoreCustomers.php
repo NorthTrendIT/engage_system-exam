@@ -67,15 +67,18 @@ class StoreCustomers implements ShouldQueue
                     }
                 }
 
-                if(!is_null(@$value['U_Classification']) || @$value['U_Classification'] == "-" || @$value['U_Classification'] != ""){
+                if(!is_null(@$value['U_Classification']) || @$value['U_Classification'] != ""){
                     $obj_class = Classes::updateOrCreate(
                                             [
                                                 'name' => @$value['U_Classification'],
                                                 'module' => 'C',
+                                                'sap_connection_id' => $this->sap_connection_id,
                                             ],
                                             [
                                                 'name' => @$value['U_Classification'],
                                                 'module' => 'C',
+                                                'sap_connection_id' => $this->sap_connection_id,
+                                                'real_sap_connection_id' => $this->real_sap_connection_id,
                                             ]
                                         );
                 }
