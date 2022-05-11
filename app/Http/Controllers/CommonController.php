@@ -277,7 +277,7 @@ class CommonController extends Controller
         if($request->sap_connection_id){
             $search = $request->search;
 
-            $data = Customer::where('is_active', true)->orderby('u_classification','asc')->select('u_classification')->limit(50)->groupBy('u_classification');
+            $data = Customer::where('is_active', true)->orderby('u_classification','asc')->limit(50)->groupBy('u_classification');
 
             if($search != ''){
                 //$data->where('u_classification', 'like', '%' .$search . '%');
