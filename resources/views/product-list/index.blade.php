@@ -66,7 +66,7 @@
                   <select class="form-control form-control-lg form-control-solid" name="filter_product_line" data-control="select2" data-hide-search="false" data-placeholder="Select product line" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($c_product_line as $key => $l)
-                    <option value="{{ $l }}">{{ $l }}</option>
+                    <option value="{{ $l->u_item_line }}">{{ @$l->u_item_line_sap_value->value ?? $l->u_item_line }}</option>
                     @endforeach
                   </select>
                 </div>
