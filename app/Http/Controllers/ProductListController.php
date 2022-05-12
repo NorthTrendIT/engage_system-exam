@@ -20,22 +20,26 @@ class ProductListController extends Controller
 
         $c_product_groups = $c_product_line = $c_product_category = collect();
 
-        $customer_id = null;
+        $customer_id = $sap_connection_id = null;
 
         if(userrole() == 4){
 
             $customer_id = array( @Auth::user()->customer_id );
+            $sap_connection_id = @Auth::user()->sap_connection_id;
 
         }elseif(userrole() == 2){
 
             $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
+            $sap_connection_id = @Auth::user()->sap_connection_id;
 
         }elseif (!is_null(@Auth::user()->created_by)) {
 
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
             if(!is_null($customer)){
                 $customer_id = array( @$customer->customer_id );
+                $sap_connection_id = @$customer->sap_connection_id;
             }
+
         }
 
         // Is Customer
@@ -73,17 +77,26 @@ class ProductListController extends Controller
                 $q->where('is_active', true);
             });   
             
+            if($sap_connection_id == 5){ //Solid Trend
+                $sap_connection_id = 1;
+            }
+
+            $brand_product->where('sap_connection_id', $sap_connection_id);
+
+            $c_product_line = $brand_product->groupBy('u_item_line')->get();
+            
+
             $brand_product = $brand_product->get()->toArray();
 
 
-            $c_product_line = array_unique(
-                                        array_filter(
-                                                array_merge($c_product_line,
-                                                    array_column($brand_product, 'u_item_line')
-                                                )
-                                            )
-                                    );
-            asort($c_product_line);
+            // $c_product_line = array_unique(
+            //                             array_filter(
+            //                                     array_merge($c_product_line,
+            //                                         array_column($brand_product, 'u_item_line')
+            //                                     )
+            //                                 )
+            //                         );
+            // asort($c_product_line);
 
             $c_product_category = array_unique(
                                         array_filter(
@@ -400,7 +413,7 @@ class ProductListController extends Controller
                               return @$row->group->group_name ?? "";
                           })
                           ->addColumn('u_item_line', function($row) {
-                              return @$row->u_item_line ?? "-";
+                              return @$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-";
                           })
                           ->addColumn('u_tires', function($row) {
                               return @$row->u_tires ?? "-";
