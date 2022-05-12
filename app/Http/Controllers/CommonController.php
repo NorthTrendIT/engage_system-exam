@@ -624,7 +624,9 @@ class CommonController extends Controller
             $data = Product::where('is_active', true)->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $request->sap_connection_id)->whereNotNull('u_pattern2')->orderby('u_pattern2')->limit(50);
 
             if(@$request->search  != ''){
-                $data->where('u_pattern2', 'like', '%' .$request->search . '%');
+                $data->whereHas('u_pattern2_sap_value', function($q) use ($request){
+                  $q->where('value', 'like', '%' .$request->search . '%');
+                });
             }
 
             $data->whereHas('group', function($q){
@@ -645,7 +647,7 @@ class CommonController extends Controller
             foreach($data as $value){
                 $response[] = array(
                     "id" => @$value->u_pattern2,
-                    "text" => @$value->u_pattern2,
+                    "text" => @$value->u_pattern2_sap_value->value ?? @$value->u_pattern2,
                 );
             }
         }

@@ -112,4 +112,10 @@ class Product extends Model
                 $q->where('field', 'product-application');
             });
     }
+
+    public function u_pattern2_sap_value() {
+        return $this->belongsTo(SapConnectionApiFieldValue::class, ['u_pattern2', 'sap_connection_id'], ['key', 'sap_connection_id'])->whereHas('sap_connection_api_field', function($q) {
+                $q->where('field', 'product-pattern');
+            });
+    }
 }

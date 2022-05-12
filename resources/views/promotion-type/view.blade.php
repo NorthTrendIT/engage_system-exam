@@ -188,7 +188,7 @@
                                     @if( @$p->product_option == "category")
                                       {{ "(".$p->category.")" }}
                                     @elseif( @$p->product_option == "pattern")
-                                      {{ "(".$p->pattern.")" }}
+                                      {{ "(".(@$p->product->u_pattern2_sap_value->value ?? @$p->pattern).")" }}
                                     @endif
                                   </td>
 

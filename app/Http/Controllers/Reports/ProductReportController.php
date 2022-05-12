@@ -381,7 +381,7 @@ class ProductReportController extends Controller
 
             // Shows Product Pattern
             if(in_array($product_category, ["tires"])){
-              $temp['u_pattern2'] = $value->u_pattern2 ?? "-";
+              $temp['u_pattern2'] = @$value->u_pattern2_sap_value->value ?? $value->u_pattern2 ?? "-";
             }
 
             $temp['created_at'] = date('M d, Y',strtotime($value->created_date));
@@ -425,7 +425,7 @@ class ProductReportController extends Controller
 
             // Shows Product Pattern
             if(in_array($product_category, ["tires"])){
-              $temp['u_pattern2'] = $value->u_pattern2 ?? "-";
+              $temp['u_pattern2'] = @$value->u_pattern2_sap_value->value ?? $value->u_pattern2 ?? "-";
             }
 
             // Shows Product Technology
@@ -545,7 +545,7 @@ class ProductReportController extends Controller
 
           // Shows Product Pattern
           if(in_array($product_category, ["tires"])){
-            $temp['u_pattern2'] = $value->u_pattern2 ?? "-";
+            $temp['u_pattern2'] = @$value->u_pattern2_sap_value->value ?? $value->u_pattern2 ?? "-";
           }
 
           $temp['created_at'] = date('M d, Y',strtotime($value->created_date));
@@ -587,7 +587,7 @@ class ProductReportController extends Controller
 
           // Shows Product Pattern
           if(in_array($product_category, ["tires"])){
-            $temp['u_pattern2'] = $value->u_pattern2 ?? "-";
+            $temp['u_pattern2'] = @$value->u_pattern2_sap_value->value ?? $value->u_pattern2 ?? "-";
           }
 
           // Shows Product Technology
@@ -712,7 +712,7 @@ class ProductReportController extends Controller
 
             // Shows Product Pattern
             if(in_array($product_category, ["tires"])){
-              $temp['u_pattern2'] = $value->u_pattern2 ?? "-";
+              $temp['u_pattern2'] = @$value->u_pattern2_sap_value->value ?? $value->u_pattern2 ?? "-";
             }
 
             $temp['created_at'] = date('M d, Y',strtotime($value->created_date));
@@ -754,7 +754,7 @@ class ProductReportController extends Controller
 
             // Shows Product Pattern
             if(in_array($product_category, ["tires"])){
-              $temp['u_pattern2'] = $value->u_pattern2 ?? "-";
+              $temp['u_pattern2'] = @$value->u_pattern2_sap_value->value ?? $value->u_pattern2 ?? "-";
             }
 
             // Shows Product Technology

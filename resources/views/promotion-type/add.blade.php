@@ -232,7 +232,7 @@
                               <label>Pattern<span class="asterisk">*</span></label>
                               <select class="form-control form-control-lg form-control-solid pattern" name="pattern">
                                 <option value=""></option>
-                                <option value="{{ @$p->pattern }}" selected="">{{ @$p->pattern }}</option>
+                                <option value="{{ @$p->pattern }}" selected="">{{ @$p->product->u_pattern2_sap_value->value ?? @$p->pattern }}</option>
                               </select>
                             </div>
                           </div>
@@ -803,12 +803,7 @@
         },
         processResults: function (response) {
           return {
-            results:  $.map(response, function (item) {
-                          return {
-                            text: item,
-                            id: item
-                          }
-                      })
+            results:  response
           };
         },
         cache: true
@@ -963,12 +958,7 @@
             },
             processResults: function (response) {
               return {
-                results:  $.map(response, function (item) {
-                              return {
-                                text: item,
-                                id: item
-                              }
-                          })
+                results:  response
               };
             },
             cache: true
