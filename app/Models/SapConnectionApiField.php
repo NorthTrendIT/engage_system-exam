@@ -26,6 +26,7 @@ class SapConnectionApiField extends Model
         'product-line' => 'Product Line',
         'product-type' => 'Product Type',
         'product-application' => 'Product Application',
+        'product-pattern' => 'Product Pattern',
     ];
 
     public function sap_connection(){

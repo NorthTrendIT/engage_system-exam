@@ -317,6 +317,43 @@ class SapConnectionApiFieldSeeder extends Seeder
                             'sap_field_id' => 26,
                             'sap_table_name' => 'OITM',
                         ),
+
+
+                        array(
+                            'sap_connection_id' => 1,
+                            'real_sap_connection_id' => 1,
+                            'field' => 'product-pattern',
+                            'sap_field_id' => 38,
+                            'sap_table_name' => 'OITM',
+                        ),
+                        array(
+                            'sap_connection_id' => 2,
+                            'real_sap_connection_id' => 2,
+                            'field' => 'product-pattern',
+                            'sap_field_id' => 31,
+                            'sap_table_name' => 'OITM',
+                        ),
+                        array(
+                            'sap_connection_id' => 3,
+                            'real_sap_connection_id' => 3,
+                            'field' => 'product-pattern',
+                            'sap_field_id' => 30,
+                            'sap_table_name' => 'OITM',
+                        ),
+                        array(
+                            'sap_connection_id' => 4,
+                            'real_sap_connection_id' => 4,
+                            'field' => 'product-pattern',
+                            'sap_field_id' => 30,
+                            'sap_table_name' => 'OITM',
+                        ),
+                        array(
+                            'sap_connection_id' => 5,
+                            'real_sap_connection_id' => 1,
+                            'field' => 'product-pattern',
+                            'sap_field_id' => 38,
+                            'sap_table_name' => 'OITM',
+                        ),
                     // End - Products
                 );
 

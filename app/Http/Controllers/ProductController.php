@@ -313,7 +313,7 @@ class ProductController extends Controller
                             return @$row->u_item_application_sap_value->value ?? @$row->u_item_application ?? "-";
                           })
                           ->addColumn('u_pattern2', function($row) {
-                            return @$row->u_pattern2 ?? "-";
+                            return @$row->u_pattern2_sap_value->value ?? @$row->u_pattern2 ?? "-" ;
                           })
 
                           ->addColumn('unit', function($row) {
@@ -725,7 +725,7 @@ class ProductController extends Controller
 
         // Shows Product Pattern
         if(in_array($product_category, ["tires"])){
-          $temp['u_pattern2'] = $value->u_pattern2 ?? "-";
+          $temp['u_pattern2'] = @$value->u_pattern2_sap_value->value ?? $value->u_pattern2 ?? "-";
         }
 
         $temp['created_at'] = date('M d, Y',strtotime($value->created_date));
@@ -774,7 +774,7 @@ class ProductController extends Controller
 
         // Shows Product Pattern
         if(in_array($product_category, ["tires"])){
-          $temp['u_pattern2'] = $value->u_pattern2 ?? "-";
+          $temp['u_pattern2'] = @$value->u_pattern2_sap_value->value ?? $value->u_pattern2 ?? "-";
         }
 
         // Shows Product Technology
@@ -1124,7 +1124,9 @@ class ProductController extends Controller
       $data = Product::where('is_active', true)->where('items_group_code', $request->items_group_code)->where('sap_connection_id', $sap_connection_id)->whereNotNull('u_pattern2')->orderby('u_pattern2')->limit(50);
 
       if(@$request->search  != ''){
-        $data->where('u_pattern2', 'like', '%' .$request->search . '%');
+        $data->whereHas('u_pattern2_sap_value', function($q) use ($request){
+          $q->where('value', 'like', '%' .$request->search . '%');
+        });
       }
 
       $data = $data->groupBy('u_pattern2')->get();
@@ -1132,7 +1134,7 @@ class ProductController extends Controller
       foreach($data as $value){
         $response[] = array(
           "id" => @$value->u_pattern2,
-          "text" => @$value->u_pattern2,
+          "text" => @$value->u_pattern2_sap_value->value ?? @$value->u_pattern2,
         );
       }
 

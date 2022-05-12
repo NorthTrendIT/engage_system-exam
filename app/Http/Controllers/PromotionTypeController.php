@@ -496,7 +496,7 @@ class PromotionTypeController extends Controller
     {
         $search = $request->search;
 
-        $data = collect();
+        $response = [];
 
         $brand = ProductGroup::find($request->brand_id);
 
@@ -513,20 +513,29 @@ class PromotionTypeController extends Controller
                             'is_active' => true,
                         );
 
-            $data = Product::whereNotNull('u_pattern2')->select('u_pattern2')->orderby('u_pattern2','asc')->where($where);
+            $data = Product::whereNotNull('u_pattern2')->orderby('u_pattern2','asc')->where($where);
 
             $data->whereHas('group', function($q){
                 $q->where('is_active', true);
             });
             
             if($search != ''){
-                $data->where('u_pattern2', 'like', '%' .$search . '%');
+                $data->whereHas('u_pattern2_sap_value', function($q) use ($search){
+                  $q->where('value', 'like', '%' .$search . '%');
+                });
             }
 
-            $data = $data->limit(50)->groupBy('u_pattern2')->pluck('u_pattern2','u_pattern2');
+            $data = $data->groupBy('u_pattern2')->get();
+
+            foreach($data as $value){
+                $response[] = array(
+                  "id" => @$value->u_pattern2,
+                  "text" => @$value->u_pattern2_sap_value->value ?? @$value->u_pattern2,
+                );
+            }
         }
 
-        return $data;
+        return response()->json($response);
     }
 
     public function export(Request $request){
