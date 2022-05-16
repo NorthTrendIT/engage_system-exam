@@ -44,6 +44,11 @@ class User extends Authenticatable
         'is_sap_user',
         'default_profile_color',
         'last_sync_at',
+        'u_card_code',
+        'multi_customer_id',
+        'multi_sap_connection_id',
+        'multi_real_sap_connection_id',
+        'multi_sap_connections',
     ];
 
     /**

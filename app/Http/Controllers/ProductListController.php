@@ -17,7 +17,6 @@ use DataTables;
 class ProductListController extends Controller
 {
     public function index(){
-
         $c_product_groups = $c_product_line = $c_product_category = collect();
 
         $customer_id = $sap_connection_id = null;
@@ -287,6 +286,11 @@ class ProductListController extends Controller
   	}
 
     public function getAll(Request $request){
+
+
+        // $customer_id = explode(',', Auth::user()->multi_customer_id);
+        // dd(get_customer_price_list_no_arr($customer_id));
+        
         $c_product_tires_category = $c_product_item_line = $c_product_group = array();
 
         $where = array('is_active' => 1);
@@ -310,7 +314,9 @@ class ProductListController extends Controller
 
         if(userrole() == 4){
 
-            $customer_id = array( @Auth::user()->customer_id );
+            // $customer_id = array( @Auth::user()->customer_id );
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
+
             $customer = @Auth::user()->customer;
             $sap_connection_id = @Auth::user()->sap_connection_id;
             $customer_price_list_no = @Auth::user()->customer->price_list_num;
@@ -319,7 +325,9 @@ class ProductListController extends Controller
 
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
             if(!is_null($customer)){
-                $customer_id = array( @$customer->customer_id );
+                // $customer_id = array( @$customer->customer_id );
+                $customer_id = explode(',', @$customer->multi_customer_id);
+
                 $customer = @$customer->customer;
                 $sap_connection_id = @$customer->sap_connection_id;
                 $customer_price_list_no = @$customer->price_list_num;
