@@ -97,7 +97,7 @@ class SAPProductGroup
                 foreach ($data['value'] as $value) {
                     
                     $status = true;
-                    if(substr(@$value['GroupName'], -3) == "-NA"){
+                    if(substr(@$value['GroupName'], -3) == "-NA" || in_array(strtoupper(@$value['GroupName']), ['ITEMS', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT', 'OTHER BRANDS'])){
                         $status = false;
                     }
 
