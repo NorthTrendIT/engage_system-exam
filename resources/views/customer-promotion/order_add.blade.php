@@ -52,12 +52,12 @@
                     <div class="col-md-12">
                       <div class="form-group">
                         <label>Customer</label>
-                        <input type="text" class="form-control form-control-solid" value="{{ @$customer_user->customer->card_name }}" readonly="" disabled="">
+                        <input type="text" class="form-control form-control-solid" value="{{ @$customer->card_name }}" readonly="" disabled="">
                       </div>
                     </div>
                   </div>
 
-                  <input type="hidden" name="customer_id" value="{{ @$customer_user->customer->id }}">
+                  <input type="hidden" name="customer_id" value="{{ @$customer->id }}">
                 @endif
 
                 @if(@$promotion->promotion_type->is_total_fixed_quantity)
@@ -109,7 +109,7 @@
 
                         $amount = get_product_customer_price(@$p->product->item_prices, 14);
 
-                        $original_amount = get_product_customer_price(@$p->product->item_prices, @$customer_user->customer->price_list_num);
+                        $original_amount = get_product_customer_price(@$p->product->item_prices, @$customer->price_list_num);
 
                         $total_amount = $discount_amount = get_product_customer_price(@$p->product->item_prices, 14,$discount_percentage,@$discount_fix_amount);
 
@@ -677,7 +677,7 @@
                   _token: "{{ csrf_token() }}",
                   search: params.term,
                   @if(userrole() != 4) {{-- If its not a customer --}}
-                  customer_id: '{{ @$customer_user->customer->id }}',
+                  customer_id: '{{ @$customer->id }}',
                   @endif
               };
           },

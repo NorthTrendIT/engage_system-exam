@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Customer;
 
 class User extends Authenticatable
 {
@@ -128,5 +129,15 @@ class User extends Authenticatable
     public function sales_specialist_customers()
     {
         return $this->hasMany(CustomersSalesSpecialist::class, 'ss_id', 'id');
+    }
+
+    public function get_multi_customer_details(){
+        $customer = collect([]);
+        $customer_id = explode(',', $this->multi_customer_id);
+        if(!empty($customer_id)){
+            $customer = Customer::whereIn('id', $customer_id)->get();
+        }
+
+        return $customer;
     }
 }

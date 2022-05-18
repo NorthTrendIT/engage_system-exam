@@ -38,7 +38,11 @@
                                             <span class="text-gray-800 fs-6 fw-bolder">{{ $value->product->item_name}}</span>
                                             <span class="text-muted fw-bold d-block fs-7">CODE: {{ $value->product->item_code }}</span>
                                         </div>
-                                        <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,@Auth::user()->customer->price_list_num) * $value->qty ) }}</span>
+                                        @php
+                                            $customer_id = explode(',', Auth::user()->multi_customer_id);
+                                            $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
+                                        @endphp
+                                        <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) * $value->qty ) }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>
