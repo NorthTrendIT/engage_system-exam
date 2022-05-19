@@ -253,6 +253,11 @@ $(document).ready(function() {
                     $addToCartBtn.hide();
                     $goToCartBtn.show();
                     toast_success(result.message);
+
+                    if(result.count > 0){
+                        $('.cartCount').show();
+                        $('.cartCount').html(result.count);
+                    }
                 }
             })
             .fail(function() {

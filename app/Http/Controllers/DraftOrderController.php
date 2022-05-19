@@ -331,9 +331,13 @@ class DraftOrderController extends Controller
 
     function getPrice(Request $request){
         $input = $request->all();
-        if($input['price_list_num'] && $input['product_id']){
+        if($input['product_id']){
             $product = Product::findOrFail($input['product_id']);
-            $price = get_product_customer_price(@$product->item_prices, $input['price_list_num']);
+
+            $customer_id = explode(',', @Auth::user()->multi_customer_id);
+            $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+
+            $price = get_product_customer_price(@$product->item_prices, @$customer_price_list_no[@$product->sap_connection_id]);
             return $response = ['status' => true, 'price' => $price];
         }
         return $response = ['status' => false, 'message' => "Something went wrong!"];

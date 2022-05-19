@@ -19,7 +19,7 @@
             @if(isset($data) && count($data) > 0)
             <form method="post" id="myForm">
                 @csrf
-                <input type="hidden" value="{{ $user->customer_id }}" name="customer_id">
+                <input type="hidden" value="{{ $customer->id }}" name="customer_id">
                 <div class="row gy-5 g-xl-8 mt-5">
                     <!--begin::Col-->
                     <div class="col-xl-8">
@@ -30,6 +30,7 @@
                                     <span class="card-label fw-bolder text-dark productCount">Products ({{ count($data) }})</span>
                                 </h3>
                             </div>
+
                             @foreach($data as $value)
                             <div class="card-body pt-5 productSection">
                                 <div class="d-flex align-items-sm-center mb-7">
@@ -39,24 +40,26 @@
                                             <span class="text-gray-800 fs-6 fw-bolder">{{ $value->product->item_name}}</span>
                                             <span class="text-muted fw-bold d-block fs-7">CODE: {{ $value->product->item_code }}</span>
                                         </div>
-                                        <span class="fw-bolder my-2 price">₱ {{ get_product_customer_price(@$value->product->item_prices,@Auth::user()->customer->price_list_num) * $value->qty }}</span>
+
+
+                                        <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer->price_list_num) * $value->qty) }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>
                                 <div class="button-wrap">
                                     <div class="counter">
-                                        <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyMinus" data-url="{{ route('cart.qty-minus', $value->id)}}">
+                                        <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyMinus" data-url="{{ route('recommended-products.cart.qty-minus', $value->id)}}">
                                             <i class="fas fa-minus"></i>
                                         </a>
 
-                                        <input class="form-control qty" data-url="{{ route('cart.update-qty', $value->id)}}" type="number" min="1" value="{{ $value->qty }}" >
+                                        <input class="form-control qty" data-url="{{ route('recommended-products.cart.update-qty', $value->id)}}" type="number" min="1" value="{{ $value->qty }}" >
 
-                                        <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyPlus" data-url="{{ route('cart.qty-plus', $value->id)}}">
+                                        <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyPlus" data-url="{{ route('recommended-products.cart.qty-plus', $value->id)}}">
                                             <i class="fas fa-plus"></i>
                                         </a>
                                     </div>
                                     <div class="remove">
-                                        <a href="javascript:;" class="remove-from-cart" data-url="{{ route('cart.remove',$value->id) }}">Remove</a>
+                                        <a href="javascript:;" class="remove-from-cart" data-url="{{ route('recommended-products.cart.remove',$value->id) }}">Remove</a>
                                     </div>
                                 </div>
                             </div>
@@ -87,7 +90,7 @@
                                             <span class="text-gray-800 fs-6 fw-bolder">Price</span>
                                         </div>
 
-                                        <span class="fw-bolder my-2 totalPrice">₱ {{ $total}}</span>
+                                        <span class="fw-bolder my-2 totalPrice">₱ {{ number_format_value($total) }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>
@@ -125,7 +128,7 @@
                                         <div class="flex-grow-1 me-2">
                                             <h3 class="text-gray-800 fs-6 fw-bolder">Total Amount</h3>
                                         </div>
-                                        <span class="fw-bolder my-2 totalAmount">₱ {{ $total }}</span>
+                                        <span class="fw-bolder my-2 totalAmount">₱ {{ number_format_value($total) }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>

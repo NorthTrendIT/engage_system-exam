@@ -67,6 +67,9 @@ class CustomerPromotionController extends Controller
             if(@Auth::user()->multi_sap_connection_id != ""){
                 $sap_connection_id = explode(',', Auth::user()->multi_sap_connection_id);
                 $promotions->whereIn('sap_connection_id', $sap_connection_id);
+            }elseif(!is_null(Auth::user()->created_by)){
+                $sap_connection_id = explode(',', Auth::user()->created_by_user->multi_sap_connection_id);
+                $promotions->whereIn('sap_connection_id', $sap_connection_id);
             }
 
             $promotions = $promotions->get();
@@ -86,6 +89,9 @@ class CustomerPromotionController extends Controller
 
             if(@Auth::user()->multi_sap_connection_id != ""){
                 $sap_connection_id = explode(',', Auth::user()->multi_sap_connection_id);
+                $last->whereIn('sap_connection_id', $sap_connection_id);
+            }elseif(!is_null(Auth::user()->created_by)){
+                $sap_connection_id = explode(',', Auth::user()->created_by_user->multi_sap_connection_id);
                 $last->whereIn('sap_connection_id', $sap_connection_id);
             }
 
@@ -240,6 +246,9 @@ class CustomerPromotionController extends Controller
         if(@Auth::user()->multi_sap_connection_id != ""){
             $sap_connection_id = explode(',', Auth::user()->multi_sap_connection_id);
             $data->whereIn('sap_connection_id', $sap_connection_id);
+        }elseif(!is_null(Auth::user()->created_by)){
+            $sap_connection_id = explode(',', Auth::user()->created_by_user->multi_sap_connection_id);
+            $data->whereIn('sap_connection_id', $sap_connection_id);
         }
 
         $data = $data->firstOrFail();
@@ -286,10 +295,11 @@ class CustomerPromotionController extends Controller
                     if(isset($request->customer_id)){
                         $customer = Customer::find($request->customer_id);
                     }else{
-                        $customer = @Auth::user()->customer;
+                        // $customer = @Auth::user()->customer;
+                        $customer = Customer::where('sap_connection_id', $value->promotion_type->sap_connection_id)->where('u_card_code', @Auth::user()->u_card_code)->first();
                     }
 
-                    if(!is_null($product)){
+                    if(!is_null($product) && @$customer){
                         $output .= view('customer-promotion.ajax.product',compact('product','promotion_type_product','promotion_id','customer'))->render();
                     }
                 }

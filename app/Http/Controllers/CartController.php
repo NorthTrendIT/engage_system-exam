@@ -107,25 +107,21 @@ class CartController extends Controller
     }
 
     public function addToCart($id){
-        if(!@Auth::user()->customer->sap_connection_id){
+        if(!@Auth::user()->multi_sap_connection_id){
             return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
         }
 
-        // if(isset($id)){
-        //     $product = Product::findOrFail($id);
-        //     if($product->sap_conection_id != @Auth::user()->customer->sap_connection_id){
-        //         return $response = ['status'=>false,'message'=>"Oops! Customer or Items can not be located in the DataBase."];
-        //     }
-        // }
+        $product = Product::findOrFail($id);
+        $sap_customer_arr = get_sap_customer_arr(@Auth::user());
 
         if(isset($id)){
             $cart = new Cart();
-            $cart->customer_id = @Auth::user()->customer_id;
+            $cart->customer_id = @$sap_customer_arr[$product->sap_connection_id];
             $cart->product_id = $id;
             $cart->qty = 1;
             $cart->save();
 
-            $count = Cart::where('customer_id', @Auth::user()->customer_id)->count();
+            $count = Cart::where('customer_id', $cart->customer_id)->count();
 
             return $response = ['status'=>true,'message'=>"Product added to cart successfully.", 'count'=> $count];
         }
@@ -160,13 +156,12 @@ class CartController extends Controller
             $cart->qty = $cart->qty + 1;
             $cart->save();
 
-            $customer_id = @Auth::user()->customer_id;
+            $customer_id = explode(',', @Auth::user()->multi_customer_id);
             $total = 0;
-            $data = Cart::with('product')->where('customer_id', $customer_id)->get();
-
+            $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
+            
             foreach($data as $item){
 
-                $customer_id = explode(',', Auth::user()->multi_customer_id);
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
                 $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
@@ -190,13 +185,12 @@ class CartController extends Controller
                 $cart->save();
                 $message = "Product quantity updated successfully.";
             }
-            $customer_id = @Auth::user()->customer_id;
+            $customer_id = explode(',', @Auth::user()->multi_customer_id);
             $total = 0;
             $data = Cart::with('product')->where('customer_id', $customer_id)->get();
-            $cartCount = Cart::where('customer_id', $customer_id)->count();
+            $cartCount = Cart::whereIn('customer_id', $customer_id)->count();
 
             foreach($data as $item){
-                $customer_id = explode(',', Auth::user()->multi_customer_id);
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
                 $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
@@ -212,13 +206,11 @@ class CartController extends Controller
     public function removeFromCart($id){
         if(isset($id)){
             Cart::where('id', $id)->delete();
-            $customer_id = @Auth::user()->customer_id;
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
             $total = 0;
-            $data = Cart::with('product')->where('customer_id', $customer_id)->get();
+            $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
 
             foreach($data as $item){
-
-                $customer_id = explode(',', Auth::user()->multi_customer_id);
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
                 $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
@@ -241,10 +233,10 @@ class CartController extends Controller
 
         $data = $request->all();
         $total_amount = 0;
-        $products = Cart::where('customer_id', @Auth::user()->customer_id)->get();
+        $customer_id = explode(',', Auth::user()->multi_customer_id);
+        $products = Cart::whereIn('customer_id', $customer_id)->get();
         if( !empty($products) ){
             foreach($products as $value){
-                $customer_id = explode(',', Auth::user()->multi_customer_id);
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
 
                 $total_amount += get_product_customer_price(@$value->product->item_prices, @$customer_price_list_no);

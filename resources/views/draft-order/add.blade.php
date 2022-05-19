@@ -541,7 +541,7 @@
                 data: {
                     _token: "{{ csrf_token() }}",
                     product_id: $(this).val(),
-                    price_list_num: "{{@Auth::user()->customer->price_list_num}}"
+                    // price_list_num: "{{--@Auth::user()->customer->price_list_num--}}"
                 },
                 success: function (data) {
                     if (data.status) {
