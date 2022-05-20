@@ -46,10 +46,14 @@ class DraftOrderController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-        
-        $customer_id = Auth::user()->customer_id;
 
-        $sap_connection_id = @Auth::user()->customer->sap_connection_id;
+        $customer = Customer::find($input['customer_id']);
+        if(!$customer->sap_connection_id){
+            return $response = ['status'=>false,'message'=>"Oops! Customer not found in our database."];
+        }
+        
+        $customer_id = $customer->id;
+        $sap_connection_id = $customer->sap_connection_id;
         if($sap_connection_id == 5){ //Solid Trend
             $sap_connection_id = 1;
         }
@@ -78,7 +82,6 @@ class DraftOrderController extends Controller
                 $message = "Order created successfully.";
             }
 
-            $customer = Customer::find($customer_id);
             $address = CustomerBpAddress::find($input['address_id']);
 
             if(!empty($customer) && !empty($address)){
@@ -133,14 +136,20 @@ class DraftOrderController extends Controller
             $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id', $id)->firstOrFail();
             return view('draft-order.pending_order_view', compact('data', 'total'));
         } else {
-            $data = Quotation::with(['items.product', 'customer'])->where('doc_entry', $local_order->doc_entry);
             if(userrole() == 4){
-                $data->where('card_code', @Auth::user()->customer->card_code);
+                $customers = Auth::user()->get_multi_customer_details();
+                $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
             }elseif(userrole() == 2){
                 $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+            }elseif(!is_null(Auth::user()->created_by)){
+                $customers = Auth::user()->created_by_user->get_multi_customer_details();
+                $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
             }elseif(userrole() != 1){
                 return abort(404);
             }
+        
 
             $data = $data->firstOrFail();
 
@@ -191,9 +200,9 @@ class DraftOrderController extends Controller
     }
 
     public function getAll(Request $request){
-        $customer_id = Auth::user()->customer_id;
-        // dd($customer_id);
-        $data = LocalOrder::where('customer_id', $customer_id);
+        $customer_id = explode(',', @Auth::user()->multi_customer_id);
+
+        $data = LocalOrder::whereIn('customer_id', $customer_id);
 
         if($request->filter_search != ""){
             $data->whereHas('sales_specialist', function($q) use ($request) {
@@ -278,7 +287,23 @@ class DraftOrderController extends Controller
         return response()->json($response);
     }
 
-    function getProducts(Request $request){
+    public function getProducts(Request $request)
+    {
+        $data = app(ProductListController::class)->getProductData($request);
+        $products = $data['products'];
+
+        if(isset($data['products'])){
+            if(isset($request->product_ids) && count($request->product_ids)){
+                $products->whereNotIn('id', $request->product_ids);
+            }
+
+            $products = $products->get();
+        }else{
+            $products = collect();
+        }
+        return $products;
+    }
+    public function getProducts_OLD(Request $request){
         $search = $request->search;
 
         $sap_connection_id = @Auth::user()->customer->sap_connection_id;
@@ -309,7 +334,7 @@ class DraftOrderController extends Controller
         return response()->json($response);
     }
 
-    function getAddress(Request $request){
+    public function getAddress(Request $request){
         $customer_id = $request->customer_id;
 
         if(!empty($customer_id)){
@@ -329,7 +354,7 @@ class DraftOrderController extends Controller
         return response()->json($response);
     }
 
-    function getPrice(Request $request){
+    public function getPrice(Request $request){
         $input = $request->all();
         if($input['product_id']){
             $product = Product::findOrFail($input['product_id']);

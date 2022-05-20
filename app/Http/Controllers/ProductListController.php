@@ -371,18 +371,7 @@ class ProductListController extends Controller
         $sap_connection_id = [];
         $customer_price_list_no = [];
 
-        if(userrole() == 4){
-
-            // $customer_id = array( @Auth::user()->customer_id );
-            // $customer = @Auth::user()->customer;
-            // $sap_connection_id = @Auth::user()->sap_connection_id;
-            // $customer_price_list_no = @Auth::user()->customer->price_list_num;
-
-            $customer_id = explode(',', Auth::user()->multi_customer_id);
-            $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
-            $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
-
-        }elseif (!is_null(@Auth::user()->created_by) || (isset($request->customer_id) && !empty($request->customer_id)) ) {
+        if (!is_null(@Auth::user()->created_by) || (isset($request->customer_id) && !empty($request->customer_id)) ) {
 
             if(@$request->customer_id){
                 $where = array(
@@ -408,6 +397,17 @@ class ProductListController extends Controller
                 }
             }
 
+
+        }elseif(userrole() == 4){
+
+            // $customer_id = array( @Auth::user()->customer_id );
+            // $customer = @Auth::user()->customer;
+            // $sap_connection_id = @Auth::user()->sap_connection_id;
+            // $customer_price_list_no = @Auth::user()->customer->price_list_num;
+
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
+            $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
+            $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
 
         }elseif(userrole() == 2){
 

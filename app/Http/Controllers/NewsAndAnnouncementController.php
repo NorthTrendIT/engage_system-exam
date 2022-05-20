@@ -103,12 +103,15 @@ class NewsAndAnnouncementController extends Controller
             if($input['module'] == 'all'){
                 $data = Customer::where('sap_connection_id', $input['sap_connection_id'])->get();
                 foreach($data as $customer){
-                    $user = User::where('customer_id', $customer->id)->firstOrFail();
-                    $connection = new NotificationConnection();
-                    $connection->notification_id = $notification->id;
-                    $connection->user_id = $user->id;
-                    $connection->record_id = $customer->id;
-                    $connection->save();
+                    // $user = User::where('customer_id', $customer->id)->firstOrFail();
+                    $user = @$customer->user;
+                    if($user){
+                        $connection = new NotificationConnection();
+                        $connection->notification_id = $notification->id;
+                        $connection->user_id = $user->id;
+                        $connection->record_id = $customer->id;
+                        $connection->save();
+                    }
                 }
             }
 
@@ -120,23 +123,28 @@ class NewsAndAnnouncementController extends Controller
                     foreach($records as $record_id){
                         $data = CustomerProductGroup::where('product_group_id', $record_id)->get();
                         foreach($data as $item){
-                            $user = User::where('customer_id', $item->customer_id)->firstOrFail();
-                            $connection = new NotificationConnection();
-                            $connection->notification_id = $notification->id;
-                            $connection->user_id = $user->id;
-                            $connection->record_id = $item->customer_id;
-                            $connection->save();
+
+                            $user = @$item->customer->user;
+                            if($user){
+                                $connection = new NotificationConnection();
+                                $connection->notification_id = $notification->id;
+                                $connection->user_id = $user->id;
+                                $connection->record_id = @$item->customer->id;
+                                $connection->save();
+                            }
+
                         }
                     }
                 }
 
                 if($input['module'] == 'customer'){
                     foreach($records as $customer_id){
-                        $user = User::where('customer_id', $customer_id)->firstOrFail();
+                        $customer = Customer::where('id', $customer_id)->firstOrFail();
+                        $user = @$customer->user;
+
                         $connection = new NotificationConnection();
                         $connection->notification_id = $notification->id;
                         $connection->user_id = $user->id;
-                        $connection->record_id = $customer_id;
                         $connection->save();
                     }
                 }
@@ -152,7 +160,7 @@ class NewsAndAnnouncementController extends Controller
                         $data = $data->get();
 
                         foreach($data as $customer){
-                            $user = User::where('customer_id', $customer->id)->firstOrFail();
+                            $user = @$customer->user;
                             $connection = new NotificationConnection();
                             $connection->notification_id = $notification->id;
                             $connection->user_id = $user->id;
@@ -169,7 +177,7 @@ class NewsAndAnnouncementController extends Controller
                         })->get();
 
                         foreach($data as $customer){
-                            $user = User::where('customer_id', $customer->id)->firstOrFail();
+                            $user = @$customer->user;
                             $connection = new NotificationConnection();
                             $connection->notification_id = $notification->id;
                             $connection->user_id = $user->id;
@@ -183,7 +191,7 @@ class NewsAndAnnouncementController extends Controller
                     foreach($records as $record_id){
                         $data = Customer::where('territory', $record_id)->get();
                         foreach($data as $customer){
-                            $user = User::where('customer_id', $customer->id)->firstOrFail();
+                            $user = @$customer->user;
                             $connection = new NotificationConnection();
                             $connection->notification_id = $notification->id;
                             $connection->user_id = $user->id;
@@ -197,7 +205,7 @@ class NewsAndAnnouncementController extends Controller
                     foreach($records as $record_id){
                         $data = Customer::where(['u_sector' => $record_id, 'sap_connection_id' => $input['sap_connection_id']])->get();
                         foreach($data as $customer){
-                            $user = User::where('customer_id', $customer->id)->firstOrFail();
+                            $user = @$customer->user;
                             $connection = new NotificationConnection();
                             $connection->notification_id = $notification->id;
                             $connection->user_id = $user->id;
@@ -255,20 +263,28 @@ class NewsAndAnnouncementController extends Controller
             // End Notification Document
 
             // Send Push Notification
-            // if(isset($notification->id) && isset($connection->id)){
-            //     $fields['filters'] = array(array("field" => "tag", "key" => ".$connection->module.", "relation"=> "=", "value"=> ".$connection->record_id."));
-            //     $message = $notification->title;
+            if(isset($notification->id)){
+                $connections = NotificationConnection::where('notification_id', $notification->id)->get();
 
-            //     $push = OneSignal::sendPush($fields, $message);
-            //     if(!empty($push['id'])){
-            //         $message = "Notification Send.";
-            //         return $response = ['status'=>true,'message'=>$message];
-            //     }
-            //     if(!empty($push['errors'])){
-            //         $message = $push['errors'][0];
-            //         return $response = ['status'=>false,'message'=>$message];
-            //     }
-            // }
+                $fields['filters'] = [];
+                foreach ($connections as $value) {
+                    $fields['filters'][] = array(
+                                                array("field" => "tag", "key" => "user", "relation"=> "=", "value"=> $value->user_id)
+                                            );
+                }
+
+                $message = $notification->title;
+
+                $push = OneSignal::sendPush($fields, $message);
+                if(!empty($push['id'])){
+                    $message = "Notification Send.";
+                    return $response = ['status'=>true,'message'=>$message];
+                }
+                if(!empty($push['errors'])){
+                    $message = $push['errors'][0];
+                    return $response = ['status'=>false,'message'=>$message];
+                }
+            }
 
             $response = ['status'=>true,'message'=>$message];
         }

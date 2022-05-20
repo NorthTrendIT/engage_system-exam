@@ -172,7 +172,16 @@
                                                 @if(isset($data) && !empty($address))
                                                     <option value="">Select Address</option>
                                                     @foreach($address as $item)
-                                                    <option value="{{ $item->id }}">{{$item->address}}</option>
+                                                    <option value="{{ $item->id }}"
+
+                                                            data-address="{{ $item->address }}"
+                                                            data-street="{{ $item->street }}"
+                                                            data-zip_code="{{ $item->zip_code }}"
+                                                            data-city="{{ $item->city }}"
+                                                            data-state="{{ $item->state }}"
+                                                            data-country="{{ $item->country }}"
+
+                                                    >{{$item->address}}</option>
                                                     @endforeach
                                                 @else
                                                     <option value="">No record found</option>
@@ -183,6 +192,24 @@
                                     <!--end::Section-->
                                 </div>
                                 <!--end::Item-->
+
+                                <!--begin::Item-->
+                                <div class="align-items-sm-center mb-7 address_details_div" style="display:none;">
+                                    <!--begin::Section-->
+                                    <div class="">
+                                        <div class="form-group">
+                                            <label class="">Address:</label><span class="text-muted address_span"></span><br>
+                                            <label class="mt-1">Street:</label><span class="text-muted street_span"></span><br>
+                                            <label class="mt-1">Zipcode:</label><span class="text-muted zip_code_span"></span><br>
+                                            <label class="mt-1">City:</label><span class="text-muted city_span"></span><br>
+                                            <label class="mt-1">State:</label><span class="text-muted state_span"></span><br>
+                                            <label class="mt-1">Country:</label><span class="text-muted country_span"></span><br>
+                                        </div>
+                                    </div>
+                                    <!--end::Section-->
+                                </div>
+                                <!--end::Item-->
+
                             </div>
                             <!--end::Body-->
                         </div>
@@ -658,6 +685,31 @@ $(document).ready(function() {
                 });
             });
             return validator;
+        }
+    });
+
+    $("body").on("change", '[name="address_id"]', function (e) {
+        e.preventDefault();
+        var option = $(this).find('option:selected');
+
+        if($(this).find('option:selected').val() != ""){
+            $('.address_span').text(" " + option.data('address'));
+            $('.street_span').text(" " + option.data('street'));
+            $('.zip_code_span').text(" " + option.data('zip_code'));
+            $('.city_span').text(" " + option.data('city'));
+            $('.state_span').text(" " + option.data('state'));
+            $('.country_span').text(" " + option.data('country'));
+
+            $('.address_details_div').show();
+        }else{
+            $('.address_span').text("");
+            $('.street_span').text("");
+            $('.zip_code_span').text("");
+            $('.city_span').text("");
+            $('.state_span').text("");
+            $('.country_span').text("");
+
+            $('.address_details_div').hide();
         }
     });
 });
