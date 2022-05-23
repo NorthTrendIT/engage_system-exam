@@ -67,6 +67,9 @@ class Product extends Model
         'u_product_tech',
         'sales_unit',
         'last_sync_at',
+
+        'quantity_on_stock',
+        'quantity_ordered_by_customers',
     ];
 
     public function product_images()

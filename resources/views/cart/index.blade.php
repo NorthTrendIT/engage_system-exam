@@ -122,7 +122,7 @@
                                 <!--end::Item-->
 
                                 <!--begin::Item-->
-                                <div class="d-flex align-items-sm-center mb-7">
+                                <div class="d-flex align-items-sm-center mb-2">
                                     <!--begin::Section-->
                                     <div class="d-flex align-items-center flex-row-fluid flex-wrap">
                                         <div class="flex-grow-1 me-2">
@@ -133,6 +133,17 @@
                                     <!--end::Section-->
                                 </div>
                                 <!--end::Item-->
+
+                                <!--begin::Item-->
+                                <div class="d-flex align-items-sm-center">
+                                    <!--begin::Section-->
+                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                        <span class="text-muted">Note: Prices may be subjected with discount. Final amount of order will reflect on the actual invoice.</span>
+                                    </div>
+                                    <!--end::Section-->
+                                </div>
+                                <!--end::Item-->
+
                             </div>
                             <!--end::Body-->
                         </div>
@@ -365,6 +376,7 @@ $(document).ready(function() {
     $('.qty').change(function(event) {
         $value = $(this).val();
         $url = $(this).attr('data-url');
+        $self = $(this);
         $.ajax({
             url: $url,
             method: "POST",
@@ -376,6 +388,7 @@ $(document).ready(function() {
         .done(function(result) {
             if(result.status == false){
                 toast_error(result.message);
+                $self.val(1);
             }else{
                 toast_success(result.message);
                 setTimeout(function(){
@@ -442,6 +455,7 @@ $(document).ready(function() {
         $url = $(this).attr('data-url');
         $qty = parseInt($(this).parent().find('.qty').val());
         $(this).parent().find('.qty').val($qty + 1);
+        $this = $(this);
         $.ajax({
             url: $url,
             method: "POST",
@@ -452,6 +466,7 @@ $(document).ready(function() {
         .done(function(result) {
             if(result.status == false){
                 toast_error(result.message);
+                $this.parent().find('.qty').val($qty);
             }else{
                 toast_success(result.message);
                 $('.totalAmount').html('₱ '+result.total);

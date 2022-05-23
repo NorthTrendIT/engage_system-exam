@@ -163,20 +163,31 @@ class RecommendedProductController extends Controller
                           })
 
                           ->addColumn('action', function($row) use ($sap_customer_arr) {
+                            $btn = "";
                             if(userrole() == 2){
                                 if(is_in_cart(@$row->product->id, @$sap_customer_arr[@$row->product->sap_connection_id]) == 1){
                                     $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10" href="'.route('recommended-products.goToCart', @$sap_customer_arr[@$row->product->sap_connection_id]).'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 }else{
-                                    $btn = '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm mr-10 addToCart" data-url="'.route('recommended-products.cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>
-                                    <a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('recommended-products.goToCart', @$sap_customer_arr[@$row->product->sap_connection_id]).'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                    if(@$row->product->quantity_on_stock - @$row->product->quantity_ordered_by_customers > 1){
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm mr-10 addToCart" data-url="'.route('recommended-products.cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
+                                    }else{
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
+                                    }
+
+                                    $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('recommended-products.goToCart', @$sap_customer_arr[@$row->product->sap_connection_id]).'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 }
                             }
                             if(userrole() == 4){
                                 if(is_in_cart(@$row->product->id, @$sap_customer_arr[@$row->product->sap_connection_id]) == 1){
                                     $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 }else{
-                                    $btn = '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm  mr-10 addToCart" data-url="'.route('cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>
-                                    <a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                    if(@$row->product->quantity_on_stock - @$row->product->quantity_ordered_by_customers > 1){
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm  mr-10 addToCart" data-url="'.route('cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
+                                    }else{
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
+                                    }
+
+                                    $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 }
                             }
 
@@ -253,12 +264,17 @@ class RecommendedProductController extends Controller
             return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
         }
 
-        // if(isset($id)){
-        //     $product = Product::findOrFail($id);
-        //     if($product->sap_conection_id != @Auth::user()->customer->sap_connection_id){
-        //         return $response = ['status'=>false,'message'=>"Oops! Customer or Items can not be located in the DataBase."];
-        //     }
-        // }
+        if(isset($id)){
+            $product = Product::findOrFail($id);
+            // if($product->sap_conection_id != $customer->real_sap_connection_id){
+            //     return $response = ['status'=>false,'message'=>"Oops! Customer or Items can not be located in the DataBase."];
+            // }
+
+            $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
+            if($avl_qty < 1){
+                return $response = ['status'=>false,'message'=>"The product quantity is not available."];
+            }
+        }
 
         if(isset($id)){
             $cart = Cart::updateOrCreate(
@@ -283,6 +299,10 @@ class RecommendedProductController extends Controller
             $cart = Cart::findOrFail($id);
             if(is_numeric($data['qty'])){
                 if($data['qty'] > 0){
+                    $avl_qty = $cart->product->quantity_on_stock - $cart->product->quantity_ordered_by_customers;
+                    if($avl_qty < ($data['qty'])){
+                        return $response = ['status'=>false,'message'=>"The product quantity is not available."];
+                    }
                     $cart->qty = $data['qty'];
                 } else {
                     return $response = ['status'=>false,'message'=>"Quantity value must be greater than 0(Zero)."];
@@ -301,6 +321,12 @@ class RecommendedProductController extends Controller
     public function qtyPlus($id){
         if(isset($id)){
             $cart = Cart::findOrFail($id);
+
+            $avl_qty = $cart->product->quantity_on_stock - $cart->product->quantity_ordered_by_customers;
+            if($avl_qty < ($cart->qty + 1)){
+                return $response = ['status'=>false,'message'=>"The product quantity is not available."];
+            }
+
             $cart->qty = $cart->qty + 1;
             $cart->save();
 
@@ -419,42 +445,55 @@ class RecommendedProductController extends Controller
                 $order->save();
 
                 $total = 0;
+                $is_need_delete_order = false;
+
                 $products = Cart::where('customer_id', $customer_id)->get();
                 if( !empty($products) ){
                     foreach($products as $value){
-                        $item = new LocalOrderItem();
-                        $item->local_order_id = $order->id;
-                        $item->product_id = @$value['product_id'];
-                        $item->quantity = @$value['qty'];
-
                         $productData = Product::find(@$value['product_id']);
-                        $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num);
-                        $item->total = $item->price * $item->quantity;
-                        $item->save();
 
-                        $total += $item->total;
+                        $avl_qty = $productData->quantity_on_stock - $productData->quantity_ordered_by_customers;
+                        if($avl_qty > @$value['qty']){
+                            $item = new LocalOrderItem();
+                            $item->local_order_id = $order->id;
+                            $item->product_id = @$value['product_id'];
+                            $item->quantity = @$value['qty'];
+
+                            $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num);
+                            $item->total = $item->price * $item->quantity;
+                            $item->save();
+
+                            $total += $item->total;
+                        }else{
+                            $is_need_delete_order = true;
+                        }
+
                     }
                 }
 
                 $order->total = $total;
                 $order->save();
-            }
-        }
 
-        try{
-            $sap_connection = SapConnection::find($customer->sap_connection_id);
-            
+                if($is_need_delete_order && count($products) == 1){
+                    $order->delete();
+                }else{
+                    try{
+                        $sap_connection = SapConnection::find($customer->sap_connection_id);
 
-            if(!is_null($sap_connection)){
-                $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
+                        if(!is_null($sap_connection)){
+                            $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
 
-                if($order->id){
-                    $sap->pushOrder($order->id);
+                            if($order->id){
+                                $sap->pushOrder($order->id);
+                            }
+                        }
+                    } catch (\Exception $e) {
+
+                    }
                 }
             }
-        } catch (\Exception $e) {
-
         }
+
 
         Cart::where('customer_id', $customer_id)->delete();
         
@@ -462,7 +501,6 @@ class RecommendedProductController extends Controller
     }
 
     public function saveToDraft(Request $request){
-        // dd($request->all());
         $data = $request->all();
 
         $customer_id = $data['customer_id'];
@@ -503,27 +541,40 @@ class RecommendedProductController extends Controller
                 $order->save();
 
                 $total = 0;
+                $is_need_delete_order = false;
+
                 $products = Cart::where('customer_id', $customer_id)->get();
                 if( !empty($products) ){
                     foreach($products as $value){
-                        $item = new LocalOrderItem();
-                        $item->local_order_id = $order->id;
-                        $item->product_id = @$value['product_id'];
-                        $item->quantity = @$value['qty'];
-
                         $productData = Product::find(@$value['product_id']);
-                        $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num);
-                        $item->total = $item->price * $item->quantity;
-                        $item->save();
 
-                        $total += $item->total;
+                        $avl_qty = $productData->quantity_on_stock - $productData->quantity_ordered_by_customers;
+                        if($avl_qty > @$value['qty']){
+                            $item = new LocalOrderItem();
+                            $item->local_order_id = $order->id;
+                            $item->product_id = @$value['product_id'];
+                            $item->quantity = @$value['qty'];
+
+                            $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num);
+                            $item->total = $item->price * $item->quantity;
+                            $item->save();
+
+                            $total += $item->total;
+                        }else{
+                            $is_need_delete_order = true;
+                        }
                     }
                 }
 
                 $order->total = $total;
                 $order->save();
-
+                
+                if($is_need_delete_order && count($products) == 1){
+                    $order->delete();
+                }
             }
+
+            Cart::where('customer_id', $customer_id)->delete();
             $response = ['status'=>true,'message'=> 'Order saved to customer draft Successfully.'];
         }
 

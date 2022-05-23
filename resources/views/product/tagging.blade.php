@@ -122,7 +122,7 @@
                               <th>Product Line</th>
                               
                               <th>Unit</th>
-                              <th>RDLP</th>
+                              <th>DLP</th>
                               <th>Commercial Price</th>
                               <th>SRP</th>
 

@@ -156,8 +156,9 @@
                               <th>Online Price</th>
                               <th>Commercial Price</th>
                               <th>SRP</th>
-                              <th>RDLP</th>
-                              <th>RDLP-2</th>
+                              <th>DLP</th>
+                              <th>Gross Price</th>
+                              <th>LP</th>
                               @endif
                               <th>Action</th>
                             </tr>
@@ -278,6 +279,7 @@
               {data: 'srp_price', name: 'srp_price',orderable:false,searchable:false},
               {data: 'rdlp_price', name: 'rdlp_price',orderable:false,searchable:false},
               {data: 'rdlp2_price', name: 'rdlp2_price',orderable:false,searchable:false},
+              {data: 'lp_price', name: 'lp_price',orderable:false,searchable:false},
               @endif
               {data: 'action', name: 'action'},
           ],
