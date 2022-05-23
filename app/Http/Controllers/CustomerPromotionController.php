@@ -43,9 +43,9 @@ class CustomerPromotionController extends Controller
 
             $where = array('is_active' => true);
 
-            if(@Auth::user()->sap_connection_id){
-                $where['sap_connection_id'] = @Auth::user()->sap_connection_id;
-            }
+            // if(@Auth::user()->sap_connection_id){
+            //     $where['sap_connection_id'] = @Auth::user()->sap_connection_id;
+            // }
 
             $now = date("Y-m-d");
             // $now = "2021-12-24";
@@ -64,6 +64,14 @@ class CustomerPromotionController extends Controller
                 $promotions->where('id', '<', $request->id);
             }
 
+            if(@Auth::user()->multi_sap_connection_id != ""){
+                $sap_connection_id = explode(',', Auth::user()->multi_sap_connection_id);
+                $promotions->whereIn('sap_connection_id', $sap_connection_id);
+            }elseif(!is_null(Auth::user()->created_by)){
+                $sap_connection_id = explode(',', Auth::user()->created_by_user->multi_sap_connection_id);
+                $promotions->whereIn('sap_connection_id', $sap_connection_id);
+            }
+
             $promotions = $promotions->get();
 
             $output = "";
@@ -79,6 +87,14 @@ class CustomerPromotionController extends Controller
                 $last->orwhere('sap_connection_id', 5);
             }
 
+            if(@Auth::user()->multi_sap_connection_id != ""){
+                $sap_connection_id = explode(',', Auth::user()->multi_sap_connection_id);
+                $last->whereIn('sap_connection_id', $sap_connection_id);
+            }elseif(!is_null(Auth::user()->created_by)){
+                $sap_connection_id = explode(',', Auth::user()->created_by_user->multi_sap_connection_id);
+                $last->whereIn('sap_connection_id', $sap_connection_id);
+            }
+
             $last = $last->first();
 
             if (!$promotions->isEmpty()) {
@@ -91,15 +107,17 @@ class CustomerPromotionController extends Controller
 
                         $customer = null;
                         if(userrole() == 4){
-                            $customer = @Auth::user()->customer;
+                            // $customer = @Auth::user()->customer;
+                            $customer = Customer::where('sap_connection_id', $promotion->sap_connection_id)->where('u_card_code', @Auth::user()->u_card_code)->first();
                         }elseif(!is_null(Auth::user()->created_by)){
-                            $customer = @Auth::user()->created_by_user->customer;
+                            // $customer = @Auth::user()->created_by_user->customer;
+                            $customer = Customer::where('sap_connection_id', $promotion->sap_connection_id)->where('u_card_code', @Auth::user()->created_by_user->u_card_code)->first();
                         }
 
                 		if($promotion->promotion_scope == "C"){ //Customer
 
                             if($customer){
-                    			$check = $promotion->promotion_data->firstWhere('customer_id',@Auth::user()->customer_id);
+                    			$check = $promotion->promotion_data->firstWhere('customer_id',$customer->id);
 
                     			if(is_null($check)){
                     				$is_continue = true;
@@ -117,7 +135,7 @@ class CustomerPromotionController extends Controller
                     				$is_continue = true;
                     			}else{
                                     if($promotion->customer_selection == "specific"){
-                                        $check = $promotion->promotion_data->firstWhere('customer_id',@Auth::user()->customer_id);
+                                        $check = $promotion->promotion_data->firstWhere('customer_id',$customer->id);
                                         if(is_null($check)){
                                             $is_continue = true;
                                         }
@@ -215,14 +233,22 @@ class CustomerPromotionController extends Controller
     {
         $where = array('is_active' => true);
 
-        if(@Auth::user()->sap_connection_id){
-            $where['sap_connection_id'] = @Auth::user()->sap_connection_id;
-        }
+        // if(@Auth::user()->sap_connection_id){
+        //     $where['sap_connection_id'] = @Auth::user()->sap_connection_id;
+        // }
 
         $data = Promotions::where($where)->where('id',$id);
 
         if(userrole() == 2 && @Auth::user()->sap_connection_id == 1){
             $data->orwhere('sap_connection_id', 5);
+        }
+
+        if(@Auth::user()->multi_sap_connection_id != ""){
+            $sap_connection_id = explode(',', Auth::user()->multi_sap_connection_id);
+            $data->whereIn('sap_connection_id', $sap_connection_id);
+        }elseif(!is_null(Auth::user()->created_by)){
+            $sap_connection_id = explode(',', Auth::user()->created_by_user->multi_sap_connection_id);
+            $data->whereIn('sap_connection_id', $sap_connection_id);
         }
 
         $data = $data->firstOrFail();
@@ -269,10 +295,11 @@ class CustomerPromotionController extends Controller
                     if(isset($request->customer_id)){
                         $customer = Customer::find($request->customer_id);
                     }else{
-                        $customer = @Auth::user()->customer;
+                        // $customer = @Auth::user()->customer;
+                        $customer = Customer::where('sap_connection_id', $value->promotion_type->sap_connection_id)->where('u_card_code', @Auth::user()->u_card_code)->first();
                     }
 
-                    if(!is_null($product)){
+                    if(!is_null($product) && @$customer){
                         $output .= view('customer-promotion.ajax.product',compact('product','promotion_type_product','promotion_id','customer'))->render();
                     }
                 }
@@ -309,7 +336,8 @@ class CustomerPromotionController extends Controller
         if($customer_id){
             $customer = Customer::find($customer_id);
         }else{
-            $customer = @Auth::user()->customer;
+            // $customer = @Auth::user()->customer;
+            $customer = Customer::where('sap_connection_id', $promotion->sap_connection_id)->where('u_card_code', @Auth::user()->u_card_code)->first();
         }
 
         return view('customer-promotion.product-view',compact('product','data','promotion','customer'));
@@ -326,16 +354,18 @@ class CustomerPromotionController extends Controller
         }
 
         if($customer_id){
-            $customer_user = User::where('customer_id', $customer_id)->firstOrFail();
+            $customer = Customer::findOrFail($customer_id);
+            $customer_user = $customer->user;
         }else{
 
             if(is_null(@Auth::user()->customer_id)){ // If customer refernce id not get
                 return abort(404);
             }
             $customer_user = @Auth::user();
+            $customer = Customer::where('sap_connection_id', $promotion->sap_connection_id)->where('u_card_code', @Auth::user()->u_card_code)->first();
         }
 
-        return view('customer-promotion.order_add',compact('promotion','customer_user'));
+        return view('customer-promotion.order_add',compact('promotion','customer_user','customer'));
     }
 
     public function orderStore(Request $request){
@@ -346,44 +376,37 @@ class CustomerPromotionController extends Controller
             return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
         }
 
-        $rules = [];
+        $promotion = Promotions::findOrFail(@$input['promotion_id']);
+
         if(userrole() != 4){ // If its not a customer
-            if(!is_null(Auth::user()->created_by)){
-                $rules['customer_id'] = 'required|exists:customers,id,sap_connection_id,'.@Auth::user()->created_by_user->customer_id;
-            }else{
-                $rules['customer_id'] = 'required|exists:customers,id,sap_connection_id,'.@Auth::user()->sap_connection_id;
-            }
-
-            $messages = array(
-                        'customer_id.exists' => "Oops! Customer not found.",
-                    );
-
-            $validator = Validator::make($input, $rules, $messages);
-
-            if ($validator->fails()) {
-                return $response = ['status'=>false,'message'=>$validator->errors()->first()];
-            }
-
-            $customer_user = User::where('customer_id', $input['customer_id'])->firstOrFail();
+            $customer = Customer::findOrFail($input['customer_id']);
+            $customer_user = $customer->user;
         }else{
             $customer_user = @Auth::user();
+            $customer = Customer::where('sap_connection_id', $promotion->sap_connection_id)->where('u_card_code', @Auth::user()->u_card_code)->first();
         }
 
-        if(!$customer_user->customer->sap_connection_id){
+        if(!@$customer->sap_connection_id){
             return $response = ['status'=>false,'message'=>"Oops! Customer not found in our database."];
         }
 
-        $sap_connection_id = @$customer_user->customer->sap_connection_id;
+        $sap_connection_id = @$customer->sap_connection_id;
         if($sap_connection_id == 5){ //Solid Trend
             $sap_connection_id = 1;
         }
 
+        $rules = [];
+        
         $rules = array(
                     'promotion_id' => 'required|exists:promotions,id',
                     'customer_bp_address_id' => 'required|exists:customer_bp_addresses,id',
                     'products' => 'required|array',
                     'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@$sap_connection_id,
                 );
+
+        if(userrole() != 4){ // If its not a customer
+            $rules['customer_id'] = 'required|exists:customers,id';
+        }
 
         $messages = array(
                         'products.*.product_id.exists' => "Oops! Customer or Items can not be located in the database.",
@@ -405,8 +428,6 @@ class CustomerPromotionController extends Controller
                 }
 
             }
-
-            $promotion = Promotions::findOrFail($input['promotion_id']);
 
             $now = date("Y-m-d");
             if( !($now >= $promotion->promotion_start_date && $now <= $promotion->promotion_end_date) ){
@@ -436,7 +457,7 @@ class CustomerPromotionController extends Controller
                 $customer_promotion->status = 'pending';
                 $customer_promotion->is_sap_pushed = false;
                 $customer_promotion->is_approved = true;
-                $customer_promotion->sap_connection_id = @$customer_user->customer->sap_connection_id;
+                $customer_promotion->sap_connection_id = @$customer->sap_connection_id;
 
                 //$customer_promotion->user_id = Auth::id();
 
@@ -961,16 +982,19 @@ class CustomerPromotionController extends Controller
         }
 
         if($customer_id){
-            $customer_user = User::where('customer_id', $customer_id)->firstOrFail();
+            $customer = Customer::findOrFail($customer_id);
+            $customer_user = $customer->user;
         }else{
 
             if(is_null(@Auth::user()->customer_id)){ // If customer refernce id not get
                 return abort(404);
             }
             $customer_user = @Auth::user();
+            $customer = Customer::where('sap_connection_id', $promotion->sap_connection_id)->where('u_card_code', @Auth::user()->u_card_code)->first();
         }
 
-        return view('customer-promotion.order_add',compact('promotion','edit','edit_products','edit_deliveries','customer_user'));
+
+        return view('customer-promotion.order_add',compact('promotion','edit','edit_products','edit_deliveries','customer_user','customer'));
     }
 
     public function orderPushInSap(Request $request){

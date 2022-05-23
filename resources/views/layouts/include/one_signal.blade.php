@@ -83,9 +83,9 @@ $(document).ready(function() {
                 "user": "{{ @Auth::user()->id }}",
                 "role": "{{ @Auth::user()->role_id }}",
                 @if(@Auth::user()->role_id == 4)
-                "customer": "{{ @Auth::user()->customer_id }}",
-                "class": "{{ @Auth::user()->customer->u_class }}",
-                "territory": "{{ @Auth::user()->customer->territory }}",
+                // "customer": "{{-- @Auth::user()->customer_id --}}",
+                // "class": "{{-- @Auth::user()->customer->u_class --}}",
+                // "territory": "{{-- @Auth::user()->customer->territory --}}",
                 @endif
                 @if(@Auth::user()->role_id == 2)
                 "sales_specialist": "{{ @Auth::user()->id }}",
@@ -125,9 +125,9 @@ $(document).ready(function() {
                 "user": "user_"+"{{ @Auth::user()->id }}",
                 "role": "role_"+"{{ @Auth::user()->role_id }}",
                 @if(@Auth::user()->role_id == 4)
-                "customer": "customer_"+"{{ @Auth::user()->customer_id }}",
-                "class": "class_"+"{{ @Auth::user()->customer->u_class }}",
-                "territory": "territory_"+"{{ @Auth::user()->customer->territory }}",
+                // "customer": "customer_"+"{{-- @Auth::user()->customer_id --}}",
+                // "class": "class_"+"{{-- @Auth::user()->customer->u_class --}}",
+                // "territory": "territory_"+"{{-- @Auth::user()->customer->territory --}}",
                 @endif
                 @if(@Auth::user()->role_id == 2)
                 "sales_specialist": "ss_"+"{{ @Auth::user()->id }}",

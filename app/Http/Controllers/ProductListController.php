@@ -17,33 +17,38 @@ use DataTables;
 class ProductListController extends Controller
 {
     public function index(){
-
         $c_product_groups = $c_product_line = $c_product_category = collect();
 
-        $customer_id = $sap_connection_id = null;
+        $customer_id = $sap_connection_id = [];
 
         if(userrole() == 4){
 
-            $customer_id = array( @Auth::user()->customer_id );
-            $sap_connection_id = @Auth::user()->sap_connection_id;
+            // $customer_id = array( @Auth::user()->customer_id );
+            // $sap_connection_id = @Auth::user()->sap_connection_id;
+
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
+            $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
 
         }elseif(userrole() == 2){
 
             $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
-            $sap_connection_id = @Auth::user()->sap_connection_id;
+            $sap_connection_id = array( @Auth::user()->sap_connection_id );
 
         }elseif (!is_null(@Auth::user()->created_by)) {
 
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
             if(!is_null($customer)){
-                $customer_id = array( @$customer->customer_id );
-                $sap_connection_id = @$customer->sap_connection_id;
+                // $customer_id = array( @$customer->customer_id );
+                // $sap_connection_id = @$customer->sap_connection_id;
+
+                $customer_id = explode(',', @$customer->multi_customer_id);
+                $sap_connection_id = explode(',', @$customer->multi_real_sap_connection_id);
             }
 
         }
 
         // Is Customer
-        if($customer_id){
+        if(!empty($customer_id)){
 
             // Product Group
             $c_product_groups = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get()->unique('product_group_id');
@@ -77,11 +82,15 @@ class ProductListController extends Controller
                 $q->where('is_active', true);
             });   
             
-            if($sap_connection_id == 5){ //Solid Trend
-                $sap_connection_id = 1;
+            // if($sap_connection_id == 5){ //Solid Trend
+            //     $sap_connection_id = 1;
+            // }
+
+            if(in_array(5, $sap_connection_id)){
+                array_push($sap_connection_id, '5');
             }
 
-            $brand_product->where('sap_connection_id', $sap_connection_id);
+            $brand_product->whereIn('sap_connection_id', $sap_connection_id);
 
             $c_product_line = $brand_product->groupBy('u_item_line')->get();
             
@@ -117,11 +126,17 @@ class ProductListController extends Controller
 
         $customer = null;
   		if(userrole() == 4){
-            $customer = @Auth::user()->customer;
+            //$customer = @Auth::user()->customer;
+
+            $customer_id = @get_sap_customer_arr(Auth::user())[$product->sap_connection_id];
+            $customer = Customer::findOrFail($customer_id);
         }elseif (!is_null(@Auth::user()->created_by)) {
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
             if(!is_null($customer)){
-                $customer = @$customer->customer;
+                //$customer = @$customer->customer;
+
+                $customer_id = @get_sap_customer_arr($customer)[$product->sap_connection_id];
+                $customer = Customer::findOrFail($customer_id);
             }
         }elseif($customer_id){
             $customer = Customer::findOrFail($customer_id);
@@ -130,214 +145,60 @@ class ProductListController extends Controller
   	}
 
 
-  	public function _getAll(Request $request){
-  		if ($request->ajax()) {
-
-            $c_product_tires_category = $c_product_item_line = $c_product_group = array();
-
-            $output = "<div class='text-center mt-5'><h2>Result Not Found !</h2></div>";
-            $button = "";
-            $last_id = "";
-
-            $where = array('is_active' => 1);
-
-            $products = Product::where($where)->orderBy('id', 'DESC')->limit(12);
-
-            $products->whereHas('group', function($q){
-                $q->where('is_active', true);
-            });
-
-            if ($request->id > 0) {
-                $products->where('id', '<', $request->id);
-            }
-
-            if($request->filter_search != ""){
-                $products->where(function($q) use ($request) {
-                    $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
-                });
-            }
-
-
-            $customer_id = null;
-            $customer = collect();
-            $sap_connection_id = null;
-
-            if(userrole() == 4){
-                $customer_id = @Auth::user()->customer_id;
-                $customer = @Auth::user()->customer;
-                $sap_connection_id = @Auth::user()->sap_connection_id;
-            }elseif (!is_null(@Auth::user()->created_by)) {
-                $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
-                if(!is_null($customer)){
-                    $customer_id = @$customer->customer_id;
-                    $customer = @$customer->customer;
-                    $sap_connection_id = @$customer->sap_connection_id;
-                }
-            }
-
-            // Is Customer
-            if($customer_id){
-
-                // Product Group
-                $c_product_group = CustomerProductGroup::with('product_group')->where('customer_id', $customer_id)->get();
-
-                $c_product_group = array_map( function ( $ar ) {
-                   return $ar['number'];
-                }, array_column( $c_product_group->toArray(), 'product_group' ) );
-
-
-                // Product Item Line
-                $c_product_item_line = CustomerProductItemLine::with('product_item_line')->where('customer_id', $customer_id)->get();
-
-                $c_product_item_line = array_map( function ( $ar ) {
-                   return $ar['u_item_line'];
-                }, array_column( $c_product_item_line->toArray(), 'product_item_line' ) );
-
-
-                // Product Tires Category
-                $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->where('customer_id', $customer_id)->get();
-
-                $c_product_tires_category = array_map( function ( $ar ) {
-                   return $ar['u_tires'];
-                }, array_column( $c_product_tires_category->toArray(), 'product_tires_category' ) );
-            }
-
-
-            if($customer_id && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
-                return response()->json(['output' => $output, 'button' => $button]);
-            }
-
-
-            $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
-
-                if(!empty($c_product_group)){
-                    $q->orWhereIn('items_group_code', $c_product_group);
-                }
-
-                if(!empty($c_product_tires_category)){
-                    $q->orWhereIn('u_tires', $c_product_tires_category);
-                }
-
-                if(!empty($c_product_item_line)){
-                    $q->orWhereIn('u_item_line', $c_product_item_line);
-                }
-            });
-
-            $products->where('sap_connection_id', $sap_connection_id);
-
-            $products = $products->get();
-
-            $last = Product::where($where)->select('id');
-
-            $last->whereHas('group', function($q){
-                $q->where('is_active', true);
-            });
-
-            if($request->filter_search != ""){
-                $last->where(function($q) use ($request) {
-                    $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
-                });
-            }
-
-            $last->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
-
-                if(!empty($c_product_group)){
-                    $q->orWhereIn('items_group_code', $c_product_group);
-                }
-
-                if(!empty($c_product_tires_category)){
-                    $q->orWhereIn('u_tires', $c_product_tires_category);
-                }
-
-                if(!empty($c_product_item_line)){
-                    $q->orWhereIn('u_item_line', $c_product_item_line);
-                }
-            });
-
-            $last->where('sap_connection_id', $sap_connection_id);
-
-            $last = $last->first();
-
-            if (!$products->isEmpty()) {
-                $output = "";
-                foreach ($products as $product) {
-                    // $output .= view('product-list.ajax.product',compact('product','customer'))->render();
-                    $output .= view('product-list.ajax.product-list-view',compact('product','customer'))->render();
-                }
-
-                $last_id = $products->last()->id;
-
-                if ($last_id != $last->id) {
-                    $button = '<a href="javascript:" class="btn btn-primary" data-id="' . $last_id . '" id="view_more_btn">View More Products</a>';
-                }
-
-            } else {
-
-                $button = '';
-
-            }
-
-            // if($output == $button){
-            //     $output = "<div class='text-center mt-5'><h2>Result Not Found !</h2></div>";
-            // }
-
-
-            return response()->json(['output' => $output, 'button' => $button]);
-        }
-  	}
-
     public function getAll(Request $request){
+
+
+        // $customer_id = explode(',', Auth::user()->multi_customer_id);
+        // dd(get_customer_price_list_no_arr($customer_id));
+        
         $c_product_tires_category = $c_product_item_line = $c_product_group = array();
 
-        $where = array('is_active' => 1);
-
-        $products = Product::where($where);
-
-        $products->whereHas('group', function($q){
-            $q->where('is_active', true);
-        });
-        
-        if($request->filter_search != ""){
-            $products->where(function($q) use ($request) {
-                $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
-            });
-        }
-
-        $customer_id = null;
+        $customer_id = [];
         $customer = collect();
-        $sap_connection_id = null;
-        $customer_price_list_no = null;
+        $sap_connection_id = [];
+        $customer_price_list_no = [];
 
         if(userrole() == 4){
 
-            $customer_id = array( @Auth::user()->customer_id );
-            $customer = @Auth::user()->customer;
-            $sap_connection_id = @Auth::user()->sap_connection_id;
-            $customer_price_list_no = @Auth::user()->customer->price_list_num;
+            // $customer_id = array( @Auth::user()->customer_id );
+            // $customer = @Auth::user()->customer;
+            // $sap_connection_id = @Auth::user()->sap_connection_id;
+            // $customer_price_list_no = @Auth::user()->customer->price_list_num;
+
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
+            $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
+            $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
 
         }elseif (!is_null(@Auth::user()->created_by)) {
 
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
             if(!is_null($customer)){
-                $customer_id = array( @$customer->customer_id );
-                $customer = @$customer->customer;
-                $sap_connection_id = @$customer->sap_connection_id;
-                $customer_price_list_no = @$customer->price_list_num;
+                // $customer_id = array( @$customer->customer_id );
+                // $customer = @$customer->customer;
+                // $sap_connection_id = @$customer->sap_connection_id;
+                // $customer_price_list_no = @$customer->price_list_num;
+
+                $customer_id = explode(',', @$customer->multi_customer_id);
+                $sap_connection_id = explode(',', @$customer->multi_real_sap_connection_id);
+                $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
             }
         }elseif(userrole() == 2){
 
             $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
-            $sap_connection_id = @Auth::user()->sap_connection_id;
+            $sap_connection_id = array( @Auth::user()->sap_connection_id );
 
         }
 
+        // if($sap_connection_id == 5){ //Solid Trend
+        //     $sap_connection_id = 1;
+        // }
 
-        if($sap_connection_id == 5){ //Solid Trend
-            $sap_connection_id = 1;
+        if(in_array(5, $sap_connection_id)){
+            array_push($sap_connection_id, '5');
         }
 
         // Is Customer
-        if($customer_id){
+        if(!empty($customer_id)){
 
             // Product Group
             $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
@@ -363,6 +224,27 @@ class ProductListController extends Controller
             }, array_column( $c_product_tires_category->toArray(), 'product_tires_category' ) );
         }
 
+
+        if(empty($customer_id) && empty($sap_connection_id) && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
+            $products = collect([]);
+            return DataTables::of($products)->make(true);
+        }
+
+        $where = array('is_active' => 1);
+
+        $products = Product::where($where);
+
+        $products->whereHas('group', function($q){
+            $q->where('is_active', true);
+        });
+        
+        if($request->filter_search != ""){
+            $products->where(function($q) use ($request) {
+                $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('item_code','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
         $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
 
             if(!empty($c_product_group)){
@@ -378,27 +260,26 @@ class ProductListController extends Controller
             }
         });
 
-        $products->where('products.sap_connection_id', $sap_connection_id);
-
-        if($customer_id && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
-            $products = collect([]);
-            return DataTables::of($products)->make(true);
-        }
+        $products->whereIn('products.sap_connection_id', $sap_connection_id);
 
         $products->when(!isset($request->order), function ($q) {
-          $q->orderBy('item_name', 'asc');
+            $q->orderBy('item_name', 'asc');
         });
 
         if($request->filter_brand != ""){
-          $products->where('items_group_code',$request->filter_brand);
+            // $products->where('items_group_code', $request->filter_brand);
+
+            $products->whereHas('group', function($q) use ($request){
+                $q->where('group_name', $request->filter_brand);
+            });
         }
 
         if($request->filter_product_category != ""){
-          $products->where('u_tires',$request->filter_product_category);
+            $products->where('u_tires',$request->filter_product_category);
         }
 
         if($request->filter_product_line != ""){
-          $products->where('u_item_line',$request->filter_product_line);
+            $products->where('u_item_line',$request->filter_product_line);
         }
 
         return DataTables::of($products)
@@ -419,7 +300,8 @@ class ProductListController extends Controller
                               return @$row->u_tires ?? "-";
                           })
                           ->addColumn('price', function($row) use ($customer_price_list_no) {
-                              return "₱ ".number_format_value(get_product_customer_price(@$row->item_prices,$customer_price_list_no));
+                                $sap_connection_id = $row->sap_connection_id;
+                                return "₱ ".number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]));
                           })
                           ->addColumn('action', function($row) {
                             $btn = null;
@@ -484,65 +366,66 @@ class ProductListController extends Controller
     public function getProductData($request){
         $c_product_tires_category = $c_product_item_line = $c_product_group = array();
 
-        $where = array('is_active' => true);
-
-        $products = Product::where($where)->limit(50);
-
-        $products->whereHas('group', function($q){
-            $q->where('is_active', true);
-        });
-
-        if($request->filter_search != ""){
-            $products->where(function($q) use ($request) {
-                $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
-            });
-        }
-
-        $customer_id = null;
+        $customer_id = [];
         $customer = collect();
-        $sap_connection_id = null;
-        $customer_price_list_no = null;
+        $sap_connection_id = [];
+        $customer_price_list_no = [];
 
-        if(userrole() == 4){
-
-            $customer_id = array( @Auth::user()->customer_id );
-            $customer = @Auth::user()->customer;
-            $sap_connection_id = @Auth::user()->sap_connection_id;
-            $customer_price_list_no = @Auth::user()->customer->price_list_num;
-
-        }elseif (!is_null(@Auth::user()->created_by) || (isset($request->customer_id) && !empty($request->customer_id)) ) {
+        if (!is_null(@Auth::user()->created_by) || (isset($request->customer_id) && !empty($request->customer_id)) ) {
 
             if(@$request->customer_id){
                 $where = array(
-                            'customer_id' => @$request->customer_id,
+                            'id' => @$request->customer_id,
                         );
+                $customer = Customer::where($where)->first();
+                if(!is_null($customer)){
+                    $customer_id = array( @$customer->id );
+                    $sap_connection_id = array( @$customer->sap_connection_id);
+                    $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+                }
+
+
             }else{
                 $where = array(
                             'id' => @Auth::user()->created_by,
                         );
+                $customer = User::where('role_id', 4)->where($where)->first();
+                if(!is_null($customer)){
+                    $customer_id = explode(',', @$customer->multi_customer_id);
+                    $sap_connection_id = explode(',', @$customer->multi_real_sap_connection_id);
+                    $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+                }
             }
 
-            $customer = User::where('role_id', 4)->where($where)->first();
-            if(!is_null($customer)){
-                $customer_id = array( @$customer->customer_id );
-                $customer = @$customer->customer;
-                $sap_connection_id = @$customer->sap_connection_id;
-                $customer_price_list_no = @$customer->price_list_num;
-            }
+
+        }elseif(userrole() == 4){
+
+            // $customer_id = array( @Auth::user()->customer_id );
+            // $customer = @Auth::user()->customer;
+            // $sap_connection_id = @Auth::user()->sap_connection_id;
+            // $customer_price_list_no = @Auth::user()->customer->price_list_num;
+
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
+            $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
+            $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
 
         }elseif(userrole() == 2){
 
             $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
-            $sap_connection_id = @Auth::user()->sap_connection_id;
+            $sap_connection_id = array( @Auth::user()->sap_connection_id );
 
         }
 
-        if($sap_connection_id == 5){ //Solid Trend
-            $sap_connection_id = 1;
+        // if($sap_connection_id == 5){ //Solid Trend
+        //     $sap_connection_id = 1;
+        // }
+
+        if(in_array(5, $sap_connection_id)){
+            array_push($sap_connection_id, '5');
         }
         
         // Is Customer
-        if($customer_id){
+        if(!empty($customer_id)){
 
             // Product Group
             $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
@@ -568,6 +451,24 @@ class ProductListController extends Controller
             }, array_column( $c_product_tires_category->toArray(), 'product_tires_category' ) );
         }
 
+        if(empty($customer_id) && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
+            $products = collect([]);
+        }
+
+        $where = array('is_active' => true);
+
+        $products = Product::where($where)->limit(50);
+
+        $products->whereHas('group', function($q){
+            $q->where('is_active', true);
+        });
+
+        if($request->filter_search != ""){
+            $products->where(function($q) use ($request) {
+                $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
         $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
 
             if(!empty($c_product_group)){
@@ -583,16 +484,11 @@ class ProductListController extends Controller
             }
         });
 
-        $products->where('sap_connection_id', $sap_connection_id);
+        $products->whereIn('sap_connection_id', $sap_connection_id);
 
-        if($customer_id && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
-            $products = collect([]);
-        }else{
-            $products->when(!isset($request->order), function ($q) {
-              $q->orderBy('item_name', 'asc');
-            });
-        }
-
+        $products->when(!isset($request->order), function ($q) {
+          $q->orderBy('item_name', 'asc');
+        });
 
         return [ 'products' => $products, 'customer_price_list_no' => $customer_price_list_no];
     }

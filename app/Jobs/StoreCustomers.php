@@ -183,7 +183,7 @@ class StoreCustomers implements ShouldQueue
 
 
                     // Store Customer Records in users table
-                    $check_customer = User::where('customer_id',$obj->id)->first();
+                    $check_customer = User::where('u_card_code',$obj->u_card_code)->first();
                     if(is_null($check_customer)){
 
                         $name = explode(" ", $obj->card_name, 2);
@@ -201,15 +201,39 @@ class StoreCustomers implements ShouldQueue
                                             'password' => Hash::make($password),
                                             'password_text' => $password,
                                             // 'email' => strtolower(@$obj->card_code)."-".$this->sap_connection_id.'@mailinator.com',
-                                            'email' => strtolower(@$obj->u_card_code)."-".$this->sap_connection_id.'@mailinator.com',
+                                            // 'email' => strtolower(@$obj->u_card_code)."-".$this->sap_connection_id.'@mailinator.com',
+                                            'email' => strtolower(@$obj->u_card_code).'@mailinator.com',
                                             'first_login' => true,
                                             'sap_connection_id' => $this->sap_connection_id,
                                             'real_sap_connection_id' => $this->real_sap_connection_id,
                                             'default_profile_color' => get_hex_color(),
+
+                                            'u_card_code' => $obj->u_card_code,
+                                            'multi_customer_id' => $obj->id,
+                                            'multi_sap_connection_id' => $obj->sap_connection_id,
+                                            'multi_real_sap_connection_id' => $obj->real_sap_connection_id,
                                         );
 
                         User::create($insert_user);
+                    }else{
 
+                        $multi_customer_id = explode(",", $check_customer->multi_customer_id);
+                        array_push($multi_customer_id, $obj->id);
+
+                        $multi_sap_connection_id = explode(",", $check_customer->multi_sap_connection_id);
+                        array_push($multi_sap_connection_id, $obj->sap_connection_id);
+
+                        $multi_real_sap_connection_id = explode(",", $check_customer->multi_real_sap_connection_id);
+                        array_push($multi_real_sap_connection_id, $obj->real_sap_connection_id);
+
+                        // $multi_sap_connections = explode(",", $check_customer->multi_sap_connections);
+                        // array_push($multi_sap_connections, $obj->id);
+
+
+                        $check_customer->multi_customer_id = implode(",", $multi_customer_id);
+                        $check_customer->multi_sap_connection_id = implode(",", $multi_sap_connection_id);
+                        $check_customer->multi_real_sap_connection_id = implode(",", $multi_real_sap_connection_id);
+                        $check_customer->save();
                     }
                 }
             }

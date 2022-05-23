@@ -5,6 +5,7 @@ namespace App\Support;
 use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
+use App\Models\Customer;
 use App\Models\Quotation;
 use App\Models\QuotationItem;
 use App\Models\CustomerPromotion;
@@ -295,16 +296,22 @@ class SAPCustomerPromotion
 
         if(!is_null($customer_promotion)){
 
-            if(@$customer_promotion->user->customer->card_code){
+            $where = array(
+                        'sap_connection_id' => $customer_promotion->sap_connection_id,
+                        'u_card_code' => $customer_promotion->user->u_card_code,
+                    );
+
+            $customer = Customer::where($where)->first();
+            if(@$customer->card_code){
 
                 $this->sap_connection_id = @$customer_promotion->sap_connection_id;
-                $this->real_sap_connection_id = @$customer_promotion->user->customer->real_sap_connection_id;
+                $this->real_sap_connection_id = @$customer->real_sap_connection_id;
 
-                $response['CardCode'] = @$customer_promotion->user->customer->card_code;
-                $response['CardName'] = @$customer_promotion->user->customer->card_name;
+                $response['CardCode'] = @$customer->card_code;
+                $response['CardName'] = @$customer->card_name;
                 // $response['DocTotal'] = @$customer_promotion->total_amount;
 
-                if(strtolower(@$customer_promotion->customer_bp_address->street) == strtolower(@$customer_promotion->user->customer->card_name)){
+                if(strtolower(@$customer_promotion->customer_bp_address->street) == strtolower(@$customer->card_name)){
                     $response['Address'] = @$customer_promotion->customer_bp_address->street;
                 }else{
                     $response['Address'] = @$customer_promotion->customer_bp_address->address;

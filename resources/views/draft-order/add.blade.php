@@ -25,6 +25,7 @@
 
                     @if(isset($edit))
                         <input type="hidden" value="{{$edit->id}}" name="id">
+                        <input type="hidden" value="{{$edit->customer_id}}" name="customer_id">
                     @endif
                     <div class="col-md-12">
                         <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -286,15 +287,30 @@
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {
+
+                    var product_ids = [];
+                    $('.selectProducts').each(function(){
+                        if(this.value){
+                            product_ids.push(this.value);
+                        }
+                    });
+
                     return {
                         _token: "{{ csrf_token() }}",
-                        search: params.term
+                        filter_search: params.term,
+                        customer_id : "{{ $edit->customer_id }}",
+                        product_ids: product_ids,
                     };
                 },
                 processResults: function (response) {
                     return {
-                        results: response
-                    };
+                        results:  $.map(response, function (item) {
+                                    return {
+                                        text: item.item_name,
+                                        id: item.id
+                                    }
+                                })
+                        };
                 },
                 cache: true
             },
@@ -319,15 +335,29 @@
                         dataType: 'json',
                         delay: 250,
                         data: function (params) {
+                            var product_ids = [];
+                            $('.selectProducts').each(function(){
+                                if(this.value){
+                                    product_ids.push(this.value);
+                                }
+                            });
+
                             return {
                                 _token: "{{ csrf_token() }}",
-                                search: params.term
+                                filter_search: params.term,
+                                customer_id : "{{ $edit->customer_id }}",
+                                product_ids: product_ids,
                             };
                         },
                         processResults: function (response) {
                             return {
-                                results: response
-                            };
+                                results:  $.map(response, function (item) {
+                                            return {
+                                                text: item.item_name,
+                                                id: item.id
+                                            }
+                                        })
+                                };
                         },
                         cache: true
                     },
@@ -520,7 +550,7 @@
                 $(this).val(1);
                 $amount = $price;
             }
-            $(this).parent().parent().find('td .amount').html('₱ '+$amount.toFixed(2));
+            $(this).parent().parent().find('td .amount').html('₱ '+number_format($amount.toFixed(2)));
 
             $grandTotal = 0;
             $("tr[name='items']").each(function(){
@@ -529,8 +559,8 @@
                 $grandTotal += $subPrice * $subQty;
             });
 
-            $('.subTotal').html('₱ '+$grandTotal.toFixed(2));
-            $('.grandTotal').html('₱ '+$grandTotal.toFixed(2));
+            $('.subTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
+            $('.grandTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
         });
 
         $(document).on('change', '.selectProducts',function(event){
@@ -541,7 +571,7 @@
                 data: {
                     _token: "{{ csrf_token() }}",
                     product_id: $(this).val(),
-                    price_list_num: "{{@Auth::user()->customer->price_list_num}}"
+                    // price_list_num: "{{--@Auth::user()->customer->price_list_num--}}"
                 },
                 success: function (data) {
                     if (data.status) {

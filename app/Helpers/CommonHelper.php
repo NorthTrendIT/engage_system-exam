@@ -13,6 +13,7 @@ use App\Models\LocalOrderItem;
 use App\Models\SapApiUrl;
 use App\Models\ConversationMessage;
 use App\Models\CustomerPromotion;
+use App\Models\Customer;
 
 use Auth as Auth;
 
@@ -682,4 +683,26 @@ function get_un_read_customer_promotion_count(){
     $count = CustomerPromotion::where('is_admin_read', false)->count();
 
     return $count;
+}
+
+function get_customer_price_list_no_arr(array $customer_ids){
+
+    $customer_price_list_no_arr = [];
+
+    $customers = Customer::whereIn('id', $customer_ids)->get();
+
+    if(count($customers)){
+        $customer_price_list_no_keys = $customers->pluck('real_sap_connection_id')->toArray();
+        $customer_price_list_no_values = $customers->pluck('price_list_num')->toArray();
+
+        $customer_price_list_no_arr = array_combine($customer_price_list_no_keys, $customer_price_list_no_values);
+    }
+
+    return $customer_price_list_no_arr;
+}
+
+function get_sap_customer_arr($user){
+    $customer_id = explode(',', $user->multi_customer_id);
+    $sap_connection_id = explode(',', $user->multi_real_sap_connection_id);
+    return array_combine($sap_connection_id, $customer_id);
 }

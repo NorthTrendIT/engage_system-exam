@@ -98,7 +98,8 @@ class Customer extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class,'id','customer_id');
+        // return $this->belongsTo(User::class,'id','customer_id');
+        return $this->belongsTo(User::class,'u_card_code','u_card_code');
     }
 
     public function sap_connection()

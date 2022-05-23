@@ -86,12 +86,19 @@ class OrdersController extends Controller
         $total = 0;
         $data = Quotation::where('id', $id);
         if(userrole() == 4){
-            $data->where('card_code', @Auth::user()->customer->card_code);
+            $customers = Auth::user()->get_multi_customer_details();
+            $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }elseif(userrole() == 2){
             $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(!is_null(Auth::user()->created_by)){
+            $customers = Auth::user()->created_by_user->get_multi_customer_details();
+            $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }elseif(userrole() != 1){
             return abort(404);
         }
+
         
         $data = $data->firstOrFail();
         
@@ -229,12 +236,18 @@ class OrdersController extends Controller
         $data = Quotation::query();
 
         if(userrole() == 4){
-            $data->where('card_code', @Auth::user()->customer->card_code);
+            $customers = Auth::user()->get_multi_customer_details();
+            $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }elseif(userrole() == 2){
             $data->where('sales_person_code', @Auth::user()->sales_employee_code);
         }elseif(userrole() != 1){
             if (!is_null(@Auth::user()->created_by)) {
-                $data->where('card_code', @Auth::user()->created_by_user->customer->card_code);
+                $customers = @Auth::user()->created_by_user->get_multi_customer_details();
+                $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+            
+                // $data->where('card_code', @Auth::user()->created_by_user->customer->card_code);
             } else {
                 return DataTables::of(collect())->make(true);
             }
@@ -439,12 +452,28 @@ class OrdersController extends Controller
         $response = ['status' => false, 'message' => 'Record not found!'];
 
         $quotation = Quotation::where('id', $request->id);
+        // if(userrole() == 4){
+        //     $quotation->where('card_code', @Auth::user()->customer->card_code);
+        // }elseif(userrole() == 2){
+        //     $quotation->where('sales_person_code', @Auth::user()->sales_employee_code);
+        // }elseif(userrole() != 1){
+        //     return abort(404);
+        // }
+
         if(userrole() == 4){
-            $quotation->where('card_code', @Auth::user()->customer->card_code);
+            $customers = Auth::user()->get_multi_customer_details();
+            $quotation->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $quotation->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }elseif(userrole() == 2){
             $quotation->where('sales_person_code', @Auth::user()->sales_employee_code);
         }elseif(userrole() != 1){
-            return abort(404);
+            if (!is_null(@Auth::user()->created_by)) {
+                $customers = @Auth::user()->created_by_user->get_multi_customer_details();
+                $quotation->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                $quotation->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+            } else {
+                return abort(404);
+            }
         }
 
         $quotation = $quotation->first();
@@ -474,11 +503,19 @@ class OrdersController extends Controller
 
         $quotation = Quotation::where('id', $request->id);
         if(userrole() == 4){
-            $quotation->where('card_code', @Auth::user()->customer->card_code);
+            $customers = Auth::user()->get_multi_customer_details();
+            $quotation->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $quotation->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }elseif(userrole() == 2){
             $quotation->where('sales_person_code', @Auth::user()->sales_employee_code);
         }elseif(userrole() != 1){
-            return abort(404);
+            if (!is_null(@Auth::user()->created_by)) {
+                $customers = @Auth::user()->created_by_user->get_multi_customer_details();
+                $quotation->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                $quotation->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+            } else {
+                return abort(404);
+            }
         }
 
         $quotation = $quotation->first();
@@ -834,12 +871,16 @@ class OrdersController extends Controller
         $data = Quotation::orderBy('id', 'desc');
 
         if(userrole() == 4){
-            $data->where('card_code', @Auth::user()->customer->card_code);
+            $customers = Auth::user()->get_multi_customer_details();
+            $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }elseif(userrole() == 2){
             $data->where('sales_person_code', @Auth::user()->sales_employee_code);
         }elseif(userrole() != 1){
             if (!is_null(@Auth::user()->created_by)) {
-                $data->where('card_code', @Auth::user()->created_by_user->customer->card_code);
+                $customers = @Auth::user()->created_by_user->get_multi_customer_details();
+                $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
             } else {
                 return redirect()->back();
             }

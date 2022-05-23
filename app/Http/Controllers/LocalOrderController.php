@@ -478,9 +478,8 @@ class LocalOrderController extends Controller
     function getCustomerSchedule(Request $request){
         $customer_id = $request->customer_id;
 
-        $user = User::where('customer_id', $customer_id)->first();
-        $dates = CustomerDeliverySchedule::where('user_id', $user->id)->where('date','>',date("Y-m-d"))->get();
-        // dd($dates);
+        $customer = Customer::where('id', $customer_id)->first();
+        $dates = CustomerDeliverySchedule::where('user_id', @$customer->user->id)->where('date','>',date("Y-m-d"))->get();
 
         if(count($dates)){
             $dates = array_map( function ( $t ) {

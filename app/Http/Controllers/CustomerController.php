@@ -210,6 +210,7 @@ class CustomerController extends Controller
                 $q->orwhere('card_code','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('email','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('u_card_code','LIKE',"%".$request->filter_search."%");
 
                 if(userrole() == 1){
                     $q->orwhere('credit_limit','LIKE',"%".$request->filter_search."%");

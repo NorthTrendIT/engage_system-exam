@@ -232,14 +232,14 @@
 
                     <div class="col-md-6 mt-5 closed_status_div">
                       <div class="form-group">
-                        <label>Closed Reason</label>
+                        <label>Closed Reason<span class="asterisk">*</span></label>
                         <textarea class="form-control form-control-lg form-control-solid" name="closed_reason" placeholder="Enter closed reason">{{ $data->closed_reason }}</textarea>
                       </div>
                     </div>
 
                     <div class="col-md-6 mt-5 closed_status_div">
                       <div class="form-group">
-                        <label>Upload Image</label>
+                        <label>Upload Image<span class="asterisk">*</span></label>
                         <input type="file" class="form-control form-control-lg form-control-solid" name="closed_image" accept="image/*"></input>
 
                         @if(@$data->closed_image && get_valid_file_url('sitebucket/help-desk', @$data->closed_image))
