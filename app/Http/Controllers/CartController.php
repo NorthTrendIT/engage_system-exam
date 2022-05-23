@@ -25,13 +25,15 @@ class CartController extends Controller
     public function index()
     {
         $customer_id = @Auth::user()->customer_id;
-        $total = 0;
-        $data = Cart::with(['product', 'customer'])->where('customer_id', $customer_id)->get();
+
         $address = CustomerBpAddress::where('customer_id', $customer_id)->orderBy('order', 'ASC')->get();
+
+        $total = 0;
+        $customer_id = explode(',', Auth::user()->multi_customer_id);
+        $data = Cart::with(['product', 'customer'])->whereIn('customer_id', $customer_id)->get();
 
         foreach($data as $item){
 
-            $customer_id = explode(',', Auth::user()->multi_customer_id);
             $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
             $subTotal = get_product_customer_price(@$item->product->item_prices, $customer_price_list_no) * $item->qty;
@@ -112,6 +114,12 @@ class CartController extends Controller
         }
 
         $product = Product::findOrFail($id);
+
+        $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
+        if($avl_qty < 1){
+            return $response = ['status'=>false,'message'=>"The product quantity is not available."];
+        }
+
         $sap_customer_arr = get_sap_customer_arr(@Auth::user());
 
         if(isset($id)){
@@ -135,6 +143,10 @@ class CartController extends Controller
             $cart = Cart::findOrFail($id);
             if(is_numeric($data['qty'])){
                 if($data['qty'] > 0){
+                    $avl_qty = $cart->product->quantity_on_stock - $cart->product->quantity_ordered_by_customers;
+                    if($avl_qty < ($data['qty'])){
+                        return $response = ['status'=>false,'message'=>"The product quantity is not available."];
+                    }
                     $cart->qty = $data['qty'];
                 } else {
                     return $response = ['status'=>false,'message'=>"Quantity value must be greater than 0(Zero)."];
@@ -153,6 +165,12 @@ class CartController extends Controller
     public function qtyPlus($id){
         if(isset($id)){
             $cart = Cart::findOrFail($id);
+
+            $avl_qty = $cart->product->quantity_on_stock - $cart->product->quantity_ordered_by_customers;
+            if($avl_qty < ($cart->qty + 1)){
+                return $response = ['status'=>false,'message'=>"The product quantity is not available."];
+            }
+
             $cart->qty = $cart->qty + 1;
             $cart->save();
 
@@ -263,7 +281,7 @@ class CartController extends Controller
         if ($validator->fails()) {
             return $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
-            $customer_id = @Auth::user()->customer_id;
+            //$customer_id = @Auth::user()->customer_id;
             $address_id = $data['address_id'];
             $due_date = strtr($data['due_date'], '/', '-');
             
@@ -277,7 +295,7 @@ class CartController extends Controller
                     $sap_connection_id = 1;
                 }
 
-                $products = Cart::where('customer_id', $customer_id)
+                $products = Cart::whereIn('customer_id', $customer_id)
                                 ->whereHas('product', function($q) use ($sap_connection_id){
                                     $q->where('sap_connection_id', $sap_connection_id);
                                 })->get();
@@ -300,33 +318,44 @@ class CartController extends Controller
 
                         $total = 0;
 
+                        $is_need_delete_order = false;
                         foreach($products as $value){
-                            $item = new LocalOrderItem();
-                            $item->local_order_id = $order->id;
-                            $item->product_id = @$value['product_id'];
-                            $item->quantity = @$value['qty'];
-                            $item->price = get_product_customer_price(@$value->product->item_prices,@$customer->price_list_num);
-                            $item->total = $item->price * $item->quantity;
-                            $item->save();
-                            
-                            $total += $item->total;
+
+                            $avl_qty = $value->product->quantity_on_stock - $value->product->quantity_ordered_by_customers;
+                            if($avl_qty > @$value['qty']){
+                                $item = new LocalOrderItem();
+                                $item->local_order_id = $order->id;
+                                $item->product_id = @$value['product_id'];
+                                $item->quantity = @$value['qty'];
+                                $item->price = get_product_customer_price(@$value->product->item_prices,@$customer->price_list_num);
+                                $item->total = $item->price * $item->quantity;
+                                $item->save();
+                                
+                                $total += $item->total;
+                            }else{
+                                $is_need_delete_order = true;
+                            }
                         }
 
                         $order->total = $total;
                         $order->save();
                         
-                        try{
-                            $sap_connection = SapConnection::find($real_sap_connection_id);
+                        if($is_need_delete_order && count($products) == 1){
+                            $order->delete();
+                        }else{
+                            try{
+                                $sap_connection = SapConnection::find($real_sap_connection_id);
 
-                            if(!is_null($sap_connection)){
-                                $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
+                                if(!is_null($sap_connection)){
+                                    $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
 
-                                if($order->id){
-                                    $sap->pushOrder($order->id);
+                                    if($order->id){
+                                        $sap->pushOrder($order->id);
+                                    }
                                 }
-                            }
-                        } catch (\Exception $e) {
+                            } catch (\Exception $e) {
 
+                            }
                         }
                     }
 
@@ -334,7 +363,7 @@ class CartController extends Controller
                 }
             }
 
-            Cart::where('customer_id', $customer_id)->delete();
+            Cart::whereIn('customer_id', $customer_id)->delete();
         }
 
         return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];

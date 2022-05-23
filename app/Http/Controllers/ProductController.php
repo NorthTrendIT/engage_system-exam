@@ -458,6 +458,17 @@ class ProductController extends Controller
 
                             return $price;
                           })
+                          ->addColumn('lp_price', function($row) {
+                            $price = "-";
+                            $item_prices = json_decode($row->item_prices,true);
+
+                            if(count($item_prices) > 0){
+                              $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                              $price = '₱ '.(@$prices[16]['Price'] ? @$prices[16]['Price'] : '0');
+                            }
+
+                            return $price;
+                          })
                           ->addColumn('status', function($row) {
 
                             $btn = "";
@@ -735,6 +746,7 @@ class ProductController extends Controller
         $temp['srp_price'] = @$prices[13]['Price'] ?? "-";
         $temp['rdlp_price'] = @$prices[14]['Price'] ?? "-";
         $temp['rdlp2_price'] = @$prices[15]['Price'] ?? "-";
+        $temp['lp_price'] = @$prices[16]['Price'] ?? "-";
 
         $records[] = $temp;
       }else{
@@ -845,8 +857,9 @@ class ProductController extends Controller
       array_push($headers, 'Online Price');
       array_push($headers, 'Commercial Price');
       array_push($headers, 'SRP');
-      array_push($headers, 'RDLP');
-      array_push($headers, 'RDLP-2');
+      array_push($headers, 'DLP');
+      array_push($headers, 'Gross Price');
+      array_push($headers, 'LP');
 
 
     }else{

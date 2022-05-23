@@ -97,6 +97,9 @@ class StoreProducts implements ShouldQueue
                                 'updated_date' => $value['UpdateDate'],
                                 'last_sync_at' => current_datetime(),
                                 'sap_connection_id' => $this->sap_connection_id,
+
+                                'quantity_on_stock' => @$value['QuantityOnStock'],
+                                'quantity_ordered_by_customers' => @$value['QuantityOrderedByCustomers'],
                             );
 
                 $obj = Product::updateOrCreate(
