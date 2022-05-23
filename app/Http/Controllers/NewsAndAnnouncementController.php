@@ -268,9 +268,7 @@ class NewsAndAnnouncementController extends Controller
 
                 $fields['filters'] = [];
                 foreach ($connections as $value) {
-                    $fields['filters'][] = array(
-                                                array("field" => "tag", "key" => "user", "relation"=> "=", "value"=> $value->user_id)
-                                            );
+                    $fields['filters'][] = array("field" => "tag", "key" => "user", "relation"=> "=", "value"=> $value->user_id);
                 }
 
                 $message = $notification->title;
