@@ -1072,3 +1072,11 @@ table.dataTable>thead .sorting.sorting_desc:after{
     left: 50% !important;   
     margin-left: -150px !important;
 }
+
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) and (min-width : 1200px){
+    #toastr-container .toastr{
+        width: 530px;
+    }
+}

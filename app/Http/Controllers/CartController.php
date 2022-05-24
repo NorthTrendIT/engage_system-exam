@@ -255,6 +255,15 @@ class CartController extends Controller
         $products = Cart::whereIn('customer_id', $customer_id)->get();
         if( !empty($products) ){
             foreach($products as $value){
+
+                $product = @$value->product;
+                $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
+                if($avl_qty == 0){
+                    return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity is not available at the moment please remove from order.'];
+                }else if($avl_qty < @$value->qty){
+                    return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity value must be less then '.$avl_qty.'.'];
+                }
+
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
 
                 $total_amount += get_product_customer_price(@$value->product->item_prices, @$customer_price_list_no);

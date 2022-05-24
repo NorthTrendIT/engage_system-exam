@@ -285,50 +285,76 @@ class ProductListController extends Controller
         return DataTables::of($products)
                           ->addIndexColumn()
                           ->addColumn('item_name', function($row) {
-                              return @$row->item_name ?? "";
-                          })
-                          ->addColumn('item_code', function($row) {
-                              return @$row->item_code ?? "";
-                          })
-                          ->addColumn('brand', function($row) {
-                              return @$row->group->group_name ?? "";
-                          })
-                          ->addColumn('u_item_line', function($row) {
-                              return @$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-";
-                          })
-                          ->addColumn('u_tires', function($row) {
-                              return @$row->u_tires ?? "-";
-                          })
-                          ->addColumn('price', function($row) use ($customer_price_list_no) {
-                                $sap_connection_id = $row->sap_connection_id;
-                                return "₱ ".number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]));
-                          })
-                          ->addColumn('action', function($row) {
-                            $btn = "";
-                            if(@Auth::user()->role_id == 4){
-                                if(is_in_cart(@$row->id) == 1){
-                                    $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
+                                    return '<span class="text-muted" title="Not Available">'.(@$row->item_name ?? "").'</span>';
                                 }else{
-
-                                    if($row->quantity_on_stock - $row->quantity_ordered_by_customers > 1){
-                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm addToCart" data-url="'.route('cart.add',@$row->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
-                                    }else{
-                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
-                                    }
-
-                                    $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                    return @$row->item_name ?? "";
                                 }
-                            }
+                            })
+                            ->addColumn('item_code', function($row) {
+                                if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
+                                    return '<span class="text-muted" title="Not Available">'.(@$row->item_code ?? "").'</span>';
+                                }else{
+                                    return @$row->item_code ?? "";
+                                }
+                            })
+                            ->addColumn('brand', function($row) {
+                                if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
+                                    return '<span class="text-muted" title="Not Available">'.(@$row->group->group_name ?? "").'</span>';
+                                }else{
+                                    return @$row->group->group_name ?? "";
+                                }
+                            })
+                            ->addColumn('u_item_line', function($row) {
+                                if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
+                                    return '<span class="text-muted" title="Not Available">'.(@$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-").'</span>';
+                                }else{
+                                    return @$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-";
+                                }
+                            })
+                            ->addColumn('u_tires', function($row) {
+                                if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
+                                    return '<span class="text-muted" title="Not Available">'.(@$row->u_tires ?? "").'</span>';
+                                }else{
+                                    return @$row->u_tires ?? "-";
+                                }
+                            })
+                            ->addColumn('price', function($row) use ($customer_price_list_no) {
+                                $sap_connection_id = $row->sap_connection_id;
 
-                            $btn .= '<a href="' . route('product-list.show',@$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm m-3">
-                                    <i class="fa fa-eye"></i>
-                                </a>';
+                                if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
+                                    return '<span class="text-muted" title="Not Available">₱ '.number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id])).'</span>';
+                                }else{
+                                    return "₱ ".number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]));
 
-                            return $btn;
-                          })
-                          ->orderColumn('item_name', function ($query, $order) {
-                              $query->orderBy('item_name', $order);
-                          })
+                                }
+                            })
+                            ->addColumn('action', function($row) {
+                                $btn = "";
+                                if(@Auth::user()->role_id == 4){
+                                    if(is_in_cart(@$row->id) == 1){
+                                        $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                    }else{
+
+                                        if($row->quantity_on_stock - $row->quantity_ordered_by_customers > 1){
+                                            $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm addToCart" data-url="'.route('cart.add',@$row->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
+                                        }else{
+                                            $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
+                                        }
+
+                                        $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                    }
+                                }
+
+                                $btn .= '<a href="' . route('product-list.show',@$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm m-3">
+                                        <i class="fa fa-eye"></i>
+                                    </a>';
+
+                                return $btn;
+                            })
+                            ->orderColumn('item_name', function ($query, $order) {
+                                $query->orderBy('item_name', $order);
+                            })
                           ->orderColumn('item_code', function ($query, $order) {
                               $query->orderBy('item_code', $order);
                           })
@@ -353,7 +379,7 @@ class ProductListController extends Controller
                                       ->on("products.sap_connection_id","=","product_groups.sap_connection_id");
                               })->orderBy('product_groups.group_name', $order);
                           })
-                          ->rawColumns(['status','action'])
+                          ->rawColumns(['status','action','item_name', 'item_code','brand','u_tires','u_item_line','price'])
                           ->make(true);
     }
 
@@ -495,6 +521,10 @@ class ProductListController extends Controller
         $products->when(!isset($request->order), function ($q) {
           $q->orderBy('item_name', 'asc');
         });
+
+        if(userrole() != 1){
+            $products->havingRaw('quantity_on_stock - quantity_ordered_by_customers > 1');
+        }
 
         return [ 'products' => $products, 'customer_price_list_no' => $customer_price_list_no];
     }

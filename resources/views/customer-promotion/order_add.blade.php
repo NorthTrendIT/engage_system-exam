@@ -143,14 +143,14 @@
                         <div class="col-md-6">
                           <div class="form-group">
                             <label>Actual Product Price</label>
-                            <input type="text" class="form-control form-control-solid actual_product_price" readonly="" disabled="" value="{{ round($original_amount,2) }}" >
+                            <input type="text" class="form-control form-control-solid actual_product_price" readonly="" disabled="" value="{{ number_format_value(round($original_amount,2)) }}" data-value="{{ round($original_amount,2) }}" >
                           </div>
                         </div>
 
                         <div class="col-md-6">
                           <div class="form-group">
                             <label>Promotion Price</label>
-                            <input type="text" class="form-control form-control-solid promotion_price" readonly="" disabled="" value="{{ round($amount,2) }}" >
+                            <input type="text" class="form-control form-control-solid promotion_price" readonly="" disabled="" value="{{ number_format_value(round($amount,2)) }}" data-value="{{ round($amount,2) }}">
                           </div>
                         </div>
                       </div>
@@ -514,7 +514,7 @@
         if(this.value != ""){
           sum += parseFloat(this.value);
 
-          sum1 += ( parseFloat(this.value) * parseFloat($(this).closest('.product_list').find('.actual_product_price').val()));
+          sum1 += ( parseFloat(this.value) * parseFloat($(this).closest('.product_list').find('.actual_product_price').data('value')));
 
           var unit_price = $(this).closest('.product_list').find('.unit_price').val();
           sum2 += ( parseFloat(this.value) * $(this).closest('.product_list').find('.unit_price').val() );
