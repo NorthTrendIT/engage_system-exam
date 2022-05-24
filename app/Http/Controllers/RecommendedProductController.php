@@ -152,42 +152,55 @@ class RecommendedProductController extends Controller
         return DataTables::of($products)
                           ->addIndexColumn()
                           ->addColumn('item_name', function($row) {
-                              return @$row->product->item_name ?? "";
+                                if($row->product->quantity_on_stock - $row->product->quantity_ordered_by_customers < 1){
+                                    return '<span class="text-muted" title="Not Available">'.(@$row->product->item_name ?? "").'</span>';
+                                }else{
+                                    return @$row->product->item_name ?? "";
+                                }
                           })
                           ->addColumn('item_code', function($row) {
-                              return @$row->product->item_code ?? "";
-                          })
+                                if($row->product->quantity_on_stock - $row->product->quantity_ordered_by_customers < 1){
+                                    return '<span class="text-muted" title="Not Available">'.(@$row->product->item_code ?? "").'</span>';
+                                }else{
+                                    return @$row->product->item_code ?? "";
+                                }
+                            })
                           ->addColumn('price', function($row) use ($customer_price_list_no) {
                                 $sap_connection_id = @$row->product->sap_connection_id;
-                                return "₱ ".number_format_value(get_product_customer_price(@$row->product->item_prices,@$customer_price_list_no[$sap_connection_id]));
+                                
+                                if($row->product->quantity_on_stock - $row->product->quantity_ordered_by_customers < 1){
+                                    return '<span class="text-muted" title="Not Available">₱ '.(number_format_value(get_product_customer_price(@$row->product->item_prices,@$customer_price_list_no[$sap_connection_id]))).'</span>';
+                                }else{
+                                    return "₱ ".number_format_value(get_product_customer_price(@$row->product->item_prices,@$customer_price_list_no[$sap_connection_id]));
+                                }
                           })
 
                           ->addColumn('action', function($row) use ($sap_customer_arr) {
                             $btn = "";
                             if(userrole() == 2){
                                 if(is_in_cart(@$row->product->id, @$sap_customer_arr[@$row->product->sap_connection_id]) == 1){
-                                    $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10" href="'.route('recommended-products.goToCart', @$sap_customer_arr[@$row->product->sap_connection_id]).'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                    $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2" href="'.route('recommended-products.goToCart', @$sap_customer_arr[@$row->product->sap_connection_id]).'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 }else{
                                     if(@$row->product->quantity_on_stock - @$row->product->quantity_ordered_by_customers > 1){
-                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm mr-10 addToCart" data-url="'.route('recommended-products.cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm mx-2 addToCart" data-url="'.route('recommended-products.cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
                                     }else{
-                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-smmx-2 " title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
                                     }
 
-                                    $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('recommended-products.goToCart', @$sap_customer_arr[@$row->product->sap_connection_id]).'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                    $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2 goToCart" href="'.route('recommended-products.goToCart', @$sap_customer_arr[@$row->product->sap_connection_id]).'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 }
                             }
                             if(userrole() == 4){
                                 if(is_in_cart(@$row->product->id, @$sap_customer_arr[@$row->product->sap_connection_id]) == 1){
-                                    $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                    $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 }else{
                                     if(@$row->product->quantity_on_stock - @$row->product->quantity_ordered_by_customers > 1){
-                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm  mr-10 addToCart" data-url="'.route('cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm mx-2 addToCart" data-url="'.route('cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
                                     }else{
-                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm mx-2" title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
                                     }
 
-                                    $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                    $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2 goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 }
                             }
 
@@ -202,7 +215,7 @@ class RecommendedProductController extends Controller
                                 $join->on("products.id","=","product_id");
                             })->orderBy('product_groups.group_name', $order);
                           })
-                          ->rawColumns(['action'])
+                          ->rawColumns(['action','price','item_name'])
                           ->make(true);
     }
 

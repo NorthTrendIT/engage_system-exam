@@ -57,7 +57,7 @@ class CustomerPromotionController extends Controller
             						->limit(12);
 
             if(userrole() == 2 && Auth::user()->sap_connection_id == 1){
-                $promotions->orwhere('sap_connection_id', 5);
+                $promotions->whereIn('sap_connection_id', [1,5]);
             }
 
             if ($request->id > 0) {
@@ -84,7 +84,7 @@ class CustomerPromotionController extends Controller
                                 ->select('id');
 
             if(userrole() == 2 && Auth::user()->sap_connection_id == 1){
-                $last->orwhere('sap_connection_id', 5);
+                $last->whereIn('sap_connection_id', [1,5]);
             }
 
             if(@Auth::user()->multi_sap_connection_id != ""){
@@ -238,12 +238,9 @@ class CustomerPromotionController extends Controller
         // }
 
         $data = Promotions::where($where)->where('id',$id);
-
         if(userrole() == 2 && @Auth::user()->sap_connection_id == 1){
-            $data->orwhere('sap_connection_id', 5);
-        }
-
-        if(@Auth::user()->multi_sap_connection_id != ""){
+            $data->whereIn('sap_connection_id', [5,1]);
+        }else if(@Auth::user()->multi_sap_connection_id != ""){
             $sap_connection_id = explode(',', Auth::user()->multi_sap_connection_id);
             $data->whereIn('sap_connection_id', $sap_connection_id);
         }elseif(!is_null(Auth::user()->created_by)){

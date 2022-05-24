@@ -193,6 +193,11 @@
                                                 <span style="text-align: right; width: 100%;" class="d-block price grandTotal text-primary">₱ {{ number_format_value($edit->total) }}</span>
                                             </div>
                                         </div>
+                                        <div class="row" >
+                                            <div class="col-md-12 mb-3">
+                                                <span class="text-muted">Note: Prices may be subjected with discount. Final amount of order will reflect on the actual invoice.</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
