@@ -24,12 +24,11 @@ class CartController extends Controller
      */
     public function index()
     {
-        $customer_id = @Auth::user()->customer_id;
+        $customer_id = explode(',', Auth::user()->multi_customer_id);
 
-        $address = CustomerBpAddress::where('customer_id', $customer_id)->orderBy('order', 'ASC')->get();
+        $address = CustomerBpAddress::whereIn('customer_id', $customer_id)->orderBy('order', 'ASC')->get();
 
         $total = 0;
-        $customer_id = explode(',', Auth::user()->multi_customer_id);
         $data = Cart::with(['product', 'customer'])->whereIn('customer_id', $customer_id)->get();
 
         foreach($data as $item){
@@ -205,8 +204,7 @@ class CartController extends Controller
             }
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
             $total = 0;
-            $data = Cart::with('product')->where('customer_id', $customer_id)->get();
-            $cartCount = Cart::whereIn('customer_id', $customer_id)->count();
+            $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
 
             foreach($data as $item){
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
@@ -215,7 +213,7 @@ class CartController extends Controller
                 $total += $subTotal;
             }
 
-            return $response = ['status'=>true,'message'=> $message, 'total' => number_format_value($total), 'count' => count($data), 'cart_count' => $cartCount];
+            return $response = ['status'=>true,'message'=> $message, 'total' => number_format_value($total), 'count' => count($data), 'cart_count' => count($data)];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\CustomersSalesSpecialist;
 use App\Models\User;
 use App\Models\Customer;
+use App\Models\CustomerGroup;
 use App\Models\ProductItemLine;
 use App\Models\ProductGroup;
 use App\Models\ProductTiresCategory;
@@ -64,9 +65,14 @@ class CustomersSalesSpecialistsController extends Controller
         $rules = array(
 
                     'company_id' => 'required|exists:sap_connections,id',
+                    
+                    'customer_selection' => 'required',
 
-                    'customer_ids' => 'required',
-                    'customer_ids.*' => 'required|exists:customers,id,sap_connection_id,'.$input['company_id'],
+                    'customer_group_ids' => 'required',
+                    'customer_group_ids.*' => 'required|exists:customer_groups,id,sap_connection_id,'.$input['company_id'],
+
+                    // 'customer_ids' => 'required',
+                    // 'customer_ids.*' => 'required|exists:customers,id,sap_connection_id,'.$input['company_id'],
 
                     'ss_ids' => 'required',
                     'ss_ids.*' => 'required|exists:users,id,sap_connection_id,'.$sap_connection_id,
@@ -80,6 +86,17 @@ class CustomersSalesSpecialistsController extends Controller
                     'product_item_line_id' => 'nullable|array',
                     'product_item_line_id.*' => 'exists:product_item_lines,id,sap_connection_id,'.$sap_connection_id,
                 );
+
+        if(!isset($input['id']) && @$request->customer_selection == "specific"){
+            $rules['customer_ids'] = 'required';
+            $rules['customer_ids.*'] = 'required|exists:customers,id,sap_connection_id,'.$input['company_id'];
+        }
+
+        if(isset($input['id'])){
+            unset($rules['customer_selection']);
+            unset($rules['customer_group_ids']);
+            unset($rules['customer_group_ids.*']);
+        }
 
         $message = array(
                         // 'customer_id.required' => 'Please select customer.',
@@ -102,9 +119,11 @@ class CustomersSalesSpecialistsController extends Controller
             // }
 
 
+            $customer_ids = [];
             if(isset($input['id'])){
                 $message = "Record updated successfully.";
 
+                $customer_ids = array( $input['id'] );
                 //save log
                 add_log(42, $input);
             }else{
@@ -112,10 +131,22 @@ class CustomersSalesSpecialistsController extends Controller
 
                 //save log
                 add_log(41, $input);
+                
+                if(@$request->customer_selection == "specific"){
+                    $customer_ids = $input['customer_ids'];
+                }else{
+                    $customer_ids = Customer::doesnthave('sales_specialist')
+                                            ->orderby('card_name','asc')
+                                            ->where('sap_connection_id',$input['company_id'])
+                                            ->where('is_active',1)
+                                            ->whereHas('group', function($q) use ($input){
+                                                $q->whereIn('id', $input['customer_group_ids']);
+                                            })->pluck('id')->toArray();
+
+                }
             }
 
-
-            foreach($input['customer_ids'] as $key => $customer){
+            foreach($customer_ids as $key => $customer){
                 CustomersSalesSpecialist::where('customer_id', $customer)->delete();
                 if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
                     foreach($input['ss_ids'] as $value){
@@ -297,15 +328,13 @@ class CustomersSalesSpecialistsController extends Controller
                                 return @$row->first()->customer->sap_connection->company_name;
                             })
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('customers-sales-specialist.edit',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
+                                $btn = '<a href="' . route('customers-sales-specialist.edit',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
-
-                                $btn .= ' <a href="javascript:void(0)" data-url="' . route('customers-sales-specialist.destroy',$row->first()->customer_id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete">
+                                $btn .= '<a href="javascript:void(0)" data-url="' . route('customers-sales-specialist.destroy',$row->first()->customer_id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete mx-2">
                                     <i class="fa fa-trash"></i>
                                   </a>';
-
-                                $btn .= ' <a href="' . route('customers-sales-specialist.show',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                $btn .= '<a href="' . route('customers-sales-specialist.show',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
                                     <i class="fa fa-eye"></i>
                                   </a>';
 
@@ -413,6 +442,12 @@ class CustomersSalesSpecialistsController extends Controller
                 });
             }
 
+            if(isset($request->group_id) && !empty($request->group_id)){
+                $data->whereHas('group', function($q) use ($request){
+                    $q->whereIn('id', $request->group_id);
+                });
+            }
+
             $data = $data->get();
 
             foreach($data as $value){
@@ -427,6 +462,29 @@ class CustomersSalesSpecialistsController extends Controller
         return response()->json($response);
     }
 
+    public function getCustomerGroups(Request $request){
+        $search = $request->search;
+
+        $response = array();
+        if($request->sap_connection_id){
+            $data = CustomerGroup::orderby('name','asc')->where('sap_connection_id',$request->sap_connection_id)->limit(50);
+
+            if($search != ''){
+                $data->where('name', 'like', '%' .$search . '%');
+            }
+
+            $data = $data->get();
+
+            foreach($data as $value){
+                $response[] = array(
+                    "id" => $value->id,
+                    "text" => $value->name,
+                );
+            }
+        }
+
+        return response()->json($response);
+    }
 
     public function getProductBrand(Request $request){
 

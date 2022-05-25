@@ -53,9 +53,30 @@
 
                 </div>
 
-
+                @if(!isset($edit))
                 <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Customer Group<span class="asterisk">*</span></label>
+                      <select class="form-select form-select-solid" id='selectCustomerGroup' data-control="select2" data-hide-search="false" name="customer_group_ids[]">
+                      </select>
+                    </div>
+                  </div>
+                </div>
 
+                <div class="col-md-6 mb-5 customer_selection_div">
+                  <div class="form-group">
+                    <label>Customer Selection<span class="asterisk">*</span></label>
+                    <select class="form-select form-select-solid" data-control="select2" id="selectCustomerSelection" data-hide-search="false" name="customer_selection" data-placeholder="Select Customer Option">
+                      <option value=""></option>
+                      <option value="all">All Customers</option>
+                      <option value="specific">Specific Customers</option>
+                    </select>
+                  </div>
+                </div>
+                @endif
+
+                <div class="row mb-5 customer_div" @if(!isset($edit)) style="display:none" @endif>
                   <div class="col-md-12">
                     <div class="form-group">
                       <label>Customer<span class="asterisk">*</span></label>
@@ -63,7 +84,6 @@
                       </select>
                     </div>
                   </div>
-
                 </div>
 
                 <div class="row mb-5">
@@ -179,8 +199,21 @@ $(document).ready(function() {
             company_id:{
               required: true
             },
-            "customer_ids[]":{
+            "customer_group_ids[]":{
               required: true
+            },
+            customer_selection:{
+              required: true
+            },
+            "customer_ids[]":{
+              // required: true
+              required: function () {
+                      if( $('#selectCustomerSelection').find('option:selected').val() == "specific"){
+                        return true;
+                      }else{
+                        return false;
+                      }
+                    },
             },
             "ss_ids[]":{
               required: true
@@ -189,6 +222,12 @@ $(document).ready(function() {
           messages: {
             company_id:{
               required: "Please select business unit.",
+            },
+            "customer_group_ids[]":{
+              required: "Please select customer groups.",
+            },
+            customer_selection:{
+              required: "Please select customer option.",
             },
             "customer_ids[]":{
               required: "Please select customers.",
@@ -262,6 +301,31 @@ $(document).ready(function() {
       @endforeach
     @endif
 
+    $("#selectCustomerGroup").select2({
+      @if(!isset($edit))
+      ajax: {
+          url: "{{route('customers-sales-specialist.getCustomerGroups')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term,
+                  sap_connection_id: $('[name="company_id"]').val()
+              };
+          },
+          processResults: function (response) {
+              return {
+                  results: response
+              };
+          },
+          cache: true
+      },
+      @endif
+      placeholder: 'Select Customer Group',
+      multiple: true,
+    });
 
     $("#selectCustomer").select2({
         @if(!isset($edit))
@@ -274,7 +338,8 @@ $(document).ready(function() {
                 return {
                     _token: "{{ csrf_token() }}",
                     search: params.term,
-                    sap_connection_id: $('[name="company_id"]').val()
+                    sap_connection_id: $('[name="company_id"]').val(),
+                    group_id: $('#selectCustomerGroup').find('option:selected').toArray().map(item => item.value),
                 };
             },
             processResults: function (response) {
@@ -413,10 +478,22 @@ $(document).ready(function() {
     $(document).on('change', '[name="company_id"]', function(event) {
       event.preventDefault();
       $('#selectCustomer').val('').trigger('change');
+      $('#selectCustomerGroup').val('').trigger('change');
+      $('#selectCustomerSelection').val('').trigger('change');
       $('#selectSalseSpecialist').val('').trigger('change');
       $('#selectProductBrand').val('').trigger('change');
       $('#selectProductLine').val('').trigger('change');
       $('#selectProductCategory').val('').trigger('change');
+    });
+
+
+    $(document).on('change', '[name="customer_selection"]', function(event) {
+      event.preventDefault();
+      if($(this).val() == "specific"){
+        $('.customer_div').show();
+      }else{
+        $('.customer_div').hide();
+      }
     });
 
 });

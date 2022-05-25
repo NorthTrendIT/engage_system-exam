@@ -501,10 +501,10 @@ $(document).ready(function() {
                 if(parseInt($self.parent().find('.qty').val()) <= 0){
                     $self.closest('.productSection').remove();
                 }
-                if(result.count > 0){
+                if(result.cart_count > 0){
                     $('.totalAmount').html('₱ '+result.total);
                     $('.totalPrice').html('₱ '+result.total);
-                    $('.productCount').html('Products ('+result.count+')');
+                    $('.productCount').html('Products ('+result.cart_count+')');
                     if(result.cart_count > 0){
                         $('.cartCount').show();
                         $('.cartCount').html(result.cart_count);

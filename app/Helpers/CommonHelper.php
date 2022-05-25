@@ -365,15 +365,10 @@ function decryptValue($value){
 }
 
 function getCartCount(){
-    $customer_id = @Auth::user()->customer_id;
+    $customer_id = explode(',', @Auth::user()->multi_customer_id);
     if($customer_id){
-        $cart = Cart::where('customer_id', $customer_id)->get();
-        // dd($cart);
-        if(count($cart)){
-            return count($cart);
-        } else {
-            return 0;
-        }
+        $cart = Cart::whereIn('customer_id', $customer_id)->get();
+        return count($cart);
     }
     return 0;
 }

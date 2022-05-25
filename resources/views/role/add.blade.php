@@ -683,6 +683,28 @@
                         </li>
                         @endif
 
+
+                        {{-- customer-delivery-schedule --}}
+                        @if(@$modules['customer-delivery-schedule']['id'])
+                        <li>
+                          <i class="fa fa-plus"></i>
+                          <label>
+                            <input data-id="{{ @$modules['customer-delivery-schedule']['id'] }}" type="checkbox" /> {{ @$modules['customer-delivery-schedule']['title'] }}
+                          </label>
+                          <ul>
+
+                            @if(@$modules['view-all-customer-delivery-schedule']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['view-all-customer-delivery-schedule']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-all-customer-delivery-schedule']['id'] }}]" /> {{ @$modules['view-all-customer-delivery-schedule']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                          </ul>
+                        </li>
+                        @endif
+                        
                       </ul>
                     </div>
 
