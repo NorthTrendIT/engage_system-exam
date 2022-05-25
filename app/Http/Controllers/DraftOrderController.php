@@ -149,6 +149,7 @@ class DraftOrderController extends Controller
             $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id', $id)->firstOrFail();
             return view('draft-order.pending_order_view', compact('data', 'total'));
         } else {
+            $data = Quotation::with(['items.product', 'customer'])->where('doc_entry', $local_order->doc_entry);
             if(userrole() == 4){
                 $customers = Auth::user()->get_multi_customer_details();
                 $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
