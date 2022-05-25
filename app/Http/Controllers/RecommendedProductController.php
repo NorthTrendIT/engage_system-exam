@@ -181,10 +181,10 @@ class RecommendedProductController extends Controller
                                 if(is_in_cart(@$row->product->id, @$sap_customer_arr[@$row->product->sap_connection_id]) == 1){
                                     $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2" href="'.route('recommended-products.goToCart', @$sap_customer_arr[@$row->product->sap_connection_id]).'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 }else{
-                                    if(@$row->product->quantity_on_stock - @$row->product->quantity_ordered_by_customers > 1){
-                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm mx-2 addToCart" data-url="'.route('recommended-products.cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
-                                    }else{
+                                    if(@$row->product->quantity_on_stock - @$row->product->quantity_ordered_by_customers < 1){
                                         $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-smmx-2 " title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
+                                    }else{
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm mx-2 addToCart" data-url="'.route('recommended-products.cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
                                     }
 
                                     $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2 goToCart" href="'.route('recommended-products.goToCart', @$sap_customer_arr[@$row->product->sap_connection_id]).'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
@@ -194,10 +194,10 @@ class RecommendedProductController extends Controller
                                 if(is_in_cart(@$row->product->id, @$sap_customer_arr[@$row->product->sap_connection_id]) == 1){
                                     $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 }else{
-                                    if(@$row->product->quantity_on_stock - @$row->product->quantity_ordered_by_customers > 1){
-                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm mx-2 addToCart" data-url="'.route('cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
-                                    }else{
+                                    if(@$row->product->quantity_on_stock - @$row->product->quantity_ordered_by_customers < 1){
                                         $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm mx-2" title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
+                                    }else{
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm mx-2 addToCart" data-url="'.route('cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
                                     }
 
                                     $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2 goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';

@@ -112,7 +112,7 @@
                             </table>
                          </div> -->
                          @if(userdepartment() != 1 && $customer)
-                            @if($product->quantity_on_stock - $product->quantity_ordered_by_customers > 1){
+                            @if($product->quantity_on_stock - $product->quantity_ordered_by_customers > 1)
                              <button type="button" class="btn btn-primary btn-md mr-1 mb-2">Buy now</button>
                              @if(is_in_cart(@$product->id) == 1)
                              <a class="btn btn-light btn-md mr-1 mb-2" href="{{ route('cart.index') }}">

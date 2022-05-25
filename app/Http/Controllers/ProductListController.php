@@ -285,35 +285,35 @@ class ProductListController extends Controller
         return DataTables::of($products)
                           ->addIndexColumn()
                           ->addColumn('item_name', function($row) {
-                                if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
+                                if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
                                     return '<span class="text-muted" title="Not Available">'.(@$row->item_name ?? "").'</span>';
                                 }else{
                                     return @$row->item_name ?? "";
                                 }
                             })
                             ->addColumn('item_code', function($row) {
-                                if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
+                                if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
                                     return '<span class="text-muted" title="Not Available">'.(@$row->item_code ?? "").'</span>';
                                 }else{
                                     return @$row->item_code ?? "";
                                 }
                             })
                             ->addColumn('brand', function($row) {
-                                if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
+                                if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
                                     return '<span class="text-muted" title="Not Available">'.(@$row->group->group_name ?? "").'</span>';
                                 }else{
                                     return @$row->group->group_name ?? "";
                                 }
                             })
                             ->addColumn('u_item_line', function($row) {
-                                if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
+                                if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
                                     return '<span class="text-muted" title="Not Available">'.(@$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-").'</span>';
                                 }else{
                                     return @$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-";
                                 }
                             })
                             ->addColumn('u_tires', function($row) {
-                                if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
+                                if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
                                     return '<span class="text-muted" title="Not Available">'.(@$row->u_tires ?? "").'</span>';
                                 }else{
                                     return @$row->u_tires ?? "-";
@@ -322,7 +322,7 @@ class ProductListController extends Controller
                             ->addColumn('price', function($row) use ($customer_price_list_no) {
                                 $sap_connection_id = $row->sap_connection_id;
 
-                                if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
+                                if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
                                     return '<span class="text-muted" title="Not Available">₱ '.number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id])).'</span>';
                                 }else{
                                     return "₱ ".number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]));
@@ -336,10 +336,10 @@ class ProductListController extends Controller
                                         $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                     }else{
 
-                                        if($row->quantity_on_stock - $row->quantity_ordered_by_customers > 1){
-                                            $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm addToCart" data-url="'.route('cart.add',@$row->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
-                                        }else{
+                                        if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
                                             $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
+                                        }else{
+                                            $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm addToCart" data-url="'.route('cart.add',@$row->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
                                         }
 
                                         $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
