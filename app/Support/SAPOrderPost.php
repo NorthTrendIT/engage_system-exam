@@ -248,8 +248,8 @@ class SAPOrderPost
                 'ItemCode' => @$item->product->item_code,
                 'ItemDescription' => @$item->product->item_name,
                 'Quantity' => @$item->quantity,
-                'Price' => @$item->price,
-                'UnitPrice' => @$item->price,
+                'Price' => @$item->price / env('SAP_VAT'),
+                'UnitPrice' => @$item->price / env('SAP_VAT'),
                 'ShipDate' => @$order->due_date,
             );
             array_push($response['DocumentLines'], $temp);

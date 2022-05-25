@@ -346,8 +346,8 @@ class SAPCustomerPromotion
                     $temp = array(
                                 'ItemCode' => @$customer_promotion_product->product->item_code,
                                 'ItemDescription' => @$customer_promotion_product->product->item_name,
-                                'Price' => @$customer_promotion_product->price,
-                                'UnitPrice' => @$customer_promotion_product->price - @$customer_promotion_product->discount,
+                                'Price' => @$customer_promotion_product->price / env('SAP_VAT'),
+                                'UnitPrice' => (@$customer_promotion_product->price - @$customer_promotion_product->discount) / env('SAP_VAT'),
                                 'Quantity' => @$customer_promotion_product_delivery->delivery_quantity,
                                 'ShipDate' => @$customer_promotion_product_delivery->delivery_date,
                             );
