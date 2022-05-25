@@ -357,9 +357,25 @@ class DraftOrderController extends Controller
         $response = array();
         // if(!empty($data)){
             foreach($data as $value){
+                $address = $value->address;
+                if(!empty($value->street)){
+                    $address .= ', '.$value->street;
+                }
+                if(!empty($value->zip_code)){
+                    $address .= ', '.$value->zip_code;
+                }
+                if(!empty($value->city)){
+                    $address .= ', '.$value->city;
+                }
+                if(!empty($value->state)){
+                    $address .= ', '.$value->state;
+                }
+                if(!empty($value->country)){
+                    $address .= ', '.$value->country;
+                }
                 $response[] = array(
                     "id"=>$value->id,
-                    "text"=>$value->address
+                    "text"=>$address,
                 );
             }
         // }

@@ -169,6 +169,14 @@ class ModuleSeeder extends Seeder
         //                     )
         //                 );
 
+        $customer_delivery_schedule = Module::create(
+                            array(
+                                'title' => 'Customer Delivery Schedule',
+                                'slug' => 'customer-delivery-schedule',
+                                'parent_id' => null,
+                            )
+                        );
+
         $data = array(
 
                     array(
@@ -400,6 +408,12 @@ class ModuleSeeder extends Seeder
                         'parent_id' => $warranty->id,
                     ),
 
+
+                    array(
+                        'title' => 'View All',
+                        'slug' => 'view-all-customer-delivery-schedule',
+                        'parent_id' => $customer_delivery_schedule->id,
+                    ),
         		);
         Module::insert($data);
     }

@@ -337,6 +337,11 @@ Route::middleware(['auth'])->group(function(){
         Route::post('common/get-product-application', 'App\Http\Controllers\CommonController@getProductApplication')->name('common.getProductApplication');
         Route::post('common/get-product-pattern', 'App\Http\Controllers\CommonController@getProductPattern')->name('common.getProductPattern');
 
+
+
+        // Customer Delivery Schedule
+        Route::get('customer-delivery-schedule/all-view', 'App\Http\Controllers\CustomerDeliveryScheduleController@allView')->name('customer-delivery-schedule.all-view');
+        
     });
 
     // For SS Only
@@ -388,10 +393,6 @@ Route::middleware(['auth'])->group(function(){
         Route::post('promotion/get-brands/','App\Http\Controllers\PromotionsController@getBrands')->name('promotion.get-brands');
         Route::post('promotion/get-market-sectors/','App\Http\Controllers\PromotionsController@getMarketSectors')->name('promotion.get-market-sectors');
         Route::post('promotion/check-title/','App\Http\Controllers\PromotionsController@checkTitle')->name('promotion.checkTitle');
-
-
-        // Customer Delivery Schedule
-        Route::get('customer-delivery-schedule/all-view', 'App\Http\Controllers\CustomerDeliveryScheduleController@allView')->name('customer-delivery-schedule.all-view');
 
         Route::resource('customer-delivery-schedule','App\Http\Controllers\CustomerDeliveryScheduleController');
         Route::post('customer-delivery-schedule/get-all', 'App\Http\Controllers\CustomerDeliveryScheduleController@getAll')->name('customer-delivery-schedule.get-all');

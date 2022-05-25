@@ -289,9 +289,9 @@
             @endif
 
             {{-- Customer Delivery Schedule --}}
-            @if(userrole() == 2)
+            @if(userrole() == 2 || (isset($access['view-all-customer-delivery-schedule']) && $access['view-all-customer-delivery-schedule'] == 1))
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer-delivery-schedule.ss-view'])) ? 'active' : '' }}" href="{{ route('customer-delivery-schedule.ss-view') }}">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer-delivery-schedule.ss-view', 'customer-delivery-schedule.all-view'])) ? 'active' : '' }}" @if(userrole() == 2) href="{{ route('customer-delivery-schedule.ss-view') }}" @else href="{{ route('customer-delivery-schedule.all-view') }}" @endif>
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">

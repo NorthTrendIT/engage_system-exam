@@ -47,10 +47,27 @@
                                             <div class="form-group">
                                                 <label class="col-form-label text-right">Select Address<span class="asterisk">*</span></label>
                                                 <select class="form-select form-select-solid selectAddress" id='selectAddress' data-control="select2" data-hide-search="false" name="address_id" @if(!isset($edit)) disabled="disabled" @endif>
-                                                    @if(isset($edit))
-                                                        <option value="{{ $edit->address->id }}" selected>{{$edit->address->address}}</option>
-                                                    @else
                                                         <option value="">Select Address</option>
+                                                    @if(isset($edit))
+                                                        @php
+                                                            $address = $edit->address->address;
+                                                            if(!empty($edit->address->street)){
+                                                                $address .= ', '.$edit->address->street;
+                                                            }
+                                                            if(!empty($edit->address->zip_code)){
+                                                                $address .= ', '.$edit->address->zip_code;
+                                                            }
+                                                            if(!empty($edit->address->city)){
+                                                                $address .= ', '.$edit->address->city;
+                                                            }
+                                                            if(!empty($edit->address->state)){
+                                                                $address .= ', '.$edit->address->state;
+                                                            }
+                                                            if(!empty($edit->address->country)){
+                                                                $address .= ', '.$edit->address->country;
+                                                            }
+                                                        @endphp
+                                                        <option value="{{ $edit->address->id }}" selected>{{$address}}</option>
                                                     @endif
                                                 </select>
                                             </div>
