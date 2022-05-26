@@ -112,7 +112,9 @@
                             </table>
                          </div> -->
                          @if(userdepartment() != 1 && $customer)
-                            @if($product->quantity_on_stock - $product->quantity_ordered_by_customers > 1)
+                            @if($product->quantity_on_stock - $product->quantity_ordered_by_customers < 1)
+                                <button type="button" class="btn btn-danger btn-md mr-1 mb-2">Not Available</button>
+                            @else
                              <button type="button" class="btn btn-primary btn-md mr-1 mb-2">Buy now</button>
                              @if(is_in_cart(@$product->id) == 1)
                              <a class="btn btn-light btn-md mr-1 mb-2" href="{{ route('cart.index') }}">
@@ -123,8 +125,6 @@
                                  <i class="fas fa-shopping-cart pr-2"></i>Add to cart
                              </button>
                              @endif
-                            @else
-                            <button type="button" class="btn btn-danger btn-md mr-1 mb-2">Not Available</button>
                             @endif
                         @endif
                       </div>
@@ -250,13 +250,18 @@
                                         </h3>
 
                                         <div class="price">₱ {{ number_format_value(get_product_customer_price(@$item->product->item_prices,@$customer->price_list_num)) }}</div>
-                                        @if(userdepartment() != 1)
-                                        @if(is_in_cart(@$item->product->id) == 1)
-                                            <a class="add-to-cart" href="{{ route('cart.index') }}">Go to cart</a>
+
+                                        @if($item->product->quantity_on_stock - $item->product->quantity_ordered_by_customers < 1)
+                                            <a href="javascript:" class="add-to-cart bg-danger">Not Available</a>
                                         @else
-                                            <a href="javascript:;" class="add-to-cart addToCart" data-url="{{ route('cart.add',@$item->product->id) }}">Add to Cart</a>
-                                            <a class="add-to-cart goToCart" href="{{ route('cart.index') }}" style="display:none">Go to cart</a>
-                                        @endif
+                                            @if(userdepartment() != 1)
+                                                @if(is_in_cart(@$item->product->id) == 1)
+                                                    <a class="add-to-cart" href="{{ route('cart.index') }}">Go to cart</a>
+                                                @else
+                                                    <a href="javascript:;" class="add-to-cart addToCart" data-url="{{ route('cart.add',@$item->product->id) }}">Add to Cart</a>
+                                                    <a class="add-to-cart goToCart" href="{{ route('cart.index') }}" style="display:none">Go to cart</a>
+                                                @endif
+                                            @endif
                                         @endif
                                     </div>
                                 </div>
