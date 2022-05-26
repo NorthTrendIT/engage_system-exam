@@ -466,7 +466,7 @@ class RecommendedProductController extends Controller
                         $productData = Product::find(@$value['product_id']);
 
                         $avl_qty = $productData->quantity_on_stock - $productData->quantity_ordered_by_customers;
-                        if($avl_qty > @$value['qty']){
+                        if($avl_qty >= @$value['qty']){
                             $item = new LocalOrderItem();
                             $item->local_order_id = $order->id;
                             $item->product_id = @$value['product_id'];
@@ -562,7 +562,7 @@ class RecommendedProductController extends Controller
                         $productData = Product::find(@$value['product_id']);
 
                         $avl_qty = $productData->quantity_on_stock - $productData->quantity_ordered_by_customers;
-                        if($avl_qty > @$value['qty']){
+                        if($avl_qty >= @$value['qty']){
                             $item = new LocalOrderItem();
                             $item->local_order_id = $order->id;
                             $item->product_id = @$value['product_id'];
