@@ -75,6 +75,32 @@
         </div>
       </div>
 
+        <div class="row gy-5 g-xl-8">
+            <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+              <div class="card card-xl-stretch mb-5 mb-xl-8">
+                <div class="card-body">
+                  <div class="row">
+                  <div class="col-md-6 mb-sm-5 mb-md-0">
+                        <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative h-100">
+                          <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Pending Sales Revenue: 
+                          <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
+                          <span class="grand_total_of_pending_sales_revenue_count text-primary "></span>
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="bg-light-chocolate px-6 py-8 rounded-2 min-w-150 position-relative h-100">
+                          <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Approved Sales Revenue: 
+                          <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
+                          <span class="grand_total_of_approved_sales_revenue_count text-primary "></span>
+                          </h6>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
 
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
@@ -180,6 +206,11 @@ $(document).ready(function() {
     });
 
     function getData(){
+
+        $('.loader_img').show();
+        $('.grand_total_of_pending_sales_revenue_count').text("");
+        $('.grand_total_of_approved_sales_revenue_count').text("");
+
         $.ajax({
             url: "{{ route('reports.promotion-report.get-all') }}",
             method: "POST",
@@ -196,6 +227,11 @@ $(document).ready(function() {
             if(result.status == false){
                 toast_error("result.message");
             }else{
+
+                $('.loader_img').hide();
+                $('.grand_total_of_pending_sales_revenue_count').text(result.grand_total_of_pending_sales_revenue);
+                $('.grand_total_of_approved_sales_revenue_count').text(result.grand_total_of_approved_sales_revenue);
+
                 myTable.clear();
                 $.each(result.data, function(index, value) {
                     myTable.row.add(value);

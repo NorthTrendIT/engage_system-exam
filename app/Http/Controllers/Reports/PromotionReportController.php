@@ -99,6 +99,7 @@ class PromotionReportController extends Controller
 
         $outputData = [];
         $no = 0;
+        $grand_total_of_pending_sales_revenue = $grand_total_of_approved_sales_revenue = 0;
         foreach($company as $key => $item){
                 $companyName = $item->company_name;
 
@@ -220,9 +221,12 @@ class PromotionReportController extends Controller
 
                 array_push($outputData, $pending);
                 array_push($outputData, $approved);
+
+                $grand_total_of_pending_sales_revenue += $totalPendingRev;
+                $grand_total_of_approved_sales_revenue += $totalApprovedRev;
         }
 
-        return ['status' => true, 'data' => $outputData];
+        return ['status' => true, 'data' => $outputData, 'grand_total_of_pending_sales_revenue' => "₱ ".number_format_value($grand_total_of_pending_sales_revenue), 'grand_total_of_approved_sales_revenue' => "₱ ".number_format_value($grand_total_of_approved_sales_revenue)];
 
     }
 
