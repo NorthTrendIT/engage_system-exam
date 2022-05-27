@@ -19,6 +19,7 @@ class TireManifistationSeeder extends Seeder
         \Schema::enableForeignKeyConstraints();
 
         \File::deleteDirectory(public_path('/sitebucket/tire-manifistation'));
+        \File::makeDirectory(public_path('/sitebucket'));
         \File::makeDirectory(public_path('/sitebucket/tire-manifistation'));
 
         /*$old_path =  public_path()."/assets/assets/media/tm_image_1.png";
