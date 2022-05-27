@@ -239,10 +239,7 @@ class ProductListController extends Controller
         });
         
         if($request->filter_search != ""){
-            $products->where(function($q) use ($request) {
-                $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
-                $q->orwhere('item_code','LIKE',"%".$request->filter_search."%");
-            });
+            $products->where('item_name','LIKE',"%".$request->filter_search."%");
         }
 
         $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
@@ -496,9 +493,7 @@ class ProductListController extends Controller
         });
 
         if($request->filter_search != ""){
-            $products->where(function($q) use ($request) {
-                $q->orwhere('item_name','LIKE',"%".$request->filter_search."%");
-            });
+            $products->where('item_name','LIKE',"%".$request->filter_search."%");
         }
 
         $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
@@ -523,7 +518,7 @@ class ProductListController extends Controller
         });
 
         if(userrole() != 1){
-            $products->havingRaw('quantity_on_stock - quantity_ordered_by_customers > 1');
+            $products->havingRaw('quantity_on_stock - quantity_ordered_by_customers > 0');
         }
 
         return [ 'products' => $products, 'customer_price_list_no' => $customer_price_list_no];
