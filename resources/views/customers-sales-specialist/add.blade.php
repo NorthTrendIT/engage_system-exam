@@ -87,15 +87,16 @@
                 </div>
 
                 <div class="row mb-5">
-
-                  <div class="col-md-6">
+                  <div class="col-md-12">
                     <div class="form-group">
                       <label>Sales Specialist<span class="asterisk">*</span></label>
                       <select class="form-select form-select-solid" id='selectSalseSpecialist' multiple="multiple" data-control="select2" data-hide-search="false" data-allow-clear="true" name="ss_ids[]">
                       </select>
                     </div>
                   </div>
+                </div>
 
+                <div class="row mb-5">
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Product Brand</label>
@@ -103,7 +104,6 @@
                       </select>
                     </div>
                   </div>
-
                 </div>
 
                 <div class="row mb-5">
@@ -250,7 +250,7 @@ $(document).ready(function() {
     @if(isset($edit) && !empty($edit))
         var initialOption = {
             id: {{ $edit->id }},
-            text: '{!! $edit->card_name.' (Code: '.$edit->card_code. (@$edit->user->email ? ', Email: '.@$edit->user->email : ""). ')' !!}',
+            text: `{!! $edit->card_name.' (Code: '.$edit->card_code. (@$edit->user->email ? ', Email: '.@$edit->user->email : ""). ')' !!}`,
             sap_connection_id: '{!! $edit->sap_connection_id !!}',
             selected: true
         }
@@ -261,7 +261,7 @@ $(document).ready(function() {
       @foreach ($edit->sales_specialist as $data)
         var initialOption = {
             id: {{ $data->ss_id }},
-            text: '{!! $data->sales_person->sales_specialist_name !!}',
+            text: `{!! $data->sales_person->sales_specialist_name !!} (Email: {!! $data->sales_person->email !!})`,
             selected: true
         }
         $initialSalesPerson.push(initialOption);
