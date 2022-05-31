@@ -328,7 +328,7 @@ class CustomersSalesSpecialistsController extends Controller
                                 return @$row->first()->customer->sap_connection->company_name;
                             })
                             ->addColumn('action', function($row) {
-                                $btn = '<a href="' . route('customers-sales-specialist.edit',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2">
+                                $btn = '<a href="' . route('customers-sales-specialist.edit',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                     <i class="fa fa-pencil"></i>
                                   </a>';
                                 $btn .= '<a href="javascript:void(0)" data-url="' . route('customers-sales-specialist.destroy',$row->first()->customer_id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete mx-2">
@@ -404,11 +404,14 @@ class CustomersSalesSpecialistsController extends Controller
                             ->where('role_id',2)
                             ->where('is_active', 1)
                             ->orderby('sales_specialist_name','asc')
-                            ->select('id','sales_specialist_name')
+                            ->select('id','sales_specialist_name','email')
                             ->limit(50);
 
             if($search != ''){
-                $data->where('sales_specialist_name', 'like', '%' .$search . '%');
+                $data->where(function($q) use ($search){
+                    $q->orwhere('sales_specialist_name', 'like', '%' .$search . '%');
+                    $q->orwhere('email', 'like', '%' .$search . '%');
+                });
             }
 
             $data = $data->get();
@@ -416,7 +419,7 @@ class CustomersSalesSpecialistsController extends Controller
             foreach($data as $value){
                 $response[] = array(
                     "id"=>$value->id,
-                    "text"=>$value->sales_specialist_name
+                    "text"=>$value->sales_specialist_name."(Email: ".$value->email.")",
                 );
             }
         }
