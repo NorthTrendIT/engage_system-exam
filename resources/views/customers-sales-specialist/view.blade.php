@@ -52,7 +52,7 @@
                   <div class="form-group">
                     <ul>
                       @foreach (@$data->sales_specialist as $d)
-                        <li>{!! $d->sales_person->sales_specialist_name !!}</li>
+                        <li>{!! $d->sales_person->sales_specialist_name !!} (Email: {!! $d->sales_person->email !!})</li>
                       @endforeach
                     </ul> 
                   </div>
