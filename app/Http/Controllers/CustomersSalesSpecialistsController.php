@@ -303,9 +303,14 @@ class CustomersSalesSpecialistsController extends Controller
                                             ->orderBy('id', 'desc');
 
         if($request->filter_company != ""){
-
             $data->whereHas('customer', function($q) use ($request){
                 $q->where('sap_connection_id',$request->filter_company);
+            });
+        }
+
+        if($request->filter_group != ""){
+            $data->whereHas('customer.group', function($q) use ($request){
+                $q->where('code',$request->filter_group);
             });
         }
 
@@ -323,6 +328,9 @@ class CustomersSalesSpecialistsController extends Controller
                             })
                             ->addColumn('customer', function($row) {
                                 return @$row->first()->customer->card_name ?? "-";
+                            })
+                            ->addColumn('group', function($row) {
+                                return @$row->first()->customer->group->name ?? "-";
                             })
                             ->addColumn('company', function($row) {
                                 return @$row->first()->customer->sap_connection->company_name;
