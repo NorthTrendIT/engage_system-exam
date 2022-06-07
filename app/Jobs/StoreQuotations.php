@@ -104,6 +104,7 @@ class StoreQuotations implements ShouldQueue
 
                 if(!empty($value['DocumentLines'])){
 
+                    $item_codes = [];
                     $quo_items = @$value['DocumentLines'];
 
                     foreach($quo_items as $item){
@@ -139,15 +140,20 @@ class StoreQuotations implements ShouldQueue
 
                         $item_obj = QuotationItem::updateOrCreate([
                                         'quotation_id' => $obj->id,
+                                        'item_code' => @$item['ItemCode'],
                                     ],
                                     $fields
                                 );
+
+                        array_push($item_codes, @$item['ItemCode']);
 
                         if(!is_null(@$value['BaseEntry'])){
                             $obj->base_entry = @$value['BaseEntry'];
                             $obj->save();
                         }
                     }
+
+                    QuotationItem::where('quotation_id', $obj->id)->whereNotIn('item_code', $item_codes)->delete();
 
                 }
             }
