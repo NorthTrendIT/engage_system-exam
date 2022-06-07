@@ -103,6 +103,7 @@ class StoreInvoices implements ShouldQueue
 
                 if(!empty($invoice['DocumentLines'])){
 
+                    $item_codes = [];
                     $invoice_items = @$invoice['DocumentLines'];
 
                     foreach($invoice_items as $value){
@@ -142,11 +143,15 @@ class StoreInvoices implements ShouldQueue
                                     $item
                                 );
 
+                        array_push($item_codes, @$value['ItemCode']);
+
                         if(!is_null(@$value['BaseEntry'])){
                             $obj->base_entry = @$value['BaseEntry'];
                             $obj->save();
                         }
                     }
+
+                    InvoiceItem::where('invoice_id', $obj->id)->whereNotIn('item_code', $item_codes)->delete();
 
                 }
             }
