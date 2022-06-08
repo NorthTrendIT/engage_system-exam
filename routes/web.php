@@ -153,6 +153,7 @@ Route::middleware(['auth'])->group(function(){
     	    Route::resource('organisation','App\Http\Controllers\OrganisationController');
 
             // Activity Log
+            Route::get('activitylog/export', 'App\Http\Controllers\ActivityLogController@export')->name('activitylog.export');
             Route::resource('activitylog','App\Http\Controllers\ActivityLogController');
     	    Route::post('activitylog/get-all', 'App\Http\Controllers\ActivityLogController@getAll')->name('activitylog.get-all');
 

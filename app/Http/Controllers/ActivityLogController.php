@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\ActivityLog;
 use App\Models\SapConnection;
 use DataTables;
+
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ActivityLogExport;
+
 class ActivityLogController extends Controller
 {
     /**
@@ -172,7 +176,7 @@ class ActivityLogController extends Controller
                     return $row->ip_address;
                 })
                 ->addColumn('date_time', function($row){
-                    return date("M d, Y H:m A", strtotime($row->created_at));
+                    return date("M d, Y h:m A", strtotime($row->created_at));
                 })
                 ->orderColumn('date_time', function ($query, $order) {
                     $query->orderBy('created_at', $order);
@@ -193,5 +197,74 @@ class ActivityLogController extends Controller
                 })
                 ->rawColumns(['status'])
                 ->make(true);
+    }
+
+    public function export(Request $request){
+        $filter = collect();
+        if(@$request->data){
+          $filter = json_decode(base64_decode($request->data));
+        }
+
+        $data = ActivityLog::with(['activity', 'user'])->orderBy('id', 'desc');
+
+        if(@$filter->filter_status != ""){
+            $data->where('status',$filter->filter_status);
+        }
+
+        if(@$filter->filter_type != ""){
+            $data->where('type',$filter->filter_type);
+        }
+
+        if(@$filter->filter_company != ""){
+            $data->where('sap_connection_id',$filter->filter_company);
+        }
+
+        if(@$filter->filter_search != ""){
+            $data->where(function($q) use ($filter) {
+                $q->whereHas('activity', function($q1) use ($filter) {
+                    $q1->where('name','LIKE',"%".$filter->filter_search."%");
+                });
+            });
+        }
+
+        if(@$filter->filter_date_range != ""){
+            $date = explode(" - ", $filter->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('created_at', '>=' , $start);
+            $data->whereDate('created_at', '<=' , $end);
+        }
+
+        $data = $data->get();
+
+        $records = array();
+        foreach($data as $key => $value){
+
+            $type = "";
+            if($value->type == "S"){
+                $type = "SAP";
+            }else if($value->type == "O"){
+                $type = 'OMS';
+            }
+                                
+            $records[] = array(
+                            'no' => $key + 1,
+                            'type' => $type,
+                            'activity' => @$value->activity->name ?? "-",
+                            'company' => @$value->sap_connection->company_name ?? "-",
+                            'user_name' => @$value->user->sales_specialist_name ?? "-",
+                            'status' => ucfirst(@$value->status ?? ""),
+                            'ip' =>  @$value->ip_address ?? "-",
+                            'created_at' => date('M d, Y h:m A',strtotime($value->created_at)),
+                          );
+        }
+        if(count($records)){
+            $title = 'Activity Log Report '.date('dmY').'.xlsx';
+            return Excel::download(new ActivityLogExport($records), $title);
+        }
+
+        \Session::flash('error_message', common_error_msg('excel_download'));
+        return redirect()->back();
     }
 }
