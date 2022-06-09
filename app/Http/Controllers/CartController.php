@@ -128,7 +128,8 @@ class CartController extends Controller
             $cart->qty = 1;
             $cart->save();
 
-            $count = Cart::where('customer_id', $cart->customer_id)->count();
+            $customer_id = explode(',', @Auth::user()->multi_customer_id);
+            $count = Cart::whereIn('customer_id', $customer_id)->count();
 
             return $response = ['status'=>true,'message'=>"Product added to cart successfully.", 'count'=> $count];
         }

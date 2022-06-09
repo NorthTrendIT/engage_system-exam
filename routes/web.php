@@ -155,7 +155,8 @@ Route::middleware(['auth'])->group(function(){
             // Activity Log
             Route::get('activitylog/export', 'App\Http\Controllers\ActivityLogController@export')->name('activitylog.export');
             Route::resource('activitylog','App\Http\Controllers\ActivityLogController');
-    	    Route::post('activitylog/get-all', 'App\Http\Controllers\ActivityLogController@getAll')->name('activitylog.get-all');
+            Route::post('activitylog/get-all', 'App\Http\Controllers\ActivityLogController@getAll')->name('activitylog.get-all');
+    	    Route::post('activitylog/clear-all-logs', 'App\Http\Controllers\ActivityLogController@clearAllLogs')->name('activitylog.clear-all-logs');
 
     	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index')->middleware('not-super-admin');
     	    Route::get('product-list/{id}/{customer_id?}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show')->middleware('not-super-admin');

@@ -267,4 +267,12 @@ class ActivityLogController extends Controller
         \Session::flash('error_message', common_error_msg('excel_download'));
         return redirect()->back();
     }
+
+    public function clearAllLogs(){
+        $data = ActivityLog::truncate();
+        
+        $response = ['status'=>true,'message'=>'All activity logs deleted successfully !'];
+        
+        return $response;
+    }
 }
