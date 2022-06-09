@@ -9,6 +9,17 @@
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Activity Log</h1>
       </div>
+
+      <!--begin::Actions-->
+      <div class="d-flex align-items-center py-1">
+        <!--begin::Button-->
+        @if(userrole() == 1)
+        <a href="javascript:" class="btn btn-sm btn-primary mr-10 clear_all_logs">Clear All Logs</a>
+        @endif
+        <!--end::Button-->
+      </div>
+      <!--end::Actions-->
+
     </div>
   </div>
 
@@ -279,6 +290,41 @@
         url = url + '?data=' + btoa(JSON.stringify(data));
 
         window.location.href = url;
+      });
+
+      $(document).on('click', '.clear_all_logs', function(event) {
+        event.preventDefault();
+
+        Swal.fire({
+          title: 'Are you sure want to clear all logs?',
+          text: "Once deleted, you will not be able to recover this record!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, clear it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: '{{ route('activitylog.clear-all-logs') }}',
+              method: "POST",
+              data: {
+                      _token:'{{ csrf_token() }}' 
+                    }
+            })
+            .done(function(result) {
+              if(result.status == false){
+                toast_error(result.message);
+              }else{
+                toast_success(result.message);
+                render_table();
+              }
+            })
+            .fail(function() {
+              toast_error("error");
+            });
+          }
+        })
       });
     @endif
 
