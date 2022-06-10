@@ -42,7 +42,7 @@ class SyncInvoices implements ShouldQueue
      */
     public function handle()
     {
-        \Log::debug('2 The invoice log id is -->' . $this->log_id);
+        // \Log::debug('2 The invoice log id is -->' . $this->log_id);
 
         $sap_invoices = new SAPInvoices($this->database, $this->username, $this->password, $this->log_id);
 

@@ -45,6 +45,10 @@
                               <td>{{ @$data->sap_connection->company_name ?? "-" }}</td>
                             </tr>
                             <tr>
+                              <th> <b>Other Business Units:</b> </th>
+                              <td>{{ @$sap_connections ?? "-" }}</td>
+                            </tr>
+                            <tr>
                               <th> <b>Card Code:</b> </th>
                               <td>{{ @$data->card_code ?? "-" }}</td>
                             </tr>

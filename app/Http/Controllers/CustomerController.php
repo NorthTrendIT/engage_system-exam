@@ -76,7 +76,10 @@ class CustomerController extends Controller
 
         $data = $data->firstOrFail();
 
-        return view('customer.view',compact('data'));
+        $sap_connection_id = explode(',', @$data->user->multi_sap_connection_id);
+        $sap_connections = SapConnection::whereIn('id', $sap_connection_id)->where('id','!=', $data->sap_connection_id)->pluck('company_name')->toArray();
+        $sap_connections = implode(", ", $sap_connections);
+        return view('customer.view',compact('data', 'sap_connections'));
     }
 
     /**

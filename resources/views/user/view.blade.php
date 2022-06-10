@@ -49,6 +49,12 @@
                        <table class="table table-bordered" id="myTable">
                           <!--begin::Table head-->
                           <thead>
+                            @if($sap_connections != "")
+                            <tr>
+                              <th> <b>Business Units:</b> </th>
+                              <td>{{ @$sap_connections ?? "-" }}</td>
+                            </tr>
+                            @endif
                             <tr>
                               <th> <b>First Name:</b> </th>
                               <td>{{ @$data->first_name ?? "-" }}</td>
