@@ -205,6 +205,8 @@ Route::middleware(['auth'])->group(function(){
             Route::post('customers-sales-specialist/get-product-line/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductLine')->name('customers-sales-specialist.get-product-line');
             Route::post('customers-sales-specialist/get-product-category/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductCategory')->name('customers-sales-specialist.get-product-category');
 
+            Route::post('customers-sales-specialist/get-assigned-customer-list/','App\Http\Controllers\CustomersSalesSpecialistsController@getAssignedCustomerList')->name('customers-sales-specialist.get-assigned-customer-list');
+
     	    Route::resource('class','App\Http\Controllers\ClassController');
     	    Route::post('class/get-all', 'App\Http\Controllers\ClassController@getAll')->name('class.get-all');
 

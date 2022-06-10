@@ -76,14 +76,20 @@
                 </div>
                 @endif
 
-                <div class="row mb-5 customer_div" @if(!isset($edit)) style="display:none" @endif>
+                <div class="row  mb-5 customer_div" @if(!isset($edit)) style="display:none" @endif>
                   <div class="col-md-12">
                     <div class="form-group">
                       <label>Customer<span class="asterisk">*</span></label>
                       <select class="form-select form-select-solid" id='selectCustomer' data-control="select2" data-hide-search="false" name="customer_ids[]">
                       </select>
+                      <span class="text-muted">Note: The already assigned sales specialist customer is not shown in the above list. <a href="javascript:" title="Click here" class="click_here_link">Click here</a></span>
                     </div>
                   </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                    </div>
+                  </div>
+
                 </div>
 
                 <div class="row mb-5">
@@ -142,6 +148,59 @@
     </div>
   </div>
 </div>
+
+
+<!--begin::Modal - View Users-->
+<div class="modal fade" id="kt_modal_view_users" tabindex="-1" aria-hidden="true">
+  <!--begin::Modal dialog-->
+  <div class="modal-dialog mw-650px">
+    <!--begin::Modal content-->
+    <div class="modal-content">
+      <!--begin::Modal header-->
+      <div class="modal-header pb-0 border-0 justify-content-end">
+        <!--begin::Close-->
+        <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+          <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+          <span class="svg-icon svg-icon-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="black" />
+              <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
+            </svg>
+          </span>
+          <!--end::Svg Icon-->
+        </div>
+        <!--end::Close-->
+      </div>
+      <!--begin::Modal header-->
+      <!--begin::Modal body-->
+      <div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
+        <!--begin::Heading-->
+        <div class="text-center mb-13">
+          <!--begin::Title-->
+          <h1 class="mb-3">Customer List</h1>
+          <!--end::Title-->
+        </div>
+        <!--end::Heading-->
+        <!--begin::Users-->
+        <div class="mb-15">
+          <!--begin::List-->
+          <div class="mh-375px scroll-y me-n7 pe-7 customer_list_div" >
+            <!--begin::User-->
+            
+            <!--end::User-->
+          </div>
+          <!--end::List-->
+        </div>
+        <!--end::Users-->
+      </div>
+      <!--end::Modal body-->
+    </div>
+    <!--end::Modal content-->
+  </div>
+  <!--end::Modal dialog-->
+</div>
+<!--end::Modal - View Users-->
+
 @endsection
 
 
@@ -494,6 +553,37 @@ $(document).ready(function() {
       }else{
         $('.customer_div').hide();
       }
+    });
+
+    function showCustomerList(){
+      $.ajax({
+        url: "{{route('customers-sales-specialist.get-assigned-customer-list')}}",
+        type: "POST",
+        data: {
+          _token: "{{ csrf_token() }}",
+          sap_connection_id: $('[name="company_id"]').val(),
+          group_id: $('#selectCustomerGroup').find('option:selected').toArray().map(item => item.value),
+        },
+        success: function (data) {
+          if (data.status) {
+            $('.customer_list_div').html(data.html);
+          } else {
+            $('.customer_list_div').html(data.html);
+          }
+        },
+        error: function () {
+          toast_error("Something went to wrong !");
+          $('.customer_list_div').html("");
+        },
+      });
+    }
+
+    $(document).on('click', '.click_here_link', function(event) {
+      event.preventDefault();
+      
+      showCustomerList();
+      $('#kt_modal_view_users').modal('show');
+
     });
 
 });
