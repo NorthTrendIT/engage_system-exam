@@ -46,7 +46,7 @@
                             </tr>
                             <tr>
                               <th> <b>Other Business Units:</b> </th>
-                              <td>{{ @$sap_connections ?? "-" }}</td>
+                              <td>{{ @$sap_connections != "" ? @$sap_connections : "-" }}</td>
                             </tr>
                             <tr>
                               <th> <b>Card Code:</b> </th>
