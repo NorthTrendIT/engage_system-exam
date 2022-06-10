@@ -374,6 +374,6 @@ class CartController extends Controller
             Cart::whereIn('customer_id', $customer_id)->delete();
         }
 
-        return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
+        return $response = ['status' => true, 'message' => 'Your order placed successfully!'];
     }
 }

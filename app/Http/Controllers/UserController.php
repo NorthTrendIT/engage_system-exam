@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Role;
 use App\Models\Location;
 use App\Models\Department;
+use App\Models\SapConnection;
 use App\Models\User;
 use Validator;
 use DataTables;
@@ -170,7 +171,11 @@ class UserController extends Controller
 
         $tree = json_encode($this->getUserTreeData($id));
 
-        return view('user.view',compact('data','tree'));
+        $sap_connection_id = explode(',', @$data->multi_sap_connection_id);
+        $sap_connections = SapConnection::whereIn('id', $sap_connection_id)->pluck('company_name')->toArray();
+        $sap_connections = implode(", ", $sap_connections);
+
+        return view('user.view',compact('data','tree','sap_connections'));
     }
 
     /**
