@@ -341,6 +341,9 @@ class HelpDeskController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('ticket_number', function($row) {
+                                if(@$row->ticket_number != ""){
+                                    return '<a href="' . route('help-desk.show',$row->id). '">'.@$row->ticket_number.'</a>';
+                                }
                                 return @$row->ticket_number ?? "";
                             })
                             ->addColumn('type_of_customer_request', function($row) {
@@ -406,7 +409,7 @@ class HelpDeskController extends Controller
                             ->orderColumn('user', function ($query, $order) {
                                 $query->join('users', 'help_desks.user_id', '=', 'users.id')->orderBy('users.sales_specialist_name', $order);
                             })
-                            ->rawColumns(['status','action','urgency'])
+                            ->rawColumns(['status','action','urgency','ticket_number'])
                             ->make(true);
     }
 
