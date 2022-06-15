@@ -542,7 +542,7 @@ class OrdersController extends Controller
             // return view('emails.order_update',array('link'=>$link, 'order_no'=>$quotation->doc_entry));
 
             // Send Mail.
-            Mail::send('emails.order_update', array('link'=>$link, 'order_no'=>$quotation->doc_entry), function($message) use($user) {
+            Mail::send('emails.order_update', array('link'=>$link, 'order_no'=>$quotation->doc_entry, 'status'=>getOrderStatusByQuotation($quotation)), function($message) use($user) {
                 $message->to($user->email, $user->name)
                         ->subject('Order Status Update');
             });
