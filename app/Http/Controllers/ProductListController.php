@@ -260,13 +260,13 @@ class ProductListController extends Controller
             }
 
             if(!empty($c_product_tires_category)){
-                $q->orwhereHas('product_tires_category', function($q1) use ($c_product_group){
+                $q->orwhereHas('product_tires_category', function($q1) use ($c_product_tires_category){
                     $q1->whereIn('id', $c_product_tires_category);
                 });
             }
 
             if(!empty($c_product_item_line)){
-                $q->orwhereHas('product_item_line', function($q1) use ($c_product_group){
+                $q->orwhereHas('product_item_line', function($q1) use ($c_product_item_line){
                     $q1->whereIn('id', $c_product_item_line);
                 });
             }
@@ -535,13 +535,13 @@ class ProductListController extends Controller
             }
 
             if(!empty($c_product_tires_category)){
-                $q->orwhereHas('product_tires_category', function($q1) use ($c_product_group){
+                $q->orwhereHas('product_tires_category', function($q1) use ($c_product_tires_category){
                     $q1->whereIn('id', $c_product_tires_category);
                 });
             }
 
             if(!empty($c_product_item_line)){
-                $q->orwhereHas('product_item_line', function($q1) use ($c_product_group){
+                $q->orwhereHas('product_item_line', function($q1) use ($c_product_item_line){
                     $q1->whereIn('id', $c_product_item_line);
                 });
             }
