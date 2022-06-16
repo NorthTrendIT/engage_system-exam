@@ -514,7 +514,10 @@ class WarrantyController extends Controller
                                 return  @$row->warranty_claim_type ?? "-";
                             })
                             ->addColumn('ref_no', function($row) {
-                                return @$row->ref_no ?? "-";
+                                if(@$row->ref_no != ""){
+                                    return '<a href="' . route('warranty.show',$row->id). '">'.@$row->ref_no.'</a>';
+                                }
+                                return @$row->ref_no ?? "";
                             })
                             ->addColumn('created_at', function($row) {
                                 return date('M d, Y',strtotime($row->created_at));
@@ -566,7 +569,7 @@ class WarrantyController extends Controller
                                         ->leftjoin('sap_connections', 'sap_connections.id', '=', 'users.id')
                                         ->orderBy('sap_connections.company_name', $order);
                             })
-                            ->rawColumns(['action'])
+                            ->rawColumns(['action','ref_no'])
                             ->make(true);
     }
 
