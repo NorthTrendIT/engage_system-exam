@@ -287,6 +287,11 @@ class RecommendedProductController extends Controller
             if($avl_qty < 1){
                 return $response = ['status'=>false,'message'=>"The product quantity is not available."];
             }
+
+            $price = get_product_customer_price(@$product->item_prices,@$customer->price_list_num);
+            if($price < 1){
+                return $response = ['status'=>false,'message'=>"The product price is not a valid."];
+            }
         }
 
         if(isset($id)){
