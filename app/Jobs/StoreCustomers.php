@@ -236,6 +236,9 @@ class StoreCustomers implements ShouldQueue
                         // array_push($multi_sap_connections, $obj->id);
 
 
+                        if($obj->is_active){
+                            $check_customer->is_active = $obj->is_active;
+                        }
                         $check_customer->multi_customer_id = implode(",", $multi_customer_id);
                         $check_customer->multi_sap_connection_id = implode(",", $multi_sap_connection_id);
                         $check_customer->multi_real_sap_connection_id = implode(",", $multi_real_sap_connection_id);
