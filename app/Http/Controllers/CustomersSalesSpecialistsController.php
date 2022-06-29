@@ -303,9 +303,14 @@ class CustomersSalesSpecialistsController extends Controller
                                             ->orderBy('id', 'desc');
 
         if($request->filter_company != ""){
-
             $data->whereHas('customer', function($q) use ($request){
                 $q->where('sap_connection_id',$request->filter_company);
+            });
+        }
+
+        if($request->filter_group != ""){
+            $data->whereHas('customer.group', function($q) use ($request){
+                $q->where('code',$request->filter_group);
             });
         }
 
@@ -323,6 +328,9 @@ class CustomersSalesSpecialistsController extends Controller
                             })
                             ->addColumn('customer', function($row) {
                                 return @$row->first()->customer->card_name ?? "-";
+                            })
+                            ->addColumn('group', function($row) {
+                                return @$row->first()->customer->group->name ?? "-";
                             })
                             ->addColumn('company', function($row) {
                                 return @$row->first()->customer->sap_connection->company_name;
@@ -587,6 +595,51 @@ class CustomersSalesSpecialistsController extends Controller
                 );
             }
         }
+
+        return response()->json($response);
+    }
+
+
+    public function getAssignedCustomerList(Request $request){
+        $response = array();
+        $status = false;
+        $html = "Not found !";
+
+        if($request->sap_connection_id){
+            $data = Customer::has('sales_specialist')->orderby('card_name','asc')->where('sap_connection_id',$request->sap_connection_id)->where('is_active',1);
+            
+            if(isset($request->group_id) && !empty($request->group_id)){
+                $data->whereHas('group', function($q) use ($request){
+                    $q->whereIn('id', $request->group_id);
+                });
+            }
+
+            $data = $data->get();
+
+            $status = true;
+
+            if(count($data)){
+                $html = "";
+                foreach($data as $value){
+
+                    $html .= '<div class="d-flex flex-stack py-5 border-bottom border-gray-300 border-bottom-dashed">
+                              <div class="d-flex align-items-center">
+                                <div class="">
+                                  <span class="d-flex align-items-center fs-5 fw-bolder text-dark text-hover-primary">'.$value->card_name.' (Code: '.$value->card_code.')</span>
+                                </div>
+                              </div>
+                              <div class="d-flex">
+                                <div class="text-end">
+                                  <div class="fs-7 text-muted">'.@$value->user->email.'</div>
+                                </div>
+                              </div>
+                            </div>';
+                }
+            }
+
+
+        }
+        $response = ['html'=>$html, 'status'=>$status];
 
         return response()->json($response);
     }

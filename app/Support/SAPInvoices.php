@@ -202,6 +202,7 @@ class SAPInvoices
 
                     if(!empty($invoice['DocumentLines'])){
 
+                        $item_codes = [];
                         $invoice_items = @$invoice['DocumentLines'];
 
                         foreach($invoice_items as $value){
@@ -241,11 +242,15 @@ class SAPInvoices
                                         $item
                                     );
 
+                            array_push($item_codes, @$item['ItemCode']);
+
                             if(!is_null(@$value['BaseEntry'])){
                                 $obj->base_entry = @$value['BaseEntry'];
                                 $obj->save();
                             }
                         }
+
+                        QuotationItem::where('quotation_id', $obj->id)->whereNotIn('item_code', $item_codes)->delete();
                     }
 
                 }

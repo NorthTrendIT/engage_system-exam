@@ -168,7 +168,6 @@ class ProductListController extends Controller
             $customer_id = explode(',', Auth::user()->multi_customer_id);
             $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
             $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
-
         }elseif (!is_null(@Auth::user()->created_by)) {
 
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
@@ -186,7 +185,6 @@ class ProductListController extends Controller
 
             $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
             $sap_connection_id = array( @Auth::user()->sap_connection_id );
-
         }
 
         // if($sap_connection_id == 5){ //Solid Trend
@@ -202,30 +200,29 @@ class ProductListController extends Controller
 
             // Product Group
             $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
-
-            $c_product_group = array_map( function ( $ar ) {
-                return $ar['number'];
-            }, array_column( $c_product_group->toArray(), 'product_group' ) );
+            $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
+            // $c_product_group = array_map( function ( $ar ) {
+            //     return $ar['number'];
+            // }, array_column( $c_product_group->toArray(), 'product_group' ) );
 
 
             // Product Item Line
             $c_product_item_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
-
-            $c_product_item_line = array_map( function ( $ar ) {
-                return $ar['u_item_line'];
-            }, array_column( $c_product_item_line->toArray(), 'product_item_line' ) );
+            $c_product_item_line = array_column( $c_product_item_line->toArray(), 'product_item_line_id' );
+            // $c_product_item_line = array_map( function ( $ar ) {
+            //     return $ar['u_item_line'];
+            // }, array_column( $c_product_item_line->toArray(), 'product_item_line' ) );
 
 
             // Product Tires Category
             $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
-
-            $c_product_tires_category = array_map( function ( $ar ) {
-                return $ar['u_tires'];
-            }, array_column( $c_product_tires_category->toArray(), 'product_tires_category' ) );
+            $c_product_tires_category = array_column( $c_product_tires_category->toArray(), 'product_tires_category_id' );
+            // $c_product_tires_category = array_map( function ( $ar ) {
+            //     return $ar['u_tires'];
+            // }, array_column( $c_product_tires_category->toArray(), 'product_tires_category' ) );
         }
 
-
-        if(empty($customer_id) && empty($sap_connection_id) && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
+        if(empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
             $products = collect([]);
             return DataTables::of($products)->make(true);
         }
@@ -244,7 +241,7 @@ class ProductListController extends Controller
 
         $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
 
-            if(!empty($c_product_group)){
+            /*if(!empty($c_product_group)){
                 $q->orWhereIn('items_group_code', $c_product_group);
             }
 
@@ -254,6 +251,24 @@ class ProductListController extends Controller
 
             if(!empty($c_product_item_line)){
                 $q->orWhereIn('u_item_line', $c_product_item_line);
+            }*/
+
+            if(!empty($c_product_group)){
+                $q->orwhereHas('group', function($q1) use ($c_product_group){
+                    $q1->whereIn('id', $c_product_group);
+                });
+            }
+
+            if(!empty($c_product_tires_category)){
+                $q->orwhereHas('product_tires_category', function($q1) use ($c_product_tires_category){
+                    $q1->whereIn('id', $c_product_tires_category);
+                });
+            }
+
+            if(!empty($c_product_item_line)){
+                $q->orwhereHas('product_item_line', function($q1) use ($c_product_item_line){
+                    $q1->whereIn('id', $c_product_item_line);
+                });
             }
         });
 
@@ -458,29 +473,32 @@ class ProductListController extends Controller
 
             // Product Group
             $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
-
-            $c_product_group = array_map( function ( $ar ) {
-                return $ar['number'];
-            }, array_column( $c_product_group->toArray(), 'product_group' ) );
+            $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
+            
+            // $c_product_group = array_map( function ( $ar ) {
+            //     return $ar['number'];
+            // }, array_column( $c_product_group->toArray(), 'product_group' ) );
 
 
             // Product Item Line
             $c_product_item_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
-
-            $c_product_item_line = array_map( function ( $ar ) {
-                return $ar['u_item_line'];
-            }, array_column( $c_product_item_line->toArray(), 'product_item_line' ) );
+            $c_product_item_line = array_column( $c_product_item_line->toArray(), 'product_item_line_id' );
+            
+            // $c_product_item_line = array_map( function ( $ar ) {
+            //     return $ar['u_item_line'];
+            // }, array_column( $c_product_item_line->toArray(), 'product_item_line' ) );
 
 
             // Product Tires Category
             $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
-
-            $c_product_tires_category = array_map( function ( $ar ) {
-                return $ar['u_tires'];
-            }, array_column( $c_product_tires_category->toArray(), 'product_tires_category' ) );
+            $c_product_tires_category = array_column( $c_product_tires_category->toArray(), 'product_tires_category_id' );
+            
+            // $c_product_tires_category = array_map( function ( $ar ) {
+            //     return $ar['u_tires'];
+            // }, array_column( $c_product_tires_category->toArray(), 'product_tires_category' ) );
         }
 
-        if(empty($customer_id) && empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
+        if(empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
             $products = collect([]);
         }
 
@@ -498,7 +516,7 @@ class ProductListController extends Controller
 
         $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
 
-            if(!empty($c_product_group)){
+            /*if(!empty($c_product_group)){
                 $q->orWhereIn('items_group_code', $c_product_group);
             }
 
@@ -508,6 +526,24 @@ class ProductListController extends Controller
 
             if(!empty($c_product_item_line)){
                 $q->orWhereIn('u_item_line', $c_product_item_line);
+            }*/
+
+            if(!empty($c_product_group)){
+                $q->orwhereHas('group', function($q1) use ($c_product_group){
+                    $q1->whereIn('id', $c_product_group);
+                });
+            }
+
+            if(!empty($c_product_tires_category)){
+                $q->orwhereHas('product_tires_category', function($q1) use ($c_product_tires_category){
+                    $q1->whereIn('id', $c_product_tires_category);
+                });
+            }
+
+            if(!empty($c_product_item_line)){
+                $q->orwhereHas('product_item_line', function($q1) use ($c_product_item_line){
+                    $q1->whereIn('id', $c_product_item_line);
+                });
             }
         });
 

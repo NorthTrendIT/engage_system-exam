@@ -248,6 +248,13 @@
                             </div>
                           </div>
 
+                          <div class="col-md-3 mt-5 product_price_div">
+                            <div class="form-group">
+                              <label>Product Price<span class="asterisk">*</span></label>
+                              <input type="number" class="form-control form-control-solid product_price" name="product_price" readonly value="{{ @$p->product->promotion_price }}">
+                            </div>
+                          </div>
+
                           <div class="col-md-3 mt-5 product_fixed_quantity_div">
                             <div class="form-group">
                               <label>Fixed Quantity<span class="asterisk">*</span></label>
@@ -265,6 +272,12 @@
                           <div class="col-md-3 mt-5 delete_btn_div" @if($key == 0) style="display: none;" @endif>
                             <div class="form-group">
                               <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-md btn-color-danger mt-6 " data-repeater-delete ><i class="fa fa-trash"></i></a>
+                            </div>
+                          </div>
+
+                          <div class="col-md-12 mt-5 product_price_error_div" @if(@$p->product->promotion_price > 0) style="display: none;" @endif>
+                            <div class="form-group">
+                              <span class="text-danger">The product price must be greater than zero so please remove/change this product for further process.</span>
                             </div>
                           </div>
 
@@ -326,6 +339,13 @@
                           </div>
                         </div>
 
+                        <div class="col-md-3 mt-5 product_price_div" style="display:none;">
+                          <div class="form-group">
+                            <label>Product Price<span class="asterisk">*</span></label>
+                            <input type="number" class="form-control form-control-solid product_price" name="product_price" readonly value="0.00">
+                          </div>
+                        </div>
+
                         <div class="col-md-3 mt-5 product_fixed_quantity_div">
                           <div class="form-group">
                             <label>Fixed Quantity<span class="asterisk">*</span></label>
@@ -345,6 +365,14 @@
                             <a href="javascript:" class="btn btn-icon btn-bg-light btn-active-color-primary btn-md btn-color-danger mt-6" data-repeater-delete><i class="fa fa-trash"></i></a>
                           </div>
                         </div>
+
+                        <div class="col-md-12 mt-5 product_price_error_div" style="display: none;">
+                          <div class="form-group">
+                            <span class="text-danger">The product price must be greater than zero so please remove/change this product for further process.</span>
+                          </div>
+                        </div>
+
+                        
                       </div>
                     @endif
 
@@ -434,6 +462,13 @@
       @endif
 
       hide_loader();
+
+      $('.product_price').each(function(){
+        if(this.value < 1 && this.value){
+          $('[type="submit"]').prop('disabled', true);
+        }
+      });
+      
     @endif
 
 
@@ -744,7 +779,8 @@
             results:  $.map(response, function (item) {
                           return {
                             text: item.item_name,
-                            id: item.id
+                            id: item.id,
+                            'data-price': item.promotion_price,
                           }
                       })
           };
@@ -817,6 +853,14 @@
       initEmpty: false,
       show: function () {
         
+        $('[type="submit"]').prop('disabled', false);
+        $('.product_price').each(function(){
+          if(this.value < 1 && this.value){
+            console.log(this.value);
+            $('[type="submit"]').prop('disabled', true);
+          }
+        });
+
         $(this).slideDown();
         $(this).find('.product_discount_div').hide();
         $(this).find('.product_div, .category_div, .pattern_div').hide();
@@ -898,7 +942,8 @@
                 results:  $.map(response, function (item) {
                               return {
                                 text: item.item_name,
-                                id: item.id
+                                id: item.id,
+                                'data-price': item.promotion_price,
                               }
                           })
               };
@@ -972,6 +1017,16 @@
       hide: function (deleteElement) {
         if(confirm('Are you sure you want to delete this element?')) {
           $(this).slideUp(deleteElement);
+
+          setTimeout(function(){
+            $('[type="submit"]').prop('disabled', false);
+            $('.product_price').each(function(){
+              if(this.value < 1 && this.value){
+                $('[type="submit"]').prop('disabled', true);
+              }
+            });
+          },500);
+
         }
       },
       ready: function (setIndexes) {
@@ -985,13 +1040,48 @@
       var value = $(this).val();
       var $this = $(this);
 
-      $(".product_id").each(function () {
-        if (this.value == value) {
-          this.value = '';
-          $(this).val("");
+      $price = 0.00;
+      if(value){
+        $('[type="submit"]').prop('disabled', false);
+
+        $(".product_id").each(function () {
+          if (this.value == value) {
+            this.value = '';
+            $(this).val("");
+            $(this).closest('.row').find('.product_price').val('0.00').trigger('change');
+            $(this).closest('.row').find('.product_price_div,.product_price_error_div').hide();
+          }
+
+
+          /*$price = $(this).select2('data')[0]['data-price'];
+          if($price < 1){
+            $(this).closest('.row').find('.product_price_error_div').show();
+            $('[type="submit"]').prop('disabled', true);
+          }*/
+
+        });
+        $this.val(value);
+
+        $price = $this.select2('data')[0]['data-price'];
+        
+        $this.closest('.row').find('.product_price').val($price).trigger('change');
+        $this.closest('.row').find('.product_price_div').show();
+
+        if($price < 1){
+          $this.closest('.row').find('.product_price_error_div').show();
+          $('[type="submit"]').prop('disabled', true);
+        }
+      }else{
+        $this.closest('.row').find('.product_price').val(0.00).trigger('change');
+        $this.closest('.row').find('.product_price_div, .product_price_error_div').hide();
+      }
+
+      $('.product_price').each(function(){
+        if(this.value < 1 && this.value){
+          $('[type="submit"]').prop('disabled', true);
         }
       });
-      $this.val(value);
+
     });
 
 
@@ -999,11 +1089,15 @@
       event.preventDefault();
       $('.product_id').val('').trigger('change');
       $('.brand_id').val('').trigger('change');
+      $('.product_price').val("0.00").trigger('change');
+      $('.product_price_div,.product_price_error_div').hide();
     });
 
     $(document).on('change', '.brand_id', function(event) {
       event.preventDefault();
       $(this).closest('.row').find('.product_id').val('').trigger('change');
+      $(this).closest('.row').find('.product_price').val("0.00").trigger('change');
+      $(this).closest('.row').find('.product_price_div,.product_price_error_div').hide();
     });
 
     $(document).on('change', '.product_option', function(event) {
@@ -1028,6 +1122,9 @@
       }else{
         $(this).closest('.row').find('.pattern').val('').trigger('change');
         $(this).closest('.row').find('.category').val('').trigger('change');
+
+        $(this).closest('.row').find('.product_price').val("0.00").trigger('change');
+        $(this).closest('.row').find('.product_price_div,.product_price_error_div').hide();
       }
     });
 
@@ -1037,6 +1134,8 @@
 
       if($(this).val() == "") {
         $(this).closest('.row').find('.product_div').hide();
+        $(this).closest('.row').find('.product_price').val("0.00").trigger('change');
+        $(this).closest('.row').find('.product_price_div,.product_price_error_div').hide();
       }else{
         $(this).closest('.row').find('.product_div').show();
       }

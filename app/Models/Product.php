@@ -72,6 +72,25 @@ class Product extends Model
         'quantity_ordered_by_customers',
     ];
 
+    protected $appends = ['item_prices_json','promotion_price'];
+
+    public function getItemPricesJsonAttribute()
+    {
+        return json_decode($this->item_prices);
+    }
+
+    public function getPromotionPriceAttribute()
+    {
+        $price = 0.00;
+        $item_prices = json_decode($this->item_prices,true);
+        if(count($item_prices) > 0){
+            $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+
+            $price = @$prices[14]['Price'] ? round(@$prices[14]['Price'],2) : 0.00;
+        }
+        return $price;
+    }
+
     public function product_images()
     {
         return $this->hasMany(ProductImage::class,'product_id');

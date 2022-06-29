@@ -218,18 +218,27 @@ class StoreCustomers implements ShouldQueue
                     }else{
 
                         $multi_customer_id = explode(",", $check_customer->multi_customer_id);
-                        array_push($multi_customer_id, $obj->id);
+                        if(!in_array($obj->id, $multi_customer_id)){
+                            array_push($multi_customer_id, $obj->id);
+                        }
 
                         $multi_sap_connection_id = explode(",", $check_customer->multi_sap_connection_id);
-                        array_push($multi_sap_connection_id, $obj->sap_connection_id);
+                        if(!in_array($obj->sap_connection_id, $multi_sap_connection_id)){
+                            array_push($multi_sap_connection_id, $obj->sap_connection_id);
+                        }
 
                         $multi_real_sap_connection_id = explode(",", $check_customer->multi_real_sap_connection_id);
-                        array_push($multi_real_sap_connection_id, $obj->real_sap_connection_id);
+                        if(!in_array($obj->real_sap_connection_id, $multi_real_sap_connection_id)){
+                            array_push($multi_real_sap_connection_id, $obj->real_sap_connection_id);
+                        }
 
                         // $multi_sap_connections = explode(",", $check_customer->multi_sap_connections);
                         // array_push($multi_sap_connections, $obj->id);
 
 
+                        if($obj->is_active){
+                            $check_customer->is_active = $obj->is_active;
+                        }
                         $check_customer->multi_customer_id = implode(",", $multi_customer_id);
                         $check_customer->multi_sap_connection_id = implode(",", $multi_sap_connection_id);
                         $check_customer->multi_real_sap_connection_id = implode(",", $multi_real_sap_connection_id);

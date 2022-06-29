@@ -9,6 +9,17 @@
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Activity Log</h1>
       </div>
+
+      <!--begin::Actions-->
+      <div class="d-flex align-items-center py-1">
+        <!--begin::Button-->
+        @if(userrole() == 1)
+        <a href="javascript:" class="btn btn-sm btn-primary mr-10 clear_all_logs">Clear All Logs</a>
+        @endif
+        <!--end::Button-->
+      </div>
+      <!--end::Actions-->
+
     </div>
   </div>
 
@@ -48,7 +59,7 @@
 
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Selecte date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
                     <span>
                     </span>
                   </div>
@@ -63,9 +74,14 @@
                   </div>
                 </div>
 
-                <div class="col-md-4 mt-5">
+                <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
-                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
+                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
+
+                  @if(in_array(userrole(),[1]))
+                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
+                  @endif
+
                 </div>
 
               </div>
@@ -259,6 +275,59 @@
       $('#error_data_text').html(textedJson);
       $('#kt_modal_error_data').modal('show');
     });
+
+    @if(in_array(userrole(),[1]))
+      $(document).on("click", ".download_excel", function(e) {
+        var url = "{{route('activitylog.export')}}";
+
+        var data = {};
+        data.filter_search = $('[name="filter_search"]').val();
+        data.filter_date_range = $('[name="filter_date_range"]').val();
+        data.filter_status = $('[name="filter_status"]').find('option:selected').val();
+        data.filter_type = $('[name="filter_type"]').find('option:selected').val();
+        data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+
+        url = url + '?data=' + btoa(JSON.stringify(data));
+
+        window.location.href = url;
+      });
+
+      $(document).on('click', '.clear_all_logs', function(event) {
+        event.preventDefault();
+
+        Swal.fire({
+          title: 'Are you sure want to clear all logs?',
+          text: "Once deleted, you will not be able to recover this record!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, clear it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: '{{ route('activitylog.clear-all-logs') }}',
+              method: "POST",
+              data: {
+                      _token:'{{ csrf_token() }}' 
+                    }
+            })
+            .done(function(result) {
+              if(result.status == false){
+                toast_error(result.message);
+              }else{
+                toast_success(result.message);
+                render_table();
+              }
+            })
+            .fail(function() {
+              toast_error("error");
+            });
+          }
+        })
+      });
+    @endif
+
   })
 </script>
 @endpush

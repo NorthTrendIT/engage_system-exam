@@ -32,9 +32,9 @@
               <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
             </div> --}}
             <div class="card-body">
-              <div class="row mt-5">
+              <div class="row">
                 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid filter_company" name="filter_company" data-control="select2" data-hide-search="false" data-placeholder="Select business unit" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($company as $c)
@@ -43,7 +43,14 @@
                   </select>
                 </div>
 
-                <div class="col-md-3">
+                <!-- group -->
+                <div class="col-md-3 mt-5 other_filter_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_group" data-control="select2" data-hide-search="false" data-placeholder="Select group" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+
+                <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
                     <span>
@@ -52,7 +59,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -71,6 +78,7 @@
                               <th>No.</th>
                               <th>Business Unit</th>
                               <th>Customer</th>
+                              <th>Customer Group</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -101,6 +109,11 @@
 
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+  .other_filter_div{
+    display: none;
+  }
+</style>
 @endpush
 
 @push('js')
@@ -116,6 +129,7 @@
       table.DataTable().destroy();
 
       $filter_company = $('[name="filter_company"]').val();
+      $filter_group = $('[name="filter_group"]').val();
 
       table.DataTable({
           processing: true,
@@ -130,13 +144,15 @@
               },
               data:{
                 filter_company : $filter_company,
+                filter_group : $filter_group,
               }
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'company', name: 'company'},
               {data: 'customer', name: 'customer'},
-              {data: 'action', name: 'action'},
+              {data: 'group', name: 'group',orderable:false,searchable:false},
+              {data: 'action', name: 'action',orderable:false,searchable:false},
           ],
           drawCallback:function(){
               $(function () {
@@ -157,6 +173,7 @@
     $(document).on('click', '.clear-search', function(event) {
       $('#myTable').dataTable().fnFilter('');
       $('[name="filter_company"]').val('').trigger('change');
+      $('[name="filter_group"]').val('').trigger('change');
       $('[name="filter_search"]').val('');
       render_table();
     })
@@ -195,6 +212,38 @@
           });
         }
       })
+    });
+
+    $('[name="filter_group"]').select2({
+      ajax: {
+          url: "{{route('common.getBranch')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+    });
+
+    $(document).on('change', '[name="filter_company"]', function(event) {
+      event.preventDefault();
+      $('[name="filter_group"]').val('').trigger('change');
+      if($(this).find('option:selected').val() != ""){
+        $('.other_filter_div').show();
+      }else{
+        $('.other_filter_div').hide();
+      }
     });
 
   })

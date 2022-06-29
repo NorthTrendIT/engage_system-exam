@@ -33,8 +33,9 @@
               
               <div class="row mb-5">
                 <div class="col-md-12">
-                  <div class="form-group">
+                  <div class="form-group d-flex justify-content-between">
                     <h4>Customer : {{ @$data->card_name ?? "-" }}</h4>
+                    <h5>Customer Group : {{ @$data->group->name ?? "-" }}</h4>
                   </div>
                 </div>
               </div>

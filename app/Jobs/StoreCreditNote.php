@@ -103,6 +103,7 @@ class StoreCreditNote implements ShouldQueue
 
                 if(!empty($value['DocumentLines'])){
 
+                    $item_codes = [];
                     $items = @$value['DocumentLines'];
 
                     foreach($items as $d_item){
@@ -141,11 +142,15 @@ class StoreCreditNote implements ShouldQueue
                                     $item
                                 );
 
+                        array_push($item_codes, @$d_item['ItemCode']);
+                        
                         if(!is_null(@$d_item['BaseEntry'])){
                             $obj->base_entry = @$d_item['BaseEntry'];
                             $obj->save();
                         }
                     }
+
+                    CreditNoteItem::where('credit_note_id', $obj->id)->whereNotIn('item_code', $item_codes)->delete();
 
                 }
             }

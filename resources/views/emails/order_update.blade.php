@@ -53,7 +53,7 @@ bgcolor="#f6f6f6">
                             <td class="content-block"
                                 style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                 valign="top">
-                                Your order <b>#{{ @$order_no }}</b> status has been updated to <b>[STATUS]</b>. Please click the below link to view more details.;
+                                Your order <b>#{{ @$order_no }}</b> status has been updated to <b>{{ @$status }}</b>. Please click the below link to view more details.;
                             </td>
                         </tr>
                         <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;text-align: center;">

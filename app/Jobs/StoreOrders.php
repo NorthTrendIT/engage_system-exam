@@ -102,6 +102,7 @@ class StoreOrders implements ShouldQueue
 
                 if(!empty($order['DocumentLines'])){
 
+                    $item_codes = [];
                     $order_items = @$order['DocumentLines'];
 
                     foreach($order_items as $value){
@@ -141,11 +142,15 @@ class StoreOrders implements ShouldQueue
                                     $item
                                 );
 
+                        array_push($item_codes, @$value['ItemCode']);
+
                         if(!is_null(@$value['BaseEntry'])){
                             $obj->base_entry = @$value['BaseEntry'];
                             $obj->save();
                         }
                     }
+
+                    OrderItem::where('order_id', $obj->id)->whereNotIn('item_code', $item_codes)->delete();
 
                 }
             }

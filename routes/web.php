@@ -153,8 +153,10 @@ Route::middleware(['auth'])->group(function(){
     	    Route::resource('organisation','App\Http\Controllers\OrganisationController');
 
             // Activity Log
+            Route::get('activitylog/export', 'App\Http\Controllers\ActivityLogController@export')->name('activitylog.export');
             Route::resource('activitylog','App\Http\Controllers\ActivityLogController');
-    	    Route::post('activitylog/get-all', 'App\Http\Controllers\ActivityLogController@getAll')->name('activitylog.get-all');
+            Route::post('activitylog/get-all', 'App\Http\Controllers\ActivityLogController@getAll')->name('activitylog.get-all');
+    	    Route::post('activitylog/clear-all-logs', 'App\Http\Controllers\ActivityLogController@clearAllLogs')->name('activitylog.clear-all-logs');
 
     	    Route::get('product-list/', 'App\Http\Controllers\ProductListController@index')->name('product-list.index')->middleware('not-super-admin');
     	    Route::get('product-list/{id}/{customer_id?}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show')->middleware('not-super-admin');
@@ -202,6 +204,8 @@ Route::middleware(['auth'])->group(function(){
             Route::post('customers-sales-specialist/get-product-brand/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductBrand')->name('customers-sales-specialist.get-product-brand');
             Route::post('customers-sales-specialist/get-product-line/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductLine')->name('customers-sales-specialist.get-product-line');
             Route::post('customers-sales-specialist/get-product-category/','App\Http\Controllers\CustomersSalesSpecialistsController@getProductCategory')->name('customers-sales-specialist.get-product-category');
+
+            Route::post('customers-sales-specialist/get-assigned-customer-list/','App\Http\Controllers\CustomersSalesSpecialistsController@getAssignedCustomerList')->name('customers-sales-specialist.get-assigned-customer-list');
 
     	    Route::resource('class','App\Http\Controllers\ClassController');
     	    Route::post('class/get-all', 'App\Http\Controllers\ClassController@getAll')->name('class.get-all');

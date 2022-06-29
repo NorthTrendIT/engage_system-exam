@@ -536,13 +536,13 @@ class OrdersController extends Controller
         $q_id = $request->order_id;
         $quotation = Quotation::with('customer')->find($q_id);
 
-        if(!empty($quotation)){
+        if(!empty($quotation) && !empty(@$quotation->customer->user)){
             $link = route('orders.show', $q_id);
-            $user = User::where('customer_id' ,'=', $quotation->customer->id)->firstOrFail();
+            $user = @$quotation->customer->user;
             // return view('emails.order_update',array('link'=>$link, 'order_no'=>$quotation->doc_entry));
 
             // Send Mail.
-            Mail::send('emails.order_update', array('link'=>$link, 'order_no'=>$quotation->doc_entry), function($message) use($user) {
+            Mail::send('emails.order_update', array('link'=>$link, 'order_no'=>$quotation->doc_entry, 'status'=>getOrderStatusByQuotation($quotation)), function($message) use($user) {
                 $message->to($user->email, $user->name)
                         ->subject('Order Status Update');
             });

@@ -119,6 +119,13 @@ class CartController extends Controller
             return $response = ['status'=>false,'message'=>"The product quantity is not available."];
         }
 
+        $customer_id = explode(',', Auth::user()->multi_customer_id);
+        $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+        $price = get_product_customer_price(@$product->item_prices,@$customer_price_list_no[$product->sap_connection_id]);
+        if($price < 1){
+            return $response = ['status'=>false,'message'=>"The product price is not a valid."];
+        }
+
         $sap_customer_arr = get_sap_customer_arr(@Auth::user());
 
         if(isset($id)){
@@ -128,7 +135,8 @@ class CartController extends Controller
             $cart->qty = 1;
             $cart->save();
 
-            $count = Cart::where('customer_id', $cart->customer_id)->count();
+            $customer_id = explode(',', @Auth::user()->multi_customer_id);
+            $count = Cart::whereIn('customer_id', $customer_id)->count();
 
             return $response = ['status'=>true,'message'=>"Product added to cart successfully.", 'count'=> $count];
         }
@@ -264,6 +272,11 @@ class CartController extends Controller
 
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
 
+                $price = get_product_customer_price(@$value->product->item_prices, @$customer_price_list_no);
+                if($price < 1){
+                    return $response = ['status'=>false,'message'=>'The product "'.@$value->product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
+                }
+
                 $total_amount += get_product_customer_price(@$value->product->item_prices, @$customer_price_list_no);
             }
         }
@@ -373,6 +386,6 @@ class CartController extends Controller
             Cart::whereIn('customer_id', $customer_id)->delete();
         }
 
-        return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
+        return $response = ['status' => true, 'message' => 'Your order placed successfully!'];
     }
 }
