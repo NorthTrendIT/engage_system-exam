@@ -219,8 +219,10 @@
                                 @if($status == "Pending" && !$data->customer_promotion_id)
                                   <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
                                 @else
-                                  <button type="button" class="btn btn-danger btn-sm" title="Cancel Order" disabled>Cancel Order</button>
-                                  <a href="javascript:" class="mx-2 text-dark" title="Promotion Orders can not be Cancelled! "><i class="fa fa-info-circle fs-6"></i></a>
+                                  @if($status != "Cancelled")
+                                    <button type="button" class="btn btn-danger btn-sm" title="Cancel Order" disabled>Cancel Order</button>
+                                    <a href="javascript:" class="mx-2 text-dark" title="Promotion Orders can not be Cancelled! "><i class="fa fa-info-circle fs-6"></i></a>
+                                  @endif
                                 @endif
 
                                 {{-- @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->user->id,1]))

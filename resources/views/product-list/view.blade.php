@@ -111,7 +111,7 @@
                             </tbody>
                             </table>
                          </div> -->
-                         @if(userdepartment() != 1 && $customer)
+                         @if(userdepartment() != 1 && $customer && in_array(userrole(), [2,4]))
                             @if($product->quantity_on_stock - $product->quantity_ordered_by_customers > 0)
                                  <button type="button" class="btn btn-primary btn-md mr-1 mb-2">Buy now</button>
                                  @if(is_in_cart(@$product->id) == 1)
@@ -252,7 +252,7 @@
                                         <div class="price">₱ {{ number_format_value(get_product_customer_price(@$item->product->item_prices,@$customer->price_list_num)) }}</div>
 
                                         @if($item->product->quantity_on_stock - $item->product->quantity_ordered_by_customers > 0)
-                                            @if(userdepartment() != 1)
+                                            @if(userdepartment() != 1  && in_array(userrole(), [2,4]))
                                                 @if(is_in_cart(@$item->product->id) == 1)
                                                     <a class="add-to-cart" href="{{ route('cart.index') }}">Go to cart</a>
                                                 @else
