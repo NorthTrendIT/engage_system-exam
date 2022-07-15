@@ -250,7 +250,7 @@ class SAPInvoices
                             }
                         }
 
-                        QuotationItem::where('quotation_id', $obj->id)->whereNotIn('item_code', $item_codes)->delete();
+                        InvoiceItem::where('invoice_id', $obj->id)->whereNotIn('item_code', $item_codes)->delete();
                     }
 
                 }
