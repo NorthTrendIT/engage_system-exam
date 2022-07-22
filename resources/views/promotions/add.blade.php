@@ -566,16 +566,16 @@
     $initialOptions = [];
     $initialClassCustomerOptions = [];
 
-    @if(isset($edit) && $edit->promotion_scope == 'C')
+    /*@if(isset($edit) && $edit->promotion_scope == 'C')
         @foreach ($edit->promotion_data as $data)
             var initialOption = {
                 id: {{ $data->customer_id }},
-                text: '{!! $data->customer->card_name !!}',
+                text: "{!! urlencode($data->customer->card_name) !!}",
                 selected: true
             }
             $initialOptions.push(initialOption);
         @endforeach
-    @endif
+    @endif*/
 
     @if(isset($edit) && $edit->promotion_scope == 'T')
         @foreach ($edit->promotion_data as $data)
