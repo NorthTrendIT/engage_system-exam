@@ -86,7 +86,7 @@
 
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
-                            <div class="col-sm-5">
+                            <div class="col-sm-4">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Sales Specialist:</div>
                               <!--end::Label-->
@@ -95,6 +95,15 @@
                               <!--end::Text-->
                             </div>
                             <!--end::Col-->
+
+                            <div class="col-sm-2">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">References#:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->num_at_card ?? "-" }}</div>
+                              <!--end::Text-->
+                            </div>
 
                             <!--end::Col-->
                             <div class="col-sm-2">
@@ -108,7 +117,7 @@
                             <!--end::Col-->
 
                             <!--end::Col-->
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Order Date:</div>
                               <!--end::Label-->
