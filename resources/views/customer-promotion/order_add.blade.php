@@ -173,21 +173,21 @@
                         <div class="col-md-3">
                           <div class="form-group">
                             <label>Unit Price</label>
-                            <input type="text" class="form-control form-control-solid unit_price" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ round($edit_products[@$p->product->id]['price'], 2) }}" @else value="{{ round($amount, 2) }}" @endif name="unit_price" >
+                            <input type="text" class="form-control form-control-solid unit_price" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{number_format_value( round($edit_products[@$p->product->id]['price'], 2)) }}" @else value="{{ number_format_value(round($amount, 2)) }}" @endif name="unit_price" >
                           </div>
                         </div>
 
                         <div class="col-md-3">
                           <div class="form-group">
                             <label>Discount</label>
-                            <input type="text" class="form-control form-control-solid discount_amount" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ round($edit_products[@$p->product->id]['discount'] * $edit_products[@$p->product->id]['quantity'], 2) }}" @else value="{{ round($discount_amount, 2) }}" @endif data-value="{{ round($discount_percentage, 2) }}" name="discount_amount">
+                            <input type="text" class="form-control form-control-solid discount_amount" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{number_format_value( round($edit_products[@$p->product->id]['discount'] * $edit_products[@$p->product->id]['quantity'], 2)) }}" @else value="{{ number_format_value(round($discount_amount, 2)) }}" @endif data-value="{{ number_format_value(round($discount_percentage, 2)) }}" name="discount_amount">
                           </div>
                         </div>
 
                         <div class="col-md-3">
                           <div class="form-group">
                             <label>Amount</label>
-                            <input type="text" class="form-control form-control-solid amount" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ round($edit_products[@$p->product->id]['amount'], 2) }}" @else value="{{ round($total_amount, 2) }}" @endif name="amount">
+                            <input type="text" class="form-control form-control-solid amount" readonly="" disabled="" @if(isset($edit) && isset($edit_products[@$p->product->id])) value="{{number_format_value( round($edit_products[@$p->product->id]['amount'], 2)) }}" @else value="{{ number_format_value(round($total_amount, 2)) }}" @endif name="amount">
                           </div>
                         </div>
 
