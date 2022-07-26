@@ -513,11 +513,10 @@
       $('.quantity').each(function(){
         if(this.value != ""){
           sum += parseFloat(this.value);
-
           sum1 += ( parseFloat(this.value) * parseFloat($(this).closest('.product_list').find('.actual_product_price').data('value')));
 
           var unit_price = $(this).closest('.product_list').find('.unit_price').val();
-          sum2 += ( parseFloat(this.value) * $(this).closest('.product_list').find('.unit_price').val() );
+          sum2 += ( parseFloat(this.value) * parseFloat($(this).closest('.product_list').find('.unit_price').val()) );
         }
       });
       $('.total_quantity').val(sum.toFixed(2));
