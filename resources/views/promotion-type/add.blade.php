@@ -716,13 +716,13 @@
         }
       });
 
-      $('.fixed_quantity').each(function() {
-        $(this).rules('add', {
-          min:1,
-          required:true,
-          digits: true,
-        });
-      });
+      // $('.fixed_quantity').each(function() {
+      //   $(this).rules('add', {
+      //     min:1,
+      //     required:true,
+      //     digits: true,
+      //   });
+      // });
 
       return validator;
     }
@@ -1140,7 +1140,6 @@
         $(this).closest('.row').find('.product_div').show();
       }
     });
-
 
   });
 </script>
