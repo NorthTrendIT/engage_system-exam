@@ -139,7 +139,6 @@ class ReturnOrderReportController extends Controller
     }
 
     public function getReportResultData($request){
-
         $data = CreditNoteItem::orderBy('credit_note_id', 'DESC');
 
         $data->whereHas('credit_note', function($q){

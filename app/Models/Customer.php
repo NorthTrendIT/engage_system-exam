@@ -13,6 +13,7 @@ class Customer extends Model
     use \Awobaz\Compoships\Compoships;
 
     protected $fillable = [
+        'id',
     	'card_code',
     	'card_type',
     	'card_name',

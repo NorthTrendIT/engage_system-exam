@@ -704,6 +704,115 @@
                           </ul>
                         </li>
                         @endif
+
+                        {{-- reports --}}
+                        @if(@$modules['reports']['id'])
+                        <li>
+                          <i class="fa fa-plus"></i>
+                          <label>
+                            <input data-id="{{ @$modules['reports']['id'] }}" type="checkbox" /> {{ @$modules['reports']['title'] }}
+                          </label>
+                          <ul>
+
+                            @if(@$modules['promotion-report']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['promotion-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['promotion-report']['id'] }}]" /> {{ @$modules['promotion-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['sales-report']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['sales-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['sales-report']['id'] }}]" /> {{ @$modules['sales-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['sales-order-report']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['sales-order-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['sales-order-report']['id'] }}]" /> {{ @$modules['sales-order-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['overdue-sales-invoice-report']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['overdue-sales-invoice-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['overdue-sales-invoice-report']['id'] }}]" /> {{ @$modules['overdue-sales-invoice-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['back-order-report']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['back-order-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['back-order-report']['id'] }}]" /> {{ @$modules['back-order-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['product-sales-report']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['product-sales-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['product-sales-report']['id'] }}]" /> {{ @$modules['product-sales-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['product-report']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['product-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['product-report']['id'] }}]" /> {{ @$modules['product-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['credit-memo-report']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['credit-memo-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['credit-memo-report']['id'] }}]" /> {{ @$modules['credit-memo-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['debit-memo-report']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['debit-memo-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['debit-memo-report']['id'] }}]" /> {{ @$modules['debit-memo-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['return-order-report']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['return-order-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['return-order-report']['id'] }}]" /> {{ @$modules['return-order-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['sales-order-to-invoice-lead-time-report']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['sales-order-to-invoice-lead-time-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['sales-order-to-invoice-lead-time-report']['id'] }}]" /> {{ @$modules['sales-order-to-invoice-lead-time-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                            @if(@$modules['invoice-to-delivery-lead-time-report']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['invoice-to-delivery-lead-time-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['invoice-to-delivery-lead-time-report']['id'] }}]" /> {{ @$modules['invoice-to-delivery-lead-time-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                          </ul>
+                        </li>
+                        @endif
                         
                       </ul>
                     </div>

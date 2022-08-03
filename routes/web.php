@@ -362,10 +362,8 @@ Route::middleware(['auth'])->group(function(){
         // Customer Tagging
         Route::get('customer-tagging', 'App\Http\Controllers\CustomerController@customerTaggingIndex')->name('customer-tagging.index');
         Route::post('customer-tagging/get-territory', 'App\Http\Controllers\CustomerController@customerTaggingGetTerritory')->name('customer-tagging.get-territory');
-        Route::post('customer-tagging/get-market-sector', 'App\Http\Controllers\CustomerController@customerTaggingGetMarketSector')->name('customer-tagging.get-market-sector');
-        Route::post('customer-tagging/get-market-sub-sector', 'App\Http\Controllers\CustomerController@customerTaggingGetMarketSubSector')->name('customer-tagging.get-market-sub-sector');
-        Route::post('customer-tagging/get-customer-class', 'App\Http\Controllers\CustomerController@customerTaggingGetCustomerClass')->name('customer-tagging.get-customer-class');
-        Route::post('customer-tagging/get-sales-specialist', 'App\Http\Controllers\CustomerController@customerTaggingGetSalesSpecialist')->name('customer-tagging.get-sales-specialist');
+       
+        
 
         // Pramotion Type
         Route::get('promotion-type/export', 'App\Http\Controllers\PromotionTypeController@export')->name('promotion-type.export');
@@ -422,65 +420,71 @@ Route::middleware(['auth'])->group(function(){
         Route::post('sap-connection-api-field/sync-all', 'App\Http\Controllers\SapConnectionApiFieldController@syncAll')->name('sap-connection-api-field.sync-all');
         Route::post('sap-connection-api-field/sync-specific', 'App\Http\Controllers\SapConnectionApiFieldController@syncSpecific')->name('sap-connection-api-field.sync-specific');
 
-        // Report
-        Route::resource('report', 'App\Http\Controllers\ReportController');
-        Route::prefix('reports')->namespace('App\Http\Controllers\Reports')->name('reports.')->group(function(){
-
-            Route::resource('sales-report','SalesReportController')->only('index');
-            Route::post('sales-report/get-all', 'SalesReportController@getAll')->name('sales-report.get-all');
-            Route::get('sales-report/export', 'SalesReportController@export')->name('sales-report.export');
-
-            Route::resource('promotion-report', 'PromotionReportController')->only('index');
-            Route::post('promotion-report/get-all', 'PromotionReportController@getAll')->name('promotion-report.get-all');
-            Route::post('promotion-report/get-chart-data', 'PromotionReportController@getChartData')->name('promotion-report.get-chart-data');
-
-            Route::resource('product-report', 'ProductReportController')->only('index');
-            Route::post('product-report/get-all', 'ProductReportController@getAll')->name('product-report.get-all');
-            Route::post('product-report/get-chart-data', 'ProductReportController@getChartData')->name('product-report.get-chart-data');
-            Route::get('product-report/export', 'ProductReportController@export')->name('product-report.export');
-
-            Route::resource('sales-order-report','SalesOrderReportController')->only('index');
-            Route::post('sales-order-report/get-all', 'SalesOrderReportController@getAll')->name('sales-order-report.get-all');
-
-            Route::resource('overdue-sales-invoice-report','OverdueSalesInvoiceReportController')->only('index');
-            Route::post('overdue-sales-invoice-report/get-all', 'OverdueSalesInvoiceReportController@getAll')->name('overdue-sales-invoice-report.get-all');
-            Route::get('overdue-sales-invoice-report/export', 'OverdueSalesInvoiceReportController@export')->name('overdue-sales-invoice-report.export');
-
-            Route::resource('product-sales-report', 'ProductSalesReportController')->only('index');
-            Route::post('product-sales-report/get-all', 'ProductSalesReportController@getAll')->name('product-sales-report.get-all');
-            Route::post('product-sales-report/get-chart-data', 'ProductSalesReportController@getChartData')->name('product-sales-report.get-chart-data');
-            Route::get('product-sales-report/export', 'ProductSalesReportController@export')->name('product-sales-report.export');
-
-            Route::resource('back-order-report','BackOrderReportController')->only('index');
-            Route::post('back-order-report/get-all', 'BackOrderReportController@getAll')->name('back-order-report.get-all');
-            Route::get('back-order-report/export', 'BackOrderReportController@export')->name('back-order-report.export');
-            Route::post('back-order-report/get-chart-data', 'BackOrderReportController@getChartData')->name('back-order-report.get-chart-data');
-
-            Route::resource('credit-memo-report','CreditMemoReportController')->only('index');
-            Route::post('credit-memo-report/get-all', 'CreditMemoReportController@getAll')->name('credit-memo-report.get-all');
-            Route::get('credit-memo-report/export', 'CreditMemoReportController@export')->name('credit-memo-report.export');
-
-
-            Route::resource('debit-memo-report','DebitMemoReportController')->only('index');
-            Route::post('debit-memo-report/get-all', 'DebitMemoReportController@getAll')->name('debit-memo-report.get-all');
-            Route::get('debit-memo-report/export', 'DebitMemoReportController@export')->name('debit-memo-report.export');
-
-
-            Route::resource('return-order-report','ReturnOrderReportController')->only('index');
-            Route::post('return-order-report/get-all', 'ReturnOrderReportController@getAll')->name('return-order-report.get-all');
-            Route::get('return-order-report/export', 'ReturnOrderReportController@export')->name('return-order-report.export');
-
-            Route::resource('sales-order-to-invoice-lead-time-report','SalesOrderToInvoiceLeadTimeReportController')->only('index');
-            Route::post('sales-order-to-invoice-lead-time-report/get-all', 'SalesOrderToInvoiceLeadTimeReportController@getAll')->name('sales-order-to-invoice-lead-time-report.get-all');
-            Route::get('sales-order-to-invoice-lead-time-report/export', 'SalesOrderToInvoiceLeadTimeReportController@export')->name('sales-order-to-invoice-lead-time-report.export');
-
-
-            Route::resource('invoice-to-delivery-lead-time-report','InvoiceToDeliveryLeadTimeReportController')->only('index');
-            Route::post('invoice-to-delivery-lead-time-report/get-all', 'InvoiceToDeliveryLeadTimeReportController@getAll')->name('invoice-to-delivery-lead-time-report.get-all');
-            Route::get('invoice-to-delivery-lead-time-report/export', 'InvoiceToDeliveryLeadTimeReportController@export')->name('invoice-to-delivery-lead-time-report.export');
-        });
-
     });
+
+    
+    // Report
+    Route::resource('report', 'App\Http\Controllers\ReportController');
+    Route::prefix('reports')->namespace('App\Http\Controllers\Reports')->name('reports.')->group(function(){
+
+        Route::resource('sales-report','SalesReportController')->only('index');
+        Route::post('sales-report/get-all', 'SalesReportController@getAll')->name('sales-report.get-all');
+        Route::get('sales-report/export', 'SalesReportController@export')->name('sales-report.export');
+
+        Route::resource('promotion-report', 'PromotionReportController')->only('index');
+        Route::post('promotion-report/get-all', 'PromotionReportController@getAll')->name('promotion-report.get-all');
+        Route::post('promotion-report/get-chart-data', 'PromotionReportController@getChartData')->name('promotion-report.get-chart-data');
+
+        Route::resource('product-report', 'ProductReportController')->only('index');
+        Route::post('product-report/get-all', 'ProductReportController@getAll')->name('product-report.get-all');
+        Route::post('product-report/get-chart-data', 'ProductReportController@getChartData')->name('product-report.get-chart-data');
+        Route::get('product-report/export', 'ProductReportController@export')->name('product-report.export');
+
+        Route::resource('sales-order-report','SalesOrderReportController')->only('index');
+        Route::post('sales-order-report/get-all', 'SalesOrderReportController@getAll')->name('sales-order-report.get-all');
+
+        Route::resource('overdue-sales-invoice-report','OverdueSalesInvoiceReportController')->only('index');
+        Route::post('overdue-sales-invoice-report/get-all', 'OverdueSalesInvoiceReportController@getAll')->name('overdue-sales-invoice-report.get-all');
+        Route::get('overdue-sales-invoice-report/export', 'OverdueSalesInvoiceReportController@export')->name('overdue-sales-invoice-report.export');
+
+        Route::resource('product-sales-report', 'ProductSalesReportController')->only('index');
+        Route::post('product-sales-report/get-all', 'ProductSalesReportController@getAll')->name('product-sales-report.get-all');
+        Route::post('product-sales-report/get-chart-data', 'ProductSalesReportController@getChartData')->name('product-sales-report.get-chart-data');
+        Route::get('product-sales-report/export', 'ProductSalesReportController@export')->name('product-sales-report.export');
+
+        Route::resource('back-order-report','BackOrderReportController')->only('index');
+        Route::post('back-order-report/get-all', 'BackOrderReportController@getAll')->name('back-order-report.get-all');
+        Route::get('back-order-report/export', 'BackOrderReportController@export')->name('back-order-report.export');
+        Route::post('back-order-report/get-chart-data', 'BackOrderReportController@getChartData')->name('back-order-report.get-chart-data');
+
+        Route::resource('credit-memo-report','CreditMemoReportController')->only('index');
+        Route::post('credit-memo-report/get-all', 'CreditMemoReportController@getAll')->name('credit-memo-report.get-all');
+        Route::get('credit-memo-report/export', 'CreditMemoReportController@export')->name('credit-memo-report.export');
+
+
+        Route::resource('debit-memo-report','DebitMemoReportController')->only('index');
+        Route::post('debit-memo-report/get-all', 'DebitMemoReportController@getAll')->name('debit-memo-report.get-all');
+        Route::get('debit-memo-report/export', 'DebitMemoReportController@export')->name('debit-memo-report.export');
+
+
+        Route::resource('return-order-report','ReturnOrderReportController')->only('index');
+        Route::post('return-order-report/get-all', 'ReturnOrderReportController@getAll')->name('return-order-report.get-all');
+        Route::get('return-order-report/export', 'ReturnOrderReportController@export')->name('return-order-report.export');
+
+        Route::resource('sales-order-to-invoice-lead-time-report','SalesOrderToInvoiceLeadTimeReportController')->only('index');
+        Route::post('sales-order-to-invoice-lead-time-report/get-all', 'SalesOrderToInvoiceLeadTimeReportController@getAll')->name('sales-order-to-invoice-lead-time-report.get-all');
+        Route::get('sales-order-to-invoice-lead-time-report/export', 'SalesOrderToInvoiceLeadTimeReportController@export')->name('sales-order-to-invoice-lead-time-report.export');
+
+
+        Route::resource('invoice-to-delivery-lead-time-report','InvoiceToDeliveryLeadTimeReportController')->only('index');
+        Route::post('invoice-to-delivery-lead-time-report/get-all', 'InvoiceToDeliveryLeadTimeReportController@getAll')->name('invoice-to-delivery-lead-time-report.get-all');
+        Route::get('invoice-to-delivery-lead-time-report/export', 'InvoiceToDeliveryLeadTimeReportController@export')->name('invoice-to-delivery-lead-time-report.export');
+    });
+    Route::post('customer-tagging/get-sales-specialist', 'App\Http\Controllers\CustomerController@customerTaggingGetSalesSpecialist')->name('customer-tagging.get-sales-specialist');
+    Route::post('customer-tagging/get-market-sector', 'App\Http\Controllers\CustomerController@customerTaggingGetMarketSector')->name('customer-tagging.get-market-sector');
+    Route::post('customer-tagging/get-market-sub-sector', 'App\Http\Controllers\CustomerController@customerTaggingGetMarketSubSector')->name('customer-tagging.get-market-sub-sector');
+    Route::post('customer-tagging/get-customer-class', 'App\Http\Controllers\CustomerController@customerTaggingGetCustomerClass')->name('customer-tagging.get-customer-class');
+
 
 
 	Route::resource('help-desk','App\Http\Controllers\HelpDeskController');

@@ -629,6 +629,15 @@ class CustomerController extends Controller
         $response = array();
         $search = $request->search;
 
+        if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
+            if($request->sap_connection_id == ""){
+                return response()->json($response);
+            }
+        }else{
+            $user = User::where('id',Auth::id())->first();
+            $request->sap_connection_id = $user->sap_connection_id;
+        }
+
         if(@$request->sap_connection_id != "" && @$request->brand_id != ""){
 
             $data = CustomerProductGroup::has('customer')->with('customer')->where('product_group_id', $request->brand_id);
@@ -665,6 +674,14 @@ class CustomerController extends Controller
 
         $response = array();
         $search = $request->search;
+        if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
+            if($request->sap_connection_id == ""){
+                return response()->json($response);
+            }
+        }else{
+            $user = User::where('id',Auth::id())->first();
+            $request->sap_connection_id = $user->sap_connection_id;
+        }
 
         if(@$request->sap_connection_id != "" && @$request->brand_id != ""){
 
@@ -702,6 +719,14 @@ class CustomerController extends Controller
 
         $response = array();
         $search = $request->search;
+        if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
+            if($request->sap_connection_id == ""){
+                return response()->json($response);
+            }
+        }else{
+            $user = User::where('id',Auth::id())->first();
+            $request->sap_connection_id = $user->sap_connection_id;
+        }
 
         if(@$request->sap_connection_id != "" && @$request->brand_id != ""){
 
@@ -740,7 +765,6 @@ class CustomerController extends Controller
 
 
     public function customerTaggingGetSalesSpecialist(Request $request){
-
         $response = $customer_ids = array();
         $search = $request->search;
 
@@ -750,7 +774,23 @@ class CustomerController extends Controller
 
             if(!empty($customer_ids)){
 
-                $data = User::where('role_id', 2)->has('sales_specialist_customers')->orderby('sales_specialist_name','asc');
+                if(Auth::user()->role_id == 6){
+                    $data = User::where('role_id', 2)
+                                    ->where('parent_id', Auth::id())
+                                    ->has('sales_specialist_customers')
+                                    ->orderby('sales_specialist_name','asc');
+                }else if(Auth::user()->role_id == 1){
+                    if(@$request->filter_manager != ''){
+                        $data = User::where('role_id', 2)
+                                    ->where('parent_id', $request->filter_manager)
+                                    ->has('sales_specialist_customers')
+                                    ->orderby('sales_specialist_name','asc');
+                    } else{
+                        return response()->json($response);
+                    } 
+                }else{
+                    $data = User::where('role_id', 2)->has('sales_specialist_customers')->orderby('sales_specialist_name','asc');
+                }                
 
                 $data->whereHas('sales_specialist_customers', function($q) use ($customer_ids) {
                     $q->whereIn('customer_id', $customer_ids);

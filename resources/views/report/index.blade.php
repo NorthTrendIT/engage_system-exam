@@ -3,6 +3,9 @@
 @section('title','Reports')
 
 @section('content')
+@php
+   $access = get_user_role_module_access(Auth::user()->role_id);
+@endphp
 <!--begin::Content-->
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
@@ -24,6 +27,7 @@
                 <div class="card-body p-0">
                     <div class="card-p">
                         <div class="row">
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && $access['promotion-report'] == 1 && isset($access['promotion-report'])))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-warning d-block my-2">
@@ -33,7 +37,8 @@
                                     <a href="{{ route('reports.promotion-report.index') }}" class="text-warning fw-bold fs-6">Promotions Report </a>
                                 </div>
                             </div>
-
+                            @endif
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['sales-report']) && $access['sales-report'] == 1))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-primary px-6 py-8 rounded-2 min-w-150 box">
                                         <span class="svg-icon svg-icon-3x svg-icon-primary d-block my-2">
@@ -43,7 +48,8 @@
                                         <a href="{{ route('reports.sales-report.index') }}" class="text-primary fw-bold fs-6">Sales Report </a>
                                 </div>
                             </div>
-
+                            @endif
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['sales-order-report']) &&  $access['sales-order-report'] == 1))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-success px-6 py-8 rounded-2 min-w-150 box">
                                         <span class="svg-icon svg-icon-3x svg-icon-success d-block my-2">
@@ -53,7 +59,8 @@
                                         <a href="{{ route('reports.sales-order-report.index') }}" class="text-success fw-bold fs-6">Sales Order Report </a>
                                 </div>
                             </div>
-
+                            @endif
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['overdue-sales-invoice-report']) && $access['overdue-sales-invoice-report'] == 1))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-dark px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-dark d-block my-2">
@@ -63,7 +70,8 @@
                                     <a href="{{ route('reports.overdue-sales-invoice-report.index') }}" class="text-dark fw-bold fs-6">Overdue Sales Invoice Report </a>
                                 </div>
                             </div>
-
+                            @endif
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['back-order-report']) && $access['back-order-report'] == 1))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-danger px-6 py-8 rounded-2 min-w-150 box">
                                         <span class="svg-icon svg-icon-3x svg-icon-danger d-block my-2">
@@ -73,7 +81,8 @@
                                         <a href="{{ route('reports.back-order-report.index') }}" class="text-danger fw-bold fs-6">Back Order Report </a>
                                 </div>
                             </div>
-
+                            @endif
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['product-sales-report']) &&  $access['product-sales-report'] == 1))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-orange px-6 py-8 rounded-2 min-w-150 box">
                                         <span class="svg-icon svg-icon-3x svg-icon-warning d-block my-2">
@@ -83,7 +92,8 @@
                                         <a href="{{ route('reports.product-sales-report.index') }}" class="text-orange fw-bold fs-6">Product Sales Report</a>
                                 </div>
                             </div>
-
+                            @endif
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['product-report']) && $access['product-report'] == 1))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-purple px-6 py-8 rounded-2 min-w-150 box">
                                         <span class="svg-icon svg-icon-3x svg-icon-primary d-block my-2">
@@ -93,7 +103,8 @@
                                         <a href="{{ route('reports.product-report.index') }}" class="text-purple fw-bold fs-6">Product Report </a>
                                 </div>
                             </div>
-
+                            @endif
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['credit-memo-report']) && $access['credit-memo-report'] == 1))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-light px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-success d-block my-2">
@@ -102,7 +113,8 @@
                                     <a href="{{ route('reports.credit-memo-report.index') }}" class="text-primary fw-bold fs-6">Credit Memo Report </a>
                                 </div>
                             </div>
-
+                            @endif
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['debit-memo-report']) && $access['debit-memo-report'] == 1))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-green px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-dark d-block my-2">
@@ -111,7 +123,8 @@
                                     <a href="{{ route('reports.debit-memo-report.index') }}" class="text-green fw-bold fs-6">Debit Memo Report </a>
                                 </div>
                             </div>
-
+                            @endif
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['return-order-report']) &&  $access['return-order-report'] == 1))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-chocolate px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-danger d-block my-2">
@@ -120,7 +133,8 @@
                                     <a href="{{ route('reports.return-order-report.index') }}" class="text-chocolate fw-bold fs-6">Return Order Report </a>
                                 </div>
                             </div>
-
+                            @endif
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['sales-order-to-invoice-lead-time-report']) && $access['sales-order-to-invoice-lead-time-report'] == 1))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-blue px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-danger d-block my-2">
@@ -129,7 +143,8 @@
                                     <a href="{{ route('reports.sales-order-to-invoice-lead-time-report.index') }}" class="text-blue fw-bold fs-6">Sales Order to Invoice Lead Time </a>
                                 </div>
                             </div>
-
+                            @endif
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['invoice-to-delivery-lead-time-report']) && $access['invoice-to-delivery-lead-time-report'] == 1))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-red px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-danger d-block my-2">
@@ -138,6 +153,7 @@
                                     <a href="{{ route('reports.invoice-to-delivery-lead-time-report.index') }}" class="text-red fw-bold fs-6">Invoice to Delivery Lead Time </a>
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>
