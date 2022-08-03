@@ -16,6 +16,10 @@ use DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CreditMemoReportExport;
 
+use Auth;
+use App\Models\User;
+use App\Models\Role;
+
 class CreditMemoReportController extends Controller
 {
     /**
@@ -25,8 +29,18 @@ class CreditMemoReportController extends Controller
      */
     public function index()
     {
-        $company = SapConnection::all();
-        return view('report.credit-memo-report.index', compact('company'));
+        $company = [];
+        $managers = [];
+
+        if(Auth::user()->role_id == 1){
+            $company = SapConnection::all();
+            $role = Role::where('name','Manager')->first();
+            $managers = User::where('role_id',$role->id)->get();
+        }
+        if(Auth::user()->role_id == 6){
+            $company = SapConnection::all();          
+        }
+        return view('report.credit-memo-report.index', compact('company','managers'));
     }
 
     

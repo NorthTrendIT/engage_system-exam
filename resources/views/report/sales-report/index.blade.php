@@ -31,7 +31,7 @@
             </div> --}}
             <div class="card-body">
               <div class="row">
-
+                @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                     <option value=""></option>
@@ -40,13 +40,32 @@
                     @endforeach
                   </select>
                 </div>
-
+                @endif   
+                @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))             
                 <div class="col-md-3 mt-5 filter_brand_div" style="display:none;">
                   <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
                     <option value=""></option>
                     
                   </select>
                 </div>
+                @else
+                <div class="col-md-3 mt-5 filter_brand_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
+                    <option value=""></option>
+                    
+                  </select>
+                </div>
+                @endif
+                @if(in_array(userrole(),[1]))
+                <div class="col-md-3 mt-5 filter_brand_div" style="display:none;">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_manager" data-allow-clear="true" data-placeholder="Select Manager">
+                    <option value=""></option>
+                    @foreach($managers as $m)
+                      <option value="{{ $m->id }}">{{ $m->first_name.' '.$m->last_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                @endif
 
                 <!-- Customer Class -->
                 <div class="col-md-3 mt-5 other_filter_div">
@@ -54,14 +73,14 @@
                     <option value=""></option>
                   </select>
                 </div>
-
+                @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))
                 <!-- Sales Specialist -->
                 <div class="col-md-3 mt-5 other_filter_div">
                   <select class="form-control form-control-lg form-control-solid" name="filter_sales_specialist" data-control="select2" data-hide-search="false" data-placeholder="Select sales specialist" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
-
+                @endif
                 <!-- Market Sector -->
                 <div class="col-md-3 mt-5 other_filter_div">
                   <select class="form-control form-control-lg form-control-solid" name="filter_market_sector" data-control="select2" data-hide-search="false" data-placeholder="Select market sector" data-allow-clear="true">
@@ -265,6 +284,7 @@
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
+      $filter_manager = $('[name="filter_manager"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
@@ -301,6 +321,8 @@
                 filter_sales_specialist : $filter_sales_specialist,
                 filter_market_sector : $filter_market_sector,
                 filter_market_sub_sector : $filter_market_sub_sector,
+
+                filter_manager : $filter_manager,
               }
       })
       .done(function(result) {
@@ -467,6 +489,7 @@
                     _token: "{{ csrf_token() }}",
                     search: params.term,
                     sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    filter_manager: $('[name="filter_manager"]').find('option:selected').val(),
                     brand_id: $('[name="filter_brand"]').select2('data')[0]['data_id'],
               };
           },

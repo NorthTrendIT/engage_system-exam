@@ -14,6 +14,10 @@ use DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OverdueSalesInvoiceReportExport;
 
+use Auth;
+use App\Models\User;
+use App\Models\Role;
+
 class OverdueSalesInvoiceReportController extends Controller
 {
     /**
@@ -23,8 +27,18 @@ class OverdueSalesInvoiceReportController extends Controller
      */
     public function index()
     {
-        $company = SapConnection::all();
-        return view('report.overdue-sales-invoice-report.index', compact('company'));
+        $company = [];
+        $managers = [];
+
+        if(Auth::user()->role_id == 1){
+            $company = SapConnection::all();
+            $role = Role::where('name','Manager')->first();
+            $managers = User::where('role_id',$role->id)->get();
+        }
+        if(Auth::user()->role_id == 6){
+            $company = SapConnection::all();          
+        }
+        return view('report.overdue-sales-invoice-report.index', compact('company','managers'));
     }
 
     
@@ -127,18 +141,27 @@ class OverdueSalesInvoiceReportController extends Controller
 
         $data->whereDate('doc_date', '<=', $date);
 
-        if($request->filter_customer != ""){
+        if(Auth::user()->role_id == 4){
             $data->where(function($query) use ($request) {
                 $query->orwhereHas('customer', function($q1) use ($request){
-                    $q1->where('id', $request->filter_customer);
+                    $q1->where('id', Auth::id());
                 });
-
-                $query->orwhere(function($q1) use ($request){
-                    $q1->where('card_name','LIKE',"%".$request->filter_customer."%");
-                });
-
             });
+        }else{
+            if($request->filter_customer != ""){
+                $data->where(function($query) use ($request) {
+                    $query->orwhereHas('customer', function($q1) use ($request){
+                        $q1->where('id', $request->filter_customer);
+                    });
+
+                    $query->orwhere(function($q1) use ($request){
+                        $q1->where('card_name','LIKE',"%".$request->filter_customer."%");
+                    });
+
+                });
+            }
         }
+        
 
         if($request->filter_brand != ""){
             $data->where(function($query) use ($request) {
@@ -152,17 +175,57 @@ class OverdueSalesInvoiceReportController extends Controller
             });
         }
 
-        if($request->filter_sales_specialist != ""){
+        if($request->filter_manager != ""){
             $data->where(function($query) use ($request) {
                 $query->whereHas('customer', function($q) use ($request) {
                     $q->where(function($que) use ($request) {
                         $que->whereHas('sales_specialist', function($q2) use ($request){
-                            $q2->where('id', $request->filter_sales_specialist);
+                            $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                            $q2->whereIn('id', $salesAgent);
                         });
                     });
                 });
             });
         }
+
+
+        if(Auth::user()->role_id == 6){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where(function($que) use ($request) {
+                        $que->whereHas('sales_specialist', function($q2) use ($request){
+                            $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                            $q2->whereIn('id', $salesAgent);
+                        });
+                    });
+                });
+            });
+        }
+
+        if(Auth::user()->role_id == 2){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where(function($que) use ($request) {
+                        $que->whereHas('sales_specialist', function($q2) use ($request){
+                            $q2->where('id', Auth::id());
+                        });
+                    });
+                });
+            });
+        }else{
+            if($request->filter_sales_specialist != ""){
+                $data->where(function($query) use ($request) {
+                    $query->whereHas('customer', function($q) use ($request) {
+                        $q->where(function($que) use ($request) {
+                            $que->whereHas('sales_specialist', function($q2) use ($request){
+                                $q2->where('id', $request->filter_sales_specialist);
+                            });
+                        });
+                    });
+                });
+            }
+        }
+        
 
         if($request->filter_company != ""){
             $data->where('sap_connection_id',$request->filter_company);
