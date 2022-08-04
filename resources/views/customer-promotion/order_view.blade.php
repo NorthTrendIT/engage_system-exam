@@ -235,7 +235,9 @@
 
                                         if($is_sap_pushed){
                                           $delivery = @$p->deliveries()->first();
-                                          $quotation = @$delivery->quotation()->first();
+                                          if($delivery != null){
+                                            $quotation = @$delivery->quotation()->first();
+                                          }                                          
                                           $quotation_item = @$quotation->items()->first();
                                           $price_after_vat = @$quotation_item->price_after_vat;
                                         }
