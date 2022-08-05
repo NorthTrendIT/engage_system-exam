@@ -32,7 +32,7 @@ class BackOrderReportController extends Controller
         if(Auth::user()->role_id == 1){
             $company = SapConnection::all();
             $role = Role::where('name','Manager')->first();
-            $managers = User::where('role_id',$role->id)->get();
+            $managers = User::where('role_id',@$role->id)->get();
         }
         if(Auth::user()->role_id == 6){
             $company = SapConnection::all();          
@@ -251,14 +251,14 @@ class BackOrderReportController extends Controller
         if($request->filter_manager != ""){
             $data->whereHas('order.sales_specialist', function($q) use ($request) {
                 $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
-                $q->where('id', $salesAgent);
+                $q->whereIn('id', $salesAgent);
             });
         }
 
         if(Auth::user()->role_id == 6){
             $data->whereHas('order.sales_specialist', function($q) use ($request) {
                 $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
-                $q->where('id', $salesAgent);
+                $q->whereIn('id', $salesAgent);
             });
         }
 

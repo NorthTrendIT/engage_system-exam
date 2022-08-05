@@ -33,7 +33,7 @@ class OverdueSalesInvoiceReportController extends Controller
         if(Auth::user()->role_id == 1){
             $company = SapConnection::all();
             $role = Role::where('name','Manager')->first();
-            $managers = User::where('role_id',$role->id)->get();
+            $managers = User::where('role_id',@$role->id)->get();
         }
         if(Auth::user()->role_id == 6){
             $company = SapConnection::all();          

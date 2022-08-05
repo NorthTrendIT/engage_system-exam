@@ -81,6 +81,7 @@
                               <th>Last Name</th>
                               <th>Email</th>
                               <th>Territory</th>
+                              <th>Parent</th>
                               <th>Status</th>
                               <th>Action</th>
                             </tr>
@@ -164,6 +165,7 @@
               {data: 'last_name', name: 'last_name'},
               {data: 'email', name: 'email'},
               {data: 'territory', name: 'territory'},
+              {data: 'parent', name: 'parent'},
               {data: 'status', name: 'status'},
               {data: 'action', name: 'action', orderable: false, searchable: false},
           ],
