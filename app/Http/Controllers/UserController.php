@@ -393,6 +393,13 @@ class UserController extends Controller
                                     return "-";
                                 }
                             })
+                            ->addColumn('parent',function($row){
+                                if(@$row->parent){
+                                    return @$row->parent->first_name.' '.@$row->parent->last_name;
+                                }else{
+                                    return "-";
+                                }
+                            })
                             ->addColumn('status', function($row) {
 
                                 $btn = "";
