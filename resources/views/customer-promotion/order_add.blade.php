@@ -166,7 +166,7 @@
                         <div class="col-md-3">
                           <div class="form-group">
                             <label>Quantity</label>
-                            <input type="number" class="form-control form-control-solid quantity" placeholder="Enter quantity" name="products[{{ @$p->product->id }}][quantity]" @if($quantity) readonly="" value="{{ $quantity }}" @elseif(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ $edit_products[@$p->product->id]['quantity'] }}" @else value="0" @endif min="0">
+                            <input type="number" class="form-control form-control-solid quantity" placeholder="Enter quantity" name="products[{{ @$p->product->id }}][quantity]" @if($quantity) readonly="" value="{{ $quantity }}" @elseif(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ $edit_products[@$p->product->id]['quantity'] }}" @else value="1" @endif min="0">
                           </div>
                         </div>
 
