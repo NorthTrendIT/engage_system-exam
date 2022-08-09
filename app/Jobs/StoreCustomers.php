@@ -122,6 +122,7 @@ class StoreCustomers implements ShouldQueue
                                 'u_subsector' => @$value['U_Subsector'],
                                 'u_province' => @$value['U_Province'],
                                 'u_card_code' => @$value['U_CardCode'],
+                                'open_orders_balance' => @$value['OpenOrdersBalance'],
 
                                 'updated_date' => $value['UpdateDate'],
                                 'last_sync_at' => current_datetime(),
