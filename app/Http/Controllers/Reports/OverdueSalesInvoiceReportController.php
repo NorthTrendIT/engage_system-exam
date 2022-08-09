@@ -62,7 +62,7 @@ class OverdueSalesInvoiceReportController extends Controller
 
         $table = DataTables::of($data)
                             ->addIndexColumn()
-                            ->addColumn('name', function($row) {
+                            ->addColumn('name', function($row) {                                
                                 return  @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('doc_entry', function($row) {
@@ -175,7 +175,7 @@ class OverdueSalesInvoiceReportController extends Controller
             });
         }
 
-        if($request->filter_manager != ""){
+        if(@$request->filter_manager != ""){
             $data->where(function($query) use ($request) {
                 $query->whereHas('customer', function($q) use ($request) {
                     $q->where(function($que) use ($request) {

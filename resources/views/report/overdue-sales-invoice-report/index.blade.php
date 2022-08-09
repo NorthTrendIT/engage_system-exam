@@ -417,6 +417,7 @@
       data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
+      data.filter_manager = $('[name="filter_manager"]').find('option:selected').val();
 
       url = url + '?data=' + btoa(JSON.stringify(data));
 
