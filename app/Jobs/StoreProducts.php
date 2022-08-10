@@ -99,6 +99,7 @@ class StoreProducts implements ShouldQueue
                                 'sap_connection_id' => $this->sap_connection_id,
 
                                 'quantity_on_stock' => @$value['QuantityOnStock'],
+                                'sales_unit_weight' => @$value['SalesUnitWeight'],
                                 'quantity_ordered_by_customers' => @$value['QuantityOrderedByCustomers'],
                             );
 
