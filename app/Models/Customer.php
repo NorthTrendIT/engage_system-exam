@@ -55,6 +55,7 @@ class Customer extends Model
         'u_classification',
         'updated_date',
         'last_sync_at',
+        'open_orders_balance',
     ];
 
     public function bp_addresses()
