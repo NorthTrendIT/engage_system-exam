@@ -13,6 +13,7 @@ use App\Models\Classes;
 use App\Models\CustomerBpAddress;
 use App\Models\User;
 use Hash;
+use Log;
 
 class StoreCustomers implements ShouldQueue
 {
@@ -44,8 +45,7 @@ class StoreCustomers implements ShouldQueue
     {
         if(!empty($this->data)){
 
-            foreach ($this->data as $value) {
-
+            foreach ($this->data as $value) {                
                 if(empty(@$value['U_CardCode'])){
                     continue;
                 }
@@ -129,7 +129,7 @@ class StoreCustomers implements ShouldQueue
                                 'sap_connection_id' => $this->sap_connection_id,
                                 'real_sap_connection_id' => $this->real_sap_connection_id,
                             );
-
+                        
                 $obj = Customer::updateOrCreate(
                                         [
                                             'card_code' => @$value['CardCode'],
@@ -137,7 +137,7 @@ class StoreCustomers implements ShouldQueue
                                         ],
                                         $insert
                                     );
-
+                Log::info(print_r($obj, true));
                 // Store BPAddresses details
                 if(@$obj->id){
 

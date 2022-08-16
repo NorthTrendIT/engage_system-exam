@@ -1,7 +1,9 @@
 @extends('layouts.master')
 
 @section('title','Customer')
-
+@php
+   $access = get_user_role_module_access(Auth::user()->role_id);
+@endphp
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
@@ -40,14 +42,16 @@
                        <table class="table table-bordered">
                           <!--begin::Table head-->
                           <thead>
+                            @if(Auth::user()->role_id != 4)
                             <tr>
                               <th> <b>Business Unit:</b> </th>
                               <td>{{ @$data->sap_connection->company_name ?? "-" }}</td>
-                            </tr>
+                            </tr>                            
                             <tr>
                               <th> <b>Other Business Units:</b> </th>
                               <td>{{ @$sap_connections != "" ? @$sap_connections : "-" }}</td>
                             </tr>
+                            @endif
                             <tr>
                               <th> <b>Card Code:</b> </th>
                               <td>{{ @$data->card_code ?? "-" }}</td>
@@ -127,6 +131,43 @@
                               <td><b class="{{ @$data->is_active ? "text-success" : "text-danger" }}">{{ @$data->is_active == true ? "Active" : "Inactive" }}</b></td>
                             </tr>
 
+                            <tr>
+                              <th> <b>Total Overdue Amount:</b> </th>
+                              <td>{{@$totalOverdueAmount}}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Total Outstanding Amount:</b> </th>
+                              <td>{{ (@$data->current_account_balance) ?? "-" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Open Order Amount:</b> </th>
+                              <td>{{ (@$data->open_orders_balance) ?? "-" }}</td>
+                            </tr>
+
+
+                            <tr>
+                              <th> <b>Total Exposure Amount:</b> </th>
+                              <td>{{ @$data->current_account_balance + @$data->open_orders_balance  ?? "-" }}</td>
+                            </tr>
+
+                            <tr>
+                              <th> <b>Credit Limit:</b> </th>
+                              <td>{{ (@$data->credit_limit) ?? "-" }}</td>
+                            </tr>
+
+                            @if(@$data->credit_limit > (@$data->current_account_balance + @$data->open_orders_balance))
+                            <tr>
+                              <th> <b>Available Credit Limit:</b> </th>
+                              <td>{{@$data->credit_limit - ($data->current_account_balance + @$data->open_orders_balance)}}</td>
+                            </tr>
+                            @else
+                            <tr>
+                              <th> <b>Over Credit Limit:</b> </th>
+                              <td>{{($data->current_account_balance + @$data->open_orders_balance) - @$data->credit_limit}}</td>
+                            </tr>
+                            @endif
                           </thead>
                           <!--end::Table head-->
                           <!--begin::Table body-->

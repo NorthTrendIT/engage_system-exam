@@ -221,6 +221,7 @@
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
+      $filter_manager = $('[name="filter_manager"]').find('option:selected').val();
 
       $.ajax({
         url: '{{ route('reports.credit-memo-report.get-all') }}',
@@ -231,6 +232,7 @@
                 filter_customer : $filter_customer,
                 filter_brand : $filter_brand,
                 filter_sales_specialist : $filter_sales_specialist,
+                filter_manager : $filter_manager,
               }
       })
       .done(function(result) {
@@ -367,6 +369,7 @@
                     search: params.term,
                     sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
                     brand_id: $('[name="filter_brand"]').select2('data')[0]['data_id'],
+                    filter_manager: $('[name="filter_manager"]').find('option:selected').val(),
               };
           },
           processResults: function (response) {

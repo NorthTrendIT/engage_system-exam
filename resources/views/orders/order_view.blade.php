@@ -192,6 +192,17 @@
                               <!--end::Text-->
                             </div>
                             <!--end::Col-->
+
+                            <!--end::Col-->
+                            <div class="col-sm-2">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Total Weight:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ (!is_null($products->sales_unit_weight)) ? $products->sales_unit_weight : "-" }}</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
                             
                           </div>
                           <div class="row g-5 mb-11">

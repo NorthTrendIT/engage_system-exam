@@ -35,6 +35,8 @@ use OneSignal;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderExport;
 
+use App\Models\Product;
+
 class OrdersController extends Controller
 {
     public function __construct(){
@@ -101,8 +103,9 @@ class OrdersController extends Controller
 
         
         $data = $data->firstOrFail();
+        $products = Product::where('id',@$data->doc_entry)->first();
         
-        return view('orders.order_view', compact('data'));
+        return view('orders.order_view', compact('data','products'));
     }
 
     /**
