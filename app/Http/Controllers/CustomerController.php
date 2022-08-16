@@ -19,6 +19,7 @@ use Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomerExport;
 use App\Exports\CustomerTaggingExport;
+use App\Models\Invoice;
 
 class CustomerController extends Controller
 {
@@ -76,10 +77,12 @@ class CustomerController extends Controller
 
         $data = $data->firstOrFail();
 
+        $totalOverdueAmount = Invoice::where(['card_code'=>$data->card_code,'document_status'=>'bost_Open'])->sum('doc_entry');
+
         $sap_connection_id = explode(',', @$data->user->multi_sap_connection_id);
         $sap_connections = SapConnection::whereIn('id', $sap_connection_id)->where('id','!=', $data->sap_connection_id)->pluck('company_name')->toArray();
         $sap_connections = implode(", ", $sap_connections);
-        return view('customer.view',compact('data', 'sap_connections'));
+        return view('customer.view',compact('data', 'sap_connections','totalOverdueAmount'));
     }
 
     /**
@@ -769,11 +772,9 @@ class CustomerController extends Controller
         $search = $request->search;
 
         if(@$request->sap_connection_id != "" && @$request->brand_id != ""){
-
             $customer_ids = CustomerProductGroup::has('customer')->with('customer')->where('product_group_id', $request->brand_id)->pluck('customer_id')->toArray();
 
             if(!empty($customer_ids)){
-
                 if(Auth::user()->role_id == 6){
                     $data = User::where('role_id', 2)
                                     ->where('parent_id', Auth::id())

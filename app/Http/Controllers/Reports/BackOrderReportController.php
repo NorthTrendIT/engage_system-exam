@@ -51,28 +51,35 @@ class BackOrderReportController extends Controller
         $table = DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('item_name', function($row) {
-                                return @$row->product1->item_name ?? @$row->item_description ?? "-";
+                                //return @$row->product1->item_name ?? @$row->item_description ?? "-";
+                                return "-";
                             })
                             ->addColumn('item_code', function($row) {
-                                return @$row->product1->item_code ?? @$row->item_code ?? "-";
+                                //return @$row->product1->item_code ?? @$row->item_code ?? "-";
+                                return "-";
                             })
                             ->addColumn('customer', function($row) {
-                                return @$row->order->customer->card_name ?? @$row->order->card_name ?? "-";
+                                //return @$row->order->customer->card_name ?? @$row->order->card_name ?? "-";
+                                return "-";
                             })
                             ->addColumn('sales_specialist', function($row) {
-                                return @$row->order->sales_specialist->sales_specialist_name ?? "-";
+                                //return @$row->order->sales_specialist->sales_specialist_name ?? "-";
+                                return "-";
                             })
                             ->addColumn('brand', function($row) {
-                                return @$row->product1->group->group_name ?? "-";
+                                //return @$row->product1->group->group_name ?? "-";
+                                return "-";
                             })
                             ->addColumn('company', function($row) {
                                 return @$row->sap_connection->company_name ?? "-";
                             })
                             ->addColumn('doc_entry', function($row) {
-                                return @$row->order->doc_entry ?? "-";
+                                //return @$row->order->doc_entry ?? "-";
+                                return "-";
                             })
                             ->addColumn('doc_date', function($row) {
-                                return date('M d, Y',strtotime(@$row->order->doc_date));
+                                //return date('M d, Y',strtotime(@$row->order->doc_date));
+                                return "-";
                             })
                             ->addColumn('quantity', function($row) {
                                 return @$row->quantity ?? "-";
@@ -248,10 +255,10 @@ class BackOrderReportController extends Controller
             }
         }
 
-        if($request->filter_manager != ""){
+        if(@$request->filter_manager != ""){
             $data->whereHas('order.sales_specialist', function($q) use ($request) {
-                $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
-                $q->whereIn('id', $salesAgent);
+                $salesAgent = User::where('parent_id',@$request->filter_manager)->pluck('id')->toArray();
+                $q->whereIn('id', @$salesAgent);
             });
         }
 
