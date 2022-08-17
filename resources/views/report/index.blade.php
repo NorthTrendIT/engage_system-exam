@@ -27,7 +27,7 @@
                 <div class="card-body p-0">
                     <div class="card-p">
                         <div class="row">
-                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && $access['promotion-report'] == 1 && isset($access['promotion-report'])))
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['promotion-report']) && $access['promotion-report'] == 1))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-warning d-block my-2">
