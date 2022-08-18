@@ -222,6 +222,17 @@
                                 </div>
                                 <!--end::Item-->
 
+                                <div class="align-items-sm-center mb-7">
+                                    <!--begin::Section-->
+                                    <div class="">
+                                        <div class="flex-grow-1 me-2">
+                                            <span class="fs-4 fw-bolder">Remark :</span>
+                                        </div>
+                                        <textarea type="text" class="form-control" placeholder="Remark" id="remark" name="remark" autocomplete="off" rows="5"></textarea>
+                                    </div>
+                                    <!--end::Section-->
+                                </div>
+
                             </div>
                             <!--end::Body-->
                         </div>
@@ -539,6 +550,7 @@ $(document).ready(function() {
                 contentType: false,
                 success: function (data) {
                     if (data.status) {
+                        console.log("success");
                         toast_success(data.message)
                         setTimeout(function(){
                             window.location.href = "{{ route('orders.index') }}";
