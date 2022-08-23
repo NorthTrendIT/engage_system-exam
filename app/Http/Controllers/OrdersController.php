@@ -103,7 +103,7 @@ class OrdersController extends Controller
 
         
         $data = $data->firstOrFail();
-        $products = Product::where('id',@$data->doc_entry)->first();
+        $products = Product::where('id',@$data->doc_num)->first();
         
         return view('orders.order_view', compact('data','products'));
     }

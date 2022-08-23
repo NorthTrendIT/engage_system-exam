@@ -302,7 +302,7 @@
                                           <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total Weight:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-5 fw-boldest">{{ (!is_null($products->sales_unit_weight)) ? $products->sales_unit_weight.'Kg' : "-" }}</div>
+                                          <div class="text-end fw-bolder fs-5 fw-boldest">{{ (!is_null($products)) ? $products->sales_unit_weight.'Kg' : "-" }}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
@@ -313,7 +313,7 @@
                                           <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total Volume:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-5 fw-boldest">{{ (!is_null($products->sales_unit_weight)) ? $products->sales_unit_weight * $products->quantity_ordered_by_customers : "0" }}</div>
+                                          <div class="text-end fw-bolder fs-5 fw-boldest">{{ (!is_null($products)) ? $products->sales_unit_weight * $products->quantity_ordered_by_customers : "0" }}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
