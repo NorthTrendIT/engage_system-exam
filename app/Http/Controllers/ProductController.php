@@ -13,7 +13,7 @@ use App\Models\ProductTiresCategory;
 use DataTables;
 use Validator;
 use Auth;
-
+use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ProductExport;
 use App\Exports\ProductTaggingExport;
@@ -950,7 +950,14 @@ class ProductController extends Controller
 
   public function getBrandData(Request $request){
     $data = collect();
-
+    if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
+        if($request->sap_connection_id == ""){
+            return response()->json($data);
+        }
+    }else{
+        $user = User::where('id',Auth::id())->first();
+        $request->sap_connection_id = $user->sap_connection_id;
+    }
     if(@$request->sap_connection_id != ""){
 
       $sap_connection_id = $request->sap_connection_id;
@@ -974,6 +981,14 @@ class ProductController extends Controller
 
   public function getProductCategoryData(Request $request){
     $response = array();
+    if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
+        if($request->sap_connection_id == ""){
+            return response()->json($response);
+        }
+    }else{
+        $user = User::where('id',Auth::id())->first();
+        $request->sap_connection_id = $user->sap_connection_id;
+    }
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
       
@@ -1004,6 +1019,14 @@ class ProductController extends Controller
 
   public function getProductLineData(Request $request){
     $response = array();
+    if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
+        if($request->sap_connection_id == ""){
+            return response()->json($response);
+        }
+    }else{
+        $user = User::where('id',Auth::id())->first();
+        $request->sap_connection_id = $user->sap_connection_id;
+    }
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
       
@@ -1034,6 +1057,14 @@ class ProductController extends Controller
 
   public function getProductClassData(Request $request){
     $response = array();
+    if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
+        if($request->sap_connection_id == ""){
+            return response()->json($response);
+        }
+    }else{
+        $user = User::where('id',Auth::id())->first();
+        $request->sap_connection_id = $user->sap_connection_id;
+    }
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
       
@@ -1065,6 +1096,14 @@ class ProductController extends Controller
 
   public function getProductTypeData(Request $request){
     $response = array();
+    if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
+        if($request->sap_connection_id == ""){
+            return response()->json($response);
+        }
+    }else{
+        $user = User::where('id',Auth::id())->first();
+        $request->sap_connection_id = $user->sap_connection_id;
+    }
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
       
@@ -1096,6 +1135,14 @@ class ProductController extends Controller
 
   public function getProductApplicationData(Request $request){
     $response = array();
+    if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
+        if($request->sap_connection_id == ""){
+            return response()->json($response);
+        }
+    }else{
+        $user = User::where('id',Auth::id())->first();
+        $request->sap_connection_id = $user->sap_connection_id;
+    }
 
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
       
@@ -1126,7 +1173,15 @@ class ProductController extends Controller
 
   public function getProductPatternData(Request $request){
     $response = array();
-
+    if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
+        if($request->sap_connection_id == ""){
+            return response()->json($response);
+        }
+    }else{
+        $user = User::where('id',Auth::id())->first();
+        $request->sap_connection_id = $user->sap_connection_id;
+    }
+    
     if(@$request->sap_connection_id != "" && @$request->items_group_code != ""){
       
       $sap_connection_id = $request->sap_connection_id;

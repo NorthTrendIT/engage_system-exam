@@ -484,9 +484,7 @@ class CustomerPromotionController extends Controller
                 if(@$customer_promotion->id){
 
                     if(isset($input['products']) && !empty($input['products'])){
-
                         foreach ($input['products'] as $key => $value) {
-
                             $quantity = 0;
 
                             $product = Product::find($key);
@@ -510,8 +508,8 @@ class CustomerPromotionController extends Controller
                                 $customer_promotion_product->save();
 
                                 if(@$customer_promotion_product->id){
-
-                                    foreach ($value['delivery_date'] as $d_key => $d_value) {
+                                if(@$value['delivery_date'] != null){
+                                    foreach (@$value['delivery_date'] as $d_key => $d_value) {
 
                                         if($d_value && $value['delivery_quantity'][$d_key]){
 
@@ -530,6 +528,7 @@ class CustomerPromotionController extends Controller
 
                                         }
                                     }
+                                }
 
 
                                     $discount_percentage = 0;

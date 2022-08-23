@@ -166,7 +166,13 @@
                         <div class="col-md-3">
                           <div class="form-group">
                             <label>Quantity</label>
-                            <input type="number" class="form-control form-control-solid quantity" placeholder="Enter quantity" name="products[{{ @$p->product->id }}][quantity]" @if($quantity) readonly="" value="{{ $quantity }}" @elseif(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ $edit_products[@$p->product->id]['quantity'] }}" @else value="1" @endif min="1">
+                            @if($p->fixed_quantity == NULL && $promotion->promotion_type->is_fixed_quantity == 0)
+                            <input type="number" class="form-control form-control-solid quantity" placeholder="Enter quantity" name="products[{{ @$p->product->id }}][quantity]" @if($quantity) readonly="" value="{{ $quantity }}" @elseif(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ $edit_products[@$p->product->id]['quantity'] }}" @else value="1" @endif min="0">
+                            @elseif($p->promotion_type->is_total_fixed_quantity == 1 && $promotion->promotion_type->is_fixed_quantity == 1)
+                            <input type="number" class="form-control form-control-solid quantity" placeholder="Enter quantity" name="products[{{ @$p->product->id }}][quantity]" @if($quantity) readonly="" value="{{ $quantity }}" @elseif(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ $edit_products[@$p->product->id]['quantity'] }}" @else value="1" @endif min="0">
+                            @else
+                            <input type="number" class="form-control form-control-solid quantity" placeholder="Enter quantity" name="products[{{ @$p->product->id }}][quantity]" @if($quantity) readonly="" value="{{ $quantity }}" @elseif(isset($edit) && isset($edit_products[@$p->product->id])) value="{{ $edit_products[@$p->product->id]['quantity'] }}" @else value="0" @endif min="0">
+                            @endif
                           </div>
                         </div>
 
@@ -216,6 +222,10 @@
                             <input type="hidden" name="products[{{ @$p->product->id }}][delivery_id][{{ $i }}]" value="{{ @$edit_deliveries[@$p->product->id][$i-1]['id'] }}">
                           @endif
 
+                          {{-- @if($promotion->promotion_type->is_fixed_quantity == 0 && $promotion->promotion_type->is_total_fixed_quantity == 0) --}}
+                          @if(($promotion->promotion_type->is_fixed_quantity == 0 && $promotion->promotion_type->is_total_fixed_quantity == 0) || ($promotion->promotion_type->is_fixed_quantity == 1 && $promotion->promotion_type->is_total_fixed_quantity == 1) ||
+                          ($quantity || (isset($edit) && isset($edit_products[@$p->product->id]))
+                          ))
                           <div class="row">
                             <div class="col-md-3 mt-5">
                               <div class="form-group">
@@ -262,6 +272,7 @@
                             {{-- @endif --}}
 
                           </div>
+                          @endif
                         @endfor
                       @endif
 
@@ -513,11 +524,10 @@
       $('.quantity').each(function(){
         if(this.value != ""){
           sum += parseFloat(this.value);
-
           sum1 += ( parseFloat(this.value) * parseFloat($(this).closest('.product_list').find('.actual_product_price').data('value')));
 
           var unit_price = $(this).closest('.product_list').find('.unit_price').val();
-          sum2 += ( parseFloat(this.value) * $(this).closest('.product_list').find('.unit_price').val() );
+          sum2 += ( parseFloat(this.value) * parseFloat($(this).closest('.product_list').find('.unit_price').val()) );
         }
       });
       $('.total_quantity').val(sum.toFixed(2));

@@ -501,6 +501,21 @@
             </div>
 
             @if(Auth::user()->role_id != 1)
+            @if((isset($access['promotion-report']) && $access['promotion-report'] == 1)  || (isset($access['sales-report']) && $access['sales-report'] == 1))
+            <div class="menu-item">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['report.index', 'report.promotion.index', 'reports.sales-report.index', 'reports.sales-order-report.index', 'reports.overdue-sales-invoice-report.index', 'reports.back-order-report.index', 'reports.credit-memo-report.index', 'reports.debit-memo-report.index', 'reports.return-order-report.index', 'reports.product-report.index', 'reports.product-sales-report.index', 'reports.sales-order-to-invoice-lead-time-report.index', 'reports.invoice-to-delivery-lead-time-report.index', 'reports.promotion-report.index' ])) ? 'active' : '' }}" href="{{ route('report.index') }}">
+                  <span class="menu-icon">
+                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
+                     <span class="svg-icon svg-icon-2">
+                     <i class="far fa-chart-bar"></i>
+                     </span>
+                     <!--end::Svg Icon-->
+                  </span>
+                  <span class="menu-title">Reports</span>
+               </a>
+            </div>
+            @endif
+
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['conversation.index','conversation.create','conversation.show'])) ? 'active' : '' }}" href="{{ route('conversation.index') }}">
                   <span class="menu-icon">
@@ -547,7 +562,9 @@
                   <span class="menu-title">SAP API Connection Field</span>
                </a>
             </div>
+            @endif
 
+            @if(Auth::user()->role_id == 1) 
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['report.index', 'report.promotion.index', 'reports.sales-report.index', 'reports.sales-order-report.index', 'reports.overdue-sales-invoice-report.index', 'reports.back-order-report.index', 'reports.credit-memo-report.index', 'reports.debit-memo-report.index', 'reports.return-order-report.index', 'reports.product-report.index', 'reports.product-sales-report.index', 'reports.sales-order-to-invoice-lead-time-report.index', 'reports.invoice-to-delivery-lead-time-report.index', 'reports.promotion-report.index' ])) ? 'active' : '' }}" href="{{ route('report.index') }}">
                   <span class="menu-icon">
@@ -560,7 +577,9 @@
                   <span class="menu-title">Reports</span>
                </a>
             </div>
+            @endif
 
+            @if(Auth::user()->role_id == 1)
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['activitylog.index'])) ? 'active' : '' }}" href="{{ route('activitylog.index') }}">
                   <span class="menu-icon">
@@ -573,9 +592,7 @@
                   <span class="menu-title">Activity Log</span>
                </a>
             </div>
-            @endif
-
-            
+            @endif            
 
          </div>
          <!--end::Menu-->

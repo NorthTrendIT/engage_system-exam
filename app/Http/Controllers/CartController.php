@@ -334,6 +334,7 @@ class CartController extends Controller
                         $order->placed_by = "C";
                         $order->confirmation_status = "P";
                         $order->sap_connection_id = $real_sap_connection_id;
+                        //$order->remarks = $request->remark;
                         $order->save();
 
                         $total = 0;

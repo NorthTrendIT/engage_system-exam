@@ -73,7 +73,7 @@
 
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
-                            <div class="col-sm-5">
+                            <div class="col-sm-6">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Name:</div>
                               <!--end::Label-->
@@ -84,31 +84,35 @@
                             <!--end::Col-->
 
                             <!--end::Col-->
-                            <div class="col-sm-2">
+                            <div class="col-sm-6">
                               <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Branch:</div>
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
                               <!--end::Label-->
                               <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->group->name ?? '-' }}</div>
+                              <div class="fw-bolder fs-6 text-gray-800">
+
+                                <span class="mr-10">{!! getOrderStatusBtnHtml($status) !!}</span>
+
+                                @if($status == "Pending" && !$data->customer_promotion_id)
+                                  <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
+                                @else
+                                  @if($status != "Cancelled")
+                                    <button type="button" class="btn btn-danger btn-sm" title="Cancel Order" disabled>Cancel Order</button>
+                                    <a href="javascript:" class="mx-2 text-dark" title="Promotion Orders can not be Cancelled! "><i class="fa fa-info-circle fs-6"></i></a>
+                                  @endif
+                                @endif
+
+                                {{-- @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->user->id,1]))
+                                  <a href="javascript:" class="btn btn-info btn-sm mark-as-completed-order" title="Mark as Completed">Mark as Completed</a>
+                                @endif --}}
+
+                              </div>
                               <!--end::Text-->
                             </div>
                             <!--end::Col-->
 
                             <!--end::Col-->
-                            <div class="col-sm-5">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Delivery Address:</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->address ?? '-' }}</div>
-                              <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
-                          </div>
-
-                          <div class="row g-5 mb-11">
-                            <!--end::Col-->
-                            <div class="col-sm-5">
+                            <div class="col-sm-6">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Sales Specialist:</div>
                               <!--end::Label-->
@@ -119,29 +123,29 @@
                             <!--end::Col-->
 
                             <!--end::Col-->
-                            <div class="col-sm-2">
+                            <div class="col-sm-6">
                               <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Order #:</div>
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Delivery Address:</div>
                               <!--end::Label-->
-                              <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ '#'.@$data->doc_entry ?? "-"  }}</div>
-                              <!--end::Col-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->address ?? '-' }}</div>
+                              <!--end::Text-->
                             </div>
                             <!--end::Col-->
 
                             <!--end::Col-->
-                            <div class="col-sm-2">
+                            <div class="col-sm-6">
                               <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Reference #:</div>
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Order Type:</div>
                               <!--end::Label-->
-                              <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->num_at_card ?? "-"  }}</div>
-                              <!--end::Col-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ (!is_null($data->customer_promotion_id)) ? "Promotion" : "Standard" }}</div>
+                              <!--end::Text-->
                             </div>
-                            <!--end::Col-->
+                            <!--end::Col-->                            
 
                             <!--end::Col-->
-                            <div class="col-sm-3">
+                            <div class="col-sm-6">
                               <!--end::Label-->
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Order Date:</div>
                               <!--end::Label-->
@@ -150,6 +154,51 @@
                               <!--end::Col-->
                             </div>
                             <!--end::Col-->
+
+                            <!--end::Col-->
+                            <div class="col-sm-6">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Branch:</div>
+                              <!--end::Label-->
+                              <!--end::Text-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->group->name ?? '-' }}</div>
+                              <!--end::Text-->
+                            </div>
+                            <!--end::Col-->
+
+                            <!--end::Col-->
+                            <div class="col-sm-6">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Delivery Date:</div>
+                              <!--end::Label-->
+                              <!--end::Col-->
+                              <div class="fw-bolder fs-6 text-gray-800">-</div>
+                              <!--end::Col-->
+                            </div>
+                            <!--end::Col-->
+
+                            <!--end::Col-->
+                            <div class="col-sm-6">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Order #:</div>
+                              <!--end::Label-->
+                              <!--end::Col-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ '#'.@$data->doc_entry ?? "-"  }}</div>
+                              <!--end::Col-->
+                            </div>
+                            <!--end::Col-->
+                          </div>
+
+                          <div class="row g-5 mb-11">
+
+                           
+                            <!-- <div class="col-sm-2">
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Reference #:</div>
+                             
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->num_at_card ?? "-"  }}</div>
+                            </div> -->
+
+                            
 
                           </div>
                           <!--end::Row-->
@@ -182,58 +231,9 @@
                             <!--end::Col-->
                             @endif
 
-                            <!--end::Col-->
-                            <div class="col-sm-2">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Order Type:</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ (!is_null($data->customer_promotion_id)) ? "Promotion" : "Standard" }}</div>
-                              <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
                             
                           </div>
-                          <div class="row g-5 mb-11">
-                            <!--end::Col-->
-                            <div class="col-sm-7">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Remarks:</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->u_remarks ?? "-" }}</div>
-                              <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
-
-                            <!--end::Col-->
-                            <div class="col-sm-5">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">
-
-                                <span class="mr-10">{!! getOrderStatusBtnHtml($status) !!}</span>
-
-                                @if($status == "Pending" && !$data->customer_promotion_id)
-                                  <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
-                                @else
-                                  @if($status != "Cancelled")
-                                    <button type="button" class="btn btn-danger btn-sm" title="Cancel Order" disabled>Cancel Order</button>
-                                    <a href="javascript:" class="mx-2 text-dark" title="Promotion Orders can not be Cancelled! "><i class="fa fa-info-circle fs-6"></i></a>
-                                  @endif
-                                @endif
-
-                                {{-- @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->user->id,1]))
-                                  <a href="javascript:" class="btn btn-info btn-sm mark-as-completed-order" title="Mark as Completed">Mark as Completed</a>
-                                @endif --}}
-
-                              </div>
-                              <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
-                          </div>
+                          
 
                           <hr>
 
@@ -268,43 +268,71 @@
                             </div>
                             <!--end::Table-->
                             <!--begin::Container-->
-                            <div class="d-flex justify-content-end">
-                              <!--begin::Section-->
-                              <div class="mw-300px">
-                                {{-- <!--begin::Item-->
-                                <div class="d-flex flex-stack mb-3">
-                                  <!--begin::Accountname-->
-                                  <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
-                                  <!--end::Accountname-->
-                                  <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format_value(@$data->doc_total) }}</div>
-                                  <!--end::Label-->
-                                </div>
-                                <!--end::Item-->
-                                <!--begin::Item-->
-                                <div class="d-flex flex-stack mb-3">
-                                  <!--begin::Accountname-->
-                                  <div class="fw-bold pe-10 text-gray-600 fs-7">Discount:</div>
-                                  <!--end::Accountname-->
-                                  <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">- ₱ 0.00</div>
-                                  <!--end::Label-->
-                                </div>
-                                <!--end::Item--> --}}
+                            <div class="row">
+                              <div class="col-sm-6 col-md-6">Remark: {{ @$data->u_remarks ?? "-" }}</div>
+                              <div class="col-sm-6 col-md-6">
+                                  <div class="total">
+                                    <div class="d-flex justify-content-end">
+                                      <!--begin::Section-->
+                                      <div class="mw-300px">
+                                        {{-- <!--begin::Item-->
+                                        <div class="d-flex flex-stack mb-3">
+                                          <!--begin::Accountname-->
+                                          <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
+                                          <!--end::Accountname-->
+                                          <!--begin::Label-->
+                                          <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format_value(@$data->doc_total) }}</div>
+                                          <!--end::Label-->
+                                        </div>
+                                        <!--end::Item-->
+                                        <!--begin::Item-->
+                                        <div class="d-flex flex-stack mb-3">
+                                          <!--begin::Accountname-->
+                                          <div class="fw-bold pe-10 text-gray-600 fs-7">Discount:</div>
+                                          <!--end::Accountname-->
+                                          <!--begin::Label-->
+                                          <div class="text-end fw-bolder fs-6 text-gray-700">- ₱ 0.00</div>
+                                          <!--end::Label-->
+                                        </div>
+                                        <!--end::Item--> --}}
 
-                                <!--begin::Item-->
-                                <div class="d-flex flex-stack">
-                                  <!--begin::Code-->
-                                  <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
-                                  <!--end::Code-->
-                                  <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-5 fw-boldest">₱ {{ number_format_value(@$data->doc_total) }}</div>
-                                  <!--end::Label-->
-                                </div>
-                                <!--end::Item-->
+                                        <!--begin::Item-->
+                                        <div class="d-flex flex-stack">
+                                          <!--begin::Code-->
+                                          <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total Weight:</div>
+                                          <!--end::Code-->
+                                          <!--begin::Label-->
+                                          <div class="text-end fw-bolder fs-5 fw-boldest">{{ (!is_null($products)) ? $products->sales_unit_weight.'Kg' : "-" }}</div>
+                                          <!--end::Label-->
+                                        </div>
+                                        <!--end::Item-->
+
+                                        <!--begin::Item-->
+                                        <div class="d-flex flex-stack">
+                                          <!--begin::Code-->
+                                          <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total Volume:</div>
+                                          <!--end::Code-->
+                                          <!--begin::Label-->
+                                          <div class="text-end fw-bolder fs-5 fw-boldest">{{ (!is_null($products)) ? $products->sales_unit_weight * $products->quantity_ordered_by_customers : "0" }}</div>
+                                          <!--end::Label-->
+                                        </div>
+                                        <!--end::Item-->
+
+                                        <!--begin::Item-->
+                                        <div class="d-flex flex-stack">
+                                          <!--begin::Code-->
+                                          <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
+                                          <!--end::Code-->
+                                          <!--begin::Label-->
+                                          <div class="text-end fw-bolder fs-5 fw-boldest">₱ {{ number_format_value(@$data->doc_total) }}</div>
+                                          <!--end::Label-->
+                                        </div>
+                                        <!--end::Item-->
+                                      </div>
+                                      <!--end::Section-->
+                                    </div>
+                                  </div>                              
                               </div>
-                              <!--end::Section-->
-                            </div>
                             <!--end::Container-->
                           </div>
                           <!--end::Content-->

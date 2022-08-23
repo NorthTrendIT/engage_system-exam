@@ -112,7 +112,7 @@ class SAPCustomer
                 if(isset($data['odata.nextLink'])){
 
                     SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
-                    //$this->addCustomerDataInDatabase($data['odata.nextLink']);
+                    $this->addCustomerDataInDatabase($data['odata.nextLink']);
                 }else{
                     if(!empty($this->log_id)){
                         add_sap_log([

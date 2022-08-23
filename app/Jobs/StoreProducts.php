@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\Product;
 use App\Models\ProductItemLine;
 use App\Models\ProductTiresCategory;
+use Log;
 
 class StoreProducts implements ShouldQueue
 {
@@ -99,6 +100,7 @@ class StoreProducts implements ShouldQueue
                                 'sap_connection_id' => $this->sap_connection_id,
 
                                 'quantity_on_stock' => @$value['QuantityOnStock'],
+                                'sales_unit_weight' => @$value['SalesUnitWeight'],
                                 'quantity_ordered_by_customers' => @$value['QuantityOrderedByCustomers'],
                             );
 
@@ -109,7 +111,7 @@ class StoreProducts implements ShouldQueue
                                         ],
                                         $insert
                                     );
-
+                Log::info(print_r($obj, true));
                 if(!is_null(@$value['U_TIRES']) && !empty(@$value['U_TIRES'])){
                     $obj_t = ProductTiresCategory::updateOrCreate(
                                             [

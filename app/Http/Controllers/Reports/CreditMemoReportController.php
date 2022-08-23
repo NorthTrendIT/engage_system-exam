@@ -16,6 +16,10 @@ use DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CreditMemoReportExport;
 
+use Auth;
+use App\Models\User;
+use App\Models\Role;
+
 class CreditMemoReportController extends Controller
 {
     /**
@@ -25,8 +29,18 @@ class CreditMemoReportController extends Controller
      */
     public function index()
     {
-        $company = SapConnection::all();
-        return view('report.credit-memo-report.index', compact('company'));
+        $company = [];
+        $managers = [];
+
+        if(Auth::user()->role_id == 1){
+            $company = SapConnection::all();
+            $role = Role::where('name','Manager')->first();
+            $managers = User::where('role_id',@$role->id)->get();
+        }
+        if(Auth::user()->role_id == 6){
+            $company = SapConnection::all();          
+        }
+        return view('report.credit-memo-report.index', compact('company','managers'));
     }
 
     
@@ -156,18 +170,28 @@ class CreditMemoReportController extends Controller
             $q->where('doc_type', 'dDocument_Service')->where('document_status', 'bost_Open')->where('doc_total', '>', 0);
         });
 
-        if(@$request->filter_customer != ""){
+        if(Auth::user()->role_id == 2){
             $data->where(function($query) use ($request) {
                 $query->whereHas('credit_note', function($q) use ($request) {
                     $q->orwhereHas('customer', function($q1) use ($request){
-                        $q1->where('id', $request->filter_customer);
-                    });
-
-                    $q->orwhere(function($q1) use ($request){
-                        $q1->where('card_name','LIKE',"%".$request->filter_customer."%");
+                        $q1->where('id', Auth::id());
                     });
                 });
             });
+        }else{
+            if(@$request->filter_customer != ""){
+                $data->where(function($query) use ($request) {
+                    $query->whereHas('credit_note', function($q) use ($request) {
+                        $q->orwhereHas('customer', function($q1) use ($request){
+                            $q1->where('id', $request->filter_customer);
+                        });
+
+                        $q->orwhere(function($q1) use ($request){
+                            $q1->where('card_name','LIKE',"%".$request->filter_customer."%");
+                        });
+                    });
+                });
+            }
         }
 
         if(@$request->filter_brand != ""){
@@ -180,11 +204,43 @@ class CreditMemoReportController extends Controller
             });
         }
 
-        if(@$request->filter_sales_specialist != ""){
+        if(Auth::user()->role_id == 2){
             $data->where(function($query) use ($request) {
                 $query->whereHas('credit_note', function($q) use ($request) {
                     $q->whereHas('sales_specialist', function($q2) use ($request){
-                        $q2->where('id', $request->filter_sales_specialist);
+                        $q2->where('id', Auth::id());
+                    });
+                });
+            });
+        }else{
+            if(@$request->filter_sales_specialist != ""){
+                $data->where(function($query) use ($request) {
+                    $query->whereHas('credit_note', function($q) use ($request) {
+                        $q->whereHas('sales_specialist', function($q2) use ($request){
+                            $q2->where('id', $request->filter_sales_specialist);
+                        });
+                    });
+                });
+            }
+        }
+
+        if(@$request->filter_manager != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('credit_note', function($q) use ($request) {
+                    $q->whereHas('sales_specialist', function($q2) use ($request){
+                        $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                        $q2->whereIn('id', $salesAgent);
+                    });
+                });
+            });
+        }
+
+        if(Auth::user()->role_id == 6){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('credit_note', function($q) use ($request) {
+                    $q->whereHas('sales_specialist', function($q2) use ($request){
+                        $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                        $q2->whereIn('id', $salesAgent);
                     });
                 });
             });

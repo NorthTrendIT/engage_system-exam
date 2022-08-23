@@ -11,6 +11,7 @@ use App\Models\ProductGroup;
 use App\Models\CustomerGroup;
 use App\Models\Promotions;
 use App\Models\Product;
+use Auth;
 
 class CommonController extends Controller
 {
@@ -257,6 +258,16 @@ class CommonController extends Controller
                 $data->where('sap_connection_id',@$sap_connection_id);
             }
 
+            if(Auth::user()->role_id == 6){
+                $data->where('parent_id',Auth::id());
+            }else if(Auth::user()->role_id == 1){
+                if(@$request->filter_manager != ''){
+                    $data->where('parent_id',@$request->filter_manager);
+                } else{
+                    return response()->json($response);
+                }               
+            }
+
             $data = $data->get();
             // dd($data);
 
@@ -274,7 +285,15 @@ class CommonController extends Controller
     // Get Class
     public function getCustomerClass(Request $request){
         $response = array();
-        if($request->sap_connection_id){
+        if(Auth::user()->role_id == 1){
+            if($request->sap_connection_id == ""){
+                return response()->json($response);
+            }
+        }else{
+            $user = User::where('id',Auth::id())->first();
+            $request->sap_connection_id = $user->sap_connection_id;
+        }
+        //if($request->sap_connection_id){
             $search = $request->search;
 
             $data = Customer::where('is_active', true)->orderby('u_classification','asc')->limit(50)->groupBy('u_classification');
@@ -299,16 +318,23 @@ class CommonController extends Controller
                     "text" => $value->u_classification_sap_value->value ?? $value->u_classification,
                 );
             }
-        }
+        //}
 
         return response()->json($response);
     }
 
     // Get Brand
     public function getBrands(Request $request){
-
         $response = array();
-        if($request->sap_connection_id){
+        if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
+            if($request->sap_connection_id == ""){
+                return response()->json($response);
+            }
+        }else{
+            $user = User::where('id',Auth::id())->first();
+            $request->sap_connection_id = $user->sap_connection_id;
+        }
+        //if($request->sap_connection_id){
             $search = $request->search;
 
             $data = ProductGroup::orderby('group_name','asc')
@@ -339,7 +365,7 @@ class CommonController extends Controller
                     "text" => $value->group_name
                 );
             }
-        }
+        //}
 
         return response()->json($response);
     }
@@ -397,7 +423,15 @@ class CommonController extends Controller
     // Get Customers
     public function getCustomer(Request $request){
         $response = array();
-        if($request->sap_connection_id){
+        if(Auth::user()->role_id == 1){
+            if($request->sap_connection_id == ""){
+                return response()->json($response);
+            }
+        }else{
+            $user = User::where('id',Auth::id())->first();
+            $request->sap_connection_id = $user->sap_connection_id;
+        }
+        //if($request->sap_connection_id){
             $search = $request->search;
 
             $data = Customer::where('is_active', true)->orderby('card_name','asc')->select('id', 'card_name')->limit(50);
@@ -416,6 +450,16 @@ class CommonController extends Controller
                 $data->where('sap_connection_id',@$sap_connection_id);
             }
 
+            // Not a customer
+            if(userrole() != 4){
+                // Sales specialist can see only assigned customer
+                if(in_array(userrole(),[2])){
+                    $data->whereHas('sales_specialist', function($q) {
+                        return $q->where('ss_id',Auth::id());
+                    });
+                }
+            }
+        
             $data = $data->get();
 
             foreach($data as $value){
@@ -424,7 +468,7 @@ class CommonController extends Controller
                     "text" => $value->card_name,
                 );
             }
-        }
+        //}
 
         return response()->json($response);
     }

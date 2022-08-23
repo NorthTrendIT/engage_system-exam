@@ -14,6 +14,10 @@ use DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SalesOrderToInvoiceLeadTimeReportExport;
 
+use Auth;
+use App\Models\User;
+use App\Models\Role;
+
 class SalesOrderToInvoiceLeadTimeReportController extends Controller
 {
     /**
@@ -23,8 +27,18 @@ class SalesOrderToInvoiceLeadTimeReportController extends Controller
      */
     public function index()
     {
-        $company = SapConnection::all();
-        return view('report.sales-order-to-invoice-lead-time-report.index', compact('company'));
+        $company = [];
+        $managers = [];
+
+        if(Auth::user()->role_id == 1){
+            $company = SapConnection::all();
+            $role = Role::where('name','Manager')->first();
+            $managers = User::where('role_id',@$role->id)->get();
+        }
+        if(Auth::user()->role_id == 6){
+            $company = SapConnection::all();          
+        }
+        return view('report.sales-order-to-invoice-lead-time-report.index', compact('company','managers'));
     }
 
     
@@ -46,37 +60,46 @@ class SalesOrderToInvoiceLeadTimeReportController extends Controller
         $table = DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('card_name', function($row) {
-                                return @$row->customer->card_name ?? @$row->card_name ?? "-";
+                                //return @$row->customer->card_name ?? @$row->card_name ?? "-";
+                                return "-";
                             })
                             ->addColumn('card_code', function($row) {
-                                return @$row->customer->card_code ?? @$row->card_code ?? "-";
+                                //return @$row->customer->card_code ?? @$row->card_code ?? "-";
+                                return "-";
                             })
                             ->addColumn('invoice_date', function($row) {
-                                return date('M d, Y',strtotime(@$row->doc_date));
+                                //return date('M d, Y',strtotime(@$row->doc_date));
+                                return "-";
                             })
                             ->addColumn('invoice_doc_num', function($row) {
-                                return @$row->doc_num ?? "-";
+                                //return @$row->doc_num ?? "-";
+                                return "-";
                             })
                             ->addColumn('order_date', function($row) {
-                                return date('M d, Y',strtotime(@$row->order->doc_date));
+                                //return date('M d, Y',strtotime(@$row->order->doc_date));
+                                return "-";
                             })
                             ->addColumn('order_doc_num', function($row) {
-                                return @$row->order->doc_num ?? "-";
+                                //return @$row->order->doc_num ?? "-";
+                                return "-";
                             })
                             ->addColumn('sales_specialist', function($row) {
-                                return @$row->sales_specialist->sales_specialist_name ?? "-";
+                                //return @$row->sales_specialist->sales_specialist_name ?? "-";
+                                return "-";
                             })
                             ->addColumn('company', function($row) {
-                                return @$row->sap_connection->company_name ?? "-";
+                                //return @$row->sap_connection->company_name ?? "-";
+                                return "-";
                             })
                             ->addColumn('lead_time', function($row) {
-                                $endDate = $row->created_at;
-                                $startDate = $row->order->created_at;
+                                // $endDate = $row->created_at;
+                                // $startDate = $row->order->created_at;
 
-                                $days = (strtotime($endDate) - strtotime($startDate)) / (60 * 60 * 24);
-                                return $days ." Day(s)";
+                                // $days = (strtotime($endDate) - strtotime($startDate)) / (60 * 60 * 24);
+                                // return $days ." Day(s)";
+                                return "-";
                             })
-                            ->rawColumns(['action','status','name','lead_time'])
+                            ->rawColumns(['lead_time'])
                             ->make(true);
 
 
@@ -131,16 +154,24 @@ class SalesOrderToInvoiceLeadTimeReportController extends Controller
 
         $data = Invoice::has('order')->orderby('doc_date', 'desc');
 
-        if(@$request->filter_customer != ""){
+        if(Auth::user()->role_id == 4){
             $data->where(function($q) use ($request) {
                 $q->orwhereHas('customer', function($q1) use ($request){
-                    $q1->where('id', $request->filter_customer);
-                });
-
-                $q->orwhere(function($q1) use ($request){
-                    $q1->where('card_name','LIKE',"%".$request->filter_customer."%");
+                    $q1->where('id', Auth::id());
                 });
             });
+        }else{
+            if(@$request->filter_customer != ""){
+                $data->where(function($q) use ($request) {
+                    $q->orwhereHas('customer', function($q1) use ($request){
+                        $q1->where('id', $request->filter_customer);
+                    });
+
+                    $q->orwhere(function($q1) use ($request){
+                        $q1->where('card_name','LIKE',"%".$request->filter_customer."%");
+                    });
+                });
+            }
         }
 
         if(@$request->filter_brand != ""){
@@ -153,10 +184,36 @@ class SalesOrderToInvoiceLeadTimeReportController extends Controller
             });
         }
 
-        if(@$request->filter_sales_specialist != ""){
+        if(Auth::user()->role_id == 2){
             $data->where(function($query) use ($request) {
                 $query->whereHas('sales_specialist', function($q2) use ($request){
-                    $q2->where('id', $request->filter_sales_specialist);
+                    $q2->where('id', Auth::id());
+                });
+            });
+        }else{
+            if(@$request->filter_sales_specialist != ""){
+                $data->where(function($query) use ($request) {
+                    $query->whereHas('sales_specialist', function($q2) use ($request){
+                        $q2->where('id', $request->filter_sales_specialist);
+                    });
+                });
+            }
+        }
+
+        if(@$request->filter_manager != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('sales_specialist', function($q2) use ($request){
+                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                    $q2->whereIn('id', $salesAgent);
+                });
+            });
+        }
+
+        if(Auth::user()->role_id == 6){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('sales_specialist', function($q2) use ($request){
+                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                    $q2->whereIn('id', $salesAgent);
                 });
             });
         }

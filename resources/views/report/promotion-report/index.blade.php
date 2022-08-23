@@ -28,7 +28,7 @@
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-body">
               <div class="row">
-                @if(in_array(userrole(),[1]))
+                @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                     <option value=""></option>
@@ -37,10 +37,21 @@
                     @endforeach
                   </select>
                 </div>
-
+                @endif
+                @if(in_array(userrole(),[1]))
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_manager" data-allow-clear="true" data-placeholder="Select Manager">
+                    <option value=""></option>
+                    @foreach($managers as $m)
+                      <option value="{{ $m->id }}">{{ $m->first_name.' '.$m->last_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                @endif
                 <!-- Brand -->
                 <div class="col-md-3 mt-5 brand">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_brand">
+
                     </select>
                 </div>
 
@@ -50,24 +61,32 @@
                     </select>
                 </div>
 
+                @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))
                 <!-- Sales Specilalist -->
                 <div class="col-md-3 mt-5 sales_specialist">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_sales_specialist">
                     </select>
                 </div>
+                @endif
 
+                @if(!in_array(userrole(),[4]))
                 <!-- Customer -->
                 <div class="col-md-3 mt-5 sales_specialist">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_customer">
                     </select>
                 </div>
                 @endif
-
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
+                    </span>
+                  </div>
+                </div>
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
                 </div>
-
               </div>
 
             </div>
@@ -202,6 +221,8 @@ $(document).ready(function() {
         $('[name="filter_customer_class"]').val(null).trigger('change'),
         $('[name="filter_sales_specialist"]').val(null).trigger('change'),
         $('[name="filter_customer"]').val(null).trigger('change'),
+        $('[name="filter_manager"]').val(null).trigger('change'),
+        $('input').val(''),
         getData();
     });
 
@@ -222,6 +243,8 @@ $(document).ready(function() {
                 filter_customer_class: $('[name="filter_customer_class"]').find('option:selected').val(),
                 filter_sales_specialist: $('[name="filter_sales_specialist"]').find('option:selected').val(),
                 filter_customer: $('[name="filter_customer"]').find('option:selected').val(),
+                filter_manager: $('[name="filter_manager"]').find('option:selected').val(),
+                filter_date_range: $('[name="filter_date_range"]').val(),
             }
         }).done(function(result) {
             if(result.status == false){
@@ -304,6 +327,8 @@ $(document).ready(function() {
                     _token: "{{ csrf_token() }}",
                     search: params.term,
                     sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                    
+                    filter_manager: $('[name="filter_manager"]').find('option:selected').val(),
                 };
             },
             processResults: function (response) {

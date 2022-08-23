@@ -13,6 +13,7 @@ class Customer extends Model
     use \Awobaz\Compoships\Compoships;
 
     protected $fillable = [
+        'id',
     	'card_code',
     	'card_type',
     	'card_name',
@@ -54,6 +55,7 @@ class Customer extends Model
         'u_classification',
         'updated_date',
         'last_sync_at',
+        'open_orders_balance',
     ];
 
     public function bp_addresses()

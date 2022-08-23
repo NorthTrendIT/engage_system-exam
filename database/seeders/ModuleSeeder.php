@@ -416,5 +416,78 @@ class ModuleSeeder extends Seeder
                     ),
         		);
         Module::insert($data);
+
+        $reports = Module::create(
+            array(
+                'title' => 'Reports',
+                'slug' => 'reports',
+                'parent_id' => null,
+            )
+        );
+
+        $data = array(
+            array(
+                'title' => 'Promotion Report',
+                'slug' => 'promotion-report',
+                'parent_id' => $reports->id,
+            ),
+            array(
+                'title' => 'Sales Report',
+                'slug' => 'sales-report',
+                'parent_id' => $reports->id,
+            ),
+            array(
+                'title' => 'Sales Order Report ',
+                'slug' => 'sales-order-report',
+                'parent_id' => $reports->id,
+            ),
+            array(
+                'title' => 'Overdue Sales Invoice Report ',
+                'slug' => 'overdue-sales-invoice-report',
+                'parent_id' => $reports->id,
+            ),
+            array(
+                'title' => 'Back Order Report',
+                'slug' => 'back-order-report',
+                'parent_id' => $reports->id,
+            ),
+            array(
+                'title' => 'Product Sales Report',
+                'slug' => 'product-sales-report',
+                'parent_id' => $reports->id,
+            ),
+            array(
+                'title' => 'Product Report',
+                'slug' => 'product-report',
+                'parent_id' => $reports->id,
+            ),
+            array(
+                'title' => 'Credit Memo Report',
+                'slug' => 'credit-memo-report',
+                'parent_id' => $reports->id,
+            ),
+            array(
+                'title' => 'Debit Memo Report',
+                'slug' => 'debit-memo-report',
+                'parent_id' => $reports->id,
+            ),
+            array(
+                'title' => 'Return Order Report',
+                'slug' => 'return-order-report',
+                'parent_id' => $reports->id,
+            ),
+            array(
+                'title' => 'Sales Order to Invoice Lead Time',
+                'slug' => 'sales-order-to-invoice-lead-time-report',
+                'parent_id' => $reports->id,
+            ),
+            array(
+                'title' => 'Invoice to Delivery Lead Time',
+                'slug' => 'invoice-to-delivery-lead-time-report',
+                'parent_id' => $reports->id,
+            ),
+            
+        );
+        Module::insert($data);
     }
 }

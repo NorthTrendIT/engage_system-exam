@@ -8,6 +8,11 @@ use App\Models\SapConnection;
 use App\Models\Promotions;
 use App\Models\CustomerPromotion;
 use Auth;
+use App\Models\User;
+use App\Models\ProductGroup;
+use App\Models\Classes;
+use App\Models\Customer;
+use App\Models\Role;
 
 class PromotionReportController extends Controller
 {
@@ -18,8 +23,17 @@ class PromotionReportController extends Controller
      */
     public function index()
     {
-        $company = SapConnection::all();
-        return view('report.promotion-report.index', compact('company'));
+        $company = [];
+        $managers = [];
+        if(Auth::user()->role_id == 1){
+            $company = SapConnection::all();
+            $role = Role::where('name','Manager')->first();
+            $managers = User::where('role_id',@$role->id)->get();
+        }
+        if(Auth::user()->role_id == 6){
+            $company = SapConnection::all();          
+        }
+        return view('report.promotion-report.index', compact('company','managers'));
     }
 
     /**
@@ -89,13 +103,17 @@ class PromotionReportController extends Controller
     }
 
     public function getAll(Request $request){
-        $company = SapConnection::query();
-
-        if($request->filter_company != ""){
-            $company->where('id', $request->filter_company);
+        if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
+            $company = SapConnection::query();
+            if($request->filter_company != ""){
+                $company->where('id', $request->filter_company);
+            }
+            $company = $company->get();
+        }else{
+            $user = User::where('id',Auth::id())->first();
+            $company = SapConnection::where(['id'=>$user->sap_connection_id])->get();
         }
-
-        $company = $company->get();
+        
 
         $outputData = [];
         $no = 0;
@@ -107,14 +125,46 @@ class PromotionReportController extends Controller
                 // Pending
                 $totalPending = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'pending']);
 
-                if($request->filter_customer != ""){
-                    $totalPending->whereHas('user',function($q) use($request){
-                        $q->where('customer_id', $request->filter_customer);
-                    });
+                // Manager Filter
+                if(Auth::user()->role_id == 1){
+                    if($request->filter_manager != ""){
+                        $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                        $totalPending->whereIn('sales_specialist_id', $salesAgent);
+                    }
+                }else if(Auth::user()->role_id == 6){
+                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                    $totalPending->whereIn('sales_specialist_id', $salesAgent);
                 }
 
-                if($request->filter_sales_specialist != ""){
-                    $totalPending->where('sales_specialist_id', $request->filter_sales_specialist);
+                // Customer Filter
+                if(Auth::user()->role_id == 4){
+                    $totalPending->whereHas('user',function($q) use($request){
+                        $q->where('customer_id', Auth::id());
+                    });
+                }else{
+                    if($request->filter_customer != ""){
+                        $totalPending->whereHas('user',function($q) use($request){
+                            $q->where('customer_id', $request->filter_customer);
+                        });
+                    }
+                }
+
+                // Sales Agent Filter
+                if(Auth::user()->role_id == 1){
+                    if($request->filter_sales_specialist != ""){
+                        $totalPending->where('sales_specialist_id', $request->filter_sales_specialist);
+                    }
+                }else if(Auth::user()->role_id == 2){
+                    $totalPending->where('sales_specialist_id', Auth::id());
+                }
+
+                // Date Range Filter
+                if($request->filter_date_range != ""){
+                    $date = explode(" - ", $request->filter_date_range);
+                    $start = date("Y-m-d H:i:s", strtotime($date[0]));
+                    $end = date("Y-m-d H:i:s", strtotime($date[1]));
+                    $totalPending->whereDate('created_at', '>=' , $start);
+                    $totalPending->whereDate('created_at', '<=' , $end);
                 }
 
                 $totalPending = $totalPending->count();
@@ -122,14 +172,46 @@ class PromotionReportController extends Controller
                 // Approved
                 $totalApproved = CustomerPromotion::with('customer_user')->where(['sap_connection_id' => $item->id, 'status' => 'approved']);
 
-                if($request->filter_customer != ""){
-                    $totalApproved->whereHas('user',function($q) use($request){
-                        $q->where('customer_id', $request->filter_customer);
-                    });
+                // Manager Filter
+                if(Auth::user()->role_id == 1){
+                    if($request->filter_manager != ""){
+                        $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                        $totalApproved->whereIn('sales_specialist_id', $salesAgent);
+                    }
+                }else if(Auth::user()->role_id == 6){
+                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                    $totalApproved->whereIn('sales_specialist_id', $salesAgent);
                 }
 
-                if($request->filter_sales_specialist != ""){
-                    $totalApproved->where('sales_specialist_id', $request->filter_sales_specialist);
+                // Customer filter
+                if(Auth::user()->role_id == 4){
+                    $totalApproved->whereHas('user',function($q) use($request){
+                        $q->where('customer_id', Auth::id());
+                    });
+                }else{
+                    if($request->filter_customer != ""){
+                        $totalApproved->whereHas('user',function($q) use($request){
+                            $q->where('customer_id', $request->filter_customer);
+                        });
+                    }
+                }
+
+                // Sales Agent Filter
+                if(Auth::user()->role_id == 1){
+                    if($request->filter_sales_specialist != ""){
+                        $totalApproved->where('sales_specialist_id', $request->filter_sales_specialist);
+                    }
+                }else if(Auth::user()->role_id == 2){
+                    $totalApproved->where('sales_specialist_id', Auth::id());
+                }
+
+                // Date range Filter
+                if($request->filter_date_range != ""){
+                    $date = explode(" - ", $request->filter_date_range);
+                    $start = date("Y-m-d H:i:s", strtotime($date[0]));
+                    $end = date("Y-m-d H:i:s", strtotime($date[1]));
+                    $totalApproved->whereDate('created_at', '>=' , $start);
+                    $totalApproved->whereDate('created_at', '<=' , $end);
                 }
 
                 $totalApproved = $totalApproved->count();
@@ -141,14 +223,46 @@ class PromotionReportController extends Controller
                 // Pending
                 $totalPendingQue = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'pending']);
 
-                if($request->filter_customer != ""){
-                    $totalPendingQue->whereHas('user',function($q) use($request){
-                        $q->where('customer_id', $request->filter_customer);
-                    });
+                // Manager Filter
+                if(Auth::user()->role_id == 1){
+                    if($request->filter_manager != ""){
+                        $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                        $totalPendingQue->whereIn('sales_specialist_id', $salesAgent);
+                    }
+                }else if(Auth::user()->role_id == 6){
+                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                    $totalPendingQue->whereIn('sales_specialist_id', $salesAgent);
                 }
 
-                if($request->filter_sales_specialist != ""){
-                    $totalPendingQue->where('sales_specialist_id', $request->filter_sales_specialist);
+                // Customer Filter
+                if(Auth::user()->role_id == 4){
+                    $totalPendingQue->whereHas('user',function($q) use($request){
+                        $q->where('customer_id', Auth::id());
+                    });
+                }else{
+                    if($request->filter_customer != ""){
+                        $totalPendingQue->whereHas('user',function($q) use($request){
+                            $q->where('customer_id', $request->filter_customer);
+                        });
+                    }
+                }
+
+                // Sales Agent filter
+                if(Auth::user()->role_id == 1){
+                    if($request->filter_sales_specialist != ""){
+                        $totalPendingQue->where('sales_specialist_id', $request->filter_sales_specialist);
+                    }
+                }else if(Auth::user()->role_id == 2){
+                    $totalPendingQue->where('sales_specialist_id', Auth::id());
+                }
+
+                // Date Range Filter
+                if($request->filter_date_range != ""){
+                    $date = explode(" - ", $request->filter_date_range);
+                    $start = date("Y-m-d H:i:s", strtotime($date[0]));
+                    $end = date("Y-m-d H:i:s", strtotime($date[1]));
+                    $totalPendingQue->whereDate('created_at', '>=' , $start);
+                    $totalPendingQue->whereDate('created_at', '<=' , $end);
                 }
 
                 $totalPendingQue = $totalPendingQue->sum('total_quantity');
@@ -156,14 +270,46 @@ class PromotionReportController extends Controller
                 // Approved
                 $totalApprovedQue = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'approved']);
 
-                if($request->filter_customer != ""){
-                    $totalApprovedQue->whereHas('user',function($q) use($request){
-                        $q->where('customer_id', $request->filter_customer);
-                    });
+                // Manager Filter
+                if(Auth::user()->role_id == 1){
+                    if($request->filter_manager != ""){
+                        $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                        $totalApprovedQue->whereIn('sales_specialist_id', $salesAgent);
+                    }
+                }else if(Auth::user()->role_id == 6){
+                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                    $totalApprovedQue->whereIn('sales_specialist_id', $salesAgent);
                 }
 
-                if($request->filter_sales_specialist != ""){
-                    $totalApprovedQue->where('sales_specialist_id', $request->filter_sales_specialist);
+                // Customer Filter
+                if(Auth::user()->role_id == 4){
+                    $totalApprovedQue->whereHas('user',function($q) use($request){
+                        $q->where('customer_id', Auth::id());
+                    });
+                }else{
+                    if($request->filter_customer != ""){
+                        $totalApprovedQue->whereHas('user',function($q) use($request){
+                            $q->where('customer_id', $request->filter_customer);
+                        });
+                    }
+                }
+
+                // Sales Agent Filter
+                if(Auth::user()->role_id == 1){
+                    if($request->filter_sales_specialist != ""){
+                        $totalApprovedQue->where('sales_specialist_id', $request->filter_sales_specialist);
+                    }
+                }else if(Auth::user()->role_id == 2){
+                    $totalApprovedQue->where('sales_specialist_id', Auth::id());
+                }
+                
+                // Date Range filter
+                if($request->filter_date_range != ""){
+                    $date = explode(" - ", $request->filter_date_range);
+                    $start = date("Y-m-d H:i:s", strtotime($date[0]));
+                    $end = date("Y-m-d H:i:s", strtotime($date[1]));
+                    $totalApprovedQue->whereDate('created_at', '>=' , $start);
+                    $totalApprovedQue->whereDate('created_at', '<=' , $end);
                 }
 
                 $totalApprovedQue = $totalApprovedQue->sum('total_quantity');
@@ -175,14 +321,46 @@ class PromotionReportController extends Controller
                 // Pending
                 $totalPendingRev = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'pending']);
 
-                if($request->filter_customer != ""){
-                    $totalPendingRev->whereHas('user',function($q) use($request){
-                        $q->where('customer_id', $request->filter_customer);
-                    });
+                // Manager Filter
+                if(Auth::user()->role_id == 1){
+                    if($request->filter_manager != ""){
+                        $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                        $totalPendingRev->whereIn('sales_specialist_id', $salesAgent);
+                    }
+                }else if(Auth::user()->role_id == 6){
+                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                    $totalPendingRev->whereIn('sales_specialist_id', $salesAgent);
                 }
 
-                if($request->filter_sales_specialist != ""){
-                    $totalPendingRev->where('sales_specialist_id', $request->filter_sales_specialist);
+                // Customer Filter
+                if(Auth::user()->role_id == 4){
+                    $totalPendingRev->whereHas('user',function($q) use($request){
+                        $q->where('customer_id', Auth::id());
+                    });
+                }else{
+                    if($request->filter_customer != ""){
+                        $totalPendingRev->whereHas('user',function($q) use($request){
+                            $q->where('customer_id', $request->filter_customer);
+                        });
+                    }
+                }
+
+                // Sales Agent Filter
+                if(Auth::user()->role_id == 1){
+                    if($request->filter_sales_specialist != ""){
+                        $totalPendingRev->where('sales_specialist_id', $request->filter_sales_specialist);
+                    }
+                }else if(Auth::user()->role_id == 2){
+                    $totalPendingRev->where('sales_specialist_id', Auth::id());
+                }
+
+                // Date Range Filter
+                if($request->filter_date_range != ""){
+                    $date = explode(" - ", $request->filter_date_range);
+                    $start = date("Y-m-d H:i:s", strtotime($date[0]));
+                    $end = date("Y-m-d H:i:s", strtotime($date[1]));
+                    $totalPendingRev->whereDate('created_at', '>=' , $start);
+                    $totalPendingRev->whereDate('created_at', '<=' , $end);
                 }
 
                 $totalPendingRev = $totalPendingRev->sum('total_amount');
@@ -190,14 +368,46 @@ class PromotionReportController extends Controller
                 // Approved
                 $totalApprovedRev = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'approved']);
 
-                if($request->filter_customer != ""){
-                    $totalApprovedRev->whereHas('user',function($q) use($request){
-                        $q->where('customer_id', $request->filter_customer);
-                    });
+                // Manager Filter
+                if(Auth::user()->role_id == 1){
+                    if($request->filter_manager != ""){
+                        $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                        $totalApprovedRev->whereIn('sales_specialist_id', $salesAgent);
+                    }
+                }else if(Auth::user()->role_id == 6){
+                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                    $totalApprovedRev->whereIn('sales_specialist_id', $salesAgent);
                 }
 
-                if($request->filter_sales_specialist != ""){
-                    $totalApprovedRev->where('sales_specialist_id', $request->filter_sales_specialist);
+                // Customer Filter
+                if(Auth::user()->role_id == 4){
+                    $totalApprovedRev->whereHas('user',function($q) use($request){
+                        $q->where('customer_id', Auth::id());
+                    });
+                }else{
+                    if($request->filter_customer != ""){
+                        $totalApprovedRev->whereHas('user',function($q) use($request){
+                            $q->where('customer_id', $request->filter_customer);
+                        });
+                    }
+                }
+
+                // Sales Agent Filter
+                if(Auth::user()->role_id == 1){
+                    if($request->filter_sales_specialist != ""){
+                        $totalApprovedRev->where('sales_specialist_id', $request->filter_sales_specialist);
+                    }
+                }else if(Auth::user()->role_id == 2){
+                    $totalApprovedRev->where('sales_specialist_id', Auth::id());
+                }
+
+                // Date Range Filter
+                if($request->filter_date_range != ""){
+                    $date = explode(" - ", $request->filter_date_range);
+                    $start = date("Y-m-d H:i:s", strtotime($date[0]));
+                    $end = date("Y-m-d H:i:s", strtotime($date[1]));
+                    $totalApprovedRev->whereDate('created_at', '>=' , $start);
+                    $totalApprovedRev->whereDate('created_at', '<=' , $end);
                 }
 
                 $totalApprovedRev = $totalApprovedRev->sum('total_amount');

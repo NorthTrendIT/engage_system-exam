@@ -14,6 +14,10 @@ use DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\BackOrderReportExport;
 
+use Auth;
+use App\Models\User;
+use App\Models\Role;
+
 class BackOrderReportController extends Controller
 {
     /**
@@ -22,8 +26,18 @@ class BackOrderReportController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){
-        $company = SapConnection::all();
-        return view('report.back-order-report.index', compact('company'));
+        $company = [];
+        $managers = [];
+
+        if(Auth::user()->role_id == 1){
+            $company = SapConnection::all();
+            $role = Role::where('name','Manager')->first();
+            $managers = User::where('role_id',@$role->id)->get();
+        }
+        if(Auth::user()->role_id == 6){
+            $company = SapConnection::all();          
+        }
+        return view('report.back-order-report.index', compact('company','managers'));
     }
 
     public function getAll(Request $request){
@@ -37,28 +51,35 @@ class BackOrderReportController extends Controller
         $table = DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('item_name', function($row) {
-                                return @$row->product1->item_name ?? @$row->item_description ?? "-";
+                                //return @$row->product1->item_name ?? @$row->item_description ?? "-";
+                                return "-";
                             })
                             ->addColumn('item_code', function($row) {
-                                return @$row->product1->item_code ?? @$row->item_code ?? "-";
+                                //return @$row->product1->item_code ?? @$row->item_code ?? "-";
+                                return "-";
                             })
                             ->addColumn('customer', function($row) {
-                                return @$row->order->customer->card_name ?? @$row->order->card_name ?? "-";
+                                //return @$row->order->customer->card_name ?? @$row->order->card_name ?? "-";
+                                return "-";
                             })
                             ->addColumn('sales_specialist', function($row) {
-                                return @$row->order->sales_specialist->sales_specialist_name ?? "-";
+                                //return @$row->order->sales_specialist->sales_specialist_name ?? "-";
+                                return "-";
                             })
                             ->addColumn('brand', function($row) {
-                                return @$row->product1->group->group_name ?? "-";
+                                //return @$row->product1->group->group_name ?? "-";
+                                return "-";
                             })
                             ->addColumn('company', function($row) {
                                 return @$row->sap_connection->company_name ?? "-";
                             })
                             ->addColumn('doc_entry', function($row) {
-                                return @$row->order->doc_entry ?? "-";
+                                //return @$row->order->doc_entry ?? "-";
+                                return "-";
                             })
                             ->addColumn('doc_date', function($row) {
-                                return date('M d, Y',strtotime(@$row->order->doc_date));
+                                //return date('M d, Y',strtotime(@$row->order->doc_date));
+                                return "-";
                             })
                             ->addColumn('quantity', function($row) {
                                 return @$row->quantity ?? "-";
@@ -222,17 +243,44 @@ class BackOrderReportController extends Controller
             });
         }
 
-        if(@$request->filter_customer != ""){
+        if(Auth::user()->role_id == 4){
             $data->whereHas('order.customer', function($q) use ($request) {
-                $q->where('id', $request->filter_customer);
+                $q->where('id', Auth::id());
+            });
+        }else{
+            if(@$request->filter_customer != ""){
+                $data->whereHas('order.customer', function($q) use ($request) {
+                    $q->where('id', $request->filter_customer);
+                });
+            }
+        }
+
+        if(@$request->filter_manager != ""){
+            $data->whereHas('order.sales_specialist', function($q) use ($request) {
+                $salesAgent = User::where('parent_id',@$request->filter_manager)->pluck('id')->toArray();
+                $q->whereIn('id', @$salesAgent);
             });
         }
 
-        if(@$request->filter_sales_specialist != ""){
+        if(Auth::user()->role_id == 6){
             $data->whereHas('order.sales_specialist', function($q) use ($request) {
-                $q->where('id', $request->filter_sales_specialist);
+                $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                $q->whereIn('id', $salesAgent);
             });
         }
+
+        if(Auth::user()->role_id == 2){
+            $data->whereHas('order.sales_specialist', function($q) use ($request) {
+                $q->where('id', Auth::id());
+            });
+        }else{
+            if(@$request->filter_sales_specialist != ""){
+                $data->whereHas('order.sales_specialist', function($q) use ($request) {
+                    $q->where('id', $request->filter_sales_specialist);
+                });
+            }
+        }
+        
 
         return $data;
     }

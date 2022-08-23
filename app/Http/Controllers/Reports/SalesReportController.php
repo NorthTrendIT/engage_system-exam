@@ -7,10 +7,11 @@ use Illuminate\Http\Request;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\SapConnection;
-
+use Auth;
 use DB;
 use DataTables;
-
+use App\Models\Role;
+use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SalesReportExport;
 
@@ -22,8 +23,17 @@ class SalesReportController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){
-        $company = SapConnection::all();
-        return view('report.sales-report.index', compact('company'));
+        $company = [];
+        $managers = [];
+        if(Auth::user()->role_id == 1){
+            $company = SapConnection::all();
+            $role = Role::where('name','Manager')->first();
+            $managers = User::where('role_id',@$role->id)->get();
+        }
+        if(Auth::user()->role_id == 6){
+            $company = SapConnection::all();
+        }
+        return view('report.sales-report.index', compact('company','managers'));
     }
 
     public function getAll(Request $request){
