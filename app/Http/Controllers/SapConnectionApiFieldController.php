@@ -45,7 +45,6 @@ class SapConnectionApiFieldController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-
         $rules = array(
                     'field' => 'required|max:185',
                     'sap_field_id' => 'required|max:185',
@@ -69,12 +68,12 @@ class SapConnectionApiFieldController extends Controller
             }
 
             if(isset($input['id'])){
-                $check = SapConnectionApiField::where('field', $input['field'])->where('sap_connection_id', $input['sap_connection_id'])->where('id', '!=', $input['id'])->first();
+                $check = SapConnectionApiField::where('field', $input['field'])->where('sap_connection_id', $input['sap_connection_id'])->where('sap_table_name',$input['sap_table_name'])->where('id', '!=', $input['id'])->first();
                 if(!is_null($check)){
                     return $response = ['status' => false, 'message' => 'The given field and field id already used.'];
                 }
             }else{
-                $check = SapConnectionApiField::where('field', $input['field'])->where('sap_connection_id', $input['sap_connection_id'])->first();
+                $check = SapConnectionApiField::where('field', $input['field'])->where('sap_connection_id', $input['sap_connection_id'])->where('sap_table_name',$input['sap_table_name'])->first();
                 if(!is_null($check)){
                     return $response = ['status' => false, 'message' => 'The given field and field id already used.'];
                 }

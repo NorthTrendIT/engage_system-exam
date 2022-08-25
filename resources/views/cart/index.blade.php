@@ -222,14 +222,14 @@
                                 </div>
                                 <!--end::Item-->
 
-                                <!-- <div class="align-items-sm-center mb-7">
+                                <div class="align-items-sm-center mb-7">
                                     <div class="">
                                         <div class="flex-grow-1 me-2">
                                             <span class="fs-4 fw-bolder">Remark :</span>
                                         </div>
                                         <textarea type="text" class="form-control" placeholder="Remark" id="remark" name="remark" autocomplete="off" rows="5"></textarea>
                                     </div>
-                                </div> -->
+                                </div>
 
                             </div>
                             <!--end::Body-->
