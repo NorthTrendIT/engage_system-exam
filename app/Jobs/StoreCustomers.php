@@ -137,7 +137,7 @@ class StoreCustomers implements ShouldQueue
                                         ],
                                         $insert
                                     );
-                Log::info(print_r($obj, true));
+                //Log::info(print_r($obj, true));
                 // Store BPAddresses details
                 if(@$obj->id){
 

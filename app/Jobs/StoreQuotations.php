@@ -135,6 +135,8 @@ class StoreQuotations implements ShouldQueue
 
                             'sap_connection_id' => $this->sap_connection_id,
                             'real_sap_connection_id' => $this->real_sap_connection_id,
+                            'line_status' => @$item['LineStatus'],
+                            'u_itemstat' => @$item['U_ITEMSTAT'],
 
                         );
 
