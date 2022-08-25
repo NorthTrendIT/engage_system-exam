@@ -111,7 +111,7 @@ class StoreProducts implements ShouldQueue
                                         ],
                                         $insert
                                     );
-                Log::info(print_r($obj, true));
+                //Log::info(print_r($obj, true));
                 if(!is_null(@$value['U_TIRES']) && !empty(@$value['U_TIRES'])){
                     $obj_t = ProductTiresCategory::updateOrCreate(
                                             [

@@ -245,22 +245,51 @@
                                 <thead>
                                   <tr class="border-bottom fs-6 fw-bolder text-muted">
                                     <th class="min-w-175px pb-2">Product</th>
-                                    <th class="min-w-80px text-end pb-2">Delivery Date</th>
-                                    <th class="min-w-70px text-end pb-2">Quantity</th>
+                                    <th class="min-w-175px pb-2">Ordered quantity</th>
+                                    <th class="min-w-175px pb-2">Served quantity</th>
+                                    <th class="min-w-80px text-end pb-2">Promo Delivery Date</th>
+                                    <th class="min-w-70px text-end pb-2">Invoice</th>
                                     <th class="min-w-80px text-end pb-2">Price</th>
                                     <th class="min-w-80px text-end pb-2">Price After VAT</th>
                                     <th class="min-w-100px text-end pb-2">Amount</th>
+                                    <th class="min-w-100px text-end pb-2">Line Status</th>
+                                    <th class="min-w-100px text-end pb-2">Line Remarks</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($data->items as $value)
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
-                                        <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
+                                        <td class="pt-6">{{ @$value->product1->quantity_ordered_by_customers ?? '-' }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
+                                        <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
+                                        <td class="pt-6">{{ $data->doc_num }}</td>
                                         <td class="pt-6">₱ {{ number_format_value($value->price) }}</td>
                                         <td class="pt-6">₱ {{ number_format_value($value->price_after_vat) }}</td>
                                         <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($value->gross_total) }}</td>
+                                        <?php
+                                          if($value->quantity == 0){
+                                            $status = 'Unserved';
+                                          }else if($value->quantity > 0 && @$value->product1->quantity_ordered_by_customers > $value->quantity){
+                                            $status = 'Partial Served';
+                                          }else if($value->quantity == @$value->product1->quantity_ordered_by_customers){
+                                            $status = 'Fully Served';
+                                          }else if($value->quantity > @$value->product1->quantity_ordered_by_customers){
+                                            $status = 'Over Served';
+                                          }
+                                        ?>
+                                        <td>{{@$status}}</td>
+                                        <?php
+                                          if($value->line_status == 'bost_Close'){
+                                            $remarks = 'Served';
+                                          }else if($value->line_status == 'bost_Open'){
+                                            $value = SapConnectionApiFieldValue::where('key',@$value->u_itemstat)->first();
+                                            $remarks = @$value->value;
+                                          }else{
+                                            $remarks = '-';
+                                          }
+                                        ?>
+                                        <td>{{@$remarks}}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -269,7 +298,7 @@
                             <!--end::Table-->
                             <!--begin::Container-->
                             <div class="row">
-                              <div class="col-sm-6 col-md-6">Remark: {{ @$data->u_remarks ?? "-" }}</div>
+                              <div class="col-sm-6 col-md-6">Remark: {{ @$remarks ?? "-" }}</div>
                               <div class="col-sm-6 col-md-6">
                                   <div class="total">
                                     <div class="d-flex justify-content-end">
