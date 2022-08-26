@@ -1,7 +1,17 @@
 @extends('layouts.master')
 
 @section('title','Order Details')
+<style type="text/css">
+  .order_class td{min-width: 120px;}
+  .order_class td:first-child{min-width: 280px;}
+  .order_class td:nth-child(4){min-width: 140px;}
+  .order_class td:nth-child(2),
+  .order_class td:nth-child(3){min-width: 80px;}
+  .order_class th.min-w-175px{min-width: auto !important;}
+  .order_class th,
+  .order_class td{text-align: center !important;}
 
+</style>
 @section('content')
 @php
   $status = getOrderStatusByQuotation(@$data, true);
@@ -241,7 +251,7 @@
                           <div class="flex-grow-1 mt-10">
                             <!--begin::Table-->
                             <div class="table-responsive border-bottom mb-9">
-                              <table class="table mb-3">
+                              <table class="table mb-3 order_class">
                                 <thead>
                                   <tr class="border-bottom fs-6 fw-bolder text-muted">
                                     <th class="min-w-175px pb-2">Product</th>
