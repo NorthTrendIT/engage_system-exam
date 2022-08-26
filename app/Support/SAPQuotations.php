@@ -231,6 +231,9 @@ class SAPQuotations
                                 'remaining_open_quantity' => @$item['RemainingOpenQuantity'],
                                 //'response' => json_encode($item),
 
+                                'line_status' => @$item['LineStatus'],
+                                'u_itemstat' => @$item['U_ITEMSTAT'],
+
                                 'sap_connection_id' => $sap_connection_id,
                                 'real_sap_connection_id' => $sap_connection->id,
                             );

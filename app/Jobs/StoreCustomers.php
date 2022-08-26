@@ -13,7 +13,6 @@ use App\Models\Classes;
 use App\Models\CustomerBpAddress;
 use App\Models\User;
 use Hash;
-use Log;
 
 class StoreCustomers implements ShouldQueue
 {
