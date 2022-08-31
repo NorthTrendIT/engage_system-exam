@@ -37,6 +37,8 @@ class QuotationItem extends Model
         'real_sap_connection_id',
         'open_amount',
         'remaining_open_quantity',
+        'line_status',
+        'u_itemstat',
     ];
 
     public function product(){
@@ -49,5 +51,9 @@ class QuotationItem extends Model
 
     public function quotation(){
         return $this->belongsTo(Quotation::class, 'quotation_id');
+    }
+
+    public function status(){
+        return $this->hasOne(SapConnectionApiFieldValue::class, 'key','u_itemstat');
     }
 }

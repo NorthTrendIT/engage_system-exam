@@ -72,4 +72,8 @@ class Quotation extends Model
     public function customer_promotion(){
         return $this->belongsTo(CustomerPromotion::class,'customer_promotion_id');
     }
+
+    public function invoice(){
+        return $this->belongsTo(Invoice::class,'doc_entry');
+    }
 }

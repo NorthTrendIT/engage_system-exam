@@ -17,6 +17,7 @@
   $status = getOrderStatusByQuotation(@$data, true);
   $date_array = @$status['date_array'];
   $status = @$status['status'];
+  use App\Models\SapConnectionApiFieldValue;
 
 @endphp
 
@@ -257,7 +258,9 @@
                                     <th class="min-w-175px pb-2">Product</th>
                                     <th class="min-w-175px pb-2">Ordered quantity</th>
                                     <th class="min-w-175px pb-2">Served quantity</th>
+                                    @if($data->order_type == 'Promotion')
                                     <th class="min-w-80px text-end pb-2">Promo Delivery Date</th>
+                                    @endif
                                     <th class="min-w-70px text-end pb-2">Invoice</th>
                                     <th class="min-w-80px text-end pb-2">Price</th>
                                     <th class="min-w-80px text-end pb-2">Price After VAT</th>
@@ -270,21 +273,23 @@
                                     @foreach($data->items as $value)
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
-                                        <td class="pt-6">{{ @$value->product1->quantity_ordered_by_customers ?? '-' }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
-                                        <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
-                                        <td class="pt-6">{{ $data->doc_num }}</td>
+                                        <td class="pt-6">{{ @$value->invoice->quantity ?? "0" }}</td>
+                                        @if($data->order_type == 'Promotion')
+                                        <td class="pt-6">{{  "-"  }}</td>
+                                        @endif
+                                        <td class="pt-6">{{ @$data->invoice->doc_num ?? '-' }}</td>
                                         <td class="pt-6">₱ {{ number_format_value($value->price) }}</td>
                                         <td class="pt-6">₱ {{ number_format_value($value->price_after_vat) }}</td>
                                         <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($value->gross_total) }}</td>
                                         <?php
-                                          if($value->quantity == 0){
+                                          if(@$value->invoice->quantity == 0){
                                             $status = 'Unserved';
-                                          }else if($value->quantity > 0 && @$value->product1->quantity_ordered_by_customers > $value->quantity){
+                                          }else if(@$value->invoice->quantity > 0 && @$value->quantity > $value->invoice->quantity){
                                             $status = 'Partial Served';
-                                          }else if($value->quantity == @$value->product1->quantity_ordered_by_customers){
+                                          }else if(@$value->invoice->quantity == @$value->quantity){
                                             $status = 'Fully Served';
-                                          }else if($value->quantity > @$value->product1->quantity_ordered_by_customers){
+                                          }else if(@$value->invoice->quantity > @$value->quantity){
                                             $status = 'Over Served';
                                           }
                                         ?>
@@ -308,7 +313,7 @@
                             <!--end::Table-->
                             <!--begin::Container-->
                             <div class="row">
-                              <div class="col-sm-6 col-md-6">Remark: {{ @$remarks ?? "-" }}</div>
+                              <div class="col-sm-6 col-md-6 text-gray-700">Remark: {{ @$orderRemarks ?? "-" }}</div>
                               <div class="col-sm-6 col-md-6">
                                   <div class="total">
                                     <div class="d-flex justify-content-end">
@@ -338,10 +343,10 @@
                                         <!--begin::Item-->
                                         <div class="d-flex flex-stack">
                                           <!--begin::Code-->
-                                          <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total Weight:</div>
+                                          <div class="fw-bold pe-10 text-gray-900 fs-7 ">Total Weight:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-5 fw-boldest">{{ (!is_null($products)) ? $products->sales_unit_weight.'Kg' : "-" }}</div>
+                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{ (!is_null($products)) ? $products->sales_unit_weight.'Kg' : "-" }}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
@@ -349,10 +354,10 @@
                                         <!--begin::Item-->
                                         <div class="d-flex flex-stack">
                                           <!--begin::Code-->
-                                          <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total Volume:</div>
+                                          <div class="fw-bold pe-10 text-gray-900 fs-7 ">Total Volume:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-5 fw-boldest">{{ (!is_null($products)) ? $products->sales_unit_weight * $products->quantity_ordered_by_customers : "0" }}</div>
+                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{ (!is_null($products)) ? $products->sales_unit_weight * $products->quantity_ordered_by_customers : "0" }}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
@@ -360,10 +365,10 @@
                                         <!--begin::Item-->
                                         <div class="d-flex flex-stack">
                                           <!--begin::Code-->
-                                          <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
+                                          <div class="fw-bold pe-10 text-gray-900 fs-7 ">Total:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-5 fw-boldest">₱ {{ number_format_value(@$data->doc_total) }}</div>
+                                          <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format_value(@$data->doc_total) }}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
