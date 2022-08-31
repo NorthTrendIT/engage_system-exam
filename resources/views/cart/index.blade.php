@@ -477,7 +477,7 @@ $(document).ready(function() {
                 toast_error(result.message);
                 $this.parent().find('.qty').val($qty);
             }else{
-                toast_success(result.message);
+                //toast_success(result.message);
                 $('.totalAmount').html('₱ '+result.total);
                 $('.totalPrice').html('₱ '+result.total);
                 // setTimeout(function(){
@@ -506,7 +506,7 @@ $(document).ready(function() {
             if(result.status == false){
                 toast_error(result.message);
             }else{
-                toast_success(result.message);
+                //toast_success(result.message);
                 if(parseInt($self.parent().find('.qty').val()) <= 0){
                     $self.closest('.productSection').remove();
                 }
