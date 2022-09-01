@@ -103,10 +103,12 @@ class OrdersController extends Controller
 
         
         $data = $data->firstOrFail();
+        // echo "<pre>";
+        // print_r($data->items);exit();
         $products = Product::where('id',@$data->doc_entry)->first();
-        $remarks = LocalOrder::where('doc_entry',@$data->doc_entry)->first();
+        $orderRemarks = LocalOrder::where('doc_entry',@$data->doc_entry)->first();
         
-        return view('orders.order_view', compact('data','products','remarks'));
+        return view('orders.order_view', compact('data','products','orderRemarks'));
     }
 
     /**
