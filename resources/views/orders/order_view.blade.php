@@ -256,8 +256,8 @@
                                 <thead>
                                   <tr class="border-bottom fs-6 fw-bolder text-muted">
                                     <th class="min-w-175px pb-2">Product</th>
-                                    <th class="min-w-175px pb-2">Ordered quantity</th>
-                                    <th class="min-w-175px pb-2">Served quantity</th>
+                                    <th class="min-w-175px pb-2">Ordered Quantity</th>
+                                    <th class="min-w-175px pb-2">Served Quantity</th>
                                     @if($data->order_type == 'Promotion')
                                     <th class="min-w-80px text-end pb-2">Promo Delivery Date</th>
                                     @endif
@@ -274,22 +274,26 @@
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
-                                        <td class="pt-6">{{ @$value->invoice->quantity ?? "0" }}</td>
+                                        <td class="pt-6">{{ @$data->order->invoice->quantity ?? "0" }}</td>
                                         @if($data->order_type == 'Promotion')
                                         <td class="pt-6">{{  "-"  }}</td>
                                         @endif
-                                        <td class="pt-6">{{ @$data->invoice->doc_num ?? '-' }}</td>
+                                        @if(@$data->order->invoice->doc_num != null)
+                                        <td class="pt-6"><a href="{{route('invoices.show',@$data->order->invoice->id)}}">{{@$data->order->invoice->doc_num}}</a></td>
+                                        @else
+                                        <td class="pt-6">{{ @$data->order->invoice->doc_num ?? '-' }}</td>
+                                        @endif
                                         <td class="pt-6">₱ {{ number_format_value($value->price) }}</td>
                                         <td class="pt-6">₱ {{ number_format_value($value->price_after_vat) }}</td>
                                         <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($value->gross_total) }}</td>
                                         <?php
-                                          if(@$value->invoice->quantity == 0){
+                                          if(@$data->order->invoice->quantity == 0){
                                             $status = 'Unserved';
-                                          }else if(@$value->invoice->quantity > 0 && @$value->quantity > $value->invoice->quantity){
+                                          }else if(@$data->order->invoice->quantity > 0 && @$value->quantity > $value->invoice->quantity){
                                             $status = 'Partial Served';
-                                          }else if(@$value->invoice->quantity == @$value->quantity){
+                                          }else if(@$data->order->invoice->quantity == @$value->quantity){
                                             $status = 'Fully Served';
-                                          }else if(@$value->invoice->quantity > @$value->quantity){
+                                          }else if(@$data->order->invoice->quantity > @$value->quantity){
                                             $status = 'Over Served';
                                           }
                                         ?>
@@ -313,8 +317,12 @@
                             <!--end::Table-->
                             <!--begin::Container-->
                             <div class="row">
-                              <div class="col-sm-6 col-md-6 text-gray-700">Remark: {{ @$orderRemarks ?? "-" }}</div>
-                              <div class="col-sm-6 col-md-6">
+                              <div class="col-sm-5 col-md-5 text-gray-700">Remark: {{ @$orderRemarks->remarks ?? "-" }}</div>
+                              <div class="col-sm-5 col-md-5 d-flex align-items-center justify-content-center">
+                                <p>Note: Prices may be subjected with discount. Final amount of order will reflect on the actual invoice.</p>
+                              </div>
+                              <div class="col-sm-2 col-md-2">
+                                                              
                                   <div class="total">
                                     <div class="d-flex justify-content-end">
                                       <!--begin::Section-->
