@@ -273,6 +273,7 @@ class SAPOrderPost
 
             $body = array(
                             'NumAtCard' => $num_at_card,
+                            'U_OMSNo' => $doc_entry,
                         );
 
             $response = $this->requestSapApi('/b1s/v1/Quotations('.$doc_entry.')', "PATCH", $body);
@@ -281,6 +282,7 @@ class SAPOrderPost
             $data = $response['data'];
             if($data == '204'){
                 $quotation->num_at_card = $num_at_card;
+                $quotation->u_omsno = $doc_entry;
                 $quotation->save();
             }
         }
