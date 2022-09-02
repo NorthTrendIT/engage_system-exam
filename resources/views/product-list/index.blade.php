@@ -226,6 +226,13 @@ $(document).ready(function() {
                 $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
               })
           },
+          rowCallback: function( row, data, index ) {
+              var split_price = (data['price']).split(' ');
+              var price = split_price[1].split('.');
+              if (price[0] <= 0) {
+                  $(row).hide();
+              }
+          },  
           initComplete: function () {
           }
         });

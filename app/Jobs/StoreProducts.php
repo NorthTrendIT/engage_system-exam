@@ -101,6 +101,8 @@ class StoreProducts implements ShouldQueue
 
                                 'quantity_on_stock' => @$value['QuantityOnStock'],
                                 'sales_unit_weight' => @$value['SalesUnitWeight'],
+                                'sales_unit_volume' => @$value['SalesUnitVolume'],
+                                'sales_volume_unit' => @$value['SalesVolumeUnit'],
                                 'quantity_ordered_by_customers' => @$value['QuantityOrderedByCustomers'],
                             );
 

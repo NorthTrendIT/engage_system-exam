@@ -270,7 +270,16 @@
                                   </tr>
                                 </thead>
                                 <tbody>
+                                  <?php
+                                    $Weight = 0;
+                                    $Volume = 0;
+                                  ?>
                                     @foreach($data->items as $value)
+                                    <?php
+                                      $Weight = $Weight + ($value->quantity * $value->product1->sales_unit_weight);
+                                      $Volume = $Volume + ($value->quantity * $value->product1->sales_unit_volume);
+
+                                    ?>
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
@@ -302,8 +311,12 @@
                                           if($value->line_status == 'bost_Close'){
                                             $remarks = 'Served';
                                           }else if($value->line_status == 'bost_Open'){
-                                            $value = SapConnectionApiFieldValue::where('key',@$value->u_itemstat)->first();
-                                            $remarks = @$value->value;
+                                            if(@$value->u_itemstat != 'NA'){
+                                              $value = SapConnectionApiFieldValue::where('key',@$value->u_itemstat)->first();
+                                              $remarks = @$value->value;
+                                            }else{
+                                              $remarks = '-';
+                                            }
                                           }else{
                                             $remarks = '-';
                                           }
@@ -318,10 +331,10 @@
                             <!--begin::Container-->
                             <div class="row">
                               <div class="col-sm-5 col-md-5 text-gray-700">Remark: {{ @$orderRemarks->remarks ?? "-" }}</div>
-                              <div class="col-sm-5 col-md-5 d-flex align-items-center justify-content-center">
+                              <div class="col-sm-4 col-md-4 d-flex align-items-center justify-content-center">
                                 <p>Note: Prices may be subjected with discount. Final amount of order will reflect on the actual invoice.</p>
                               </div>
-                              <div class="col-sm-2 col-md-2">
+                              <div class="col-sm-3 col-md-3">
                                                               
                                   <div class="total">
                                     <div class="d-flex justify-content-end">
@@ -354,7 +367,7 @@
                                           <div class="fw-bold pe-10 text-gray-900 fs-7 ">Total Weight:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{ (!is_null($products)) ? $products->sales_unit_weight.'Kg' : "-" }}</div>
+                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{ @$Weight.'Kg'}}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
@@ -365,7 +378,7 @@
                                           <div class="fw-bold pe-10 text-gray-900 fs-7 ">Total Volume:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{ (!is_null($products)) ? $products->sales_unit_weight * $products->quantity_ordered_by_customers : "0" }}</div>
+                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{  @$Volume }}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
@@ -373,10 +386,10 @@
                                         <!--begin::Item-->
                                         <div class="d-flex flex-stack">
                                           <!--begin::Code-->
-                                          <div class="fw-bold pe-10 text-gray-900 fs-7 ">Total:</div>
+                                          <div class="fw-bold pe-10 text-gray-900 fs-4 ">Total:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format_value(@$data->doc_total) }}</div>
+                                          <div class="text-end fw-bolder fs-4 fw-boldest">₱ {{ number_format_value(@$data->doc_total) }}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
