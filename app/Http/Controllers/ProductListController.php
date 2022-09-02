@@ -229,7 +229,8 @@ class ProductListController extends Controller
 
         $where = array('is_active' => 1);
 
-        $products = Product::where($where);
+        $products = Product::where($where)
+                ->whereRaw('quantity_on_stock - quantity_ordered_by_customers > 0');
 
         $products->whereHas('group', function($q){
             $q->where('is_active', true);

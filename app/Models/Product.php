@@ -71,6 +71,8 @@ class Product extends Model
         'quantity_on_stock',
         'quantity_ordered_by_customers',
         'sales_unit_weight',
+        'sales_unit_volume',
+        'sales_volume_unit',
     ];
 
     protected $appends = ['item_prices_json','promotion_price'];
