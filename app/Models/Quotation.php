@@ -47,6 +47,7 @@ class Quotation extends Model
         'cancelled',
         'cancel_date',
         'last_sync_at',
+        'u_omsno',
     ];
 
     public function items(){
