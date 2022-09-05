@@ -183,7 +183,7 @@
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Delivery Date:</div>
                               <!--end::Label-->
                               <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{date('F d, Y',strtotime(@$data->order->invoice->u_commitment)) ?? '-'}}</div>
+                              <div class="fw-bolder fs-6 text-gray-800">{{(isset($data->order->invoice->u_commitment))?date('F d, Y',strtotime(@$data->order->invoice->u_commitment)) : '-'}}</div>
                               <!--end::Col-->
                             </div>
                             <!--end::Col-->
