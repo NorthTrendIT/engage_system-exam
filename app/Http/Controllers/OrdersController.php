@@ -101,8 +101,10 @@ class OrdersController extends Controller
             return abort(404);
         }
 
-        
-        $data = $data->firstOrFail();        
+        $data = $data->firstOrFail();    
+        // echo "<pre>";
+        // print_r($data);exit();
+            
         $orderRemarks = LocalOrder::where('doc_entry',@$data->doc_entry)->first();
         
         return view('orders.order_view', compact('data','orderRemarks'));
