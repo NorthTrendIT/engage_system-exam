@@ -181,6 +181,7 @@ class SAPQuotations
                                 'updated_at' => $value['UpdateDate'],
                                 'cancelled' => @$value['Cancelled'] == 'tYES' ? 'Yes' : 'No',
                                 'cancel_date' => $value['CancelDate'],
+                                'u_omsno' => @$value['U_OMSNo'],
                                 //'response' => json_encode($order),
 
                                 'updated_date' => $value['UpdateDate'],

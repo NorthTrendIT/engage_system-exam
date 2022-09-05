@@ -47,6 +47,7 @@ class Order extends Model
         'real_sap_connection_id',
         'document_status',
         'last_sync_at',
+        'u_omsno',
     ];
 
     public function invoice(){

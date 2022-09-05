@@ -272,7 +272,7 @@ class SAPOrderPost
             $num_at_card = "OMS# ".$doc_entry;
 
             $body = array(
-                            'NumAtCard' => $num_at_card,
+                            //'NumAtCard' => $num_at_card,
                             'U_OMSNo' => $doc_entry,
                         );
 
@@ -281,7 +281,7 @@ class SAPOrderPost
             $status = $response['status'];
             $data = $response['data'];
             if($data == '204'){
-                $quotation->num_at_card = $num_at_card;
+                //$quotation->num_at_card = $num_at_card;
                 $quotation->u_omsno = $doc_entry;
                 $quotation->save();
             }

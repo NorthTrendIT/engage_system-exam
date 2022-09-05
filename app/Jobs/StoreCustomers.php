@@ -122,6 +122,9 @@ class StoreCustomers implements ShouldQueue
                                 'u_province' => @$value['U_Province'],
                                 'u_card_code' => @$value['U_CardCode'],
                                 'open_orders_balance' => @$value['OpenOrdersBalance'],
+                                'frozen' => @$value['Frozen'] == "tYES" ? 1 : 0,
+                                'frozen_from' => @$value['FrozenFrom'],
+                                'frozen_to' => @$value['FrozenTo'],
 
                                 'updated_date' => $value['UpdateDate'],
                                 'last_sync_at' => current_datetime(),

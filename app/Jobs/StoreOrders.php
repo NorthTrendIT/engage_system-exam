@@ -81,6 +81,7 @@ class StoreOrders implements ShouldQueue
                             'created_at' => $order['CreationDate'],
                             'updated_at' => $order['UpdateDate'],
                             'document_status' => $order['DocumentStatus'],
+                            'u_omsno' => $order['U_OMSNo'],
                             //'response' => json_encode($order),
 
                             'updated_date' => $order['UpdateDate'],
