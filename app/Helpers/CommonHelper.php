@@ -512,18 +512,19 @@ function getOrderStatusByQuotation($data, $with_date = false){
     $status = getOrderStatusArray("PN");
 
     if(!empty($data)){
-
-        if($data->cancelled == 'Yes' || @$data->document_status == 'Cancelled'){
+        if($data->cancelled == 'Yes'){
             $status = getOrderStatusArray('CL');
-
         }elseif(!empty(@$data->order)){
 
             if($data->order->cancelled == 'Yes'){
                 $status = getOrderStatusArray('CL');
 
             }else{
+                // if($data->order->document_status == 'bost_Open' && $data->order->u_sostat == "OP"){
+                //     $status = getOrderStatusArray("OP");
+                // }
 
-                if($data->order->document_status == 'bost_Open' && $data->order->u_sostat == "OP"){
+                if($data->order->u_sostat == "OP" && $data->order->cancelled == 'No' && $data->order->u_omsno != "" && $data->order->doc_date != ""){
                     $status = getOrderStatusArray("OP");
                 }
 
@@ -533,7 +534,11 @@ function getOrderStatusByQuotation($data, $with_date = false){
                         $status = getOrderStatusArray('CL');
 
                     }else if(@$data->order->invoice->document_status == 'bost_Open' && !empty(@$data->order->invoice->u_sostat)){
-                        $status = getOrderStatusArray(@$data->order->invoice->u_sostat);
+                        if(@$data->order->invoice->u_sostat == 'OP' || @$data->order->invoice->u_sostat == 'FD'){
+                            $status = getOrderStatusArray('FD');
+                        }else{
+                            $status = getOrderStatusArray(@$data->order->invoice->u_sostat);
+                        }
                     }else{
                         $status = getOrderStatusArray("PN");
                     }
@@ -547,8 +552,10 @@ function getOrderStatusByQuotation($data, $with_date = false){
     if($with_date){
         $date_array = array(
                             'Pending' => @$data->created_at ?? null,
-                            'On Process' => @$data->order->created_at ?? null,
-                            'For Delivery' => @$data->order->invoice->created_at ?? null,
+                            //'On Process' => @$data->order->created_at ?? null,
+                            'On Process' => @$data->order->doc_date ?? null,
+                            //'For Delivery' => @$data->order->invoice->created_at ?? null,
+                            'For Delivery' => @$data->order->invoice->u_commitment ?? null,
                             'Delivered' => @$data->order->invoice->u_delivery ?? null,
                             'Completed' => @$data->order->invoice->completed_date ?? null,
                             'Cancelled' => @$data->order->invoice->cancel_date ?? @$data->order->cancel_date ?? @$data->cancel_date,

@@ -49,6 +49,7 @@ class Invoice extends Model
         'last_sync_at',
         'completed_date',
         'completed_remarks',
+        'u_omsno',
     ];
 
     public function items(){

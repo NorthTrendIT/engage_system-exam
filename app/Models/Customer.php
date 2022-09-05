@@ -56,6 +56,9 @@ class Customer extends Model
         'updated_date',
         'last_sync_at',
         'open_orders_balance',
+        'frozen',
+        'frozen_from',
+        'frozen_to',
     ];
 
     public function bp_addresses()
