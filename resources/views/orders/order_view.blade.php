@@ -308,12 +308,12 @@
                                         ?>
                                         <td>{{@$status}}</td>
                                         <?php
-                                          if($value->line_status == 'bost_Close'){
+                                          if(@$data->order[$key]->line_status == 'bost_Close'){
                                             $remarks = 'Served';
                                           }else if($value->line_status == 'bost_Open'){
-                                            if(@$value->u_itemstat != 'NA'){
-                                              $value = SapConnectionApiFieldValue::where('key',@$value->u_itemstat)->first();
-                                              $remarks = @$value->value;
+                                            if(@$data->order[$key]->line_status != 'NA'){
+                                              $value = SapConnectionApiFieldValue::where('key',@$data->order[$key]->line_status)->first();
+                                              $remarks = @$data->order[$key]->line_status;
                                             }else{
                                               $remarks = '-';
                                             }
