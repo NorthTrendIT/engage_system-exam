@@ -274,7 +274,7 @@
                                     $Weight = 0;
                                     $Volume = 0;
                                   ?>
-                                    @foreach($data->items as $value)
+                                    @foreach($data->items as $key=>$value)
                                     <?php
                                       $Weight = $Weight + ($value->quantity * $value->product1->sales_unit_weight);
                                       $Volume = $Volume + ($value->quantity * $value->product1->sales_unit_volume);
@@ -282,8 +282,8 @@
                                     ?>
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
-                                        <td class="pt-6">{{ $value->quantity }}</td>
-                                        <td class="pt-6">{{ @$data->order->invoice->quantity ?? "0" }}</td>
+                                        <td class="pt-6">{{ number_format($value->quantity) }}</td>
+                                        <td class="pt-6">{{ number_format($data->order->invoice->items[$key]->quantity) ?? "0" }}</td>
                                         @if($data->order_type == 'Promotion')
                                         <td class="pt-6">{{  "-"  }}</td>
                                         @endif
@@ -294,15 +294,15 @@
                                         @endif
                                         <td class="pt-6">₱ {{ number_format_value($value->price) }}</td>
                                         <td class="pt-6">₱ {{ number_format_value($value->price_after_vat) }}</td>
-                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($value->gross_total) }}</td>
+                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value(round($value->gross_total,2)) }}</td>
                                         <?php
-                                          if(@$data->order->invoice->quantity == 0){
+                                          if(@$data->order->invoice->items[$key]->quantity == 0){
                                             $status = 'Unserved';
-                                          }else if(@$data->order->invoice->quantity > 0 && @$value->quantity > $value->invoice->quantity){
+                                          }else if(@$data->order->invoice->items[$key]->quantity > 0 && @$value->quantity > $data->order->invoice->items[$key]->quantity){
                                             $status = 'Partial Served';
-                                          }else if(@$data->order->invoice->quantity == @$value->quantity){
+                                          }else if(@$data->order->invoice->items[$key]->quantity == @$value->quantity){
                                             $status = 'Fully Served';
-                                          }else if(@$data->order->invoice->quantity > @$value->quantity){
+                                          }else if(@$data->order->invoice->items[$key]->quantity > @$value->quantity){
                                             $status = 'Over Served';
                                           }
                                         ?>
@@ -330,11 +330,11 @@
                             <!--end::Table-->
                             <!--begin::Container-->
                             <div class="row">
-                              <div class="col-sm-5 col-md-5 text-gray-700">Remark: {{ @$orderRemarks->remarks ?? "-" }}</div>
-                              <div class="col-sm-4 col-md-4 d-flex align-items-center justify-content-center">
+                              <div class="col-sm-12 col-md-6 custom_remarks_order">Remark: {{ @$orderRemarks->remarks ?? "-" }}</div>
+                              <!-- <div class="col-sm-4 col-md-4 d-flex align-items-center justify-content-center">
                                 <p>Note: Prices may be subjected with discount. Final amount of order will reflect on the actual invoice.</p>
-                              </div>
-                              <div class="col-sm-3 col-md-3">
+                              </div> -->
+                              <div class="col-sm-12 col-md-6 d-flex align-items-center justify-content-center">
                                                               
                                   <div class="total">
                                     <div class="d-flex justify-content-end">
@@ -367,7 +367,7 @@
                                           <div class="fw-bold pe-10 text-gray-900 fs-7 ">Total Weight:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{ @$Weight.'Kg'}}</div>
+                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{ number_format(@$Weight).' Kg'}}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
@@ -378,7 +378,7 @@
                                           <div class="fw-bold pe-10 text-gray-900 fs-7 ">Total Volume:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{  @$Volume }}</div>
+                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{  number_format(@$Volume) }}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
@@ -389,7 +389,7 @@
                                           <div class="fw-bold pe-10 text-gray-900 fs-4 ">Total:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-4 fw-boldest">₱ {{ number_format_value(@$data->doc_total) }}</div>
+                                          <div class="text-end fw-bolder fs-4 fw-boldest">₱ {{ number_format_value(round(@$data->doc_total,2)) }}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
@@ -399,6 +399,13 @@
                                   </div>                              
                               </div>
                             <!--end::Container-->
+                          </div>
+                          <br>
+                          <div class="row">
+                            <div class="col-md-6"></div>
+                            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                              <p>Note: Prices may be subjected with discount. Final <br>amount of order will reflect on the actual invoice.</p>
+                            </div>
                           </div>
                           <!--end::Content-->
                         </div>

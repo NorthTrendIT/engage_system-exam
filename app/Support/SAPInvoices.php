@@ -179,6 +179,8 @@ class SAPInvoices
                                 // 'updated_at' => $invoice['UpdateDate'],
                                 'document_status' => $invoice['DocumentStatus'],
                                 'cancelled' => @$invoice['Cancelled'] == 'tYES' ? 'Yes' : 'No',
+                                'u_omsno' => $order['U_OMSNo'],
+                                'update_date' => $invoice['UpdateDate'],
                                 //'response' => json_encode($invoice),
 
                                 'updated_date' => $invoice['UpdateDate'],

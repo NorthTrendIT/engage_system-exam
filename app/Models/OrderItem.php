@@ -37,6 +37,9 @@ class OrderItem extends Model
             'real_sap_connection_id',
             'open_amount',
             'remaining_open_quantity',
+            
+            'line_status',
+            'u_itemstat',
         ];
     
     public function product(){
