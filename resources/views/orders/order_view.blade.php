@@ -283,7 +283,7 @@
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="d-flex align-items-center pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
                                         <td class="pt-6">{{ number_format($value->quantity) }}</td>
-                                        <td class="pt-6">{{ number_format($data->order->invoice->items[$key]->quantity) ?? "0" }}</td>
+                                        <td class="pt-6">{{ number_format(@$data->order->invoice->items[$key]->quantity) ?? "0" }}</td>
                                         @if($data->order_type == 'Promotion')
                                         <td class="pt-6">{{  "-"  }}</td>
                                         @endif
