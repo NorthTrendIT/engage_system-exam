@@ -179,8 +179,8 @@ class SAPInvoices
                                 // 'updated_at' => $invoice['UpdateDate'],
                                 'document_status' => $invoice['DocumentStatus'],
                                 'cancelled' => @$invoice['Cancelled'] == 'tYES' ? 'Yes' : 'No',
-                                'u_omsno' => $order['U_OMSNo'],
-                                'update_date' => $invoice['UpdateDate'],
+                                'u_omsno' => @$invoice['U_OMSNo'],
+                                'update_date' => @$invoice['UpdateDate'],
                                 //'response' => json_encode($invoice),
 
                                 'updated_date' => $invoice['UpdateDate'],
@@ -190,7 +190,6 @@ class SAPInvoices
                                 'sap_connection_id' => $sap_connection_id,
                                 'real_sap_connection_id' => $sap_connection->id,
                             );
-
                     if(!empty($invoice['DocumentLines'])){
                         array_push($insert, array('base_entry' => $invoice['DocumentLines'][0]['BaseEntry']));
                     }
