@@ -135,8 +135,8 @@ class StoreOrders implements ShouldQueue
 
                             'sap_connection_id' => $this->sap_connection_id,
                             'real_sap_connection_id' => $this->real_sap_connection_id,
-                            'line_status' => @$item['LineStatus'],
-                            'u_itemstat' => @$item['U_ITEMSTAT'],
+                            'line_status' => @$value['LineStatus'],
+                            'u_itemstat' => @$value['U_ITEMSTAT'],
                         );
 
                         $item_obj = OrderItem::updateOrCreate([
