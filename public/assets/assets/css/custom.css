@@ -1080,3 +1080,8 @@ table.dataTable>thead .sorting.sorting_desc:after{
         width: 530px;
     }
 }
+
+.custom_remarks_order{
+    font-weight: bold;
+    font-style: italic;
+}

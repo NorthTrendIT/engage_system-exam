@@ -217,6 +217,7 @@ class SAPOrderPost
         $response['CardName'] = @$order->customer->card_name;
         $response['DocDueDate'] = @$order->due_date;
         $response['DocCurrency'] = 'PHP';
+        $response['Comments'] = @$order->remarks;
 
         if(strtolower(@$order->address->street) == strtolower(@$order->customer->card_name)){
             $response['Address'] = @$order->address->street;

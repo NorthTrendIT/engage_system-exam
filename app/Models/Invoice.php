@@ -50,6 +50,7 @@ class Invoice extends Model
         'completed_date',
         'completed_remarks',
         'u_omsno',
+        'update_date',
     ];
 
     public function items(){
