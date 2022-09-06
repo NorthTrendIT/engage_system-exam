@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Customer;
+use Log;
 
 class StoreOrders implements ShouldQueue
 {
@@ -43,7 +44,7 @@ class StoreOrders implements ShouldQueue
         if(!empty($this->data)){
 
             foreach ($this->data as $order) {
-
+                //Log::info(print_r($order,true));
                 if($this->real_sap_connection_id == 1){ // GROUP Cagayan, Davao NEED TO STORE in Solid Trend 
                     $customer = Customer::where('card_code', $order['CardCode'])->where('sap_connection_id', 5)->first();
                     if(!empty($customer)){
@@ -134,6 +135,8 @@ class StoreOrders implements ShouldQueue
 
                             'sap_connection_id' => $this->sap_connection_id,
                             'real_sap_connection_id' => $this->real_sap_connection_id,
+                            'line_status' => @$item['LineStatus'],
+                            'u_itemstat' => @$item['U_ITEMSTAT'],
                         );
 
                         $item_obj = OrderItem::updateOrCreate([

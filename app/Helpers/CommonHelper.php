@@ -557,7 +557,8 @@ function getOrderStatusByQuotation($data, $with_date = false){
                             //'For Delivery' => @$data->order->invoice->created_at ?? null,
                             'For Delivery' => @$data->order->invoice->u_commitment ?? null,
                             'Delivered' => @$data->order->invoice->u_delivery ?? null,
-                            'Completed' => @$data->order->invoice->completed_date ?? null,
+                            //'Completed' => @$data->order->invoice->completed_date ?? null,
+                            'Completed' => @$data->order->invoice->update_date ?? null,
                             'Cancelled' => @$data->order->invoice->cancel_date ?? @$data->order->cancel_date ?? @$data->cancel_date,
                         );
 

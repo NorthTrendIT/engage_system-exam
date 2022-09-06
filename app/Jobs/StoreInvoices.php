@@ -43,7 +43,7 @@ class StoreInvoices implements ShouldQueue
         if(!empty($this->data)){
 
             foreach ($this->data as $invoice) {
-                if($invoice['U_OMSNo'] != null){
+                //if($invoice['U_OMSNo'] != null){
 
                     if($this->real_sap_connection_id == 1){ // GROUP Cagayan, Davao NEED TO STORE in Solid Trend 
                         $customer = Customer::where('card_code', $invoice['CardCode'])->where('sap_connection_id', 5)->first();
@@ -81,6 +81,8 @@ class StoreInvoices implements ShouldQueue
                                 'updated_at' => $invoice['UpdateDate'],
                                 'document_status' => $invoice['DocumentStatus'],
                                 'cancelled' => @$invoice['Cancelled'] == 'tYES' ? 'Yes' : 'No',
+                                'u_omsno' => $invoice['U_OMSNo'],
+                                'update_date' => $invoice['UpdateDate'],
                                 //'response' => json_encode($invoice),
 
                                 'updated_date' => $invoice['UpdateDate'],
@@ -156,7 +158,7 @@ class StoreInvoices implements ShouldQueue
 
                     }
 
-                }
+                //}
             }
 
         }
