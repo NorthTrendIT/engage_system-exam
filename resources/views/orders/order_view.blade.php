@@ -294,7 +294,7 @@
                                         @endif
                                         <td class="pt-6">₱ {{ number_format_value($value->price) }}</td>
                                         <td class="pt-6">₱ {{ number_format_value($value->price_after_vat) }}</td>
-                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value(round($value->gross_total,2)) }}</td>
+                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value(round($value->gross_total,1)) }}</td>
                                         <?php
                                           if(@$data->order->invoice->items[$key]->quantity == 0){
                                             $status = 'Unserved';
@@ -389,7 +389,7 @@
                                           <div class="fw-bold pe-10 text-gray-900 fs-4 ">Total:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-4 fw-boldest">₱ {{ number_format_value(round(@$data->doc_total,2)) }}</div>
+                                          <div class="text-end fw-bolder fs-4 fw-boldest">₱ {{ number_format_value(round(@$data->doc_total,1)) }}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->

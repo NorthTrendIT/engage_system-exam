@@ -136,7 +136,7 @@ class SAPInvoices
             if($response['status']){
                 $invoice = $response['data'];
 
-                if(!empty($invoice)){
+                if(!empty($invoice) && $invoice['U_OMSNo'] != null){
 
                     $where = array(
                                 'db_name' => $this->database,
