@@ -39,13 +39,13 @@
                 </div> --}}
 
                 <div class="col-md-6 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_product" data-hide-search="false" data-placeholder="Search product" data-allow-clear="true">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_product" id="filter_product" data-hide-search="false" data-placeholder="Search product" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
 
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_brand" id="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($c_product_groups as $key)
                     <option value="{{ $key->product_group->group_name }}">{{ $key->product_group->group_name }}</option>
@@ -54,7 +54,7 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_product_category" data-control="select2" data-hide-search="false" data-placeholder="Select product category" data-allow-clear="true">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_product_category" id="filter_product_category" data-control="select2" data-hide-search="false" data-placeholder="Select product category" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($c_product_category as $key => $c)
                     <option value="{{ $c }}">{{ $c }}</option>
@@ -63,7 +63,7 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_product_line" data-control="select2" data-hide-search="false" data-placeholder="Select product line" data-allow-clear="true">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_product_line" id="filter_product_line" data-control="select2" data-hide-search="false" data-placeholder="Select product line" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($c_product_line as $key => $l)
                     <option value="{{ $l->u_item_line }}">{{ @$l->u_item_line_sap_value->value ?? $l->u_item_line }}</option>
@@ -358,6 +358,22 @@ $(document).ready(function() {
     },
     tags: true,
     minimumInputLength: 2,
+  });
+
+  $(document).on('change','#filter_product',function(){
+    $('.search').click();
+  });
+
+  $(document).on('change','#filter_brand',function(){
+    $('.search').click();
+  });
+
+  $(document).on('change','#filter_product_category',function(){
+    $('.search').click();
+  });
+
+  $(document).on('change','#filter_product_line',function(){
+    $('.search').click();
   });
 });
 </script>
