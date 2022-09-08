@@ -81,7 +81,6 @@ class StoreCustomers implements ShouldQueue
                                             ]
                                         );
                 }
-
                 $insert = array(
                                 'card_code' => @$value['CardCode'],
                                 'card_type' => @$value['CardType'],
@@ -126,7 +125,7 @@ class StoreCustomers implements ShouldQueue
                                 'frozen_from' => @$value['FrozenFrom'],
                                 'frozen_to' => @$value['FrozenTo'],
 
-                                'updated_date' => $value['UpdateDate'],
+                                'updated_date' => @$value['UpdateDate'],
                                 'last_sync_at' => current_datetime(),
                                 'sap_connection_id' => $this->sap_connection_id,
                                 'real_sap_connection_id' => $this->real_sap_connection_id,
@@ -139,7 +138,6 @@ class StoreCustomers implements ShouldQueue
                                         ],
                                         $insert
                                     );
-                //Log::info(print_r($obj, true));
                 // Store BPAddresses details
                 if(@$obj->id){
 
