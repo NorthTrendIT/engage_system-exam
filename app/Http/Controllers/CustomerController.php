@@ -20,6 +20,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomerExport;
 use App\Exports\CustomerTaggingExport;
 use App\Models\Invoice;
+use Carbon\Carbon;
 
 class CustomerController extends Controller
 {
@@ -159,9 +160,9 @@ class CustomerController extends Controller
                             $q->where('name','!=','EMPLOYEE');
                         })*/query();
 
-        if($request->filter_status != ""){
-            $data->where('is_active',$request->filter_status);
-        }
+        // if($request->filter_status != ""){
+        //     $data->where('is_active',$request->filter_status);
+        // }
 
         if($request->filter_territory != ""){
             $data->where('territory',$request->filter_territory);
@@ -209,6 +210,20 @@ class CustomerController extends Controller
 
         if($request->filter_customer_class != ""){
             $data->where('u_classification',$request->filter_customer_class);
+        }
+
+        if($request->filter_status != ""){
+            $today = Carbon::today()->toDateString();
+            if($request->filter_status == 1){
+                $data->where('is_active',1)                        
+                    ->orWhere(function($query) use ($today){
+                        $query->where('frozen',1);
+                        $query->where('frozen_from', '>=' ,$today);
+                        $query->where('frozen_to', '<=' ,$today);
+                    });                    
+            }else if($request->filter_status == 0){
+                $data->where('frozen',0)->orWhere('is_active',0);
+            }
         }
 
         if($request->filter_search != ""){

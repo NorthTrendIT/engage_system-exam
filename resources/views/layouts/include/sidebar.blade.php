@@ -170,6 +170,22 @@
             </div>
             @endif
 
+            {{-- Product List --}}
+            @if((isset($access['view-product-list']) && $access['view-product-list'] == 1))
+            <div class="menu-item">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['product-list.index','product-list.show','recommended-products.index'])) ? 'active' : '' }}" href="{{ route('product-list.index') }}">
+                  <span class="menu-icon">
+                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
+                     <span class="svg-icon svg-icon-2">
+                     <i class="fas fa-list"></i>
+                     </span>
+                     <!--end::Svg Icon-->
+                  </span>
+                  <span class="menu-title">Product List</span>
+               </a>
+            </div>
+            @endif
+
 
             {{-- Orders --}}
             @if(Auth::user()->role_id == 1 || (isset($access['view-order']) && $access['view-order'] == 1))
@@ -401,21 +417,7 @@
             </div>
             @endif
 
-            {{-- Product List --}}
-            @if((isset($access['view-product-list']) && $access['view-product-list'] == 1))
-            <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['product-list.index','product-list.show','recommended-products.index'])) ? 'active' : '' }}" href="{{ route('product-list.index') }}">
-                  <span class="menu-icon">
-                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
-                     <span class="svg-icon svg-icon-2">
-                     <i class="fas fa-list"></i>
-                     </span>
-                     <!--end::Svg Icon-->
-                  </span>
-                  <span class="menu-title">Product List</span>
-               </a>
-            </div>
-            @endif
+            
 
 
             {{-- My Promotions --}}

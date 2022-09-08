@@ -118,6 +118,14 @@
                   </div>
                 </div>
 
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid filter_status" name="filter_status" data-control="select2" data-hide-search="false" data-placeholder="Select Status" data-allow-clear="true">
+                    <option value=""></option>
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                  </select>
+                </div>
+
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
@@ -216,6 +224,7 @@
       $filter_branch = $('[name="filter_branch"]').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').val();
       $filter_customer_class = $('[name="filter_customer_class"]').val();
+      $filter_status = $('[name="filter_status"]').find('option:selected').val();
 
 
       table.DataTable({
@@ -250,6 +259,7 @@
                 filter_territory : $filter_territory,
                 filter_search : $filter_search,
                 filter_date_range : $filter_date_range,
+                filter_status : $filter_status,
               }
           },
           columns: [
@@ -298,6 +308,7 @@
       $('[name="filter_branch"]').val('').trigger('change');
       $('[name="filter_sales_specialist"]').val('').trigger('change');
       $('[name="filter_customer_class"]').val('').trigger('change');
+      $('[name="filter_status"]').val('').trigger('change');
       render_table();
     })
 
