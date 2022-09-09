@@ -518,26 +518,20 @@ function getOrderStatusByQuotation($data, $with_date = false){
 
             if($data->order->cancelled == 'Yes'){
                 $status = getOrderStatusArray('CL');
-
             }else{
-                // if($data->order->document_status == 'bost_Open' && $data->order->u_sostat == "OP"){
-                //     $status = getOrderStatusArray("OP");
-                // }
-
-                if($data->order->u_sostat == "OP" && $data->order->cancelled == 'No' && $data->order->u_omsno != "" && $data->order->doc_date != ""){
+                if($data->order->u_omsno != ""){
                     $status = getOrderStatusArray("OP");
                 }
-
                 if(!empty(@$data->order->invoice)){
 
                     if($data->order->invoice->cancelled == 'Yes'){
                         $status = getOrderStatusArray('CL');
 
-                    }else if(@$data->order->invoice->document_status == 'bost_Open' && !empty(@$data->order->invoice->u_sostat)){
-                        if(@$data->order->invoice->u_sostat == 'OP' || @$data->order->invoice->u_sostat == 'FD'){
-                            $status = getOrderStatusArray('FD');
-                        }else{
+                    }else if(@$data->order->invoice->u_omsno != null){
+                        if(@$data->order->invoice->u_sostat == 'DL' || @$data->order->invoice->u_sostat == 'CM'){
                             $status = getOrderStatusArray(@$data->order->invoice->u_sostat);
+                        }else{
+                          $status = getOrderStatusArray('FD');  
                         }
                     }else{
                         $status = getOrderStatusArray("PN");
