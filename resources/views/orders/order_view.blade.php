@@ -3,13 +3,12 @@
 @section('title','Order Details')
 <style type="text/css">
   .order_class td{min-width: 120px;}
-  .order_class td:first-child{min-width: 280px;}
+  /* .order_class td:first-child{min-width: 280px;} */
   .order_class td:nth-child(4){min-width: 140px;}
-  .order_class td:nth-child(2),
+  .order_class td:nth-child(2){min-width: 280px;}
   .order_class td:nth-child(3){min-width: 80px;}
   .order_class th.min-w-175px{min-width: auto !important;}
-  .order_class th,
-  .order_class td{text-align: center !important;}
+  .order_class th{text-align: center !important;}
 
 </style>
 @section('content')
@@ -255,6 +254,7 @@
                               <table class="table mb-3 order_class">
                                 <thead>
                                   <tr class="border-bottom fs-6 fw-bolder text-muted">
+                                    <th>#</th>
                                     <th class="min-w-175px pb-2">Product</th>
                                     <th class="min-w-175px pb-2">Ordered Quantity</th>
                                     <th class="min-w-175px pb-2">Served Quantity</th>
@@ -280,10 +280,11 @@
                                       $Volume = $Volume + ($value->quantity * $value->product1->sales_unit_volume);
 
                                     ?>
-                                    <tr class="fw-bolder text-gray-700 fs-5 text-end">
-                                        <td class="d-flex align-items-center pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
-                                        <td class="pt-6">{{ number_format($value->quantity) }}</td>
-                                        <td class="pt-6">{{ number_format(@$data->order->invoice->items[$key]->quantity) ?? "0" }}</td>
+                                    <tr class="fw-bolder text-gray-700 fs-5">
+                                      <td class="text-center">1</td>
+                                        <td class="d-flex pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
+                                        <td class="pt-6 text-end">{{ number_format($value->quantity) }}</td>
+                                        <td class="pt-6 text-end">{{ number_format(@$data->order->invoice->items[$key]->quantity) ?? "0" }}</td>
                                         @if($data->order_type == 'Promotion')
                                         <td class="pt-6">{{  "-"  }}</td>
                                         @endif
@@ -292,8 +293,8 @@
                                         @else
                                         <td class="pt-6">{{ @$data->order->invoice->doc_num ?? '-' }}</td>
                                         @endif
-                                        <td class="pt-6">₱ {{ number_format_value($value->price) }}</td>
-                                        <td class="pt-6">₱ {{ number_format_value($value->price_after_vat) }}</td>
+                                        <td class="pt-6 text-end">₱ {{ number_format_value($value->price) }}</td>
+                                        <td class="pt-6 text-end">₱ {{ number_format_value($value->price_after_vat) }}</td>
                                         <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value(round($value->gross_total,1)) }}</td>
                                         <?php
                                           if(@$data->order->invoice->items[$key]->quantity == 0){
