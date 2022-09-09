@@ -281,7 +281,7 @@
 
                                     ?>
                                     <tr class="fw-bolder text-gray-700 fs-5">
-                                      <td class="text-center">{{$key + 1}}</td>
+                                      <td class="text-center pt-6">{{$key + 1}}</td>
                                         <td class="d-flex pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
                                         <td class="pt-6 text-end">{{ number_format($value->quantity) }}</td>
                                         <td class="pt-6 text-end">{{ number_format(@$data->order->invoice->items[$key]->quantity) ?? "0" }}</td>
@@ -295,7 +295,7 @@
                                         @endif
                                         <td class="pt-6 text-end">₱ {{ number_format_value($value->price) }}</td>
                                         <td class="pt-6 text-end">₱ {{ number_format_value($value->price_after_vat) }}</td>
-                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value(round($value->gross_total,1)) }}</td>
+                                        <td class="pt-6 text-dark fw-boldest text-end">₱ {{ number_format_value(round($value->gross_total,1)) }}</td>
                                         <?php
                                           if(@$data->order->invoice->items[$key]->quantity == 0){
                                             $status = 'Unserved';
@@ -307,7 +307,7 @@
                                             $status = 'Over Served';
                                           }
                                         ?>
-                                        <td>{{@$status}}</td>
+                                        <td class="pt-6">{{@$status}}</td>
                                         <?php
                                           if(@$data->order[$key]->line_status == 'bost_Close'){
                                             $remarks = 'Served';
@@ -322,7 +322,7 @@
                                             $remarks = '-';
                                           }
                                         ?>
-                                        <td>{{@$remarks}}</td>
+                                        <td class="pt-6">{{@$remarks}}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
