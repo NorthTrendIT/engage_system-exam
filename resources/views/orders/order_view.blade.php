@@ -281,7 +281,7 @@
 
                                     ?>
                                     <tr class="fw-bolder text-gray-700 fs-5">
-                                      <td class="text-center">1</td>
+                                      <td class="text-center">{{$key + 1}}</td>
                                         <td class="d-flex pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
                                         <td class="pt-6 text-end">{{ number_format($value->quantity) }}</td>
                                         <td class="pt-6 text-end">{{ number_format(@$data->order->invoice->items[$key]->quantity) ?? "0" }}</td>
