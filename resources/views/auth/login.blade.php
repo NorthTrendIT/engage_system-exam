@@ -13,7 +13,7 @@
 		<div class="text-center mb-10">
 			<!--begin::Title-->
 			{{-- <h1 class="text-dark mb-3">Engage</h1> --}}
-			<img src="{{ asset('assets') }}/assets/media/exceltrend-logo.png" style="width: 60%;">
+			<img src="{{ asset('assets') }}/assets/media/exceltrend-logo.png">
 			<!--end::Title-->
 			<!--begin::Link-->
 			<!-- <div class="fw-bold fs-4">
