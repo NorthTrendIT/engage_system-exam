@@ -8,7 +8,7 @@
     <!--[if !mso]><!-->
     <meta http-equiv="x-ua-compatible" content="IE=edge">
     <!--<![endif]-->
-    <title>Exceltrend Ordering Management System</title>
+    <title>Engage Ordering Management System</title>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet">
     
@@ -123,7 +123,7 @@
 </style></head>
   <body style="background:#fff;margin:0;padding:0;word-spacing:normal;background-color:#ffffff;">
     <!--*|IF:MC_PREVIEW_TEXT|*-->
-    <!--[if !gte mso 9]><!--><span class="mcnPreviewText" style="display:none; font-size:0px; line-height:0px; max-height:0px; max-width:0px; opacity:0; overflow:hidden; visibility:hidden; mso-hide:all;">Exceltrend Ordering Management System</span>
+    <!--[if !gte mso 9]><!--><span class="mcnPreviewText" style="display:none; font-size:0px; line-height:0px; max-height:0px; max-width:0px; opacity:0; overflow:hidden; visibility:hidden; mso-hide:all;">Engage Ordering Management System</span>
     <!--<![endif]-->
     <!--*|END:IF|*-->
     <div lang="en" style="-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:#ffffff;" xml:lang="en">
@@ -142,7 +142,7 @@
                     <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-radius:0 0 40px 40px;width:100% !important;" width="100%">
                       <tr>
                         <td style="padding:0px;vertical-align:top;">
-                          <h2 style="font-size:20px;margin-top: 25px;margin-bottom: 25px;text-align: center;">Exceltrend Ordering Management System</h2>
+                          <h2 style="font-size:20px;margin-top: 25px;margin-bottom: 25px;text-align: center;">Engage Ordering Management System</h2>
                         </td>
                       </tr>
                     </table>

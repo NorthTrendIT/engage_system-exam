@@ -73,7 +73,7 @@ class UserController extends Controller
                     'role_id' => 'required|exists:roles,id',
                     'city_id' => 'nullable|exists:locations,id',
                     'province_id' => 'nullable|exists:locations,id',
-                    'password' => 'required|max:20|regex:/^(?=.*\d)(?=.*[@$!%*#?&_-~<>;])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@$!%*#?&_-~<>;]{8,20}$/',
+                    'password' => 'required|max:20|regex:/^(?=.*\d)(?=.*[@$!%*#?&_-~<>;])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@$!%*#?&_-~<>;]{8,20}$/',                    
                     'confirm_password' => 'required|same:password',
                 );
 

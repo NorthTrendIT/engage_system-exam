@@ -68,6 +68,7 @@
                               @endif
                               <th>Code</th>
                               <th>Name</th>
+                              <th>Action</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -137,6 +138,7 @@
               @endif
               {data: 'code', name: 'code'},
               {data: 'name', name: 'name'},
+              {data: 'action', name: 'action', orderable: false, searchable: false},
           ],
           drawCallback:function(){
               $(function () {

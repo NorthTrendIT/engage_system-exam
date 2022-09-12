@@ -3,7 +3,7 @@
 <html lang="en">
 	<!--begin::Head-->
 	<head>
-		<title>@yield('title') | Exceltrend Ordering Management System</title>
+		<title>@yield('title') | Engage Ordering Management System</title>
 		<meta charset="utf-8" />
 		<meta name="description" content="" />
 		<meta name="keywords" content="" />

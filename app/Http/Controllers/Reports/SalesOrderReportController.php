@@ -14,6 +14,10 @@ use App\Models\SapConnection;
 use DB;
 use DataTables;
 
+use Auth;
+use App\Models\User;
+use App\Models\Role;
+
 class SalesOrderReportController extends Controller
 {
     /**
@@ -23,8 +27,18 @@ class SalesOrderReportController extends Controller
      */
     public function index()
     {
-        $company = SapConnection::all();
-        return view('report.sales-order-report.index', compact('company'));
+        $company = [];
+        $managers = [];
+
+        if(Auth::user()->role_id == 1){
+            $company = SapConnection::all();
+            $role = Role::where('name','Manager')->first();
+            $managers = User::where('role_id',@$role->id)->get();
+        }
+        if(Auth::user()->role_id == 6){
+            $company = SapConnection::all();          
+        }
+        return view('report.sales-order-report.index', compact('company','managers'));
     }
 
     public function getAll(Request $request)
@@ -48,20 +62,54 @@ class SalesOrderReportController extends Controller
                                                         $q->whereDate('doc_date', '<=' , $end);
                                                     }
 
-                                                    if($request->filter_customer != ""){
+                                                    if(Auth::user()->role_id == 4){
                                                         $q->where(function($query) use ($request) {
-                                                            $query->whereHas('customer', function($q1) use ($request){
-                                                                $q1->where('id', $request->filter_customer);
+                                                                $query->whereHas('customer', function($q1) use ($request){
+                                                                    $q1->where('id', Auth::id());
+                                                                });
+                                                            });
+                                                    }else{
+                                                        if($request->filter_customer != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer', function($q1) use ($request){
+                                                                    $q1->where('id', $request->filter_customer);
+                                                                });
+                                                            });
+                                                        }
+                                                    }
+
+                                                    if($request->filter_manager != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                                                                    $q1->where('ss_id', $salesAgent);
+                                                                });
+                                                            });
+                                                    }
+
+                                                    if(Auth::user()->role_id == 6){
+                                                        $q->where(function($query) use ($request) {
+                                                            $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                                                                $q1->where('ss_id', $salesAgent);
                                                             });
                                                         });
                                                     }
                                                     
-                                                    if($request->filter_sales_specialist != ""){
+                                                    if(Auth::user()->role_id == 2){
                                                         $q->where(function($query) use ($request) {
-                                                            $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                                                                $q1->where('ss_id', $request->filter_sales_specialist);
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $q1->where('ss_id', Auth::id());
+                                                                });
                                                             });
-                                                        });
+                                                    }else{
+                                                        if($request->filter_sales_specialist != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $q1->where('ss_id', $request->filter_sales_specialist);
+                                                                });
+                                                            });
+                                                        }
                                                     }
                                                 });
 
@@ -104,20 +152,54 @@ class SalesOrderReportController extends Controller
                                                         $q->whereDate('doc_date', '<=' , $end);
                                                     }
 
-                                                    if($request->filter_customer != ""){
+                                                    if(Auth::user()->role_id == 4){
                                                         $q->where(function($query) use ($request) {
-                                                            $query->whereHas('customer', function($q1) use ($request){
-                                                                $q1->where('id', $request->filter_customer);
+                                                                $query->whereHas('customer', function($q1) use ($request){
+                                                                    $q1->where('id', Auth::id());
+                                                                });
+                                                            });
+                                                    }else{
+                                                        if($request->filter_customer != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer', function($q1) use ($request){
+                                                                    $q1->where('id', $request->filter_customer);
+                                                                });
+                                                            });
+                                                        }
+                                                    }
+
+                                                    if($request->filter_manager != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                                                                    $q1->where('ss_id', $salesAgent);
+                                                                });
+                                                            });
+                                                    }
+
+                                                    if(Auth::user()->role_id == 6){
+                                                        $q->where(function($query) use ($request) {
+                                                            $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                                                                $q1->where('ss_id', $salesAgent);
                                                             });
                                                         });
                                                     }
 
-                                                    if($request->filter_sales_specialist != ""){
+                                                    if(Auth::user()->role_id == 2){
                                                         $q->where(function($query) use ($request) {
-                                                            $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                                                                $q1->where('ss_id', $request->filter_sales_specialist);
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $q1->where('ss_id', Auth::id());
+                                                                });
                                                             });
-                                                        });
+                                                    }else{
+                                                        if($request->filter_sales_specialist != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $q1->where('ss_id', $request->filter_sales_specialist);
+                                                                });
+                                                            });
+                                                        }
                                                     }
                                                 });
 
@@ -169,20 +251,54 @@ class SalesOrderReportController extends Controller
                                                         $q->whereDate('doc_date', '<=' , $end);
                                                     }
 
-                                                    if($request->filter_customer != ""){
+                                                    if(Auth::user()->role_id == 4){
                                                         $q->where(function($query) use ($request) {
-                                                            $query->whereHas('customer', function($q1) use ($request){
-                                                                $q1->where('id', $request->filter_customer);
+                                                                $query->whereHas('customer', function($q1) use ($request){
+                                                                    $q1->where('id', Auth::id());
+                                                                });
+                                                            });
+                                                    }else{
+                                                        if($request->filter_customer != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer', function($q1) use ($request){
+                                                                    $q1->where('id', $request->filter_customer);
+                                                                });
+                                                            });
+                                                        }
+                                                    }
+
+                                                    if($request->filter_manager != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                                                                    $q1->where('ss_id', $salesAgent);
+                                                                });
+                                                            });
+                                                    }
+
+                                                    if(Auth::user()->role_id == 6){
+                                                        $q->where(function($query) use ($request) {
+                                                            $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                                                                $q1->where('ss_id', $salesAgent);
                                                             });
                                                         });
                                                     }
                                                 
-                                                    if($request->filter_sales_specialist != ""){
+                                                    if(Auth::user()->role_id == 2){
                                                         $q->where(function($query) use ($request) {
-                                                            $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                                                                $q1->where('ss_id', $request->filter_sales_specialist);
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $q1->where('ss_id', Auth::id());
+                                                                });
                                                             });
-                                                        });
+                                                    }else{
+                                                        if($request->filter_sales_specialist != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $q1->where('ss_id', $request->filter_sales_specialist);
+                                                                });
+                                                            });
+                                                        }
                                                     }
 
                                                 });
@@ -231,20 +347,54 @@ class SalesOrderReportController extends Controller
                                                         $q->whereDate('doc_date', '<=' , $end);
                                                     }
 
-                                                    if($request->filter_customer != ""){
+                                                    if(Auth::user()->role_id == 4){
                                                         $q->where(function($query) use ($request) {
-                                                            $query->whereHas('customer', function($q1) use ($request){
-                                                                $q1->where('id', $request->filter_customer);
+                                                                $query->whereHas('customer', function($q1) use ($request){
+                                                                    $q1->where('id', Auth::id());
+                                                                });
+                                                            });
+                                                    }else{
+                                                        if($request->filter_customer != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer', function($q1) use ($request){
+                                                                    $q1->where('id', $request->filter_customer);
+                                                                });
+                                                            });
+                                                        }
+                                                    }
+
+                                                    if($request->filter_manager != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                                                                    $q1->where('ss_id', $salesAgent);
+                                                                });
+                                                            });
+                                                    }
+
+                                                    if(Auth::user()->role_id == 6){
+                                                        $q->where(function($query) use ($request) {
+                                                            $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                                                                $q1->where('ss_id', $salesAgent);
                                                             });
                                                         });
                                                     }
 
-                                                    if($request->filter_sales_specialist != ""){
+                                                    if(Auth::user()->role_id == 2){
                                                         $q->where(function($query) use ($request) {
-                                                            $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                                                                $q1->where('ss_id', $request->filter_sales_specialist);
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $q1->where('ss_id', Auth::id());
+                                                                });
                                                             });
-                                                        });
+                                                    }else{
+                                                        if($request->filter_sales_specialist != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $q1->where('ss_id', $request->filter_sales_specialist);
+                                                                });
+                                                            });
+                                                        }
                                                     }
                                                 });
 
