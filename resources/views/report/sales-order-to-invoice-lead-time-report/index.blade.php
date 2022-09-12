@@ -89,6 +89,13 @@
                   </select>
                 </div>
                 @endif
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <span>
+                    </span>
+                  </div>
+                </div>
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
@@ -181,6 +188,7 @@
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
       $filter_manager = $('[name="filter_manager"]').find('option:selected').val();
+      $filter_date_range = $('[name="filter_date_range"]').val();
 
       $.ajax({
         url: '{{ route('reports.sales-order-to-invoice-lead-time-report.get-all') }}',
@@ -192,6 +200,7 @@
                 filter_brand : $filter_brand,
                 filter_sales_specialist : $filter_sales_specialist,
                 filter_manager : $filter_manager,
+                filter_date_range : $filter_date_range,
               }
       })
       .done(function(result) {

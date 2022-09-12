@@ -31,7 +31,7 @@
            
             <div class="card-body">
               <div class="row">
-
+                @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                     <option value=""></option>
@@ -40,29 +40,55 @@
                     @endforeach
                   </select>
                 </div>
-
+                @endif
+                @if(in_array(userrole(),[1]))
+                <div class="col-md-3 mt-5">
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_manager" data-allow-clear="true" data-placeholder="Select Manager">
+                    <option value=""></option>
+                    @foreach($managers as $m)
+                      <option value="{{ $m->id }}">{{ $m->first_name.' '.$m->last_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                @endif
+                @if(in_array(userrole(),[4]) || in_array(userrole(),[2]))
+                <div class="col-md-3 mt-5 filter_brand_div">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
+                    <option value=""></option>
+                    
+                  </select>
+                </div>
+                @else
                 <div class="col-md-3 mt-5 filter_brand_div" style="display:none;">
                   <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
                     <option value=""></option>
                     
                   </select>
                 </div>
-
+                @endif
+                @if(in_array(userrole(),[4]) || in_array(userrole(),[2]))
                 <!-- Sales Specialist -->
+                <div class="col-md-3 mt-5" style="display: none;">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_sales_specialist" data-control="select2" data-hide-search="false" data-placeholder="Select sales specialist" data-allow-clear="true">
+                    <option value=""></option>
+                  </select>
+                </div>
+                @else
                 <div class="col-md-3 mt-5 other_filter_div">
                   <select class="form-control form-control-lg form-control-solid" name="filter_sales_specialist" data-control="select2" data-hide-search="false" data-placeholder="Select sales specialist" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
-
+                @endif
 
                 <!-- Customer -->
+                @if(!in_array(userrole(),[4]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-placeholder="Select customer" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
-
+                @endif
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>

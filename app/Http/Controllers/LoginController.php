@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Models\User;
 use Auth;
+use App\Models\Customer;
+use Carbon\Carbon;
+
 class LoginController extends Controller
 {
     public function index()
@@ -29,9 +32,15 @@ class LoginController extends Controller
     	}else{
 
     		$user = User::where('email',$input['email'])->first();
+            $customer = Customer::where('email',@$user->email)->first();
 
     		if($user){
+                // $today = Carbon::today()->toDateString();
+                // if(($user->is_active) || (@$customer->frozen && ($today < @$customer->frozen_from) && ($today > @$customer->frozen_to))){
 
+                // }else{
+                //     return $response = array('status'=>false,'message'=>"Your account has been deactivated by administrator. Please contact system admin.");
+                // }
     			if(!$user->is_active){
     				return $response = array('status'=>false,'message'=>"Your account has been deactivated by administrator. Please contact system admin.");
     			}
@@ -77,19 +86,24 @@ class LoginController extends Controller
     			$expiry = strtotime('+24 hours', $time);
     			
     			if($time <= $expiry){
-		    		$user = User::where('is_active',true)->where('id', $id)->first();
-
+		    		//$user = User::where('is_active',true)->where('id', $id)->first();
+                    $user = where('id',$id)->first();
 		    		if($user){
+                        $customer = Customer::where('email',@$user->email)->first();
+                        $today = Carbon::today()->toDateString();
+                        // if(($user->is_active) || (@$customer->frozen && ($today < @$customer->frozen_from) && ($today > @$customer->frozen_to))){                
 
-		                if(!is_null($user->role)){
-			                Auth::loginUsingId($id);
+    		                if(!is_null($user->role)){
+    			                Auth::loginUsingId($id);
 
-			                //save log
-            				add_log(45, $user->toArray());
+    			                //save log
+                				add_log(45, $user->toArray());
 
-			                \Session::flash('login_success_message', "Login successfully !");
-			                return redirect()->route('home');
-		                }
+    			                \Session::flash('login_success_message', "Login successfully !");
+    			                return redirect()->route('home');
+    		                }
+
+                       // } 
 		    			
 		    		}
     			}
