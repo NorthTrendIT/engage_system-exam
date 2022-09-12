@@ -120,29 +120,44 @@ class CustomerController extends Controller
         //
     }
 
-    public function syncCustomers(){
-        try {
-
+    public function syncCustomers(Request $request){
+        try {            
             // Add Sync Customer data log.
             // add_log(15, null);
 
-            $sap_connections = SapConnection::where('id', '!=', 5)->get();
-
-            foreach ($sap_connections as $value) {
-
+            if($request->filter_company != ""){
+                $sap_connections = SapConnection::where('id', $request->filter_company)->first();
                 $log_id = add_sap_log([
-                                'ip_address' => userip(),
-                                'activity_id' => 15,
-                                'user_id' => userid(),
-                                'data' => null,
-                                'type' => "S",
-                                'status' => "in progress",
-                                'sap_connection_id' => $value->id,
-                            ]);
+                                    'ip_address' => userip(),
+                                    'activity_id' => 15,
+                                    'user_id' => userid(),
+                                    'data' => null,
+                                    'type' => "S",
+                                    'status' => "in progress",
+                                    'sap_connection_id' => $sap_connections->id,
+                                ]);
+
+                    // Save Data of customer in database
+                    SyncCustomers::dispatch($sap_connections->db_name, $sap_connections->user_name , $sap_connections->password, $log_id);
+            }else{
+                $sap_connections = SapConnection::where('id', '!=', 5)->get();
+
+                foreach ($sap_connections as $value) {
+
+                    $log_id = add_sap_log([
+                                    'ip_address' => userip(),
+                                    'activity_id' => 15,
+                                    'user_id' => userid(),
+                                    'data' => null,
+                                    'type' => "S",
+                                    'status' => "in progress",
+                                    'sap_connection_id' => $value->id,
+                                ]);
 
 
-                // Save Data of customer in database
-                SyncCustomers::dispatch($value->db_name, $value->user_name , $value->password, $log_id);
+                    // Save Data of customer in database
+                    SyncCustomers::dispatch($value->db_name, $value->user_name , $value->password, $log_id);
+                }
             }
             // // Save Data of customer in database
             // SyncCustomers::dispatch('TEST-APBW', 'manager', 'test');
@@ -218,8 +233,8 @@ class CustomerController extends Controller
                 $data->where('is_active',1)                        
                     ->orWhere(function($query) use ($today){
                         $query->where('frozen',1);
-                        $query->where('frozen_from', '>=' ,$today);
-                        $query->where('frozen_to', '<=' ,$today);
+                        $query->where('frozen_from', '>' ,$today);
+                        $query->where('frozen_to', '<' ,$today);
                     });                    
             }else if($request->filter_status == 0){
                 $data->where('frozen',0)->orWhere('is_active',0);

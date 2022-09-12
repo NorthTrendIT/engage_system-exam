@@ -173,30 +173,45 @@ class ProductController extends Controller
       //
   }
 
-  public function syncProducts(){
-    try {
+  public function syncProducts(Request $request){
+    try {      
 
       // // Add sync Product data log.
       // add_log(18, null);
 
       // // Save Data of Product in database
       // SyncProducts::dispatch('TEST-APBW', 'manager', 'test');
-
-      $sap_connections = SapConnection::where('id', '!=', 5)->get();
-      foreach ($sap_connections as $value) {
+      if($request->filter_company != ""){
+        $sap_connections = SapConnection::where('id', $request->filter_company)->first();
 
         $log_id = add_sap_log([
-                                'ip_address' => userip(),
-                                'activity_id' => 18,
-                                'user_id' => userid(),
-                                'data' => null,
-                                'type' => "S",
-                                'status' => "in progress",
-                                'sap_connection_id' => $value->id,
-                            ]);
+                                  'ip_address' => userip(),
+                                  'activity_id' => 18,
+                                  'user_id' => userid(),
+                                  'data' => null,
+                                  'type' => "S",
+                                  'status' => "in progress",
+                                  'sap_connection_id' => $sap_connections->id,
+                              ]);
+        SyncProducts::dispatch($sap_connections->db_name, $sap_connections->user_name , $sap_connections->password, $log_id);
 
-        // Save Data of Product in database
-        SyncProducts::dispatch($value->db_name, $value->user_name , $value->password, $log_id);
+      }else{
+        $sap_connections = SapConnection::where('id', '!=', 5)->get();
+        foreach ($sap_connections as $value) {
+
+          $log_id = add_sap_log([
+                                  'ip_address' => userip(),
+                                  'activity_id' => 18,
+                                  'user_id' => userid(),
+                                  'data' => null,
+                                  'type' => "S",
+                                  'status' => "in progress",
+                                  'sap_connection_id' => $value->id,
+                              ]);
+
+          // Save Data of Product in database
+          SyncProducts::dispatch($value->db_name, $value->user_name , $value->password, $log_id);
+        }
       }
 
       $response = ['status' => true, 'message' => 'Sync Product successfully !'];

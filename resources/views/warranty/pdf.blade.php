@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>Exceltrend Ordering Management System</title>
+	<title>Engage Ordering Management System</title>
 
 	<style type="text/css">
 		body {
@@ -91,7 +91,7 @@
     <table class="transcript-tbl" width=" 100%" border="0" cellpadding="0" cellspacing="0" style="max-width: 100%; margin: 0 auto;margin-top: 15px;margin-bottom: 15px;table-layout:fixed;">
 		<tr class="box-detail" style="padding-bottom: 50px;">
 			<td style="width: 100%;background-color: #7239ea;">
-				<h2 style="font-size: 28px;color:white;text-align: center;width: 100%;">Exceltrend Ordering Management System</h2>
+				<h2 style="font-size: 28px;color:white;text-align: center;width: 100%;">Engage Ordering Management System</h2>
 			</td>
 		</tr>
 		<tr class="box-detail" style="">
