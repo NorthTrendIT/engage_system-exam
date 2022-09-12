@@ -9,7 +9,7 @@
       <!--begin::Logo-->
       <a href="{{ route('home') }}">
       {{-- <img alt="Logo" src="{{ asset('assets') }}/assets/media/logo-full.png" class="h-25px logo"> --}}
-      <span class="text-white logo" style="font-size: 20px;">Exceltrend OMS</span>
+      <span class="text-white logo" style="font-size: 20px;">Engage OMS</span>
       </a>
       <!--end::Logo-->
       <!--begin::Aside toggler-->

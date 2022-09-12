@@ -134,7 +134,7 @@
                               <!--end::Label-->
                               <!--end::Text-->
                               <div class="fw-bolder fs-6 text-gray-800">
-                                <span>{!! getOrderStatusBtnHtml(getOrderStatusByInvoice($data)) !!}</span>
+                                <span>{!! getOrderStatusBtnHtml(($data->document_status == 'bost_Open')?'Open':'Close') !!}</span>
                               </div>
                               <!--end::Text-->
                             </div>

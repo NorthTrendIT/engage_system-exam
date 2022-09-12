@@ -479,7 +479,7 @@ function getOrderStatusArray($key = ""){
 
 // Start Status
 function getOrderStatusByInvoice($data){
-    $status = getOrderStatusArray("PN");
+    $status = getOrderStatusArray("CL");
 
     if(!empty($data)){
 
@@ -664,6 +664,12 @@ function getOrderStatusBtnHtml($status){
             break;
         case "Error":
             $btn = '<b style="color:'.convert_hex_to_rgba('#f44336').';background-color:'.convert_hex_to_rgba('#f44336',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "Open":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#66bb6a').';background-color:'.convert_hex_to_rgba('#66bb6a',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "Close":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#ffa726').';background-color:'.convert_hex_to_rgba('#ffa726',0.1).';" class="btn btn-sm">'.$status.'</b>';
             break;
         default:
             break;

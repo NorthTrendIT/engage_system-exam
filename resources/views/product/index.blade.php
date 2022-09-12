@@ -342,7 +342,8 @@
             url: '{{ route('product.sync-products') }}',
             method: "POST",
             data: {
-                    _token:'{{ csrf_token() }}'
+                    _token:'{{ csrf_token() }}',
+                    filter_company : $('[name="filter_company"]').find('option:selected').val(),
                   }
           })
           .done(function(result) {

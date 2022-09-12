@@ -232,25 +232,11 @@ class InvoicesController extends Controller
         if($request->filter_status != ""){
             $status = $request->filter_status;
 
-            if($status == "CL"){ //Cancel
-                $data->where('cancelled', 'Yes');
+            if($status == "Open"){
+                $data->where('document_status', 'bost_Open');
 
-            }elseif($status == "PN"){ //Pending
-
-                // $data->where('cancelled', 'No');
-
-                $data->where(function($query){
-                    $query->orwhere(function($q){
-                        $q->whereNull('u_sostat');
-                    });
-
-                    $query->orwhere(function($q1){
-                        $q1->where('cancelled', 'No')->whereNotIn('u_sostat', array_keys(getOrderStatusArray()));
-                    });
-                });
-
-            }else{
-                $data->where('document_status', 'bost_Open')->where('u_sostat', $status);
+            }elseif($status == "Close"){
+               $data->where('document_status', 'bost_Close');
             }
         }
 
@@ -275,7 +261,7 @@ class InvoicesController extends Controller
                                 return  @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('status', function($row) {
-                                return getOrderStatusBtnHtml(getOrderStatusByInvoice($row));
+                                return getOrderStatusBtnHtml(($row->document_status == 'bost_Open')?'Open':'Close');
                             })
                             ->addColumn('doc_entry', function($row) {
                                 return '<a href="' . route('invoices.show',$row->id). '" title="View details">'.$row->doc_entry.'</a>';
