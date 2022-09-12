@@ -51,35 +51,28 @@ class BackOrderReportController extends Controller
         $table = DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('item_name', function($row) {
-                                //return @$row->product1->item_name ?? @$row->item_description ?? "-";
-                                return "-";
+                                return @$row->product1->item_name ?? @$row->item_description ?? "-";
                             })
                             ->addColumn('item_code', function($row) {
-                                //return @$row->product1->item_code ?? @$row->item_code ?? "-";
-                                return "-";
+                                return @$row->product1->item_code ?? @$row->item_code ?? "-";
                             })
                             ->addColumn('customer', function($row) {
-                                //return @$row->order->customer->card_name ?? @$row->order->card_name ?? "-";
-                                return "-";
+                                return @$row->order->customer->card_name ?? @$row->order->card_name ?? "-";
                             })
                             ->addColumn('sales_specialist', function($row) {
-                                //return @$row->order->sales_specialist->sales_specialist_name ?? "-";
-                                return "-";
+                                return @$row->order->sales_specialist->sales_specialist_name ?? "-";
                             })
                             ->addColumn('brand', function($row) {
-                                //return @$row->product1->group->group_name ?? "-";
-                                return "-";
+                                return @$row->product1->group->group_name ?? "-";
                             })
                             ->addColumn('company', function($row) {
                                 return @$row->sap_connection->company_name ?? "-";
                             })
                             ->addColumn('doc_entry', function($row) {
-                                //return @$row->order->doc_entry ?? "-";
-                                return "-";
+                                return @$row->order->doc_entry ?? "-";
                             })
                             ->addColumn('doc_date', function($row) {
-                                //return date('M d, Y',strtotime(@$row->order->doc_date));
-                                return "-";
+                                return date('M d, Y',strtotime(@$row->order->doc_date));
                             })
                             ->addColumn('quantity', function($row) {
                                 return @$row->quantity ?? "-";

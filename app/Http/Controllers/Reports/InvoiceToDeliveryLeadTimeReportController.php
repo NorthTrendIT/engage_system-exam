@@ -213,6 +213,15 @@ class InvoiceToDeliveryLeadTimeReportController extends Controller
             });
         }
 
+        // Date Range Filter
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+            $totalPending->whereDate('u_delivery', '>=' , $start);
+            $totalPending->whereDate('u_delivery', '<=' , $end);
+        }
+
         if(@$request->filter_company != ""){
             $data->where('sap_connection_id',$request->filter_company);
         }

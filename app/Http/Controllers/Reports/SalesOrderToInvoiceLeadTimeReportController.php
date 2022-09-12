@@ -60,44 +60,35 @@ class SalesOrderToInvoiceLeadTimeReportController extends Controller
         $table = DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('card_name', function($row) {
-                                //return @$row->customer->card_name ?? @$row->card_name ?? "-";
-                                return "-";
+                                return @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('card_code', function($row) {
-                                //return @$row->customer->card_code ?? @$row->card_code ?? "-";
-                                return "-";
+                                return @$row->customer->card_code ?? @$row->card_code ?? "-";
                             })
                             ->addColumn('invoice_date', function($row) {
-                                //return date('M d, Y',strtotime(@$row->doc_date));
-                                return "-";
+                                return date('M d, Y',strtotime(@$row->doc_date));
                             })
                             ->addColumn('invoice_doc_num', function($row) {
-                                //return @$row->doc_num ?? "-";
-                                return "-";
+                                return @$row->doc_num ?? "-";
                             })
                             ->addColumn('order_date', function($row) {
-                                //return date('M d, Y',strtotime(@$row->order->doc_date));
-                                return "-";
+                                return date('M d, Y',strtotime(@$row->order->doc_date));
                             })
                             ->addColumn('order_doc_num', function($row) {
-                                //return @$row->order->doc_num ?? "-";
-                                return "-";
+                                return @$row->order->doc_num ?? "-";
                             })
                             ->addColumn('sales_specialist', function($row) {
-                                //return @$row->sales_specialist->sales_specialist_name ?? "-";
-                                return "-";
+                                return @$row->sales_specialist->sales_specialist_name ?? "-";
                             })
                             ->addColumn('company', function($row) {
-                                //return @$row->sap_connection->company_name ?? "-";
-                                return "-";
+                                return @$row->sap_connection->company_name ?? "-";
                             })
                             ->addColumn('lead_time', function($row) {
-                                // $endDate = $row->created_at;
-                                // $startDate = $row->order->created_at;
+                                $endDate = $row->created_at;
+                                $startDate = $row->order->created_at;
 
-                                // $days = (strtotime($endDate) - strtotime($startDate)) / (60 * 60 * 24);
-                                // return $days ." Day(s)";
-                                return "-";
+                                 $days = (strtotime($endDate) - strtotime($startDate)) / (60 * 60 * 24);
+                                return $days ." Day(s)";
                             })
                             ->rawColumns(['lead_time'])
                             ->make(true);
@@ -216,6 +207,15 @@ class SalesOrderToInvoiceLeadTimeReportController extends Controller
                     $q2->whereIn('id', $salesAgent);
                 });
             });
+        }
+
+        // Date Range Filter
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+            $totalPending->whereDate('doc_date', '>=' , $start);
+            $totalPending->whereDate('doc_date', '<=' , $end);
         }
 
         if(@$request->filter_company != ""){

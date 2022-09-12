@@ -43,7 +43,29 @@ class CustomerGroupController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $emails = explode(";", $request->email);
+
+        $dups = array();
+        foreach(array_count_values($emails) as $val => $c){
+            if($c > 1) $dups[] = $val;
+        }
+        if(!empty($dups)){
+            $response = ['status'=>false,'message'=>'Duplicate email available.'];
+        }
+        foreach($emails as $e){
+            $checkEmail = (!preg_match("/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix", $e)) ? FALSE : TRUE;
+            if($checkEmail == FALSE){ 
+                $response = ['status'=>false,'message'=>'Email is not valid'];
+            } 
+        }
+        
+        $group = CustomerGroup::find($request->id);
+        $group->emails = $request->email;
+        $group->save();
+
+        $response = ['status'=>true,'message'=>'Customer group emails updated.','data'=>$group]; 
+
+        return $response;
     }
 
     /**
@@ -65,7 +87,8 @@ class CustomerGroupController extends Controller
      */
     public function edit($id)
     {
-        //
+        $edit = CustomerGroup::where('id',$id)->firstOrFail();
+        return view('customer-group.edit',compact('edit'));
     }
 
     /**
@@ -77,7 +100,7 @@ class CustomerGroupController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        
     }
 
     /**
@@ -158,6 +181,13 @@ class CustomerGroupController extends Controller
                                 }
                                 return $name;
                             })
+                            ->addColumn('action', function($row) {
+                                $btn = "";
+                                $btn .= '<a href="' . route('customer-group.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10" title="Edit">
+                                        <i class="fa fa-pencil"></i>
+                                      </a>';
+                                return $btn;
+                            })
                             ->orderColumn('name', function ($query, $order) {
                                 $query->orderBy('name', $order);
                             })
@@ -167,7 +197,7 @@ class CustomerGroupController extends Controller
                             ->orderColumn('company', function ($query, $order) {
                                 $query->join('sap_connections', 'customer_groups.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
                             })
-                            ->rawColumns(['name', 'code','company'])
+                            ->rawColumns(['name', 'code','company','action'])
                             ->make(true);
     }
 }
