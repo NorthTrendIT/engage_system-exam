@@ -87,7 +87,7 @@ class LoginController extends Controller
     			
     			if($time <= $expiry){
 		    		//$user = User::where('is_active',true)->where('id', $id)->first();
-                    $user = where('id',$id)->first();
+                    $user = User::where('id',$id)->first();
 		    		if($user){
                         $customer = Customer::where('email',@$user->email)->first();
                         $today = Carbon::today()->toDateString();
