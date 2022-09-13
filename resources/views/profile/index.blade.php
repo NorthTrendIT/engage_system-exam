@@ -84,6 +84,73 @@
                   </div>
                 @endif
 
+                @if(Auth::user()->role_id == 4)
+                <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Total Overdue Amount<span class="asterisk">*</span></label>
+                      <input type="text" class="form-control form-control-solid" value="{{ number_format(@$totalOverdueAmount) ??  "" }}" readonly>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Total Outstanding Amount<span class="asterisk">*</span></label>
+                      <input type="text" class="form-control form-control-solid" value="{{ number_format(@$data->current_account_balance) ??  "" }}" readonly>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Open Order Amount<span class="asterisk">*</span></label>
+                      <input type="text" class="form-control form-control-solid" value="{{ number_format(@$data->open_orders_balance) ??  "" }}" readonly>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Total Exposure Amount<span class="asterisk">*</span></label>
+                      <input type="text" class="form-control form-control-solid" value="{{ number_format(@$data->current_account_balance + @$data->open_orders_balance) ??  "" }}" readonly>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Credit Limit<span class="asterisk">*</span></label>
+                      <input type="text" class="form-control form-control-solid" value="{{ number_format(@$data->credit_limit) ??  "" }}" readonly>
+                    </div>
+                  </div>
+                </div>
+
+                @if(@$data->credit_limit > (@$data->current_account_balance + @$data->open_orders_balance))
+                <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Available Credit Limit<span class="asterisk">*</span></label>
+                      <input type="text" class="form-control form-control-solid" value="{{ number_format(@$data->credit_limit - ($data->current_account_balance + @$data->open_orders_balance)) ??  "" }}" readonly>
+                    </div>
+                  </div>
+                </div>
+                @else
+                <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Total Overdue Amount<span class="asterisk">*</span></label>
+                      <input type="text" class="form-control form-control-solid" value="{{ number_format(($data->current_account_balance + @$data->open_orders_balance) - @$data->credit_limit) ??  "" }}" readonly>
+                    </div>
+                  </div>
+                </div>
+                @endif
+                @endif
+
                 <div class="row mb-5">
                   <div class="col-md-12">
                     <div class="form-group">
