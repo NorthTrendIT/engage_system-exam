@@ -8,6 +8,8 @@ use Auth;
 use Hash;
 use Validator;
 use App\Models\User;
+use App\Models\Customer;
+use App\Models\Invoice;
 
 class ProfileController extends Controller
 {
@@ -18,7 +20,10 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        return view('profile.index');
+        $data = Customer::where('id',Auth::user()->customer_id)->firstOrFail();
+
+        $totalOverdueAmount = Invoice::where(['card_code'=>$data->card_code,'document_status'=>'bost_Open'])->sum('doc_entry'); 
+        return view('profile.index',compact('data', 'totalOverdueAmount'));
     }
 
     /**
