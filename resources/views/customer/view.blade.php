@@ -133,39 +133,39 @@
 
                             <tr>
                               <th> <b>Total Overdue Amount:</b> </th>
-                              <td>{{@$totalOverdueAmount}}</td>
+                              <td>{{number_format(@$totalOverdueAmount)}}</td>
                             </tr>
 
                             <tr>
                               <th> <b>Total Outstanding Amount:</b> </th>
-                              <td>{{ (@$data->current_account_balance) ?? "-" }}</td>
+                              <td>{{ (number_format(@$data->current_account_balance)) ?? "-" }}</td>
                             </tr>
 
                             <tr>
                               <th> <b>Open Order Amount:</b> </th>
-                              <td>{{ (@$data->open_orders_balance) ?? "-" }}</td>
+                              <td>{{ (number_format(@$data->open_orders_balance)) ?? "-" }}</td>
                             </tr>
 
 
                             <tr>
                               <th> <b>Total Exposure Amount:</b> </th>
-                              <td>{{ @$data->current_account_balance + @$data->open_orders_balance  ?? "-" }}</td>
+                              <td>{{ number_format(@$data->current_account_balance + @$data->open_orders_balance)  ?? "-" }}</td>
                             </tr>
 
                             <tr>
                               <th> <b>Credit Limit:</b> </th>
-                              <td>{{ (@$data->credit_limit) ?? "-" }}</td>
+                              <td>{{ (number_format(@$data->credit_limit)) ?? "-" }}</td>
                             </tr>
 
                             @if(@$data->credit_limit > (@$data->current_account_balance + @$data->open_orders_balance))
                             <tr>
                               <th> <b>Available Credit Limit:</b> </th>
-                              <td>{{@$data->credit_limit - ($data->current_account_balance + @$data->open_orders_balance)}}</td>
+                              <td>{{number_format(@$data->credit_limit - ($data->current_account_balance + @$data->open_orders_balance))}}</td>
                             </tr>
                             @else
                             <tr>
                               <th> <b>Over Credit Limit:</b> </th>
-                              <td>{{($data->current_account_balance + @$data->open_orders_balance) - @$data->credit_limit}}</td>
+                              <td>{{(number_format($data->current_account_balance + @$data->open_orders_balance) - @$data->credit_limit)}}</td>
                             </tr>
                             @endif
                           </thead>
