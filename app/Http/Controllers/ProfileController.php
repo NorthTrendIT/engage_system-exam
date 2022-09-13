@@ -22,7 +22,7 @@ class ProfileController extends Controller
     {
         $data = Customer::where('id',Auth::user()->customer_id)->firstOrFail();
 
-        $totalOverdueAmount = Invoice::where(['card_code'=>$data->card_code,'document_status'=>'bost_Open'])->sum('doc_entry'); 
+        $totalOverdueAmount = Invoice::where(['card_code'=>@$data->card_code,'document_status'=>'bost_Open'])->sum('doc_entry'); 
         return view('profile.index',compact('data', 'totalOverdueAmount'));
     }
 
