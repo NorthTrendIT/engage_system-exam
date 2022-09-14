@@ -144,10 +144,15 @@ class OrdersController extends Controller
         //
     }
 
-    public function syncOrders(){
+    public function syncOrders(Request $request){
         try {
 
-            $sap_connections = SapConnection::where('id', '!=', 5)->get();
+            if($request->filter_company != ""){
+                $sap_connections = SapConnection::where('id', $request->filter_company)->get();
+            }else{
+                $sap_connections = SapConnection::where('id', '!=', 5)->get();
+            }
+            
             foreach ($sap_connections as $value) {
 
                 $order_log_id = add_sap_log([
