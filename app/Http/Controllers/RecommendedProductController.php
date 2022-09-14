@@ -341,9 +341,9 @@ class RecommendedProductController extends Controller
             $cart = Cart::findOrFail($id);
 
             $avl_qty = $cart->product->quantity_on_stock - $cart->product->quantity_ordered_by_customers;
-            if($avl_qty < ($cart->qty + 1)){
-                return $response = ['status'=>false,'message'=>"The product quantity is not available."];
-            }
+            // if($avl_qty < ($cart->qty + 1)){
+            //     return $response = ['status'=>false,'message'=>"The product quantity is not available."];
+            // }
 
             $cart->qty = $cart->qty + 1;
             $cart->save();
