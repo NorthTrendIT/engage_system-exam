@@ -298,16 +298,16 @@
                                         <td class="pt-6 text-dark fw-boldest text-end">₱ {{ number_format_value(round($value->gross_total,1)) }}</td>
                                         <?php
                                           if(@$data->order->invoice->items[$key]->quantity == 0){
-                                            $status = 'Unserved';
+                                            $status1 = 'Unserved';
                                           }else if(@$data->order->invoice->items[$key]->quantity > 0 && @$value->quantity > $data->order->invoice->items[$key]->quantity){
-                                            $status = 'Partial Served';
+                                            $status1 = 'Partial Served';
                                           }else if(@$data->order->invoice->items[$key]->quantity == @$value->quantity){
-                                            $status = 'Fully Served';
+                                            $status1 = 'Fully Served';
                                           }else if(@$data->order->invoice->items[$key]->quantity > @$value->quantity){
-                                            $status = 'Over Served';
+                                            $status1 = 'Over Served';
                                           }
                                         ?>
-                                        <td class="pt-6">{{@$status}}</td>
+                                        <td class="pt-6">{{@$status1}}</td>
                                         <?php
                                           if(@$data->order[$key]->line_status == 'bost_Close'){
                                             $remarks = 'Served';
