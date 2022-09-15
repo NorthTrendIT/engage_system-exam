@@ -256,7 +256,6 @@
                                   <tr class="border-bottom fs-6 fw-bolder text-muted">
                                     <th>#</th>
                                     <th class="min-w-175px pb-2">Product</th>
-                                    <th class="min-w-175px pb-2">Unit</th>
                                     <th class="min-w-175px pb-2">Ordered Quantity</th>
                                     <th class="min-w-175px pb-2">Served Quantity</th>
                                     @if($data->order_type == 'Promotion')
@@ -284,20 +283,18 @@
                                     <tr class="fw-bolder text-gray-700 fs-5">
                                       <td class="text-center pt-6">{{$key + 1}}</td>
                                         <td class="d-flex pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
-                                        <td class="d-flex pt-6">{{ @$value->product1->sales_unit ?? '-' }}</td>
+                                        
                                         <td class="pt-6 text-end">{{ number_format($value->quantity) }}</td>
                                         <td class="pt-6 text-end">{{ number_format(@$data->order->invoice->items[$key]->quantity) ?? "0" }}</td>
                                         @if($data->order_type == 'Promotion')
                                         <td class="pt-6">{{  "-"  }}</td>
                                         @endif
-                                        @if(@$data->order->invoice->cancelled == 'No')
+                                        
                                         @if(@$data->order->invoice->doc_num != null)
                                         <td class="pt-6"><a href="{{route('invoices.show',@$data->order->invoice->id)}}">{{@$data->order->invoice->doc_num}}</a></td>
                                         @else
                                         <td class="pt-6">{{ @$data->order->invoice->doc_num ?? '-' }}</td>
-                                        @endif
-                                        @else
-                                        <td class="pt-6">-</td>
+                                        
                                         @endif
                                         <td class="pt-6 text-end">₱ {{ number_format_value($value->price) }}</td>
                                         <td class="pt-6 text-end">₱ {{ number_format_value($value->price_after_vat) }}</td>
