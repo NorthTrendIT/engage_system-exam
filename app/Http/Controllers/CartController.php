@@ -344,7 +344,7 @@ class CartController extends Controller
                         foreach($products as $value){
 
                             $avl_qty = $value->product->quantity_on_stock - $value->product->quantity_ordered_by_customers;
-                            if($avl_qty >= @$value['qty']){
+                            //if($avl_qty >= @$value['qty']){
                                 $item = new LocalOrderItem();
                                 $item->local_order_id = $order->id;
                                 $item->product_id = @$value['product_id'];
@@ -354,17 +354,17 @@ class CartController extends Controller
                                 $item->save();
                                 
                                 $total += $item->total;
-                            }else{
-                                $is_need_delete_order = true;
-                            }
+                            // }else{
+                            //     $is_need_delete_order = true;
+                            // }
                         }
 
                         $order->total = $total;
                         $order->save();
                         
-                        if($is_need_delete_order && count($products) == 1){
-                            $order->delete();
-                        }else{
+                        // if($is_need_delete_order && count($products) == 1){
+                        //     $order->delete();
+                        // }else{
                             try{
                                 $sap_connection = SapConnection::find($real_sap_connection_id);
 
@@ -391,7 +391,7 @@ class CartController extends Controller
                             } catch (\Exception $e) {
 
                             }
-                        }
+                        //}
                     }
 
                     // End Order
