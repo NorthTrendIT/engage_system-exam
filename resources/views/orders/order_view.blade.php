@@ -256,6 +256,7 @@
                                   <tr class="border-bottom fs-6 fw-bolder text-muted">
                                     <th>#</th>
                                     <th class="min-w-175px pb-2">Product</th>
+                                    <th>Unit</th>
                                     <th class="min-w-175px pb-2">Ordered Quantity</th>
                                     <th class="min-w-175px pb-2">Served Quantity</th>
                                     @if($data->order_type == 'Promotion')
@@ -283,7 +284,7 @@
                                     <tr class="fw-bolder text-gray-700 fs-5">
                                       <td class="text-center pt-6">{{$key + 1}}</td>
                                         <td class="d-flex pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
-                                        
+                                        <td>{{ @$value->product1->sales_unit ?? '-' }}</td>
                                         <td class="pt-6 text-end">{{ number_format($value->quantity) }}</td>
                                         <td class="pt-6 text-end">{{ number_format(@$data->order->invoice->items[$key]->quantity) ?? "0" }}</td>
                                         @if($data->order_type == 'Promotion')
