@@ -291,11 +291,14 @@
                                         <td class="pt-6">{{  "-"  }}</td>
                                         @endif
                                         
+                                        @if(@$data->order->invoice->cancelled == 'No')
                                         @if(@$data->order->invoice->doc_num != null)
                                         <td class="pt-6"><a href="{{route('invoices.show',@$data->order->invoice->id)}}">{{@$data->order->invoice->doc_num}}</a></td>
                                         @else
                                         <td class="pt-6">{{ @$data->order->invoice->doc_num ?? '-' }}</td>
-                                        
+                                        @endif
+                                        @else
+                                        <td class="pt-6">-</td>
                                         @endif
                                         <td class="pt-6 text-end">₱ {{ number_format_value($value->price) }}</td>
                                         <td class="pt-6 text-end">₱ {{ number_format_value($value->price_after_vat) }}</td>
