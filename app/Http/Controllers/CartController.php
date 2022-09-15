@@ -14,6 +14,7 @@ use App\Models\SapConnection;
 use App\Models\Product;
 use Validator;
 use Auth;
+use App\Models\Quotation;
 
 class CartController extends Controller
 {
@@ -151,9 +152,9 @@ class CartController extends Controller
             if(is_numeric($data['qty'])){
                 if($data['qty'] > 0){
                     $avl_qty = $cart->product->quantity_on_stock - $cart->product->quantity_ordered_by_customers;
-                    if($avl_qty < ($data['qty'])){
-                        return $response = ['status'=>false,'message'=>"The product quantity is not available."];
-                    }
+                    // if($avl_qty < ($data['qty'])){
+                    //     return $response = ['status'=>false,'message'=>"The product quantity is not available."];
+                    // }
                     $cart->qty = $data['qty'];
                 } else {
                     return $response = ['status'=>false,'message'=>"Quantity value must be greater than 0(Zero)."];
@@ -174,9 +175,9 @@ class CartController extends Controller
             $cart = Cart::findOrFail($id);
 
             $avl_qty = $cart->product->quantity_on_stock - $cart->product->quantity_ordered_by_customers;
-            if($avl_qty < ($cart->qty + 1)){
-                return $response = ['status'=>false,'message'=>"The product quantity is not available."];
-            }
+            // if($avl_qty < ($cart->qty + 1)){
+            //     return $response = ['status'=>false,'message'=>"The product quantity is not available."];
+            // }
 
             $cart->qty = $cart->qty + 1;
             $cart->save();
@@ -373,6 +374,19 @@ class CartController extends Controller
                                     if($order->id){
                                         $sap->pushOrder($order->id);
                                     }
+
+                                    // $localOrders = LocalOrder::find($order->id);
+                                    // $quotation = Quotation::with('customer')->where('doc_entry',@$localOrders->doc_entry)->first();
+
+                                    //$user = @$quotation->customer->user;
+
+                                    // $link = route('orders.show', @$quotation->id);
+                                    // // Send Mail.
+                                    // Mail::send('emails.order_placed', array('link'=>$link, 'order_no'=>@$quotation->doc_entry, 'status'=>getOrderStatusByQuotation($quotation)), function($message) use($user) {
+                                    //     $message->to('mansiparikh95@gmail.com', $user->name)
+                                    //             ->subject('Order Placed');
+                                    // });
+
                                 }
                             } catch (\Exception $e) {
 
