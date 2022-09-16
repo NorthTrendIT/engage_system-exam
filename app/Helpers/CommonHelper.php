@@ -525,7 +525,7 @@ function getOrderStatusByQuotation($data, $with_date = false){
                 if(!empty(@$data->order->invoice)){
 
                     if($data->order->invoice->cancelled == 'Yes'){
-                        $status = getOrderStatusArray('CL');
+                        $status = getOrderStatusArray('OP');
 
                     }else if(@$data->order->invoice->u_omsno != null){
                         if(@$data->order->invoice->u_sostat == 'DL' || @$data->order->invoice->u_sostat == 'CM'){
