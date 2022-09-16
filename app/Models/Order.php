@@ -51,8 +51,12 @@ class Order extends Model
     ];
 
     public function invoice(){
-        return $this->hasOne(Invoice::class, ['base_entry', 'sap_connection_id'], ['doc_entry', 'sap_connection_id']);
+        return $this->hasOne(Invoice::class, ['base_entry', 'sap_connection_id'], ['doc_entry', 'sap_connection_id'])->latest();
     }
+
+    // public function invoice1(){
+    //     return $this->hasMany(Invoice::class, ['base_entry', 'sap_connection_id'], ['doc_entry', 'sap_connection_id'])->latest();
+    // }
 
     public function quotation(){
         return $this->hasOne(Quotation::class, ['doc_entry', 'sap_connection_id'], ['base_entry', 'sap_connection_id']);
