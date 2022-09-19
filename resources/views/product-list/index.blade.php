@@ -72,6 +72,12 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search1" autocomplete="off">
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
                 </div>
@@ -85,9 +91,10 @@
                           <thead>
                             <tr>
                               <th style="width:24px !important">No.</th>
+                              <th>Product Code</th>
                               <th>Name</th>
-                              <!-- <th>Brand</th>
-                              <th>Code</th> -->
+                              <!-- <th>Brand</th> -->
+                              
                               <th>Brand</th>
                               <th>Product Line</th>
                               <th>Product Category</th>
@@ -185,6 +192,7 @@ $(document).ready(function() {
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_product"]').val();
+      $filter_search1 = $('[name="filter_search1"]').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_product_category = $('[name="filter_product_category"]').find('option:selected').val();
       $filter_product_line = $('[name="filter_product_line"]').find('option:selected').val();
@@ -202,6 +210,7 @@ $(document).ready(function() {
               },
               data:{
                 filter_search : $filter_search,
+                filter_search1 : $filter_search1,
                 filter_brand : $filter_brand,
                 filter_product_category : $filter_product_category,
                 filter_product_line : $filter_product_line,
@@ -209,9 +218,10 @@ $(document).ready(function() {
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'item_code', name: 'item_code'},
               {data: 'item_name', name: 'item_name'},
             //   {data: 'brand', name: 'brand'},
-            //   {data: 'item_code', name: 'item_code'},
+              
               {data: 'brand', name: 'brand'},
               {data: 'u_item_line', name: 'u_item_line'},
               {data: 'u_tires', name: 'u_tires'},
