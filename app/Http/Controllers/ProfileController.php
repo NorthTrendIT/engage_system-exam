@@ -19,11 +19,17 @@ class ProfileController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        $data = Customer::where('id',Auth::user()->customer_id)->firstOrFail();
+    {        
 
-        $totalOverdueAmount = Invoice::where(['card_code'=>@$data->card_code,'document_status'=>'bost_Open'])->sum('doc_entry'); 
-        return view('profile.index',compact('data', 'totalOverdueAmount'));
+        if(Auth::user()->role_id == 4){
+            $data = Customer::where('id',Auth::user()->customer_id)->firstOrFail();
+
+            $totalOverdueAmount = Invoice::where(['card_code'=>@$data->card_code,'document_status'=>'bost_Open'])->sum('doc_entry');
+
+            return view('profile.index',compact('data', 'totalOverdueAmount'));
+        }else{
+            return view('profile.index');
+        }        
     }
 
     /**
