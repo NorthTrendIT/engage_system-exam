@@ -240,6 +240,13 @@ class ProductListController extends Controller
             $products->where('item_name','LIKE',"%".$request->filter_search."%");
         }
 
+        if($request->filter_search1 != ""){
+          $products->where(function($q) use ($request) {
+            $q->orwhere('products.item_code','LIKE',"%".$request->filter_search1."%");
+            $q->orwhere('products.item_name','LIKE',"%".$request->filter_search1."%");
+          });
+        }
+
         $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
 
             /*if(!empty($c_product_group)){
