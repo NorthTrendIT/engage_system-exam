@@ -305,11 +305,24 @@ class ProductListController extends Controller
         return DataTables::of($products)
                           ->addIndexColumn()
                           ->addColumn('item_name', function($row) {
-                                if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="text-muted" title="Not Available">'.(@$row->item_name ?? "").'</span>';
-                                }else{
-                                    return @$row->item_name ?? "";
-                                }
+                                // if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
+                                //     return '<span class="text-muted" title="Not Available">'.(@$row->item_name ?? "").'</span>';
+                                // }else{
+                                //     return @$row->item_name ?? "";
+                                // }
+                            $html = "";
+
+                                $html .= '<div class="d-flex align-items-center">
+                                            
+                                            <div class="d-flex justify-content-start flex-column">';
+                                                
+
+                                $html .= @$row->item_name ?? " ";
+
+                                $html .= '<span class="text-muted fw-bold text-muted d-block fs-7">';
+
+                                $html .= "Code: ".$row->item_code;
+                                return $html;
                             })
                             ->addColumn('item_code', function($row) {
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
