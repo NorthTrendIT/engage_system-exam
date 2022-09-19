@@ -90,15 +90,76 @@
             <div class="tab-teaser">
                 <div class="tab-menu">
                   <ul>
-                    <li><a href="#" class="active" data-rel="tab-1">Profile</a></li>
-                    <li><a href="#" data-rel="tab-2" class="">Update Details</a></li>
+                    <li><a href="#" class="active" data-rel="tab-1">Update Details</a></li>
+                    <li><a href="#" data-rel="tab-2" class="">Profile</a></li>
                   </ul>
               </div>
 
               <div class="tab-main-box">
                   <div class="tab-box" id="tab-1" style="display:block;">
                     <!--  <h2>Tab 1</h2> -->
-                     <div class="row mb-5">
+                     <form method="post" id="myForm">
+                        @csrf
+                        <div class="row mb-5">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <label>First Name<span class="asterisk">*</span></label>
+                              <input type="text" class="form-control form-control-solid" placeholder="Enter first name" name="first_name" value="{{ @Auth::user()->first_name ?? "" }}">
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="row mb-5">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <label>Last Name<span class="asterisk">*</span></label>
+                              <input type="text" class="form-control form-control-solid" placeholder="Enter last name" name="last_name" value="{{ @Auth::user()->last_name ?? "" }}">
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="row mb-5">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <label>Email<span class="asterisk">*</span></label>
+                              <input type="email" class="form-control form-control-solid" placeholder="Enter email" name="email" value="{{ @Auth::user()->email ?? "" }}">
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="row mb-5">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <label>Profile</label>
+                              <input type="file" class="form-control form-control-solid" name="profile" data-allowed-file-extensions="jpeg jpg png eps bmp tif tiff webp pdf doc docx xls xlsx ppt pptx odt ods">
+                            </div>
+                          </div>
+                        </div>
+
+                        @if(get_login_user_profile())
+                          <div class="row mt-10 mb-10">
+                            <div class="col-md-12">
+                              <div class="form-group">
+                                <a href="{{ get_login_user_profile() }}" class="fancybox"><img src="{{ get_login_user_profile() }}" height="100" width="100"></a>
+                              </div>
+                            </div>
+                          </div>
+                        @endif
+
+                        <div class="row mb-5">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <input type="submit" value="Update" class="btn btn-primary">
+                            </div>
+                          </div>
+                        </div>
+
+                      </form>
+                  </div>
+                  <div class="tab-box" id="tab-2">
+                      <!-- <h2>Update Details</h2> -->
+                      
+                      <div class="row mb-5">
                         <div class="col-md-12">
                           <div class="form-group">
                             <!--begin::Table container-->
@@ -240,66 +301,6 @@
 
                         </div>
                       </div>
-                  </div>
-                  <div class="tab-box" id="tab-2">
-                      <!-- <h2>Update Details</h2> -->
-                      <form method="post" id="myForm">
-                        @csrf
-                        <div class="row mb-5">
-                          <div class="col-md-12">
-                            <div class="form-group">
-                              <label>First Name<span class="asterisk">*</span></label>
-                              <input type="text" class="form-control form-control-solid" placeholder="Enter first name" name="first_name" value="{{ @Auth::user()->first_name ?? "" }}">
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="row mb-5">
-                          <div class="col-md-12">
-                            <div class="form-group">
-                              <label>Last Name<span class="asterisk">*</span></label>
-                              <input type="text" class="form-control form-control-solid" placeholder="Enter last name" name="last_name" value="{{ @Auth::user()->last_name ?? "" }}">
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="row mb-5">
-                          <div class="col-md-12">
-                            <div class="form-group">
-                              <label>Email<span class="asterisk">*</span></label>
-                              <input type="email" class="form-control form-control-solid" placeholder="Enter email" name="email" value="{{ @Auth::user()->email ?? "" }}">
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="row mb-5">
-                          <div class="col-md-12">
-                            <div class="form-group">
-                              <label>Profile</label>
-                              <input type="file" class="form-control form-control-solid" name="profile" data-allowed-file-extensions="jpeg jpg png eps bmp tif tiff webp pdf doc docx xls xlsx ppt pptx odt ods">
-                            </div>
-                          </div>
-                        </div>
-
-                        @if(get_login_user_profile())
-                          <div class="row mt-10 mb-10">
-                            <div class="col-md-12">
-                              <div class="form-group">
-                                <a href="{{ get_login_user_profile() }}" class="fancybox"><img src="{{ get_login_user_profile() }}" height="100" width="100"></a>
-                              </div>
-                            </div>
-                          </div>
-                        @endif
-
-                        <div class="row mb-5">
-                          <div class="col-md-12">
-                            <div class="form-group">
-                              <input type="submit" value="Update" class="btn btn-primary">
-                            </div>
-                          </div>
-                        </div>
-
-                      </form>
                   </div>                
               </div>
             </div>
