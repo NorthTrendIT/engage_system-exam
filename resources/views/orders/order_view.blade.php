@@ -197,6 +197,18 @@
                               <!--end::Col-->
                             </div>
                             <!--end::Col-->
+                            @if(!in_array(userrole(),[4]))
+                            <!--end::Col-->
+                            <div class="col-sm-6">
+                              <!--end::Label-->
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Quotation #:</div>
+                              <!--end::Label-->
+                              <!--end::Col-->
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->doc_num ?? "-"  }}</div>
+                              <!--end::Col-->
+                            </div>
+                            @endif
+                            <!--end::Col-->
                           </div>
 
                           <div class="row g-5 mb-11">
