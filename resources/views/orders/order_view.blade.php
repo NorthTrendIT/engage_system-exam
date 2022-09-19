@@ -300,27 +300,27 @@
 
                                     ?>
                                     <tr class="fw-bolder text-gray-700 fs-5">
-                                      <td class="text-center pt-6 text-center">{{$key + 1}}</td>
-                                        <td class="d-flex pt-6 text-center">{{ @$value->product1->item_name ?? '-' }}</td>
+                                      <td class="text-center pt-6">{{$key + 1}}</td>
+                                        <td class="d-flex pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
                                         <td>{{ @$value->product1->sales_unit ?? '-' }}</td>
-                                        <td class="pt-6 text-center">{{ number_format($value->quantity) }}</td>
-                                        <td class="pt-6 text-center">{{ number_format(@$data->order->invoice->items[$key]->quantity) ?? "0" }}</td>
+                                        <td class="pt-6 text-end">{{ number_format($value->quantity) }}</td>
+                                        <td class="pt-6 text-end">{{ number_format(@$data->order->invoice->items[$key]->quantity) ?? "0" }}</td>
                                         @if($data->order_type == 'Promotion')
                                         <td class="pt-6">{{  "-"  }}</td>
                                         @endif
                                         
                                         @if(@$data->order->invoice->cancelled == 'No')
                                         @if(@$data->order->invoice->doc_num != null)
-                                        <td class="pt-6 text-center"><a href="{{route('invoices.show',@$data->order->invoice->id)}}">{{@$data->order->invoice->doc_num}}</a></td>
+                                        <td class="pt-6"><a href="{{route('invoices.show',@$data->order->invoice->id)}}">{{@$data->order->invoice->doc_num}}</a></td>
                                         @else
-                                        <td class="pt-6 text-center">{{ @$data->order->invoice->doc_num ?? '-' }}</td>
+                                        <td class="pt-6">{{ @$data->order->invoice->doc_num ?? '-' }}</td>
                                         @endif
                                         @else
-                                        <td class="pt-6 text-center">-</td>
+                                        <td class="pt-6">-</td>
                                         @endif
-                                        <td class="pt-6 text-center">₱ {{ number_format_value($value->price) }}</td>
-                                        <td class="pt-6 text-center">₱ {{ number_format_value($value->price_after_vat) }}</td>
-                                        <td class="pt-6 text-dark fw-boldest text-center">₱ {{ number_format_value(round($value->gross_total,1)) }}</td>
+                                        <td class="pt-6 text-end">₱ {{ number_format_value($value->price) }}</td>
+                                        <td class="pt-6 text-end">₱ {{ number_format_value($value->price_after_vat) }}</td>
+                                        <td class="pt-6 text-dark fw-boldest text-end">₱ {{ number_format_value(round($value->gross_total,1)) }}</td>
                                         <?php
                                           if(@$data->order->invoice->items[$key]->quantity == 0){
                                             $status1 = 'Unserved';
