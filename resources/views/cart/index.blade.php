@@ -535,17 +535,21 @@ $(document).ready(function() {
 
     $('body').on("click", ".placeOrder", function (e) {
         e.preventDefault();
+        show_loader();
         var validator = validate_form();
-        if (validator.form() != false) {
-            $('[type="submit"]').prop('disabled', true);
+        if (validator.form() != true) {
+            $('[type="submit"]').prop('disabled', false);
             // $('[name="address_id"]').removeAttr('disabled');
-            $.ajax({
+          
+        }else{
+            $('[type="submit"]').prop('disabled', true);
+              $.ajax({
                 url: "{{route('cart.placeOrder')}}",
                 type: "POST",
                 data: new FormData($("#myForm")[0]),
-                async: false,
+                //async: true,
                 processData: false,
-                contentType: false,
+                contentType: false,                
                 success: function (data) {
                     if (data.status) {
                         console.log("success");
