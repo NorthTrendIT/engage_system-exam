@@ -46,15 +46,19 @@
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
-	@if(!in_array(Route::currentRouteName(), ['home', 'conversation.index','cart.index']))
+	@if(!in_array(Route::currentRouteName(), ['home', 'conversation.index']))
     
 		$(document).ajaxStart(function() {
 		  show_loader();
 		});
 
-		$(document).ajaxStop(function() {
-		  hide_loader();
-		});
+		// $(document).ajaxStop(function() {
+		//   hide_loader();
+		// });
+
+    $(document).ajaxComplete(function() {
+      hide_loader();
+    });
 	@endif
 
 
