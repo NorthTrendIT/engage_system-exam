@@ -36,12 +36,18 @@
                       <i class="flaticon2-search-1 text-muted"></i>
                     </span>
                   </div>
-                </div> --}}
+                  </div> --}}
+
+                  <!-- <div class="col-md-6 mt-5">
+                    <select class="form-control form-control-lg form-control-solid" name="filter_product" id="filter_product" data-hide-search="false" data-placeholder="Search product" data-allow-clear="true">
+                      <option value=""></option>
+                    </select>
+                  </div> -->
 
                 <div class="col-md-6 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_product" id="filter_product" data-hide-search="false" data-placeholder="Search product" data-allow-clear="true">
-                    <option value=""></option>
-                  </select>
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search product" name="filter_search1" autocomplete="off">
+                  </div>
                 </div>
 
                 <div class="col-md-3 mt-5">
@@ -69,12 +75,6 @@
                     <option value="{{ $l->u_item_line }}">{{ @$l->u_item_line_sap_value->value ?? $l->u_item_line }}</option>
                     @endforeach
                   </select>
-                </div>
-
-                <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search1" autocomplete="off">
-                  </div>
                 </div>
 
                 <div class="col-md-3 mt-5">
