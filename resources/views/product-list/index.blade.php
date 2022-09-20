@@ -91,7 +91,7 @@
                           <thead>
                             <tr>
                               <th style="width:24px !important">No.</th>
-                              <th>Product Code</th>
+                              <!-- <th>Product Code</th> -->
                               <th>Name</th>
                               <!-- <th>Brand</th> -->
                               
@@ -218,7 +218,7 @@ $(document).ready(function() {
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
-              {data: 'item_code', name: 'item_code'},
+              // {data: 'item_code', name: 'item_code'},
               {data: 'item_name', name: 'item_name'},
             //   {data: 'brand', name: 'brand'},
               
