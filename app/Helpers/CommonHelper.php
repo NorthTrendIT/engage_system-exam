@@ -706,6 +706,8 @@ function get_customer_price_list_no_arr(array $customer_ids){
 
 function get_sap_customer_arr($user){
     $customer_id = explode(',', $user->multi_customer_id);
-    $sap_connection_id = explode(',', $user->multi_real_sap_connection_id);
+    $sap_connection_id = Customer::whereIn('id',$customer_id)->pluck('real_sap_connection_id')->toArray();
+    //$sap_connection_id = explode(',', $user->multi_real_sap_connection_id);
+    //print_r($sap_connection_id);exit();
     return array_combine($sap_connection_id, $customer_id);
 }
