@@ -3,6 +3,17 @@
 @section('title','Change Password')
 
 @section('content')
+<style type="text/css">
+  label[for=new_password],label[for=confirm_password]
+{
+    position: absolute;
+    bottom: -18px;
+    left: 0;
+}
+.password_generate{
+  margin: 20px 0 10px 0;
+}
+</style>
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
@@ -37,8 +48,9 @@
                     <div class="form-group">
                       <label>New Password<span class="asterisk">*</span></label>
                       <div class="input-group input-group-solid">
-                        <input class="form-control form-control-solid password" type="password" placeholder="Enter password" name="password">
-                        <div class="input-group-append password_icon_div cursor-pointer pt-2">
+                        <!-- <input class="form-control form-control-solid password" type="password" placeholder="Enter password" name="password"> -->
+                        <input class="form-control form-control-solid password" type="password" placeholder="Enter password" name="new_password" id="new_password">                        
+                        <div class="input-group-append password_icon_div new_pass_icon_div cursor-pointer pt-2">
                           <span class="input-group-text">
                             <i class="fas fa-eye-slash password_icon"></i>
                           </span>
@@ -65,9 +77,9 @@
                       <label>Confirm Password<span class="asterisk">*</span></label>
                       {{-- <input type="password" class="form-control form-control-solid" placeholder="Enter confirm password" name="confirm_password" > --}}
 
-                      <div class="input-group input-group-solid">
+                      <div class="input-group input-group-solid change_custom_pwd_class">
                         <input class="form-control form-control-solid password" type="password" placeholder="Enter confirm password" name="confirm_password">
-                        <div class="input-group-append password_icon_div cursor-pointer pt-2">
+                        <div class="input-group-append password_icon_div confirm_icon_div cursor-pointer pt-2">
                           <span class="input-group-text">
                             <i class="fas fa-eye-slash password_icon"></i>
                           </span>
@@ -140,6 +152,9 @@
             $('[type="submit"]').prop('disabled', false);
           },
         });
+      }else{
+        $("#new_password-error").insertAfter('.new_pass_icon_div');
+        $("#confirm_password-error").insertAfter('.confirm_icon_div');
       }
     });
 
