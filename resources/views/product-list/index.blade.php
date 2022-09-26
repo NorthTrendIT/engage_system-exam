@@ -3,6 +3,14 @@
 @section('title','Product List')
 
 @section('content')
+<style type="text/css">
+  .btn-check:active+.btn.btn-active-color-primary i, .btn-check:checked+.btn.btn-active-color-primary i, .btn.btn-active-color-primary.active i, .btn.btn-active-color-primary.show i, .btn.btn-active-color-primary:active:not(.btn-active) i, .btn.btn-active-color-primary:focus:not(.btn-active) i, .btn.btn-active-color-primary:hover:not(.btn-active) i, .show>.btn.btn-active-color-primary i{
+    color: #50cd89 !important;
+  }
+  .fa-shopping-cart{
+    color: #009ef7;
+  }
+</style>
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
@@ -44,11 +52,15 @@
                     </select>
                   </div> -->
 
-                <div class="col-md-6 mt-5">
+                <div class="col-md-5 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search product" name="filter_search1" autocomplete="off">
                   </div>
                 </div>
+
+                <!-- <div class="col-md-1 mt-5">
+                  <input type="button" name="" id="pro_btn">
+                </div> -->
 
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_brand" id="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
@@ -385,6 +397,21 @@ $(document).ready(function() {
   $(document).on('change','#filter_product_line',function(){
     $('.search').click();
   });
+});
+
+$(document).on('click','#pro_btn',function(){
+    var product = $('[name="filter_search1"]').val();
+    $.ajax({
+      url: "{{route('product-list.get-product-details')}}",
+      method:'POST',
+      data: {
+         _token:'{{ csrf_token() }}',
+        data : product,
+      },
+      success: function(results){
+        //$("#results").append(html);
+      }
+    });
 });
 </script>
 @endpush
