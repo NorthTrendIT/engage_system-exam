@@ -365,7 +365,7 @@ class ProductListController extends Controller
                             ->addColumn('action', function($row) {
                                 $btn = "";
                                 if(@Auth::user()->role_id == 4){
-                                    if(is_in_cart(@$row->id) == 1){
+                                    if(is_in_cart1(@$row->id) == 1){
                                         $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                     }else{
 
@@ -579,5 +579,18 @@ class ProductListController extends Controller
         }
 
         return [ 'products' => $products, 'customer_price_list_no' => $customer_price_list_no];
+    }
+
+    public function getProductDetails(Request $request){
+
+        
+        if($request->data != ""){
+            $products = Product::where('item_code','LIKE',"%".$request->data."%")
+                            ->orwhere('item_name','LIKE',"%".$request->data."%")->first();
+            return $response = ['status'=>true,'data'=>$products];
+        }else{
+            return $response = ['status'=>false,'message'=>'No data'];
+        }
+        
     }
 }

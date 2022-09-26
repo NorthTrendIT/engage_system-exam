@@ -128,7 +128,6 @@ class CartController extends Controller
         }
 
         $sap_customer_arr = get_sap_customer_arr(@Auth::user());
-
         if(isset($id)){
             $cart = new Cart();
             $cart->customer_id = @$sap_customer_arr[$product->sap_connection_id];
