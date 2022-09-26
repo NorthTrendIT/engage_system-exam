@@ -10,6 +10,85 @@
   .fa-shopping-cart{
     color: #009ef7;
   }
+ .tipClick>a{
+    font-size: 20px;
+    line-height: 21px
+  }
+  .tipClick{
+   
+    display:block;
+    position:relative
+  }
+  .tipClick > a:focus + .tooltipT{
+    /*TOOLTIP VISIBLE ON CLICKING THE ICON*/
+      display:block;
+  }
+  .tooltipT{
+      display:none;/*=====INITIAL HIDDEN STATE=====*/
+      position: absolute;
+      background: #fff;
+      color-stop(0%,rgba(51,51,51,0.85)), color-stop(100%,rgba(0,0,0,0.85))); /* webkit */
+      -moz-box-shadow: 0 0 6px 1px #666666;
+      -webkit-box-shadow: 0 0 6px 1px #666666;
+      box-shadow: 0 0 6px 1px #666666;
+      border:solid #FFFFFF;
+      color: #636363;
+      padding:15px 5px 5px;
+      font-family:Arial;
+      font-size: 15px;
+      text-align: center;
+      text-align:left;
+      bottom:30px;
+      left: -280px;
+    right:0px;
+      z-index: 99;
+    max-width:300px
+  }
+  .tooltipT p{
+       margin:10px;
+    }
+    /*=====CLOSE BUTTON=====*/
+  .tooltipT span{
+      position: absolute;
+      top:10px;
+      right: 10px;
+      font-size: 20px;
+      line-height: 1;
+  }
+  .tooltipT span a{
+      text-decoration: none;
+      color: #00529B;
+  }
+  .tooltipT span:focus .tooltipT{
+      display: none;/*CLOSE TOOLTIP ON CLICK*/
+  }
+  /*======ARROW=====*/
+  .tooltipT>.arrow, .tooltipT>.arrow:after {
+      position: absolute;
+      display: block;
+      width: 0;
+      height: 0;
+      border-color: transparent;
+      border-style: solid
+  }
+  .tipClick>.tooltipT>.arrow {
+      border-width: 11px;
+      bottom: -14px;
+      right: 0px;
+      margin-left: -11px;
+      border-top-color: #999;
+      border-top-color: rgba(0, 0, 0, .25);
+      border-bottom-width: 0;
+  }
+  .tipClick>.tooltipT>.arrow:after {
+      content: "";
+      border-width: 10px;
+      bottom: 1px;
+      margin-left: -10px;
+      content: " ";
+      border-top-color: #fff;
+      border-bottom-width: 0
+  }
 </style>
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
@@ -58,9 +137,20 @@
                   </div>
                 </div>
 
-                <!-- <div class="col-md-1 mt-5">
-                  <input type="button" name="" id="pro_btn">
-                </div> -->
+                 <div class="col-md-1 mt-5">
+                  <!-- <a id="pro_btn" href="#" title="Hello from speech bubble!" class="tooltip">CSS Tooltip! Hover me!</a> -->
+
+                   <div class="tipClick">
+                    <a href="#"><img src="{{ asset('assets') }}/assets/media/help_icon.png" style="width: 60%;"></a>
+                    <strong class="tooltipT">
+                      <p> Search products here by name e.g. ‘4T-10W' and code e.g. '3428396’</p>
+                      <span><a href="#">&#10005;</a></span>
+                      <div class="arrow"></div>
+                    </strong>
+                  </div>
+                </div>
+
+                 
 
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_brand" id="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
