@@ -8,6 +8,7 @@ use App\Support\SAPAuthentication;
 use App\Models\Quotation;
 use App\Models\QuotationItem;
 use App\Models\LocalOrder;
+use Log;
 
 class SAPOrderPost
 {
@@ -181,11 +182,11 @@ class SAPOrderPost
 
     public function pushOrder($id){
         $body = $this->madeSapData($id);
+        //Log::info(print_r($body,true));
         $response = array();
 
         if(!empty($body)){
             $response = $this->requestSapApi('/b1s/v1/Quotations', "POST", $body);
-
             $status = $response['status'];
             $data = $response['data'];
 
@@ -255,6 +256,7 @@ class SAPOrderPost
                 'Price' => @$item->price / env('SAP_VAT'),
                 'UnitPrice' => @$item->price / env('SAP_VAT'),
                 'ShipDate' => @$order->due_date,
+                'WarehouseCode' => '01',
             );
             array_push($response['DocumentLines'], $temp);
         }

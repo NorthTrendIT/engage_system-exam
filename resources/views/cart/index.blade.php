@@ -442,6 +442,7 @@ $(document).ready(function() {
                             $('.totalAmount').html('₱ '+result.total);
                             $('.totalPrice').html('₱ '+result.total);
                             $('.productCount').html('Products ('+result.count+')');
+                            $('.cartCount').html(result.count);
                         } else {
                             $('.emptyCart').show();
                             $('#myForm').remove();

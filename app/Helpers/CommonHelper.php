@@ -14,6 +14,7 @@ use App\Models\SapApiUrl;
 use App\Models\ConversationMessage;
 use App\Models\CustomerPromotion;
 use App\Models\Customer;
+use App\Models\Product;
 
 use Auth as Auth;
 
@@ -140,7 +141,24 @@ function ordinal($number) {
 
 function is_in_cart($product_id, $customer_id = null){
     if($customer_id == null){
+        print_r(@Auth::user());exit();
         $cart = Cart::where(['product_id' => $product_id, 'customer_id' => @Auth::user()->customer_id])->get();
+    } else {
+        $cart = Cart::where(['product_id' => $product_id, 'customer_id' => $customer_id])->get();
+    }
+    if(count($cart)){
+        return 1;
+    }
+    return 0;
+}
+
+function is_in_cart1($product_id, $customer_id = null){
+    if($customer_id == null){
+        $sap_customer_arr = get_sap_customer_arr(@Auth::user());
+        $product = Product::findOrFail($product_id);
+        $customer_id = @$sap_customer_arr[$product->sap_connection_id];
+
+        $cart = Cart::where(['product_id' => $product_id, 'customer_id' => $customer_id])->get();
     } else {
         $cart = Cart::where(['product_id' => $product_id, 'customer_id' => $customer_id])->get();
     }

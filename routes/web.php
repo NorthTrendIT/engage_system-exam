@@ -173,7 +173,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('recommended-products/customer-cart/qty-minus/{id}','App\Http\Controllers\RecommendedProductController@qtyMinus')->name('recommended-products.cart.qty-minus')->middleware('not-super-admin');
             Route::post('recommended-products/customer-cart/placeOrder','App\Http\Controllers\RecommendedProductController@placeOrder')->name('recommended-products.cart.placeOrder')->middleware('not-super-admin');
             Route::post('recommended-products/customer-cart/saveToDraft','App\Http\Controllers\RecommendedProductController@saveToDraft')->name('recommended-products.cart.saveToDraft')->middleware('not-super-admin');
-
+             Route::post('get-product-details', 'App\Http\Controllers\ProductListController@getProductDetails')->name('product-list.get-product-details')->middleware('not-super-admin');
 
 
 
