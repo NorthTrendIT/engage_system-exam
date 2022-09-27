@@ -141,7 +141,6 @@ function ordinal($number) {
 
 function is_in_cart($product_id, $customer_id = null){
     if($customer_id == null){
-        print_r(@Auth::user());exit();
         $cart = Cart::where(['product_id' => $product_id, 'customer_id' => @Auth::user()->customer_id])->get();
     } else {
         $cart = Cart::where(['product_id' => $product_id, 'customer_id' => $customer_id])->get();
