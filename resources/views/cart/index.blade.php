@@ -446,6 +446,7 @@ $(document).ready(function() {
                         } else {
                             $('.emptyCart').show();
                             $('#myForm').remove();
+                            $('.cartCount').hide();
                         }
                         hide_loader();
                         // setTimeout(function(){
