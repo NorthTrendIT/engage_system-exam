@@ -139,6 +139,7 @@ class SalesReportController extends Controller
                             ->where('invoices.cancelled', 'No')
                             // ->whereIn('invoices.u_sostat', ['CM','IN'])
                             ->whereIn('invoices.u_sostat', ['CM'])
+                            //->whereNotNull('invoices.u_omsno')
                             ->select(
                                 DB::raw("count(invoice_items.id) as total_id"),
                                 DB::raw("sum(invoice_items.quantity) as total_quantity"),
@@ -150,6 +151,10 @@ class SalesReportController extends Controller
                                 // 'invoice_items.*',
                             )
                             ->orderBy('invoices.id','DESC');
+
+        if($request->engage_transaction != 0){
+            $data->whereNotNull('invoices.u_omsno');
+        }
 
         if(@$request->filter_company != ""){
             $data->where('sap_connections.id',$request->filter_company);

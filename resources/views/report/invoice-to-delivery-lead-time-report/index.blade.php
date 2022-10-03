@@ -3,6 +3,20 @@
 @section('title','Invoice To Delivery Lead Time Report')
 
 @section('content')
+<style type="text/css">
+  .input-icon.engage_transaction {
+    display: flex;
+    align-items: center;
+}
+.input-icon.engage_transaction span  {
+  
+  padding-left: 10px;
+}
+.input-icon.engage_transaction input {
+  width :20px;
+  height: 20px;
+}
+</style>
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
@@ -30,7 +44,7 @@
           <div class="card card-xl-stretch mb-5 mb-xl-8">
            
             <div class="card-body">
-              <div class="row">
+              <div class="row" style="align-items: center;">
                 @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
@@ -95,6 +109,16 @@
                     </span>
                   </div>
                 </div>
+
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon engage_transaction">
+                    <input type="checkbox" class="" name = "engage_transaction" id="engage_transaction" value="1" checked>
+                    <span>
+                      Engage Transactions Only
+                    </span>
+                  </div>
+                </div>
+
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
@@ -189,6 +213,8 @@
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
       $filter_manager = $('[name="filter_manager"]').find('option:selected').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
+      $engage_transaction = $('[name="engage_transaction"]').val();
+
 
       $.ajax({
         url: '{{ route('reports.invoice-to-delivery-lead-time-report.get-all') }}',
@@ -201,6 +227,7 @@
                 filter_sales_specialist : $filter_sales_specialist,
                 filter_manager : $filter_manager,
                 filter_date_range : $filter_date_range,
+                engage_transaction : $engage_transaction,
               }
       })
       .done(function(result) {

@@ -208,10 +208,15 @@ class BackOrderReportController extends Controller
     public function getReportResultData($request){
         $data = OrderItem::where('remaining_open_quantity', '>', 0)->orderBy('id','DESC');
 
-        $data->whereHas('order', function($q){
+        $data->whereHas('order', function($q) use ($request){
             $q->where('document_status', 'bost_Open');
             $q->where('cancelled', 'No');
             $q->whereIn('u_sostat', ['OP']);
+
+            if($request->engage_transaction != 0){
+                $q->whereNotNull('u_omsno');
+            }
+           
         });
 
 
