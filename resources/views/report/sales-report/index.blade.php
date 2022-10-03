@@ -3,6 +3,20 @@
 @section('title','Sales Report')
 
 @section('content')
+<style type="text/css">
+  .input-icon.engage_transaction {
+    display: flex;
+    align-items: center;
+}
+.input-icon.engage_transaction span  {
+  
+  padding-left: 10px;
+}
+.input-icon.engage_transaction input {
+  width :20px;
+  height: 20px;
+}
+</style>
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
@@ -30,7 +44,7 @@
               <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
             </div> --}}
             <div class="card-body">
-              <div class="row">
+              <div class="row" style="align-items: center;">
                 @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
@@ -138,7 +152,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
                     <span>
@@ -149,6 +163,15 @@
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon engage_transaction">
+                    <input type="checkbox" class="" name = "engage_transaction" id="engage_transaction" value="1" checked>
+                    <span>
+                      Engage Transactions Only
+                    </span>
                   </div>
                 </div>
 
@@ -299,6 +322,7 @@
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
       $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
       $filter_market_sub_sector = $('[name="filter_market_sub_sector"]').find('option:selected').val();
+      $engage_transaction = $('[name="engage_transaction"]').val();
 
       $.ajax({
         url: '{{ route('reports.sales-report.get-all') }}',
@@ -323,6 +347,7 @@
                 filter_market_sub_sector : $filter_market_sub_sector,
 
                 filter_manager : $filter_manager,
+                engage_transaction : $engage_transaction,
               }
       })
       .done(function(result) {

@@ -3,6 +3,20 @@
 @section('title','Product Reports')
 
 @section('content')
+<style type="text/css">
+  .input-icon.engage_transaction {
+    display: flex;
+    align-items: center;
+}
+.input-icon.engage_transaction span  {
+  
+  padding-left: 10px;
+}
+.input-icon.engage_transaction input {
+  width :20px;
+  height: 20px;
+}
+</style>
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
@@ -27,7 +41,7 @@
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-body">
-                <div class="row">
+                <div class="row" style="align-items: center;">
 
                     <!-- Business Unit-->
                     <div class="col-md-3 mt-5">
@@ -86,6 +100,15 @@
                         <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" data-allow-clear="true" name="filter_product_pattern">
                             <option value=""></option>
                         </select>
+                    </div>
+
+                    <div class="col-md-3 mt-5">
+                      <div class="input-icon engage_transaction">
+                        <input type="checkbox" class="" name = "engage_transaction" id="engage_transaction" value="1" checked>
+                        <span>
+                          Engage Transactions Only
+                        </span>
+                      </div>
                     </div>
 
                     <div class="col-md-6 mt-5">
@@ -219,6 +242,7 @@ $(document).ready(function() {
       $filter_product_type = $('[name="filter_product_type"]').find('option:selected').val();
       $filter_product_application = $('[name="filter_product_application"]').find('option:selected').val();
       $filter_product_pattern = $('[name="filter_product_pattern"]').find('option:selected').val();
+      $engage_transaction = $('[name="engage_transaction"]').val();
 
       $.ajax({
         url: '{{ route('reports.product-sales-report.get-all') }}',
@@ -233,6 +257,7 @@ $(document).ready(function() {
                 filter_product_type : $filter_product_type,
                 filter_product_application : $filter_product_application,
                 filter_product_pattern : $filter_product_pattern,
+                engage_transaction : $engage_transaction,
               }
       })
       .done(function(result) {

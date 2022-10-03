@@ -3,6 +3,20 @@
 @section('title','Back Order Report')
 
 @section('content')
+<style type="text/css">
+  .input-icon.engage_transaction {
+    display: flex;
+    align-items: center;
+}
+.input-icon.engage_transaction span  {
+  
+  padding-left: 10px;
+}
+.input-icon.engage_transaction input {
+  width :20px;
+  height: 20px;
+}
+</style>
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
@@ -30,7 +44,7 @@
               <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
             </div> --}}
             <div class="card-body">
-              <div class="row">
+              <div class="row" style="align-items: center;">
                 @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
@@ -101,6 +115,16 @@
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
                   </div>
                 </div> --}}
+
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon engage_transaction">
+                    <input type="checkbox" class="" name = "engage_transaction" id="engage_transaction" value="1" checked>
+                    <span>
+                      Engage Transactions Only
+                    </span>
+                  </div>
+                </div>
+
 
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
@@ -244,6 +268,7 @@
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
+      $engage_transaction = $('[name="engage_transaction"]').val();
 
       $.ajax({
         url: '{{ route('reports.back-order-report.get-all') }}',
@@ -254,6 +279,7 @@
                 filter_customer : $filter_customer,
                 filter_brand : $filter_brand,
                 filter_sales_specialist : $filter_sales_specialist,
+                engage_transaction : $engage_transaction,
               }
       })
       .done(function(result) {
