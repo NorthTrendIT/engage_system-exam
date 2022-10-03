@@ -42,12 +42,16 @@ class SalesOrderReportController extends Controller
     }
 
     public function getAll(Request $request)
-    {
+    {       
         // For Pending
         $pending_total_sales_orders = $pending_total_sales_quantity = $pending_total_sales_revenue = 0;
 
         $pending_quotation_item = QuotationItem::whereHas('quotation', function($q) use ($request) {
                                                     $q->doesntHave('order')->where('document_status','bost_Open')->where('cancelled', "No");
+
+                                                    if($request->engage_transaction != 0){
+                                                        $q->whereNotNull('u_omsno');
+                                                    }
 
                                                     if($request->filter_company != ""){
                                                         $q->where('sap_connection_id',$request->filter_company);
@@ -138,6 +142,9 @@ class SalesOrderReportController extends Controller
 
         $approved_order_item = OrderItem::whereHas('order', function($q) use ($request) {
                                                     $q->doesntHave('invoice')->where('document_status','bost_Open')->where('u_sostat', "OP");
+                                                    if($request->engage_transaction != 0){
+                                                        $q->whereNotNull('u_omsno');
+                                                    }
 
                                                     if($request->filter_company != ""){
                                                         $q->where('sap_connection_id',$request->filter_company);
@@ -237,6 +244,10 @@ class SalesOrderReportController extends Controller
                                                             $q1->where('cancelled', "Yes");
                                                         });
                                                     });
+
+                                                    if($request->engage_transaction != 0){
+                                                        $q->whereNotNull('u_omsno');
+                                                    }
 
                                                     if($request->filter_company != ""){
                                                         $q->where('sap_connection_id',$request->filter_company);
