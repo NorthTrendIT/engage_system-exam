@@ -98,6 +98,15 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
+                  <div class="input-icon">
+                    <input type="checkbox" class="" name = "engage_transaction" id="engage_transaction" value="1" checked>
+                    <span>
+                      Engage Transactions Only
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
                 </div>
@@ -259,6 +268,7 @@
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
+      $engage_transaction = $('[name="engage_transaction"]').val();
 
       $.ajax({
         url: '{{ route('reports.sales-order-report.get-all') }}',
@@ -270,6 +280,7 @@
                 filter_brand : $filter_brand,
                 filter_customer : $filter_customer,
                 filter_sales_specialist : $filter_sales_specialist,
+                engage_transaction : $engage_transaction,
               }
       })
       .done(function(result) {
