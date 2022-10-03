@@ -3,6 +3,20 @@
 @section('title','Sales Order Report')
 
 @section('content')
+<style type="text/css">
+  .input-icon.engage_transaction {
+    display: flex;
+    align-items: center;
+}
+.input-icon.engage_transaction span  {
+  
+  padding-left: 10px;
+}
+.input-icon.engage_transaction input {
+  width :20px;
+  height: 20px;
+}
+</style>
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
@@ -30,7 +44,7 @@
           <div class="card card-xl-stretch mb-5 mb-xl-8">
            
             <div class="card-body">
-              <div class="row">
+              <div class="row" style="align-items: center;">
                 @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
@@ -98,7 +112,7 @@
                 </div>
 
                 <div class="col-md-3 mt-5">
-                  <div class="input-icon">
+                  <div class="input-icon engage_transaction">
                     <input type="checkbox" class="" name = "engage_transaction" id="engage_transaction" value="1" checked>
                     <span>
                       Engage Transactions Only
