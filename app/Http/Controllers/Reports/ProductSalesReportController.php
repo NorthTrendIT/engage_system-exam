@@ -159,6 +159,10 @@ class ProductSalesReportController extends Controller
                     ->where('invoice_items.ship_date', '>=', Carbon::now()->subDays(60)->toDateTimeString())
                     ->orderBy('invoice_items.ship_date','DESC');
 
+        if($request->engage_transaction != 0){
+            $data->whereNotNull('invoices.u_omsno');
+        }
+
         if(@$request->filter_company != ""){
             $data->where('sap_connections.id',$request->filter_company);
         }

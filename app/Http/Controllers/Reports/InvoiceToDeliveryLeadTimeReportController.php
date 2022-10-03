@@ -149,6 +149,10 @@ class InvoiceToDeliveryLeadTimeReportController extends Controller
 
         $data = Invoice::has('order')->whereNotNull('u_delivery')->orderby('doc_date', 'desc');
 
+        if($request->engage_transaction != 0){
+            $data->whereNotNull('u_omsno');
+        }
+
         if(Auth::user()->role_id == 4){
             $data->where(function($q) use ($request) {
                 $q->orwhereHas('customer', function($q1) use ($request){
