@@ -514,7 +514,8 @@ Route::middleware(['auth'])->group(function(){
            'Content-Disposition' => 'inline; filename="' . $file . '"'
         ];
         return response()->file($path, $header);
-    })->name('documentation')->middleware('super-admin');
+    })->name('documentation');
+    // ->middleware('super-admin');
 });
 
 Route::get('clear-cache', function () {

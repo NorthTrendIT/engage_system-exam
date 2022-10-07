@@ -40,6 +40,10 @@
 			    left: 50% !important;   
 			    margin-left: -150px !important;
 			}
+
+			/**********06-10-2022**********/
+			.loginpage-form .login-link { margin-left: 25px; }
+			
 		</style>
 		@stack('css')
 	</head>

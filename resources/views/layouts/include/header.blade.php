@@ -161,13 +161,27 @@
                      </div>
                      <!--end::Menu item-->
 
+                     @if(Auth::user()->role_id == 4)
+                     <!--begin::Menu item-->
+                     <div class="menu-item px-5 sidebar-dropdown">
+                        <a href="#" class="menu-link px-5" id="video_link"><i class="fa fa-solid fa-video text-success mr-10"></i> <span>Video Tutorials</span></a>
+                        <ul class="video_cls">
+                          <li><a href="https://www.youtube.com/watch?v=tx-lQatjSDU" class="menu-link px-5" target="_blank"> <span>Creating Order</span></a></li>
+                          <li><a href="https://www.youtube.com/watch?v=Dr63PvezjN4" class="menu-link px-5" target="_blank"> <span>Login and Change Password</span></a></li>
+                          <li><a href="https://www.youtube.com/watch?v=19TKgdtxjZU" class="menu-link px-5" target="_blank"> <span>View Order Status</span></a></li>
+                        </ul>
+                        </a>
+                     </div>
+                     <!--end::Menu item-->
+                     @endif
+
                      <!--begin::Menu item-->
                      <div class="menu-item px-5">
                         <a href="{{ route('profile.change-password.index') }}" class="menu-link px-5"><i class="fa fa-lock text-primary mr-10"></i> <span>Change Password</span></a>
                      </div>
                      <!--end::Menu item-->
 
-                     @if(userrole() == 1)
+                     @if(userrole() == 1 || userrole() == 4)
                      <!--begin::Menu item-->
                      <div class="menu-item px-5">
                         <a href="{{ route('documentation') }}" class="menu-link px-5" target="_blank"><i class="fa fa-file text-success mr-10"></i> <span>Documentation</span></a>
