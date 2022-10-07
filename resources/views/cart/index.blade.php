@@ -162,7 +162,7 @@
                                     <!--begin::Section-->
                                     <div class="">
                                         <div class="flex-grow-1 me-2">
-                                            <span class="fs-4 fw-bolder">Delivery Date :</span>
+                                            <span class="fs-4 fw-bolder">Expected Delivery Date :</span>
                                         </div>
                                         <input type="text" class="form-control" placeholder="Delivery Date" id="kt_datepicker_1" name="due_date" autocomplete="off">
                                     </div>
@@ -537,38 +537,49 @@ $(document).ready(function() {
 
     $('body').on("click", ".placeOrder", function (e) {
         e.preventDefault();
-        show_loader();
         var validator = validate_form();
         if (validator.form() != true) {
             $('[type="submit"]').prop('disabled', false);
-            // $('[name="address_id"]').removeAttr('disabled');
-          
         }else{
-            $('[type="submit"]').prop('disabled', true);
-              $.ajax({
-                url: "{{route('cart.placeOrder')}}",
-                type: "POST",
-                data: new FormData($("#myForm")[0]),
-                //async: true,
-                processData: false,
-                contentType: false,                
-                success: function (data) {
-                    if (data.status) {
-                        console.log("success");
-                        toast_success(data.message)
-                        setTimeout(function(){
-                            window.location.href = "{{ route('orders.index') }}";
-                        },1500);
-                    } else {
-                        toast_error(data.message);
+            Swal.fire({
+            title: 'Do want to proceed with the order?',
+            text: "",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+          }).then((result) => {
+            if (result.isConfirmed) {
+                show_loader();
+                $('[type="submit"]').prop('disabled', true);
+                $.ajax({
+                    url: "{{route('cart.placeOrder')}}",
+                    type: "POST",
+                    data: new FormData($("#myForm")[0]),
+                    //async: true,
+                    processData: false,
+                    contentType: false,                
+                    success: function (data) {
+                        if (data.status) {
+                            console.log("success");
+                            toast_success(data.message)
+                            setTimeout(function(){
+                                window.location.href = "{{ route('orders.index') }}";
+                            },1500);
+                        } else {
+                            toast_error(data.message);
+                            $('[type="submit"]').prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        toast_error("Something went to wrong !");
                         $('[type="submit"]').prop('disabled', false);
-                    }
-                },
-                error: function () {
-                    toast_error("Something went to wrong !");
-                    $('[type="submit"]').prop('disabled', false);
-                },
-            });
+                    },
+                });
+            }
+          });
+            
         }
     });
 

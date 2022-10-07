@@ -1086,3 +1086,42 @@ table.dataTable>thead .sorting.sorting_desc:after{
     font-weight: bold;
     font-style: italic;
 }
+
+
+/*********06-10-2022*******/
+.menu-item.sidebar-dropdown ul li a.menu-link {
+    padding-left: 0 !important;
+}
+.menu-item.sidebar-dropdown:hover .menu-link+ul {
+    display: block;
+    opacity: 1;
+    height: auto;
+}
+.menu-item.sidebar-dropdown ul {
+    opacity: 0;
+    transition: 0.2s;
+    -webkit-transition: 0.2s;
+    -moz-transition: 0.2s;
+    -o-transition: 0.2s;
+    height: 0;
+    background: #FFF;
+    padding-left: 60px;
+    margin-bottom: 0;
+    display: none;
+    position: relative;
+}
+.menu-item.sidebar-dropdown>.menu-link:after {
+    content: '\f107';
+    font-family: "Font Awesome 5 Pro";
+    font-weight: 900;
+    font-size: 17px;
+    position: absolute;
+    right: 25px;
+    transition: 0.2s;
+    -webkit-transition: 0.2s;
+    -moz-transition: 0.2s;
+    -o-transition: 0.2s;
+}
+.menu-item.sidebar-dropdown:hover >.menu-link:after{
+    transform: rotate(180deg);
+} 

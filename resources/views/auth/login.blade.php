@@ -7,7 +7,7 @@
 <!--begin::Wrapper-->
 <div class="w-lg-500px bg-body rounded shadow-sm p-10 p-lg-15 mx-auto">
 	<!--begin::Form-->
-	<form class="form w-100" id="myForm" method="post">
+	<form class="form w-100 loginpage-form" id="myForm" method="post">
 		@csrf
 		<!--begin::Heading-->
 		<div class="text-center mb-10">
@@ -40,7 +40,9 @@
 		</div>
 		<!--end::Input group-->
 		<div class="fv-row mb-10 text-left">
-			<a href="{{ route('forgot-password.index') }}" class="link-primary fs-6 fw-bolder">Forgot Password ?</a>
+			<a href="{{ route('forgot-password.index') }}" class="link-primary fs-6 fw-bolder forgot-link">Forgot Password ?</a>
+
+			<a href="https://www.youtube.com/watch?v=Dr63PvezjN4" class="link-primary fs-6 fw-bolder login-link">View how to log-in <u>here</u></a>
 		</div>
 		<!--begin::Actions-->
 		<div class="text-center">
