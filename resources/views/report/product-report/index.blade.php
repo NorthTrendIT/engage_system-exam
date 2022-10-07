@@ -13,6 +13,7 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
+        <a href="javascript:void(0)" class="btn btn-sm btn-success generate-report" style="margin-right: 5px">Generate Report</a>
         <a href="{{ route('report.index') }}" class="btn btn-sm btn-primary mr-10">Back</a>
         <!--end::Button-->
       </div>
@@ -166,6 +167,11 @@
 <script>
 $(document).ready(function() {
 
+
+    $(document).on('click','.generate-report',function(){
+      getData();
+    });
+
     var myTable = $('#myTable').DataTable({
         "processing": true,
         "serverSide": false,
@@ -196,7 +202,7 @@ $(document).ready(function() {
             cell.innerHTML = i+1;
         } );
     } ).draw();
-    getData();
+    //getData();
 
     $('.search').on('click', function(){
         getData();

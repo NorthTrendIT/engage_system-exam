@@ -27,6 +27,7 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
+        <a href="javascript:void(0)" class="btn btn-sm btn-success generate-report" style="margin-right: 5px">Generate Report</a>
         <a href="{{ route('report.index') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
@@ -255,8 +256,12 @@
 <script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
 <script>
   $(document).ready(function() {
+    render_table();
 
-    render_data();
+    $(document).on('click','.generate-report',function(){
+      render_data();
+    });
+    //render_data();
     function render_data(){
 
       $('.loader_img').show();
