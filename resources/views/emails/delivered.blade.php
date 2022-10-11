@@ -46,14 +46,18 @@ bgcolor="#f6f6f6">
                             <td class="content-block"
                                 style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                 valign="top">
-                            <h2>Hello ! </h2>
+                                {{$customer}}, Your order with Order #{{$order_no}} has been successfully delivered.
+
                             </td>
                         </tr>
                         <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                             <td class="content-block"
                                 style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                 valign="top">
-                                Your order <b>#{{ @$order_no }}</b> status has been updated to <b>{{ @$status }}</b>. Please click the below link to view more details.;
+                                You can check the canceled order information below.Your order has been delivered today to this address. <br>
+                                {{$address}}
+                                <br>
+                                We hope you enjoy your purchase.  
                             </td>
                         </tr>
                         <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;text-align: center;">
