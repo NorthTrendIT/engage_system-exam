@@ -9,6 +9,10 @@ use App\Models\Quotation;
 use App\Models\QuotationItem;
 use App\Models\LocalOrder;
 use Log;
+use Mail;
+use App\Models\Customer;
+use App\Models\User;
+use App\Models\CustomerGroup;
 
 class SAPOrderPost
 {
@@ -182,7 +186,6 @@ class SAPOrderPost
 
     public function pushOrder($id){
         $body = $this->madeSapData($id);
-        //Log::info(print_r($body,true));
         $response = array();
 
         if(!empty($body)){
@@ -199,6 +202,35 @@ class SAPOrderPost
 
                 $this->pushOrderDetailsInDatabase($data);
                 $this->updateNumAtCardInOrder($data['DocEntry']);
+
+                $emails = [];
+                $quotation = Quotation::where('doc_entry',$data['DocEntry'])->first();
+                $user = Customer::where('card_code',$data['CardCode'])->first();
+                $group = CustomerGroup::where('code',@$user->group_code)->where('sap_connection_id',@$user->sap_connection_id)->first();
+                $emails = explode(";", @$group->emails);
+
+                $link = route('orders.show', @$quotation->id);
+
+                Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>$user->card_name), function($message) use($user) {
+                    $message->to($user->email, $user->card_name)
+                            ->subject('Order Confirmation');
+                });
+                
+                if(@$group->emails == null || @$group->emails == ""){
+                    Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>$user->card_name), function($message) use($user) {
+                        $message->to('orders@northtrend.com', 'orders@northtrend.com')
+                                ->subject('Order Confirmation');
+                    });
+                }else{
+                   
+                    foreach($emails as $email){
+                        Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>@$user->card_name), function($message) use($email) {
+                            $message->to($email, $email)
+                                    ->subject('Order Confirmation');
+                        });
+                    }
+                }    
+
             } else {
                 $order->confirmation_status = 'ERR';
                 $order->message = $data;

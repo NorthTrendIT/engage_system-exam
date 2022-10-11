@@ -197,7 +197,7 @@
                                 <p style="margin-top: 30px;text-align:left;">For more information click 
                                     <a href="{{ route('warranty.show', @$data->warranty->id) }}" target="_blank">here</a>.</p>
                                 <p style="margin-top: 30px;margin-bottom:0;text-align:left;">Regards</p>
-                                <p style="margin-top: 0px;text-align:left;">OMS Team</p>
+                                <p style="margin-top: 0px;text-align:left;">Engage Team</p>
                               </td>
                             </tr>
                           </table>
