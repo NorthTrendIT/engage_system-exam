@@ -399,7 +399,7 @@ $(document).ready(function() {
                 toast_error(result.message);
                 $self.val(1);
             }else{
-                toast_success(result.message);
+                //toast_success(result.message);
                 setTimeout(function(){
                     window.location.reload();
                 },1500)
