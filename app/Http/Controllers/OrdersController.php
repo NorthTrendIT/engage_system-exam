@@ -26,6 +26,7 @@ use App\Jobs\SyncQuotations;
 use App\Jobs\SyncCreditNote;
 use App\Jobs\SAPAllOrderPost;
 use App\Jobs\SAPAllCustomerPromotionPost;
+use App\Models\Customer;
 
 use Mail;
 use DataTables;
@@ -243,7 +244,7 @@ class OrdersController extends Controller
     }
 
     public function getAll(Request $request){
-        $data = Quotation::where('u_omsno','!=',null);
+        $data = Quotation::whereNotNull('u_omsno');
 
         if(userrole() == 4){
             $customers = Auth::user()->get_multi_customer_details();
@@ -251,7 +252,7 @@ class OrdersController extends Controller
             $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }elseif(userrole() == 2){
             $data->where('sales_person_code', @Auth::user()->sales_employee_code);
-        }elseif(userrole() != 1){
+        }elseif(userrole() != 1 && userrole()!= 10){
             if (!is_null(@Auth::user()->created_by)) {
                 $customers = @Auth::user()->created_by_user->get_multi_customer_details();
                 $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
@@ -493,6 +494,34 @@ class OrdersController extends Controller
 
             $sap_quotations = new SAPQuotations(@$sap_connection->db_name, @$sap_connection->user_name, @$sap_connection->password);
             $response = $sap_quotations->cancelSpecificQuotation($quotation->id, $quotation->doc_entry);
+
+            $emails = [];
+            $link = route('orders.show', @$quotation->id);
+            $user = Customer::where('card_code',@$quotation->card_code)->first();
+            $group = CustomerGroup::where('code',@$user->group_code)->where('sap_connection_id',@$user->sap_connection_id)->first();
+            $emails = explode(";", @$group->emails);
+
+            Mail::send('emails.cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($user) {
+                $message->to('mt_0108@outlook.com', $user->card_name)
+                        ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
+            });
+
+            if(@$group->emails == null || @$group->emails == ""){
+                Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($quotation) {
+                    $message->to('mt_0108@outlook.com', 'orders@northtrend.com')
+                            ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
+                });
+            }else{
+                // foreach($emails as $email){
+
+                //     $quotations = ['quotation'=>@$quotations->u_omsno,'user'=>$email]
+                //     Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($quotations) {
+                //         $message->to($quotations['email'], $quotations['email'])
+                //                 ->subject('Order #'.$quotations['quotation'].' -Cancel Order');
+                //     });
+                // }
+            }
+            
 
             if(@$response['status']){
                 $response = ['status' => true, 'message' => 'Order canceled successfully!'];
