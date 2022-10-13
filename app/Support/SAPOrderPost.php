@@ -204,17 +204,22 @@ class SAPOrderPost
                 $this->updateNumAtCardInOrder($data['DocEntry']);
 
                 $emails = [];
+                $customer_mails = [];
                 $quotation = Quotation::where('doc_entry',$data['DocEntry'])->first();
                 $user = Customer::where('card_code',$data['CardCode'])->first();
                 $group = CustomerGroup::where('code',@$user->group_code)->where('sap_connection_id',@$user->sap_connection_id)->first();
                 $emails = explode(";", @$group->emails);
+                $customer_mails = explode("; ", @$user->email);
 
                 $link = route('orders.show', @$quotation->id);
 
-                Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>$user->card_name), function($message) use($user) {
-                    $message->to($user->email, $user->card_name)
-                            ->subject('Order Confirmation');
-                });
+
+                foreach($customer_mails as $email){
+                    Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>$user->card_name), function($message) use($email) {
+                        $message->to($email, $email)
+                                ->subject('Order Confirmation');
+                    });
+                }
                 
                 if(@$group->emails == null || @$group->emails == ""){
                     Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>$user->card_name), function($message) use($user) {
