@@ -229,8 +229,8 @@ class ProductListController extends Controller
 
         $where = array('is_active' => 1);
 
-        $products = Product::where($where)
-                ->whereRaw('quantity_on_stock - quantity_ordered_by_customers > 0');
+        $products = Product::where($where);
+                //->whereRaw('quantity_on_stock - quantity_ordered_by_customers > 0');
 
         $products->whereHas('group', function($q){
             $q->where('is_active', true);
@@ -369,11 +369,11 @@ class ProductListController extends Controller
                                         $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                     }else{
 
-                                        if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
-                                            $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
-                                        }else{
+                                        // if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
+                                        //     $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
+                                        // }else{
                                             $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm addToCart" data-url="'.route('cart.add',@$row->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
-                                        }
+                                        //}
 
                                         $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                     }

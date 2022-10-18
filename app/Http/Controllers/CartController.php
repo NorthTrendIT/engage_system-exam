@@ -116,9 +116,9 @@ class CartController extends Controller
         $product = Product::findOrFail($id);
 
         $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
-        if($avl_qty < 1){
-            return $response = ['status'=>false,'message'=>"The product quantity is not available."];
-        }
+        // if($avl_qty < 1){
+        //     return $response = ['status'=>false,'message'=>"The product quantity is not available."];
+        // }
 
         $customer_id = explode(',', Auth::user()->multi_customer_id);
         $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
