@@ -496,30 +496,34 @@ class OrdersController extends Controller
             $response = $sap_quotations->cancelSpecificQuotation($quotation->id, $quotation->doc_entry);
 
             $emails = [];
+            $customer_mails = [];
             $link = route('orders.show', @$quotation->id);
             $user = Customer::where('card_code',@$quotation->card_code)->first();
             $group = CustomerGroup::where('code',@$user->group_code)->where('sap_connection_id',@$user->sap_connection_id)->first();
             $emails = explode(";", @$group->emails);
+            $customer_mails = explode("; ", @$user->email);
 
-            Mail::send('emails.cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($user) {
-                $message->to('mt_0108@outlook.com', $user->card_name)
-                        ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
-            });
+            foreach($customer_mails as $email){
+                Mail::send('emails.cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email) {
+                    $message->to($email, $email)
+                            ->subject('Order # -Cancel Order');
+                });
+            }
 
             if(@$group->emails == null || @$group->emails == ""){
                 Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($quotation) {
-                    $message->to('mt_0108@outlook.com', 'orders@northtrend.com')
+                    $message->to('orders@northtrend.com', 'orders@northtrend.com')
                             ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
                 });
             }else{
-                // foreach($emails as $email){
+                foreach($emails as $email){
 
-                //     $quotations = ['quotation'=>@$quotations->u_omsno,'user'=>$email]
-                //     Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($quotations) {
-                //         $message->to($quotations['email'], $quotations['email'])
-                //                 ->subject('Order #'.$quotations['quotation'].' -Cancel Order');
-                //     });
-                // }
+                    $quotations = ['quotation'=>@$quotations->u_omsno,'user'=>$email]
+                    Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email) {
+                        $message->to($email, $email)
+                                ->subject('Order # -Cancel Order');
+                    });
+                }
             }
             
 
