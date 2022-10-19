@@ -27,6 +27,7 @@ use App\Jobs\SyncCreditNote;
 use App\Jobs\SAPAllOrderPost;
 use App\Jobs\SAPAllCustomerPromotionPost;
 use App\Models\Customer;
+use App\Models\CustomerGroup;
 
 use Mail;
 use DataTables;
@@ -500,31 +501,43 @@ class OrdersController extends Controller
             $link = route('orders.show', @$quotation->id);
             $user = Customer::where('card_code',@$quotation->card_code)->first();
             $group = CustomerGroup::where('code',@$user->group_code)->where('sap_connection_id',@$user->sap_connection_id)->first();
-            $emails = explode(";", @$group->emails);
+            $emails = explode("; ", @$group->emails);
             $customer_mails = explode("; ", @$user->email);
 
-            // foreach($customer_mails as $email){
-            //     Mail::send('emails.cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email) {
-            //         $message->to($email, $email)
-            //                 ->subject('Order # -Cancel Order');
-            //     });
-            // }
+            if($user->sap_connection_id == 1){
+                $from_name = 'AP BLUE WHALE CORP';
+            }else if($user->sap_connection_id == 2){
+                $from_name = 'NORTH TREND MARKETING CORP';
+            }else if($user->sap_connection_id == 3){
+                $from_name = 'PHILCREST MARKETING CORP';
+            }else if($user->sap_connection_id == 5){
+                $from_name = 'SOLID TREND TRADE SALES INC.';
+            }
 
-            // if(@$group->emails == null || @$group->emails == ""){
-            //     Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($quotation) {
-            //         $message->to('orders@northtrend.com', 'orders@northtrend.com')
-            //                 ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
-            //     });
-            // }else{
-            //     foreach($emails as $email){
+            foreach($customer_mails as $email){
+                Mail::send('emails.cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email,$from_name,$quotation) {
+                    $message->from('orders@northtrend.com', $from_name);
+                    $message->to($email, $email)
+                            ->subject('Order #'.$quotation->u_omsno.' -Cancel Order');
+                });
+            }
 
-            //         $quotations = ['quotation'=>@$quotations->u_omsno,'user'=>$email]
-            //         Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email) {
-            //             $message->to($email, $email)
-            //                     ->subject('Order # -Cancel Order');
-            //         });
-            //     }
-            // }
+            if(@$group->emails == null || @$group->emails == ""){
+                Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($quotation,$from_name) {
+                    $message->from('orders@northtrend.com', $from_name);
+                    $message->to('orders@northtrend.com', 'orders@northtrend.com')
+                            ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
+                });
+            }else{
+                foreach($emails as $email){
+
+                    Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email,$from_name,$quotation) {
+                        $message->from('orders@northtrend.com', $from_name);
+                        $message->to($email, $email)
+                                ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
+                    });
+                }
+            }
             
 
             if(@$response['status']){
