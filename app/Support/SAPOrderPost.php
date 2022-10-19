@@ -208,28 +208,40 @@ class SAPOrderPost
                 $quotation = Quotation::where('doc_entry',$data['DocEntry'])->first();
                 $user = Customer::where('card_code',$data['CardCode'])->first();
                 $group = CustomerGroup::where('code',@$user->group_code)->where('sap_connection_id',@$user->sap_connection_id)->first();
-                $emails = explode(";", @$group->emails);
+                $emails = explode("; ", @$group->emails);
                 $customer_mails = explode("; ", @$user->email);
 
                 $link = route('orders.show', @$quotation->id);
 
+                if($user->sap_connection_id == 1){
+                    $from_name = 'AP BLUE WHALE CORP';
+                }else if($user->sap_connection_id == 2){
+                    $from_name = 'NORTH TREND MARKETING CORP';
+                }else if($user->sap_connection_id == 3){
+                    $from_name = 'PHILCREST MARKETING CORP';
+                }else if($user->sap_connection_id == 5){
+                    $from_name = 'SOLID TREND TRADE SALES INC.';
+                }
 
                 foreach($customer_mails as $email){
-                    Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>$user->card_name), function($message) use($email) {
+                    Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>$user->card_name), function($message) use($email,$from_name) {
+                        $message->from('orders@northtrend.com', $from_name);
                         $message->to($email, $email)
                                 ->subject('Order Confirmation');
                     });
                 }
                 
                 if(@$group->emails == null || @$group->emails == ""){
-                    Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>$user->card_name), function($message) use($user) {
-                        $message->to('orders@northtrend.com', 'orders@northtrend.com')
+                    Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>$user->card_name), function($message) use($user,$from_name) {
+                        $message->from('orders@northtrend.com', $from_name);
+                        $message->to('mt@mailinator.com', 'orders@northtrend.com')
                                 ->subject('Order Confirmation');
                     });
                 }else{
                    
                     foreach($emails as $email){
-                        Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>@$user->card_name), function($message) use($email) {
+                        Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>@$user->card_name), function($message) use($email,$from_name) {
+                            $message->from('orders@northtrend.com', $from_name);
                             $message->to($email, $email)
                                     ->subject('Order Confirmation');
                         });
