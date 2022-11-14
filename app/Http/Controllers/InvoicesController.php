@@ -264,7 +264,7 @@ class InvoicesController extends Controller
                                 return getOrderStatusBtnHtml(($row->document_status == 'bost_Open')?'Open':'Close');
                             })
                             ->addColumn('doc_entry', function($row) {
-                                return '<a href="' . route('invoices.show',$row->id). '" title="View details">'.$row->doc_entry.'</a>';
+                                return '<a href="' . route('invoices.show',$row->id). '" title="View details">'.$row->doc_num.'</a>';
                             })
                             ->addColumn('total', function($row) {
                                 return '₱ '. number_format_value($row->doc_total);
