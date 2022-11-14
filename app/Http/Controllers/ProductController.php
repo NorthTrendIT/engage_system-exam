@@ -637,6 +637,8 @@ class ProductController extends Controller
 
 
   public function export(Request $request){
+     ini_set('memory_limit', '1024M');
+     ini_set('max_execution_time', 1800);
     $filter = collect();
     if(@$request->data){
       $filter = json_decode(base64_decode($request->data));
