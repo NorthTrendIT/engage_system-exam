@@ -114,10 +114,10 @@ class OrdersController extends Controller
             $invoiceDetails[$key]['unit'] = @$value->product1->sales_unit;
             $invoiceDetails[$key]['order_quantity'] = number_format(@$value->quantity);
 
-            $invoice = $data->order->invoice1;
+            $invoice = @$data->order->invoice1;
             $invoiceIds = [];
             foreach($invoice as $val){
-                $invoiceIds[] = $val->id;
+                $invoiceIds[] = @$val->id;
             }
 
             $quantityDetails[] = InvoiceItem::whereIn('invoice_id',$invoiceIds)->where('item_code',$value->item_code)->sum('quantity');
