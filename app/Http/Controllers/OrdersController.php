@@ -29,6 +29,7 @@ use App\Jobs\SAPAllCustomerPromotionPost;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\InvoiceItem;
+use App\Models\SapConnectionApiFieldValue;
 
 use Mail;
 use DataTables;
@@ -116,9 +117,12 @@ class OrdersController extends Controller
 
             $invoice = @$data->order->invoice1;
             $invoiceIds = [];
-            foreach($invoice as $val){
-                $invoiceIds[] = @$val->id;
+            if(!empty($invoice)){
+                foreach($invoice as $val){
+                    $invoiceIds[] = @$val->id;
+                }
             }
+            
 
             $quantityDetails[] = InvoiceItem::whereIn('invoice_id',$invoiceIds)->where('item_code',$value->item_code)->sum('quantity');
             
@@ -150,7 +154,7 @@ class OrdersController extends Controller
                 $remarks = '-';
             }
 
-            $num = InvoiceItem::with('invoice')->whereIn('invoice_id',$invoiceIds)->where('item_code',$value->item_code)->pluck('invoice_id');
+            $num = InvoiceItem::with('invoice')->whereIn('invoice_id',$invoiceIds)->where('item_code',@$value->item_code)->pluck('invoice_id');
 
             $num1 = [];
             $invoice_num = Invoice::whereIn('id',$num)->pluck('doc_num')->implode(',');
@@ -165,8 +169,8 @@ class OrdersController extends Controller
 
             }
 
-            $Weight = $Weight + ($value->quantity * $value->product1->sales_unit_weight);
-            $Volume = $Volume + ($value->quantity * $value->product1->sales_unit_volume);
+            $Weight = $Weight + (@$value->quantity * @$value->product1->sales_unit_weight);
+            $Volume = $Volume + (@$value->quantity * @$value->product1->sales_unit_volume);
 
         }
         $orderRemarks = LocalOrder::where('doc_entry',@$data->doc_entry)->first();
