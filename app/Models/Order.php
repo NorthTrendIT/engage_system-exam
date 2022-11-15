@@ -54,6 +54,10 @@ class Order extends Model
         return $this->hasOne(Invoice::class, ['base_entry', 'sap_connection_id'], ['doc_entry', 'sap_connection_id'])->latest();
     }
 
+    public function invoice1(){
+        return $this->hasMany(Invoice::class, ['base_entry', 'sap_connection_id'], ['doc_entry', 'sap_connection_id'])->where('cancelled','No');
+    }
+
     // public function invoice1(){
     //     return $this->hasMany(Invoice::class, ['base_entry', 'sap_connection_id'], ['doc_entry', 'sap_connection_id'])->latest();
     // }
