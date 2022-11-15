@@ -28,6 +28,7 @@ use App\Jobs\SAPAllOrderPost;
 use App\Jobs\SAPAllCustomerPromotionPost;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
+use App\Models\InvoiceItem;
 
 use Mail;
 use DataTables;
@@ -103,12 +104,74 @@ class OrdersController extends Controller
             return abort(404);
         }
 
-        $data = $data->firstOrFail();    
-         // echo "<pre>";
-         // print_r($data->order);exit();
+        $data = $data->firstOrFail();   
+        $invoiceDetails = [];
+        $Weight = 0;
+        $Volume = 0;
+        foreach($data->items as $key=>$value){
+            $invoiceDetails[$key]['key'] = $key + 1;
+            $invoiceDetails[$key]['product'] = @$value->product1->item_name;
+            $invoiceDetails[$key]['unit'] = @$value->product1->sales_unit;
+            $invoiceDetails[$key]['order_quantity'] = number_format(@$value->quantity);
+
+            $invoice = $data->order->invoice1;
+            $invoiceIds = [];
+            foreach($invoice as $val){
+                $invoiceIds[] = $val->id;
+            }
+
+            $quantityDetails[] = InvoiceItem::whereIn('invoice_id',$invoiceIds)->where('item_code',$value->item_code)->sum('quantity');
+            
+            $invoiceDetails[$key]['serverd_quantity'] = $quantityDetails[$key];
+            $invoiceDetails[$key]['price'] = number_format_value(@$value->price);
+            $invoiceDetails[$key]['price_after_vat'] = number_format_value($value->price_after_vat);
+            $invoiceDetails[$key]['amount'] = '₱'. number_format_value(round($value->gross_total,1));
+            
+            if(@$quantityDetails[$key] == 0){
+                $status1 = 'Unserved';
+            }else if(@$quantityDetails[$key] > 0 && @$value->quantity > $quantityDetails[$key]){
+                $status1 = 'Partial Served';
+            }else if(@$quantityDetails[$key] == @$value->quantity){
+                $status1 = 'Fully Served';
+            }else if(@$quantityDetails[$key] > @$value->quantity){
+                $status1 = 'Over Served';
+            }
+
+            if(@$data->order[$key]->line_status == 'bost_Close'){
+                $remarks = 'Served';
+            }else if($value->line_status == 'bost_Open'){
+                if(@$data->order[$key]->line_status != 'NA'){
+                  $value = SapConnectionApiFieldValue::where('key',@$data->order[$key]->line_status)->first();
+                  $remarks = @$data->order[$key]->line_status;
+                }else{
+                  $remarks = '-';
+                }
+            }else{
+                $remarks = '-';
+            }
+
+            $num = InvoiceItem::with('invoice')->whereIn('invoice_id',$invoiceIds)->where('item_code',$value->item_code)->pluck('invoice_id');
+
+            $num1 = [];
+            $invoice_num = Invoice::whereIn('id',$num)->pluck('doc_num')->implode(',');
+
+           
+            $invoiceDetails[$key]['line_status'] = $status1;
+            $invoiceDetails[$key]['line_remarks'] = $remarks;
+            $invoiceDetails[$key]['invoice_num'] = @$invoice_num;
+
+            if($data->order_type == 'Promotion'){
+                $invoiceDetails[$key]['promotion'] = '-';
+
+            }
+
+            $Weight = $Weight + ($value->quantity * $value->product1->sales_unit_weight);
+            $Volume = $Volume + ($value->quantity * $value->product1->sales_unit_volume);
+
+        }
         $orderRemarks = LocalOrder::where('doc_entry',@$data->doc_entry)->first();
         
-        return view('orders.order_view', compact('data','orderRemarks'));
+        return view('orders.order_view', compact('data','orderRemarks','invoiceDetails','Weight','Volume'));
     }
 
     /**
