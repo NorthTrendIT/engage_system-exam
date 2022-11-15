@@ -104,9 +104,8 @@ class OrdersController extends Controller
         }
 
         $data = $data->firstOrFail();    
-        // echo "<pre>";
-        // print_r($data);exit();
-            
+         // echo "<pre>";
+         // print_r($data->order);exit();
         $orderRemarks = LocalOrder::where('doc_entry',@$data->doc_entry)->first();
         
         return view('orders.order_view', compact('data','orderRemarks'));
@@ -698,6 +697,10 @@ class OrdersController extends Controller
                                 Push
                             </a>';
 
+                            $btn .= '<a href="javascript:;" data-id="'.$row->id.'" class="btn btn-bg-light btn-light-danger btn-sm m-2 deleteOrder">
+                                Delete
+                            </a>';
+
                             return $btn;
                         })
                         ->rawColumns(['action'])
@@ -838,10 +841,8 @@ class OrdersController extends Controller
         $order_id = $request->id;
 
         $data = LocalOrder::with('customer')->find($order_id);
-
         if(!empty($data)){
             $sap_connection = SapConnection::find(@$data->customer->sap_connection_id);
-
             if(!is_null($sap_connection)){
                 // SAPAllOrderPost::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id, $order_id);
 
@@ -852,6 +853,17 @@ class OrdersController extends Controller
 
             return $response = ['status' => true, 'message' => 'Order Placed Successfully!'];
         } else {
+            return $response = ['status' => false, 'message' => 'Something went wrong!'];
+        }
+    }
+
+    public function deletePushSingleOrder(Request $request){
+        $order_id = $request->id;
+
+        try{
+            $data = LocalOrder::where('id',$order_id)->delete();        
+            return $response = ['status' => true, 'message' => 'Order deleted Successfully!'];
+        }catch(Exception $e){
             return $response = ['status' => false, 'message' => 'Something went wrong!'];
         }
     }
