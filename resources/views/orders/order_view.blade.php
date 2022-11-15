@@ -288,68 +288,25 @@
                                     <th class="min-w-100px text-end pb-2">Line Remarks</th>
                                   </tr>
                                 </thead>
-                                <tbody>
-                                  <?php
-                                    $Weight = 0;
-                                    $Volume = 0;
-                                  ?>
-                                    @foreach($data->items as $key=>$value)
-                                    <?php
-                                      $Weight = $Weight + ($value->quantity * $value->product1->sales_unit_weight);
-                                      $Volume = $Volume + ($value->quantity * $value->product1->sales_unit_volume);
-
-                                    ?>
-                                    <tr class="fw-bolder text-gray-700 fs-5">
-                                      <td class="text-center pt-6">{{$key + 1}}</td>
-                                        <td class="d-flex pt-6">{{ @$value->product1->item_name ?? '-' }}</td>
-                                        <td>{{ @$value->product1->sales_unit ?? '-' }}</td>
-                                        <td class="pt-6 text-end">{{ number_format($value->quantity) }}</td>
-                                        <td class="pt-6 text-end">{{ number_format(@$data->order->invoice->items[$key]->quantity) ?? "0" }}</td>
-                                        @if($data->order_type == 'Promotion')
-                                        <td class="pt-6">{{  "-"  }}</td>
-                                        @endif
-                                        
-                                        @if(@$data->order->invoice->cancelled == 'No')
-                                        @if(@$data->order->invoice->doc_num != null)
-                                        <td class="pt-6"><a href="{{route('invoices.show',@$data->order->invoice->id)}}">{{@$data->order->invoice->doc_num}}</a></td>
-                                        @else
-                                        <td class="pt-6">{{ @$data->order->invoice->doc_num ?? '-' }}</td>
-                                        @endif
-                                        @else
-                                        <td class="pt-6">-</td>
-                                        @endif
-                                        <td class="pt-6 text-end">₱ {{ number_format_value($value->price) }}</td>
-                                        <td class="pt-6 text-end">₱ {{ number_format_value($value->price_after_vat) }}</td>
-                                        <td class="pt-6 text-dark fw-boldest text-end">₱ {{ number_format_value(round($value->gross_total,1)) }}</td>
-                                        <?php
-                                          if(@$data->order->invoice->items[$key]->quantity == 0){
-                                            $status1 = 'Unserved';
-                                          }else if(@$data->order->invoice->items[$key]->quantity > 0 && @$value->quantity > $data->order->invoice->items[$key]->quantity){
-                                            $status1 = 'Partial Served';
-                                          }else if(@$data->order->invoice->items[$key]->quantity == @$value->quantity){
-                                            $status1 = 'Fully Served';
-                                          }else if(@$data->order->invoice->items[$key]->quantity > @$value->quantity){
-                                            $status1 = 'Over Served';
-                                          }
-                                        ?>
-                                        <td class="pt-6">{{@$status1}}</td>
-                                        <?php
-                                          if(@$data->order[$key]->line_status == 'bost_Close'){
-                                            $remarks = 'Served';
-                                          }else if($value->line_status == 'bost_Open'){
-                                            if(@$data->order[$key]->line_status != 'NA'){
-                                              $value = SapConnectionApiFieldValue::where('key',@$data->order[$key]->line_status)->first();
-                                              $remarks = @$data->order[$key]->line_status;
-                                            }else{
-                                              $remarks = '-';
-                                            }
-                                          }else{
-                                            $remarks = '-';
-                                          }
-                                        ?>
-                                        <td class="pt-6">{{@$remarks}}</td>
-                                    </tr>
-                                    @endforeach
+                                <tbody>                                    
+                                  @foreach($invoiceDetails as $k=>$val)
+                                  <tr class="fw-bolder text-gray-700 fs-5">
+                                    <td>{{$val['key']}}</td>
+                                    <td>{{$val['product']}}</td>
+                                    <td>{{$val['unit']}}</td>
+                                    <td>{{$val['order_quantity']}}</td>
+                                    <td>{{$val['serverd_quantity']}}</td>
+                                    @if($data->order_type == 'Promotion')
+                                        <td>{{$val['promotion']}}</td>
+                                    @endif
+                                    <td>{{$val['invoice_num']}}</td>
+                                    <td>{{$val['price']}}</td>
+                                    <td>{{$val['price_after_vat']}}</td>
+                                    <td>{{$val['amount']}}</td>
+                                    <td>{{$val['line_status']}}</td>
+                                    <td>{{$val['line_remarks']}}</td>
+                                  </tr>
+                                  @endforeach
                                 </tbody>
                               </table>
                             </div>
