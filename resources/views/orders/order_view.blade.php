@@ -300,12 +300,14 @@
                                         <td>{{$val['promotion']}}</td>
                                     @endif
                                     <?php
-                                      $route = route('invoices.show',$val['id']);
+                                      if(@$val['id'] == ""){
+                                        $route = '#';
+                                      }else{
+                                        $route = route('invoices.show',@$val['id']);
+                                      }
                                     ?>
                                     <td>
                                       <a href="{{$route}}" target="_blank">{{$val['invoice_num']}}</a></td>
-                                    }
-                                    }
                                     <td>{{$val['price']}}</td>
                                     <td>{{$val['price_after_vat']}}</td>
                                     <td>{{$val['amount']}}</td>
