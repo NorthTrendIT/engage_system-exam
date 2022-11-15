@@ -133,6 +133,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('pending-orders/push-order', 'App\Http\Controllers\OrdersController@pushSingleOrder')->name('orders.push-order');
             Route::post('pending-orders/push-all', 'App\Http\Controllers\OrdersController@pushAllOrder')->name('orders.push-all-order');
             Route::post('pending-promotion/push-all', 'App\Http\Controllers\OrdersController@pushAllPromotion')->name('orders.push-all-promotion');
+            Route::post('pending-orders/delete-push-order', 'App\Http\Controllers\OrdersController@deletePushSingleOrder')->name('orders.delete-push-order');
 
             // Invoices
             Route::get('invoices/export', 'App\Http\Controllers\InvoicesController@export')->name('invoices.export');
