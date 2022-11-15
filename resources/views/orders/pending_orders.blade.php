@@ -236,6 +236,45 @@ $(document).ready(function() {
         }
       })
     });
+
+    $(document).on('click', '.deleteOrder', function(event) {
+      event.preventDefault();
+      var id = $(this).data('id');
+      Swal.fire({
+        title: 'Are you sure want to delete this order?',
+        //text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '{{ route('orders.delete-push-order') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                    id: id,
+                }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              toast_success(result.message);
+              render_table();
+            //   setTimeout(function(){
+            //     window.location.reload();
+            //   },500)
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
 });
 </script>
 @endpush
