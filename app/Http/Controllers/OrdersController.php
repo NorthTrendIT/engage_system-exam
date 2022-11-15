@@ -112,6 +112,7 @@ class OrdersController extends Controller
         foreach($data->items as $key=>$value){
             $invoiceDetails[$key]['key'] = $key + 1;
             $invoiceDetails[$key]['product'] = @$value->product1->item_name;
+            $invoiceDetails[$key]['key'] = $data->order->id;
             $invoiceDetails[$key]['unit'] = @$value->product1->sales_unit;
             $invoiceDetails[$key]['order_quantity'] = number_format(@$value->quantity);
 
@@ -122,7 +123,6 @@ class OrdersController extends Controller
                     $invoiceIds[] = @$val->id;
                 }
             }
-            
 
             $quantityDetails[] = InvoiceItem::whereIn('invoice_id',$invoiceIds)->where('item_code',$value->item_code)->sum('quantity');
             
@@ -155,12 +155,12 @@ class OrdersController extends Controller
             }
 
             $num = InvoiceItem::with('invoice')->whereIn('invoice_id',$invoiceIds)->where('item_code',@$value->item_code)->pluck('invoice_id');
-
+            
             $num1 = [];
             $invoice_num = Invoice::whereIn('id',$num)->pluck('doc_num')->implode(',');
-
            
             $invoiceDetails[$key]['line_status'] = $status1;
+            $invoiceDetails[$key]['id'] = $num[0];
             $invoiceDetails[$key]['line_remarks'] = $remarks;
             $invoiceDetails[$key]['invoice_num'] = @$invoice_num;
 
@@ -173,6 +173,7 @@ class OrdersController extends Controller
             $Volume = $Volume + (@$value->quantity * @$value->product1->sales_unit_volume);
 
         }
+        
         $orderRemarks = LocalOrder::where('doc_entry',@$data->doc_entry)->first();
         
         return view('orders.order_view', compact('data','orderRemarks','invoiceDetails','Weight','Volume'));
