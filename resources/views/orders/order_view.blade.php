@@ -299,7 +299,13 @@
                                     @if($data->order_type == 'Promotion')
                                         <td>{{$val['promotion']}}</td>
                                     @endif
-                                    <td>{{$val['invoice_num']}}</td>
+                                    <?php
+                                      $route = route('invoices.show',$val['id']);
+                                    ?>
+                                    <td>
+                                      <a href="{{$route}}" target="_blank">{{$val['invoice_num']}}</a></td>
+                                    }
+                                    }
                                     <td>{{$val['price']}}</td>
                                     <td>{{$val['price_after_vat']}}</td>
                                     <td>{{$val['amount']}}</td>
