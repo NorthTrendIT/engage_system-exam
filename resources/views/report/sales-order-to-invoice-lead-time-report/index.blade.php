@@ -289,7 +289,7 @@
     });
 
     $(document).on('click', '.clear-search', function(event) {
-      $('input').val('');
+      $('#kt_daterangepicker_1').val('');
       $('select').val('').trigger('change');
       render_data();
     })
@@ -409,7 +409,8 @@
       data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
-
+      data.engage_transaction = $('[name="engage_transaction"]').val();
+      data.filter_date_range = $('[name="filter_date_range"]').val();
       url = url + '?data=' + btoa(JSON.stringify(data));
 
       window.location.href = url;
