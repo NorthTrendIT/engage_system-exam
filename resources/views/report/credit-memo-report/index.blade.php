@@ -304,7 +304,7 @@
     });
 
     $(document).on('click', '.clear-search', function(event) {
-      $('input').val('');
+      $('#kt_daterangepicker_1').val('');
       $('select').val('').trigger('change');
       render_data();
     })
