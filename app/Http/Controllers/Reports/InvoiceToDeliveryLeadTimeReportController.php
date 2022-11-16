@@ -87,8 +87,8 @@ class InvoiceToDeliveryLeadTimeReportController extends Controller
                                 return @$row->sap_connection->company_name ?? "-";
                             })
                             ->addColumn('lead_time', function($row) {
-                                $startDate = date("Y-m-d", strtotime($row->created_at));
-                                $endDate = $row->u_delivery;
+                                $startDate = date("Y-m-d", strtotime(@$row->created_at));
+                                $endDate = @$row->u_delivery;
 
                                 $days = (strtotime($endDate) - strtotime($startDate)) / (60 * 60 * 24);
                                 return $days ." Day(s)";
