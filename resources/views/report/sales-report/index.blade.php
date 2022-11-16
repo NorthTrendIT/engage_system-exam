@@ -743,7 +743,7 @@
       data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
       data.filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
       data.filter_market_sub_sector = $('[name="filter_market_sub_sector"]').find('option:selected').val();
-
+      data.engage_transaction = $('[name="engage_transaction"]').val();
       url = url + '?data=' + btoa(JSON.stringify(data));
 
       window.location.href = url;
