@@ -56,7 +56,8 @@ class CreditMemoReportController extends Controller
     }
 
     public function getAll(Request $request){
-        
+        ini_set('memory_limit', '1024M');
+        ini_set('max_execution_time', 1800);
         $data = $this->getReportResultData($request);
 
         $doc_totals = array_value_recursive('doc_total', $data->get()->toArray());
