@@ -199,6 +199,7 @@ class SAPOrderPost
                 $order->doc_entry = $data['DocEntry'];
                 $order->doc_num = $data['DocNum'];
                 $order->message = null;
+                $order->save();
 
                 $this->pushOrderDetailsInDatabase($data);
                 $this->updateNumAtCardInOrder($data['DocEntry']);
@@ -251,8 +252,9 @@ class SAPOrderPost
             } else {
                 $order->confirmation_status = 'ERR';
                 $order->message = $data;
+                $order->save();
             }
-            $order->save();
+            
         }
 
         return $response;
