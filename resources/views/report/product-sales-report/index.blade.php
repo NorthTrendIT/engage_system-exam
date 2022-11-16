@@ -546,6 +546,7 @@ $(document).ready(function() {
         data.filter_product_type = $('[name="filter_product_type"]').find('option:selected').val(),
         data.filter_product_application = $('[name="filter_product_application"]').find('option:selected').val(),
         data.filter_product_pattern = $('[name="filter_product_pattern"]').find('option:selected').val(),
+        data.engage_transaction = $('[name="engage_transaction"]').val(),
 
         url = url + '?data=' + btoa(JSON.stringify(data));
 
