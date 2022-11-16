@@ -58,10 +58,11 @@ class DebitMemoReportController extends Controller
         $data = $this->getReportResultData($request);
 
         $doc_totals = array_value_recursive('doc_total', $data->get()->toArray());
+        $doc_totals = (array)$doc_totals;
         if($doc_totals != null){
             $grand_total_of_amount = '₱ '. number_format_value(
                                             array_sum(
-                                                $doc_totals
+                                                @$doc_totals
                                             )
                                         );
         }else{
