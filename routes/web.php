@@ -34,6 +34,7 @@ Route::middleware('guest')->group(function(){
 
 Route::middleware(['auth'])->group(function(){
     Route::get('/home','App\Http\Controllers\HomeController@index')->name('home')->middleware('check-login');
+    Route::get('/comments','App\Http\Controllers\HomeController@comments')->name('comments')->middleware('check-login');
 	Route::post('home/get-report-data','App\Http\Controllers\HomeController@getReportData')->name('home.get-report-data');
 
 

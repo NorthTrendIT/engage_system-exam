@@ -321,7 +321,7 @@
                             <!--end::Table-->
                             <!--begin::Container-->
                             <div class="row">
-                              <div class="col-sm-12 col-md-6 custom_remarks_order">Remark: {{ @$orderRemarks->remarks ?? "-" }}</div>
+                              <div class="col-sm-12 col-md-6 custom_remarks_order">Remark: {{ @$data->comments ?? "-" }}</div>
                               <!-- <div class="col-sm-4 col-md-4 d-flex align-items-center justify-content-center">
                                 <p>Note: Prices may be subjected with discount. Final amount of order will reflect on the actual invoice.</p>
                               </div> -->
