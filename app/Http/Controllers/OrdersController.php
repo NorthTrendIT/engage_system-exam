@@ -581,30 +581,30 @@ class OrdersController extends Controller
                 $from_name = 'SOLID TREND TRADE SALES INC.';
             }
 
-            foreach($customer_mails as $email){
-                Mail::send('emails.cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email,$from_name,$quotation) {
-                    $message->from('orders@northtrend.com', $from_name);
-                    $message->to($email, $email)
-                            ->subject('Order #'.$quotation->u_omsno.' -Cancel Order');
-                });
-            }
+            // foreach($customer_mails as $email){
+            //     Mail::send('emails.cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email,$from_name,$quotation) {
+            //         $message->from('orders@northtrend.com', $from_name);
+            //         $message->to($email, $email)
+            //                 ->subject('Order #'.$quotation->u_omsno.' -Cancel Order');
+            //     });
+            // }
 
-            if(@$group->emails == null || @$group->emails == ""){
-                Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($quotation,$from_name) {
-                    $message->from('orders@northtrend.com', $from_name);
-                    $message->to('orders@northtrend.com', 'orders@northtrend.com')
-                            ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
-                });
-            }else{
-                foreach($emails as $email){
+            // if(@$group->emails == null || @$group->emails == ""){
+            //     Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($quotation,$from_name) {
+            //         $message->from('orders@northtrend.com', $from_name);
+            //         $message->to('orders@northtrend.com', 'orders@northtrend.com')
+            //                 ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
+            //     });
+            // }else{
+            //     foreach($emails as $email){
 
-                    Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email,$from_name,$quotation) {
-                        $message->from('orders@northtrend.com', $from_name);
-                        $message->to($email, $email)
-                                ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
-                    });
-                }
-            }
+            //         Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email,$from_name,$quotation) {
+            //             $message->from('orders@northtrend.com', $from_name);
+            //             $message->to($email, $email)
+            //                     ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
+            //         });
+            //     }
+            // }
             
 
             if(@$response['status']){
@@ -1004,7 +1004,7 @@ class OrdersController extends Controller
           $filter = json_decode(base64_decode($request->data));
         }
 
-        $data = Quotation::orderBy('id', 'desc');
+        $data = Quotation::whereNotNull('u_omsno')->orderBy('id', 'desc');
 
         if(userrole() == 4){
             $customers = Auth::user()->get_multi_customer_details();
