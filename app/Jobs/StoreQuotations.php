@@ -89,6 +89,8 @@ class StoreQuotations implements ShouldQueue
                             'last_sync_at' => current_datetime(),
                             'sap_connection_id' => $this->sap_connection_id,
                             'real_sap_connection_id' => $this->real_sap_connection_id,
+                            'u_omsno' => @$value['U_OMSNo'],
+                            'comments'=> @$value['Comments'],
                         );
 
                 if(!empty($value['DocumentLines'])){

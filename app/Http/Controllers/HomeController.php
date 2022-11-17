@@ -14,8 +14,8 @@ use App\Models\OrderItem;
 use App\Models\SapConnection;
 use App\Models\SystemSetting;
 use App\Models\CustomerPromotionProductDelivery;
-
 use Auth;
+use App\Support\SAPQuotations;
 
 class HomeController extends Controller
 {
@@ -159,6 +159,22 @@ class HomeController extends Controller
             
         } catch (\Exception $e) {
             return $response = [ 'status' => false, 'message' => "Something went wrong !"];
+        }
+    }
+
+    public function comments(Request $request){
+        ini_set('memory_limit', '10240M');
+        ini_set('max_execution_time', 18000);
+        $sap_connections = SapConnection::all();
+        if(!empty($sap_connections)){
+            foreach($sap_connections as $connections){
+                $sap = new SAPQuotations($connections->db_name, $connections->user_name , $connections->password, $connections->id);
+
+                $quotation = Quotation::where('sap_connection_id',$connections->id)->orderBy('id','DESC')->get();
+                foreach ($quotation as $key => $value) {
+                   $sap->addComments(@$value->doc_entry);
+                }                
+            }
         }
     }
 }

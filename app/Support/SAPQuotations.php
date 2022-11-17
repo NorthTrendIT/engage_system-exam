@@ -12,6 +12,7 @@ use App\Models\Quotation;
 use App\Models\QuotationItem;
 use App\Models\SapConnection;
 use App\Models\Customer;
+use Log;
 
 class SAPQuotations
 {
@@ -93,6 +94,7 @@ class SAPQuotations
         }else{
             $latestData = Quotation::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
+                //$latestData->updated_date = '2020-03-20';
                 $url = '/b1s/v1/Quotations?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
                 $response = $this->getQuotationData($url);
             } else {
@@ -131,7 +133,6 @@ class SAPQuotations
         if($doc_entry){
             $url = '/b1s/v1/Quotations('.$doc_entry.')';
             $response = $this->getQuotationData($url);
-
             if($response['status']){
                 $value = $response['data'];
 
@@ -188,6 +189,7 @@ class SAPQuotations
                                 'last_sync_at' => current_datetime(),
                                 'sap_connection_id' => $sap_connection_id,
                                 'real_sap_connection_id' => $sap_connection->id,
+                                'comments' => $value['Comments'],
                             );
 
                     if(!empty($value['DocumentLines'])){
@@ -307,5 +309,22 @@ class SAPQuotations
         }
 
         return $response;
+    }
+
+    // Store Specific Quotations Data
+    public function addComments($doc_entry = false)
+    {
+        if($doc_entry){
+            $url = '/b1s/v1/Quotations('.$doc_entry.')';
+            $response = $this->getQuotationData($url);            
+            if($response['status']){
+                $value = $response['data'];
+                if(!empty($value)){
+                    $quotation = Quotation::where('doc_entry',$doc_entry)->first();
+                    $quotation->comments = $value['Comments'];
+                    $quotation->save();
+                }
+            }
+        }
     }
 }
