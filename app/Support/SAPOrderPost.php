@@ -95,7 +95,7 @@ class SAPOrderPost
         }
     }
 
-    public function pushOrderDetailsInDatabase($data){
+    public function pushOrderDetailsInDatabase($data){       
         if($data){
             $insert = array(
                         'doc_entry' => $data['DocEntry'],
@@ -126,11 +126,12 @@ class SAPOrderPost
 
                         'sap_connection_id' => $this->sap_connection_id,
                         'real_sap_connection_id' => $this->real_sap_connection_id,
+                        'comments' => $data['Comments'],
                     );
-
             $obj = Quotation::updateOrCreate([
                                     'doc_entry' => $data['DocEntry'],
                                     'sap_connection_id' => $this->sap_connection_id,
+                                    'comments' => $data['Comments'],
                                 ],
                                 $insert
                             );
@@ -337,6 +338,7 @@ class SAPOrderPost
             if($data == '204'){
                 //$quotation->num_at_card = $num_at_card;
                 $quotation->u_omsno = $doc_entry;
+                //$quotation->comments = @$data['Comments'];
                 $quotation->save();
             }
         }
