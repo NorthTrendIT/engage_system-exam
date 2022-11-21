@@ -46,7 +46,80 @@ class SalesOrderReportController extends Controller
         // For Pending
         $pending_total_sales_orders = $pending_total_sales_quantity = $pending_total_sales_revenue = 0;
 
-        $pending_quotation_item = QuotationItem::whereHas('quotation', function($q) use ($request) {
+        $pending_quotation_item = Quotation::doesntHave('order')->where('document_status','bost_Open')->where('cancelled', "No");
+
+        if($request->engage_transaction != 0){
+            $pending_quotation_item->whereNotNull('u_omsno');
+        }
+
+        if($request->filter_company != ""){
+            $pending_quotation_item->where('sap_connection_id',$request->filter_company);
+        }
+
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $pending_quotation_item->whereDate('doc_date', '>=' , $start);
+            $pending_quotation_item->whereDate('doc_date', '<=' , $end);
+        }
+
+        if(Auth::user()->role_id == 4){
+            $pending_quotation_item->where(function($query) use ($request) {
+                    $query->whereHas('customer', function($q1) use ($request){
+                        $q1->where('id', Auth::id());
+                    });
+                });
+        }else{
+            if($request->filter_customer != ""){
+                $pending_quotation_item->where(function($query) use ($request) {
+                    $query->whereHas('customer', function($q1) use ($request){
+                        $q1->where('id', $request->filter_customer);
+                    });
+                });
+            }
+        }
+
+        if($request->filter_manager != ""){
+            $pending_quotation_item->where(function($query) use ($request) {
+                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                    $q1->where('ss_id', $salesAgent);
+                });
+            });
+        }
+
+        if(Auth::user()->role_id == 6){
+            $pending_quotation_item->where(function($query) use ($request) {
+                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                    $q1->where('ss_id', $salesAgent);
+                });
+            });
+        }
+                                                    
+        if(Auth::user()->role_id == 2){
+            $pending_quotation_item->where(function($query) use ($request) {
+                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                        $q1->where('ss_id', Auth::id());
+                    });
+                });
+        }else{
+            if($request->filter_sales_specialist != ""){
+                $pending_quotation_item->where(function($query) use ($request) {
+                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                        $q1->where('ss_id', $request->filter_sales_specialist);
+                    });
+                });
+            }
+        }
+
+        $pending_quotation_item = $pending_quotation_item->get()->toArray();
+
+        $pending_total_sales_orders = count($pending_quotation_item);
+
+        $pending_quotation_item_quan = QuotationItem::whereHas('quotation', function($q) use ($request) {
                                                     $q->doesntHave('order')->where('document_status','bost_Open')->where('cancelled', "No");
 
                                                     if($request->engage_transaction != 0){
@@ -127,20 +200,100 @@ class SalesOrderReportController extends Controller
             });
         }
 
-        $pending_quotation_item = $pending_quotation_item->get()->toArray();
+        if($request->filter_brand != ""){
+            $pending_quotation_item_quan->where(function($query) use ($request) {
+                $query->whereHas('product1.group', function($q1) use ($request){
+                    $q1->where('id', $request->filter_brand);
+                });
+            });
+        }
 
-        $pending_total_sales_orders = count($pending_quotation_item);
+        $pending_quotation_item_quan = $pending_quotation_item_quan->get()->toArray();
 
-        if(!empty($pending_quotation_item)){
-            $pending_total_sales_quantity = array_sum(array_column($pending_quotation_item, 'quantity'));
-            $pending_total_sales_revenue = round(array_sum(array_column($pending_quotation_item, 'price_after_vat')), 2);
+        //$pending_total_sales_orders = count($pending_quotation_item);
+
+        if(!empty($pending_quotation_item_quan)){
+            $pending_total_sales_quantity = array_sum(array_column($pending_quotation_item_quan, 'quantity'));
+            $pending_total_sales_revenue = round(array_sum(array_column($pending_quotation_item_quan, 'price_after_vat')), 2);
         }
 
 
         // For Approved
         $approved_total_sales_orders = $approved_total_sales_quantity = $approved_total_sales_revenue = 0;
 
-        $approved_order_item = OrderItem::whereHas('order', function($q) use ($request) {
+        $approved_order_item = Order::doesntHave('invoice')
+                                    ->where('document_status','bost_Open')
+                                    ->where('u_sostat', "OP")
+                                    ->where('cancelled','No');
+
+        if($request->engage_transaction != 0){
+            $approved_order_item->whereNotNull('u_omsno');
+        }
+
+        if($request->filter_company != ""){
+            $approved_order_item->where('sap_connection_id',$request->filter_company);
+        }
+
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $approved_order_item->whereDate('doc_date', '>=' , $start);
+            $approved_order_item->whereDate('doc_date', '<=' , $end);
+        }
+
+        if(Auth::user()->role_id == 4){
+            $approved_order_item->where(function($query) use ($request) {
+                    $query->whereHas('customer', function($q1) use ($request){
+                        $q1->where('id', Auth::id());
+                    });
+                });
+        }else{
+            if($request->filter_customer != ""){
+                $approved_order_item->where(function($query) use ($request) {
+                    $query->whereHas('customer', function($q1) use ($request){
+                        $q1->where('id', $request->filter_customer);
+                    });
+                });
+            }
+        }
+
+        if($request->filter_manager != ""){
+                $approved_order_item->where(function($query) use ($request) {
+                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                        $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                        $q1->where('ss_id', $salesAgent);
+                    });
+                });
+        }
+
+        if(Auth::user()->role_id == 6){
+            $qapproved_order_item->where(function($query) use ($request) {
+                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                    $q1->where('ss_id', $salesAgent);
+                });
+            });
+        }
+
+        if(Auth::user()->role_id == 2){
+            $approved_order_item->where(function($query) use ($request) {
+                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                        $q1->where('ss_id', Auth::id());
+                    });
+                });
+        }else{
+            if($request->filter_sales_specialist != ""){
+                $approved_order_item->where(function($query) use ($request) {
+                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                        $q1->where('ss_id', $request->filter_sales_specialist);
+                    });
+                });
+            }
+        }
+
+        $approved_order_item_quan = OrderItem::whereHas('order', function($q) use ($request) {
                                                     $q->doesntHave('invoice')->where('document_status','bost_Open')->where('u_sostat', "OP");
                                                     if($request->engage_transaction != 0){
                                                         $q->whereNotNull('u_omsno');
@@ -218,13 +371,22 @@ class SalesOrderReportController extends Controller
             });
         }
 
-        $approved_order_item = $approved_order_item->get()->toArray();
+        if($request->filter_brand != ""){
+            $approved_order_item_quan->where(function($query) use ($request) {
+                $query->whereHas('product1.group', function($q1) use ($request){
+                    $q1->where('id', $request->filter_brand);
+                });
+            });
+        }
 
+        $approved_order_item = $approved_order_item->get()->toArray();
         $approved_total_sales_orders = count($approved_order_item);
 
-        if(!empty($approved_order_item)){
-            $approved_total_sales_quantity = array_sum(array_column($approved_order_item, 'quantity'));
-            $approved_total_sales_revenue = round(array_sum(array_column($approved_order_item, 'price_after_vat')), 2);
+        $approved_order_item_quan = $approved_order_item_quan->get()->toArray();        
+
+        if(!empty($approved_order_item_quan)){
+            $approved_total_sales_quantity = array_sum(array_column($approved_order_item_quan, 'quantity'));
+            $approved_total_sales_revenue = round(array_sum(array_column($approved_order_item_quan, 'price_after_vat')), 2);
         }
 
 
@@ -232,7 +394,94 @@ class SalesOrderReportController extends Controller
         // quotation table
         $disapproved_total_sales_orders = $disapproved_total_sales_quantity = $disapproved_total_sales_revenue = 0;
 
-        $disapproved_quotation_item = QuotationItem::whereHas('quotation', function($q) use ($request){
+        $disapproved_quotation_item = Quotation::doesntHave('order');
+
+        $disapproved_quotation_item->where(function($query){
+            $query->orwhere(function($q1){
+               $q1->where('document_status','Cancelled');
+            });
+
+            $query->orwhere(function($q1){
+                $q1->where('cancelled', "Yes");
+            });
+        });
+
+        if($request->engage_transaction != 0){
+            $disapproved_quotation_item->whereNotNull('u_omsno');
+        }
+
+        if($request->filter_company != ""){
+            $disapproved_quotation_item->where('sap_connection_id',$request->filter_company);
+        }
+
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $disapproved_quotation_item->whereDate('doc_date', '>=' , $start);
+            $disapproved_quotation_item->whereDate('doc_date', '<=' , $end);
+        }
+
+        if(Auth::user()->role_id == 4){
+            $disapproved_quotation_item->where(function($query) use ($request) {
+                    $query->whereHas('customer', function($q1) use ($request){
+                        $q1->where('id', Auth::id());
+                    });
+                });
+        }else{
+            if($request->filter_customer != ""){
+                $disapproved_quotation_item->where(function($query) use ($request) {
+                    $query->whereHas('customer', function($q1) use ($request){
+                        $q1->where('id', $request->filter_customer);
+                    });
+                });
+            }
+        }
+
+        if($request->filter_manager != ""){
+                $disapproved_quotation_item->where(function($query) use ($request) {
+                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                        $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                        $q1->where('ss_id', $salesAgent);
+                    });
+                });
+        }
+
+        if(Auth::user()->role_id == 6){
+            $disapproved_quotation_item->where(function($query) use ($request) {
+                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                    $q1->where('ss_id', $salesAgent);
+                });
+            });
+        }
+                                                
+        if(Auth::user()->role_id == 2){
+            $disapproved_quotation_item->where(function($query) use ($request) {
+                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                        $q1->where('ss_id', Auth::id());
+                    });
+                });
+        }else{
+            if($request->filter_sales_specialist != ""){
+                $disapproved_quotation_item->where(function($query) use ($request) {
+                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                        $q1->where('ss_id', $request->filter_sales_specialist);
+                    });
+                });
+            }
+        }
+
+        if($request->filter_brand != ""){
+            $disapproved_quotation_item->where(function($query) use ($request) {
+                $query->whereHas('product1.group', function($q1) use ($request){
+                    $q1->where('id', $request->filter_brand);
+                });
+            });
+        }
+
+        $disapproved_quotation_item_quan = QuotationItem::whereHas('quotation', function($q) use ($request){
                                                     $q->doesntHave('order');
 
                                                     $q->where(function($query){
@@ -315,7 +564,7 @@ class SalesOrderReportController extends Controller
                                                 });
 
         if($request->filter_brand != ""){
-            $disapproved_quotation_item->where(function($query) use ($request) {
+            $disapproved_quotation_item_quan->where(function($query) use ($request) {
                 $query->whereHas('product1.group', function($q1) use ($request){
                     $q1->where('id', $request->filter_brand);
                 });
@@ -323,16 +572,106 @@ class SalesOrderReportController extends Controller
         }
 
         $disapproved_quotation_item = $disapproved_quotation_item->get()->toArray();
-
         $disapproved_total_sales_orders = count($disapproved_quotation_item);
 
-        if(!empty($disapproved_quotation_item)){
-            $disapproved_total_sales_quantity += array_sum(array_column($disapproved_quotation_item, 'quantity'));
-            $disapproved_total_sales_revenue += round(array_sum(array_column($disapproved_quotation_item, 'price_after_vat')), 2);
+        $disapproved_quotation_item_quan = $disapproved_quotation_item_quan->get()->toArray();
+
+        if(!empty($disapproved_quotation_item_quan)){
+            $disapproved_total_sales_quantity += array_sum(array_column($disapproved_quotation_item_quan, 'quantity'));
+            $disapproved_total_sales_revenue += round(array_sum(array_column($disapproved_quotation_item_quan, 'price_after_vat')), 2);
         }
 
         // order table
-        $disapproved_order_item = OrderItem::whereHas('order', function($q) use ($request){
+
+        $disapproved_order_item = Order::doesntHave('invoice');
+
+        $disapproved_order_item->where(function($query){
+            $query->orwhere(function($q1){
+               $q1->where('document_status','Cancelled');
+            });
+
+            $query->orwhere(function($q1){
+                $q1->where('cancelled', "Yes");
+            });
+        });
+
+        if($request->engage_transaction != 0){
+            $disapproved_order_item->whereNotNull('u_omsno');
+        }
+
+        if($request->filter_company != ""){
+            $disapproved_order_item->where('sap_connection_id',$request->filter_company);
+        }
+
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $disapproved_order_item->whereDate('doc_date', '>=' , $start);
+            $disapproved_order_item->whereDate('doc_date', '<=' , $end);
+        }
+
+        if(Auth::user()->role_id == 4){
+            $disapproved_order_item->where(function($query) use ($request) {
+                    $query->whereHas('customer', function($q1) use ($request){
+                        $q1->where('id', Auth::id());
+                    });
+                });
+        }else{
+            if($request->filter_customer != ""){
+                $disapproved_order_item->where(function($query) use ($request) {
+                    $query->whereHas('customer', function($q1) use ($request){
+                        $q1->where('id', $request->filter_customer);
+                    });
+                });
+            }
+        }
+
+        if($request->filter_manager != ""){
+                $disapproved_order_item->where(function($query) use ($request) {
+                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                        $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                        $q1->where('ss_id', $salesAgent);
+                    });
+                });
+        }
+
+        if(Auth::user()->role_id == 6){
+            $disapproved_order_item->where(function($query) use ($request) {
+                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                    $q1->where('ss_id', $salesAgent);
+                });
+            });
+        }
+
+        if(Auth::user()->role_id == 2){
+            $disapproved_order_item->where(function($query) use ($request) {
+                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                        $q1->where('ss_id', Auth::id());
+                    });
+                });
+        }else{
+            if($request->filter_sales_specialist != ""){
+                $disapproved_order_item->where(function($query) use ($request) {
+                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                        $q1->where('ss_id', $request->filter_sales_specialist);
+                    });
+                });
+            }
+        }
+
+        if($request->filter_brand != ""){
+            $disapproved_order_item->where(function($query) use ($request) {
+                $query->whereHas('product1.group', function($q1) use ($request){
+                    $q1->where('id', $request->filter_brand);
+                });
+            });
+        }
+
+
+        $disapproved_order_item_quan = OrderItem::whereHas('order', function($q) use ($request){
                                                     $q->has('quotation')->doesntHave('invoice');
 
                                                     $q->where(function($query){
@@ -410,7 +749,7 @@ class SalesOrderReportController extends Controller
                                                 });
 
         if($request->filter_brand != ""){
-            $disapproved_order_item->where(function($query) use ($request) {
+            $disapproved_order_item_quan->where(function($query) use ($request) {
                 $query->whereHas('product1.group', function($q1) use ($request){
                     $q1->where('id', $request->filter_brand);
                 });
@@ -418,12 +757,13 @@ class SalesOrderReportController extends Controller
         }
 
         $disapproved_order_item = $disapproved_order_item->get()->toArray();
-
         $disapproved_total_sales_orders += count($disapproved_order_item);
 
-        if(!empty($disapproved_order_item)){
-            $disapproved_total_sales_quantity += array_sum(array_column($disapproved_order_item, 'quantity'));
-            $disapproved_total_sales_revenue += round(array_sum(array_column($disapproved_order_item, 'price_after_vat')), 2);
+        $disapproved_order_item_quan = $disapproved_order_item_quan->get()->toArray();
+
+        if(!empty($disapproved_order_item_quan)){
+            $disapproved_total_sales_quantity += array_sum(array_column($disapproved_order_item_quan, 'quantity'));
+            $disapproved_total_sales_revenue += round(array_sum(array_column($disapproved_order_item_quan, 'price_after_vat')), 2);
         }
 
         $data = compact(
