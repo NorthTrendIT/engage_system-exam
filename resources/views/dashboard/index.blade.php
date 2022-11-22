@@ -47,6 +47,7 @@
                     <div class="card-body pt-0">
                         @if(isset($notification) && count($notification) > 0)
                         @foreach($notification as $item)
+                        <a href="{{ route('news-and-announcement.show',$item->id) }}" class="fw-bolder text-gray-800 text-hover-primary fs-6">
                         <div class="d-flex align-items-center @if($item->is_important) bg-light-danger @else bg-light-success @endif rounded p-5 mb-7">
                             <span class="svg-icon @if($item->is_important) svg-icon-danger @else svg-icon-success @endif me-5">
                                 <!--begin::Svg Icon | path: icons/duotune/abstract/abs027.svg-->
@@ -59,10 +60,11 @@
                                 <!--end::Svg Icon-->
                             </span>
                             <div class="flex-grow-1 me-2">
-                                <a href="{{ route('news-and-announcement.show',$item->id) }}" class="fw-bolder text-gray-800 text-hover-primary fs-6">{{ $item->title }}</a>
+                                {{ $item->title }}
                                 <span class="text-muted fw-bold d-block">{{ getNotificationType($item->type) }}</span>
                             </div>
                         </div>
+                        </a>
                         @endforeach
                         @else
                         <div class="d-flex align-items-center p-5 mb-7">
