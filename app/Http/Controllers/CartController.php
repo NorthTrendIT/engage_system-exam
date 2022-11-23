@@ -140,20 +140,28 @@ class CartController extends Controller
 
         $sap_customer_arr = get_sap_customer_arr(@Auth::user());
         if(isset($id)){
-            $cart = new Cart();
+
+            $cart = Cart::where('customer_id',@$sap_customer_arr[$product->sap_connection_id])->where('product_id',$id)->first();
+
+            if($cart){
+                $cart = Cart::find($cart->id);
+                if($request->flag == "Addproduct" && $request->quantity !=""){
+                    $cart->qty = $request->quantity + @$cart->qty;
+                }else{
+                    $cart->qty = $request->quantity;
+                }
+            }else{
+                $cart = new Cart();
+                $cart->qty = 1;
+            }
+            
             $cart->customer_id = @$sap_customer_arr[$product->sap_connection_id];
-            $cart->product_id = $id;
-            $cart->qty = 1;
+            $cart->product_id = $id;            
             $cart->save();
 
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
             $count = Cart::whereIn('customer_id', $customer_id)->count();
 
-            if($request->flag == "Addproduct" && $request->quantity !=""){
-                $cart = Cart::findOrFail($cart->id);
-                $cart->qty = $request->quantity;
-                $cart->save();                
-            }
 
             return $response = ['status'=>true,'message'=>"Product added to cart successfully.", 'count'=> $count];
         }
