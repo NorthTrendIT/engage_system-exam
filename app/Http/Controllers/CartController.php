@@ -15,6 +15,10 @@ use App\Models\Product;
 use Validator;
 use Auth;
 use App\Models\Quotation;
+use App\Models\CustomersSalesSpecialist;
+use App\Models\CustomerProductGroup;
+use App\Models\CustomerProductItemLine;
+use App\Models\CustomerProductTiresCategory;
 
 class CartController extends Controller
 {
@@ -23,9 +27,10 @@ class CartController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $customer_id = explode(',', Auth::user()->multi_customer_id);
+        $customer = Customer::where('id',$customer_id[0])->first();
 
         $address = CustomerBpAddress::whereIn('customer_id', $customer_id)->orderBy('order', 'ASC')->get();
 
@@ -39,7 +44,17 @@ class CartController extends Controller
             $subTotal = get_product_customer_price(@$item->product->item_prices, $customer_price_list_no) * $item->qty;
             $total += $subTotal;
         }
-        return view('cart.index', compact(['data', 'address', 'total']));
+
+        $data1 = $this->getProductData($request);
+        if(count($data1['products']->get())){
+            $products = $data1['products']->get();
+        }else{
+            $products = collect();
+        }
+
+        $sales_agent = CustomersSalesSpecialist::with('sales_person')->where('customer_id',$customer_id)->first();
+
+        return view('cart.index', compact(['data', 'address', 'total','sales_agent','customer','products']));
     }
 
     /**
@@ -108,7 +123,7 @@ class CartController extends Controller
         //
     }
 
-    public function addToCart($id){
+    public function addToCart(Request $request,$id){
         if(!@Auth::user()->multi_sap_connection_id){
             return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
         }
@@ -116,10 +131,6 @@ class CartController extends Controller
         $product = Product::findOrFail($id);
 
         $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
-        // if($avl_qty < 1){
-        //     return $response = ['status'=>false,'message'=>"The product quantity is not available."];
-        // }
-
         $customer_id = explode(',', Auth::user()->multi_customer_id);
         $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
         $price = get_product_customer_price(@$product->item_prices,@$customer_price_list_no[$product->sap_connection_id]);
@@ -137,6 +148,12 @@ class CartController extends Controller
 
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
             $count = Cart::whereIn('customer_id', $customer_id)->count();
+
+            if($request->flag == "Addproduct" && $request->quantity !=""){
+                $cart = Cart::findOrFail($cart->id);
+                $cart->qty = $request->quantity;
+                $cart->save();                
+            }
 
             return $response = ['status'=>true,'message'=>"Product added to cart successfully.", 'count'=> $count];
         }
@@ -182,18 +199,26 @@ class CartController extends Controller
             $cart->save();
 
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
+
+            $price_no = @get_customer_price_list_no_arr($customer_id)[@$cart->product->sap_connection_id];
+            $price = get_product_customer_price(@$cart->product->item_prices,$price_no) * $cart->qty;
+
             $total = 0;
             $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
             
+            $weight = 0;
+            $volume = 0;
             foreach($data as $item){
 
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
                 $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
                 $total += $subTotal;
+                $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
+                $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);
             }
 
-            return $response = ['status'=>true,'message'=>"Product quantity updated successfully.", 'total' => number_format_value($total)];
+            return $response = ['status'=>true,'message'=>"Product quantity updated successfully.", 'total' => number_format_value($total),'weight' => number_format_value($weight),'volume' => number_format_value($volume),'price' => number_format_value($price)];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];
@@ -211,7 +236,12 @@ class CartController extends Controller
                 $message = "Product quantity updated successfully.";
             }
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
+            $price_no = @get_customer_price_list_no_arr($customer_id)[@$cart->product->sap_connection_id];
+            $price = get_product_customer_price(@$cart->product->item_prices,$price_no) * $cart->qty;
+
             $total = 0;
+            $weight = 0;
+            $volume = 0;
             $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
 
             foreach($data as $item){
@@ -219,9 +249,12 @@ class CartController extends Controller
 
                 $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
                 $total += $subTotal;
+
+                $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
+                $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);
             }
 
-            return $response = ['status'=>true,'message'=> $message, 'total' => number_format_value($total), 'count' => count($data), 'cart_count' => count($data)];
+            return $response = ['status'=>true,'message'=> $message, 'total' => number_format_value($total), 'count' => count($data), 'cart_count' => count($data),'weight' => number_format_value($weight),'volume' => number_format_value($volume),'price' => number_format_value($price)];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];
@@ -232,6 +265,9 @@ class CartController extends Controller
             Cart::where('id', $id)->delete();
             $customer_id = explode(',', Auth::user()->multi_customer_id);
             $total = 0;
+            $weight = 0;
+            $volume = 0;
+
             $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
 
             foreach($data as $item){
@@ -239,9 +275,12 @@ class CartController extends Controller
 
                 $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
                 $total += $subTotal;
+
+                $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
+                $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);
             }
 
-            return $response = ['status' => true,'message' => 'Product removed from cart.', 'total' => number_format($total, 2), 'count' => count($data)];
+            return $response = ['status' => true,'message' => 'Product removed from cart.', 'total' => number_format($total, 2), 'count' => count($data),'weight' => number_format_value($weight),'volume' => number_format_value($volume)];
         }
 
 
@@ -401,5 +440,151 @@ class CartController extends Controller
         }
 
         return $response = ['status' => true, 'message' => 'Your order placed successfully!'];
+    }
+
+    public function removeAllFromCart(Request $request){
+        if(!empty($request->chk)){
+            Cart::whereIn('id', $request->chk)->delete();
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
+            $total = 0;
+            $weight = 0;
+            $volume = 0;
+
+            $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
+
+            foreach($data as $item){
+                $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
+
+                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
+                $total += $subTotal;
+
+                $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
+                $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);
+            }
+
+            return $response = ['status' => true,'message' => 'Product removed from cart.', 'total' => number_format($total, 2), 'count' => count($data),'weight' => number_format_value($weight),'volume' => number_format_value($volume)];
+        }
+
+
+        return $response = ['status'=>false,'message'=>"Something went wrong please try again."];
+    }
+
+    public function getProductData($request){
+        $c_product_tires_category = $c_product_item_line = $c_product_group = array();
+
+        $customer_id = [];
+        $customer = collect();
+        $sap_connection_id = [];
+        $customer_price_list_no = [];
+
+        if (!is_null(@Auth::user()->created_by) || (isset($request->customer_id) && !empty($request->customer_id)) ) {
+
+            if(@$request->customer_id){
+                $where = array(
+                            'id' => @$request->customer_id,
+                        );
+                $customer = Customer::where($where)->first();
+                if(!is_null($customer)){
+                    $customer_id = array( @$customer->id );
+                    $sap_connection_id = array( @$customer->sap_connection_id);
+                    $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+                }
+
+
+            }else{
+                $where = array(
+                            'id' => @Auth::user()->created_by,
+                        );
+                $customer = User::where('role_id', 4)->where($where)->first();
+                if(!is_null($customer)){
+                    $customer_id = explode(',', @$customer->multi_customer_id);
+                    $sap_connection_id = explode(',', @$customer->multi_real_sap_connection_id);
+                    $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+                }
+            }
+
+
+        }elseif(userrole() == 4){
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
+            $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
+            $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+
+        }elseif(userrole() == 2){
+
+            $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
+            $sap_connection_id = array( @Auth::user()->sap_connection_id );
+
+        }
+
+        if(in_array(5, $sap_connection_id)){
+            array_push($sap_connection_id, '5');
+        }
+        
+        // Is Customer
+        if(!empty($customer_id)){
+
+            // Product Group
+            $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
+            $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
+
+
+            // Product Item Line
+            $c_product_item_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
+            $c_product_item_line = array_column( $c_product_item_line->toArray(), 'product_item_line_id' );
+            
+
+            // Product Tires Category
+            $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
+            $c_product_tires_category = array_column( $c_product_tires_category->toArray(), 'product_tires_category_id' );
+            
+        }
+
+        if(empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
+            $products = collect([]);
+        }
+
+        $where = array('is_active' => true);
+
+        $products = Product::where($where)->limit(50);
+
+        $products->whereHas('group', function($q){
+            $q->where('is_active', true);
+        });
+
+        if($request->filter_search != ""){
+            $products->where('item_name','LIKE',"%".$request->filter_search."%");
+        }
+
+        $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
+            if(!empty($c_product_group)){
+                $q->orwhereHas('group', function($q1) use ($c_product_group){
+                    $q1->whereIn('id', $c_product_group);
+                });
+            }
+
+            if(!empty($c_product_tires_category)){
+                $q->orwhereHas('product_tires_category', function($q1) use ($c_product_tires_category){
+                    $q1->whereIn('id', $c_product_tires_category);
+                });
+            }
+
+            if(!empty($c_product_item_line)){
+                $q->orwhereHas('product_item_line', function($q1) use ($c_product_item_line){
+                    $q1->whereIn('id', $c_product_item_line);
+                });
+            }
+        });
+
+        $products->whereIn('sap_connection_id', $sap_connection_id);
+
+        $products->when(!isset($request->order), function ($q) {
+          $q->orderBy('item_name', 'asc');
+        });
+
+        if(userrole() != 1){
+            $products->havingRaw('quantity_on_stock - quantity_ordered_by_customers > 0');
+        }
+
+        return [ 'products' => $products, 'customer_price_list_no' => $customer_price_list_no];
     }
 }

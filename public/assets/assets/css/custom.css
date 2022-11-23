@@ -1125,3 +1125,33 @@ table.dataTable>thead .sorting.sorting_desc:after{
 .menu-item.sidebar-dropdown:hover >.menu-link:after{
     transform: rotate(180deg);
 } 
+.table td {
+    border-top: 1px solid #EBEDF3;
+}
+.table thead td {
+    border-top: 0;
+}
+.table td span.price {
+    white-space: nowrap;
+}
+.table td select {
+    background-color: #FAFAFB;
+    appearance: auto;
+    -webkit-appearance: auto;
+}
+input[type="button"].remove-from-cart {
+        background-color: black;
+    padding: 4px 25px 6px;
+    color: white;
+    text-transform: uppercase;
+    border: 0;
+}
+.add-extra-row-cart td .price {
+    color: #009ef7;
+}
+.cart-table {
+    vertical-align: middle;
+}
+.cart-table thead th {
+    font-weight: 600;
+}
