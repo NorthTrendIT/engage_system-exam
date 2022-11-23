@@ -16,244 +16,208 @@
     </div>
     <div class="post d-flex flex-column-fluid" id="kt_post">
         <div id="kt_content_container" class="container-xxl">
-            @if(isset($data) && count($data) > 0)
             <form method="post" id="myForm">
                 @csrf
                 <div class="row gy-5 g-xl-8 mt-5">
                     <!--begin::Col-->
-                    <div class="col-xl-8">
+                    <div class="col-xl-12">
                         <div class="card card-xl-stretch mb-5 mb-xl-8">
-                            <!--begin::Header-->
-                            <div class="card-header border-0 pt-5">
-                                <h3 class="card-title align-items-start flex-column">
-                                    <span class="card-label fw-bolder text-dark productCount">Products ({{ count($data) }})</span>
-                                </h3>
-                            </div>
-                            @foreach($data as $value)
                             <div class="card-body pt-5 productSection">
-                                <div class="d-flex align-items-sm-center mb-7">
-                                    <!--begin::Section-->
-                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                        <div class="flex-grow-1 me-2">
-                                            <span class="text-gray-800 fs-6 fw-bolder">{{ $value->product->item_name}}</span>
-                                            <span class="text-muted fw-bold d-block fs-7">CODE: {{ $value->product->item_code }}</span>
+                                <div class="row">
+                                    <div class="col-xl-6">
+                                        <div class="d-flex align-items-sm-center mb-7">
+                                            <div class="flex-grow-1 me-2">
+                                                <span class="text-muted fw-bold d-block fs-7">Customer name:</span>
+                                                <span class="text-gray-800 fs-7 fw-bolder">{{@$customer->card_name}}  ({{@$customer->card_code}})</span>
+                                                
+                                            </div>
                                         </div>
-                                        @php
-                                            $customer_id = explode(',', Auth::user()->multi_customer_id);
-                                            $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
-                                        @endphp
-                                        <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) * $value->qty ) }}</span>
+                                        <div class="d-flex align-items-sm-center mb-7">
+                                            <div class="flex-grow-1 me-2">
+                                                <span class="text-muted fw-bold d-block fs-7">Sales Specialist:</span>
+                                                <span class="text-gray-800 fs-7 fw-bolder">{{@$sales_agent->sales_person->first_name}}  {{@$sales_agent->sales_person->last_name}}</span>
+                                                
+                                            </div>
+                                        </div>
                                     </div>
-                                    <!--end::Section-->
-                                </div>
-                                <div class="button-wrap">
-                                    <div class="counter">
-                                        <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyMinus" data-url="{{ route('cart.qty-minus', $value->id)}}">
-                                            <i class="fas fa-minus"></i>
-                                        </a>
+                                    <div class="col-xl-4">
+                                        <div class="d-flex align-items-sm-center mb-7">
+                                            <div class="flex-grow-1 me-2">
+                                                <span class="fs-7 fw-bolder">Delivery Location :
+                                                </span>
+                                                <div class="form-group">
+                                                    <select class="form-select form-select-solid" id='selectAddress' data-control="select2" data-hide-search="false" name="address_id" data-placeholder="Select address" data-allow-clear="true">
+                                                        @if(!empty($address))
+                                                            <option value=""></option>
+                                                            @foreach($address as $item)
+                                                            <option value="{{ $item->id }}" 
+                                                                    
+                                                                    data-address="{{ $item->address }}"
+                                                                    data-street="{{ $item->street }}"
+                                                                    data-zip_code="{{ $item->zip_code }}"
+                                                                    data-city="{{ $item->city }}"
+                                                                    data-state="{{ $item->state }}"
+                                                                    data-country="{{ $item->country }}"
 
-                                        <input class="form-control qty" data-url="{{ route('cart.update-qty', $value->id)}}" type="number" min="1" value="{{ $value->qty }}" >
+                                                                >{{$item->address}}
+                                                            </option>
+                                                            @endforeach
+                                                        @else
+                                                            <option value="">No record found</option>
+                                                        @endif
+                                                    </select>
+                                                </div>
+                                                <div class="align-items-sm-center mb-7 address_details_div" style="display:none;">
+                                                    <div class="">
+                                                        <div class="form-group">
+                                                            <label class="">Address:</label><span class="text-muted address_span"></span><br>
+                                                            <label class="mt-1">Street:</label><span class="text-muted street_span"></span><br>
+                                                            <label class="mt-1">Zipcode:</label><span class="text-muted zip_code_span"></span><br>
+                                                            <label class="mt-1">City:</label><span class="text-muted city_span"></span><br>
+                                                            <label class="mt-1">State:</label><span class="text-muted state_span"></span><br>
+                                                            <label class="mt-1">Country:</label><span class="text-muted country_span"></span><br>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1 me-2">
+                                                    <div class="align-items-sm-center mb-7">
+                                                        <div class="">
+                                                            <div class="flex-grow-1 me-2">
+                                                                <span class="fs-7 fw-bolder">Expected Delivery Date :</span>
+                                                            </div>
+                                                            <input type="text" class="form-control" placeholder="Delivery Date" id="kt_datepicker_1" name="due_date" autocomplete="off">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>                                  
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" name="checkall" id="checkall">
+                                        <input type="button" name="addProduct" value="Add Product" class="btn btn-primary btn-sm addProduct">
+                                        <input type="button" name="deleteProduct" id="removeAll" value="Delete" class="btn btn-danger btn-sm" data-url="{{route('cart.removeall')}}">
+                                    </div>
+                                   
+                                    <div class="col-xl-12">
+                                        <?php $m= 0; ?>
+                                        <table class="table cart-table" id="product_id_table">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th>#</th>
+                                                    <th>Products (<span class="productCount">{{ count($data) }}</span>)</th>
+                                                    <th>Quantity</th>
+                                                    <th>Unit</th>
+                                                    <th>Price</th>
+                                                    <th>Price After VAT</th>
+                                                    <th>Amount</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                             @if(isset($data) && count($data) > 0)
+                                            <tbody class="products_body">
+                                                
+                                                @foreach($data as $key=>$value)
+                                                <?php $m++; ?>
+                                                <tr id="tr_{{$m}}">
+                                                    <td style="display: none"><span class="pr_weight">{{@$value->product->sales_unit_weight}}</span></td>
+                                                    <td style="display: none"><span class="pr_volume">{{@$value->product->sales_unit_volume}}</span></td>
+                                                    <td><input type="checkbox" name="remove_product" id="{{$value->id}}" data-url="{{ route('cart.removeall') }}" value="{{$value->id}}"></td>
+                                                    <td>{{$key+1}}</td>
+                                                    <td><span class="text-gray-800 fs-6 fw-bolder">{{ $value->product->item_name}}</span>
+                                                        <span class="text-muted fw-bold d-block fs-7">CODE: {{ $value->product->item_code }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="button-wrap">
+                                                            <div class="counter">
+                                                                <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyMinus" data-url="{{ route('cart.qty-minus', $value->id)}}">
+                                                                    <i class="fas fa-minus"></i>
+                                                                </a>
 
-                                        <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyPlus" data-url="{{ route('cart.qty-plus', $value->id)}}">
-                                            <i class="fas fa-plus"></i>
-                                        </a>
+                                                                <input class="form-control qty" data-url="{{ route('cart.update-qty', $value->id)}}" type="number" min="1" value="{{ $value->qty }}" >
+
+                                                                <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyPlus" data-url="{{ route('cart.qty-plus', $value->id)}}">
+                                                                    <i class="fas fa-plus"></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{@$value->product->sales_unit}}</td>
+                                                    @php
+                                                        $customer_id = explode(',', Auth::user()->multi_customer_id);
+                                                        $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
+                                                    @endphp                    
+                                                    <td>
+                                                        <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) ) }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no)) }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="fw-bolder my-2 price total_price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) * $value->qty ) }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="button-wrap">
+                                                        <div>
+                                                            <a href="javascript:;" class="remove-from-cart btn btn-danger btn-sm" data-url="{{ route('cart.remove',$value->id) }}">Delete</a>
+                                                        </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                            @else
+                                            <tbody class="products_body">
+                                                <tr>
+                                                    <td colspan="10"> Cart is Empty</td>
+                                                </tr>
+                                            </tbody>
+                                            @endif
+                                        </table>
+                                    </div> 
+                                     @if(isset($data) && count($data) > 0)
+                                    <div class="separator separator-solid"></div>
+                                    <br>
+                                    <div class="d-flex flex-wrap justify-content-between remark_div">
+                                        <div class="col-xl-4">
+                                            <div class="align-items-sm-center mb-7">
+                                                <div class="">
+                                                    <div class="flex-grow-1 me-2">
+                                                        <span class="fs-7 fw-bolder">Remark :</span>
+                                                    </div>
+                                                    <textarea type="text" class="form-control" placeholder="Remark" id="remark" name="remark" autocomplete="off" rows="5"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-4">
+                                            <div class="flex-grow-1 me-2 row">
+                                                <span class="fs-8 col-xl-6">Total Weight:</span>
+                                                <span class="fw-bolder fs-6 col-xl-6 weight_span">0 Kg</span>
+                                            </div>  
+                                            <div class="flex-grow-1 me-2 row">
+                                                <span class="fs-8 col-xl-6">Total Volume:</span>
+                                                <span class="fw-bolder fs-6 col-xl-6 volume_span">0</span>
+                                            </div>
+                                            <div class="flex-grow-1 me-2 row mb-4">
+                                                <span class="fs-8 col-xl-6">Total:</span>
+                                                <span class="fw-bolder fs-6 col-xl-6 total_span">₱ {{ number_format_value($total) }}</span>
+                                            </div>
+                                            <div class="flex-grow-1 me-2">
+                                               <p>Note: Prices may be subjected with discount. Final <br>amount of order will reflect on the actual invoice.</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="remove">
-                                        <a href="javascript:;" class="remove-from-cart" data-url="{{ route('cart.remove',$value->id) }}">Remove</a>
-                                    </div>
+                                    @endif
                                 </div>
-                            </div>
-                            <div class="separator separator-solid"></div>
-                            @endforeach
+                            </div>                            
                         </div>
                     </div>
-                    <!--end::Col-->
-
-                    <!--begin::Col-->
-                    <div class="col-xl-4">
-                        <!--begin::List Widget 4-->
-                        <div class="card mb-5 mb-xl-8">
-                            <!--begin::Header-->
-                            <div class="card-header border-0 pt-5">
-                                <h3 class="card-title align-items-start flex-column">
-                                    <span class="card-label fw-bolder text-dark">Price Details</span>
-                                </h3>
-                            </div>
-                            <!--end::Header-->
-                            <!--begin::Body-->
-                            <div class="card-body pt-5">
-                                <!--begin::Item-->
-                                <div class="d-flex align-items-sm-center mb-7">
-                                    <!--begin::Section-->
-                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                        <div class="flex-grow-1 me-2">
-                                            <span class="text-gray-800 fs-6 fw-bolder">Price</span>
-                                        </div>
-
-                                        <span class="fw-bolder my-2 totalPrice">₱ {{ number_format_value($total) }}</span>
-                                    </div>
-                                    <!--end::Section-->
-                                </div>
-
-                                <!--end::Item-->
-                                <!--begin::Item-->
-                                <div class="d-flex align-items-sm-center mb-7">
-                                    <!--begin::Section-->
-                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                        <div class="flex-grow-1 me-2">
-                                            <span class="text-gray-800 fs-6 fw-bolder">Discount</span>
-                                        </div>
-                                        <span class="fw-bolder my-2">0</span>
-                                    </div>
-                                    <!--end::Section-->
-                                </div>
-                                <!--end::Item-->
-                                <!--begin::Item-->
-                                <div class="d-flex align-items-sm-center mb-7">
-                                    <!--begin::Section-->
-                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                        <div class="flex-grow-1 me-2">
-                                            <span class="text-gray-800 fs-6 fw-bolder">Delivery Charges</span>
-                                        </div>
-                                        <span class="fw-bolder my-2">FREE</span>
-                                    </div>
-                                    <!--end::Section-->
-                                </div>
-                                <!--end::Item-->
-
-                                <!--begin::Item-->
-                                <div class="d-flex align-items-sm-center mb-2">
-                                    <!--begin::Section-->
-                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                        <div class="flex-grow-1 me-2">
-                                            <h3 class="text-gray-800 fs-6 fw-bolder">Total Amount</h3>
-                                        </div>
-                                        <span class="fw-boldest fs-5 my-2 totalAmount">₱ {{ number_format_value($total) }}</span>
-                                    </div>
-                                    <!--end::Section-->
-                                </div>
-                                <!--end::Item-->
-
-                                <!--begin::Item-->
-                                <div class="d-flex align-items-sm-center">
-                                    <!--begin::Section-->
-                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                        <span class="text-muted">Note: Prices may be subjected with discount. Final amount of order will reflect on the actual invoice.</span>
-                                    </div>
-                                    <!--end::Section-->
-                                </div>
-                                <!--end::Item-->
-
-                            </div>
-                            <!--end::Body-->
-                        </div>
-                        <div class="card shipping-card mb-5 mb-xl-8">
-                            <!--begin::Header-->
-                            <div class="card-header border-0 pt-5">
-                                <h3 class="card-title align-items-start flex-column">
-                                    <span class="card-label fw-bolder text-dark">SHIPPING INFORMATION</span>
-                                </h3>
-                            </div>
-                            <!--end::Header-->
-                            <!--begin::Body-->
-                            <div class="card-body pt-5">
-                                <!--begin::Item-->
-                                <div class="align-items-sm-center mb-7">
-                                    <!--begin::Section-->
-                                    <div class="">
-                                        <div class="flex-grow-1 me-2">
-                                            <span class="fs-4 fw-bolder">Expected Delivery Date :</span>
-                                        </div>
-                                        <input type="text" class="form-control" placeholder="Delivery Date" id="kt_datepicker_1" name="due_date" autocomplete="off">
-                                    </div>
-                                    <!--end::Section-->
-                                </div>
-
-                                <!--end::Item-->
-                                <!--begin::Item-->
-                                <div class="align-items-sm-center mb-7">
-                                    <!--begin::Section-->
-                                    <div class="">
-                                        <div class="flex-grow-1 me-2">
-                                            <span class="fs-4 fw-bolder">Delivery Location :
-                                            </span>
-                                        </div>
-                                        <div class="form-group">
-                                            <select class="form-select form-select-solid" id='selectAddress' data-control="select2" data-hide-search="false" name="address_id" data-placeholder="Select address" data-allow-clear="true">
-                                                @if(isset($data) && !empty($address))
-                                                    <option value=""></option>
-                                                    @foreach($address as $item)
-                                                    <option value="{{ $item->id }}" 
-                                                            
-                                                            data-address="{{ $item->address }}"
-                                                            data-street="{{ $item->street }}"
-                                                            data-zip_code="{{ $item->zip_code }}"
-                                                            data-city="{{ $item->city }}"
-                                                            data-state="{{ $item->state }}"
-                                                            data-country="{{ $item->country }}"
-
-                                                        >{{$item->address}}
-                                                    </option>
-                                                    @endforeach
-                                                @else
-                                                    <option value="">No record found</option>
-                                                @endif
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <!--end::Section-->
-                                </div>
-                                <!--end::Item-->
-
-                                <!--begin::Item-->
-                                <div class="align-items-sm-center mb-7 address_details_div" style="display:none;">
-                                    <!--begin::Section-->
-                                    <div class="">
-                                        <div class="form-group">
-                                            <label class="">Address:</label><span class="text-muted address_span"></span><br>
-                                            <label class="mt-1">Street:</label><span class="text-muted street_span"></span><br>
-                                            <label class="mt-1">Zipcode:</label><span class="text-muted zip_code_span"></span><br>
-                                            <label class="mt-1">City:</label><span class="text-muted city_span"></span><br>
-                                            <label class="mt-1">State:</label><span class="text-muted state_span"></span><br>
-                                            <label class="mt-1">Country:</label><span class="text-muted country_span"></span><br>
-                                        </div>
-                                    </div>
-                                    <!--end::Section-->
-                                </div>
-                                <!--end::Item-->
-
-                                <div class="align-items-sm-center mb-7">
-                                    <div class="">
-                                        <div class="flex-grow-1 me-2">
-                                            <span class="fs-4 fw-bolder">Remark :</span>
-                                        </div>
-                                        <textarea type="text" class="form-control" placeholder="Remark" id="remark" name="remark" autocomplete="off" rows="5"></textarea>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <!--end::Body-->
-                        </div>
-                        <!--end::List Widget 4-->
-                    </div>
-                    <!--end::Col-->
                     <div class="place-button">
                         <button type="submit" href="javascript:;" class="placeOrder btn btn-dark" >PLACE ORDER</button>
                     </div>
                 </div>
+                <input type="hidden" id="product_data" value="{{$products}}">
             </form>
-            @else
-                <div class="row gy-5 g-xl-8 mt-5">
-                    <div class="col-xl-12 text-center">
-                        <h2>Whoops! your cart is empty. <a href="{{ route('product-list.index') }}">Add products</a></h2>
-                    </div>
-                </div>
-            @endif
-            <div class="row gy-5 g-xl-8 mt-5 emptyCart" style="display:none">
-                <div class="col-xl-12 text-center">
-                    <h2>Whoops! your cart is empty. <a href="{{ route('product-list.index') }}">Add products</a></h2>
-                </div>
-            </div>
         </div>
     </div>
     <!--begin::Profile Personal Information-->
@@ -412,6 +376,7 @@ $(document).ready(function() {
 
     $(document).on('click', '.remove-from-cart', function(event) {
         event.preventDefault();
+        var $self = $(this); 
         $url = $(this).attr('data-url');
         $self = $(this);
 
@@ -437,16 +402,18 @@ $(document).ready(function() {
                         hide_loader();
                     }else{
                         toast_success(result.message);
-                        $self.closest('.productSection').remove();
+                        $(this).closest("tr").remove();
                         if(result.count > 0){
-                            $('.totalAmount').html('₱ '+result.total);
-                            $('.totalPrice').html('₱ '+result.total);
+                            $(".total_span").html(result.total);
+                            $(".weight_span").html(result.weight);
+                            $(".volume_span").html(result.volume);
+                            $self.closest("tr").remove();
                             $('.productCount').html('Products ('+result.count+')');
                             $('.cartCount').html(result.count);
                         } else {
-                            $('.emptyCart').show();
-                            $('#myForm').remove();
-                            $('.cartCount').hide();
+                            $self.closest("tr").remove();
+                            $('.remark_div').attr("style", "display: none !important");
+                            $('.products_body').html('<tr><td colspan="10"> Cart is Empty</td></tr>')
                         }
                         hide_loader();
                         // setTimeout(function(){
@@ -465,6 +432,7 @@ $(document).ready(function() {
     $(document).on('click', '.qtyPlus', function(event) {
         $url = $(this).attr('data-url');
         $qty = parseInt($(this).parent().find('.qty').val());
+        $self = $(this);
         $(this).parent().find('.qty').val($qty + 1);
         $this = $(this);
         $.ajax({
@@ -475,16 +443,16 @@ $(document).ready(function() {
             }
         })
         .done(function(result) {
+            console.log(result);
             if(result.status == false){
                 toast_error(result.message);
                 $this.parent().find('.qty').val($qty);
             }else{
-                //toast_success(result.message);
-                $('.totalAmount').html('₱ '+result.total);
-                $('.totalPrice').html('₱ '+result.total);
-                // setTimeout(function(){
-                //     window.location.reload();
-                // },1500)
+                ($self.parent().parent().closest('tr').find('.total_price')).text('₱ '+result.price);
+                $(".total_span").html(result.total);
+                $(".weight_span").html(result.weight);
+                $(".volume_span").html(result.volume);
+                $(this).parent().eq( 8 ).find('.total_price').text(result.price);
             }
         })
         .fail(function() {
@@ -505,6 +473,7 @@ $(document).ready(function() {
             }
         })
         .done(function(result) {
+            console.log(result);
             if(result.status == false){
                 toast_error(result.message);
             }else{
@@ -513,8 +482,10 @@ $(document).ready(function() {
                     $self.closest('.productSection').remove();
                 }
                 if(result.cart_count > 0){
-                    $('.totalAmount').html('₱ '+result.total);
-                    $('.totalPrice').html('₱ '+result.total);
+                    ($self.parent().parent().closest('tr').find('.total_price')).text('₱ '+result.price);
+                    $(".total_span").html(result.total);
+                    $(".weight_span").html(result.weight);
+                    $(".volume_span").html(result.volume);
                     $('.productCount').html('Products ('+result.cart_count+')');
                     if(result.cart_count > 0){
                         $('.cartCount').show();
@@ -664,6 +635,181 @@ $(document).ready(function() {
             $('.address_details_div').hide();
         }
     });
+
+    var m = '{{@$m}}';    
+     products = $("#product_data").val();
+    
+    products = $.parseJSON(products);
+    
+    $(".addProduct").on("click",function(){
+        var html = '';
+        
+        m = parseInt(m) + 1;
+        html += '<tr class="add-extra-row-cart" id="tr_'+m+'">';
+        html += '<td><input type="checkbox"></td>';
+        html += '<td>'+m+'</td>';
+        html += '<td><select class="form-control filter_product1" name="filter_product1" data-hide-search="false" placeholder="Search product" data-allow-clear="true"><option value="">Select Product</option>';
+        $.each(products, function( index, val ) {
+            html += '<option value="'+val.id+'">'+val.item_name+'</option>';
+        });
+        html += '</select></td>';
+        html += '<td><input type="number" class="form-control addquantity" placeholder="Enter quantity"></td>';
+        html += '<td></td>';
+        html += '<td><span class="fw-bolder price">₱ 0.00</span></td>';
+        html += '<td><span class="fw-bolder price">₱ 0.00</span></td>';
+        html += '<td><span class="fw-bolder price">₱ 0.00</span></td>';
+        html += '<td><input type="button" value="Delete" class="remove_class btn-sm btn btn-danger"></td></tr>';
+        if(m == 1){
+            $(".products_body").html(html);
+        }else{
+            $(".products_body").append(html);
+        }
+        
+    });
+
+    $("#product_id_table").on("click", ".remove_class", function() {
+       $(this).closest("tr").remove();
+       m = parseInt(m) - 1;
+    });
+    
+    cartTotal();
+
+    function cartTotal(){
+        var sum = 0;
+        var Weight = 0;
+        var Volume = 0;
+        $( "#product_id_table tbody tr ").each( function( index ) {
+            var str = $(this).children().eq( 9 ).text();            
+            str = str.replace('₱ ', '');
+            str = str.replace(',', '');
+            sum += parseFloat(str);
+
+            var str1 = $(this).children().eq( 0 ).text(); 
+            var str2 = $(this).children().eq( 5 ).find('.qty').val();
+
+            var str3 = $(this).children().eq( 1 ).text(); 
+            
+            Weight = parseFloat(str1) * parseFloat(str2);
+            Volume = parseFloat(str2) * parseFloat(str3);
+        });
+
+        sum = sum.toString().split(".");
+        sum[0] = sum[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        sum = sum.join(".");
+
+        $(".total_span").html(sum);
+        $(".weight_span").html(Weight);
+        $(".volume_span").html(Volume);
+    }
+
+    $("#checkall").click(function() {
+      $("input[type=checkbox]").prop("checked", $(this).prop("checked"));
+    });
+
+    $("input[type=checkbox]").click(function() {
+      if (!$(this).prop("checked")) {
+        $("#checkall").prop("checked", false);
+      }
+    });
+
+    $(document).on('click', '#removeAll', function(event) {
+        event.preventDefault();
+        var chk =[];
+        $("input:checkbox[name=remove_product]:checked").each(function(){
+            chk.push($(this).val());
+        });
+        var $self = $(this); 
+        $url = $(this).attr('data-url');
+        $self = $(this);
+
+        Swal.fire({
+            title: 'Are you sure want to Remove this product?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Remove!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: $url,
+                    method: "POST",
+                    data: {
+                            _token:'{{ csrf_token() }}',
+                            chk : chk,
+                        }
+                })
+                .done(function(result) {
+                    if(result.status == false){
+                        toast_error(result.message);
+                        hide_loader();
+                    }else{
+                        toast_success(result.message);
+                        $(this).closest("tr").remove();
+                        if(result.count > 0){
+                            $(".total_span").html(result.total);
+                            $(".weight_span").html(result.weight);
+                            $(".volume_span").html(result.volume);
+                            $self.closest("tr").remove();
+                            $('.productCount').html('Products ('+result.count+')');
+                            $('.cartCount').html(result.count);
+                        } else {
+                            $self.closest("tr").remove();
+                            $('.remark_div').attr("style", "display: none !important");
+                            $('.products_body').html('<tr><td colspan="10"> Cart is Empty</td></tr>')
+                        }
+                        hide_loader();
+                        // setTimeout(function(){
+                        //     window.location.reload();
+                        // },1500)
+                    }
+                })
+                .fail(function() {
+                    toast_error("error");
+                    hide_loader();
+                });
+            }
+        })
+    });
+
+    $(".filter_product1").select2();
+
+    $(document).on("change",".filter_product1",function(){
+        addToCart();
+    });
+
+    $(document).on("keyup",".addquantity",function(){
+        addToCart();
+    });
+
+    function addToCart(){
+        var product = $(".filter_product1").val();
+        var quantity = $(".addquantity").val();
+        var url = "{{ route('cart.add', ['id' => ":product"]) }}";
+        url = url.replace(":product", product);
+        console.log(product);
+        console.log(quantity);
+        if(product != "" && quantity != ""){
+            $.ajax({
+                url: url,
+                method: "POST",
+                data: {
+                    _token:'{{ csrf_token() }}',
+                    id: product, 
+                    quantity: quantity,
+                    flag: 'Addproduct',
+                }
+            })
+            .done(function(result) {
+                window.location.reload();
+                
+            })
+            .fail(function() {
+                toast_error("error");
+            });
+
+        }
+    }
 });
 </script>
 @endpush

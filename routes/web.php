@@ -222,6 +222,9 @@ Route::middleware(['auth'])->group(function(){
             Route::resource('cart','App\Http\Controllers\CartController');
             Route::post('cart/add/{id}','App\Http\Controllers\CartController@addToCart')->name('cart.add');
             Route::post('cart/remove/{id}','App\Http\Controllers\CartController@removeFromCart')->name('cart.remove');
+
+            Route::post('cart/removeall','App\Http\Controllers\CartController@removeAllFromCart')->name('cart.removeall');
+
             Route::post('cart/update-qty/{id}','App\Http\Controllers\CartController@updateQty')->name('cart.update-qty');
             Route::post('cart/placeOrder','App\Http\Controllers\CartController@placeOrder')->name('cart.placeOrder');
             Route::post('cart/qty-plus/{id}','App\Http\Controllers\CartController@qtyPlus')->name('cart.qty-plus');
