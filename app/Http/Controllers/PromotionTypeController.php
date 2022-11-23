@@ -409,7 +409,7 @@ class PromotionTypeController extends Controller
             });
             
             if($search != ''){
-                $data->where('item_name', 'like', '%' .$search . '%');
+                $data->where('item_name', 'like', '%' .$search . '%')->orwhere('item_code', 'like', '%' .$search . '%');
             }
 
             if($request->product_option == "pattern"){
