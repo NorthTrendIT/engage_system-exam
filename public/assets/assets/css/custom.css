@@ -1155,3 +1155,22 @@ input[type="button"].remove-from-cart {
 .cart-table thead th {
     font-weight: 600;
 }
+
+#myModal .modal-dialog {
+    max-width: 1100px !important;
+}
+
+.custom_add_product{
+    width: auto !important;
+    padding: 10px !important;
+    color: #fff;
+}
+.custom_note{
+    font-size: 12px !important;
+}
+.add_product_close{
+    border: none;
+    font-size: 25px;
+    background: none;
+    padding: 0;
+}

@@ -92,8 +92,7 @@
                                             </div>
                                         </div>                                  
                                     </div>
-                                    <div>
-                                        <input type="checkbox" name="checkall" id="checkall">
+                                    <div>                                        
                                         <input type="button" name="addProduct" value="Add Product" class="btn btn-primary btn-sm addProduct">
                                         <input type="button" name="deleteProduct" id="removeAll" value="Delete" class="btn btn-danger btn-sm" data-url="{{route('cart.removeall')}}">
                                     </div>
@@ -103,7 +102,9 @@
                                         <table class="table cart-table" id="product_id_table">
                                             <thead>
                                                 <tr>
-                                                    <th></th>
+                                                    <th style="display: none;"></th>
+                                                    <th style="display: none;"></th>
+                                                    <th><input type="checkbox" name="checkall" id="checkall"></th>
                                                     <th>#</th>
                                                     <th>Products (<span class="productCount">{{ count($data) }}</span>)</th>
                                                     <th>Quantity</th>
@@ -134,7 +135,7 @@
                                                                     <i class="fas fa-minus"></i>
                                                                 </a>
 
-                                                                <input class="form-control qty" data-url="{{ route('cart.update-qty', $value->id)}}" type="number" min="1" value="{{ $value->qty }}" >
+                                                                <input class="form-control qty text-end" data-url="{{ route('cart.update-qty', $value->id)}}" type="number" min="1" value="{{ $value->qty }}" >
 
                                                                 <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyPlus" data-url="{{ route('cart.qty-plus', $value->id)}}">
                                                                     <i class="fas fa-plus"></i>
@@ -147,13 +148,13 @@
                                                         $customer_id = explode(',', Auth::user()->multi_customer_id);
                                                         $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
                                                     @endphp                    
-                                                    <td>
+                                                    <td class="text-end">
                                                         <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) ) }}</span>
                                                     </td>
-                                                    <td>
+                                                    <td class="text-end">
                                                         <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no)) }}</span>
                                                     </td>
-                                                    <td>
+                                                    <td class="text-end">
                                                         <span class="fw-bolder my-2 price total_price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) * $value->qty ) }}</span>
                                                     </td>
                                                     <td>
@@ -183,13 +184,13 @@
                                             <div class="align-items-sm-center mb-7">
                                                 <div class="">
                                                     <div class="flex-grow-1 me-2">
-                                                        <span class="fs-7 fw-bolder">Remark :</span>
+                                                        <span class="fs-7 fw-bolder">Remarks :</span>
                                                     </div>
                                                     <textarea type="text" class="form-control" placeholder="Remark" id="remark" name="remark" autocomplete="off" rows="5"></textarea>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-xl-4">
+                                        <div class="col-xl-3">
                                             <div class="flex-grow-1 me-2 row">
                                                 <span class="fs-8 col-xl-6">Total Weight:</span>
                                                 <span class="fw-bolder fs-6 col-xl-6 weight_span">0 Kg</span>
@@ -197,13 +198,15 @@
                                             <div class="flex-grow-1 me-2 row">
                                                 <span class="fs-8 col-xl-6">Total Volume:</span>
                                                 <span class="fw-bolder fs-6 col-xl-6 volume_span">0</span>
-                                            </div>
+                                            </div>                                            
+                                        </div>
+                                        <div class="col-xl-4">                                            
                                             <div class="flex-grow-1 me-2 row mb-4">
                                                 <span class="fs-8 col-xl-6">Total:</span>
                                                 <span class="fw-bolder fs-6 col-xl-6 total_span">₱ {{ number_format_value($total) }}</span>
                                             </div>
                                             <div class="flex-grow-1 me-2">
-                                               <p>Note: Prices may be subjected with discount. Final <br>amount of order will reflect on the actual invoice.</p>
+                                               <p class="custom_note">Note: Prices may be subjected with discount. Final <br>amount of order will reflect on the actual invoice.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -216,8 +219,91 @@
                         <button type="submit" href="javascript:;" class="placeOrder btn btn-dark" >PLACE ORDER</button>
                     </div>
                 </div>
-                <input type="hidden" id="product_data" value="{{$products}}">
+                
             </form>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">Add Products</h4>
+                      <button type="button" class="close add_product_cl" data-bs-dismiss="modal">&times;</button>
+                      
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-5 mt-5">
+                                <div class="input-icon">
+                                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search product" name="filter_search1" autocomplete="off">
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 mt-5">
+                                <select class="form-control form-control-lg form-control-solid" name="filter_brand" id="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
+                                    <option value=""></option>
+                                    @foreach($c_product_groups as $key)
+                                    <option value="{{ $key->product_group->group_name }}">{{ $key->product_group->group_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-3 mt-5">
+                                <select class="form-control form-control-lg form-control-solid" name="filter_product_category" id="filter_product_category" data-control="select2" data-hide-search="false" data-placeholder="Select product category" data-allow-clear="true">
+                                    <option value=""></option>
+                                    @foreach($c_product_category as $key => $c)
+                                    <option value="{{ $c }}">{{ $c }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-3 mt-5">
+                                <select class="form-control form-control-lg form-control-solid" name="filter_product_line" id="filter_product_line" data-control="select2" data-hide-search="false" data-placeholder="Select product line" data-allow-clear="true">
+                                    <option value=""></option>
+                                    @foreach($c_product_line as $key => $l)
+                                    <option value="{{ $l->u_item_line }}">{{ @$l->u_item_line_sap_value->value ?? $l->u_item_line }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-3 mt-5">
+                              <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
+                              <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
+                            </div>
+                        </div>
+                        <div class="row mb-5 mt-5">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="table-responsive">
+                                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                                          <thead>
+                                            <tr>
+                                              <th style="width:24px !important">No.</th>
+                                              <th>Name</th>                                      
+                                              <th>Brand</th>
+                                              <th>Product Line</th>
+                                              <th>Product Category</th>
+                                              @if(userrole() != 2)
+                                              <th>Price</th>
+                                              @endif
+                                              <th>Action</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+
+                                          </tbody>
+                                       </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>      
+            </div>
         </div>
     </div>
     <!--begin::Profile Personal Information-->
@@ -228,6 +314,7 @@
 @push('css')
 <!-- Place you css here -->
 <link rel="stylesheet" href="{{ asset('assets') }}/assets/css/datepicker.css" class="href">
+<link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 <style>
     .button-wrap {
         display: flex;
@@ -294,10 +381,13 @@
 </style>
 @endpush
 
+
+
 @push('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" ></script>
+<script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script>
 $(document).ready(function() {
     @php
@@ -635,42 +725,80 @@ $(document).ready(function() {
             $('.address_details_div').hide();
         }
     });
-
-    var m = '{{@$m}}';    
-     products = $("#product_data").val();
-    
-    products = $.parseJSON(products);
+   
     
     $(".addProduct").on("click",function(){
-        var html = '';
-        
-        m = parseInt(m) + 1;
-        html += '<tr class="add-extra-row-cart" id="tr_'+m+'">';
-        html += '<td><input type="checkbox"></td>';
-        html += '<td>'+m+'</td>';
-        html += '<td><select class="form-control filter_product1" name="filter_product1" data-hide-search="false" placeholder="Search product" data-allow-clear="true"><option value="">Select Product</option>';
-        $.each(products, function( index, val ) {
-            html += '<option value="'+val.id+'">'+val.item_name+'</option>';
-        });
-        html += '</select></td>';
-        html += '<td><input type="number" class="form-control addquantity" placeholder="Enter quantity"></td>';
-        html += '<td></td>';
-        html += '<td><span class="fw-bolder price">₱ 0.00</span></td>';
-        html += '<td><span class="fw-bolder price">₱ 0.00</span></td>';
-        html += '<td><span class="fw-bolder price">₱ 0.00</span></td>';
-        html += '<td><input type="button" value="Delete" class="remove_class btn-sm btn btn-danger"></td></tr>';
-        if(m == 1){
-            $(".products_body").html(html);
-        }else{
-            $(".products_body").append(html);
-        }
-        
+        $("#myModal").modal('toggle');
+        render_table();        
     });
 
-    $("#product_id_table").on("click", ".remove_class", function() {
-       $(this).closest("tr").remove();
-       m = parseInt(m) - 1;
+    function render_table(){
+      var table = $("#myTable");
+      table.DataTable().destroy();
+
+      $filter_search = $('[name="filter_product"]').val();
+      $filter_search1 = $('[name="filter_search1"]').val();
+      $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+      $filter_product_category = $('[name="filter_product_category"]').find('option:selected').val();
+      $filter_product_line = $('[name="filter_product_line"]').find('option:selected').val();
+
+      table.DataTable({
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          order: [],
+          ajax: {
+              'url': "{{ route('cart.get.product.list') }}",
+              'type': 'POST',
+              headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+              },
+              data:{
+                filter_search : $filter_search,
+                filter_search1 : $filter_search1,
+                filter_brand : $filter_brand,
+                filter_product_category : $filter_product_category,
+                filter_product_line : $filter_product_line,
+              }
+          },
+          columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'item_name', name: 'item_name'},              
+              {data: 'brand', name: 'brand'},
+              {data: 'u_item_line', name: 'u_item_line'},
+              {data: 'u_tires', name: 'u_tires'},
+              @if(userrole() != 2)
+              {data: 'price', name: 'price', orderable:false,searchable:false},
+              @endif
+              {data: 'action', name: 'action', orderable:false,searchable:false},
+          ],
+          drawCallback:function(){
+              $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+                $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+              })
+          },
+          rowCallback: function( row, data, index ) {
+              var split_price = (data['price']).split(' ');
+              var price = split_price[1].split('.');
+              if (price[0] <= 0) {
+                  $(row).hide();
+              }
+          },  
+          initComplete: function () {
+          }
+        });
+    }
+
+    $(document).on('click', '.search', function(event) {
+      render_table();
     });
+
+    $(document).on('click', '.clear-search', function(event) {
+      $('input').val('');
+      $('select').val('').trigger('change');
+      render_table();
+    })
     
     cartTotal();
 
@@ -810,6 +938,42 @@ $(document).ready(function() {
 
         }
     }
+
+    @if(userdepartment() != 1)
+        $(document).on('click', '.addToCart', function(event) {
+          event.preventDefault();
+          $url = $(this).attr('data-url');
+          $addToCartBtn = $(this);
+          $goToCartBtn = $(this).parent().find('.goToCart');
+            $.ajax({
+                url: $url,
+                method: "POST",
+                data: {
+                        _token:'{{ csrf_token() }}'
+                        }
+                })
+                .done(function(result) {
+                    if(result.status == false){
+                        toast_error(result.message);
+                    }else{
+                        $addToCartBtn.hide();
+                        $goToCartBtn.show();
+                        if(result.count > 0){
+                            $('.cartCount').show();
+                            $('.cartCount').html(result.count);
+                        }
+                        toast_success(result.message);
+                        window.location.reload();
+                        // setTimeout(function(){
+                        //     window.location.reload();
+                        // },1500)
+                    }
+                })
+                .fail(function() {
+                    toast_error("error");
+                });
+        });
+    @endif
 });
 </script>
 @endpush
