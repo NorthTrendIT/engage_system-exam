@@ -229,6 +229,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('cart/placeOrder','App\Http\Controllers\CartController@placeOrder')->name('cart.placeOrder');
             Route::post('cart/qty-plus/{id}','App\Http\Controllers\CartController@qtyPlus')->name('cart.qty-plus');
             Route::post('cart/qty-minus/{id}','App\Http\Controllers\CartController@qtyMinus')->name('cart.qty-minus');
+             Route::post('cart/get-product-list','App\Http\Controllers\CartController@getAllProductList')->name('cart.get.product.list');
 
 
             Route::get('customer-promotion/', 'App\Http\Controllers\CustomerPromotionController@index')->name('customer-promotion.index')/*->middleware('not-super-admin')*/;
