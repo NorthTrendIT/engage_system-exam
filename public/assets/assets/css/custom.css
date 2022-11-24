@@ -1165,6 +1165,11 @@ input[type="button"].remove-from-cart {
     padding: 10px !important;
     color: #fff;
 }
+
+.custom_add_product:hover{    
+    color: #fff !important;
+}
+
 .custom_note{
     font-size: 12px !important;
 }
