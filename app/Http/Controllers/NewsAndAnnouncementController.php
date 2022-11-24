@@ -269,19 +269,19 @@ class NewsAndAnnouncementController extends Controller
                 $fields['filters'] = [];
                 foreach ($connections as $value) {
                     $fields['filters'][] = array("field" => "tag", "key" => "user", "relation"=> "=", "value"=> $value->user_id);
-                }
+                } 
 
                 $message = $notification->title;
 
-                $push = OneSignal::sendPush($fields, $message);
-                if(!empty($push['id'])){
-                    $message = "Notification Send.";
-                    return $response = ['status'=>true,'message'=>$message];
-                }
-                if(!empty($push['errors'])){
-                    $message = $push['errors'][0];
-                    return $response = ['status'=>false,'message'=>$message];
-                }
+                // $push = OneSignal::sendPush($fields, $message);
+                // if(!empty($push['id'])){
+                //     $message = "Notification Send.";
+                //     return $response = ['status'=>true,'message'=>$message];
+                // }
+                // if(!empty($push['errors'])){
+                //     $message = $push['errors'][0];
+                //     return $response = ['status'=>false,'message'=>$message];
+                // }
             }
 
             $response = ['status'=>true,'message'=>$message];
