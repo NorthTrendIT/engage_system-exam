@@ -820,21 +820,26 @@ $(document).ready(function() {
         var Volume = 0;
         $( "#product_id_table tbody tr ").each( function( index ) {
             var str = $(this).children().eq( 9 ).text(); 
-            if(str.length > 0){
-                str = str.replace('₱ ', '');
-                str = str.replace(',', '');
-                str = str.trim();      
-                sum += parseFloat(str);
+            if(str==""){
+                
+            }else{
+                if(str.length > 0){
+                    str = str.replace('₱ ', '');
+                    str = str.replace(',', '');
+                    str = str.trim();      
+                    sum += parseFloat(str);
+                }
+
+                var str1 = $(this).children().eq( 0 ).text(); 
+                var str2 = $(this).children().eq( 5 ).find('.qty').val();
+                var str3 = $(this).children().eq( 1 ).text();
+
+                if(str1.length > 0 && str2.length > 0  && str3.length > 0) {
+                    Weight = parseFloat(str1) * parseFloat(str2);
+                    Volume = parseFloat(str2) * parseFloat(str3);
+                } 
             }
-
-            var str1 = $(this).children().eq( 0 ).text(); 
-            var str2 = $(this).children().eq( 5 ).find('.qty').val();
-            var str3 = $(this).children().eq( 1 ).text();
-
-            if(str1.length > 0 && str2.length > 0  && str3.length > 0) {
-                Weight = parseFloat(str1) * parseFloat(str2);
-                Volume = parseFloat(str2) * parseFloat(str3);
-            }            
+                       
             
         });
 
