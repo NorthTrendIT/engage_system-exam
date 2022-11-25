@@ -93,7 +93,7 @@
                                         </div>                                  
                                     </div>
                                     <div>                                        
-                                        <input type="button" name="addProduct" value="Add Product" class="btn btn-primary btn-sm addProduct">
+                                        
                                         <input type="button" name="deleteProduct" id="removeAll" value="Delete" class="btn btn-danger btn-sm" data-url="{{route('cart.removeall')}}">
                                     </div>
                                    
@@ -166,6 +166,12 @@
                                                     </td>
                                                 </tr>
                                                 @endforeach
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td><input type="button" name="addProduct" value="Add Product" class="btn btn-primary btn-sm addProduct"></td>
+                                                    <td colspan="6"></td>
+                                                </tr>
                                             </tbody>
                                             @else
                                             <tbody class="products_body">
