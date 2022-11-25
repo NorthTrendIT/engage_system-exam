@@ -428,7 +428,7 @@
           url: "{{route('news-and-announcement.store')}}",
           type: "POST",
           data: new FormData($("#myForm")[0]),
-          async: false,
+          //async: false,
           processData: false,
           contentType: false,
           success: function (data) {
