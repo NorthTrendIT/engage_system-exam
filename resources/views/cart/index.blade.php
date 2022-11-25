@@ -178,6 +178,12 @@
                                                 <tr>
                                                     <td colspan="10"> Cart is Empty</td>
                                                 </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td><input type="button" name="addProduct" value="Add Product" class="btn btn-primary btn-sm addProduct"></td>
+                                                    <td colspan="6"></td>
+                                                </tr>
                                             </tbody>
                                             @endif
                                         </table>
