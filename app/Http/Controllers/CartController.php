@@ -36,6 +36,8 @@ class CartController extends Controller
         $address = CustomerBpAddress::whereIn('customer_id', $customer_id)->orderBy('order', 'ASC')->get();
 
         $total = 0;
+        $weight = 0;
+        $volume = 0;
         $data = Cart::with(['product', 'customer'])->whereIn('customer_id', $customer_id)->get();
 
         foreach($data as $item){
@@ -44,6 +46,9 @@ class CartController extends Controller
 
             $subTotal = get_product_customer_price(@$item->product->item_prices, $customer_price_list_no) * $item->qty;
             $total += $subTotal;
+
+            $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
+            $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);
         }
 
         $sales_agent = CustomersSalesSpecialist::with('sales_person')->where('customer_id',$customer_id)->first();
@@ -114,7 +119,7 @@ class CartController extends Controller
 
         }
 
-        return view('cart.index', compact(['data', 'address', 'total','sales_agent','customer','c_product_groups','c_product_category','c_product_line']));
+        return view('cart.index', compact(['data', 'address', 'total','sales_agent','customer','c_product_groups','c_product_category','c_product_line','weight','volume']));
     }
 
     /**
