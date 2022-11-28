@@ -238,6 +238,10 @@ class ReturnOrderReportController extends Controller
             $data->where('sap_connection_id',$request->filter_company);
         }
 
+        /*if($request->engage_transaction != 0){
+            $data->whereNotNull('u_omsno');
+        }*/
+
         return $data;
     }
 

@@ -143,11 +143,9 @@ class OverdueSalesInvoiceReportController extends Controller
         $data->whereDate('doc_date', '<=', $date);
 
         if(Auth::user()->role_id == 4){
-            $data->where(function($query) use ($request) {
-                $query->orwhereHas('customer', function($q1) use ($request){
-                    $q1->where('id', Auth::id());
-                });
-            });
+            $customers = Auth::user()->get_multi_customer_details();
+            $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }else{
             if($request->filter_customer != ""){
                 $data->where(function($query) use ($request) {
