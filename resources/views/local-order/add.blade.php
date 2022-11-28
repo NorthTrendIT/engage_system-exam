@@ -118,7 +118,7 @@
                                                             <td>
                                                                 <div class="form-group">
                                                                     <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
-                                                                        <option value="{{ $value->product->id }}" selected>{{ $value->product->item_name }}</option>
+                                                                        <option value="{{ $value->product->id }}" selected>{{ $value->product->item_name }} (@$value->product->item_code )</option>
                                                                     </select>
                                                                 </div>
                                                             </td>
@@ -285,7 +285,7 @@
                     return {
                         results:  $.map(response, function (item) {
                                     return {
-                                        text: item.item_name,
+                                        text: item.item_name+ " (Code: " + item.item_code + ")",
                                         id: item.id
                                     }
                                 })
@@ -330,7 +330,7 @@
                             return {
                                 results:  $.map(response, function (item) {
                                             return {
-                                                text: item.item_name,
+                                                text: item.item_name+ " (Code: " + item.item_code + ")",
                                                 id: item.id
                                             }
                                         })
