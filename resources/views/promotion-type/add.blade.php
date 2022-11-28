@@ -941,7 +941,7 @@
               return {
                 results:  $.map(response, function (item) {
                               return {
-                                text: item.item_name,
+                                text: item.item_name+ " (Code: " + item.item_code + ")",
                                 id: item.id,
                                 'data-price': item.promotion_price,
                               }
