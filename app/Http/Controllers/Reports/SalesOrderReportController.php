@@ -787,6 +787,8 @@ class SalesOrderReportController extends Controller
 
     public function getAll(Request $request){
 
+        ini_set('memory_limit', '2048M');
+        ini_set('max_execution_time', 3600);
         // For Pending
         $pending_total_sales_orders = $pending_total_sales_quantity = $pending_total_sales_revenue = 0;
         $pending_quotation_item = $this->getDataPendingQuaotation($request);        
