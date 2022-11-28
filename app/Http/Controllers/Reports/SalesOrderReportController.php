@@ -786,7 +786,6 @@ class SalesOrderReportController extends Controller
     }
 
     public function getAll(Request $request){
-
         ini_set('memory_limit', '2048M');
         ini_set('max_execution_time', 3600);
         // For Pending
@@ -915,11 +914,9 @@ class SalesOrderReportController extends Controller
         }
 
         if(Auth::user()->role_id == 4){
-            $pending_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer', function($q1) use ($request){
-                        $q1->where('id', Auth::id());
-                    });
-                });
+            $customers = Auth::user()->get_multi_customer_details();
+            $pending_quotation_item->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $pending_quotation_item->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }else{
             if($request->filter_customer != ""){
                 $pending_quotation_item->where(function($query) use ($request) {
@@ -990,11 +987,9 @@ class SalesOrderReportController extends Controller
         }
 
         if(Auth::user()->role_id == 4){
-            $on_process_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer', function($q1) use ($request){
-                        $q1->where('id', Auth::id());
-                    });
-                });
+            $customers = Auth::user()->get_multi_customer_details();
+            $on_process_quotation_item->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $on_process_quotation_item->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }else{
             if($request->filter_customer != ""){
                 $on_process_quotation_item->where(function($query) use ($request) {
@@ -1064,11 +1059,10 @@ class SalesOrderReportController extends Controller
         }
 
         if(Auth::user()->role_id == 4){
-            $for_delivery_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer', function($q1) use ($request){
-                        $q1->where('id', Auth::id());
-                    });
-                });
+           
+            $customers = Auth::user()->get_multi_customer_details();
+            $for_delivery_quotation_item->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $for_delivery_quotation_item->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }else{
             if($request->filter_customer != ""){
                 $for_delivery_quotation_item->where(function($query) use ($request) {
@@ -1138,11 +1132,9 @@ class SalesOrderReportController extends Controller
         }
 
         if(Auth::user()->role_id == 4){
-            $delivered_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer', function($q1) use ($request){
-                        $q1->where('id', Auth::id());
-                    });
-                });
+            $customers = Auth::user()->get_multi_customer_details();
+            $delivered_quotation_item->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $delivered_quotation_item->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }else{
             if($request->filter_customer != ""){
                 $delivered_quotation_item->where(function($query) use ($request) {
@@ -1213,11 +1205,9 @@ class SalesOrderReportController extends Controller
         }
 
         if(Auth::user()->role_id == 4){
-            $completed_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer', function($q1) use ($request){
-                        $q1->where('id', Auth::id());
-                    });
-                });
+            $customers = Auth::user()->get_multi_customer_details();
+            $completed_quotation_item->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $completed_quotation_item->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }else{
             if($request->filter_customer != ""){
                 $completed_quotation_item->where(function($query) use ($request) {
@@ -1303,11 +1293,9 @@ class SalesOrderReportController extends Controller
         }
 
         if(Auth::user()->role_id == 4){
-            $cancelled_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer', function($q1) use ($request){
-                        $q1->where('id', Auth::id());
-                    });
-                });
+            $customers = Auth::user()->get_multi_customer_details();
+            $cancelled_quotation_item->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $cancelled_quotation_item->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }else{
             if($request->filter_customer != ""){
                 $cancelled_quotation_item->where(function($query) use ($request) {
@@ -1377,11 +1365,9 @@ class SalesOrderReportController extends Controller
                                                     }
 
                                                     if(Auth::user()->role_id == 4){
-                                                        $q->where(function($query) use ($request) {
-                                                                $query->whereHas('customer', function($q1) use ($request){
-                                                                    $q1->where('id', Auth::id());
-                                                                });
-                                                            });
+                                                        $customers = Auth::user()->get_multi_customer_details();
+                                                        $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                                                        $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));                                                        
                                                     }else{
                                                         if($request->filter_customer != ""){
                                                             $q->where(function($query) use ($request) {
@@ -1469,11 +1455,9 @@ class SalesOrderReportController extends Controller
                                                     }
 
                                                     if(Auth::user()->role_id == 4){
-                                                        $q->where(function($query) use ($request) {
-                                                                $query->whereHas('customer', function($q1) use ($request){
-                                                                    $q1->where('id', Auth::id());
-                                                                });
-                                                            });
+                                                        $customers = Auth::user()->get_multi_customer_details();
+                                                        $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                                                        $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id')); 
                                                     }else{
                                                         if($request->filter_customer != ""){
                                                             $q->where(function($query) use ($request) {
@@ -1563,11 +1547,9 @@ class SalesOrderReportController extends Controller
                                                     }
 
                                                     if(Auth::user()->role_id == 4){
-                                                        $q->where(function($query) use ($request) {
-                                                                $query->whereHas('customer', function($q1) use ($request){
-                                                                    $q1->where('id', Auth::id());
-                                                                });
-                                                            });
+                                                        $customers = Auth::user()->get_multi_customer_details();
+                                                        $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                                                        $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id')); 
                                                     }else{
                                                         if($request->filter_customer != ""){
                                                             $q->where(function($query) use ($request) {
@@ -1656,11 +1638,9 @@ class SalesOrderReportController extends Controller
                                                     }
 
                                                     if(Auth::user()->role_id == 4){
-                                                        $q->where(function($query) use ($request) {
-                                                                $query->whereHas('customer', function($q1) use ($request){
-                                                                    $q1->where('id', Auth::id());
-                                                                });
-                                                            });
+                                                        $customers = Auth::user()->get_multi_customer_details();
+                                                        $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                                                        $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id')); 
                                                     }else{
                                                         if($request->filter_customer != ""){
                                                             $q->where(function($query) use ($request) {
@@ -1749,11 +1729,9 @@ class SalesOrderReportController extends Controller
                                                     }
 
                                                     if(Auth::user()->role_id == 4){
-                                                        $q->where(function($query) use ($request) {
-                                                                $query->whereHas('customer', function($q1) use ($request){
-                                                                    $q1->where('id', Auth::id());
-                                                                });
-                                                            });
+                                                        $customers = Auth::user()->get_multi_customer_details();
+                                                        $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                                                        $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id')); 
                                                     }else{
                                                         if($request->filter_customer != ""){
                                                             $q->where(function($query) use ($request) {
@@ -1852,11 +1830,9 @@ class SalesOrderReportController extends Controller
                                                     }
 
                                                     if(Auth::user()->role_id == 4){
-                                                        $q->where(function($query) use ($request) {
-                                                                $query->whereHas('customer', function($q1) use ($request){
-                                                                    $q1->where('id', Auth::id());
-                                                                });
-                                                            });
+                                                        $customers = Auth::user()->get_multi_customer_details();
+                                                        $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                                                        $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id')); 
                                                     }else{
                                                         if($request->filter_customer != ""){
                                                             $q->where(function($query) use ($request) {
