@@ -148,14 +148,29 @@
                   <span class="count text-warning fw-bold fs-1 number_of_sales_orders_pending_count">0</span>
                 </div>
 
+                <div class="col-md-4 bg-light-dark px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
+                  <a href="javascript:" class="text-dark fw-bold fs-6">On Process</a>
+                  <span class="count text-dark fw-bold fs-1 number_of_sales_orders_on_process_count">0</span>
+                </div>
+
+                <div class="col-md-4 bg-light-info px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
+                  <a href="javascript:" class="text-info fw-bold fs-6">For Delivery</a>
+                  <span class="count text-info fw-bold fs-1 number_of_sales_orders_for_delivery_count">0</span>
+                </div>
+
+                <div class="col-md-4 bg-light-primary px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
+                  <a href="javascript:" class="text-primary fw-bold fs-6">Delivered</a>
+                  <span class="count text-primary fw-bold fs-1 number_of_sales_orders_delivered_count">0</span>
+                </div>
+
                 <div class="col-md-4 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
-                  <a href="javascript:" class="text-success fw-bold fs-6">Approved</a>
-                  <span class="count text-success fw-bold fs-1 number_of_sales_orders_approved_count">0</span>
+                  <a href="javascript:" class="text-success fw-bold fs-6">Completed</a>
+                  <span class="count text-success fw-bold fs-1 number_of_sales_orders_completed_count">0</span>
                 </div>
 
                 <div class="col-md-4 bg-light-danger px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
-                  <a href="javascript:" class="text-danger fw-bold fs-6">Disapproved</a>
-                  <span class="count text-danger fw-bold fs-1 number_of_sales_orders_disapproved_count">0</span>
+                  <a href="javascript:" class="text-danger fw-bold fs-6">Cancelled</a>
+                  <span class="count text-danger fw-bold fs-1 number_of_sales_orders_cancelled_count">0</span>
                 </div>
               </div>
 
@@ -185,14 +200,29 @@
                   <span class="count text-warning fw-bold fs-1 total_sales_quantity_pending_count">0</span>
                 </div>
 
+                <div class="col-md-4 bg-light-dark px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
+                  <a href="javascript:" class="text-dark fw-bold fs-6">On Process </a>
+                  <span class="count text-dark fw-bold fs-1 total_sales_quantity_on_process_count">0</span>
+                </div>
+
+                <div class="col-md-4 bg-light-info px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
+                  <a href="javascript:" class="text-info fw-bold fs-6">For Delivery </a>
+                  <span class="count text-info fw-bold fs-1 total_sales_quantity_for_delivery_count">0</span>
+                </div>
+
+                <div class="col-md-4 bg-light-primary px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
+                  <a href="javascript:" class="text-primary fw-bold fs-6">Delivered</a>
+                  <span class="count text-primary fw-bold fs-1 total_sales_quantity_delivered_count">0</span>
+                </div>
+
                 <div class="col-md-4 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
-                  <a href="javascript:" class="text-success fw-bold fs-6">Approved</a>
-                  <span class="count text-success fw-bold fs-1 total_sales_quantity_approved_count">0</span>
+                  <a href="javascript:" class="text-success fw-bold fs-6">Completed</a>
+                  <span class="count text-success fw-bold fs-1 total_sales_quantity_completed_count">0</span>
                 </div>
 
                 <div class="col-md-4 bg-light-danger px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
-                  <a href="javascript:" class="text-danger fw-bold fs-6">Disapproved</a>
-                  <span class="count text-danger fw-bold fs-1 total_sales_quantity_disapproved_count">0</span>
+                  <a href="javascript:" class="text-danger fw-bold fs-6">Cancelled</a>
+                  <span class="count text-danger fw-bold fs-1 total_sales_quantity_cancelled_count">0</span>
                 </div>
               </div>
 
@@ -221,15 +251,31 @@
                   <span class="count text-warning fw-bold fs-1 total_sales_revenue_pending_count">0</span>
                 </div>
 
+                <div class="col-md-4 bg-light-dark px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
+                  <a href="javascript:" class="text-dark fw-bold fs-6">On Process </a>
+                  <span class="count text-dark fw-bold fs-1 total_sales_revenue_on_process_count">0</span>
+                </div>
+
+                <div class="col-md-4 bg-light-info px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
+                  <a href="javascript:" class="text-info fw-bold fs-6">For Delivery </a>
+                  <span class="count text-info fw-bold fs-1 total_sales_revenue_for_delivery_count">0</span>
+                </div>
+
+                <div class="col-md-4 bg-light-primary px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
+                  <a href="javascript:" class="text-primary fw-bold fs-6">Delivered</a>
+                  <span class="count text-primary fw-bold fs-1 total_sales_revenue_delivered_count">0</span>
+                </div>
+
                 <div class="col-md-4 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
-                  <a href="javascript:" class="text-success fw-bold fs-6">Approved</a>
-                  <span class="count text-success fw-bold fs-1 total_sales_revenue_approved_count">0</span>
+                  <a href="javascript:" class="text-success fw-bold fs-6">Completed</a>
+                  <span class="count text-success fw-bold fs-1 total_sales_revenue_completed_count">0</span>
                 </div>
 
                 <div class="col-md-4 bg-light-danger px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
-                  <a href="javascript:" class="text-danger fw-bold fs-6">Disapproved</a>
-                  <span class="count text-danger fw-bold fs-1 total_sales_revenue_disapproved_count">0</span>
+                  <a href="javascript:" class="text-danger fw-bold fs-6">Cancelled</a>
+                  <span class="count text-danger fw-bold fs-1 total_sales_revenue_cancelled_count">0</span>
                 </div>
+
               </div>
 
 
@@ -307,15 +353,25 @@
           $('.number_of_sales_orders_pending_count').text(result.data.pending_total_sales_orders);
           $('.number_of_sales_orders_approved_count').text(result.data.approved_total_sales_orders);
           $('.number_of_sales_orders_disapproved_count').text(result.data.disapproved_total_sales_orders);
+          $('.number_of_sales_orders_on_process_count').text(result.data.on_process_total_sales_orders);
+          $(".number_of_sales_orders_for_delivery_count").text(result.data.for_delivery_total_sales_orders);
+          $(".number_of_sales_orders_delivered_count").text(result.data.delivered_total_sales_orders);
+          $(".number_of_sales_orders_completed_count").text(result.data.completed_total_sales_orders);
+          $('.number_of_sales_orders_cancelled_count').text(result.data.cancelled_total_sales_orders);
 
           $('.total_sales_quantity_pending_count').text(result.data.pending_total_sales_quantity);
-          $('.total_sales_quantity_approved_count').text(result.data.approved_total_sales_quantity);
-          $('.total_sales_quantity_disapproved_count').text(result.data.disapproved_total_sales_quantity);
+          $('.total_sales_quantity_on_process_count').text(result.data.on_process_total_sales_quantity);
+          $('.total_sales_quantity_for_delivery_count').text(result.data.for_delivery_total_sales_quantity);
+          $('.total_sales_quantity_delivered_count').text(result.data.delivered_total_sales_quantity);
+          $('.total_sales_quantity_completed_count').text(result.data.completed_total_sales_quantity);
+          $('.total_sales_quantity_cancelled_count').text(result.data.cancelled_total_sales_quantity);
 
           $('.total_sales_revenue_pending_count').text("₱ " + get_format_number_value(result.data.pending_total_sales_revenue));
-          $('.total_sales_revenue_approved_count').text("₱ " + get_format_number_value(result.data.approved_total_sales_revenue));
-          $('.total_sales_revenue_disapproved_count').text("₱ " + get_format_number_value(result.data.disapproved_total_sales_revenue));
-
+          $('.total_sales_revenue_on_process_count').text("₱ " + get_format_number_value(result.data.on_process_total_sales_revenue));
+          $('.total_sales_revenue_for_delivery_count').text("₱ " + get_format_number_value(result.data.for_delivery_total_sales_revenue));
+          $('.total_sales_revenue_delivered_count').text("₱ " + get_format_number_value(result.data.delivered_total_sales_revenue));
+          $('.total_sales_revenue_completed_count').text("₱ " + get_format_number_value(result.data.completed_total_sales_revenue));
+          $('.total_sales_revenue_cancelled_count').text("₱ " + get_format_number_value(result.data.cancelled_total_sales_revenue));
 
           render_pie_chart(result.data);
 
@@ -331,9 +387,13 @@
 
       {{-- Number of Sales Orders --}}
       var data = [
+
             { label: "Pending", data: result.pending_total_sales_orders, color: KTUtil.getCssVariableValue("--bs-active-warning") },
-            { label: "Approved", data: result.approved_total_sales_orders, color: KTUtil.getCssVariableValue("--bs-active-success") },
-            { label: "Disapproved", data: result.disapproved_total_sales_orders, color: KTUtil.getCssVariableValue("--bs-active-danger") },
+            { label: "On Process", data: result.on_process_total_sales_orders, color: KTUtil.getCssVariableValue("--bs-active-dark") },
+            { label: "For Delivery", data: result.for_delivery_total_sales_orders, color: KTUtil.getCssVariableValue("--bs-active-info") },
+            { label: "Delivered", data: result.delivered_total_sales_orders, color: KTUtil.getCssVariableValue("--bs-active-primary") },
+            { label: "Completed", data: result.completed_total_sales_orders, color: KTUtil.getCssVariableValue("--bs-active-success") },
+            { label: "Cancelled", data: result.cancelled_total_sales_orders, color: KTUtil.getCssVariableValue("--bs-active-danger") }
           ];
 
       $.plot('#number_of_sales_orders_pie_chart_div', data, {
@@ -358,7 +418,7 @@
         },
       });
 
-      if(result.pending_total_sales_orders == 0 && result.approved_total_sales_orders == 0 && result.disapproved_total_sales_orders == 0){
+      if(result.pending_total_sales_orders == 0 && result.on_process_total_sales_orders == 0 && result.for_delivery_total_sales_orders == 0 && result.delivered_total_sales_orders == 0 && result.completed_total_sales_orders == 0 && result.cancelled_total_sales_orders == 0){
         $('#number_of_sales_orders_pie_chart_div').removeClass('h-500px');
       }
 
@@ -366,8 +426,11 @@
       {{-- Total Sales Quantity --}}
       var data = [
             { label: "Pending", data: result.pending_total_sales_quantity, color: KTUtil.getCssVariableValue("--bs-active-warning") },
-            { label: "Approved", data: result.approved_total_sales_quantity, color: KTUtil.getCssVariableValue("--bs-active-success") },
-            { label: "Disapproved", data: result.disapproved_total_sales_quantity, color: KTUtil.getCssVariableValue("--bs-active-danger") },
+            { label: "On Process", data: result.on_process_total_sales_quantity, color: KTUtil.getCssVariableValue("--bs-active-dark") },
+            { label: "For Delivery", data: result.for_delivery_total_sales_quantity, color: KTUtil.getCssVariableValue("--bs-active-info") },
+            { label: "Delivered", data: result.delivered_total_sales_quantity, color: KTUtil.getCssVariableValue("--bs-active-primary") },
+            { label: "Completed", data: result.completed_total_sales_quantity, color: KTUtil.getCssVariableValue("--bs-active-success") },
+            { label: "Cancelled", data: result.cancelled_total_sales_quantity, color: KTUtil.getCssVariableValue("--bs-active-danger") }
           ];
           
       $.plot('#total_sales_quantity_pie_chart_div', data, {
@@ -399,8 +462,11 @@
       {{-- Total Sales Revenue --}}
       var data = [
             { label: "Pending", data: result.pending_total_sales_revenue, color: KTUtil.getCssVariableValue("--bs-active-warning") },
-            { label: "Approved", data: result.approved_total_sales_revenue, color: KTUtil.getCssVariableValue("--bs-active-success") },
-            { label: "Disapproved", data: result.disapproved_total_sales_revenue, color: KTUtil.getCssVariableValue("--bs-active-danger") },
+            { label: "On Process", data: result.on_process_total_sales_revenue, color: KTUtil.getCssVariableValue("--bs-active-dark") },
+            { label: "For Delivery", data: result.for_delivery_total_sales_revenue, color: KTUtil.getCssVariableValue("--bs-active-info") },
+            { label: "Delivered", data: result.delivered_total_sales_revenue, color: KTUtil.getCssVariableValue("--bs-active-primary") },
+            { label: "Completed", data: result.completed_total_sales_revenue, color: KTUtil.getCssVariableValue("--bs-active-success") },
+            { label: "Cancelled", data: result.cancelled_total_sales_revenue, color: KTUtil.getCssVariableValue("--bs-active-danger") }
           ];
           
       $.plot('#total_sales_revenue_pie_chart_div', data, {
