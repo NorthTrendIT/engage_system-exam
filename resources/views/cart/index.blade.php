@@ -176,7 +176,7 @@
                                             @else
                                             <tbody class="products_body">
                                                 <tr>
-                                                    <td colspan="10"> Cart is Empty</td>
+                                                    <td colspan="10" style="font-size:15px;text-align:center;"> Cart is Empty</td>
                                                 </tr>
                                                 <tr>
                                                     <td></td>
@@ -205,11 +205,11 @@
                                         <div class="col-xl-3">
                                             <div class="flex-grow-1 me-2 row">
                                                 <span class="fs-8 col-xl-6">Total Weight:</span>
-                                                <span class="fw-bolder fs-6 col-xl-6 weight_span">0 Kg</span>
+                                                <span class="fw-bolder fs-6 col-xl-6 weight_span">{{@$weight.".00" ?? 0}} Kg</span>
                                             </div>  
                                             <div class="flex-grow-1 me-2 row">
                                                 <span class="fs-8 col-xl-6">Total Volume:</span>
-                                                <span class="fw-bolder fs-6 col-xl-6 volume_span">0</span>
+                                                <span class="fw-bolder fs-6 col-xl-6 volume_span">{{@$volume.".00" ?? 0}}</span>
                                             </div>                                            
                                         </div>
                                         <div class="col-xl-4">                                            
@@ -515,7 +515,8 @@ $(document).ready(function() {
                         } else {
                             $self.closest("tr").remove();
                             $('.remark_div').attr("style", "display: none !important");
-                            $('.products_body').html('<tr><td colspan="10"> Cart is Empty</td></tr>')
+                            $('.products_body').html('<tr><td colspan="10" style="font-size:15px;text-align:center;"> Cart is Empty</td></tr>');
+                            window.location.reload();
                         }
                         hide_loader();
                         // setTimeout(function(){
@@ -812,44 +813,57 @@ $(document).ready(function() {
       render_table();
     })
     
-    cartTotal();
+    //cartTotal();
 
     function cartTotal(){
         var sum = 0;
-        var Weight = 0;
-        var Volume = 0;
+        var weight = 0;
+        var volume = 0;
         $( "#product_id_table tbody tr ").each( function( index ) {
             var str = $(this).children().eq( 9 ).text(); 
             if(str==""){
                 
             }else{
-                if(str.length > 0){
-                    str = str.replace('₱ ', '');
-                    str = str.replace(',', '');
-                    str = str.trim();      
-                    sum += parseFloat(str);
-                }
+                str = str.replace('₱ ', '');
+                str = str.replace(',', '');
+                str = str.trim();      
+                sum += parseFloat(str);
 
                 var str1 = $(this).children().eq( 0 ).text(); 
                 var str2 = $(this).children().eq( 5 ).find('.qty').val();
                 var str3 = $(this).children().eq( 1 ).text();
 
-                if(str1.length > 0 && str2.length > 0  && str3.length > 0) {
-                    Weight = parseFloat(str1) * parseFloat(str2);
-                    Volume = parseFloat(str2) * parseFloat(str3);
-                } 
-            }
-                       
+                weight = weight + parseFloat(str1) * parseFloat(str2);
+                volume = volume + parseFloat(str2) * parseFloat(str3);
+            }                       
             
         });
 
-        sum = sum.toString().split(".");
-        sum[0] = sum[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        sum = sum.join("."); 
-
+        if(sum.includes(".")){
+            sum = sum.toString().split(".");
+            sum[0] = sum[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            sum[1] = sum[1].substring(0, 2);
+            sum = sum.join(".");
+        }else{
+            sum = sum + ".00";
+        }        
         $(".total_span").html(sum);
-        $(".weight_span").html(Weight);
-        $(".volume_span").html(Volume);
+
+        if(weight.indexOf(".") > -1){
+            weight = weight.toString().split(".");
+            weight[0] = weight[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            weight[1] = weight[1].substring(0, 2);
+            weight = weight.join(".");
+        }else{
+            weight = weight + ".00";
+        }
+        $(".weight_span").html(weight);
+
+        volume = volume.toString().split(".");
+        volume[0] = volume[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        volume[1] = volume[1].substring(0, 2);
+        volume = volume.join(".");
+        $(".volume_span").html(volume);
     }
 
     $("#checkall").click(function() {
@@ -906,7 +920,8 @@ $(document).ready(function() {
                         } else {
                             $self.closest("tr").remove();
                             $('.remark_div').attr("style", "display: none !important");
-                            $('.products_body').html('<tr><td colspan="10"> Cart is Empty</td></tr>')
+                            $('.products_body').html('<tr><td colspan="10" style="font-size:15px;text-align:center;"> Cart is Empty</td></tr>');
+                            window.location.reload();
                         }
                         hide_loader();
                         // setTimeout(function(){
@@ -937,8 +952,6 @@ $(document).ready(function() {
         var quantity = $(".addquantity").val();
         var url = "{{ route('cart.add', ['id' => ":product"]) }}";
         url = url.replace(":product", product);
-        console.log(product);
-        console.log(quantity);
         if(product != "" && quantity != ""){
             $.ajax({
                 url: url,
@@ -986,9 +999,6 @@ $(document).ready(function() {
                         }
                         toast_success(result.message);
                         window.location.reload();
-                        // setTimeout(function(){
-                        //     window.location.reload();
-                        // },1500)
                     }
                 })
                 .fail(function() {
