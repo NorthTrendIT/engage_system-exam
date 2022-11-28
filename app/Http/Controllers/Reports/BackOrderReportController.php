@@ -242,8 +242,10 @@ class BackOrderReportController extends Controller
         }
 
         if(Auth::user()->role_id == 4){
-            $data->whereHas('order.customer', function($q) use ($request) {
-                $q->where('id', Auth::id());
+            $customers = Auth::user()->get_multi_customer_details();            
+            $data->whereHas('order', function($q) use ($customers) {
+                $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
             });
         }else{
             if(@$request->filter_customer != ""){
