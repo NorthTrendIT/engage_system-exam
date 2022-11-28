@@ -78,6 +78,80 @@
                 </div>
                 <!--end::List Widget 6-->
             </div>
+
+            @if(Auth::user()->role_id == 4)
+            <div class="col-xl-8">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-sm-5 mb-md-0 mb-lg-0">
+                                <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center mb-5">
+                                    <a href="" class="text-warning fw-bold fs-6">Total Pending Orders </a>
+                                    <span class="count text-warning fw-bold fs-1">
+                                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
+                                    <span class="sales_order_to_invoice_lead_time_count">{{@$dashboard['total_pending_order']}}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-sm-5 mb-md-0 mb-lg-0">
+                                <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center mb-5">
+                                    <a href="" class="text-warning fw-bold fs-6">Total On Process Orders</a>
+                                    <span class="count text-warning fw-bold fs-1">
+                                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
+                                    <span class="sales_order_to_invoice_lead_time_count">{{@$dashboard['total_on_process_order']}}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-sm-5 mb-md-0 mb-lg-0">
+                                <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center mb-5">
+                                    <a href="" class="text-warning fw-bold fs-6">Total For Delivery Orders</a>
+                                    <span class="count text-warning fw-bold fs-1">
+                                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
+                                    <span class="sales_order_to_invoice_lead_time_count">{{@$dashboard['total_for_delivery_order']}}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-sm-5 mb-md-0 mb-lg-0">
+                                <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center mb-5">
+                                    <a href="" class="text-warning fw-bold fs-6">Total Delivered Orders</a>
+                                    <span class="count text-warning fw-bold fs-1">
+                                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
+                                    <span class="sales_order_to_invoice_lead_time_count">{{@$dashboard['total_delivered_order']}}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-sm-5 mb-md-0 mb-lg-0">
+                                <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center mb-5">
+                                    <a href="" class="text-warning fw-bold fs-6">Total Back Order Products</a>
+                                    <span class="count text-warning fw-bold fs-1">
+                                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
+                                    <span class="sales_order_to_invoice_lead_time_count">{{@$dashboard['total_back_order']}}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-sm-5 mb-md-0 mb-lg-0">
+                                <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center mb-5">
+                                    <a href="" class="text-warning fw-bold fs-6">Total Overdue Invoices</a>
+                                    <span class="count text-warning fw-bold fs-1">
+                                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
+                                    <span class="sales_order_to_invoice_lead_time_count">{{@$dashboard['total_overdue_invoice']}}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-sm-5 mb-md-0 mb-lg-0">
+                                <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center mb-5">
+                                    <a href="" class="text-warning fw-bold fs-6">Total Overdue Amount</a>
+                                    <span class="count text-warning fw-bold fs-1">
+                                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
+                                    <span class="sales_order_to_invoice_lead_time_count">{{@$dashboard['total_amount_of_overdue_invoices']}}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+            </div>
+            @endif
             <!--end::Col-->
             @endif
            <!--begin::Col-->
@@ -179,7 +253,7 @@
                                     </span>
                               </div>
                             </div>
-                        </div>
+                        </div>                        
                     </div>
                 </div>
             </div>
