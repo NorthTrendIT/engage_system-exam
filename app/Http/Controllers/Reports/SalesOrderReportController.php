@@ -892,13 +892,16 @@ class SalesOrderReportController extends Controller
     }
 
     public function getDataPendingQuaotation($request){
-        $pending_quotation_item = Quotation::doesntHave('order')
-                                    ->where('document_status','bost_Open')
-                                    ->where('cancelled', "No");
+        // $pending_quotation_item = Quotation::doesntHave('order')
+        //                             ->where('document_status','bost_Open')
+        //                             ->where('cancelled', "No");
+        $pending_quotation_item = Quotation::whereNotNull('u_omsno');
 
-        if($request->engage_transaction != 0){
-           $pending_quotation_item->whereNotNull('u_omsno');
-        }
+        $pending_quotation_item->has('order', '<', 1);
+
+        // if($request->engage_transaction != 0){
+        //    $pending_quotation_item->whereNotNull('u_omsno');
+        // }
 
         if($request->filter_company != ""){
             $pending_quotation_item->where('sap_connection_id',$request->filter_company);
@@ -1039,7 +1042,7 @@ class SalesOrderReportController extends Controller
 
     public function getDataForDeliveryQuotation($request){
         $for_delivery_quotation_item = Quotation::whereNotNull('u_omsno')->where('cancelled','No')                            ->whereHas('order.invoice',function($q){
-                                            $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat','!=', 'DL')->where('u_sostat','!=', 'CM');
+                                            $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat','FD');
                                         });
         if($request->engage_transaction != 0){
             $for_delivery_quotation_item->whereNotNull('u_omsno');
@@ -1257,7 +1260,7 @@ class SalesOrderReportController extends Controller
 
     public function getDataCancelledQuotation($request){
 
-        $cancelled_quotation_item = Quotation::whereNotNull('u_omsno')->where('cancelled','No')
+        $cancelled_quotation_item = Quotation::whereNotNull('u_omsno')
                                                 ->where(function($query){
                                                     $query->orwhere(function($q){
                                                         $q->where('cancelled', 'Yes');
