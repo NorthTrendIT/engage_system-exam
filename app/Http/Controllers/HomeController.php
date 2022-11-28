@@ -49,16 +49,92 @@ class HomeController extends Controller
 
             $sales_order_to_invoice_lead_time = SystemSetting::where('key', 'sales_order_to_invoice_lead_time')->first();
             $invoice_to_delivery_lead_time = SystemSetting::where('key', 'invoice_to_delivery_lead_time')->first();
-
+            
             return view('dashboard.index', compact('sales_order_to_invoice_lead_time','invoice_to_delivery_lead_time','local_order','promotion'));
         }
 
         if(Auth::user()->role_id != 1){
             $notification = getMyNotifications();
-            return view('dashboard.index', compact('notification'));
+
+            $dashboard = [];
+
+            if(userrole() == 4){
+                $customers = Auth::user()->get_multi_customer_details();
+
+                $total_pending_order = Quotation::whereNotNull('u_omsno')->where('cancelled','No')->doesntHave('order')->whereIn('card_code', array_column($customers->toArray(), 'card_code'))->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))->count();
+
+                $total_on_process_order = Order::whereNotNull('u_omsno')->where('cancelled','No')->doesntHave('invoice')->whereIn('card_code', array_column($customers->toArray(), 'card_code'))->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))->count();
+
+                $total_for_delivery_order = Quotation::whereNotNull('u_omsno')
+                                    ->where('cancelled','No')
+                                    ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
+                                    ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
+                                    ->whereHas('order.invoice',function($q){
+                                         $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat','!=', 'DL')->where('u_sostat','!=', 'CM');
+                                    })->count();
+
+                $total_delivered_order = Quotation::whereNotNull('u_omsno')
+                                    ->where('cancelled','No')
+                                    ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
+                                    ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
+                                    ->whereHas('order.invoice',function($q){
+                                         $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', 'DL');
+                                    })->count();
+
+                $total_back_order = OrderItem::where('remaining_open_quantity', '>', 0);
+                $total_back_order->whereHas('order', function($q){
+                    $q->where('document_status', 'bost_Open');
+                    $q->where('cancelled', 'No');
+                    $q->whereIn('u_sostat', ['OP']);
+                    $q->whereNotNull('u_omsno');               
+                });
+                $total_back_order->whereHas('order.customer', function($q) {
+                    $q->where('id', Auth::id());
+                });
+                $total_back_order = $total_back_order->count();
+
+                $total = $this->getReportResultData();
+                $number_of_overdue_invoices = $total->count();
+                $total_amount_of_overdue_invoices = $total->sum('doc_total');
+
+                $dashboard['total_pending_order'] = $total_pending_order;
+                $dashboard['total_on_process_order'] = $total_on_process_order;
+                $dashboard['total_for_delivery_order'] = $total_for_delivery_order;
+                $dashboard['total_delivered_order'] = $total_delivered_order;
+                $dashboard['total_back_order'] = $total_back_order;
+                $dashboard['total_overdue_invoice'] = $number_of_overdue_invoices;
+                $dashboard['total_amount_of_overdue_invoices'] = $total_amount_of_overdue_invoices;
+            }
+
+            return view('dashboard.index', compact('notification','dashboard'));
         }
 
     	return view('dashboard.index');
+    }
+
+    public function getReportResultData(){
+        $date = date('Y-m-d', strtotime('-2 months'));
+
+        $data = Invoice::orderBy('created_at', 'DESC');
+
+        $data->where(function($query){
+            $query->orwhere(function($q){
+                $q->where('cancelled', '!=','No')->where('document_status', '!=', 'Cancelled');
+            });
+
+            $query->orwhere(function($q){
+                $q->where('u_sostat', '!=','CM')->where('document_status', 'bost_Open');
+            });
+        });
+
+        $data->where(function($query) {
+            $query->orwhereHas('customer', function($q1) {
+                $q1->where('id', Auth::id());
+            });
+        });
+
+        $data->whereDate('doc_date', '<=', $date);
+        return $data;
     }
 
     public function ckeditorImageUpload(Request $request){
