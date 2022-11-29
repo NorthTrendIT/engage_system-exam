@@ -790,9 +790,9 @@ class SalesOrderReportController extends Controller
         ini_set('max_execution_time', 3600);
         // For Pending
         $pending_total_sales_orders = $pending_total_sales_quantity = $pending_total_sales_revenue = 0;
-        $pending_quotation_item = $this->getDataPendingQuaotation($request);        
+        $pending_quotation_item = $this->getResultData($request,'PN');        
         $pending_quotation_item = $pending_quotation_item->get()->toArray();
-        $pending_total_sales_orders = count($pending_quotation_item);
+        $pending_total_sales_orders = count($pending_quotation_item);        
         $pending_quotation_item_quan = $this->getPendingQuationQuantity($request);
         $pending_quotation_item_quan = $pending_quotation_item_quan->get()->toArray();
         if(!empty($pending_quotation_item_quan)){
@@ -802,7 +802,7 @@ class SalesOrderReportController extends Controller
 
         // On Process
         $on_process_total_sales_orders = $on_process_total_sales_quantity = $on_process_total_sales_revenue = 0;
-        $on_process_quotation_item = $this->getDataOnProcessQuaotation($request);        
+        $on_process_quotation_item = $this->getResultData($request,'OP');        
         $on_process_quotation_item = $on_process_quotation_item->get()->toArray();
         $on_process_total_sales_orders = count($on_process_quotation_item);
         $on_process_quotation_item_quan = $this->getOnProcessQuationQuantity($request);
@@ -814,7 +814,7 @@ class SalesOrderReportController extends Controller
 
         // For Deleivery
         $for_delivery_total_sales_orders = $for_delivery_total_sales_quantity = $for_delivery_total_sales_revenue = 0;
-        $for_delivery_quotation_item = $this->getDataForDeliveryQuotation($request);        
+        $for_delivery_quotation_item = $this->getResultData($request,'FD');        
         $for_delivery_quotation_item = $for_delivery_quotation_item->get()->toArray();
         $for_delivery_total_sales_orders = count($for_delivery_quotation_item);
         $for_delivery_quotation_item_quan = $this->getForDeliveryQuationQuantity($request);
@@ -826,7 +826,7 @@ class SalesOrderReportController extends Controller
 
         // Delivered
         $delivered_total_sales_orders = $delivered_total_sales_quantity = $delivered_total_sales_revenue = 0;
-        $delivered_quotation_item = $this->getDataDeliveredQuotation($request);        
+        $delivered_quotation_item = $this->getResultData($request,'DL');        
         $delivered_quotation_item = $delivered_quotation_item->get()->toArray();
         $delivered_total_sales_orders = count($delivered_quotation_item);
         $deleivered_quotation_item_quan = $this->getDeliveredQuationQuantity($request);
@@ -837,8 +837,8 @@ class SalesOrderReportController extends Controller
         }
 
         // Completed
-        $completed_total_sales_orders = $completed_total_sales_quantity = $completed_total_sales_revenue = 0;
-        $completed_quotation_item = $this->getDataCompletedQuotation($request);        
+        $completed_total_sales_orders = $completed_total_sales_quantity = $completed_total_sales_revenue = 0;   
+        $completed_quotation_item = $this->getResultData($request,'CM');     
         $completed_quotation_item = $completed_quotation_item->get()->toArray();
         $completed_total_sales_orders = count($completed_quotation_item);
         $completed_quotation_item_quan = $this->getCompletedQuationQuantity($request);
@@ -850,7 +850,7 @@ class SalesOrderReportController extends Controller
 
         // Cancelled
         $cancelled_total_sales_orders = $cancelled_total_sales_quantity = $cancelled_total_sales_revenue = 0;
-        $cancelled_quotation_item = $this->getDataCancelledQuotation($request);
+        $cancelled_quotation_item = $this->getResultData($request,'CL');
         $cancelled_quotation_item = $cancelled_quotation_item->get()->toArray();
         $cancelled_total_sales_orders = count($cancelled_quotation_item);
         $cancelled_quotation_item_quan = $this->getCancelledQuationQuantity($request);
@@ -889,461 +889,6 @@ class SalesOrderReportController extends Controller
 
         $response = [ 'status' => true, 'data' => $data, 'message' => 'Report details fetched successfully!'];
         return $response;
-    }
-
-    public function getDataPendingQuaotation($request){
-        // $pending_quotation_item = Quotation::doesntHave('order')
-        //                             ->where('document_status','bost_Open')
-        //                             ->where('cancelled', "No");
-        $pending_quotation_item = Quotation::whereNotNull('u_omsno');
-
-        $pending_quotation_item->has('order', '<', 1);
-
-        // if($request->engage_transaction != 0){
-        //    $pending_quotation_item->whereNotNull('u_omsno');
-        // }
-
-        if($request->filter_company != ""){
-            $pending_quotation_item->where('sap_connection_id',$request->filter_company);
-        }
-
-        if($request->filter_date_range != ""){
-            $date = explode(" - ", $request->filter_date_range);
-            $start = date("Y-m-d", strtotime($date[0]));
-            $end = date("Y-m-d", strtotime($date[1]));
-
-            $pending_quotation_item->whereDate('doc_date', '>=' , $start);
-            $pending_quotation_item->whereDate('doc_date', '<=' , $end);
-        }
-
-        if(Auth::user()->role_id == 4){
-            $customers = Auth::user()->get_multi_customer_details();
-            $pending_quotation_item->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-            $pending_quotation_item->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        }else{
-            if($request->filter_customer != ""){
-                $pending_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer', function($q1) use ($request){
-                        $q1->where('id', $request->filter_customer);
-                    });
-                });
-            }
-        }
-
-        if($request->filter_manager != ""){
-            $pending_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
-                    $q1->where('ss_id', $salesAgent);
-                });
-            });
-        }
-
-        if(Auth::user()->role_id == 6){
-            $pending_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
-                    $q1->where('ss_id', $salesAgent);
-                });
-            });
-        }
-                                                    
-        if(Auth::user()->role_id == 2){
-            $pending_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                        $q1->where('ss_id', Auth::id());
-                    });
-                });
-        }else{
-            if($request->filter_sales_specialist != ""){
-                $pending_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                        $q1->where('ss_id', $request->filter_sales_specialist);
-                    });
-                });
-            }
-        }
-
-        return $pending_quotation_item;
-    }
-
-    public function getDataOnProcessQuaotation($request){
-        $on_process_quotation_item = Quotation::whereNotNull('u_omsno')->where('cancelled','No')
-                                    ->whereHas('order',function($q){
-                                        $q->where('document_status', 'bost_Open')->doesntHave('invoice');
-                                    });
-        if($request->engage_transaction != 0){
-            $on_process_quotation_item->whereNotNull('u_omsno');
-        }
-
-        if($request->filter_company != ""){
-            $on_process_quotation_item->where('sap_connection_id',$request->filter_company);
-        }
-
-        if($request->filter_date_range != ""){
-            $date = explode(" - ", $request->filter_date_range);
-            $start = date("Y-m-d", strtotime($date[0]));
-            $end = date("Y-m-d", strtotime($date[1]));
-
-            $on_process_quotation_item->whereDate('doc_date', '>=' , $start);
-            $on_process_quotation_item->whereDate('doc_date', '<=' , $end);
-        }
-
-        if(Auth::user()->role_id == 4){
-            $customers = Auth::user()->get_multi_customer_details();
-            $on_process_quotation_item->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-            $on_process_quotation_item->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        }else{
-            if($request->filter_customer != ""){
-                $on_process_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer', function($q1) use ($request){
-                        $q1->where('id', $request->filter_customer);
-                    });
-                });
-            }
-        }
-
-        if($request->filter_manager != ""){
-            $on_process_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
-                    $q1->where('ss_id', $salesAgent);
-                });
-            });
-        }
-
-        if(Auth::user()->role_id == 6){
-            $on_process_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
-                    $q1->where('ss_id', $salesAgent);
-                });
-            });
-        }
-                                                    
-        if(Auth::user()->role_id == 2){
-            $on_process_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                        $q1->where('ss_id', Auth::id());
-                    });
-                });
-        }else{
-            if($request->filter_sales_specialist != ""){
-                $on_process_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                        $q1->where('ss_id', $request->filter_sales_specialist);
-                    });
-                });
-            }
-        }
-
-        return $on_process_quotation_item;
-    }
-
-    public function getDataForDeliveryQuotation($request){
-        $for_delivery_quotation_item = Quotation::whereNotNull('u_omsno')->where('cancelled','No')                            ->whereHas('order.invoice',function($q){
-                                            $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat','FD');
-                                        });
-        if($request->engage_transaction != 0){
-            $for_delivery_quotation_item->whereNotNull('u_omsno');
-        }
-
-        if($request->filter_company != ""){
-            $for_delivery_quotation_item->where('sap_connection_id',$request->filter_company);
-        }
-
-        if($request->filter_date_range != ""){
-            $date = explode(" - ", $request->filter_date_range);
-            $start = date("Y-m-d", strtotime($date[0]));
-            $end = date("Y-m-d", strtotime($date[1]));
-
-            $for_delivery_quotation_item->whereDate('doc_date', '>=' , $start);
-            $for_delivery_quotation_item->whereDate('doc_date', '<=' , $end);
-        }
-
-        if(Auth::user()->role_id == 4){
-           
-            $customers = Auth::user()->get_multi_customer_details();
-            $for_delivery_quotation_item->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-            $for_delivery_quotation_item->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        }else{
-            if($request->filter_customer != ""){
-                $for_delivery_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer', function($q1) use ($request){
-                        $q1->where('id', $request->filter_customer);
-                    });
-                });
-            }
-        }
-
-        if($request->filter_manager != ""){
-            $for_delivery_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
-                    $q1->where('ss_id', $salesAgent);
-                });
-            });
-        }
-
-        if(Auth::user()->role_id == 6){
-            $for_delivery_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
-                    $q1->where('ss_id', $salesAgent);
-                });
-            });
-        }
-                                                    
-        if(Auth::user()->role_id == 2){
-            $for_delivery_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                        $q1->where('ss_id', Auth::id());
-                    });
-                });
-        }else{
-            if($request->filter_sales_specialist != ""){
-                $for_delivery_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                        $q1->where('ss_id', $request->filter_sales_specialist);
-                    });
-                });
-            }
-        }
-
-        return $for_delivery_quotation_item;
-    }
-
-    public function getDataDeliveredQuotation($request){
-        $delivered_quotation_item = Quotation::whereNotNull('u_omsno')->where('cancelled','No')                            ->whereHas('order.invoice',function($q){
-                                            $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat','DL');
-                                        });
-        if($request->engage_transaction != 0){
-            $delivered_quotation_item->whereNotNull('u_omsno');
-        }
-
-        if($request->filter_company != ""){
-            $delivered_quotation_item->where('sap_connection_id',$request->filter_company);
-        }
-
-        if($request->filter_date_range != ""){
-            $date = explode(" - ", $request->filter_date_range);
-            $start = date("Y-m-d", strtotime($date[0]));
-            $end = date("Y-m-d", strtotime($date[1]));
-
-            $delivered_quotation_item->whereDate('doc_date', '>=' , $start);
-            $delivered_quotation_item->whereDate('doc_date', '<=' , $end);
-        }
-
-        if(Auth::user()->role_id == 4){
-            $customers = Auth::user()->get_multi_customer_details();
-            $delivered_quotation_item->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-            $delivered_quotation_item->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        }else{
-            if($request->filter_customer != ""){
-                $delivered_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer', function($q1) use ($request){
-                        $q1->where('id', $request->filter_customer);
-                    });
-                });
-            }
-        }
-
-        if($request->filter_manager != ""){
-            $delivered_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
-                    $q1->where('ss_id', $salesAgent);
-                });
-            });
-        }
-
-        if(Auth::user()->role_id == 6){
-            $delivered_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
-                    $q1->where('ss_id', $salesAgent);
-                });
-            });
-        }
-                                                    
-        if(Auth::user()->role_id == 2){
-            $delivered_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                        $q1->where('ss_id', Auth::id());
-                    });
-                });
-        }else{
-            if($request->filter_sales_specialist != ""){
-                $delivered_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                        $q1->where('ss_id', $request->filter_sales_specialist);
-                    });
-                });
-            }
-        }
-
-        return $delivered_quotation_item;
-    }
-
-    public function getDataCompletedQuotation($request){
-
-        $completed_quotation_item = Quotation::whereNotNull('u_omsno')->where('cancelled','No')                            ->whereHas('order.invoice',function($q){
-                                            $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat','CM');
-                                        });
-        if($request->engage_transaction != 0){
-            $completed_quotation_item->whereNotNull('u_omsno');
-        }
-
-        if($request->filter_company != ""){
-            $completed_quotation_item->where('sap_connection_id',$request->filter_company);
-        }
-
-        if($request->filter_date_range != ""){
-            $date = explode(" - ", $request->filter_date_range);
-            $start = date("Y-m-d", strtotime($date[0]));
-            $end = date("Y-m-d", strtotime($date[1]));
-
-            $completed_quotation_item->whereDate('doc_date', '>=' , $start);
-            $completed_quotation_item->whereDate('doc_date', '<=' , $end);
-        }
-
-        if(Auth::user()->role_id == 4){
-            $customers = Auth::user()->get_multi_customer_details();
-            $completed_quotation_item->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-            $completed_quotation_item->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        }else{
-            if($request->filter_customer != ""){
-                $completed_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer', function($q1) use ($request){
-                        $q1->where('id', $request->filter_customer);
-                    });
-                });
-            }
-        }
-
-        if($request->filter_manager != ""){
-            $completed_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
-                    $q1->where('ss_id', $salesAgent);
-                });
-            });
-        }
-
-        if(Auth::user()->role_id == 6){
-            $completed_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
-                    $q1->where('ss_id', $salesAgent);
-                });
-            });
-        }
-                                                    
-        if(Auth::user()->role_id == 2){
-            $completed_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                        $q1->where('ss_id', Auth::id());
-                    });
-                });
-        }else{
-            if($request->filter_sales_specialist != ""){
-                $completed_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                        $q1->where('ss_id', $request->filter_sales_specialist);
-                    });
-                });
-            }
-        }
-
-        return $completed_quotation_item;
-    }
-
-    public function getDataCancelledQuotation($request){
-
-        $cancelled_quotation_item = Quotation::whereNotNull('u_omsno')
-                                                ->where(function($query){
-                                                    $query->orwhere(function($q){
-                                                        $q->where('cancelled', 'Yes');
-                                                    });
-
-                                                    $query->orwhere(function($q){
-                                                        $q->whereHas('order',function($p){
-                                                            $p->where('cancelled', 'Yes');
-                                                        });
-                                                    });
-
-                                                    $query->orwhere(function($q1){
-                                                        $q1->whereHas('order.invoice',function($p1){
-                                                            $p1->where('cancelled', 'Yes');
-                                                        });
-                                                    });
-                                                });
-        if($request->engage_transaction != 0){
-            $cancelled_quotation_item->whereNotNull('u_omsno');
-        }
-
-        if($request->filter_company != ""){
-            $cancelled_quotation_item->where('sap_connection_id',$request->filter_company);
-        }
-
-        if($request->filter_date_range != ""){
-            $date = explode(" - ", $request->filter_date_range);
-            $start = date("Y-m-d", strtotime($date[0]));
-            $end = date("Y-m-d", strtotime($date[1]));
-
-            $cancelled_quotation_item->whereDate('doc_date', '>=' , $start);
-            $cancelled_quotation_item->whereDate('doc_date', '<=' , $end);
-        }
-
-        if(Auth::user()->role_id == 4){
-            $customers = Auth::user()->get_multi_customer_details();
-            $cancelled_quotation_item->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-            $cancelled_quotation_item->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        }else{
-            if($request->filter_customer != ""){
-                $cancelled_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer', function($q1) use ($request){
-                        $q1->where('id', $request->filter_customer);
-                    });
-                });
-            }
-        }
-
-        if($request->filter_manager != ""){
-            $cancelled_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
-                    $q1->where('ss_id', $salesAgent);
-                });
-            });
-        }
-
-        if(Auth::user()->role_id == 6){
-            $cancelled_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                    $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
-                    $q1->where('ss_id', $salesAgent);
-                });
-            });
-        }
-                                                    
-        if(Auth::user()->role_id == 2){
-            $cancelled_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                        $q1->where('ss_id', Auth::id());
-                    });
-                });
-        }else{
-            if($request->filter_sales_specialist != ""){
-                $cancelled_quotation_item->where(function($query) use ($request) {
-                    $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                        $q1->where('ss_id', $request->filter_sales_specialist);
-                    });
-                });
-            }
-        }
-
-        return $cancelled_quotation_item;
     }
 
     public function getPendingQuationQuantity($request){
@@ -1891,6 +1436,152 @@ class SalesOrderReportController extends Controller
             });
         }
         return $cancelled_quotation_item_quan;
+    }
+
+    public function getResultData(Request $request,$status){
+        $data = Quotation::whereNotNull('u_omsno');
+
+        if(userrole() == 4){
+            $customers = Auth::user()->get_multi_customer_details();
+            $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+        }elseif(userrole() == 2){
+            $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(userrole() != 1 && userrole()!= 10){
+            if (!is_null(@Auth::user()->created_by)) {
+                $customers = @Auth::user()->created_by_user->get_multi_customer_details();
+                $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+            } else {
+                return DataTables::of(collect())->make(true);
+            }
+        }
+
+        if($request->filter_brand != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where(function($que) use ($request) {
+                        $que->whereHas('product_groups', function($q2) use ($request){
+                            $q2->where('product_group_id', $request->filter_brand);
+                        });
+                    });
+                });
+            });
+        }
+
+        if($request->filter_class != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where('u_classification', $request->filter_class);
+                });
+            });
+        }
+
+        if($request->filter_sales_specialist != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where(function($que) use ($request) {
+                        $que->whereHas('sales_specialist', function($q2) use ($request){
+                            $q2->where('id', $request->filter_sales_specialist);
+                        });
+                    });
+                });
+            });
+        }
+
+        if($request->filter_market_sector != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where('u_sector', $request->filter_market_sector);
+                });
+            });
+        }
+
+        if($request->filter_territory != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where('territory', $request->filter_territory);
+                });
+            });
+        }
+
+        if($request->filter_search != ""){
+            $data->where(function($q) use ($request) {
+                $q->orwhere('doc_type','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        if($request->filter_customer != ""){
+            $data->where('card_code',$request->filter_customer);
+        }
+
+        if($request->filter_company != ""){
+            $data->where('sap_connection_id',$request->filter_company);
+        }
+
+        if($status != ""){
+            if($status == "CL"){ 
+                $data->where(function($query){
+                    $query->orwhere(function($q){
+                        $q->where('cancelled', 'Yes');
+                    });
+
+                    // $query->orwhere(function($q){
+                    //     $q->whereHas('order',function($p){
+                    //         $p->where('cancelled', 'Yes');
+                    //     });
+                    // });
+
+                    // $query->orwhere(function($q1){
+                    //     $q1->whereHas('order.invoice',function($p1){
+                    //         $p1->where('cancelled', 'Yes');
+                    //     });
+                    // });
+                });
+
+            }elseif($status == "PN"){ 
+                $data->has('order', '<', 1)->where('cancelled','No');
+
+            }elseif($status == "OP"){ //On Process
+                $data->whereHas('order',function($q){
+                    $q->where('document_status', 'bost_Open')->doesntHave('invoice')->whereNotNull('u_omsno')->where('cancelled','No');
+                })->where('cancelled','No');
+
+            }elseif($status == "FD"){
+                $data->whereHas('order.invoice',function($q) use ($status){
+                    $q->where('u_sostat', '!=','DL')->where('u_sostat', '!=','CM')->whereNotNull('u_omsno')->where('cancelled','No');
+                });
+            }else{
+                $data->whereHas('order.invoice',function($q) use ($status){
+                    $q->where('u_sostat', $status)->whereNotNull('u_omsno')->where('cancelled','No');
+                });
+            }
+        }
+
+
+        if($request->filter_order_type != ""){
+            if($request->filter_order_type == "Standard"){
+                $data->whereNull('customer_promotion_id');
+            }elseif($request->filter_order_type == "Promotion"){
+                $data->whereNotNull('customer_promotion_id');
+            }
+        }
+
+
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $data->whereDate('doc_date', '>=' , $start);
+            $data->whereDate('doc_date', '<=' , $end);
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('id', 'desc');
+        });
+        return $data;
     }
 
 }
