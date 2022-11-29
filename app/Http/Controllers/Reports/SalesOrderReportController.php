@@ -793,7 +793,7 @@ class SalesOrderReportController extends Controller
         $pending_quotation_item = $this->getResultData($request,'PN');        
         $pending_quotation_item = $pending_quotation_item->get()->toArray();
         $pending_total_sales_orders = count($pending_quotation_item);        
-        $pending_quotation_item_quan = $this->getPendingQuationQuantity($request);
+        $pending_quotation_item_quan = $this->getResultDataQuantity($request,'PN');
         $pending_quotation_item_quan = $pending_quotation_item_quan->get()->toArray();
         if(!empty($pending_quotation_item_quan)){
             $pending_total_sales_quantity = array_sum(array_column($pending_quotation_item_quan, 'quantity'));
@@ -805,7 +805,7 @@ class SalesOrderReportController extends Controller
         $on_process_quotation_item = $this->getResultData($request,'OP');        
         $on_process_quotation_item = $on_process_quotation_item->get()->toArray();
         $on_process_total_sales_orders = count($on_process_quotation_item);
-        $on_process_quotation_item_quan = $this->getOnProcessQuationQuantity($request);
+        $on_process_quotation_item_quan = $this->getResultDataQuantity($request,'OP');
         $on_process_quotation_item_quan = $on_process_quotation_item_quan->get()->toArray();
         if(!empty($on_process_quotation_item_quan)){
             $on_process_total_sales_quantity = array_sum(array_column($on_process_quotation_item_quan, 'quantity'));
@@ -817,7 +817,7 @@ class SalesOrderReportController extends Controller
         $for_delivery_quotation_item = $this->getResultData($request,'FD');        
         $for_delivery_quotation_item = $for_delivery_quotation_item->get()->toArray();
         $for_delivery_total_sales_orders = count($for_delivery_quotation_item);
-        $for_delivery_quotation_item_quan = $this->getForDeliveryQuationQuantity($request);
+        $for_delivery_quotation_item_quan = $this->getResultDataQuantity($request,'FD');
         $for_delivery_quotation_item_quan = $for_delivery_quotation_item_quan->get()->toArray();
         if(!empty($for_delivery_quotation_item_quan)){
             $for_delivery_total_sales_quantity = array_sum(array_column($for_delivery_quotation_item_quan, 'quantity'));
@@ -829,7 +829,7 @@ class SalesOrderReportController extends Controller
         $delivered_quotation_item = $this->getResultData($request,'DL');        
         $delivered_quotation_item = $delivered_quotation_item->get()->toArray();
         $delivered_total_sales_orders = count($delivered_quotation_item);
-        $deleivered_quotation_item_quan = $this->getDeliveredQuationQuantity($request);
+        $deleivered_quotation_item_quan = $this->getResultDataQuantity($request,'DL');
         $deleivered_quotation_item_quan = $deleivered_quotation_item_quan->get()->toArray();
         if(!empty($deleivered_quotation_item_quan)){
             $deleivered_total_sales_quantity = array_sum(array_column($deleivered_quotation_item_quan, 'quantity'));
@@ -841,7 +841,7 @@ class SalesOrderReportController extends Controller
         $completed_quotation_item = $this->getResultData($request,'CM');     
         $completed_quotation_item = $completed_quotation_item->get()->toArray();
         $completed_total_sales_orders = count($completed_quotation_item);
-        $completed_quotation_item_quan = $this->getCompletedQuationQuantity($request);
+        $completed_quotation_item_quan = $this->getResultDataQuantity($request,'CM');
         $completed_quotation_item_quan = $completed_quotation_item_quan->get()->toArray();
         if(!empty($completed_quotation_item_quan)){
             $completed_total_sales_quantity = array_sum(array_column($completed_quotation_item_quan, 'quantity'));
@@ -853,7 +853,7 @@ class SalesOrderReportController extends Controller
         $cancelled_quotation_item = $this->getResultData($request,'CL');
         $cancelled_quotation_item = $cancelled_quotation_item->get()->toArray();
         $cancelled_total_sales_orders = count($cancelled_quotation_item);
-        $cancelled_quotation_item_quan = $this->getCancelledQuationQuantity($request);
+        $cancelled_quotation_item_quan = $this->getResultDataQuantity($request,'CL');
         $cancelled_quotation_item_quan = $cancelled_quotation_item_quan->get()->toArray();
         if(!empty($cancelled_quotation_item_quan)){
             $cancelled_total_sales_quantity = array_sum(array_column($cancelled_quotation_item_quan, 'quantity'));
@@ -891,88 +891,88 @@ class SalesOrderReportController extends Controller
         return $response;
     }
 
-    public function getPendingQuationQuantity($request){
-        $pending_quotation_item_quan = QuotationItem::whereHas('quotation', function($q) use ($request) {
-                                                    $q->doesntHave('order')->where('document_status','bost_Open')->where('cancelled', "No");
+    // public function getPendingQuationQuantity($request){
+    //     $pending_quotation_item_quan = QuotationItem::whereHas('quotation', function($q) use ($request) {
+    //                                                 $q->doesntHave('order')->where('document_status','bost_Open')->where('cancelled', "No");
 
-                                                    if($request->engage_transaction != 0){
-                                                        $q->whereNotNull('u_omsno');
-                                                    }
+    //                                                 if($request->engage_transaction != 0){
+    //                                                     $q->whereNotNull('u_omsno');
+    //                                                 }
 
-                                                    if($request->filter_company != ""){
-                                                        $q->where('sap_connection_id',$request->filter_company);
-                                                    }
+    //                                                 if($request->filter_company != ""){
+    //                                                     $q->where('sap_connection_id',$request->filter_company);
+    //                                                 }
 
-                                                    if($request->filter_date_range != ""){
-                                                        $date = explode(" - ", $request->filter_date_range);
-                                                        $start = date("Y-m-d", strtotime($date[0]));
-                                                        $end = date("Y-m-d", strtotime($date[1]));
+    //                                                 if($request->filter_date_range != ""){
+    //                                                     $date = explode(" - ", $request->filter_date_range);
+    //                                                     $start = date("Y-m-d", strtotime($date[0]));
+    //                                                     $end = date("Y-m-d", strtotime($date[1]));
 
-                                                        $q->whereDate('doc_date', '>=' , $start);
-                                                        $q->whereDate('doc_date', '<=' , $end);
-                                                    }
+    //                                                     $q->whereDate('doc_date', '>=' , $start);
+    //                                                     $q->whereDate('doc_date', '<=' , $end);
+    //                                                 }
 
-                                                    if(Auth::user()->role_id == 4){
-                                                        $customers = Auth::user()->get_multi_customer_details();
-                                                        $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-                                                        $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));                                                        
-                                                    }else{
-                                                        if($request->filter_customer != ""){
-                                                            $q->where(function($query) use ($request) {
-                                                                $query->whereHas('customer', function($q1) use ($request){
-                                                                    $q1->where('id', $request->filter_customer);
-                                                                });
-                                                            });
-                                                        }
-                                                    }
+    //                                                 if(Auth::user()->role_id == 4){
+    //                                                     $customers = Auth::user()->get_multi_customer_details();
+    //                                                     $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+    //                                                     $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));                                                        
+    //                                                 }else{
+    //                                                     if($request->filter_customer != ""){
+    //                                                         $q->where(function($query) use ($request) {
+    //                                                             $query->whereHas('customer', function($q1) use ($request){
+    //                                                                 $q1->where('id', $request->filter_customer);
+    //                                                             });
+    //                                                         });
+    //                                                     }
+    //                                                 }
 
-                                                    if($request->filter_manager != ""){
-                                                            $q->where(function($query) use ($request) {
-                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                                                                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
-                                                                    $q1->where('ss_id', $salesAgent);
-                                                                });
-                                                            });
-                                                    }
+    //                                                 if($request->filter_manager != ""){
+    //                                                         $q->where(function($query) use ($request) {
+    //                                                             $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+    //                                                                 $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+    //                                                                 $q1->where('ss_id', $salesAgent);
+    //                                                             });
+    //                                                         });
+    //                                                 }
 
-                                                    if(Auth::user()->role_id == 6){
-                                                        $q->where(function($query) use ($request) {
-                                                            $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                                                                $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
-                                                                $q1->where('ss_id', $salesAgent);
-                                                            });
-                                                        });
-                                                    }
+    //                                                 if(Auth::user()->role_id == 6){
+    //                                                     $q->where(function($query) use ($request) {
+    //                                                         $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+    //                                                             $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+    //                                                             $q1->where('ss_id', $salesAgent);
+    //                                                         });
+    //                                                     });
+    //                                                 }
                                                     
-                                                    if(Auth::user()->role_id == 2){
-                                                        $q->where(function($query) use ($request) {
-                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                                                                    $q1->where('ss_id', Auth::id());
-                                                                });
-                                                            });
-                                                    }else{
-                                                        if($request->filter_sales_specialist != ""){
-                                                            $q->where(function($query) use ($request) {
-                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
-                                                                    $q1->where('ss_id', $request->filter_sales_specialist);
-                                                                });
-                                                            });
-                                                        }
-                                                    }
-                                                });
+    //                                                 if(Auth::user()->role_id == 2){
+    //                                                     $q->where(function($query) use ($request) {
+    //                                                             $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+    //                                                                 $q1->where('ss_id', Auth::id());
+    //                                                             });
+    //                                                         });
+    //                                                 }else{
+    //                                                     if($request->filter_sales_specialist != ""){
+    //                                                         $q->where(function($query) use ($request) {
+    //                                                             $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+    //                                                                 $q1->where('ss_id', $request->filter_sales_specialist);
+    //                                                             });
+    //                                                         });
+    //                                                     }
+    //                                                 }
+    //                                             });
 
         
 
-        if($request->filter_brand != ""){
-            $pending_quotation_item->where(function($query) use ($request) {
-                $query->whereHas('product1.group', function($q1) use ($request){
-                    $q1->where('id', $request->filter_brand);
-                });
-            });
-        }
+    //     if($request->filter_brand != ""){
+    //         $pending_quotation_item->where(function($query) use ($request) {
+    //             $query->whereHas('product1.group', function($q1) use ($request){
+    //                 $q1->where('id', $request->filter_brand);
+    //             });
+    //         });
+    //     }
 
-        return $pending_quotation_item_quan;
-    }
+    //     return $pending_quotation_item_quan;
+    // }
 
     public function getOnProcessQuationQuantity($request){
 
@@ -1436,6 +1436,112 @@ class SalesOrderReportController extends Controller
             });
         }
         return $cancelled_quotation_item_quan;
+    }
+
+    public function getResultDataQuantity($request,$status){
+        $data = QuotationItem::whereHas('quotation', function($q) use ($request,$status) {
+
+                                                    if($status == 'PN'){
+                                                        $q->doesntHave('order')->where('cancelled', "No")->whereNotNull('u_omsno');
+                                                    }else if($status == 'OP'){
+                                                        $q->whereHas('order',function($q1){
+                                                            $q1->where('document_status', 'bost_Open')->doesntHave('invoice')->whereNotNull('u_omsno')->where('cancelled','No');
+                                                        })->where('cancelled','No');
+                                                    }else if($status == 'FD'){
+                                                        $q->whereHas('order.invoice',function($q1) use ($status){
+                                                            $q1->where('u_sostat', '!=','DL')->where('u_sostat', '!=','CM')->whereNotNull('u_omsno')->where('cancelled','No');
+                                                        });
+
+                                                    }else if($status == 'CL'){
+                                                        $q->where(function($query){
+                                                            $query->orwhere(function($q1){
+                                                                $q1->where('cancelled', 'Yes');
+                                                            });
+                                                        });
+                                                    }else{
+                                                        $q->whereHas('order.invoice',function($q1) use ($status){
+                                                            $q1->where('u_sostat', $status)->whereNotNull('u_omsno')->where('cancelled','No');
+                                                        });
+                                                    }
+                                                    // $q->doesntHave('order')->where('document_status','bost_Open')->where('cancelled', "No");
+
+                                                    if($request->engage_transaction != 0){
+                                                        $q->whereNotNull('u_omsno');
+                                                    }
+
+                                                    if($request->filter_company != ""){
+                                                        $q->where('sap_connection_id',$request->filter_company);
+                                                    }
+
+                                                    if($request->filter_date_range != ""){
+                                                        $date = explode(" - ", $request->filter_date_range);
+                                                        $start = date("Y-m-d", strtotime($date[0]));
+                                                        $end = date("Y-m-d", strtotime($date[1]));
+
+                                                        $q->whereDate('doc_date', '>=' , $start);
+                                                        $q->whereDate('doc_date', '<=' , $end);
+                                                    }
+
+                                                    if(Auth::user()->role_id == 4){
+                                                        $customers = Auth::user()->get_multi_customer_details();
+                                                        $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                                                        $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));                                                        
+                                                    }else{
+                                                        if($request->filter_customer != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer', function($q1) use ($request){
+                                                                    $q1->where('id', $request->filter_customer);
+                                                                });
+                                                            });
+                                                        }
+                                                    }
+
+                                                    if($request->filter_manager != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
+                                                                    $q1->where('ss_id', $salesAgent);
+                                                                });
+                                                            });
+                                                    }
+
+                                                    if(Auth::user()->role_id == 6){
+                                                        $q->where(function($query) use ($request) {
+                                                            $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                $salesAgent = User::where('parent_id',Auth::id())->pluck('id')->toArray();
+                                                                $q1->where('ss_id', $salesAgent);
+                                                            });
+                                                        });
+                                                    }
+                                                    
+                                                    if(Auth::user()->role_id == 2){
+                                                        $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $q1->where('ss_id', Auth::id());
+                                                                });
+                                                            });
+                                                    }else{
+                                                        if($request->filter_sales_specialist != ""){
+                                                            $q->where(function($query) use ($request) {
+                                                                $query->whereHas('customer.sales_specialist', function($q1) use ($request){
+                                                                    $q1->where('ss_id', $request->filter_sales_specialist);
+                                                                });
+                                                            });
+                                                        }
+                                                    }
+                                                });
+
+        
+
+        if($request->filter_brand != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('product1.group', function($q1) use ($request){
+                    $q1->where('id', $request->filter_brand);
+                });
+            });
+        }
+
+        return $data;
     }
 
     public function getResultData(Request $request,$status){
