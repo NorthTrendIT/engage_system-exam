@@ -741,9 +741,10 @@ $(document).ready(function() {
    
     
     $(".addProduct").on("click",function(){
-        $("#myModal").modal('toggle');
-        render_table();        
+        $("#myModal").modal('toggle');                
     });
+
+    render_table();
 
     function render_table(){
       var table = $("#myTable");
