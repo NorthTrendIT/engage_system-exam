@@ -397,40 +397,43 @@ class OrdersController extends Controller
 
         if($request->filter_status != ""){
             $status = $request->filter_status;
-
             if($status == "CL"){ //Cancel
-
                 $data->where(function($query){
                     $query->orwhere(function($q){
                         $q->where('cancelled', 'Yes');
                     });
-
                     $query->orwhere(function($q){
                         $q->whereHas('order',function($p){
                             $p->where('cancelled', 'Yes');
                         });
                     });
-
                     $query->orwhere(function($q1){
-                        $q1->whereHas('order.invoice',function($p1){
+                        $q1->whereHas('order.invoice1',function($p1){
                             $p1->where('cancelled', 'Yes');
                         });
                     });
                 });
-
             }elseif($status == "PN"){ //Pending
-
-                $data->has('order', '<', 1);
-
+                $data->has('order', '<', 1)->where('cancelled','No');
             }elseif($status == "OP"){ //On Process
+                $data->whereHas('order',function($q){
+                    $q->where('document_status', 'bost_Open')->doesntHave('invoice')->where('cancelled','No');
+                })->where('cancelled','No');
+            }else if($status == "FD"){
+                $data->whereHas('order.invoice',function($q) use ($status){
+                    $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', '!=','DL')->where('u_sostat', '!=','CM');
+                })->where('cancelled','No');
 
                 $data->whereHas('order',function($q){
-                    $q->where('document_status', 'bost_Open')->doesntHave('invoice');
+                    $q->where('cancelled','No');
                 });
-
             }else{
                 $data->whereHas('order.invoice',function($q) use ($status){
                     $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', $status);
+                })->where('cancelled','No');
+
+                $data->whereHas('order',function($q){
+                    $q->where('cancelled','No');
                 });
             }
         }
