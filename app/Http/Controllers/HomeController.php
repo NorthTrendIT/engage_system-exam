@@ -253,4 +253,24 @@ class HomeController extends Controller
             }
         }
     }
+
+    public function getRecentOrderData(Request $request){
+
+        $orders = Quotation::whereNotNull('u_omsno');
+        $customers = Auth::user()->get_multi_customer_details();
+        $orders->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+        $orders->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+        $orders = $orders->orderBy('created_at','DESC')->take(5)->get();
+
+        $orderno = [];
+        $amount = [];
+        foreach($orders as $val){
+            array_push($orderno, $val->u_omsno);
+            array_push($amount, $val->doc_total);
+        }
+
+        $data = [];
+        array_push($data, array('name' => 'Amount of Order', 'data' => $amount));
+        return ['status' => true, 'orderno' => $orderno, 'amount'=>$amount,'data'=>$data];
+    }
 }
