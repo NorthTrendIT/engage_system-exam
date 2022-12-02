@@ -331,6 +331,80 @@
             </div>
         </div>
         @endif
+
+        @if(@Auth::user()->role_id == 4)
+        <div class="row gy-5 g-xl-8">
+            <!-- Promotion Report -->
+            <div class="col-xl-6">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Top Products per Qty</a>
+                        </h3>
+                        
+                    </div>
+
+                    <div class="card-body">
+                        <!--begin::Chart-->
+                        <div id="top_products_per_quantity" style="height: 350px; min-height: 365px;">
+
+                        </div>
+                        <!--end::Chart-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Charts Widget 1-->
+            </div>
+
+            <!-- Product Report-->
+            <div class="col-xl-6">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Top Products per Amount</a>
+                        </h3>
+                        
+                    </div>
+
+                    <div class="card-body">
+                        <!--begin::Chart-->
+                        <div id="product_report_per_amount" style="height: 350px; min-height: 365px;">
+
+                        </div>
+                        <!--end::Chart-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Charts Widget 1-->
+            </div>
+        </div>
+
+        <div class="row gy-5 g-xl-8">
+            <!-- Back Order Report-->
+            <div class="col-xl-12">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Recent Order Report</a>
+                        </h3>
+                        
+                    </div>
+
+                    <div class="card-body">
+                        <!--begin::Chart-->
+                        <div id="recent_order_report" style="height: 350px; min-height: 365px;">
+
+                        </div>
+                        <!--end::Chart-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Charts Widget 1-->
+            </div>
+        </div>
+
+        
+        @endif
      </div>
      <!--end::Container-->
   </div>
@@ -717,7 +791,214 @@
                 }
             })
         });
-    @endif
+    @endif    
+</script>
+@endif
+@if(@Auth::user()->role_id == 4)
+<script type="text/javascript">   
+    
+        getChartData();
+        function getChartData(){
+            // Get Product Report Chart Data
+            $.ajax({
+                url: '{{ route('get.product.quantity.chart') }}',
+                method: "POST",
+                data: {
+                        _token:'{{ csrf_token() }}',
+                    }
+            })
+            .done(function(result) {
+                if(result.status == false){
+                    toast_error(result.message);
+                }else{
+                    render_product_graph_per_quantity(result.data1,result.products);
+                    render_product_graph_per_amount(result.data,result.products);
+                }
+            })
+            .fail(function() {
+                toast_error("error");
+            });
+
+            $.ajax({
+                url: '{{ route('get.recent.order.chart') }}',
+                method: "POST",
+                data: {
+                        _token:'{{ csrf_token() }}',
+                    }
+            })
+            .done(function(result) {
+                if(result.status == false){
+                    toast_error(result.message);
+                }else{
+                    console.log(result);
+                    render_recent_order_chart(result.data,result.orderno);
+                }
+            })
+            .fail(function() {
+                toast_error("error");
+            });
+        }
+
+        function render_product_graph_per_quantity(data,products){
+
+            var options = {
+                series: data,
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '35%',
+                        endingShape: 'rounded'
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    show: true,
+                    width: 2,
+                    colors: ['transparent']
+                },
+                xaxis: {
+                    categories: products,
+                },
+                yaxis: {
+                    title: {
+                        text: ''
+                    }
+                },
+                fill: {
+                    opacity: 1
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return  val
+                        }
+                    }
+                },
+                colors:['#A1A5B7', '#009EF7', '#dc3545']
+            };
+
+            var productChart = new ApexCharts(document.querySelector("#top_products_per_quantity"), options);
+            if (productChart.ohYeahThisChartHasBeenRendered) {
+                productChart.destroy();
+            }
+            productChart.render();
+        } 
+
+        function render_product_graph_per_amount(data,products){
+
+            var options = {
+                series: data,
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '35%',
+                        endingShape: 'rounded'
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    show: true,
+                    width: 2,
+                    colors: ['transparent']
+                },
+                xaxis: {
+                    categories: products,
+                },
+                yaxis: {
+                    title: {
+                        text: ''
+                    }
+                },
+                fill: {
+                    opacity: 1
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return  val
+                        }
+                    }
+                },
+                colors:['#009EF7']
+            };
+
+            var productChart = new ApexCharts(document.querySelector("#product_report_per_amount"), options);
+            if (productChart.ohYeahThisChartHasBeenRendered) {
+                productChart.destroy();
+            }
+            productChart.render();
+        }
+
+        function render_recent_order_chart(data,order){
+            var options = {
+                series: data,
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '35%',
+                        endingShape: 'rounded'
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    show: true,
+                    width: 2,
+                    colors: ['transparent']
+                },
+                xaxis: {
+                    categories: order,
+                },
+                yaxis: {
+                    title: {
+                        text: ''
+                    }
+                },
+                fill: {
+                    opacity: 1
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return  val
+                        }
+                    }
+                },
+                colors:['#009EF7']
+            };
+
+            var productChart = new ApexCharts(document.querySelector("#recent_order_report"), options);
+            if (productChart.ohYeahThisChartHasBeenRendered) {
+                productChart.destroy();
+            }
+            productChart.render();
+        } 
 </script>
 @endif
 @endpush

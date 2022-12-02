@@ -797,7 +797,7 @@ class SalesOrderReportController extends Controller
         $pending_quotation_item_quan = $pending_quotation_item_quan->get()->toArray();
         if(!empty($pending_quotation_item_quan)){
             $pending_total_sales_quantity = array_sum(array_column($pending_quotation_item_quan, 'quantity'));
-            $pending_total_sales_revenue = round(array_sum(array_column($pending_quotation_item_quan, 'price_after_vat')), 2);
+            $pending_total_sales_revenue = round(array_sum(array_column($pending_quotation_item_quan, 'gross_total')), 2);
         }
 
         // On Process
@@ -809,7 +809,7 @@ class SalesOrderReportController extends Controller
         $on_process_quotation_item_quan = $on_process_quotation_item_quan->get()->toArray();
         if(!empty($on_process_quotation_item_quan)){
             $on_process_total_sales_quantity = array_sum(array_column($on_process_quotation_item_quan, 'quantity'));
-            $on_process_total_sales_revenue = round(array_sum(array_column($on_process_quotation_item_quan, 'price_after_vat')), 2);
+            $on_process_total_sales_revenue = round(array_sum(array_column($on_process_quotation_item_quan, 'gross_total')), 2);
         }
 
         // For Deleivery
@@ -821,7 +821,7 @@ class SalesOrderReportController extends Controller
         $for_delivery_quotation_item_quan = $for_delivery_quotation_item_quan->get()->toArray();
         if(!empty($for_delivery_quotation_item_quan)){
             $for_delivery_total_sales_quantity = array_sum(array_column($for_delivery_quotation_item_quan, 'quantity'));
-            $for_delivery_total_sales_revenue = round(array_sum(array_column($for_delivery_quotation_item_quan, 'price_after_vat')), 2);
+            $for_delivery_total_sales_revenue = round(array_sum(array_column($for_delivery_quotation_item_quan, 'gross_total')), 2);
         }
 
         // Delivered
@@ -833,7 +833,7 @@ class SalesOrderReportController extends Controller
         $deleivered_quotation_item_quan = $deleivered_quotation_item_quan->get()->toArray();
         if(!empty($deleivered_quotation_item_quan)){
             $deleivered_total_sales_quantity = array_sum(array_column($deleivered_quotation_item_quan, 'quantity'));
-            $deleivered_total_sales_revenue = round(array_sum(array_column($deleivered_quotation_item_quan, 'price_after_vat')), 2);
+            $deleivered_total_sales_revenue = round(array_sum(array_column($deleivered_quotation_item_quan, 'gross_total')), 2);
         }
 
         // Completed
@@ -845,7 +845,7 @@ class SalesOrderReportController extends Controller
         $completed_quotation_item_quan = $completed_quotation_item_quan->get()->toArray();
         if(!empty($completed_quotation_item_quan)){
             $completed_total_sales_quantity = array_sum(array_column($completed_quotation_item_quan, 'quantity'));
-            $completed_total_sales_revenue = round(array_sum(array_column($completed_quotation_item_quan, 'price_after_vat')), 2);
+            $completed_total_sales_revenue = round(array_sum(array_column($completed_quotation_item_quan, 'gross_total')), 2);
         }
 
         // Cancelled
@@ -857,7 +857,7 @@ class SalesOrderReportController extends Controller
         $cancelled_quotation_item_quan = $cancelled_quotation_item_quan->get()->toArray();
         if(!empty($cancelled_quotation_item_quan)){
             $cancelled_total_sales_quantity = array_sum(array_column($cancelled_quotation_item_quan, 'quantity'));
-            $cancelled_total_sales_revenue = round(array_sum(array_column($completed_quotation_item_quan, 'price_after_vat')), 2);
+            $cancelled_total_sales_revenue = round(array_sum(array_column($completed_quotation_item_quan, 'gross_total')), 2);
         }
 
 
@@ -1633,17 +1633,17 @@ class SalesOrderReportController extends Controller
                         $q->where('cancelled', 'Yes');
                     });
 
-                    // $query->orwhere(function($q){
-                    //     $q->whereHas('order',function($p){
-                    //         $p->where('cancelled', 'Yes');
-                    //     });
-                    // });
+                    $query->orwhere(function($q){
+                        $q->whereHas('order',function($p){
+                            $p->where('cancelled', 'Yes');
+                        });
+                    });
 
-                    // $query->orwhere(function($q1){
-                    //     $q1->whereHas('order.invoice',function($p1){
-                    //         $p1->where('cancelled', 'Yes');
-                    //     });
-                    // });
+                    $query->orwhere(function($q1){
+                        $q1->whereHas('order.invoice',function($p1){
+                            $p1->where('cancelled', 'Yes');
+                        });
+                    });
                 });
 
             }elseif($status == "PN"){ 
@@ -1656,12 +1656,12 @@ class SalesOrderReportController extends Controller
 
             }elseif($status == "FD"){
                 $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('u_sostat', '!=','DL')->where('u_sostat', '!=','CM')->whereNotNull('u_omsno')->where('cancelled','No');
-                });
+                    $q->where('u_sostat', '!=','DL')->where('document_status', 'bost_Open')->where('u_sostat', '!=','CM')->whereNotNull('u_omsno')->where('cancelled','No');
+                })->where('cancelled','No');
             }else{
                 $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('u_sostat', $status)->whereNotNull('u_omsno')->where('cancelled','No');
-                });
+                    $q->where('u_sostat', $status)->where('document_status', 'bost_Open')->whereNotNull('u_omsno')->where('cancelled','No');
+                })->where('cancelled','No');
             }
         }
 

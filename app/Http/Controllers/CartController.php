@@ -529,124 +529,92 @@ class CartController extends Controller
         return $response = ['status'=>false,'message'=>"Something went wrong please try again."];
     }
 
-    // public function getProductData($request){
-    //     $c_product_tires_category = $c_product_item_line = $c_product_group = array();
+    public function getProductData(Request $request){
+        $c_product_tires_category = $c_product_item_line = $c_product_group = array();
 
-    //     $customer_id = [];
-    //     $customer = collect();
-    //     $sap_connection_id = [];
-    //     $customer_price_list_no = [];
+        $customer_id = [];
+        $customer = collect();
+        $sap_connection_id = [];
+        $customer_price_list_no = [];
 
-    //     if (!is_null(@Auth::user()->created_by) || (isset($request->customer_id) && !empty($request->customer_id)) ) {
+        $customer_id = explode(',', Auth::user()->multi_customer_id);
+        $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
+        $customer_price_list_no = get_customer_price_list_no_arr($customer_id);        
 
-    //         if(@$request->customer_id){
-    //             $where = array(
-    //                         'id' => @$request->customer_id,
-    //                     );
-    //             $customer = Customer::where($where)->first();
-    //             if(!is_null($customer)){
-    //                 $customer_id = array( @$customer->id );
-    //                 $sap_connection_id = array( @$customer->sap_connection_id);
-    //                 $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
-    //             }
+        if(in_array(5, $sap_connection_id)){
+            array_push($sap_connection_id, '5');
+        }
+        // Is Customer
+        if(!empty($customer_id)){
 
+            // Product Group
+            $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
+            $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
 
-    //         }else{
-    //             $where = array(
-    //                         'id' => @Auth::user()->created_by,
-    //                     );
-    //             $customer = User::where('role_id', 4)->where($where)->first();
-    //             if(!is_null($customer)){
-    //                 $customer_id = explode(',', @$customer->multi_customer_id);
-    //                 $sap_connection_id = explode(',', @$customer->multi_real_sap_connection_id);
-    //                 $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
-    //             }
-    //         }
+            // Product Item Line
+            $c_product_item_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
+            $c_product_item_line = array_column( $c_product_item_line->toArray(), 'product_item_line_id' ); 
 
+            // Product Tires Category
+            $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
+            $c_product_tires_category = array_column( $c_product_tires_category->toArray(), 'product_tires_category_id' );            
+        }
 
-    //     }elseif(userrole() == 4){
-    //         $customer_id = explode(',', Auth::user()->multi_customer_id);
-    //         $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
-    //         $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+        if(empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
+            $products = collect([]);
+        }
 
-    //     }elseif(userrole() == 2){
+        $where = array('is_active' => true);
 
-    //         $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
-    //         $sap_connection_id = array( @Auth::user()->sap_connection_id );
-
-    //     }
-
-    //     if(in_array(5, $sap_connection_id)){
-    //         array_push($sap_connection_id, '5');
-    //     }
+        $products = Product::where($where);
         
-    //     // Is Customer
-    //     if(!empty($customer_id)){
 
-    //         // Product Group
-    //         $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
-    //         $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
+        $products->whereHas('group', function($q){
+            $q->where('is_active', true);
+        });        
 
+        $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
+            if(!empty($c_product_group)){
+                $q->orwhereHas('group', function($q1) use ($c_product_group){
+                    $q1->whereIn('id', $c_product_group);
+                });
+            }
 
-    //         // Product Item Line
-    //         $c_product_item_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
-    //         $c_product_item_line = array_column( $c_product_item_line->toArray(), 'product_item_line_id' );
+            if(!empty($c_product_tires_category)){
+                $q->orwhereHas('product_tires_category', function($q1) use ($c_product_tires_category){
+                    $q1->whereIn('id', $c_product_tires_category);
+                });
+            }
+
+            if(!empty($c_product_item_line)){
+                $q->orwhereHas('product_item_line', function($q1) use ($c_product_item_line){
+                    $q1->whereIn('id', $c_product_item_line);
+                });
+            }
+        });
+
+        $products = $products->whereIn('sap_connection_id', $sap_connection_id)->orderBy('id','DESC')->take(5)->get(); 
+
+        $items = [];
+        $quantity = [];
+        $amount = [];
+
+        foreach ($products as $key => $value) {
+            array_push($items, $value->item_name);
+            array_push($quantity, $value->quantity_ordered_by_customers);
+
+            $price = get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]]);
+            array_push($amount, $price);
             
+        } 
 
-    //         // Product Tires Category
-    //         $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
-    //         $c_product_tires_category = array_column( $c_product_tires_category->toArray(), 'product_tires_category_id' );
-            
-    //     }
+        $data = [];
+        $data1 = [];
+        array_push($data, array('name' => 'Amount', 'data' => $amount));
+        array_push($data1, array('name' => 'Quantity', 'data' => $quantity));
 
-    //     if(empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
-    //         $products = collect([]);
-    //     }
-
-    //     $where = array('is_active' => true);
-
-    //     $products = Product::where($where)->limit(50);
-
-    //     $products->whereHas('group', function($q){
-    //         $q->where('is_active', true);
-    //     });
-
-    //     if($request->filter_search != ""){
-    //         $products->where('item_name','LIKE',"%".$request->filter_search."%");
-    //     }
-
-    //     $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
-    //         if(!empty($c_product_group)){
-    //             $q->orwhereHas('group', function($q1) use ($c_product_group){
-    //                 $q1->whereIn('id', $c_product_group);
-    //             });
-    //         }
-
-    //         if(!empty($c_product_tires_category)){
-    //             $q->orwhereHas('product_tires_category', function($q1) use ($c_product_tires_category){
-    //                 $q1->whereIn('id', $c_product_tires_category);
-    //             });
-    //         }
-
-    //         if(!empty($c_product_item_line)){
-    //             $q->orwhereHas('product_item_line', function($q1) use ($c_product_item_line){
-    //                 $q1->whereIn('id', $c_product_item_line);
-    //             });
-    //         }
-    //     });
-
-    //     $products->whereIn('sap_connection_id', $sap_connection_id);
-
-    //     $products->when(!isset($request->order), function ($q) {
-    //       $q->orderBy('item_name', 'asc');
-    //     });
-
-    //     if(userrole() != 1){
-    //         $products->havingRaw('quantity_on_stock - quantity_ordered_by_customers > 0');
-    //     }
-
-    //     return [ 'products' => $products, 'customer_price_list_no' => $customer_price_list_no];
-    // }
+        return ['status' => true, 'products' => $items, 'quantity' => $quantity,'amount'=>$amount,'data'=>$data,'data1'=>$data1];
+    }
 
     public function getAllProductList(Request $request){
         $c_product_tires_category = $c_product_item_line = $c_product_group = array();
