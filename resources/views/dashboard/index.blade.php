@@ -401,8 +401,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if(!empty($data1))
-                                    @foreach($data1 as $val)
+                                    @if(!empty($data3))
+                                    @foreach($data3 as $val)
                                     <tr>
                                         <td>{{@$val['no']}}</td>
                                         <td>{{@$val['item']}} </td>
