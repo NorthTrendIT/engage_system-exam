@@ -62,6 +62,8 @@ class HomeController extends Controller
 
             $dashboard = [];
             $data1 = [];
+            $data2 = [];
+            $data3 = [];
             $orders = [];
             $invoice_lead = [];
             $delivery_lead = [];
@@ -170,13 +172,28 @@ class HomeController extends Controller
                     }
                 });
 
-                $products = $products->whereIn('sap_connection_id', $sap_connection_id)->orderBy('id','DESC')->take(5)->get();
+                $products1 = $products->whereIn('sap_connection_id', $sap_connection_id)->get();
                 
-                foreach ($products as $key => $value) {
+                foreach ($products1 as $key => $value) {
+                    $price = (get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]]));
+                    array_push($data2,$price);
+                }
+                arsort($data2);             
+                $newArray = array_slice($data2, 0, 5, true);
+                $keys_array = array_keys($newArray);
+                $value_array = array_values($newArray);
+                $amounts = Product::whereIn('id', $keys_array)->get();
+                foreach($amounts as $key=>$val){
+                    $data3[$key]['no'] = $key +1;
+                    $data3[$key]['item'] = $val->item_name;
+                    $data3[$key]['price'] = '₱ '. number_format_value($value_array[$key]); 
+                }
+
+                $products2 = $products->whereIn('sap_connection_id', $sap_connection_id)->orderBy('quantity_on_stock','DESC')->take(5)->get();                
+                foreach ($products2 as $key => $value) {
                     $data1[$key]['no'] = $key +1;
                     $data1[$key]['item'] = $value->item_name;
                     $data1[$key]['qty'] = $value->quantity_on_stock;
-                    $data1[$key]['price'] = '₱'. number_format_value(get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]]));                    
                 }
 
                 //Recent Orders
@@ -201,7 +218,7 @@ class HomeController extends Controller
                 $delivery_lead = $delivery_lead->get();
             }
 
-            return view('dashboard.index', compact('notification','dashboard','data1','orders','invoice_lead','delivery_lead'));
+            return view('dashboard.index', compact('notification','dashboard','data1','orders','invoice_lead','delivery_lead','data3'));
         }
 
     	return view('dashboard.index');
