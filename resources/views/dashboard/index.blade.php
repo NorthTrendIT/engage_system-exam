@@ -274,7 +274,7 @@
 
                     <div class="card-body">
                         <!--begin::Chart-->
-                        <div id="promotion_report_cart" style="height: 350px; min-height: 365px;">
+                        <div id="promotion_report_cart" style="height: 320px; min-height: 320px;">
 
                         </div>
                         <!--end::Chart-->
@@ -296,7 +296,7 @@
 
                     <div class="card-body">
                         <!--begin::Chart-->
-                        <div id="product_report_cart" style="height: 350px; min-height: 365px;">
+                        <div id="product_report_cart" style="height: 320px; min-height: 320px;">
 
                         </div>
                         <!--end::Chart-->
@@ -320,7 +320,7 @@
 
                     <div class="card-body">
                         <!--begin::Chart-->
-                        <div id="back_order_report_cart" style="height: 350px; min-height: 365px;">
+                        <div id="back_order_report_cart" style="height: 320px; min-height: 320px;">
 
                         </div>
                         <!--end::Chart-->
@@ -346,8 +346,31 @@
 
                     <div class="card-body">
                         <!--begin::Chart-->
-                        <div id="top_products_per_quantity" style="height: 350px; min-height: 365px;">
-
+                        <div id="" style="height: 320px; min-height: 320px;">
+                            <table id="top_products_per_quantity" class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap">
+                                <thead>
+                                    <tr>
+                                        <td>Top</td>
+                                        <td>Name</td>
+                                        <td>Total Qty</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if(!empty($data1))
+                                    @foreach($data1 as $val)
+                                    <tr>
+                                        <td>{{@$val['no']}}</td>
+                                        <td>{{@$val['item']}} </td>
+                                        <td>{{@$val['qty']}} </td>
+                                    </tr>
+                                    @endforeach
+                                    @else
+                                    <tr>
+                                        <td colspan="3">No Data Available</td>
+                                    </tr>
+                                    @endif
+                                </tbody>
+                            </table>
                         </div>
                         <!--end::Chart-->
                     </div>
@@ -368,8 +391,31 @@
 
                     <div class="card-body">
                         <!--begin::Chart-->
-                        <div id="product_report_per_amount" style="height: 350px; min-height: 365px;">
-
+                        <div id="" style="height: 320px; min-height: 320px;">
+                            <table id="product_report_per_amount" class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap">
+                                <thead>
+                                    <tr>
+                                        <td>Top</td>
+                                        <td>Name</td>
+                                        <td>Total Amount</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if(!empty($data1))
+                                    @foreach($data1 as $val)
+                                    <tr>
+                                        <td>{{@$val['no']}}</td>
+                                        <td>{{@$val['item']}} </td>
+                                        <td>{{@$val['price']}} </td>
+                                    </tr>
+                                    @endforeach
+                                    @else
+                                    <tr>
+                                        <td colspan="3">No Data Available</td>
+                                    </tr>
+                                    @endif
+                                </tbody>
+                            </table>
                         </div>
                         <!--end::Chart-->
                     </div>
@@ -392,8 +438,33 @@
 
                     <div class="card-body">
                         <!--begin::Chart-->
-                        <div id="recent_order_report" style="height: 350px; min-height: 365px;">
-
+                        <div id="" style="height: 320px; min-height: 310px;">
+                            <table id="recent_order_report" class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap">
+                                <thead>
+                                    <tr>
+                                        <td>No</td>
+                                        <td>Order #</td>
+                                        <td>Total Amount</td>
+                                        <td>Date</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if(!empty($orders))
+                                    @foreach($orders as $k=>$val)
+                                    <tr>
+                                        <td>{{$k+1}}</td>
+                                        <td>{{@$val->u_omsno}} </td>
+                                        <td>₱ {{number_format_value(@$val->doc_total)}}</td>
+                                        <td>{{date('m/d/Y', strtotime(@$val->created_at))}}</td>
+                                    </tr>
+                                    @endforeach
+                                    @else
+                                    <tr>
+                                        <td colspan="4">No Data Available</td>
+                                    </tr>
+                                    @endif
+                                </tbody>
+                            </table>
                         </div>
                         <!--end::Chart-->
                     </div>
@@ -403,7 +474,123 @@
             </div>
         </div>
 
-        
+        <div class="row gy-5 g-xl-8">
+            <!-- Back Order Report-->
+            <div class="col-xl-12">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Order to invoice lead time</a>
+                        </h3>
+                        
+                    </div>
+
+                    <div class="card-body">
+                        <!--begin::Chart-->
+                        <div id="" style="height: 310px; min-height: 310px;">
+                            <table id="order_to_invoice_lead_time" class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap">
+                                <thead>
+                                    <tr>
+                                        <td>No</td>
+                                        <td>Order #</td>
+                                        <td>Order Date</td>
+                                        <td>Invoice #</td>
+                                        <td>Invoice Date</td>
+                                        <td>Lead Time(days)</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if(!empty($invoice_lead))
+                                    @foreach($invoice_lead as $k=>$val)
+                                    <tr>
+                                        <td>{{$k+1}}</td>
+                                        <td>{{@$val->order->doc_num}}</td>
+                                        <td>{{date('m/d/Y', strtotime(@$val->order->doc_date))}}</td>
+                                        <td>{{@$val->doc_num}}</td>
+                                        <td>{{date('m/d/Y', strtotime(@$val->doc_date))}}</td>
+                                        <?php
+                                            $endDate = $val->created_at;
+                                            $startDate = $val->order->created_at;
+
+                                            $days = (strtotime($endDate) - strtotime($startDate)) / (60 * 60 * 24);
+                                        ?>
+                                        <td>{{$days}}</td>
+                                    </tr>
+                                    @endforeach
+                                    @else
+                                    <tr>
+                                        <td colspan="4">No Data Available</td>
+                                    </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--end::Chart-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Charts Widget 1-->
+            </div>
+        </div>
+
+        <div class="row gy-5 g-xl-8">
+            <!-- Back Order Report-->
+            <div class="col-xl-12">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Invoice to delivery lead time</a>
+                        </h3>
+                        
+                    </div>
+
+                    <div class="card-body">
+                        <!--begin::Chart-->
+                        <div id="" style="height: 310px; min-height: 310px;">
+                            <table id="invoice_to_delivery_lead_time" class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap">
+                                <thead>
+                                    <tr>
+                                        <td>No</td>
+                                        <td>Order #</td>
+                                        <td>Invoice #</td>
+                                        <td>Invoice Date</td>
+                                        <td>Delivery Date</td>
+                                        <td>Lead Time(days)</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if(!empty($delivery_lead))
+                                    @foreach($delivery_lead as $k=>$val)
+                                    <tr>
+                                        <td>{{$k+1}}</td>
+                                        <td>{{@$val->order->doc_num}}</td>      
+                                        <td>{{@$val->doc_num}}</td>
+                                        <td>{{date('m/d/Y', strtotime(@$val->doc_date))}}</td>
+                                        <td>{{date('m/d/Y', strtotime(@$val->u_delivery))}}</td>
+                                        <?php
+                                            $endDate = $val->created_at;
+                                            $startDate = $val->u_delivery;
+
+                                            $days = (strtotime($endDate) - strtotime($startDate)) / (60 * 60 * 24);
+                                        ?>
+                                        <td>{{$days}}</td>
+                                    </tr>
+                                    @endforeach
+                                    @else
+                                    <tr>
+                                        <td colspan="4">No Data Available</td>
+                                    </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--end::Chart-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Charts Widget 1-->
+            </div>
+        </div>
         @endif
      </div>
      <!--end::Container-->
@@ -794,211 +981,5 @@
     @endif    
 </script>
 @endif
-@if(@Auth::user()->role_id == 4)
-<script type="text/javascript">   
-    
-        getChartData();
-        function getChartData(){
-            // Get Product Report Chart Data
-            $.ajax({
-                url: '{{ route('get.product.quantity.chart') }}',
-                method: "POST",
-                data: {
-                        _token:'{{ csrf_token() }}',
-                    }
-            })
-            .done(function(result) {
-                if(result.status == false){
-                    toast_error(result.message);
-                }else{
-                    render_product_graph_per_quantity(result.data1,result.products);
-                    render_product_graph_per_amount(result.data,result.products);
-                }
-            })
-            .fail(function() {
-                toast_error("error");
-            });
 
-            $.ajax({
-                url: '{{ route('get.recent.order.chart') }}',
-                method: "POST",
-                data: {
-                        _token:'{{ csrf_token() }}',
-                    }
-            })
-            .done(function(result) {
-                if(result.status == false){
-                    toast_error(result.message);
-                }else{
-                    console.log(result);
-                    render_recent_order_chart(result.data,result.orderno);
-                }
-            })
-            .fail(function() {
-                toast_error("error");
-            });
-        }
-
-        function render_product_graph_per_quantity(data,products){
-
-            var options = {
-                series: data,
-                chart: {
-                    type: 'bar',
-                    height: 350,
-                    toolbar: {
-                        show: false
-                    }
-                },
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        columnWidth: '35%',
-                        endingShape: 'rounded'
-                    },
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    show: true,
-                    width: 2,
-                    colors: ['transparent']
-                },
-                xaxis: {
-                    categories: products,
-                },
-                yaxis: {
-                    title: {
-                        text: ''
-                    }
-                },
-                fill: {
-                    opacity: 1
-                },
-                tooltip: {
-                    y: {
-                        formatter: function (val) {
-                            return  val
-                        }
-                    }
-                },
-                colors:['#A1A5B7', '#009EF7', '#dc3545']
-            };
-
-            var productChart = new ApexCharts(document.querySelector("#top_products_per_quantity"), options);
-            if (productChart.ohYeahThisChartHasBeenRendered) {
-                productChart.destroy();
-            }
-            productChart.render();
-        } 
-
-        function render_product_graph_per_amount(data,products){
-
-            var options = {
-                series: data,
-                chart: {
-                    type: 'bar',
-                    height: 350,
-                    toolbar: {
-                        show: false
-                    }
-                },
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        columnWidth: '35%',
-                        endingShape: 'rounded'
-                    },
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    show: true,
-                    width: 2,
-                    colors: ['transparent']
-                },
-                xaxis: {
-                    categories: products,
-                },
-                yaxis: {
-                    title: {
-                        text: ''
-                    }
-                },
-                fill: {
-                    opacity: 1
-                },
-                tooltip: {
-                    y: {
-                        formatter: function (val) {
-                            return  val
-                        }
-                    }
-                },
-                colors:['#009EF7']
-            };
-
-            var productChart = new ApexCharts(document.querySelector("#product_report_per_amount"), options);
-            if (productChart.ohYeahThisChartHasBeenRendered) {
-                productChart.destroy();
-            }
-            productChart.render();
-        }
-
-        function render_recent_order_chart(data,order){
-            var options = {
-                series: data,
-                chart: {
-                    type: 'bar',
-                    height: 350,
-                    toolbar: {
-                        show: false
-                    }
-                },
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        columnWidth: '35%',
-                        endingShape: 'rounded'
-                    },
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    show: true,
-                    width: 2,
-                    colors: ['transparent']
-                },
-                xaxis: {
-                    categories: order,
-                },
-                yaxis: {
-                    title: {
-                        text: ''
-                    }
-                },
-                fill: {
-                    opacity: 1
-                },
-                tooltip: {
-                    y: {
-                        formatter: function (val) {
-                            return  val
-                        }
-                    }
-                },
-                colors:['#009EF7']
-            };
-
-            var productChart = new ApexCharts(document.querySelector("#recent_order_report"), options);
-            if (productChart.ohYeahThisChartHasBeenRendered) {
-                productChart.destroy();
-            }
-            productChart.render();
-        } 
-</script>
-@endif
 @endpush
