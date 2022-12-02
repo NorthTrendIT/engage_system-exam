@@ -35,8 +35,7 @@ Route::middleware('guest')->group(function(){
 Route::middleware(['auth'])->group(function(){
     Route::get('/home','App\Http\Controllers\HomeController@index')->name('home')->middleware('check-login');
     Route::get('/comments','App\Http\Controllers\HomeController@comments')->name('comments')->middleware('check-login');
-	Route::post('home/get-report-data','App\Http\Controllers\HomeController@getReportData')->name('home.get-report-data');
-    Route::post('get-recent-order-chart','App\Http\Controllers\HomeController@getRecentOrderData')->name('get.recent.order.chart');
+	Route::post('home/get-report-data','App\Http\Controllers\HomeController@getReportData')->name('home.get-report-data'); 
 
 
 
@@ -230,8 +229,7 @@ Route::middleware(['auth'])->group(function(){
             Route::post('cart/placeOrder','App\Http\Controllers\CartController@placeOrder')->name('cart.placeOrder');
             Route::post('cart/qty-plus/{id}','App\Http\Controllers\CartController@qtyPlus')->name('cart.qty-plus');
             Route::post('cart/qty-minus/{id}','App\Http\Controllers\CartController@qtyMinus')->name('cart.qty-minus');
-            Route::post('cart/get-product-list','App\Http\Controllers\CartController@getAllProductList')->name('cart.get.product.list');
-            Route::post('get-product-quantity-chart','App\Http\Controllers\CartController@getProductData')->name('get.product.quantity.chart');
+            Route::post('cart/get-product-list','App\Http\Controllers\CartController@getAllProductList')->name('cart.get.product.list');           
 
 
             Route::get('customer-promotion/', 'App\Http\Controllers\CustomerPromotionController@index')->name('customer-promotion.index')/*->middleware('not-super-admin')*/;
