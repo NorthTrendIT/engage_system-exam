@@ -857,7 +857,7 @@ class SalesOrderReportController extends Controller
         $cancelled_quotation_item_quan = $cancelled_quotation_item_quan->get()->toArray();
         if(!empty($cancelled_quotation_item_quan)){
             $cancelled_total_sales_quantity = array_sum(array_column($cancelled_quotation_item_quan, 'quantity'));
-            $cancelled_total_sales_revenue = round(array_sum(array_column($completed_quotation_item_quan, 'gross_total')), 2);
+            $cancelled_total_sales_revenue = round(array_sum(array_column($cancelled_quotation_item_quan, 'gross_total')), 2);
         }
 
 
