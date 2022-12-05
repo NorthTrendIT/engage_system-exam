@@ -278,34 +278,166 @@ class ProductReportController extends Controller
 
     }
 
+    // public function export(Request $request){
+    //     ini_set('memory_limit', '1024M');
+    //     ini_set('max_execution_time', 1800);
+    //     $filter = collect();
+    //     if(@$request->data){
+    //       $filter = json_decode(base64_decode($request->data));
+    //     }
+
+    //     $records = array();
+    //     $headers = array();
+
+    //     $activeProducts = $this->getActiveProducts($filter);
+    //     $inactiveProducts = $this->getInactiveProducts($filter);
+    //     $productMovement = $this->getProductMovement($filter);
+
+    //     $headers = $this->getHeaders($filter);
+
+    //     array_push($records, $activeProducts);
+    //     array_push($records, $inactiveProducts);
+    //     array_push($records, $productMovement);
+
+    //     if(count($records)){
+    //         $title = 'Product Report '.date('dmY').'.xlsx';
+    //         return Excel::download(new ProductReportExport($records, $headers), $title);
+    //     }
+
+    //     \Session::flash('error_message', common_error_msg('excel_download'));
+    //     return redirect()->back();
+    // }
+
     public function export(Request $request){
-        ini_set('memory_limit', '1024M');
-        ini_set('max_execution_time', 1800);
-        $filter = collect();
-        if(@$request->data){
-          $filter = json_decode(base64_decode($request->data));
+      $company = SapConnection::query();
+      if($request->filter_company != ""){
+          $company->where('id', $request->filter_company);
+      }
+      $company = $company->get();
+      $outputData = [];
+      $no = 0;
+      foreach($company as $key => $item){
+        $companyName = $item->company_name;
+        // Active Products
+        $activeProducts = Product::where('sap_connection_id', $item->id)->where('is_active', 1);
+
+        if($request->filter_brand != ""){
+          $activeProducts->where('items_group_code',$request->filter_brand);
         }
 
-        $records = array();
-        $headers = array();
-
-        $activeProducts = $this->getActiveProducts($filter);
-        $inactiveProducts = $this->getInactiveProducts($filter);
-        $productMovement = $this->getProductMovement($filter);
-
-        $headers = $this->getHeaders($filter);
-
-        array_push($records, $activeProducts);
-        array_push($records, $inactiveProducts);
-        array_push($records, $productMovement);
-
-        if(count($records)){
-            $title = 'Product Report '.date('dmY').'.xlsx';
-            return Excel::download(new ProductReportExport($records, $headers), $title);
+        if($request->filter_product_category != ""){
+          $activeProducts->where('u_tires',$request->filter_product_category);
         }
 
-        \Session::flash('error_message', common_error_msg('excel_download'));
-        return redirect()->back();
+        if($request->filter_product_line != ""){
+          $activeProducts->where('u_item_line',$request->filter_product_line);
+        }
+
+        if($request->filter_product_class != ""){
+          $activeProducts->where('item_class',$request->filter_product_class);
+        }
+
+        if($request->filter_product_type != ""){
+          $activeProducts->where('u_item_type',$request->filter_product_type);
+        }
+
+        if($request->filter_product_application != ""){
+          $activeProducts->where('u_item_application',$request->filter_product_application);
+        }
+
+        if($request->filter_product_pattern != ""){
+          $activeProducts->where('u_pattern2',$request->filter_product_pattern);
+        }
+
+        $activeProducts = $activeProducts->count();
+
+        // Sleeping Products
+        $sleepingProducts = Product::where('sap_connection_id', $item->id)->where('is_active', 0);
+        if($request->filter_brand != ""){
+            $sleepingProducts->where('items_group_code',$request->filter_brand);
+        }
+
+        if($request->filter_product_category != ""){
+            $sleepingProducts->where('u_tires',$request->filter_product_category);
+        }
+
+        if($request->filter_product_line != ""){
+            $sleepingProducts->where('u_item_line',$request->filter_product_line);
+        }
+
+        if($request->filter_product_class != ""){
+            $sleepingProducts->where('item_class',$request->filter_product_class);
+        }
+
+        if($request->filter_product_type != ""){
+            $sleepingProducts->where('u_item_type',$request->filter_product_type);
+        }
+
+        if($request->filter_product_application != ""){
+            $sleepingProducts->where('u_item_application',$request->filter_product_application);
+        }
+
+        if($request->filter_product_pattern != ""){
+            $sleepingProducts->where('u_pattern2',$request->filter_product_pattern);
+        }
+
+        $sleepingProducts = $sleepingProducts->count();
+
+        // Product Movement
+        $productMovement = Product::where('products.sap_connection_id', $item->id)->join("invoice_items",function($join){
+                $join->on('invoice_items.item_code','=','products.item_code');
+            })
+            ->where('is_active', 1)
+            ->where('invoice_items.ship_date', '>=', Carbon::now()->subDays(60)->toDateTimeString());
+
+        if($request->filter_brand != ""){
+            $productMovement->where('items_group_code',$request->filter_brand);
+        }
+
+        if($request->filter_product_category != ""){
+            $productMovement->where('u_tires',$request->filter_product_category);
+        }
+
+        if($request->filter_product_line != ""){
+            $productMovement->where('u_item_line',$request->filter_product_line);
+        }
+
+        if($request->filter_product_class != ""){
+            $productMovement->where('item_class',$request->filter_product_class);
+        }
+
+        if($request->filter_product_type != ""){
+            $productMovement->where('u_item_type',$request->filter_product_type);
+        }
+
+        if($request->filter_product_application != ""){
+            $productMovement->where('u_item_application',$request->filter_product_application);
+        }
+
+        if($request->filter_product_pattern != ""){
+            $productMovement->where('u_pattern2',$request->filter_product_pattern);
+        }
+
+        $productMovement = $productMovement->count();
+        $row = [
+            'no' => ++$no,
+            'company_name' => $companyName,
+            'active_product' => number_format($activeProducts),
+            'sleeping_product' => number_format($sleepingProducts),
+            'product_movement' => number_format($productMovement),
+        ];
+        array_push($outputData, $row);
+      }
+
+      $headers = array(
+          'No.',
+          'Business Unit',
+          'Active Product',
+          'Sleeping Product',
+          'Product Movement',
+      );
+      $title = 'Product Report '.date('dmY').'.xlsx';
+      return Excel::download(new ProductReportExport($outputData, $headers), $title);
     }
 
     public function getActiveProducts($filter){
