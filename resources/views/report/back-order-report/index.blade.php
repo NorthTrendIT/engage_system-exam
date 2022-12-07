@@ -196,9 +196,14 @@
                               <th>No.</th>
                               <th>SO No.</th>
                               <th>SO Date</th>
+                              @if(Auth::user()->role_id != 4)
                               <th>Business Unit</th>
+                              @endif
+                              <th>Order No (OMS No)</th>
+                              @if(Auth::user()->role_id != 4)
                               <th>Customer Name</th>
                               <th>Sales Person</th>
+                              @endif
                               <th>Brand</th>
                               <th>Product Code</th>
                               <th>Product Name</th>
@@ -207,6 +212,7 @@
                               <th>Price</th>
                               <th>Price After VAT</th>
                               <th>Open Amount</th>
+                              <th>Days Passed</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -325,10 +331,14 @@
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'doc_entry', name: 'doc_entry',orderable:false,searchable:false},
               {data: 'doc_date', name: 'doc_date',orderable:false,searchable:false},
+              @if(Auth::user()->role_id != 4)
               {data: 'company', name: 'company',orderable:false,searchable:false},
+              @endif
+              {data: 'order_no', name: 'doc_entry',orderable:false,searchable:false},
+              @if(Auth::user()->role_id != 4)
               {data: 'customer', name: 'customer',orderable:false,searchable:false},
               {data: 'sales_specialist', name: 'sales_specialist',orderable:false,searchable:false},
-
+              @endif
               {data: 'brand', name: 'brand',orderable:false,searchable:false},
               {data: 'item_code', name: 'item_code',orderable:false,searchable:false},
               {data: 'item_name', name: 'item_name',orderable:false,searchable:false},
@@ -337,6 +347,7 @@
               {data: 'price', name: 'price',orderable:false,searchable:false},
               {data: 'price_after_vat', name: 'price_after_vat',orderable:false,searchable:false},
               {data: 'open_amount', name: 'open_amount',orderable:false,searchable:false},
+              {data: 'day_passed', name: 'doc_entry',orderable:false,searchable:false},
           ],
           drawCallback:function(){
               $(function () {
