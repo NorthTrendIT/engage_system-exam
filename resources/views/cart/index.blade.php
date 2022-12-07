@@ -108,6 +108,8 @@
                                                     <th>#</th>
                                                     <th>Products (<span class="productCount">{{ count($data) }}</span>)</th>
                                                     <th>Quantity</th>
+                                                    <th>Ordered Ltr/Kgs</th>
+                                                    <th>Served Ltr/Kgs</th>
                                                     <th>Unit</th>
                                                     <th>Price</th>
                                                     <th>Price After VAT</th>
@@ -143,7 +145,8 @@
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td>{{@$value->product->sales_unit}}</td>
+                                                    <td>{{@$value->qty * (@$value->qty * @$value->product->sales_unit_weight)}}</td>
+                                                    <td>0</td>
                                                     @php
                                                         $customer_id = explode(',', Auth::user()->multi_customer_id);
                                                         $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
@@ -556,6 +559,7 @@ $(document).ready(function() {
                 $(".weight_span").html(result.weight);
                 $(".volume_span").html(result.volume);
                 $(this).parent().eq( 8 ).find('.total_price').text(result.price);
+                window.location.reload();
             }
         })
         .fail(function() {
@@ -590,6 +594,7 @@ $(document).ready(function() {
                     $(".weight_span").html(result.weight);
                     $(".volume_span").html(result.volume);
                     $('.productCount').html('Products ('+result.cart_count+')');
+                    window.location.reload();
                     if(result.cart_count > 0){
                         $('.cartCount').show();
                         $('.cartCount').html(result.cart_count);

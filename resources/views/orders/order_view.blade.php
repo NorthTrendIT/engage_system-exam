@@ -277,6 +277,8 @@
                                     <th>Unit</th>
                                     <th class="min-w-175px pb-2">Ordered Quantity</th>
                                     <th class="min-w-175px pb-2">Served Quantity</th>
+                                    <th class="min-w-175px pb-2">Ordered Ltr/Kgs</th>
+                                    <th class="min-w-175px pb-2">Served Ltr/Kgs</th>
                                     @if($data->order_type == 'Promotion')
                                     <th class="min-w-80px text-end pb-2">Promo Delivery Date</th>
                                     @endif
@@ -296,6 +298,8 @@
                                     <td>{{$val['unit']}}</td>
                                     <td>{{$val['order_quantity']}}</td>
                                     <td>{{$val['serverd_quantity']}}</td>
+                                    <td>{{$val['orderd_weight']}}</td>
+                                    <td>{{$val['served_weight']}}</td>
                                     @if($data->order_type == 'Promotion')
                                         <td>{{$val['promotion']}}</td>
                                     @endif

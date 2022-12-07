@@ -130,6 +130,10 @@ class OrdersController extends Controller
             $invoiceDetails[$key]['price'] = number_format_value(@$value->price);
             $invoiceDetails[$key]['price_after_vat'] = number_format_value($value->price_after_vat);
             $invoiceDetails[$key]['amount'] = '₱'. number_format_value(round($value->gross_total,1));
+
+            $invoiceDetails[$key]['orderd_weight'] = @$value->quantity * (@$value->quantity * @$value->product1->sales_unit_weight);
+
+            $invoiceDetails[$key]['served_weight'] = @$quantityDetails[$key] * (@$value->quantity * @$value->product1->sales_unit_weight);
             
             if(@$quantityDetails[$key] == 0){
                 $status1 = 'Unserved';
