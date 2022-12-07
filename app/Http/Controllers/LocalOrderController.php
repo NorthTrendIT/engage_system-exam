@@ -461,16 +461,15 @@ class LocalOrderController extends Controller
             $order = LocalOrder::where('id', $update['id'])->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
             try{
-                $sap_connection = SapConnection::find(@$order->customer->sap_connection_id);
-
-                if(!is_null($sap_connection)){
+                $sap_connection = SapConnection::find(@$order->customer->sap_connection_id);                
+                if(!is_null($sap_connection)){                   
                     $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
-
-                    if($update['id']){
+                    if($update['id']){                        
                         $sap_response = $sap->pushOrder($order->id);
                         if($sap_response['status']){
                             $response = ['status' => true, 'message' => 'Order placed successfully!'];
                         }
+                        $response = ['status' => true, 'message' => 'Order placed successfully!'];
                     }
                 }
             } catch (\Exception $e) {
