@@ -1619,7 +1619,12 @@ class SalesOrderReportController extends Controller
         }
 
         if($request->filter_customer != ""){
-            $data->where('card_code',$request->filter_customer);
+           // $data->where('card_code',$request->filter_customer);
+
+                $data->whereHas('customer', function($q1) use ($request){
+                    $q1->where('id', $request->filter_customer);
+                });
+            
         }
 
         if($request->filter_company != ""){
