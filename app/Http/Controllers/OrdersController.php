@@ -131,6 +131,9 @@ class OrdersController extends Controller
             $invoiceDetails[$key]['price_after_vat'] = number_format_value($value->price_after_vat);
             $invoiceDetails[$key]['amount'] = '₱'. number_format_value(round($value->gross_total,1));
 
+            $Weight = $Weight + (@$value->quantity * @$value->product1->sales_unit_weight);
+            $Volume = $Volume + (@$value->quantity * @$value->product1->sales_unit_volume);
+
             $invoiceDetails[$key]['orderd_weight'] = @$value->quantity * (@$value->quantity * @$value->product1->sales_unit_weight);
 
             $invoiceDetails[$key]['served_weight'] = @$quantityDetails[$key] * (@$value->quantity * @$value->product1->sales_unit_weight);
@@ -171,13 +174,9 @@ class OrdersController extends Controller
             if($data->order_type == 'Promotion'){
                 $invoiceDetails[$key]['promotion'] = '-';
 
-            }
-
-            $Weight = $Weight + (@$value->quantity * @$value->product1->sales_unit_weight);
-            $Volume = $Volume + (@$value->quantity * @$value->product1->sales_unit_volume);
+            }            
 
         }
-        
         $orderRemarks = LocalOrder::where('doc_entry',@$data->doc_entry)->first();
         
         return view('orders.order_view', compact('data','orderRemarks','invoiceDetails','Weight','Volume'));
