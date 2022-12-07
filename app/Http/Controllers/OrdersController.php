@@ -134,7 +134,7 @@ class OrdersController extends Controller
             $Weight = $Weight + (@$value->quantity * @$value->product1->sales_unit_weight);
             $Volume = $Volume + (@$value->quantity * @$value->product1->sales_unit_volume);
 
-            $invoiceDetails[$key]['orderd_weight'] = @$value->quantity * (@$value->quantity * @$value->product1->sales_unit_weight);
+            $invoiceDetails[$key]['orderd_weight'] = (@$value->quantity * @$value->product1->sales_unit_weight);
 
             $invoiceDetails[$key]['served_weight'] = @$quantityDetails[$key] * (@$value->quantity * @$value->product1->sales_unit_weight);
             

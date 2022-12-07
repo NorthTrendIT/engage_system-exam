@@ -145,7 +145,7 @@
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td>{{@$value->qty * (@$value->qty * @$value->product->sales_unit_weight)}}</td>
+                                                    <td>{{(@$value->qty * @$value->product->sales_unit_weight)}}</td>
                                                     <td>0</td>
                                                     @php
                                                         $customer_id = explode(',', Auth::user()->multi_customer_id);
