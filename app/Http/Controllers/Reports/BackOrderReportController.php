@@ -56,6 +56,10 @@ class BackOrderReportController extends Controller
                             ->addColumn('item_code', function($row) {
                                 return @$row->product1->item_code ?? @$row->item_code ?? "-";
                             })
+                            ->addColumn('order_no', function($row) {
+                                return @$row->order->u_omsno ?? "-";
+                            })
+
                             ->addColumn('customer', function($row) {
                                 return @$row->order->customer->card_name ?? @$row->order->card_name ?? "-";
                             })
@@ -103,7 +107,14 @@ class BackOrderReportController extends Controller
                                 }
                                 return $html;
                             })
-                            ->rawColumns(['status','action','price','price_after_vat'])
+                            ->addColumn('day_passed', function($row) {
+                                $startDate = date("Y-m-d", strtotime(@$row->created_at));
+                                $endDate = date("Y-m-d");
+
+                                $days = (strtotime($endDate) - strtotime($startDate)) / (60 * 60 * 24);
+                                return $days ." Day(s)";
+                            })
+                            ->rawColumns(['status','action','price','price_after_vat','day_passed'])
                             ->make(true);
 
         $data = compact(
@@ -206,7 +217,7 @@ class BackOrderReportController extends Controller
 
 
     public function getReportResultData($request){
-        $data = OrderItem::where('remaining_open_quantity', '>', 0)->orderBy('id','DESC');
+        $data = OrderItem::with('order')->where('remaining_open_quantity', '>', 0)->orderBy('id','DESC');
 
         $data->whereHas('order', function($q) use ($request){
             $q->where('document_status', 'bost_Open');
