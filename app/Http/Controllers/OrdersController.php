@@ -111,7 +111,7 @@ class OrdersController extends Controller
         $Volume = 0;
         foreach($data->items as $key=>$value){
             $invoiceDetails[$key]['key'] = $key + 1;
-            $invoiceDetails[$key]['product'] = @$value->product1->item_name;
+            $invoiceDetails[$key]['product'] = @$value->product1->item_name."(Code:".@$value->product1->item_code.")";
             $invoiceDetails[$key]['key'] = @$data->order->id;
             $invoiceDetails[$key]['unit'] = @$value->product1->sales_unit;
             $invoiceDetails[$key]['order_quantity'] = number_format(@$value->quantity);

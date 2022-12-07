@@ -1179,3 +1179,36 @@ input[type="button"].remove-from-cart {
     background: none;
     padding: 0;
 }
+
+
+.sticky_table_custom .table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #fff;
+}
+.sticky_table_custom .table thead th:first-child {
+  left: 0;
+  z-index: 3;
+}
+.sticky_table_custom .table tr > :first-child {
+  position: sticky; 
+  background-color: #fff;
+  left: 0; 
+}
+
+.sticky_table_custom .table tr > :first-child {
+  background-color: #fff;
+}
+
+.sticky_table_custom .table thead th:nth-child(2) {
+  left: 80px;
+  z-index: 3;
+  background-color: #fff;
+}
+.sticky_table_custom .table tr > :nth-child(2) {
+  position: sticky; 
+   background-color: #fff;
+  left: 80px; 
+}
+
