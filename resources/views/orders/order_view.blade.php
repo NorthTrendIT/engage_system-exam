@@ -268,59 +268,61 @@
                           <!--begin::Content-->
                           <div class="flex-grow-1 mt-10">
                             <!--begin::Table-->
-                            <div class="table-responsive border-bottom mb-9">
-                              <table class="table mb-3 order_class">
-                                <thead>
-                                  <tr class="border-bottom fs-6 fw-bolder text-muted">
-                                    <th>#</th>
-                                    <th class="min-w-175px pb-2">Product</th>
-                                    <th>Unit</th>
-                                    <th class="min-w-175px pb-2">Ordered Quantity</th>
-                                    <th class="min-w-175px pb-2">Served Quantity</th>
-                                    <th class="min-w-175px pb-2">Ordered Ltr/Kgs</th>
-                                    <th class="min-w-175px pb-2">Served Ltr/Kgs</th>
-                                    @if($data->order_type == 'Promotion')
-                                    <th class="min-w-80px text-end pb-2">Promo Delivery Date</th>
-                                    @endif
-                                    <th class="min-w-70px text-end pb-2">Invoice</th>
-                                    <th class="min-w-80px text-end pb-2">Price</th>
-                                    <th class="min-w-80px text-end pb-2">Price After VAT</th>
-                                    <th class="min-w-100px text-end pb-2">Amount</th>
-                                    <th class="min-w-100px text-end pb-2">Line Status</th>
-                                    <th class="min-w-100px text-end pb-2">Line Remarks</th>
-                                  </tr>
-                                </thead>
-                                <tbody>                                    
-                                  @foreach($invoiceDetails as $k=>$val)
-                                  <tr class="fw-bolder text-gray-700 fs-5">
-                                    <td>{{$val['key']}}</td>
-                                    <td>{{$val['product']}}</td>
-                                    <td>{{$val['unit']}}</td>
-                                    <td>{{$val['order_quantity']}}</td>
-                                    <td>{{$val['serverd_quantity']}}</td>
-                                    <td>{{$val['orderd_weight']}}</td>
-                                    <td>{{$val['served_weight']}}</td>
-                                    @if($data->order_type == 'Promotion')
-                                        <td>{{$val['promotion']}}</td>
-                                    @endif
-                                    <?php
-                                      if(@$val['id'] == ""){
-                                        $route = '#';
-                                      }else{
-                                        $route = route('invoices.show',@$val['id']);
-                                      }
-                                    ?>
-                                    <td>
-                                      <a href="{{$route}}" target="_blank">{{$val['invoice_num']}}</a></td>
-                                    <td>{{$val['price']}}</td>
-                                    <td>{{$val['price_after_vat']}}</td>
-                                    <td>{{$val['amount']}}</td>
-                                    <td>{{$val['line_status']}}</td>
-                                    <td>{{$val['line_remarks']}}</td>
-                                  </tr>
-                                  @endforeach
-                                </tbody>
-                              </table>
+                            <div class="sticky_table_custom">
+                              <div class="table-responsive border-bottom mb-9">
+                                <table class="table mb-3 order_class">
+                                  <thead>
+                                    <tr class="border-bottom fs-6 fw-bolder text-muted">
+                                      <th style="width:80px;">#</th>
+                                      <th class="min-w-175px pb-2">Product</th>
+                                      <th>Unit</th>
+                                      <th class="min-w-175px pb-2">Ordered Quantity</th>
+                                      <th class="min-w-175px pb-2">Served Quantity</th>
+                                      <th class="min-w-175px pb-2">Ordered Ltr/Kgs</th>
+                                      <th class="min-w-175px pb-2">Served Ltr/Kgs</th>
+                                      @if($data->order_type == 'Promotion')
+                                      <th class="min-w-80px text-end pb-2">Promo Delivery Date</th>
+                                      @endif
+                                      <th class="min-w-70px text-end pb-2">Invoice</th>
+                                      <th class="min-w-80px text-end pb-2">Price</th>
+                                      <th class="min-w-80px text-end pb-2">Price After VAT</th>
+                                      <th class="min-w-100px text-end pb-2">Amount</th>
+                                      <th class="min-w-100px text-end pb-2">Line Status</th>
+                                      <th class="min-w-100px text-end pb-2">Line Remarks</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>                                    
+                                    @foreach($invoiceDetails as $k=>$val)
+                                    <tr class="fw-bolder text-gray-700 fs-5">
+                                      <td style="width:80px;">{{$val['key']}}</td>
+                                      <td>{{$val['product']}}</td>
+                                      <td>{{$val['unit']}}</td>
+                                      <td>{{$val['order_quantity']}}</td>
+                                      <td>{{$val['serverd_quantity']}}</td>
+                                      <td>{{$val['orderd_weight']}}</td>
+                                      <td>{{$val['served_weight']}}</td>
+                                      @if($data->order_type == 'Promotion')
+                                          <td>{{$val['promotion']}}</td>
+                                      @endif
+                                      <?php
+                                        if(@$val['id'] == ""){
+                                          $route = '#';
+                                        }else{
+                                          $route = route('invoices.show',@$val['id']);
+                                        }
+                                      ?>
+                                      <td>
+                                        <a href="{{$route}}" target="_blank">{{$val['invoice_num']}}</a></td>
+                                      <td>{{$val['price']}}</td>
+                                      <td>{{$val['price_after_vat']}}</td>
+                                      <td>{{$val['amount']}}</td>
+                                      <td>{{$val['line_status']}}</td>
+                                      <td>{{$val['line_remarks']}}</td>
+                                    </tr>
+                                    @endforeach
+                                  </tbody>
+                                </table>
+                              </div>
                             </div>
                             <!--end::Table-->
                             <!--begin::Container-->
