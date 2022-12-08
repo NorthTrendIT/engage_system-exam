@@ -254,9 +254,11 @@ class CartController extends Controller
             // if($avl_qty < ($cart->qty + 1)){
             //     return $response = ['status'=>false,'message'=>"The product quantity is not available."];
             // }
-
             $cart->qty = $cart->qty + 1;
             $cart->save();
+
+            $pr_weight = Product::where('id',$cart->product_id)->first();
+            $weight_individual = $cart->qty * @$pr_weight->sales_unit_weight;
 
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
 
@@ -275,10 +277,11 @@ class CartController extends Controller
                 $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
                 $total += $subTotal;
                 $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
-                $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);
+                $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);                
+
             }
 
-            return $response = ['status'=>true,'message'=>"Product quantity updated successfully.", 'total' => number_format_value($total),'weight' => number_format_value($weight),'volume' => number_format_value($volume),'price' => number_format_value($price)];
+            return $response = ['status'=>true,'message'=>"Product quantity updated successfully.", 'total' => number_format_value($total),'weight' => number_format_value($weight),'volume' => number_format_value($volume),'price' => number_format_value($price),'weight_individual'=>number_format_value($weight_individual)];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];
@@ -304,6 +307,9 @@ class CartController extends Controller
             $volume = 0;
             $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
 
+            $pr_weight = Product::where('id',$cart->product_id)->first();
+            $weight_individual = $cart->qty * @$pr_weight->sales_unit_weight;
+
             foreach($data as $item){
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
@@ -314,7 +320,7 @@ class CartController extends Controller
                 $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);
             }
 
-            return $response = ['status'=>true,'message'=> $message, 'total' => number_format_value($total), 'count' => count($data), 'cart_count' => count($data),'weight' => number_format_value($weight),'volume' => number_format_value($volume),'price' => number_format_value($price)];
+            return $response = ['status'=>true,'message'=> $message, 'total' => number_format_value($total), 'count' => count($data), 'cart_count' => count($data),'weight' => number_format_value($weight),'volume' => number_format_value($volume),'price' => number_format_value($price),'weight_individual'=>number_format_value($weight_individual)];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];
