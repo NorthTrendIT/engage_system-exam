@@ -145,7 +145,7 @@
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td>{{(@$value->qty * @$value->product->sales_unit_weight)}}</td>
+                                                    <td><span class="individual_weight">{{(@$value->qty * @$value->product->sales_unit_weight)}}</span></td>
                                                     <td>0</td>
                                                     @php
                                                         $customer_id = explode(',', Auth::user()->multi_customer_id);
@@ -559,7 +559,7 @@ $(document).ready(function() {
                 $(".weight_span").html(result.weight);
                 $(".volume_span").html(result.volume);
                 $(this).parent().eq( 8 ).find('.total_price').text(result.price);
-                window.location.reload();
+                ($self.parent().parent().closest('tr').find('.individual_weight')).text(result.weight_individual);
             }
         })
         .fail(function() {
@@ -579,7 +579,7 @@ $(document).ready(function() {
                 _token:'{{ csrf_token() }}',
             }
         })
-        .done(function(result) {
+        .done(function(result) {    
             console.log(result);
             if(result.status == false){
                 toast_error(result.message);
@@ -594,7 +594,7 @@ $(document).ready(function() {
                     $(".weight_span").html(result.weight);
                     $(".volume_span").html(result.volume);
                     $('.productCount').html('Products ('+result.cart_count+')');
-                    window.location.reload();
+                    $self.parent().parent().closest('tr').find('.individual_weight').text(result.weight_individual);
                     if(result.cart_count > 0){
                         $('.cartCount').show();
                         $('.cartCount').html(result.cart_count);
@@ -604,9 +604,6 @@ $(document).ready(function() {
                     $('#myForm').remove();
                     $('.cartCount').hide();
                 }
-                // setTimeout(function(){
-                //     window.location.reload();
-                // },1500)
             }
         })
         .fail(function() {
