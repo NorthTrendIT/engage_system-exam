@@ -147,6 +147,10 @@ class InvoicesController extends Controller
     public function getAll(Request $request){
         $data = Invoice::query();
 
+        if($request->engage_transaction != 0){
+            $data->whereNotNull('u_omsno');
+        }
+
         if(userrole() == 4){
             $customers = Auth::user()->get_multi_customer_details();
             $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
@@ -351,12 +355,17 @@ class InvoicesController extends Controller
     }
 
     public function export(Request $request){
+
         $filter = collect();
         if(@$request->data){
           $filter = json_decode(base64_decode($request->data));
         }
 
         $data = Invoice::orderBy('id', 'desc');
+
+        if(@$filter->engage_transaction != 0){
+            $data->whereNotNull('u_omsno');
+        }
 
         if(userrole() == 4){
             $customers = Auth::user()->get_multi_customer_details();
