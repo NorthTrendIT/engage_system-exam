@@ -134,9 +134,9 @@ class OrdersController extends Controller
             $Weight = $Weight + (@$value->quantity * @$value->product1->sales_unit_weight);
             $Volume = $Volume + (@$value->quantity * @$value->product1->sales_unit_volume);
 
-            $invoiceDetails[$key]['orderd_weight'] = (@$value->quantity * @$value->product1->sales_unit_weight);
+            $invoiceDetails[$key]['orderd_weight'] = number_format_value(@$value->quantity * @$value->product1->sales_unit_weight);
 
-            $invoiceDetails[$key]['served_weight'] = @$quantityDetails[$key] * (@$value->quantity * @$value->product1->sales_unit_weight);
+            $invoiceDetails[$key]['served_weight'] = number_format_value(@$quantityDetails[$key] * @$value->product1->sales_unit_weight);
             
             if(@$quantityDetails[$key] == 0){
                 $status1 = 'Unserved';
