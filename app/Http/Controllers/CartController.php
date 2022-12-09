@@ -258,7 +258,7 @@ class CartController extends Controller
             $cart->save();
 
             $pr_weight = Product::where('id',$cart->product_id)->first();
-            $weight_individual = $cart->qty * @$pr_weight->sales_unit_weight;
+            $weight_individual = ($cart->qty * @$pr_weight->sales_unit_weight);
 
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
 
@@ -308,7 +308,8 @@ class CartController extends Controller
             $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
 
             $pr_weight = Product::where('id',$cart->product_id)->first();
-            $weight_individual = $cart->qty * @$pr_weight->sales_unit_weight;
+            $weight_individual = ($cart->qty * @$pr_weight->sales_unit_weight);
+            //$weight_individual = number_format($weight_individual);
 
             foreach($data as $item){
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
