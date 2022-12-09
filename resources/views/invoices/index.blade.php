@@ -123,6 +123,15 @@
                   </div>
                 </div>
 
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon engage_transaction">
+                    <input type="checkbox" class="" name = "engage_transaction" id="engage_transaction" value="1" checked>
+                    <span>
+                      Engage Transactions Only
+                    </span>
+                  </div>
+                </div>
+
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
@@ -211,6 +220,7 @@
       $filter_territory = $('[name="filter_territory"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
       $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
+      $engage_transaction = $('[name="engage_transaction"]').val();
 
       table.DataTable({
           processing: true,
@@ -235,6 +245,7 @@
                 filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
                 filter_company : $filter_company,
+                engage_transaction : $engage_transaction,
                 filter_customer : $filter_customer == 'all' ? '' : $filter_customer,
                 filter_brand : $filter_brand == 'all' ? '' : $filter_brand,
                 filter_class : $filter_class == 'all' ? '' : $filter_class,
@@ -404,6 +415,7 @@
         data.filter_territory = $('[name="filter_territory"]').find('option:selected').val();
         data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
         data.filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
+        data.engage_transaction = $('[name="engage_transaction"]').val();
 
         url = url + '?data=' + btoa(JSON.stringify(data));
 
