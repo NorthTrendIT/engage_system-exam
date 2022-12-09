@@ -515,7 +515,7 @@
                     contentType: false,
                     success: function (data) {
                         if (data.status) {
-                            toast_success(data.message)
+                                                                                                                                                                                                                                                                                                                                         toast_success(data.message)
                             setTimeout(function(){
                                 window.location.href = '{{ route('sales-specialist-orders.index') }}';
                             },1500)
@@ -549,7 +549,9 @@
                     url: "{{route('sales-specialist-orders.placeOrder')}}",
                     type: "POST",
                     data: new FormData($("#myForm")[0]),
-                    async: false,
+                    beforeSend: function() {
+                        show_loader();
+                    },
                     processData: false,
                     contentType: false,
                     success: function (data) {
@@ -570,6 +572,9 @@
                         $('[type="submit"]').prop('disabled', false);
                         $('[name="address_id"]').removeAttr('disabled', false);
                         $('[name="customer_id"]').removeAttr('disabled', false);
+                    },
+                    complete: function() {
+                        hide_loader();
                     },
                 });
             }
