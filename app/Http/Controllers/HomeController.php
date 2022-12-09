@@ -175,9 +175,9 @@ class HomeController extends Controller
                 $products1 = $products->whereIn('sap_connection_id', $sap_connection_id)->get();
                 
                 foreach ($products1 as $key => $value) {
-                    $price = (get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]]));
-                    array_push($data2,$price);
-                }
+
+                    $data2[$value->id] = (get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]]));
+                }                
                 arsort($data2);             
                 $newArray = array_slice($data2, 0, 5, true);
                 $keys_array = array_keys($newArray);
