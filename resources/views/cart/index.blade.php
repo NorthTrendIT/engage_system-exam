@@ -109,7 +109,6 @@
                                                     <th>Products (<span class="productCount">{{ count($data) }}</span>)</th>
                                                     <th>Quantity</th>
                                                     <th>Ordered Ltr/Kgs</th>
-                                                    <th>Served Ltr/Kgs</th>
                                                     <th>Unit</th>
                                                     <th>Price</th>
                                                     <th>Price After VAT</th>
@@ -145,8 +144,7 @@
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td><span class="individual_weight">{{(@$value->qty * @$value->product->sales_unit_weight)}}</span></td>
-                                                    <td>0</td>
+                                                    <td><span class="individual_weight">{{number_format_value(@$value->qty * @$value->product->sales_unit_weight)}}</span></td>
                                                     @php
                                                         $customer_id = explode(',', Auth::user()->multi_customer_id);
                                                         $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
