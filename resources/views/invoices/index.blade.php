@@ -210,6 +210,12 @@
       var table = $("#myTable");
       table.DataTable().destroy();
 
+      if ($('[name="engage_transaction"]').is(':checked')) {
+          var engage_transaction = 1;
+      } else {
+          var engage_transaction = 0;
+      }
+
       $filter_search = $('[name="filter_search"]').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
@@ -220,7 +226,7 @@
       $filter_territory = $('[name="filter_territory"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
       $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
-      $engage_transaction = $('[name="engage_transaction"]').val();
+      $engage_transaction = engage_transaction;
 
       table.DataTable({
           processing: true,
@@ -415,7 +421,14 @@
         data.filter_territory = $('[name="filter_territory"]').find('option:selected').val();
         data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
         data.filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
-        data.engage_transaction = $('[name="engage_transaction"]').val();
+
+        if ($('[name="engage_transaction"]').is(':checked')) {
+            var engage_transaction = 1;
+        } else {
+            var engage_transaction = 0;
+        }
+      
+        data.engage_transaction = engage_transaction;
 
         url = url + '?data=' + btoa(JSON.stringify(data));
 
