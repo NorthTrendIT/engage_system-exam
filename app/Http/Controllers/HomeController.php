@@ -189,11 +189,11 @@ class HomeController extends Controller
                     $data3[$key]['price'] = '₱ '. number_format_value($value_array[$key]); 
                 }
 
-                $products2 = $products->whereIn('sap_connection_id', $sap_connection_id)->orderBy('quantity_on_stock','DESC')->take(5)->get();                
+                $products2 = $products->whereIn('sap_connection_id', $sap_connection_id)->orderBy('quantity_ordered_by_customers','DESC')->take(5)->get();                
                 foreach ($products2 as $key => $value) {
                     $data1[$key]['no'] = $key +1;
                     $data1[$key]['item'] = $value->item_name;
-                    $data1[$key]['qty'] = $value->quantity_on_stock;
+                    $data1[$key]['qty'] = $value->quantity_ordered_by_customers;
                 }
 
                 //Recent Orders
