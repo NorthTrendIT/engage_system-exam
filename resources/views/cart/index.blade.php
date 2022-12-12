@@ -206,11 +206,11 @@
                                         <div class="col-xl-3">
                                             <div class="flex-grow-1 me-2 row">
                                                 <span class="fs-8 col-xl-6">Total Weight:</span>
-                                                <span class="fw-bolder fs-6 col-xl-6 weight_span">{{@$weight.".00" ?? 0}} Kg</span>
+                                                <span class="fw-bolder fs-6 col-xl-6 weight_span">{{number_format_value(@$weight) ?? 0}} Kg</span>
                                             </div>  
                                             <div class="flex-grow-1 me-2 row">
                                                 <span class="fs-8 col-xl-6">Total Volume:</span>
-                                                <span class="fw-bolder fs-6 col-xl-6 volume_span">{{@$volume.".00" ?? 0}}</span>
+                                                <span class="fw-bolder fs-6 col-xl-6 volume_span">{{number_format_value(@$volume) ?? 0}}</span>
                                             </div>                                            
                                         </div>
                                         <div class="col-xl-4">                                            

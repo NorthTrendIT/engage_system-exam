@@ -281,7 +281,7 @@ class CartController extends Controller
 
             }
 
-            return $response = ['status'=>true,'message'=>"Product quantity updated successfully.", 'total' => number_format_value($total),'weight' => number_format_value($weight),'volume' => number_format_value($volume),'price' => number_format_value($price),'weight_individual'=>number_format_value($weight_individual)];
+            return $response = ['status'=>true,'message'=>"Product quantity updated successfully.", 'total' => number_format_value($total),'weight' => ($weight),'volume' => ($volume),'price' => number_format_value($price),'weight_individual'=>number_format_value($weight_individual)];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];
