@@ -315,7 +315,11 @@ class OrdersController extends Controller
     }
 
     public function getAll(Request $request){
-        $data = Quotation::whereNotNull('u_omsno');
+        $data = Quotation::query();
+
+        if($request->engage_transaction != 0){
+            $data->whereNotNull('u_omsno');
+        }
 
         if(userrole() == 4){
             $customers = Auth::user()->get_multi_customer_details();
