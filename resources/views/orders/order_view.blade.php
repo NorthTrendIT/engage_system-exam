@@ -297,10 +297,10 @@
                                       <td style="width:80px;">{{$val['key']}}</td>
                                       <td>{{$val['product']}}</td>
                                       <td>{{$val['unit']}}</td>
-                                      <td>{{$val['order_quantity']}}</td>
-                                      <td>{{$val['serverd_quantity']}}</td>
-                                      <td>{{$val['orderd_weight']}}</td>
-                                      <td>{{$val['served_weight']}}</td>
+                                      <td class="text-end">{{$val['order_quantity']}}</td>
+                                      <td class="text-end">{{$val['serverd_quantity']}}</td>
+                                      <td class="text-end">{{$val['orderd_weight']}}</td>
+                                      <td class="text-end">{{$val['served_weight']}}</td>
                                       @if($data->order_type == 'Promotion')
                                           <td>{{$val['promotion']}}</td>
                                       @endif
@@ -311,11 +311,11 @@
                                           $route = route('invoices.show',@$val['id']);
                                         }
                                       ?>
-                                      <td>
+                                      <td class="text-end">
                                         <a href="{{$route}}" target="_blank">{{$val['invoice_num']}}</a></td>
-                                      <td>{{$val['price']}}</td>
-                                      <td>{{$val['price_after_vat']}}</td>
-                                      <td>{{$val['amount']}}</td>
+                                      <td class="text-end">{{$val['price']}}</td>
+                                      <td class="text-end">{{$val['price_after_vat']}}</td>
+                                      <td class="text-end">{{$val['amount']}}</td>
                                       <td>{{$val['line_status']}}</td>
                                       <td>{{$val['line_remarks']}}</td>
                                     </tr>
