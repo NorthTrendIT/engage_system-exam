@@ -132,6 +132,15 @@
                   </div>
                 </div>
 
+                <div class="col-md-3 mt-5">
+                  <div class="input-icon engage_transaction">
+                    <input type="checkbox" class="" name = "engage_transaction" id="engage_transaction" value="1" checked>
+                    <span>
+                      Engage Transactions Only
+                    </span>
+                  </div>
+                </div>
+
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
@@ -211,6 +220,12 @@
       var table = $("#myTable");
       table.DataTable().destroy();
 
+      if ($('[name="engage_transaction"]').is(':checked')) {
+          var engage_transaction = 1;
+      } else {
+          var engage_transaction = 0;
+      }
+
       $filter_search = $('[name="filter_search"]').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
@@ -222,6 +237,7 @@
       $filter_territory = $('[name="filter_territory"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
       $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
+      $engage_transaction = engage_transaction;
 
       table.DataTable({
           processing: true,
@@ -257,6 +273,7 @@
                 filter_sales_specialist : $filter_sales_specialist == 'all' ? '' : $filter_sales_specialist,
                 filter_market_sector : $filter_market_sector == 'all' ? '' : $filter_market_sector,
                 filter_territory : $filter_territory == 'all' ? '' : $filter_territory,
+                engage_transaction : $engage_transaction,
               }
           },
           columns: [
@@ -410,6 +427,12 @@
         $(document).on("click", ".download_excel", function(e) {
             var url = "{{route('orders.export')}}";
 
+            if ($('[name="engage_transaction"]').is(':checked')) {
+                var engage_transaction = 1;
+            } else {
+                var engage_transaction = 0;
+            }
+
             var data = {};
             data.filter_search = $('[name="filter_search"]').val();
             data.filter_date_range = $('[name="filter_date_range"]').val();
@@ -422,6 +445,7 @@
             data.filter_territory = $('[name="filter_territory"]').find('option:selected').val();
             data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
             data.filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
+            data.engage_transaction = engage_transaction;
 
             url = url + '?data=' + btoa(JSON.stringify(data));
 
