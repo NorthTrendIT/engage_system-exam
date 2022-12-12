@@ -145,6 +145,7 @@
                                                         </div>
                                                     </td>
                                                     <td><span class="individual_weight text-end">{{number_format_value(@$value->qty * @$value->product->sales_unit_weight)}}</span></td>
+                                                    <td>{{@$value->product->sales_unit}}</td>
                                                     @php
                                                         $customer_id = explode(',', Auth::user()->multi_customer_id);
                                                         $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
