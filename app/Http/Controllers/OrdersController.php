@@ -1014,7 +1014,11 @@ class OrdersController extends Controller
           $filter = json_decode(base64_decode($request->data));
         }
 
-        $data = Quotation::whereNotNull('u_omsno')->orderBy('id', 'desc');
+        $data = Quotation::orderBy('id', 'desc');
+
+        if($request->engage_transaction != 0){
+            $data->whereNotNull('u_omsno');
+        }
 
         if(userrole() == 4){
             $customers = Auth::user()->get_multi_customer_details();
