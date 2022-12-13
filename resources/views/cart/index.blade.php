@@ -111,7 +111,6 @@
                                                     <th>Ordered Ltr/Kgs</th>
                                                     <th>Unit</th>
                                                     <th>Price</th>
-                                                    <th>Price After VAT</th>
                                                     <th>Amount</th>
                                                     <th></th>
                                                 </tr>
@@ -152,9 +151,6 @@
                                                     @endphp                    
                                                     <td class="text-end">
                                                         <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) ) }}</span>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no)) }}</span>
                                                     </td>
                                                     <td class="text-end">
                                                         <span class="fw-bolder my-2 price total_price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) * $value->qty ) }}</span>
