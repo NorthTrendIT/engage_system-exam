@@ -216,14 +216,24 @@
 
     render_table();
 
+    $('#engage_transaction').change(function() {
+      if(this.checked) {
+        $("#kt_daterangepicker_1").css("display","block");
+      }else{
+        $("#kt_daterangepicker_1").css("display","none");
+      }
+    });
+
     function render_table(){
       var table = $("#myTable");
       table.DataTable().destroy();
 
       if ($('[name="engage_transaction"]').is(':checked')) {
           var engage_transaction = 1;
+          $("#kt_daterangepicker_1").css("display","block");
       } else {
           var engage_transaction = 0;
+          $("#kt_daterangepicker_1").css("display","none");
       }
 
       $filter_search = $('[name="filter_search"]').val();
