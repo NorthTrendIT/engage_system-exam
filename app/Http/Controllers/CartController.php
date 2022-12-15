@@ -119,7 +119,11 @@ class CartController extends Controller
 
         }
 
-        return view('cart.index', compact(['data', 'address', 'total','sales_agent','customer','c_product_groups','c_product_category','c_product_line','weight','volume']));
+        $cart_address = Cart::whereIn('customer_id', $customer_id)->orderBy('id','DESC')->first();
+
+        $selected_address = CustomerBpAddress::where('id', $cart_address->address)->first();
+
+        return view('cart.index', compact(['data', 'address', 'total','sales_agent','customer','c_product_groups','c_product_category','c_product_line','weight','volume','selected_address','cart_address']));
     }
 
     /**
@@ -189,6 +193,7 @@ class CartController extends Controller
     }
 
     public function addToCart(Request $request,$id){
+
         if(!@Auth::user()->multi_sap_connection_id){
             return $response = ['status'=>false,'message'=>"Oops! Customer not found in DataBase."];
         }
@@ -205,11 +210,18 @@ class CartController extends Controller
 
         $sap_customer_arr = get_sap_customer_arr(@Auth::user());
         if(isset($id)){
-            
+
+                $due_date = strtr($request->due_date, '/', '-');
                 $cart = new Cart();
                 $cart->qty = 1;            
                 $cart->customer_id = @$sap_customer_arr[$product->sap_connection_id];
-                $cart->product_id = $id;            
+                $cart->product_id = $id; 
+                $cart->address = @$request->address;
+                if($request->due_date != ""){
+                    $cart->due_date = date('Y-m-d',strtotime($due_date)); 
+                }else{
+                    $cart->due_date = '';
+                } 
                 $cart->save();
 
             $customer_id = explode(',', @Auth::user()->multi_customer_id);

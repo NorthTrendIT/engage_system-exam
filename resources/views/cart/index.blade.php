@@ -59,7 +59,7 @@
                                                                     data-state="{{ $item->state }}"
                                                                     data-country="{{ $item->country }}"
 
-                                                                >{{$item->address}}
+                                                                {{@$selected_address->id == $item->id ? 'selected' : ''}}>{{$item->address}}
                                                             </option>
                                                             @endforeach
                                                         @else
@@ -111,7 +111,6 @@
                                                     <th>Ordered Ltr/Kgs</th>
                                                     <th>Unit</th>
                                                     <th>Price</th>
-                                                    <th>Price After VAT</th>
                                                     <th>Amount</th>
                                                     <th></th>
                                                 </tr>
@@ -152,9 +151,6 @@
                                                     @endphp                    
                                                     <td class="text-end">
                                                         <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) ) }}</span>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no)) }}</span>
                                                     </td>
                                                     <td class="text-end">
                                                         <span class="fw-bolder my-2 price total_price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) * $value->qty ) }}</span>
@@ -404,6 +400,36 @@
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script>
 $(document).ready(function() {
+    var cart_due_date = "{{$cart_address->due_date}}";
+    if(cart_due_date != ""){
+        var split = cart_due_date.split("-");
+        var final_date = split[2]+"/"+split[1]+"/"+split[0];
+        $('[name="due_date"]').val(final_date);
+    }
+
+    var selected_address = '{!! json_encode($selected_address) !!}';
+    var address = JSON.parse(selected_address);
+    if(address == null){
+        $('.address_span').text("");
+        $('.street_span').text("");
+        $('.zip_code_span').text("");
+        $('.city_span').text("");
+        $('.state_span').text("");
+        $('.country_span').text("");
+
+        $('.address_details_div').hide();
+    }else{
+        $("#selectAddress").val(address.id);
+        $('.address_span').text(" " + address.address);
+        $('.street_span').text(" " + address.street);
+        $('.zip_code_span').text(" " + address.zip_code);
+        $('.city_span').text(" " + address.city);
+        $('.state_span').text(" " + address.state);
+        $('.country_span').text(" " + address.country);
+
+        $('.address_details_div').show();
+    }
+        
     @php
         $dates = @Auth::user()->customer_delivery_schedules->where('date','>',date("Y-m-d"));
         if(count($dates)){
@@ -548,7 +574,6 @@ $(document).ready(function() {
             }
         })
         .done(function(result) {
-            console.log(result);
             if(result.status == false){
                 toast_error(result.message);
                 $this.parent().find('.qty').val($qty);
@@ -578,8 +603,7 @@ $(document).ready(function() {
                 _token:'{{ csrf_token() }}',
             }
         })
-        .done(function(result) {    
-            console.log(result);
+        .done(function(result) { 
             if(result.status == false){
                 toast_error(result.message);
             }else{
@@ -637,7 +661,6 @@ $(document).ready(function() {
                     contentType: false,                
                     success: function (data) {
                         if (data.status) {
-                            console.log("success");
                             toast_success(data.message)
                             setTimeout(function(){
                                 window.location.href = "{{ route('orders.index') }}";
@@ -980,14 +1003,18 @@ $(document).ready(function() {
         $(document).on('click', '.addToCart', function(event) {
           event.preventDefault();
           $url = $(this).attr('data-url');
+          var address = $("#selectAddress").val();
+          var due_date = $("#kt_datepicker_1").val();
           $addToCartBtn = $(this);
           $goToCartBtn = $(this).parent().find('.goToCart');
             $.ajax({
                 url: $url,
                 method: "POST",
                 data: {
-                        _token:'{{ csrf_token() }}'
-                        }
+                        _token:'{{ csrf_token() }}',
+                        address: address,
+                        due_date:due_date,
+                    }
                 })
                 .done(function(result) {
                     if(result.status == false){
@@ -1000,7 +1027,7 @@ $(document).ready(function() {
                             $('.cartCount').html(result.count);
                         }
                         toast_success(result.message);
-                        window.location.reload();
+                        //window.location.reload();
                     }
                 })
                 .fail(function() {
