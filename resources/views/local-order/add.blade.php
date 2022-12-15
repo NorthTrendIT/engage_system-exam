@@ -359,7 +359,7 @@
                     }
                 })
             },
-            isFirstItemUndeletable: true
+            //isFirstItemUndeletable: true
         });
 
         $("#selectCustomers").select2({

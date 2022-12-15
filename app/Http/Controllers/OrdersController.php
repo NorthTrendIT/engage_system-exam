@@ -402,8 +402,9 @@ class OrdersController extends Controller
             $data->where('sap_connection_id',$request->filter_company);
         }
 
+        $status = @$request->filter_status;
         if($request->filter_status != ""){
-            $status = $request->filter_status;
+            
             if($status == "CL"){ //Cancel
                 $data->where(function($query){
                     $query->orwhere(function($q){
@@ -474,8 +475,13 @@ class OrdersController extends Controller
                             ->addColumn('name', function($row) {
                                 return  @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
-                            ->addColumn('status', function($row) {
-                                return getOrderStatusBtnHtml(getOrderStatusByQuotation($row));
+                            ->addColumn('status', function($row) use ($status){
+                                if($status != ""){
+                                    return getOrderStatusBtnHtml(getOrderStatusArray($status));
+                                }else{
+                                    return getOrderStatusBtnHtml(getOrderStatusByQuotation($row));
+                                }
+                                
                             })
                             ->addColumn('doc_entry', function($row) {
                                 return '<a href="' . route('orders.show',$row->id). '" title="View details">'.$row->doc_entry.'</a>';
