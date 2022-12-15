@@ -429,7 +429,7 @@ class OrdersController extends Controller
                 })->where('cancelled','No');
             }else if($status == "FD"){
                 $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', '!=','DL')->where('u_sostat', '!=','CM');
+                    $q->where('cancelled', 'No')->where('u_sostat', '!=','DL')->where('u_sostat', '!=','CM');
                 })->where('cancelled','No');
 
                 $data->whereHas('order',function($q){
@@ -437,7 +437,7 @@ class OrdersController extends Controller
                 });
             }else{
                 $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', $status);
+                    $q->where('cancelled', 'No')->where('u_sostat', $status);
                 })->where('cancelled','No');
 
                 $data->whereHas('order',function($q){
