@@ -1661,11 +1661,11 @@ class SalesOrderReportController extends Controller
 
             }elseif($status == "FD"){
                 $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('u_sostat', '!=','DL')->where('document_status', 'bost_Open')->where('u_sostat', '!=','CM')->whereNotNull('u_omsno')->where('cancelled','No');
+                    $q->where('u_sostat', '!=','DL')->where('u_sostat', '!=','CM')->whereNotNull('u_omsno')->where('cancelled','No');
                 })->where('cancelled','No');
             }else{
                 $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('u_sostat', $status)->where('document_status', 'bost_Open')->whereNotNull('u_omsno')->where('cancelled','No');
+                    $q->where('u_sostat', $status)->whereNotNull('u_omsno')->where('cancelled','No');
                 })->where('cancelled','No');
             }
         }
