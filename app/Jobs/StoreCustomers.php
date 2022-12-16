@@ -13,6 +13,7 @@ use App\Models\Classes;
 use App\Models\CustomerBpAddress;
 use App\Models\User;
 use Hash;
+use Log;
 
 class StoreCustomers implements ShouldQueue
 {
@@ -129,8 +130,10 @@ class StoreCustomers implements ShouldQueue
                                 'last_sync_at' => current_datetime(),
                                 'sap_connection_id' => $this->sap_connection_id,
                                 'real_sap_connection_id' => $this->real_sap_connection_id,
+                                'payment_group_code' => @$value['PayTermsGrpCode'],
                             );
-                        
+                
+                Log::info(print_r($insert,true));   
                 $obj = Customer::updateOrCreate(
                                         [
                                             'card_code' => @$value['CardCode'],

@@ -20,6 +20,9 @@ use App\Models\CustomerProductGroup;
 use App\Models\CustomerProductItemLine;
 use App\Models\CustomerProductTiresCategory;
 use App\Models\Product;
+use App\Models\Customer;
+
+use App\Support\SAPCustomer;
 
 class HomeController extends Controller
 {
@@ -80,7 +83,7 @@ class HomeController extends Controller
                                     ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
                                     ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
                                     ->whereHas('order.invoice',function($q){
-                                         $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat','!=', 'DL')->where('u_sostat','!=', 'CM');
+                                         $q->where('cancelled', 'No')->where('u_sostat','!=', 'DL')->where('u_sostat','!=', 'CM');
                                     })->count();
 
                 $total_delivered_order = Quotation::whereNotNull('u_omsno')
@@ -364,6 +367,37 @@ class HomeController extends Controller
                 }                
             }
         }
+    }
+
+    public function paymentTerms(Request $request){
+        ini_set('memory_limit', '10240M');
+        ini_set('max_execution_time', 18000);
+        $sap_connections = SapConnection::all();
+        if(!empty($sap_connections)){
+            foreach($sap_connections as $connections){
+                $sap = new SAPCustomer($connections->db_name, $connections->user_name , $connections->password, $connections->id);
+                   $sap->getPaymentTermTypeData();
+                                
+            }
+        }
+    }
+
+    public function customerPayment(Request $request){
+        ini_set('memory_limit', '10240M');
+        ini_set('max_execution_time', 18000);
+        $sap_connections = SapConnection::all();
+        if(!empty($sap_connections)){
+            foreach($sap_connections as $connections){
+                $sap = new SAPCustomer($connections->db_name, $connections->user_name , $connections->password, $connections->id);
+
+                $customer = Customer::where('sap_connection_id',$connections->id)->orderBy('id','DESC')->get();
+                foreach ($customer as $key => $value) {
+                    $sap->addSpecificCustomerData($value->card_code);
+                } 
+
+            }
+        }
+        return "complete"; 
     }
     
 }
