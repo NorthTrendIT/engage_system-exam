@@ -126,9 +126,19 @@ class OverdueSalesInvoiceReportController extends Controller
     }
 
     public function getReportResultData($request){
-        $date = date('Y-m-d', strtotime('-2 months'));
+        //$date = date('Y-m-d', strtotime('-2 months'));
 
-        $data = Invoice::orderBy('created_at', 'DESC');
+        //$data = Invoice::orderBy('created_at', 'DESC');
+        $data = Invoice::selectRaw('*, datediff(now(),doc_date) AS Days')
+                        ->where(function($query){
+                            $query->whereHas('customer', function($q1) {
+                                $q1->whereHas('payTerm', function($q2) {
+                                    $q2->where('number_of_additional_days','<','invoices.Days');
+                                });
+                            });
+                        })
+                        ->orderBy('created_at', 'DESC')
+                        ->whereNotNull('u_omsno');
 
         $data->where(function($query){
             $query->orwhere(function($q){
@@ -140,7 +150,7 @@ class OverdueSalesInvoiceReportController extends Controller
             });
         });
 
-        $data->whereDate('doc_date', '<=', $date);
+        //$data->whereDate('doc_date', '<=', $date);
 
         if(Auth::user()->role_id == 4){
             $customers = Auth::user()->get_multi_customer_details();

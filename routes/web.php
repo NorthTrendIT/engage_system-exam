@@ -35,6 +35,10 @@ Route::middleware('guest')->group(function(){
 Route::middleware(['auth'])->group(function(){
     Route::get('/home','App\Http\Controllers\HomeController@index')->name('home')->middleware('check-login');
     Route::get('/comments','App\Http\Controllers\HomeController@comments')->name('comments')->middleware('check-login');
+
+    Route::get('/payment-terms','App\Http\Controllers\HomeController@paymentTerms')->name('payment-terms')->middleware('check-login');
+    Route::get('customer-payment','App\Http\Controllers\HomeController@customerPayment')->name('customer-payment')->middleware('check-login');
+
 	Route::post('home/get-report-data','App\Http\Controllers\HomeController@getReportData')->name('home.get-report-data'); 
 
 
