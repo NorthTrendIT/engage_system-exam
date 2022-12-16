@@ -400,7 +400,7 @@
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script>
 $(document).ready(function() {
-    var cart_due_date = "{{$cart_address->due_date}}";
+    var cart_due_date = "{{@$cart_address->due_date}}";
     if(cart_due_date != ""){
         var split = cart_due_date.split("-");
         var final_date = split[2]+"/"+split[1]+"/"+split[0];
