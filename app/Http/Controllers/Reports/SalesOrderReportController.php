@@ -1632,25 +1632,22 @@ class SalesOrderReportController extends Controller
         }
 
         if($status != ""){
-            if($status == "CL"){ 
+            if($status == "CL"){ //Cancel
                 $data->where(function($query){
                     $query->orwhere(function($q){
                         $q->where('cancelled', 'Yes');
                     });
-
                     $query->orwhere(function($q){
                         $q->whereHas('order',function($p){
                             $p->where('cancelled', 'Yes');
                         });
                     });
-
                     $query->orwhere(function($q1){
-                        $q1->whereHas('order.invoice',function($p1){
+                        $q1->whereHas('order.invoice1',function($p1){
                             $p1->where('cancelled', 'Yes');
                         });
                     });
                 });
-
             }elseif($status == "PN"){ 
                 $data->has('order', '<', 1)->where('cancelled','No');
 
