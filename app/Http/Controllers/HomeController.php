@@ -390,7 +390,7 @@ class HomeController extends Controller
             foreach($sap_connections as $connections){
                 $sap = new SAPCustomer($connections->db_name, $connections->user_name , $connections->password, $connections->id);
 
-                $customer = Customer::where('sap_connection_id',$connections->id)->orderBy('id','DESC')->get();
+                $customer = Customer::where('sap_connection_id',$connections->id)->orderBy('id','DESC')->whereNull('payment_group_code')->get();
                 foreach ($customer as $key => $value) {
                     $sap->addSpecificCustomerData($value->card_code);
                 } 
