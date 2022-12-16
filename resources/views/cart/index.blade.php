@@ -400,12 +400,14 @@
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script>
 $(document).ready(function() {
+   
     var cart_due_date = "{{@$cart_address->due_date}}";
-    if(cart_due_date != ""){
+    if(cart_due_date != "" && cart_due_date != "0000-00-00"){
         var split = cart_due_date.split("-");
         var final_date = split[2]+"/"+split[1]+"/"+split[0];
         $('[name="due_date"]').val(final_date);
     }
+    
 
     var selected_address = '{!! json_encode($selected_address) !!}';
     var address = JSON.parse(selected_address);
@@ -1027,7 +1029,7 @@ $(document).ready(function() {
                             $('.cartCount').html(result.count);
                         }
                         toast_success(result.message);
-                        //window.location.reload();
+                        window.location.reload();
                     }
                 })
                 .fail(function() {
