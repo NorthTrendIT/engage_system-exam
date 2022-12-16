@@ -121,7 +121,7 @@ class CartController extends Controller
 
         $cart_address = Cart::whereIn('customer_id', $customer_id)->orderBy('id','DESC')->first();
 
-        $selected_address = CustomerBpAddress::where('id', $cart_address->address)->first();
+        $selected_address = CustomerBpAddress::where('id', @$cart_address->address)->first();
 
         return view('cart.index', compact(['data', 'address', 'total','sales_agent','customer','c_product_groups','c_product_category','c_product_line','weight','volume','selected_address','cart_address']));
     }
