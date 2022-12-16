@@ -10,6 +10,9 @@ use App\Models\SapConnection;
 use App\Models\CustomerBpAddress;
 use App\Jobs\StoreCustomers;
 use App\Jobs\SyncNextCustomers;
+use App\Models\PaymentTermsTypes;
+use Log;
+use DB;
 
 class SAPCustomer
 {
@@ -105,7 +108,6 @@ class SAPCustomer
             $data = $response['data'];
 
             if($data['value']){
-
                 // Store Data of Customer in database
                 StoreCustomers::dispatch($data['value'],@$sap_connection->id);
 
@@ -123,4 +125,79 @@ class SAPCustomer
             }
         }
     }
+
+    // Get customer data
+    public function getPaymentTermTypeData($url = '/b1s/v1/PaymentTermsTypes')
+    {
+        try {
+            $response = $this->httpClient->request(
+                'GET',
+                get_sap_api_url().$url,
+                [
+                    'headers' => $this->headers,
+                    'verify' => false,
+                ]
+            );
+
+            if(in_array($response->getStatusCode(), [200,201])){
+                $response = json_decode($response->getBody(),true);
+                if(!empty($response['value'])){
+                    $data = $response['value']; 
+                    foreach($data as $val){
+                        $payment = new PaymentTermsTypes();
+                        $payment->group_number = @$val['GroupNumber'];
+                        $payment->number_of_additional_days = @$val['NumberOfAdditionalDays'];
+                        $payment->save();
+                    }
+                }
+
+                return array(
+                                'status' => true,
+                                'data' => $response
+                            );
+            }
+
+        } catch (\Exception $e) {
+
+            if(!empty($this->log_id)){
+                add_sap_log([
+                                'status' => "error",
+                                'error_data' => $e->getMessage(),
+                            ], $this->log_id);
+            }
+
+            return array(
+                                'status' => false,
+                                'data' => []
+                            );
+        }
+    }
+
+    public function addSpecificCustomerData($card_code = false)
+    {
+        if($card_code){
+            $url = "/b1s/v1/BusinessPartners('".$card_code."')";
+            $response = $this->getCustomerData($url);
+            if($response['status']){
+                $customer = $response['data'];
+                if(!empty($customer)){
+                    $where = array(
+                                'db_name' => $this->database,
+                                'user_name' => $this->username,
+                            );
+
+                    $sap_connection = SapConnection::where($where)->first();
+                    $sap_connection_id = $sap_connection->id;
+                    Log::info(print_r(@$customer['CardCode'],true));
+                    $update = Customer::where([
+                                                'card_code' => @$customer['CardCode'],
+                                                'sap_connection_id' => $sap_connection_id,
+                                            ])->update(['payment_group_code'=>@$customer['PayTermsGrpCode']]);
+                }
+            }
+        }
+        
+    }
+
+    
 }

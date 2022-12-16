@@ -59,6 +59,7 @@ class Customer extends Model
         'frozen',
         'frozen_from',
         'frozen_to',
+        'payment_group_code',
     ];
 
     public function bp_addresses()
@@ -160,5 +161,10 @@ class Customer extends Model
         return $this->belongsTo(SapConnectionApiFieldValue::class, ['u_classification', 'sap_connection_id'], ['key', 'sap_connection_id'])->whereHas('sap_connection_api_field', function($q) {
                 $q->where('field', 'classification');
             });
+    }
+
+    public function payTerm()
+    {
+        return $this->hasOne(PaymentTermsTypes::class,'group_number','payment_group_code');
     }
 }
