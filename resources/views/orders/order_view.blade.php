@@ -270,6 +270,7 @@
                             <!--begin::Table-->
                             <div class="sticky_table_custom">
                               <div class="table-responsive border-bottom mb-9">
+                                <input type="checkbox" name="checked_served_checkbox" id="checked_served_checkbox"> Show/Hide Ordered Served Ltr/Kgs
                                 <table class="table mb-3 order_class">
                                   <thead>
                                     <tr class="border-bottom fs-6 fw-bolder text-muted">
@@ -278,8 +279,8 @@
                                       <th>Unit</th>
                                       <th class="min-w-175px pb-2">Ordered Quantity</th>
                                       <th class="min-w-175px pb-2">Served Quantity</th>
-                                      <th class="min-w-175px pb-2">Ordered Ltr/Kgs</th>
-                                      <th class="min-w-175px pb-2">Served Ltr/Kgs</th>
+                                      <th class="min-w-175px pb-2 ordered_served_class" style="display:none;">Ordered Ltr/Kgs</th>
+                                      <th class="min-w-175px pb-2 ordered_served_class" style="display:none;">Served Ltr/Kgs</th>
                                       @if($data->order_type == 'Promotion')
                                       <th class="min-w-80px text-end pb-2">Promo Delivery Date</th>
                                       @endif
@@ -294,13 +295,13 @@
                                   <tbody>                                    
                                     @foreach($invoiceDetails as $k=>$val)
                                     <tr class="fw-bolder text-gray-700 fs-5">
-                                      <td style="width:80px;">{{$val['key']}}</td>
+                                      <td class="text-end" style="width:80px;">{{$k+1}}</td>
                                       <td>{{$val['product']}}</td>
                                       <td>{{$val['unit']}}</td>
                                       <td class="text-end">{{$val['order_quantity']}}</td>
                                       <td class="text-end">{{$val['serverd_quantity']}}</td>
-                                      <td class="text-end">{{$val['orderd_weight']}}</td>
-                                      <td class="text-end">{{$val['served_weight']}}</td>
+                                      <td class="text-end ordered_served_class" style="display:none;">{{$val['orderd_weight']}}</td>
+                                      <td class="text-end ordered_served_class" style="display:none;">{{$val['served_weight']}}</td>
                                       @if($data->order_type == 'Promotion')
                                           <td>{{$val['promotion']}}</td>
                                       @endif
@@ -730,6 +731,14 @@
 
     @endif
 
+  });
+
+  $("#checked_served_checkbox").click(function(){
+    if($(this).is(':checked')){
+      $(".ordered_served_class").css("display", "table-cell");
+    }else{
+      $(".ordered_served_class").css("display", "none");
+    }
   });
 
 </script>

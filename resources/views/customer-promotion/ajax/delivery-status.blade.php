@@ -25,7 +25,7 @@
     </div>
   </div>
   @else
-  <div class="row justify-content-between">
+  <div class="row justify-content-center">
     <div class="order-tracking {{ in_array('Pending',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
       <span class="is-complete"><img src="{{ asset('assets/assets/media/svg/order/pending.svg') }}"></span>
       <p>Pending
@@ -42,23 +42,23 @@
         @endif
       </p>
     </div>
-    <div class="order-tracking {{ in_array('For Delivery',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
+    <!-- <div class="order-tracking {{ in_array('For Delivery',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
       <span class="is-complete"><img src="{{ asset('assets/assets/media/svg/order/for-delivery.svg') }}"></span>
       <p>For Delivery
         @if(@$date_array['For Delivery'] && $status != "On Process")
           <br><span class="delivery-date">{{ date('F d, Y', strtotime(@$date_array['For Delivery']))}}</span>
         @endif
       </p>
-    </div>
-    <div class="order-tracking {{ in_array('Delivered',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
+    </div> -->
+    <!-- <div class="order-tracking {{ in_array('Delivered',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
       <span class="is-complete"><img src="{{ asset('assets/assets/media/svg/order/delivered.svg') }}"></span>
       <p>Delivered
         @if(@$date_array['Delivered'] && $status != "On Process")
           <br><span class="delivery-date">{{ date('F d, Y', strtotime(@$date_array['Delivered']))}}</span>
         @endif
       </p>
-    </div>
-    <div class="order-tracking {{ in_array('Completed',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
+    </div> -->
+    <!-- <div class="order-tracking {{ in_array('Completed',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
       <span class="is-complete">
         <img src="{{ asset('assets/assets/media/svg/order/completed.svg') }}">
       </span>
@@ -67,7 +67,7 @@
           <br><span class="delivery-date">{{ date('F d, Y', strtotime(@$date_array['Completed']))}}</span>
         @endif
       </p>
-    </div>
+    </div> -->
   </div>
   @endif
 </div>
