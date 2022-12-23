@@ -495,10 +495,12 @@ $(document).ready(function() {
                 toast_error(result.message);
                 $self.val(1);
             }else{
-                //toast_success(result.message);
-                setTimeout(function(){
-                    window.location.reload();
-                },1500)
+                ($self.parent().parent().closest('tr').find('.total_price')).text('₱ '+result.price);
+                $(".total_span").html(result.total);
+                $(".weight_span").html(result.weight);
+                $(".volume_span").html(result.volume);
+                $(this).parent().eq( 8 ).find('.total_price').text(result.price);
+                ($self.parent().parent().closest('tr').find('.individual_weight')).text(result.weight_individual);
             }
         })
         .fail(function() {
