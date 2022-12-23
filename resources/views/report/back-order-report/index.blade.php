@@ -275,11 +275,19 @@
       $('.grand_total_of_remaining_open_quantity_count').text("");
       $('.grand_total_of_open_amount_count').text("");
 
+      if ($('[name="engage_transaction"]').is(':checked')) {
+          var engage_transaction = 1;
+          $("#kt_daterangepicker_1").css("display","block");
+      } else {
+          var engage_transaction = 0;
+          $("#kt_daterangepicker_1").css("display","none");
+      }
+
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
-      $engage_transaction = $('[name="engage_transaction"]').val();
+      $engage_transaction = engage_transaction;
 
       $.ajax({
         url: '{{ route('reports.back-order-report.get-all') }}',
@@ -490,7 +498,15 @@
       data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
       data.filter_manager = $('[name="filter_manager"]').find('option:selected').val();
-      data.engage_transaction = $('[name="engage_transaction"]').val();
+
+      if ($('[name="engage_transaction"]').is(':checked')) {
+          var engage_transaction = 1;
+          $("#kt_daterangepicker_1").css("display","block");
+      } else {
+          var engage_transaction = 0;
+          $("#kt_daterangepicker_1").css("display","none");
+      }
+      data.engage_transaction = engage_transaction;
 
       url = url + '?data=' + btoa(JSON.stringify(data));
 
