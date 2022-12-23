@@ -115,6 +115,7 @@ class OrdersController extends Controller
             $invoiceDetails[$key]['key'] = @$data->order->id;
             $invoiceDetails[$key]['unit'] = @$value->product1->sales_unit;
             $invoiceDetails[$key]['order_quantity'] = number_format(@$value->quantity);
+            $invoiceDetails[$key]['item_code'] = @$value->item_code;
 
             $invoice = @$data->order->invoice1;
             $invoiceIds = [];
@@ -1022,7 +1023,7 @@ class OrdersController extends Controller
 
         $data = Quotation::orderBy('id', 'desc');
 
-        if($request->engage_transaction != 0){
+        if($filter->engage_transaction != 0){
             $data->whereNotNull('u_omsno');
         }
 
@@ -1187,6 +1188,36 @@ class OrdersController extends Controller
 
         \Session::flash('error_message', common_error_msg('excel_download'));
         return redirect()->back();
+    }
+
+    public function itemStatus(Request $request){
+        $data = Quotation::where('u_omsno', @$request->details)->first();
+        if(!empty($data)){
+            $invoice = @$data->order->invoice1;
+            $invoiceIds = [];
+            $doc_num = [];
+            if(!empty($invoice)){
+                foreach($invoice as $val){
+                    $invoiceIds[] = @$val->id;
+                    $doc_num[] = $val->doc_num;
+                }
+            }
+
+            $num = InvoiceItem::with('invoice')->whereIn('invoice_id',$invoiceIds)->where('item_code',@$request->id)->pluck('invoice_id');
+            $invoice_num = Invoice::whereIn('id',$num)->get();
+
+            $invoice_item_details = InvoiceItem::with('invoice')->whereIn('invoice_id',$invoiceIds)->where('item_code',@$request->id)->get();
+
+            $status = getOrderStatusByQuotation(@$data, true);
+            $date_array = @$status['date_array'];
+            $status = @$status['status'];
+
+            // $data->status_details = view('customer-promotion.ajax.delivery-status-modal',compact('invoice_num'))->render();
+            $data->status_details = view('customer-promotion.ajax.delivery-status-modal', compact('invoice_num','status','date_array','invoice_item_details','doc_num'))->render();
+            $response = ['status' => true, 'message' => 'Order completed successfully!','data'=>$data];
+            return $response;
+        }
+
     }
 
 }
