@@ -237,6 +237,7 @@ class CartController extends Controller
         $data = $request->all();
         if(isset($id) && isset($data['qty'])){
             $cart = Cart::findOrFail($id);
+            
             if(is_numeric($data['qty'])){
                 if($data['qty'] > 0){
                     $avl_qty = $cart->product->quantity_on_stock - $cart->product->quantity_ordered_by_customers;
@@ -244,7 +245,7 @@ class CartController extends Controller
                     //     return $response = ['status'=>false,'message'=>"The product quantity is not available."];
                     // }
                     $cart->qty = $data['qty'];
-
+                    $cart->save();
                     $pr_weight = Product::where('id',$cart->product_id)->first();
                     $weight_individual = ($cart->qty * @$pr_weight->sales_unit_weight);
 
@@ -274,9 +275,9 @@ class CartController extends Controller
             } else {
                 return $response = ['status'=>false,'message'=>"Quantity value must be numeric."];
             }
-            $cart->save();
+            
 
-            return $response = ['status'=>true,'message'=>"Product quantity updated successfully.",'total' => number_format_value($total),'weight' => ($weight),'volume' => ($volume),'price' => number_format_value($price),'weight_individual'=>number_format_value($weight_individual)];
+            return $response = ['status'=>true,'message'=>"Product quantity updated successfully.",'total' => number_format_value($total),'weight' => number_format_value($weight),'volume' => number_format_value($volume),'price' => number_format_value($price),'weight_individual'=>number_format_value($weight_individual)];
         }
 
         return $response = ['status'=>false,'message'=>"Something went wrong !"];
