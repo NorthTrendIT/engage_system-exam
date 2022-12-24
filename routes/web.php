@@ -140,6 +140,8 @@ Route::middleware(['auth'])->group(function(){
             Route::post('pending-promotion/push-all', 'App\Http\Controllers\OrdersController@pushAllPromotion')->name('orders.push-all-promotion');
             Route::post('pending-orders/delete-push-order', 'App\Http\Controllers\OrdersController@deletePushSingleOrder')->name('orders.delete-push-order');
 
+            Route::post('orders/item_status-track', 'App\Http\Controllers\OrdersController@itemStatus')->name('orders.item_status-track');
+
             // Invoices
             Route::get('invoices/export', 'App\Http\Controllers\InvoicesController@export')->name('invoices.export');
             Route::resource('invoices','App\Http\Controllers\InvoicesController');
@@ -449,6 +451,7 @@ Route::middleware(['auth'])->group(function(){
         Route::post('product-report/get-all', 'ProductReportController@getAll')->name('product-report.get-all');
         Route::post('product-report/get-chart-data', 'ProductReportController@getChartData')->name('product-report.get-chart-data');
         Route::get('product-report/export', 'ProductReportController@export')->name('product-report.export');
+        Route::post('customer-buying/get-chart-data', 'SalesOrderReportController@getChartData')->name('customer-buying.get-chart-data');
 
         Route::resource('sales-order-report','SalesOrderReportController')->only('index');
         Route::post('sales-order-report/get-all', 'SalesOrderReportController@getAll')->name('sales-order-report.get-all');
