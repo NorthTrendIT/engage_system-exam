@@ -1212,3 +1212,12 @@ input[type="button"].remove-from-cart {
   left: 80px; 
 }
 
+.order_view_status_details{
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    width: 100%;
+}
+.order_view_status_details .order-tracking {
+    width: 30%;
+}
