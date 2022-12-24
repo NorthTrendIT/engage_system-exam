@@ -580,6 +580,27 @@ function getOrderStatusByQuotation($data, $with_date = false){
     
 }
 
+function getStatusData($data, $with_date = false){
+    $status = getOrderStatusArray('FD');
+    if(@$data->u_omsno != null){
+        if(@$data->u_sostat == 'DL' || @$data->u_sostat == 'CM'){
+            $status = getOrderStatusArray(@$data->u_sostat);
+        }else{
+          $status = getOrderStatusArray('FD');  
+        }
+    }
+
+    if($with_date){
+        $date_array = array(
+                            'For Delivery' => @$data->u_commitment ?? null,
+                            'Delivered' => @$data->u_delivery ?? null,
+                            'Completed' => (@$data->u_sostat == 'CM')?@$data->update_date : null,
+                            'Cancelled' => @$data->cancel_date,
+                        );
+        return [ 'status' => $status, 'date_array' => $date_array];
+    }
+}
+
 
 function getOrderStatusProcessArray($status){
     $array = array();
