@@ -268,9 +268,10 @@
                           <!--begin::Content-->
                           <div class="flex-grow-1 mt-10">
                             <!--begin::Table-->
+                            <input type="checkbox" name="checked_served_checkbox" id="checked_served_checkbox"> Show Ltrs/Kgs
                             <div class="sticky_table_custom">
                               <div class="table-responsive border-bottom mb-9">
-                                <input type="checkbox" name="checked_served_checkbox" id="checked_served_checkbox"> Show/Hide Ordered Served Ltr/Kgs
+                                
                                 <table class="table mb-3 order_class">
                                   <thead>
                                     <tr class="border-bottom fs-6 fw-bolder text-muted">
@@ -290,6 +291,7 @@
                                       <th class="min-w-100px text-end pb-2">Amount</th>
                                       <th class="min-w-100px text-end pb-2">Line Status</th>
                                       <th class="min-w-100px text-end pb-2">Line Remarks</th>
+                                      <th>Action</th>
                                     </tr>
                                   </thead>
                                   <tbody>                                    
@@ -319,6 +321,7 @@
                                       <td class="text-end">{{$val['amount']}}</td>
                                       <td>{{$val['line_status']}}</td>
                                       <td>{{$val['line_remarks']}}</td>
+                                      <td class="text-center"><a class="trackStatus" id="item_{{$val['item_code']}}"><i class="fa fa-route"></i> </a></td>
                                     </tr>
                                     @endforeach
                                   </tbody>
@@ -489,7 +492,28 @@
       </div>
       @endif
 
+      
+  
+
     </div>
+  </div>
+</div>
+
+<div class="modal fade" id="myModal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Delivery Status</h4>
+        <button type="button" class="close add_product_close" data-bs-dismiss="modal">&times;</button>
+        
+      </div>
+      <div class="modal-body status_modal_body">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>    
   </div>
 </div>
 @endsection
@@ -731,6 +755,31 @@
 
     @endif
 
+  });
+
+  $(".trackStatus").on("click",function(){
+      var id = $(this).attr('id').split("item_")[1];
+      
+      $.ajax({
+            url: "{{route('orders.item_status-track')}}",
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                    id:id,
+                    details:"{{@$data->u_omsno}}",
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+            }else{
+              $("#myModal").modal('toggle');
+              console.log(result.data.status_details);
+              $(".status_modal_body").html(result.data.status_details); 
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });        
   });
 
   $("#checked_served_checkbox").click(function(){
