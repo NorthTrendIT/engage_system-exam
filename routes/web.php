@@ -452,6 +452,9 @@ Route::middleware(['auth'])->group(function(){
         Route::post('product-report/get-chart-data', 'ProductReportController@getChartData')->name('product-report.get-chart-data');
         Route::get('product-report/export', 'ProductReportController@export')->name('product-report.export');
         Route::post('customer-buying/get-chart-data', 'SalesOrderReportController@getChartData')->name('customer-buying.get-chart-data');
+        Route::post('status-count-chart/get-chart-data', 'SalesOrderReportController@getStatusChartData')->name('status-count-chart.get-chart-data');
+        Route::post('top-product-per-quantity-chart/get-chart-data', 'ProductReportController@getChartTopProductQuantityData')->name('top-product-per-quantity-chart.get-chart-data');
+        Route::post('top-performing-graph/get-chart-data', 'ProductReportController@getChartTopPerformingData')->name('top-performing-graph.get-chart-data');
 
         Route::resource('sales-order-report','SalesOrderReportController')->only('index');
         Route::post('sales-order-report/get-all', 'SalesOrderReportController@getAll')->name('sales-order-report.get-all');
