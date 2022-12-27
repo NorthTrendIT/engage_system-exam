@@ -82,9 +82,13 @@ class HomeController extends Controller
                                     ->where('cancelled','No')
                                     ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
                                     ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
+                                    ->whereHas('order',function($q){
+                                         $q->where('cancelled', 'No');
+                                    })
                                     ->whereHas('order.invoice',function($q){
                                          $q->where('cancelled', 'No')->where('u_sostat','!=', 'DL')->where('u_sostat','!=', 'CM');
-                                    })->count();
+                                    })                                    
+                                    ->count();
 
                 $total_delivered_order = Quotation::whereNotNull('u_omsno')
                                     ->where('cancelled','No')
@@ -390,7 +394,7 @@ class HomeController extends Controller
             foreach($sap_connections as $connections){
                 $sap = new SAPCustomer($connections->db_name, $connections->user_name , $connections->password, $connections->id);
 
-                $customer = Customer::where('sap_connection_id',$connections->id)->orderBy('id','DESC')->whereNull('payment_group_code')->get();
+                $customer = Customer::where('sap_connection_id',$connections->id)->orderBy('id','DESC')->whereNull('frozen')->get();
                 foreach ($customer as $key => $value) {
                     $sap->addSpecificCustomerData($value->card_code);
                 } 

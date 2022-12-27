@@ -9,6 +9,9 @@ use App\Models\Product;
 use App\Models\CustomerPromotion;
 use Auth;
 use Carbon\Carbon;
+use App\Models\CustomerProductGroup;
+use App\Models\CustomerProductItemLine;
+use App\Models\CustomerProductTiresCategory;
 
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ProductReportExport;
@@ -1039,5 +1042,158 @@ class ProductReportController extends Controller
         }
 
         return $headers;
+    }
+
+    public function getChartTopProductQuantityData(Request $request){
+
+        $c_product_tires_category = $c_product_item_line = $c_product_group = array();
+        $customer_id = [];
+        $customer = collect();
+        $sap_connection_id = [];
+        $customer_price_list_no = [];
+
+        $customer_id = explode(',', Auth::user()->multi_customer_id);
+        $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
+        $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+        if(in_array(5, $sap_connection_id)){
+            array_push($sap_connection_id, '5');
+        }
+        // Is Customer
+        if(!empty($customer_id)){
+
+            // Product Group
+            $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
+            $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
+
+            // Product Item Line
+            $c_product_item_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
+            $c_product_item_line = array_column( $c_product_item_line->toArray(), 'product_item_line_id' ); 
+
+            // Product Tires Category
+            $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
+            $c_product_tires_category = array_column( $c_product_tires_category->toArray(), 'product_tires_category_id' );            
+        }
+
+        if(empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
+            $products = collect([]);
+        }
+
+        $where = array('is_active' => true);
+        $products = Product::where($where);
+        $products->whereHas('group', function($q){
+            $q->where('is_active', true);
+        });        
+
+        $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
+            if(!empty($c_product_group)){
+                $q->orwhereHas('group', function($q1) use ($c_product_group){
+                    $q1->whereIn('id', $c_product_group);
+                });
+            }
+
+            if(!empty($c_product_tires_category)){
+                $q->orwhereHas('product_tires_category', function($q1) use ($c_product_tires_category){
+                    $q1->whereIn('id', $c_product_tires_category);
+                });
+            }
+
+            if(!empty($c_product_item_line)){
+                $q->orwhereHas('product_item_line', function($q1) use ($c_product_item_line){
+                    $q1->whereIn('id', $c_product_item_line);
+                });
+            }
+        });
+
+        $products1 = $products->whereIn('sap_connection_id', $sap_connection_id)->get();
+        
+        $sum = 0;
+        foreach ($products1 as $key => $value) {
+            $data2[$value->id] = (get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]]));
+            $sum = $sum + (get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]]));
+        }             
+        arsort($data2);           
+        $newArray = array_slice($data2, 0, 5, true);
+        $keys_array = array_keys($newArray);
+        $value_array = array_values($newArray);
+        $amounts = Product::whereIn('id', $keys_array)->get();
+        $sum1 = 0;
+        foreach($amounts as $key=>$val){
+            $data3[$key]['price'] = ($value_array[$key]); 
+            $data3[$key]['item'] = $val->item_name." ".number_format_value($value_array[$key]);
+            $sum1 = $sum1 + $value_array[$key];
+        }
+        $data['item'] = $data3;
+        $data['others'] = $sum - $sum1;
+        $data = compact('data');
+
+        $sum3 = 0;
+        $products2 = $products->whereIn('sap_connection_id', $sap_connection_id)->orderBy('quantity_ordered_by_customers','DESC')->take(5)->get();
+        $products2_sum = $products->whereIn('sap_connection_id', $sap_connection_id)->orderBy('quantity_ordered_by_customers','DESC')->sum('quantity_ordered_by_customers');
+
+        foreach ($products2 as $key => $value) {
+            $data1[$key]['item'] = $value->item_name;
+            $data1[$key]['qty'] = $value->quantity_ordered_by_customers;
+            $sum3 = $sum3 + $value->quantity_ordered_by_customers;
+        }
+
+        $data1['item'] = $data1;
+        $data1['others'] = $products2_sum - $sum3;
+        $response = [ 'status' => true, 'data' => $data,'data1'=>$data1];
+        return $response;
+    }
+
+    public function getChartTopPerformingData(Request $request){
+        $category = [];  
+        $total_quantity = []; 
+        $data = [];     
+
+        $where = array('is_active' => true);
+        $products = Product::where($where);
+        $products->whereHas('group', function($q){
+            $q->where('is_active', true);
+        });
+
+        if($request->range == 'this_month'){
+            $products->whereMonth('created_at', Carbon::now()->month);
+        }else if($request->range == 'this_week'){
+            $products->whereBetween('created_at', 
+                        [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
+                    );
+        }else if($request->range == 'custom_date'){
+            $date = explode(" - ", $request->custom);
+            $start = date("Y-m-d H:i:s", strtotime($date[0]));
+            $end = date("Y-m-d H:i:s", strtotime($date[1]));
+
+            $products->whereDate('created_date', '>=' , $start);
+            $products->whereDate('created_date', '<=' , $end);
+        }
+
+        if($request->type == 'Quantity'){
+            $products = $products->orderBy('quantity_ordered_by_customers','DESC')->take(5)->get();
+            foreach($products as $val){
+                array_push($category, $val->item_name);
+                array_push($total_quantity, $val->quantity_ordered_by_customers);
+            }
+            array_push($data, array('name' => 'Qty', 'data' => $total_quantity));
+        }else if($request->type == 'Amount'){
+            $data2 = [];
+            $data3 = [];
+            $products = $products->get();
+            foreach ($products as $key => $value) {
+                $data2[$value->id] = (get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]]));
+            }
+            arsort($data2);           
+            $newArray = array_slice($data2, 0, 5, true);
+            $keys_array = array_keys($newArray);
+            $value_array = array_values($newArray);
+            $amounts = Product::whereIn('id', $keys_array)->get();
+            foreach($amounts as $key=>$val){
+                array_push($category, $val->item_name);
+                array_push($total_quantity, $value_array[$key]);
+            }
+            array_push($data, array('name' => 'Amount', 'data' => $total_quantity));
+        }
+
+        return ['status' => true, 'data' => $data, 'category' => $category];
     }
 }

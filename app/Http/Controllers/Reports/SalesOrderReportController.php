@@ -412,24 +412,89 @@ class SalesOrderReportController extends Controller
 
         $inactive_customer_data = $this->getCustomerInActiveData();
         $inactiveCustomers = count($inactive_customer_data->get()->toArray());
+
+        $customer_with_data = $this->getCustomerWithData();
+        $customerWithOrder = count($customer_with_data->get()->toArray());
+
         $data = compact('inactiveCustomers','activeCustomers','customerWithOrder');
+
         $response = [ 'status' => true, 'data' => $data];
         return $response;
+    }
+
+    public function getStatusChartData(Request $request){
+        $customers = Auth::user()->get_multi_customer_details();
+
+        $total_pending_order = Quotation::whereNotNull('u_omsno')->where('cancelled','No')->doesntHave('order')->whereIn('card_code', array_column($customers->toArray(), 'card_code'))->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))->count();
+
+        $total_on_process_order = Order::whereNotNull('u_omsno')->where('cancelled','No')->doesntHave('invoice')->whereIn('card_code', array_column($customers->toArray(), 'card_code'))->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))->where('document_status', 'bost_Open')->count();
+
+        $total_for_delivery_order = Quotation::whereNotNull('u_omsno')
+        ->where('cancelled','No')
+        ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
+        ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
+        ->whereHas('order',function($q){
+             $q->where('cancelled', 'No');
+        })
+        ->whereHas('order.invoice',function($q){
+             $q->where('cancelled', 'No')->where('u_sostat','!=', 'DL')->where('u_sostat','!=', 'CM');
+        })                                    
+        ->count();
+
+        $total_delivered_order = Quotation::whereNotNull('u_omsno')
+        ->where('cancelled','No')
+        ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
+        ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
+        ->whereHas('order.invoice',function($q){
+             $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', 'DL');
+        })->count();
+
+        $total_completed_order = Quotation::whereNotNull('u_omsno')
+        ->where('cancelled','No')
+        ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
+        ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
+        ->whereHas('order.invoice',function($q){
+             $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', 'CM');
+        })->count();
+
+        $status = [];
+        array_push($status, $total_pending_order);
+        array_push($status, $total_on_process_order);
+        array_push($status, $total_for_delivery_order);
+        array_push($status, $total_delivered_order);
+        array_push($status, $total_completed_order);
+
+        $data = [];
+        array_push($data, array('name' => 'Status', 'data' => $status));
+
+        $category = [
+                        'Pending',
+                        'On Process',
+                        'For Deleivery',
+                        'Delivered',
+                        'Completed',
+                    ];
+
+        return ['status' => true, 'data' => $data, 'category' => $category];
+
+    }
+
+    public function getCustomerWithData(){
+        $customer = Customer::where('is_active','1')
+                            ->where('frozen','0')
+                            ->whereHas('customerOrder');
+        return $customer;
     }
 
     public function getCustomerActiveData(){
         $today = Carbon::today()->toDateString();
         $customer = Customer::where('is_active','1')
-                            ->whereNotNull('frozen_from')
-                            ->whereNotNull('frozen_to')
-                            ->where('frozen','1')
-                            ->where('frozen_from', '>', $today)
-                            ->where('frozen_to', '<', $today);
+                            ->where('frozen','0');
         return $customer;
     }
 
     public function getCustomerInActiveData(){
-        $customer = Customer::where('frozen','1')->whereNull('frozen_from')->whereNull('frozen_to');
+        $customer = Customer::where('frozen','1')->where('is_active','0')->whereNull('frozen_from')->whereNull('frozen_to');
         return $customer;
     }
 

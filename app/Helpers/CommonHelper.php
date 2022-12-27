@@ -545,6 +545,7 @@ function getOrderStatusByQuotation($data, $with_date = false){
                         $status = getOrderStatusArray('CL');
 
                     }else if(@$data->order->invoice->u_omsno != null){
+                        
                         if(@$data->order->invoice->u_sostat == 'DL' || @$data->order->invoice->u_sostat == 'CM'){
                             $status = getOrderStatusArray(@$data->order->invoice->u_sostat);
                         }else{
