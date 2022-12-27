@@ -167,4 +167,8 @@ class Customer extends Model
     {
         return $this->hasOne(PaymentTermsTypes::class,'group_number','payment_group_code');
     }
+
+    public function customerOrder(){
+        return $this->belongsTo(Quotation::class, ['card_code','sap_connection_id'], ['card_code', 'sap_connection_id']);
+    }
 }

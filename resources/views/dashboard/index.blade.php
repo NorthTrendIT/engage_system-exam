@@ -330,9 +330,96 @@
                 <!--end::Charts Widget 1-->
             </div>
         </div>
+
+
+        <div class="row gy-5 g-xl-8">
+            <!-- Promotion Report -->
+            <div class="col-xl-6">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Customer Buying</a>
+                        </h3>                        
+                    </div>
+                    <div class="card-body">
+                      <div id="active_customer_graph" class="h-500px" style="height: 320px; min-height: 320px;"></div>
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Charts Widget 1-->
+            </div>
+        </div>
+
+        <div class="row gy-5 g-xl-8">
+            <!-- Back Order Report-->
+            <div class="col-xl-12">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Top Performing Products</a>
+                        </h3>
+                        <input type="button" name="this_month" id="this_month" value="This Month" class="btn btn-primary btn-sm">
+                        <input type="button" name="this_week" id="this_week" value="This Week" class="btn btn-primary btn-sm">
+                        <input type="button" name="all_time" id="all_time" value="All Time" class="btn btn-primary btn-sm">
+                        <div class="">
+                          <div class="input-icon">
+                            <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                            <span>
+                            </span>
+                          </div>
+                        </div>
+                        <select id="total_performing_type" class="">
+                            <option value="Quantity">Quantity</option>
+                            <option value="Liters">Liters</option>
+                            <option value="Amount">Amount</option>
+                        </select>
+                        
+                    </div>
+
+                    <div class="card-body">
+                        <!--begin::Chart-->
+                        <div id="top_performing_products_graph" style="height: 320px; min-height: 320px;">
+
+                        </div>
+                        <!--end::Chart-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Charts Widget 1-->
+            </div>
+        </div>
+
+        <div id="hover">
+        
+        </div>
+        
         @endif
 
         @if(@Auth::user()->role_id == 4)
+        <div class="row gy-5 g-xl-8">
+            <!-- Back Order Report-->
+            <div class="col-xl-12">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Status Count</a>
+                        </h3>
+                        
+                    </div>
+
+                    <div class="card-body">
+                        <!--begin::Chart-->
+                        <div id="status_count_chart" style="height: 320px; min-height: 320px;">
+
+                        </div>
+                        <!--end::Chart-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Charts Widget 1-->
+            </div>
+        </div>
+
         <div class="row gy-5 g-xl-8">
             <!-- Promotion Report -->
             <div class="col-xl-6">
@@ -416,6 +503,52 @@
                                     @endif
                                 </tbody>
                             </table>
+                        </div>
+                        <!--end::Chart-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Charts Widget 1-->
+            </div>
+        </div>
+
+        <div class="row gy-5 g-xl-8">
+            <!-- Promotion Report -->
+            <div class="col-xl-6">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Top Product Per Quantity</a>
+                        </h3>
+                        
+                    </div>
+
+                    <div class="card-body">
+                        <!--begin::Chart-->
+                        <div id="top_products_per_quantity_chart" class="h-500px" style="height: 320px; min-height: 320px;">
+
+                        </div>
+                        <!--end::Chart-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Charts Widget 1-->
+            </div>
+
+            <!-- Product Report-->
+            <div class="col-xl-6">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Top Product Per Amount </a>
+                        </h3>
+                        
+                    </div>
+
+                    <div class="card-body">
+                        <!--begin::Chart-->
+                        <div id="top_product_per_amount_chart" class="h-500px" style="height: 320px; min-height: 320px;">
+
                         </div>
                         <!--end::Chart-->
                     </div>
@@ -601,9 +734,62 @@
 @endsection
 
 @push('js')
+<script src="{{ asset('assets') }}/assets/plugins/custom/flotcharts/flotcharts.bundle.js"></script>
+<script src="http://www.flotcharts.org/flot/source/jquery.flot.legend.js"></script>
 @if(@Auth::user()->role_id == 1)
 <script>
     getData();
+
+    var data = [];
+    var category = [];
+
+    var options = {
+        series: data,
+        chart: {
+            type: 'bar',
+            height: 350,
+            toolbar: {
+                show: false
+            }
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '35%',
+                endingShape: 'rounded'
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+        },
+        xaxis: {
+            categories: category,
+        },
+        yaxis: {
+            title: {
+                text: ''
+            }
+        },
+        fill: {
+            opacity: 1
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return  val
+                }
+            }
+        },
+        colors:['#F33A6A']
+    };
+
+    var topPerformingProduct = new ApexCharts(document.querySelector("#top_performing_products_graph"), options);
+    topPerformingProduct.render();
 
     $(document).on('click', '.push-all-order', function(event) {
         event.preventDefault();
@@ -736,7 +922,167 @@
         })
         .fail(function() {
             toast_error("error");
+        }); 
+
+        // Get Cutomer Buying chart Data
+        $.ajax({
+            url: '{{ route('reports.customer-buying.get-chart-data') }}',
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                }
+        })
+        .done(function(result) {
+            if(result.status == false){
+                toast_error(result.message);
+            }else{
+                render_customer_graph(result.data)
+            }
+        })
+        .fail(function() {
+            toast_error("error");
         });
+
+        // Get Top performing Product Report Chart Data
+        top_perform_product_data();
+    }
+
+    $(document).on("click","#this_month",function(){
+        var range = 'this_month';
+        top_perform_product_data(range);
+    });
+
+    $(document).on("click","#this_week",function(){
+        var range = 'this_week';
+        top_perform_product_data(range);
+    });
+
+    $(document).on("click","#all_time",function(){
+        var range = 'null';
+        top_perform_product_data(range);
+    });
+
+    $('#kt_daterangepicker_1').on('apply.daterangepicker', function(ev, picker){
+        var range = 'custom_date';
+        top_perform_product_data(range);
+    });
+
+    $(document).on("change","#total_performing_type",function(){
+        var range = 'null';
+        top_perform_product_data(range);
+    });
+
+
+    function top_perform_product_data(range){
+        var type = $("#total_performing_type").val();
+        if($("#kt_daterangepicker_1").val() == ""){
+            var custom_date = '';
+        }else{
+            var custom_date = $("#kt_daterangepicker_1").val();
+        }
+        // Get Top performing Product Report Chart Data
+        $.ajax({
+            url: "{{ route('reports.top-performing-graph.get-chart-data') }}",
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                    'type':type,
+                    'range':range,
+                    'custom':custom_date,
+                }
+        })
+        .done(function(result) {
+            if(result.status == false){
+                toast_error(result.message);
+            }else{
+                category = result.category;
+                topPerformingProduct.updateOptions({                
+                    xaxis: { categories: category },
+                });
+                topPerformingProduct.updateSeries([
+                    {
+                      name: result.data[0].name,  
+                      data: result.data[0].data
+                    }
+                ]);
+            }
+        })
+        .fail(function() {
+            toast_error("error");
+        });
+    }
+
+    function labelFormatter(label, series) {
+      return "<div class='default_label' style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
+    }
+
+    $('#active_customer_graph').bind("plothover", function(event, pos, obj) {
+      if(obj){
+        var percent = Math.round(obj.series.percent);
+        $("#hover").html("<span style='font-weight:bold; color:" + obj.series.color + "'>" + obj.series.label + " (" + percent + "%)</span>");
+        $('#hover').css({'position':'absolute','display':'block','left':pos.pageX,'top':pos.pageY}); 
+      }
+      else {
+        $('#hover').css('display','none');
+      }
+    });
+
+    $('#top_products_per_quantity_chart').bind("plothover", function(event, pos, obj) {
+      if(obj){
+        var percent = Math.round(obj.series.percent);
+        $("#hover").html("<span style='font-weight:bold; color:" + obj.series.color + "'>" + obj.series.label + " (" + percent + "%)</span>");
+        $('#hover').css({'position':'absolute','display':'block','left':pos.pageX,'top':pos.pageY}); 
+      }
+      else {
+        $('#hover').css('display','none');
+      }
+    });
+
+    $('#top_product_per_amount_chart').bind("plothover", function(event, pos, obj) {
+      if(obj){
+        var percent = Math.round(obj.series.percent);
+        $("#hover").html("<span style='font-weight:bold; color:" + obj.series.color + "'>" + obj.series.label + " (" + percent + "%)</span>");
+        $('#hover').css({'position':'absolute','display':'block','left':pos.pageX,'top':pos.pageY}); 
+      }
+      else {
+        $('#hover').css('display','none');
+      }
+    });
+
+    function render_customer_graph(result){
+      var data = [
+
+            { label: "Active", data: result.activeCustomers, color: '#FAA0A0' },
+            { label: "Inactive", data: result.inactiveCustomers, color: '#F33A6A' }, 
+            { label: "Active with Orders", data: result.customerWithOrder, color: '#FFF5EE' },            
+          ];
+      $.plot('#active_customer_graph', data, {
+        series: {
+          pie: {
+            show: true,
+            innerRadius:0.5,
+            radius: 1,
+
+            label: {
+              show: true,
+              radius: 3/4,
+              formatter: labelFormatter,
+              threshold: 0.1,
+            }
+          }
+        },
+        legend: {
+          show: false
+        },
+        grid: {
+          hoverable: true,
+          clickable: true
+        },
+      });
+
+      if(result.inactiveCustomers == 0 && result.activeCustomers == 0){
+        $('#active_customer_graph').removeClass('h-500px');
+      }
     }
 
     function render_promotion_graph(data, category){
@@ -901,6 +1247,57 @@
         backOrderChart.render();
     }
 
+    function render_top_performing_product_graph(data, category){
+
+        var options = {
+            series: data,
+            chart: {
+                type: 'bar',
+                height: 350,
+                toolbar: {
+                    show: false
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '35%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: category,
+            },
+            yaxis: {
+                title: {
+                    text: ''
+                }
+            },
+            fill: {
+                opacity: 1
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return  val
+                    }
+                }
+            },
+            colors:['#F33A6A']
+        };
+
+        var topPerformingProduct = new ApexCharts(document.querySelector("#top_performing_products_graph"), options);
+        topPerformingProduct.render();
+    }
+
     $('[name="filter_company"]').select2({
         ajax: {
             url: "{{ route('common.getBusinessUnits') }}",
@@ -978,8 +1375,177 @@
                 }
             })
         });
-    @endif    
+    @endif  
+
+      
 </script>
 @endif
+@if(@Auth::user()->role_id == 4)
+<script type="text/javascript">
+    // Get Status Counting
+    $.ajax({
+        url: '{{ route('reports.status-count-chart.get-chart-data') }}',
+        method: "POST",
+        data: {
+                _token:'{{ csrf_token() }}',
+            }
+    })
+    .done(function(result) {
+        if(result.status == false){
+            toast_error(result.message);
+        }else{
+            render_status_chart_graph(result.data, result.category)
+        }
+    })
+    .fail(function() {
+        toast_error("error");
+    });
 
+    function render_status_chart_graph(data, category){
+
+        var options = {
+            series: data,
+            chart: {
+                type: 'bar',
+                height: 350,
+                toolbar: {
+                    show: false
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '35%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: category,
+            },
+            yaxis: {
+                title: {
+                    text: ''
+                }
+            },
+            fill: {
+                opacity: 1
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return  val
+                    }
+                }
+            },
+            colors:['#0000FF']
+        };
+
+        var backOrderChart = new ApexCharts(document.querySelector("#status_count_chart"), options);
+        if (backOrderChart.ohYeahThisChartHasBeenRendered) {
+            backOrderChart.destroy();
+        }
+        backOrderChart.render();
+    }
+
+    // Get Top Product per Quantity Chart
+    $.ajax({
+        url: "{{ route('reports.top-product-per-quantity-chart.get-chart-data') }}",
+        method: "POST",
+        data: {
+                _token:'{{ csrf_token() }}',
+            }
+    })
+    .done(function(result) {    
+        if(result.status == false){
+            toast_error(result.message);
+        }else{
+            render_top_product_quantity_graph(result.data1)
+            render_top_product_amount_graph(result.data)
+        }
+    })
+    .fail(function() {
+        toast_error("error");
+    });
+
+    function render_top_product_quantity_graph(result){ 
+      var data = [
+            { label: result[0].item, data: result[0].qty, color: '#FFC300' },
+            { label: result[1].item, data: result[1].qty, color: '#33BBFF' }, 
+            { label: result[2].item, data: result[2].qty, color: '#FFA533' },
+            { label: result[3].item, data: result[3].qty, color: '#848BA5' },
+            { label: result[4].item, data: result[4].qty, color: '#DA80D5' },
+            { label: "Others", data: result.others, color: '#90EE90' },
+          ];
+      $.plot('#top_products_per_quantity_chart', data, {
+        series: {
+          pie: {
+            show: true,
+            innerRadius:0.5,            
+            radius: 1,
+
+            label: {
+              show: true,
+              radius: 3/4,
+              //formatter: labelFormatter,
+              threshold: 0.1,
+            }
+          }
+        },
+        legend: {
+          show: false
+        },
+        grid: {
+          hoverable: true,
+          clickable: true
+        },
+      });
+
+    }
+
+    function render_top_product_amount_graph(result){
+      var data = [
+
+            { label: result.data.item[0].item, data: result.data.item[0].price, color: '#FFC300' },
+            { label: result.data.item[1].item, data: result.data.item[1].price, color: '#33BBFF' }, 
+            { label: result.data.item[2].item, data: result.data.item[2].price, color: '#FFA533' },
+            { label: result.data.item[3].item, data: result.data.item[3].price, color: '#848BA5' },           
+            { label: result.data.item[4].item, data: result.data.item[4].price, color: '#DA80D5' },
+            { label: "Others", data: result.data.others, color: '#90EE90' },
+          ];
+      $.plot('#top_product_per_amount_chart', data, {
+        series: {
+          pie: {
+            show: true,
+            innerRadius:0.5,
+            radius: 1,
+
+            label: {
+              show: true,
+              radius: 3/4,
+              //formatter: labelFormatter,
+              threshold: 0.1,
+            }
+          }
+        },
+        legend: {
+          show: false
+        },
+        grid: {
+          hoverable: true,
+          clickable: true
+        },
+      });
+
+    }
+
+</script>
+ @endif
 @endpush
