@@ -50,7 +50,7 @@ class SalesOrderReportController extends Controller
         $pending_total_sales_orders = $pending_total_sales_quantity = $pending_total_sales_revenue = 0;
         $pending_quotation_item = $this->getResultData($request,'PN');        
         $pending_quotation_item = $pending_quotation_item->get()->toArray();
-        $pending_total_sales_orders = count($pending_quotation_item);        
+        $pending_total_sales_orders = count($pending_quotation_item);
         $pending_quotation_item_quan = $this->getResultDataQuantity($request,'PN');
         $pending_quotation_item_quan = $pending_quotation_item_quan->get()->toArray();
         if(!empty($pending_quotation_item_quan)){
@@ -153,14 +153,14 @@ class SalesOrderReportController extends Controller
         $data = QuotationItem::whereHas('quotation', function($q) use ($request,$status) {
 
                                                     if($status == 'PN'){
-                                                        $q->doesntHave('order')->where('cancelled', "No")->whereNotNull('u_omsno');
+                                                        $q->doesntHave('order')->where('cancelled', "No");
                                                     }else if($status == 'OP'){
                                                         $q->whereHas('order',function($q1){
-                                                            $q1->where('document_status', 'bost_Open')->doesntHave('invoice')->whereNotNull('u_omsno')->where('cancelled','No');
+                                                            $q1->where('document_status', 'bost_Open')->doesntHave('invoice')->where('cancelled','No');
                                                         })->where('cancelled','No');
                                                     }else if($status == 'FD'){
                                                         $q->whereHas('order.invoice',function($q1) use ($status){
-                                                            $q1->where('u_sostat', '!=','DL')->where('u_sostat', '!=','CM')->whereNotNull('u_omsno')->where('cancelled','No');
+                                                            $q1->where('u_sostat', '!=','DL')->where('u_sostat', '!=','CM')->where('cancelled','No');
                                                         });
 
                                                     }else if($status == 'CL'){
@@ -171,7 +171,7 @@ class SalesOrderReportController extends Controller
                                                         });
                                                     }else{
                                                         $q->whereHas('order.invoice',function($q1) use ($status){
-                                                            $q1->where('u_sostat', $status)->whereNotNull('u_omsno')->where('cancelled','No');
+                                                            $q1->where('u_sostat', $status)->where('cancelled','No');
                                                         });
                                                     }
                                                     // $q->doesntHave('order')->where('document_status','bost_Open')->where('cancelled', "No");
@@ -364,16 +364,16 @@ class SalesOrderReportController extends Controller
 
             }elseif($status == "OP"){ //On Process
                 $data->whereHas('order',function($q){
-                    $q->where('document_status', 'bost_Open')->doesntHave('invoice')->whereNotNull('u_omsno')->where('cancelled','No');
+                    $q->where('document_status', 'bost_Open')->doesntHave('invoice')->where('cancelled','No');
                 })->where('cancelled','No');
 
             }elseif($status == "FD"){
                 $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('u_sostat', '!=','DL')->where('u_sostat', '!=','CM')->whereNotNull('u_omsno')->where('cancelled','No');
+                    $q->where('u_sostat', '!=','DL')->where('u_sostat', '!=','CM')->where('cancelled','No');
                 })->where('cancelled','No');
             }else{
                 $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('u_sostat', $status)->whereNotNull('u_omsno')->where('cancelled','No');
+                    $q->where('u_sostat', $status)->where('cancelled','No');
                 })->where('cancelled','No');
             }
         }
