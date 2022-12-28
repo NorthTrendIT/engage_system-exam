@@ -1,4 +1,4 @@
-@if(!empty($invoice_num))  
+@if(count($invoice_num) > 0)  
   @foreach($invoice_num as $k=>$val)
   @php
   $track_status = getStatusData(@$val, true);
@@ -58,5 +58,7 @@
     
   </div>
 </div>
-  @endforeach
-  @endif
+@endforeach
+@else
+
+@endif
