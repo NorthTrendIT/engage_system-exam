@@ -51,7 +51,7 @@ class Order extends Model
     ];
 
     public function invoice(){
-        return $this->hasOne(Invoice::class, ['u_omsno', 'sap_connection_id'], ['u_omsno', 'sap_connection_id'])->latest();
+        return $this->hasOne(Invoice::class, ['u_omsno', 'sap_connection_id'], ['u_omsno', 'sap_connection_id'])->latestOfMany();
     }
 
     public function invoice1(){
