@@ -470,9 +470,10 @@ class NewsAndAnnouncementController extends Controller
                             })
                             ->addColumn('is_important', function($row) {
                                 if($row->is_important == 0){
-                                    return '<button type="button" class="btn btn-info btn-sm">Normal</button>';
+                                    /*return '<button type="button" class="btn btn-info btn-sm">Normal</button>';*/
+                                    return '<span class="badge badge-primary">Normal</span>';
                                 }elseif($row->is_important == 1){
-                                    return '<button type="button" class="btn btn-danger btn-sm">Important</button>';
+                                    return '<span class="badge badge-danger">Important</span>';
                                 }
                                 return "-";
                             })
