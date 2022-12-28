@@ -321,7 +321,11 @@
                                       <td class="text-end">{{$val['amount']}}</td>
                                       <td>{{$val['line_status']}}</td>
                                       <td>{{$val['line_remarks']}}</td>
-                                      <td class="text-center"><a class="trackStatus" id="item_{{$val['item_code']}}"><i class="fa fa-route"></i> </a></td>
+                                      <td class="text-center">
+                                        @if($status != 'Pending')
+                                        <a class="trackStatus" id="item_{{$val['item_code']}}"><i class="fa fa-route"></i> </a>
+                                        @endif
+                                      </td>
                                     </tr>
                                     @endforeach
                                   </tbody>
@@ -772,9 +776,9 @@
           .done(function(result) {
             if(result.status == false){
             }else{
-              $("#myModal").modal('toggle');
               console.log(result.data.status_details);
-              $(".status_modal_body").html(result.data.status_details); 
+              $(".status_modal_body").html(result.data.status_details);
+              $("#myModal").modal('toggle'); 
             }
           })
           .fail(function() {
