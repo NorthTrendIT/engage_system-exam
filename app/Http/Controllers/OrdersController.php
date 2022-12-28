@@ -316,7 +316,7 @@ class OrdersController extends Controller
     }
 
     public function getAll(Request $request){
-        $data = Quotation::query();
+        $data = Quotation::with('order','order.invoice');
 
         if($request->engage_transaction != 0){
             $data->whereNotNull('u_omsno');
