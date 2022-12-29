@@ -426,8 +426,18 @@
                 <div class="card card-xl-stretch mb-xl-8">
                     <div class="card-header border-0 pt-5">
                         <h3 class="card-title align-items-start flex-column">
-                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Top Products per Qty</a>
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Top Products</a>
                         </h3>
+                        <select id="total_performing_type" class="">
+                            <option value="Quantity">Quantity</option>
+                            <option value="Liters">Liters</option>
+                            <option value="Amount">Amount</option>
+                        </select>
+                        <select id="total_performing_orders" class="">
+                            <option value="order">Order</option>
+                            <option value="invoice">Invoice</option>
+                            <option value="back_order">Back Order</option>
+                        </select>
                         
                     </div>
 
@@ -436,26 +446,14 @@
                         <div id="" style="height: 320px; min-height: 320px;">
                             <table id="top_products_per_quantity" class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap">
                                 <thead>
-                                    <tr>
+                                    <tr> 
                                         <td>Top</td>
                                         <td>Name</td>
                                         <td>Total Qty</td>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @if(!empty($data1))
-                                    @foreach($data1 as $val)
-                                    <tr>
-                                        <td>{{@$val['no']}}</td>
-                                        <td>{{@$val['item']}} </td>
-                                        <td>{{@$val['qty']}} </td>
-                                    </tr>
-                                    @endforeach
-                                    @else
-                                    <tr>
-                                        <td colspan="3">No Data Available</td>
-                                    </tr>
-                                    @endif
+                                <tbody id="top_products_per_quantity_tbody">
+                                    
                                 </tbody>
                             </table>
                         </div>
@@ -465,64 +463,9 @@
                 </div>
                 <!--end::Charts Widget 1-->
             </div>
-
-            <!-- Product Report-->
             <div class="col-xl-6">
                 <div class="card card-xl-stretch mb-xl-8">
-                    <div class="card-header border-0 pt-5">
-                        <h3 class="card-title align-items-start flex-column">
-                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Top Products per Amount</a>
-                        </h3>
-                        
-                    </div>
-
-                    <div class="card-body">
-                        <!--begin::Chart-->
-                        <div id="" style="height: 320px; min-height: 320px;">
-                            <table id="product_report_per_amount" class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap">
-                                <thead>
-                                    <tr>
-                                        <td>Top</td>
-                                        <td>Name</td>
-                                        <td>Total Amount</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if(!empty($data3))
-                                    @foreach($data3 as $val)
-                                    <tr>
-                                        <td>{{@$val['no']}}</td>
-                                        <td>{{@$val['item']}} </td>
-                                        <td>{{@$val['price']}} </td>
-                                    </tr>
-                                    @endforeach
-                                    @else
-                                    <tr>
-                                        <td colspan="3">No Data Available</td>
-                                    </tr>
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
-                        <!--end::Chart-->
-                    </div>
-                    <!--end::Body-->
-                </div>
-                <!--end::Charts Widget 1-->
-            </div>
-        </div>
-
-        <div class="row gy-5 g-xl-8">
-            <!-- Promotion Report -->
-            <div class="col-xl-6">
-                <div class="card card-xl-stretch mb-xl-8">
-                    <div class="card-header border-0 pt-5">
-                        <h3 class="card-title align-items-start flex-column">
-                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Top Product Per Quantity</a>
-                        </h3>
-                        
-                    </div>
-
+                    
                     <div class="card-body">
                         <!--begin::Chart-->
                         <div id="top_products_per_quantity_chart" class="h-500px" style="height: 320px; min-height: 320px;">
@@ -533,30 +476,8 @@
                     <!--end::Body-->
                 </div>
                 <!--end::Charts Widget 1-->
-            </div>
-
-            <!-- Product Report-->
-            <div class="col-xl-6">
-                <div class="card card-xl-stretch mb-xl-8">
-                    <div class="card-header border-0 pt-5">
-                        <h3 class="card-title align-items-start flex-column">
-                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Top Product Per Amount </a>
-                        </h3>
-                        
-                    </div>
-
-                    <div class="card-body">
-                        <!--begin::Chart-->
-                        <div id="top_product_per_amount_chart" class="h-500px" style="height: 320px; min-height: 320px;">
-
-                        </div>
-                        <!--end::Chart-->
-                    </div>
-                    <!--end::Body-->
-                </div>
-                <!--end::Charts Widget 1-->
-            </div>
-        </div>
+            </div>            
+        </div>        
 
         <div class="row gy-5 g-xl-8">
             <!-- Back Order Report-->
@@ -1455,35 +1376,92 @@
         backOrderChart.render();
     }
 
-    // Get Top Product per Quantity Chart
-    $.ajax({
-        url: "{{ route('reports.top-product-per-quantity-chart.get-chart-data') }}",
-        method: "POST",
-        data: {
-                _token:'{{ csrf_token() }}',
-            }
-    })
-    .done(function(result) {    
-        if(result.status == false){
-            toast_error(result.message);
-        }else{
-            render_top_product_quantity_graph(result.data1)
-            render_top_product_amount_graph(result.data)
-        }
-    })
-    .fail(function() {
-        toast_error("error");
+    getProductData();
+
+    $(document).on("change","#total_performing_type",function(){
+        getProductData();
     });
+
+    $(document).on("change","#total_performing_orders",function(){
+        getProductData();
+    });
+
+    function getProductData(){
+        var type = $("#total_performing_type").val();
+        var order = $("#total_performing_orders").val();
+        // Get Top Product Data
+        $.ajax({
+            url: "{{ route('reports.back-order-report.get-product-data') }}",
+            method: "POST",
+            data: {
+                    _token:'{{ csrf_token() }}',
+                    type:type,
+                    order:order,
+                }
+        })
+        .done(function(result) {    
+            if(result.status == false){
+                toast_error(result.message);
+            }else{
+                var html = '';
+                render_top_product_quantity_graph(result.data1);
+                if(result.data != ""){
+                    if(order == 'order'){
+                        $.each(result.data, function( index, value ) {
+                          html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
+                            if(type == 'Quantity'){
+                                html += '<td>'+value.quantity+'</td>';
+                            }else if(type == 'Liters'){
+                                html += '<td>'+value.quantity+'</td>';
+                            }else if(type == 'Amount'){
+                                html += '<td>'+value.gross_total+'</td>';
+                            }
+                          html += '</tr>';
+                        });
+                    }else if(order == 'invoice'){
+                        $.each(result.data, function( index, value ) {
+                          html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
+                            if(type == 'Quantity'){
+                                html += '<td>'+value.quantity+'</td>';
+                            }else if(type == 'Liters'){
+                                html += '<td>'+value.quantity+'</td>';
+                            }else if(type == 'Amount'){
+                                html += '<td>'+value.gross_total+'</td>';
+                            }
+                          html += '</tr>';
+                        });
+                    }else if(order == 'back_order'){
+                        $.each(result.data, function( index, value ) {
+                          html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
+                            if(type == 'Quantity'){
+                                html += '<td>'+value.quantity+'</td>';
+                            }else if(type == 'Liters'){
+                                html += '<td>'+value.quantity+'</td>';
+                            }else if(type == 'Amount'){
+                                html += '<td>'+value.gross_total+'</td>';
+                            }
+                          html += '</tr>';
+                        });
+                    }
+                }
+                $('#top_products_per_quantity_tbody').html(html);
+            }
+        })
+        .fail(function() {
+            toast_error("error");
+        });
+    }
 
     function render_top_product_quantity_graph(result){ 
       var data = [
-            { label: result[0].item, data: result[0].qty, color: '#FFC300' },
-            { label: result[1].item, data: result[1].qty, color: '#33BBFF' }, 
-            { label: result[2].item, data: result[2].qty, color: '#FFA533' },
-            { label: result[3].item, data: result[3].qty, color: '#848BA5' },
-            { label: result[4].item, data: result[4].qty, color: '#DA80D5' },
-            { label: "Others", data: result.others, color: '#90EE90' },
+            { label: result[0].name, data: result[0].key, color: '#FFC300' },
+            { label: result[1].name, data: result[1].key, color: '#33BBFF' }, 
+            { label: result[2].name, data: result[2].key, color: '#FFA533' },
+            { label: result[3].name, data: result[3].key, color: '#848BA5' },
+            { label: result[4].name, data: result[4].key, color: '#DA80D5' },
+            //{ label: "Others", data: result.others, color: '#90EE90' },
           ];
+        console.log(result);
       $.plot('#top_products_per_quantity_chart', data, {
         series: {
           pie: {
@@ -1510,41 +1488,27 @@
 
     }
 
-    function render_top_product_amount_graph(result){
-      var data = [
+    
 
-            { label: result.data.item[0].item, data: result.data.item[0].price, color: '#FFC300' },
-            { label: result.data.item[1].item, data: result.data.item[1].price, color: '#33BBFF' }, 
-            { label: result.data.item[2].item, data: result.data.item[2].price, color: '#FFA533' },
-            { label: result.data.item[3].item, data: result.data.item[3].price, color: '#848BA5' },           
-            { label: result.data.item[4].item, data: result.data.item[4].price, color: '#DA80D5' },
-            { label: "Others", data: result.data.others, color: '#90EE90' },
-          ];
-      $.plot('#top_product_per_amount_chart', data, {
-        series: {
-          pie: {
-            show: true,
-            innerRadius:0.5,
-            radius: 1,
-
-            label: {
-              show: true,
-              radius: 3/4,
-              //formatter: labelFormatter,
-              threshold: 0.1,
-            }
-          }
-        },
-        legend: {
-          show: false
-        },
-        grid: {
-          hoverable: true,
-          clickable: true
-        },
-      });
-
-    }
+    // Get Top Product per Quantity Chart
+    // $.ajax({
+    //     url: "{{ route('reports.top-product-per-quantity-chart.get-chart-data') }}",
+    //     method: "POST",
+    //     data: {
+    //             _token:'{{ csrf_token() }}',
+    //         }
+    // })
+    // .done(function(result) {    
+    //     if(result.status == false){
+    //         toast_error(result.message);
+    //     }else{
+    //         render_top_product_quantity_graph(result.data1)
+    //         render_top_product_amount_graph(result.data)
+    //     }
+    // })
+    // .fail(function() {
+    //     toast_error("error");
+    // });    
 
 </script>
  @endif
