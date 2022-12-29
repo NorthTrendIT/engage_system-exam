@@ -120,88 +120,7 @@ class HomeController extends Controller
                 $dashboard['total_delivered_order'] = $total_delivered_order;
                 $dashboard['total_back_order'] = $total_back_order;
                 $dashboard['total_overdue_invoice'] = $number_of_overdue_invoices;
-                $dashboard['total_amount_of_overdue_invoices'] = $total_amount_of_overdue_invoices;
-
-                $c_product_tires_category = $c_product_item_line = $c_product_group = array();
-                $customer_id = [];
-                $customer = collect();
-                $sap_connection_id = [];
-                $customer_price_list_no = [];
-                $customer_id = explode(',', Auth::user()->multi_customer_id);
-                $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
-                $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
-                if(in_array(5, $sap_connection_id)){
-                    array_push($sap_connection_id, '5');
-                }
-                // Is Customer
-                if(!empty($customer_id)){
-
-                    // Product Group
-                    $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
-                    $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
-
-                    // Product Item Line
-                    $c_product_item_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
-                    $c_product_item_line = array_column( $c_product_item_line->toArray(), 'product_item_line_id' ); 
-
-                    // Product Tires Category
-                    $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
-                    $c_product_tires_category = array_column( $c_product_tires_category->toArray(), 'product_tires_category_id' );            
-                }
-
-                if(empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
-                    $products = collect([]);
-                }
-
-                $where = array('is_active' => true);
-                $products = Product::where($where);
-                $products->whereHas('group', function($q){
-                    $q->where('is_active', true);
-                });        
-
-                $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
-                    if(!empty($c_product_group)){
-                        $q->orwhereHas('group', function($q1) use ($c_product_group){
-                            $q1->whereIn('id', $c_product_group);
-                        });
-                    }
-
-                    if(!empty($c_product_tires_category)){
-                        $q->orwhereHas('product_tires_category', function($q1) use ($c_product_tires_category){
-                            $q1->whereIn('id', $c_product_tires_category);
-                        });
-                    }
-
-                    if(!empty($c_product_item_line)){
-                        $q->orwhereHas('product_item_line', function($q1) use ($c_product_item_line){
-                            $q1->whereIn('id', $c_product_item_line);
-                        });
-                    }
-                });
-
-                $products1 = $products->whereIn('sap_connection_id', $sap_connection_id)->get();
-                
-                foreach ($products1 as $key => $value) {
-
-                    $data2[$value->id] = (get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]]));
-                }                
-                arsort($data2);             
-                $newArray = array_slice($data2, 0, 5, true);
-                $keys_array = array_keys($newArray);
-                $value_array = array_values($newArray);
-                $amounts = Product::whereIn('id', $keys_array)->get();
-                foreach($amounts as $key=>$val){
-                    $data3[$key]['no'] = $key +1;
-                    $data3[$key]['item'] = $val->item_name;
-                    $data3[$key]['price'] = '₱ '. number_format_value($value_array[$key]); 
-                }
-
-                $products2 = $products->whereIn('sap_connection_id', $sap_connection_id)->orderBy('quantity_ordered_by_customers','DESC')->take(5)->get();                
-                foreach ($products2 as $key => $value) {
-                    $data1[$key]['no'] = $key +1;
-                    $data1[$key]['item'] = $value->item_name;
-                    $data1[$key]['qty'] = $value->quantity_ordered_by_customers;
-                }
+                $dashboard['total_amount_of_overdue_invoices'] = $total_amount_of_overdue_invoices; 
 
                 //Recent Orders
                 $orders = Quotation::whereNotNull('u_omsno');
@@ -225,7 +144,7 @@ class HomeController extends Controller
                 $delivery_lead = $delivery_lead->get();
             }
 
-            return view('dashboard.index', compact('notification','dashboard','data1','orders','invoice_lead','delivery_lead','data3'));
+            return view('dashboard.index', compact('notification','dashboard','orders','invoice_lead','delivery_lead'));
         }
 
     	return view('dashboard.index');
