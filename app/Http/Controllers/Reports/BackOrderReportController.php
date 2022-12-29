@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\SapConnection;
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
 
 use DB;
 use DataTables;
@@ -294,5 +296,59 @@ class BackOrderReportController extends Controller
         
 
         return $data;
+    }
+
+    public function getProductData(Request $request){
+        $customers = Auth::user()->get_multi_customer_details();
+        if($request->order == 'order'){
+            $items = [];
+            $data = Order::whereIn('card_code', array_column($customers->toArray(), 'card_code'))
+                ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))->pluck('id')->toArray();
+            if($request->type == 'Quantity'){
+                $items = OrderItem::whereIn('order_id',$data)->orderBy('quantity','DESC')->take(5)->get();
+            }else if($request->type == 'Liters'){
+                $items = OrderItem::whereIn('order_id',$data)->orderBy('quantity','DESC')->take(5)->get();
+            }else if($request->type == 'Amount'){
+                $items = OrderItem::whereIn('order_id',$data)->orderBy('gross_total','DESC')->take(5)->get();
+            }
+        }else if($request->order == 'invoice'){
+            $items = [];
+            $data = Invoice::whereIn('card_code', array_column($customers->toArray(), 'card_code'))
+                ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))->pluck('id')->toArray();
+            if($request->type == 'Quantity'){
+                $items = InvoiceItem::whereIn('invoice_id',$data)->orderBy('quantity','DESC')->take(5)->get();
+            }else if($request->type == 'Liters'){
+                $items = InvoiceItem::whereIn('invoice_id',$data)->orderBy('quantity','DESC')->take(5)->get();
+            }else if($request->type == 'Amount'){
+                $items = InvoiceItem::whereIn('invoice_id',$data)->orderBy('gross_total','DESC')->take(5)->get();
+            }
+        }else if($request->order == 'back_order'){
+            $items = [];
+            $data = OrderItem::with('order')
+                            ->where('remaining_open_quantity', '>', 0)
+                            ->whereHas('order', function($q) use ($customers) {
+                                $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                                $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+                            });                
+            if($request->type == 'Quantity'){
+                $items = $data->orderBy('quantity','DESC')->take(5)->get();
+            }else if($request->type == 'Liters'){
+                $items = $data->orderBy('quantity','DESC')->take(5)->get();
+            }else if($request->type == 'Amount'){
+                $items = $data->orderBy('gross_total','DESC')->take(5)->get();
+            }            
+        }
+        $data = [];
+        foreach($items as $key=>$val){
+            if($request->type == 'Quantity' || $request->order == 'Liters'){
+                $data[$key]['name'] = $val->item_code;
+                $data[$key]['key'] = floor($val->quantity);
+            }else if($request->type == 'Amount'){
+                $data[$key]['name'] = $val->item_code;
+                $data[$key]['key'] = floor($val->gross_total);
+            }
+        }
+        $response = ['status' => true, 'data'=>$items,'data1'=>$data];
+        return $response;
     }
 }
