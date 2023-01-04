@@ -1221,3 +1221,6 @@ input[type="button"].remove-from-cart {
 .order_view_status_details .order-tracking {
     width: 30%;
 }
+.sidebar-box {
+    height: calc(100vh - 98px) !important;
+}
