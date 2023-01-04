@@ -536,6 +536,30 @@
 
   $(document).ready(function() {
 
+    $(".trackStatus").on("click",function(){
+      var id = $(this).attr('id').split("item_")[1];
+      
+      $.ajax({
+          url: "{{route('orders.item_status-track')}}",
+          method: "POST",
+          data: {
+                  _token:'{{ csrf_token() }}',
+                  id:id,
+                  details:"{{@$data->u_omsno}}",
+                }
+        })
+        .done(function(result) {
+          if(result.status == false){
+          }else{
+            $(".status_modal_body").html(result.data.status_details);
+            $("#myModal").modal('toggle'); 
+          }
+        })
+        .fail(function() {
+          toast_error("error");
+        });        
+      });
+
 
     $(document).on('click', '.push-in-sap', function(event) {
       event.preventDefault();
@@ -759,32 +783,7 @@
 
     @endif
 
-  });
-
-  $(".trackStatus").on("click",function(){
-      var id = $(this).attr('id').split("item_")[1];
-      
-      $.ajax({
-            url: "{{route('orders.item_status-track')}}",
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                    id:id,
-                    details:"{{@$data->u_omsno}}",
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-            }else{
-              console.log(result.data.status_details);
-              $(".status_modal_body").html(result.data.status_details);
-              $("#myModal").modal('toggle'); 
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });        
-  });
+  });  
 
   $("#checked_served_checkbox").click(function(){
     if($(this).is(':checked')){
