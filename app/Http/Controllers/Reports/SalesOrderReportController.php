@@ -88,10 +88,10 @@ class SalesOrderReportController extends Controller
         $delivered_quotation_item = $delivered_quotation_item->get()->toArray();
         $delivered_total_sales_orders = count($delivered_quotation_item);
         $deleivered_quotation_item_quan = $this->getResultDataQuantity($request,'DL');
-        $deleivered_quotation_item_quan = $deleivered_quotation_item_quan->get()->toArray();
-        if(!empty($deleivered_quotation_item_quan)){
-            $deleivered_total_sales_quantity = array_sum(array_column($deleivered_quotation_item_quan, 'quantity'));
-            $deleivered_total_sales_revenue = round(array_sum(array_column($deleivered_quotation_item_quan, 'gross_total')), 2);
+        $deleivered_quotation_item_quan = $deleivered_quotation_item_quan->get()->toArray();       
+        if(!empty($deleivered_quotation_item_quan) && count($deleivered_quotation_item_quan) > 0){             
+            $delivered_total_sales_quantity = array_sum(array_column($deleivered_quotation_item_quan, 'quantity'));
+            $delivered_total_sales_revenue = round(array_sum(array_column($deleivered_quotation_item_quan, 'gross_total')), 2);
         }
 
         // Completed
