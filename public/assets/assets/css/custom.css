@@ -1224,3 +1224,6 @@ input[type="button"].remove-from-cart {
 .sidebar-box {
     height: calc(100vh - 98px) !important;
 }
+.modal-table-scroll .dataTables_scrollHeadInner {
+    width: 100% !important;
+}

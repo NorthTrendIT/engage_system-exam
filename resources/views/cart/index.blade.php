@@ -285,8 +285,8 @@
                         <div class="row mb-5 mt-5">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <div class="table-responsive">
-                                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                                    <div class="table-responsive  modal-table-scroll">
+                                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myProductTable">
                                           <thead>
                                             <tr>
                                               <th style="width:24px !important">No.</th>
@@ -775,7 +775,7 @@ $(document).ready(function() {
     render_table();
 
     function render_table(){
-      var table = $("#myTable");
+      var table = $("#myProductTable");
       table.DataTable().destroy();
 
       $filter_search = $('[name="filter_product"]').val();
@@ -787,7 +787,6 @@ $(document).ready(function() {
       table.DataTable({
           processing: true,
           serverSide: true,
-          scrollX: true,
           order: [],
           ajax: {
               'url': "{{ route('cart.get.product.list') }}",
