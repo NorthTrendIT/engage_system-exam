@@ -9,8 +9,18 @@
   <!-- <div class="row justify-content-center mb-10 text-center">
     <h2><u>Delivery Status</u></h2>
   </div> --> 
-  
   <div class="row justify-content-center">
+    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
+      <h6>Invoice No</h6>
+    </div> 
+     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-12 col-12">
+       <h6>Qty</h6>
+    </div>
+    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 col-12 d-flex justify-content-center">
+      <h6>Status</h6>
+    </div> 
+  </div>
+  <div class="row justify-content-center">    
     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
       <p>{{$invoice_num[$k]->doc_num}}</p>
     </div>
