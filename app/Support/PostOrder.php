@@ -7,6 +7,7 @@ use Illuminate\Support\Carbon;
 use App\Support\SAPAuthentication;
 use App\Models\Quotation;
 use App\Models\QuotationItem;
+use Log;
 
 class PostOrder
 {
@@ -33,6 +34,7 @@ class PostOrder
 
     public function pushOrderInSAP($body)
     {
+        Log::info(print_r($body,true));
     	try {
             $response = $this->httpClient->request(
                 'POST',
@@ -44,7 +46,7 @@ class PostOrder
                     'timeout' => 15,
                 ]
             );
-
+            Log::info(print_r($response,true));
             if(in_array($response->getStatusCode(), [200,201])){
                 $response = json_decode($response->getBody(),true);
                 return array(
