@@ -85,6 +85,7 @@ class PostOrder
 
     public function pushOrder($data)
     {
+        Log::info(print_r($data,true));
         if(!empty($data)){
             $response = $this->pushOrderInSAP($data);
         }
