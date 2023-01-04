@@ -188,12 +188,12 @@ class SAPOrderPost
     public function pushOrder($id){
         $body = $this->madeSapData($id);
         $response = array();
-
+        Log::info(print_r($body,true));
         if(!empty($body)){
             $response = $this->requestSapApi('/b1s/v1/Quotations', "POST", $body);
             $status = $response['status'];
             $data = $response['data'];
-
+            Log::info(print_r($response,true));
             $order = LocalOrder::where('id', $id)->first();
             if($status){
                 $order->confirmation_status = 'C';
