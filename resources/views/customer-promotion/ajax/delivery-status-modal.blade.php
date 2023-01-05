@@ -1,10 +1,15 @@
-@if(count($invoice_num) > 0)  
+@if(count($invoice_num) > 0) 
+  <div class="d-flex justify-content-between">
+    <h5>{{$product}}<h5>
+    <h5>Total Qty Ordered: {{$sum_of_quan}}</h5>
+  </div> 
+  
   @foreach($invoice_num as $k=>$val)
   @php
   $track_status = getStatusData(@$val, true);
   $track_date_array = @$track_status['date_array'];
   $track_status = @$track_status['status'];
-  @endphp
+  @endphp  
 <div class="hh-grayBox pb20">
   <!-- <div class="row justify-content-center mb-10 text-center">
     <h2><u>Delivery Status</u></h2>
@@ -20,9 +25,12 @@
       <h6>Status</h6>
     </div> 
   </div>
-  <div class="row justify-content-center">    
+  <div class="row justify-content-center">  
     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
-      <p>{{$invoice_num[$k]->doc_num}}</p>
+      @php 
+        $route = route('invoices.show',@$invoice_item_details[$k]->invoice_id);
+      @endphp
+      <p><a href="{{$route}}" target="_blank"> {{$invoice_num[$k]->doc_num}}</a></p>
     </div>
     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-12 col-12">
        <p>{{$invoice_item_details[$k]->quantity}}</p>

@@ -1230,6 +1230,7 @@ class OrdersController extends Controller
 
     public function itemStatus(Request $request){
         $data = Quotation::where('u_omsno', @$request->details)->first();
+        $product = $request->product;
         if(!empty($data)){
             $invoice = @$data->order->invoice1;
             $invoiceIds = [];
@@ -1243,17 +1244,22 @@ class OrdersController extends Controller
 
             $num = InvoiceItem::with('invoice')->whereIn('invoice_id',$invoiceIds)->where('item_code',@$request->id)->pluck('invoice_id');
             $invoice_num = Invoice::whereIn('id',$num)->get();
+            $sum_of_quan = 0;            
 
             $invoice_item_details = InvoiceItem::with('invoice')->whereIn('invoice_id',$invoiceIds)->where('item_code',@$request->id)->get();
+
+            foreach ($invoice_item_details as $key => $value) {
+                $sum_of_quan = @$value->quantity + $sum_of_quan;
+            }
 
             $status = getOrderStatusByQuotation(@$data, true);
             $date_array = @$status['date_array'];
             $status = @$status['status'];
             // $data->status_details = view('customer-promotion.ajax.delivery-status-modal',compact('invoice_num'))->render();
             if(count($invoice_num) > 0){
-                $data->status_details = view('customer-promotion.ajax.delivery-status-modal', compact('invoice_num','status','date_array','invoice_item_details','doc_num'))->render();
+                $data->status_details = view('customer-promotion.ajax.delivery-status-modal', compact('invoice_num','status','date_array','invoice_item_details','doc_num','product','sum_of_quan'))->render();
             }else{
-                $data->status_details = view('customer-promotion.ajax.delivery-status-default-modal', compact('status','date_array'))->render();
+                $data->status_details = view('customer-promotion.ajax.delivery-status-default-modal', compact('status','date_array','product'))->render();
             }
             $response = ['status' => true, 'message' => 'Order completed successfully!','data'=>$data];
             return $response;
