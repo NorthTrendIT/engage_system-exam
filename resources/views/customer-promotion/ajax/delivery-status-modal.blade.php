@@ -1,7 +1,7 @@
 @if(count($invoice_num) > 0) 
   <div class="d-flex justify-content-between">
     <h5>{{$product}}<h5>
-    <h5>Total Qty Ordered: {{$sum_of_quan}}</h5>
+    <h5>Total Qty Ordered: {{$orderd_quantity}}</h5>
   </div> 
   
   @foreach($invoice_num as $k=>$val)
@@ -80,3 +80,6 @@
 @else
 
 @endif
+<div class="d-flex justify-content-between">
+    <h5>Total Delivered Qty: {{$sum_of_quan}}</h5>
+</div> 
