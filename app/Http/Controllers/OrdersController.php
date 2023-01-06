@@ -403,89 +403,99 @@ class OrdersController extends Controller
             $data->where('sap_connection_id',$request->filter_company);
         }
 
+        
         $status = @$request->filter_status;
-        if($request->filter_status != ""){
-            
-            if($status == "CL"){ //Cancel
-                $data->where(function($query){
-                    $query->orwhere(function($q){
-                        $q->where('cancelled', 'Yes');
+        if(!empty($status)){
+            $data->where(function($query) use ($status){                
+                if(in_array("PN",$status)){
+                    $query->orWhere(function($q){
+                        $q->has('order', '<', 1)->where('cancelled','No');
                     });
-                    $query->orwhere(function($q){
-                        $q->whereHas('order',function($p){
-                            $p->where('cancelled', 'Yes');
+                }
+                if(in_array("OP",$status)){
+                    $query->orWhere(function($q){
+                        $q->WhereHas('order',function($q1){
+                            $q1->where('document_status', 'bost_Open')->doesntHave('invoice')->where('cancelled','No');
+                        })->where('cancelled','No');
+                    });
+                }
+                if(in_array("CL", $status)){
+                    $query->orWhere(function($q){
+                        $q->where(function($q2){
+                            $q2->orwhere(function($q1){
+                                $q1->where('cancelled', 'Yes');
+                            });
+                            $q2->orwhere(function($q3){
+                                $q3->whereHas('order',function($p){
+                                    $p->where('cancelled', 'Yes');
+                                });
+                            });
+                            $q2->orwhere(function($q4){
+                                $q4->whereHas('order.invoice1',function($p1){
+                                    $p1->where('cancelled', 'Yes');
+                                });
+                            });
                         });
                     });
-                    $query->orwhere(function($q1){
-                        $q1->whereHas('order.invoice1',function($p1){
-                            $p1->where('cancelled', 'Yes');
+                }
+                if(in_array("DL", $status)){
+                    $query->orWhere(function($q){
+                        $q->whereHas('order.invoice',function($q1){
+                            $q1->where('cancelled', 'No')->where('u_sostat', 'DL');
+                        })->where('cancelled','No');
+
+                        $q->whereHas('order',function($q1){
+                            $q1->where('cancelled','No');
                         });
                     });
-                });
-            }elseif($status == "PN"){ //Pending
-                $data->has('order', '<', 1)->where('cancelled','No');
-            }elseif($status == "OP"){ //On Process
-                $data->whereHas('order',function($q){
-                    $q->where('document_status', 'bost_Open')->doesntHave('invoice')->where('cancelled','No');
-                })->where('cancelled','No');
-            }/*else if($status == "FD"){
-                $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('cancelled', 'No')->where('u_sostat', '!=','DL')->where('u_sostat', '!=','CM');
-                })->where('cancelled','No');
+                }
+                if(in_array("CM", $status)){
+                    $query->orWhere(function($q){
+                        $q->whereHas('order.invoice',function($q1){
+                            $q1->where('cancelled', 'No')->where('u_sostat', 'CM');
+                        })->where('cancelled','No');
 
-                $data->whereHas('order',function($q){
-                    $q->where('cancelled','No');
-                });
-            }*/
-            else if($status == "DL"){
-                $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('cancelled', 'No')->where('u_sostat', 'DL');
-                })->where('cancelled','No');
+                        $q->whereHas('order',function($q1){
+                            $q1->where('cancelled','No');
+                        });
+                    });
+                }
+                if(in_array("IN", $status)){
+                    $query->orWhere(function($q){
+                        $q->whereHas('order.invoice',function($q1){
+                            $q1->where('cancelled', 'No')->where('u_sostat', 'IN');
+                        })->where('cancelled','No');
 
-                $data->whereHas('order',function($q){
-                    $q->where('cancelled','No');
-                });
-            }
-            else if($status == "CM"){
-                $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('cancelled', 'No')->where('u_sostat', 'CM');
-                })->where('cancelled','No');
+                        $q->whereHas('order',function($q1){
+                            $q1->where('cancelled','No');
+                        });
+                    });
+                }
+                if(in_array("CF", $status)){
+                    $query->orWhere(function($q){
+                        $q->whereHas('order.invoice',function($q1){
+                            $q1->where('cancelled', 'No')->where('u_sostat', 'CF');
+                        })->where('cancelled','No');
 
-                $data->whereHas('order',function($q){
-                    $q->where('cancelled','No');
-                });
-            }
-            else if($status == "IN"){
-                $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('cancelled', 'No')->where('u_sostat', 'IN');
-                })->where('cancelled','No');
+                        $q->whereHas('order',function($q1){
+                            $q1->where('cancelled','No');
+                        });
+                    });
+                }
+                if(in_array("FD", $status)){
+                    $query->orWhere(function($q){
+                        $q->whereHas('order.invoice',function($q1){
+                            $q1->where('cancelled', 'No')->where('u_sostat', '!=','CM')->where('u_sostat', '!=','DL');
+                        })->where('cancelled','No');
 
-                $data->whereHas('order',function($q){
-                    $q->where('cancelled','No');
-                });
-            }else if($status == "CF"){
-                $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('cancelled', 'No')->where('u_sostat', 'CF');
-                })->where('cancelled','No');
-
-                $data->whereHas('order',function($q){
-                    $q->where('cancelled','No');
-                });
-            }
-            else{
-                
-                $data->whereHas('order.invoice',function($q) use ($status){
-                    $q->where('cancelled', 'No')->where('u_sostat', '!=','CM')->where('u_sostat', '!=','DL');
-                })->where('cancelled','No');
-
-                $data->whereHas('order',function($q){
-                    $q->where('cancelled','No');
-                });
-                
-            }
+                        $q->whereHas('order',function($q1){
+                            $q1->where('cancelled','No');
+                        });
+                    });
+                }
+            });
         }
-
-
+        
         if($request->filter_order_type != ""){
             if($request->filter_order_type == "Standard"){
                 $data->whereNull('customer_promotion_id');
@@ -493,7 +503,6 @@ class OrdersController extends Controller
                 $data->whereNotNull('customer_promotion_id');
             }
         }
-
 
         if($request->filter_date_range != ""){
             $date = explode(" - ", $request->filter_date_range);
@@ -507,19 +516,17 @@ class OrdersController extends Controller
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
         });
-
-        // dd($data->get());
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('name', function($row) {
                                 return  @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
-                            ->addColumn('status', function($row) use ($status){
-                                if($status != ""){
-                                    return getOrderStatusBtnHtml(getOrderStatusArray($status));
-                                }else{
+                            ->addColumn('status', function($row) use ($status) {
+                                // if($status != ""){
+                                //     return getOrderStatusBtnHtml(getOrderStatusArray($status[0]));
+                                // }else{
                                     return getOrderStatusBtnHtml(getOrderStatusByQuotation($row));
-                                }
+                                //}
                                 
                             })
                             ->addColumn('doc_entry', function($row) {
@@ -1229,6 +1236,7 @@ class OrdersController extends Controller
     }
 
     public function itemStatus(Request $request){
+        $orderd_quantity = $request->quantity;
         $data = Quotation::where('u_omsno', @$request->details)->first();
         $product = $request->product;
         if(!empty($data)){
@@ -1257,9 +1265,9 @@ class OrdersController extends Controller
             $status = @$status['status'];
             // $data->status_details = view('customer-promotion.ajax.delivery-status-modal',compact('invoice_num'))->render();
             if(count($invoice_num) > 0){
-                $data->status_details = view('customer-promotion.ajax.delivery-status-modal', compact('invoice_num','status','date_array','invoice_item_details','doc_num','product','sum_of_quan'))->render();
+                $data->status_details = view('customer-promotion.ajax.delivery-status-modal', compact('invoice_num','status','date_array','invoice_item_details','doc_num','product','sum_of_quan','orderd_quantity'))->render();
             }else{
-                $data->status_details = view('customer-promotion.ajax.delivery-status-default-modal', compact('status','date_array','product'))->render();
+                $data->status_details = view('customer-promotion.ajax.delivery-status-default-modal', compact('status','date_array','product','orderd_quantity'))->render();
             }
             $response = ['status' => true, 'message' => 'Order completed successfully!','data'=>$data];
             return $response;
