@@ -276,7 +276,7 @@
                                   <thead>
                                     <tr class="border-bottom fs-6 fw-bolder text-muted">
                                       <th>Action</th>
-                                      <th style="width:80px;">#</th>
+                                      <th>#</th>
                                       <th class="min-w-175px pb-2 product_details">Product</th>
                                       <th>Unit</th>
                                       <th class="min-w-175px pb-2">Ordered Quantity</th>
@@ -303,7 +303,7 @@
                                         <a class="trackStatus btn btn-primary btn-sm" id="item_{{$val['item_code']}}"> Track Delivery</a>
                                         @endif
                                       </td>
-                                      <td class="text-end" style="width:80px;">{{$k+1}}</td>
+                                      <td class="text-end">{{$k+1}}</td>
                                       <td class="product_details">{{$val['product']}}</td>
                                       <td>{{$val['unit']}}</td>
                                       <td class="text-end">{{$val['order_quantity']}}</td>
