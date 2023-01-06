@@ -100,7 +100,7 @@
                 @endif
 
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="false" data-placeholder="Select status" data-allow-clear="true">
+                  <select class="form-control form-control-lg form-control-solid js-example-basic-multiple" name="filter_status[]" data-control="select2" data-hide-search="false" data-placeholder="Select status" data-allow-clear="true" multiple="multiple">
                     <option value=""></option>
 
                     @foreach(getOrderStatusArray() as $key => $value)
@@ -224,6 +224,10 @@
       }
     });
 
+    $(document).ready(function() {
+        $('.js-example-basic-multiple').select2();
+    });
+
     function render_table(){
       var table = $("#myTable");
       table.DataTable().destroy();
@@ -238,7 +242,7 @@
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
-      $filter_status = $('[name="filter_status"]').find('option:selected').val();
+      $filter_status = $('[name="filter_status[]"]').select2('val');
       $filter_order_type = $('[name="filter_order_type"]').find('option:selected').val();
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
