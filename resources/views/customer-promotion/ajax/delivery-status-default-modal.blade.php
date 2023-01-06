@@ -1,4 +1,7 @@
-<h5>{{$product}}<h5>
+<div class="d-flex justify-content-between">
+    <h5>{{$product}}<h5>
+    <h5>Total Qty Ordered: {{$orderd_quantity}}</h5>
+</div> 
 <div class="hh-grayBox pb20">
   <div class="row justify-content-center mb-10 text-center">
     <h2><u>Delivery Status</u></h2>

@@ -1202,14 +1202,24 @@ input[type="button"].remove-from-cart {
 }
 
 .sticky_table_custom .table thead th:nth-child(2) {
-  left: 80px;
+  left: 180px;
   z-index: 3;
   background-color: #fff;
 }
 .sticky_table_custom .table tr > :nth-child(2) {
   position: sticky; 
    background-color: #fff;
-  left: 80px; 
+  left: 180px; 
+}
+
+.sticky_table_custom .table thead th:nth-child(3) {
+  left: 225px;
+  z-index: 3;
+}
+.sticky_table_custom .table tr > :nth-child(3){
+  position: sticky; 
+  background-color: #fff;
+  left: 225px; 
 }
 
 .order_view_status_details{
