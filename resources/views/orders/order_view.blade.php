@@ -3,11 +3,11 @@
 @section('title','Order Details')
 <style type="text/css">
   .order_class td{min-width: 150px;}
-  .order_class td:first-child{min-width: 80px;} 
+  .order_class td:first-child{min-width: 180px;} 
   .order_class td:nth-child(4){min-width: 80px;}
   .order_class td:nth-child(5){min-width: 80px;}
-  .order_class td:nth-child(2){min-width: 280px;}
-  .order_class td:nth-child(3){min-width: 80px;}
+  .order_class td:nth-child(2){min-width: 45px;}
+  .order_class td:nth-child(3){min-width: 280px;}
   .order_class th.min-w-175px{min-width: auto !important;}
   .order_class th{text-align: center !important;}
 
@@ -275,6 +275,7 @@
                                 <table class="table mb-3 order_class">
                                   <thead>
                                     <tr class="border-bottom fs-6 fw-bolder text-muted">
+                                      <th>Action</th>
                                       <th style="width:80px;">#</th>
                                       <th class="min-w-175px pb-2 product_details">Product</th>
                                       <th>Unit</th>
@@ -291,12 +292,17 @@
                                       <th class="min-w-100px text-end pb-2">Amount</th>
                                       <th class="min-w-100px text-end pb-2">Line Status</th>
                                       <th class="min-w-100px text-end pb-2">Line Remarks</th>
-                                      <th>Action</th>
+                                      
                                     </tr>
                                   </thead>
                                   <tbody>                                    
                                     @foreach($invoiceDetails as $k=>$val)
                                     <tr class="fw-bolder text-gray-700 fs-5">
+                                      <td class="text-center">
+                                        @if($status != 'Pending')
+                                        <a class="trackStatus btn btn-primary btn-sm" id="item_{{$val['item_code']}}"> Track Delivery</a>
+                                        @endif
+                                      </td>
                                       <td class="text-end" style="width:80px;">{{$k+1}}</td>
                                       <td class="product_details">{{$val['product']}}</td>
                                       <td>{{$val['unit']}}</td>
@@ -321,11 +327,6 @@
                                       <td class="text-end">{{$val['amount']}}</td>
                                       <td>{{$val['line_status']}}</td>
                                       <td>{{$val['line_remarks']}}</td>
-                                      <td class="text-center">
-                                        @if($status != 'Pending')
-                                        <a class="trackStatus btn btn-primary btn-sm" id="item_{{$val['item_code']}}"> Track Delivery</a>
-                                        @endif
-                                      </td>
                                     </tr>
                                     @endforeach
                                   </tbody>
@@ -538,7 +539,8 @@
 
     $(".trackStatus").on("click",function(){
       var id = $(this).attr('id').split("item_")[1];
-      var product = $(this).closest('tr').find("td:eq(1)").text();
+      var product = $(this).closest('tr').find("td:eq(2)").text();
+      var quantity = $(this).closest('tr').find("td:eq(4)").text();
       $.ajax({
           url: "{{route('orders.item_status-track')}}",
           method: "POST",
@@ -547,6 +549,7 @@
                   id:id,
                   details:"{{@$data->u_omsno}}",
                   product : product,
+                  quantity : quantity,
                 }
         })
         .done(function(result) {
