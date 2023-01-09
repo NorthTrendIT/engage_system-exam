@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\CreditNote;
 use App\Models\CreditNoteItem;
 use App\Models\SapConnection;
+use App\Models\Customer;
 
 use DB;
 use DataTables;
@@ -159,24 +160,23 @@ class ReturnOrderReportController extends Controller
         });
 
         if(Auth::user()->role_id == 4){
-            $data->where(function($query) use ($request) {
-                $query->whereHas('credit_note', function($q) use ($request) {
-                    $q->orwhereHas('customer', function($q1) use ($request){
-                        $q1->where('id', Auth::id());
-                    });
+            $customers = Auth::user()->get_multi_customer_details();
+            $data->where(function($query) use ($customers) {
+                $query->whereHas('credit_note', function($q) use ($customers) {
+                        $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                        $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
                 });
             });
         }else{
             if(@$request->filter_customer != ""){
-                $data->where(function($query) use ($request) {
-                    $query->whereHas('credit_note', function($q) use ($request) {
-                        $q->orwhereHas('customer', function($q1) use ($request){
-                            $q1->where('id', $request->filter_customer);
-                        });
+                $customers = Customer::where('id',$request->filter_customer)->first();
+                $data->where(function($query) use ($customers) {
+                    $query->whereHas('credit_note', function($q) use ($customers) {
+                        $q->where('card_code', $customers->card_code);
 
-                        $q->orwhere(function($q1) use ($request){
-                            $q1->where('card_name','LIKE',"%".$request->filter_customer."%");
-                        });
+                        // $q->orwhereHas('customer',function($q1) use ($request){
+                        //     $q1->where('card_name','LIKE',"%".$request->filter_customer."%");
+                        // });
                     });
                 });
             }
