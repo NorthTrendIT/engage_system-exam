@@ -103,7 +103,7 @@
                   <select class="form-control form-control-lg form-control-solid js-example-basic-multiple" name="filter_status[]" data-control="select2" data-hide-search="false" data-placeholder="Select status" data-allow-clear="true" multiple="multiple">
                     <option value=""></option>
 
-                    @foreach(getOrderStatusArray() as $key => $value)
+                    @foreach(getOrderStatusArray1() as $key => $value)
                       <option value="{{ $key }}">{{ $value }}</option>
                     @endforeach
                   </select>

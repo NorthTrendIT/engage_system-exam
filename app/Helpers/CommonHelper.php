@@ -494,6 +494,25 @@ function getOrderStatusArray($key = ""){
     return $array;
 }
 
+function getOrderStatusArray1($key = ""){
+    $array = array(
+                'PN' => 'Pending', //For List only
+                'OP' => 'On Process',
+                'FD' => 'For Delivery',
+                'DL' => 'Delivered',
+                //'CF' => 'Confirmed',
+                'CM' => 'Completed',
+                //'IN' => 'Invoiced',
+                'CL' => 'Cancelled', //For List only
+            );
+
+    if($key != ""){
+        return @$array[$key] ?? $array['PN'];
+    }
+
+    return $array;
+}
+
 // Start Status
 function getOrderStatusByInvoice($data){
     $status = getOrderStatusArray("CL");

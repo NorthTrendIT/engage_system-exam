@@ -86,7 +86,8 @@ class BackOrderReportController extends Controller
                             ->addColumn('price', function($row) {
                                 $html = '₱ '. "0.00";
                                 if(@$row->price){
-                                    $price = @$row->price * @$row->quantity;
+                                    $price = @$row->price;
+                                    /*$price = @$row->price * @$row->quantity;*/
                                     $html = '₱ '.number_format_value(@$price, 2);
                                 }
                                 return $html;
@@ -307,7 +308,10 @@ class BackOrderReportController extends Controller
             if($request->type == 'Quantity'){
                 $items = OrderItem::whereIn('order_id',$data)->orderBy('quantity','DESC')->take(5)->get();
             }else if($request->type == 'Liters'){
-                $items = OrderItem::whereIn('order_id',$data)->orderBy('quantity','DESC')->take(5)->get();
+                $items = OrderItem::with(['product' => function ($q) {
+                            $q->orderBy('sales_unit_weight','DESC');
+                        }])
+                        ->whereIn('order_id',$data)->take(5)->get();
             }else if($request->type == 'Amount'){
                 $items = OrderItem::whereIn('order_id',$data)->orderBy('gross_total','DESC')->take(5)->get();
             }
@@ -318,13 +322,18 @@ class BackOrderReportController extends Controller
             if($request->type == 'Quantity'){
                 $items = InvoiceItem::whereIn('invoice_id',$data)->orderBy('quantity','DESC')->take(5)->get();
             }else if($request->type == 'Liters'){
-                $items = InvoiceItem::whereIn('invoice_id',$data)->orderBy('quantity','DESC')->take(5)->get();
+                $items = InvoiceItem::with(['product' => function ($q2) {
+                        $q2->orderBy('sales_unit_weight','DESC');
+                    }])
+                    ->whereIn('invoice_id',$data)->take(5)->get();
             }else if($request->type == 'Amount'){
                 $items = InvoiceItem::whereIn('invoice_id',$data)->orderBy('gross_total','DESC')->take(5)->get();
             }
         }else if($request->order == 'back_order'){
             $items = [];
-            $data = OrderItem::with('order')
+            $data = OrderItem::with(['order','product' => function ($q1) {
+                                $q1->orderBy('sales_unit_weight','DESC');
+                            }])
                             ->where('remaining_open_quantity', '>', 0)
                             ->whereHas('order', function($q) use ($customers) {
                                 $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
@@ -333,19 +342,22 @@ class BackOrderReportController extends Controller
             if($request->type == 'Quantity'){
                 $items = $data->orderBy('quantity','DESC')->take(5)->get();
             }else if($request->type == 'Liters'){
-                $items = $data->orderBy('quantity','DESC')->take(5)->get();
+                $items = $data->take(5)->get();
             }else if($request->type == 'Amount'){
                 $items = $data->orderBy('gross_total','DESC')->take(5)->get();
             }            
         }
         $data = [];
         foreach($items as $key=>$val){
-            if($request->type == 'Quantity' || $request->order == 'Liters'){
+            if($request->type == 'Quantity'){
                 $data[$key]['name'] = $val->item_code;
                 $data[$key]['key'] = floor($val->quantity);
             }else if($request->type == 'Amount'){
                 $data[$key]['name'] = $val->item_code;
                 $data[$key]['key'] = floor($val->gross_total);
+            }else if($request->type == 'Liters'){
+                $data[$key]['name'] = $val->product->item_name;
+                $data[$key]['key'] = floor($val->product->sales_unit_weight);
             }
         }
         $response = ['status' => true, 'data'=>$items,'data1'=>$data];
