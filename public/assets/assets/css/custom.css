@@ -1237,3 +1237,22 @@ input[type="button"].remove-from-cart {
 .modal-table-scroll .dataTables_scrollHeadInner {
     width: 100% !important;
 }
+
+
+
+/* width */
+.table-responsive::-webkit-scrollbar {
+  width: 20px;
+  height: 10px;
+}
+
+/* Track */
+.table-responsive::-webkit-scrollbar-track {
+  border-radius: 0px;
+}
+ 
+/* Handle */
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #c1c1c1c1; 
+  border-radius: 0px;
+}
