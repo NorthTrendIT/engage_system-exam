@@ -6,6 +6,7 @@
   .order_class td:first-child{min-width: 180px;} 
   .order_class td:nth-child(4){min-width: 80px;}
   .order_class td:nth-child(5){min-width: 80px;}
+  .order_class td:nth-child(6){min-width: 80px;}
   .order_class td:nth-child(2){min-width: 45px;}
   .order_class td:nth-child(3){min-width: 280px;}
   .order_class th.min-w-175px{min-width: auto !important;}
