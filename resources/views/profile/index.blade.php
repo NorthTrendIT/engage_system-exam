@@ -3,6 +3,7 @@
 @section('title','Profile')
 
 @section('content')
+
 <style type="text/css">
   /*.tab-menu { margin-top:34px; }*/
 .tab-menu ul { margin:0; padding:0; list-style:none; display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex; }
@@ -158,149 +159,680 @@
                   </div>
                   <div class="tab-box" id="tab-2">
                       <!-- <h2>Update Details</h2> -->
+
+                      <ul class="nav nav-pills mb-3" id="ex1" role="tablist">
+                        <li class="nav-item" role="presentation">
+                          <a
+                            class="nav-link active"
+                            id="ex1-tab-1"
+                            data-mdb-toggle="pill"
+                            href="#ex1-pills-1"
+                            role="tab"
+                            aria-controls="ex1-pills-1"
+                            aria-selected="true"
+                            >APBW</a
+                          >
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a
+                              class="nav-link"
+                              id="ex1-tab-2"
+                              data-mdb-toggle="pill"
+                              href="#ex1-pills-2"
+                              role="tab"
+                              aria-controls="ex1-pills-2"
+                              aria-selected="false"
+                              >NTMC</a
+                            >
+                        </li>
+                        <li class="nav-item" role="presentation">
+                          <a
+                            class="nav-link"
+                            id="ex1-tab-3"
+                            data-mdb-toggle="pill"
+                            href="#ex1-pills-3"
+                            role="tab"
+                            aria-controls="ex1-pills-3"
+                            aria-selected="false"
+                            >PHILSYN</a
+                          >
+                        </li>
+                        <li class="nav-item" role="presentation">
+                          <a
+                            class="nav-link"
+                            id="ex1-tab-4"
+                            data-mdb-toggle="pill"
+                            href="#ex1-pills-4"
+                            role="tab"
+                            aria-controls="ex1-pills-4"
+                            aria-selected="false"
+                            >PHILCREST</a
+                          >
+                        </li>
+                      </ul>
                       
-                      <div class="row mb-5">
-                        <div class="col-md-12">
-                          <div class="form-group">
-                            <!--begin::Table container-->
-                            <div class="table-responsive">
-                               <!--begin::Table-->
-                               <table class="table table-bordered">
-                                  <!--begin::Table head-->
-                                  <thead>
-                                    
-                                    <tr>
-                                      <th> <b>Card Code:</b> </th>
-                                      <td>{{ @$data->card_code ?? "-" }}</td>
-                                    </tr>
-                                    <tr>
-                                      <th> <b>Universal Card Code:</b> </th>
-                                      <td>{{ @$data->u_card_code ?? "-" }}</td>
-                                    </tr>
-                                    <tr>
-                                      <th> <b>Card Name:</b> </th>
-                                      <td>{{ @$data->card_name ?? "-" }}</td>
-                                    </tr>
 
-                                    <tr>
-                                      <th> <b>Group Name:</b> </th>
-                                      <td>{{ @$data->group->name ?? "-" }}</td>
-                                    </tr>
+                      <!-- <div class="tab-menu">
+                          <ul>
+                            <li><a href="#" class="active" data-rel="tab-11">ABPW</a></li>
+                            <li><a href="#" data-rel="tab-12">NTMC</a></li>
+                            <li><a href="#" data-rel="tab-13">PHILSYN</a></li>
+                            <li><a href="#" data-rel="tab-14" class="">PHILCREST</a></li>
+                          </ul>
+                      </div> -->
+                      <div class="tab-content" id="ex1-content">
+                      <div class="tab-pane fade show active" id="ex1-pills-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+                        <div class="row mb-5">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <!--begin::Table container-->
+                              <div class="table-responsive">
+                                 <!--begin::Table-->
+                                 <table class="table table-bordered">
+                                    <!--begin::Table head-->
+                                    @if($apbw)
+                                    <thead>
+                                      
+                                      <tr>
+                                        <th> <b>Card Code:</b> </th>
+                                        <td>{{ @$apbw->card_code ?? "-" }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th> <b>Universal Card Code:</b> </th>
+                                        <td>{{ @$apbw->u_card_code ?? "-" }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th> <b>Card Name:</b> </th>
+                                        <td>{{ @$apbw->card_name ?? "-" }}</td>
+                                      </tr>
 
-                                    <tr>
-                                      <th> <b>OMS Email:</b> </th>
-                                      <td>{{ @$data->user->email ?? "-" }}</td>
-                                    </tr>
+                                      <tr>
+                                        <th> <b>Group Name:</b> </th>
+                                        <td>{{ @$apbw->group->name ?? "-" }}</td>
+                                      </tr>
 
-                                    <tr>
-                                      <th> <b>Email:</b> </th>
-                                      <td>{{ @$data->email ?? "-" }}</td>
-                                    </tr>
+                                      <tr>
+                                        <th> <b>OMS Email:</b> </th>
+                                        <td>{{ @$apbw->user->email ?? "-" }}</td>
+                                      </tr>
 
-                                    <tr>
-                                      <th> <b>Contact Person Name:</b> </th>
-                                      <td>{{ @$data->contact_person ?? "-" }}</td>
-                                    </tr>
+                                      <tr>
+                                        <th> <b>Email:</b> </th>
+                                        <td>{{ @$apbw->email ?? "-" }}</td>
+                                      </tr>
 
-                                    <tr>
-                                      <th> <b>Class:</b> </th>
-                                      <td>{{ @$data->u_class ?? "-" }}</td>
-                                    </tr>
+                                      <tr>
+                                        <th> <b>Contact Person Name:</b> </th>
+                                        <td>{{ @$apbw->contact_person ?? "-" }}</td>
+                                      </tr>
 
-                                    <tr>
-                                      <th> <b>Address:</b> </th>
-                                      <td>{{ @$data->address ?? "-" }}</td>
-                                    </tr>
+                                      <tr>
+                                        <th> <b>Class:</b> </th>
+                                        <td>{{ @$apbw->u_class ?? "-" }}</td>
+                                      </tr>
 
-                                    <tr>
-                                      <th> <b>Territory:</b> </th>
-                                      <td>{{ @$data->territories->description ?? "-" }}</td>
-                                    </tr>
+                                      <tr>
+                                        <th> <b>Address:</b> </th>
+                                        <td>{{ @$apbw->address ?? "-" }}</td>
+                                      </tr>
 
-                                    @if(userrole() == 1)
-                                    <tr>
-                                      <th> <b>Credit Limit:</b> </th>
-                                      <td>{{ @$data->credit_limit ?? "-" }}</td>
-                                    </tr>
-                                    @endif
+                                      <tr>
+                                        <th> <b>Territory:</b> </th>
+                                        <td>{{ @$apbw->territories->description ?? "-" }}</td>
+                                      </tr>
 
-                                    {{-- <tr>
-                                      <th> <b>Max Commitment:</b> </th>
-                                      <td>{{ @$data->max_commitment ?? "-" }}</td>
-                                    </tr> --}}
+                                      @if(userrole() == 1)
+                                      <tr>
+                                        <th> <b>Credit Limit:</b> </th>
+                                        <td>{{ number_format(@$apbw->credit_limit)  ?? "-" }}</td>
+                                      </tr>
+                                      @endif
 
-                                    <tr>
-                                      <th> <b>Federal Tax ID:</b> </th>
-                                      <td>{{ @$data->federal_tax_id ?? "-" }}</td>
-                                    </tr>
+                                      {{-- <tr>
+                                        <th> <b>Max Commitment:</b> </th>
+                                        <td>{{ @$apbw->max_commitment ?? "-" }}</td>
+                                      </tr> --}}
 
-                                    <tr>
-                                      <th> <b>Current Account Balance:</b> </th>
-                                      <td>{{ @$data->current_account_balance ?? "-" }}</td>
-                                    </tr>
+                                      <tr>
+                                        <th> <b>Federal Tax ID:</b> </th>
+                                        <td>{{ @$apbw->federal_tax_id ?? "-" }}</td>
+                                      </tr>
 
-                                    <tr>
-                                      <th> <b>Created Date:</b> </th>
-                                      <td>{{ date('M d, Y',strtotime(@$data->created_at)) }}</td>
-                                    </tr>
-                                    <tr>
-                                      <th> <b>Status:</b> </th>
-                                      <td><b class="{{ @$data->is_active ? "text-success" : "text-danger" }}">{{ @$data->is_active == true ? "Active" : "Inactive" }}</b></td>
-                                    </tr>
+                                      <tr>
+                                        <th> <b>Current Account Balance:</b> </th>
+                                        <td>{{ @$apbw->current_account_balance ?? "-" }}</td>
+                                      </tr>
 
-                                    <tr>
-                                      <th> <b>Total Overdue Amount:</b> </th>
-                                      <td>{{number_format(@$totalOverdueAmount)}}</td>
-                                    </tr>
+                                      <tr>
+                                        <th> <b>Created Date:</b> </th>
+                                        <td>{{ date('M d, Y',strtotime(@$apbw->created_at)) }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th> <b>Status:</b> </th>
+                                        <td><b class="{{ @$apbw->is_active ? "text-success" : "text-danger" }}">{{ @$apbw->is_active == true ? "Active" : "Inactive" }}</b></td>
+                                      </tr>
 
-                                    <tr>
-                                      <th> <b>Total Outstanding Amount:</b> </th>
-                                      <td>{{ (number_format(@$data->current_account_balance)) ?? "-" }}</td>
-                                    </tr>
+                                      <tr>
+                                        <th> <b>Total Overdue Amount:</b> </th>
+                                        <td>{{number_format(@$totalOverdueAmount)}}</td>
+                                      </tr>
 
-                                    <tr>
-                                      <th> <b>Open Order Amount:</b> </th>
-                                      <td>{{ (number_format(@$data->open_orders_balance)) ?? "-" }}</td>
-                                    </tr>
+                                      <tr>
+                                        <th> <b>Total Outstanding Amount:</b> </th>
+                                        <td>{{ (number_format(@$apbw->current_account_balance)) ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Open Order Amount:</b> </th>
+                                        <td>{{ (number_format(@$apbw->open_orders_balance)) ?? "-" }}</td>
+                                      </tr>
 
 
-                                    <tr>
-                                      <th> <b>Total Exposure Amount:</b> </th>
-                                      <td>{{ number_format(@$data->current_account_balance + @$data->open_orders_balance)  ?? "-" }}</td>
-                                    </tr>
+                                      <tr>
+                                        <th> <b>Total Exposure Amount:</b> </th>
+                                        <td>{{ number_format(@$apbw->current_account_balance + @$apbw->open_orders_balance)  ?? "-" }}</td>
+                                      </tr>
 
-                                    <tr>
-                                      <th> <b>Credit Limit:</b> </th>
-                                      <td>{{ (number_format(@$data->credit_limit)) ?? "-" }}</td>
-                                    </tr>
+                                      <tr>
+                                        <th> <b>Credit Limit:</b> </th>
+                                        <td>{{ number_format(@$apbw->credit_limit) ?? "-" }}</td>
+                                      </tr>
 
-                                    @if(@$data->credit_limit > (@$data->current_account_balance + @$data->open_orders_balance))
-                                    <tr>
-                                      <th> <b>Available Credit Limit:</b> </th>
-                                      <td>{{number_format(@$data->credit_limit - ($data->current_account_balance + @$data->open_orders_balance))}}</td>
-                                    </tr>
+                                      @if(@$apbw->credit_limit > (@$apbw->current_account_balance + @$apbw->open_orders_balance))
+                                      <tr>
+                                        <th> <b>Available Credit Limit:</b> </th>
+                                        <td>{{number_format(@$apbw->credit_limit - ($apbw->current_account_balance + @$apbw->open_orders_balance))}}</td>
+                                      </tr>
+                                      @else
+                                      <tr>
+                                        <th> <b>Over Credit Limit:</b> </th>
+                                        <td>
+                                          {{number_format((float)(($apbw->current_account_balance + @$apbw->open_orders_balance) - @$apbw->credit_limit))}}</td>
+                                      </tr>
+                                      @endif
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
                                     @else
-                                    <tr>
-                                      <th> <b>Over Credit Limit:</b> </th>
-                                      <td>
-                                        {{number_format((float)(($data->current_account_balance + @$data->open_orders_balance) - @$data->credit_limit))}}</td>
-                                    </tr>
+                                    <thead>
+                                      <tr>
+                                        <th> <b>No Data Available</b> </th>
+                                      </tr>
+                                    </thead>
                                     @endif
-                                  </thead>
-                                  <!--end::Table head-->
-                                  <!--begin::Table body-->
-                                  <tbody>
+                                    <tbody>
 
-                                  </tbody>
-                                  <!--end::Table body-->
-                               </table>
-                               <!--end::Table-->
+                                    </tbody>
+                                    <!--end::Table body-->
+                                 </table>
+                                 <!--end::Table-->
+                              </div>
+                              <!--end::Table container-->
+
                             </div>
-                            <!--end::Table container-->
 
                           </div>
-
                         </div>
+                      </div>
+                      <div class="tab-pane fade" id="ex1-pills-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+                        <div class="row mb-5">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <!--begin::Table container-->
+                              <div class="table-responsive">
+                                 <!--begin::Table-->
+                                 <table class="table table-bordered">
+                                    <!--begin::Table head-->
+                                    @if($ntmc)
+                                    <thead>
+                                      
+                                      <tr>
+                                        <th> <b>Card Code:</b> </th>
+                                        <td>{{ @$ntmc->card_code ?? "-" }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th> <b>Universal Card Code:</b> </th>
+                                        <td>{{ @$ntmc->u_card_code ?? "-" }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th> <b>Card Name:</b> </th>
+                                        <td>{{ @$ntmc->card_name ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Group Name:</b> </th>
+                                        <td>{{ @$ntmc->group->name ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>OMS Email:</b> </th>
+                                        <td>{{ @$ntmc->user->email ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Email:</b> </th>
+                                        <td>{{ @$ntmc->email ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Contact Person Name:</b> </th>
+                                        <td>{{ @$ntmc->contact_person ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Class:</b> </th>
+                                        <td>{{ @$ntmc->u_class ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Address:</b> </th>
+                                        <td>{{ @$ntmc->address ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Territory:</b> </th>
+                                        <td>{{ @$ntmc->territories->description ?? "-" }}</td>
+                                      </tr>
+
+                                      @if(userrole() == 1)
+                                      <tr>
+                                        <th> <b>Credit Limit:</b> </th>
+                                        <td>{{ @$ntmc->credit_limit ?? "-" }}</td>
+                                      </tr>
+                                      @endif
+
+                                      {{-- <tr>
+                                        <th> <b>Max Commitment:</b> </th>
+                                        <td>{{ @$ntmc->max_commitment ?? "-" }}</td>
+                                      </tr> --}}
+
+                                      <tr>
+                                        <th> <b>Federal Tax ID:</b> </th>
+                                        <td>{{ @$ntmc->federal_tax_id ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Current Account Balance:</b> </th>
+                                        <td>{{ @$ntmc->current_account_balance ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Created Date:</b> </th>
+                                        <td>{{ date('M d, Y',strtotime(@$ntmc->created_at)) }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th> <b>Status:</b> </th>
+                                        <td><b class="{{ @$ntmc->is_active ? "text-success" : "text-danger" }}">{{ @$ntmc->is_active == true ? "Active" : "Inactive" }}</b></td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Total Overdue Amount:</b> </th>
+                                        <td>{{number_format(@$totalOverdueAmount)}}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Total Outstanding Amount:</b> </th>
+                                        <td>{{ (number_format(@$ntmc->current_account_balance)) ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Open Order Amount:</b> </th>
+                                        <td>{{ (number_format(@$ntmc->open_orders_balance)) ?? "-" }}</td>
+                                      </tr>
+
+
+                                      <tr>
+                                        <th> <b>Total Exposure Amount:</b> </th>
+                                        <td>{{ number_format(@$ntmc->current_account_balance + @$ntmc->open_orders_balance)  ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Credit Limit:</b> </th>
+                                        <td>{{ number_format(@$ntmc->credit_limit) ?? "-" }}</td>
+                                      </tr>
+
+                                      @if(@$ntmc->credit_limit > (@$ntmc->current_account_balance + @$ntmc->open_orders_balance))
+                                      <tr>
+                                        <th> <b>Available Credit Limit:</b> </th>
+                                        <td>{{number_format(@$ntmc->credit_limit - ($ntmc->current_account_balance + @$ntmc->open_orders_balance))}}</td>
+                                      </tr>
+                                      @else
+                                      <tr>
+                                        <th> <b>Over Credit Limit:</b> </th>
+                                        <td>
+                                          {{number_format((float)(($ntmc->current_account_balance + @$ntmc->open_orders_balance) - @$ntmc->credit_limit))}}</td>
+                                      </tr>
+                                      @endif
+                                    </thead>
+                                    @else
+                                    <thead>
+                                      <tr>
+                                        <th> <b>No Data Available</b> </th>
+                                      </tr>
+                                    </thead>
+                                    @endif
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody>
+
+                                    </tbody>
+                                    <!--end::Table body-->
+                                 </table>
+                                 <!--end::Table-->
+                              </div>
+                              <!--end::Table container-->
+
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+                      <div class="tab-pane fade" id="ex1-pills-3" role="tabpanel" aria-labelledby="ex1-tab-3">
+                        <div class="row mb-5">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <!--begin::Table container-->
+                              <div class="table-responsive">
+                                 <!--begin::Table-->
+                                 <table class="table table-bordered">
+                                    <!--begin::Table head-->
+                                    @if($PHILSYN)
+                                    <thead>
+                                      
+                                      <tr>
+                                        <th> <b>Card Code:</b> </th>
+                                        <td>{{ @$PHILSYN->card_code ?? "-" }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th> <b>Universal Card Code:</b> </th>
+                                        <td>{{ @$PHILSYN->u_card_code ?? "-" }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th> <b>Card Name:</b> </th>
+                                        <td>{{ @$PHILSYN->card_name ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Group Name:</b> </th>
+                                        <td>{{ @$PHILSYN->group->name ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>OMS Email:</b> </th>
+                                        <td>{{ @$PHILSYN->user->email ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Email:</b> </th>
+                                        <td>{{ @$PHILSYN->email ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Contact Person Name:</b> </th>
+                                        <td>{{ @$PHILSYN->contact_person ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Class:</b> </th>
+                                        <td>{{ @$PHILSYN->u_class ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Address:</b> </th>
+                                        <td>{{ @$PHILSYN->address ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Territory:</b> </th>
+                                        <td>{{ @$PHILSYN->territories->description ?? "-" }}</td>
+                                      </tr>
+
+                                      @if(userrole() == 1)
+                                      <tr>
+                                        <th> <b>Credit Limit:</b> </th>
+                                        <td>{{ number_format(@$PHILSYN->credit_limit) ?? "-" }}</td>
+                                      </tr>
+                                      @endif
+
+                                      {{-- <tr>
+                                        <th> <b>Max Commitment:</b> </th>
+                                        <td>{{ @$PHILSYN->max_commitment ?? "-" }}</td>
+                                      </tr> --}}
+
+                                      <tr>
+                                        <th> <b>Federal Tax ID:</b> </th>
+                                        <td>{{ @$PHILSYN->federal_tax_id ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Current Account Balance:</b> </th>
+                                        <td>{{ @$PHILSYN->current_account_balance ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Created Date:</b> </th>
+                                        <td>{{ date('M d, Y',strtotime(@$PHILSYN->created_at)) }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th> <b>Status:</b> </th>
+                                        <td><b class="{{ @$PHILSYN->is_active ? "text-success" : "text-danger" }}">{{ @$PHILSYN->is_active == true ? "Active" : "Inactive" }}</b></td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Total Overdue Amount:</b> </th>
+                                        <td>{{number_format(@$totalOverdueAmount)}}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Total Outstanding Amount:</b> </th>
+                                        <td>{{ (number_format(@$PHILSYN->current_account_balance)) ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Open Order Amount:</b> </th>
+                                        <td>{{ (number_format(@$PHILSYN->open_orders_balance)) ?? "-" }}</td>
+                                      </tr>
+
+
+                                      <tr>
+                                        <th> <b>Total Exposure Amount:</b> </th>
+                                        <td>{{ number_format(@$PHILSYN->current_account_balance + @$PHILSYN->open_orders_balance)  ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Credit Limit:</b> </th>
+                                        <td>{{ number_format(@$PHILSYN->credit_limit) ?? "-" }}</td>
+                                      </tr>
+
+                                      @if(@$PHILSYN->credit_limit > (@$PHILSYN->current_account_balance + @$PHILSYN->open_orders_balance))
+                                      <tr>
+                                        <th> <b>Available Credit Limit:</b> </th>
+                                        <td>{{number_format(@$PHILSYN->credit_limit - ($PHILSYN->current_account_balance + @$PHILSYN->open_orders_balance))}}</td>
+                                      </tr>
+                                      @else
+                                      <tr>
+                                        <th> <b>Over Credit Limit:</b> </th>
+                                        <td>
+                                          {{number_format((float)(($PHILSYN->current_account_balance + @$PHILSYN->open_orders_balance) - @$PHILSYN->credit_limit))}}</td>
+                                      </tr>
+                                      @endif
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    @else
+                                    <thead>
+                                      <tr>
+                                        <th> <b>No Data Available</b> </th>
+                                      </tr>
+                                    </thead>
+                                    @endif
+                                    <tbody>
+
+                                    </tbody>
+                                    <!--end::Table body-->
+                                 </table>
+                                 <!--end::Table-->
+                              </div>
+                              <!--end::Table container-->
+
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+                      <div class="tab-pane fade" id="ex1-pills-4" role="tabpanel" aria-labelledby="ex1-tab-4">
+                        <div class="row mb-5">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <!--begin::Table container-->
+                              <div class="table-responsive">
+                                 <!--begin::Table-->
+                                 <table class="table table-bordered">
+                                    <!--begin::Table head-->
+                                    @if($PHILCREST)
+                                    <thead>
+                                      
+                                      <tr>
+                                        <th> <b>Card Code:</b> </th>
+                                        <td>{{ @$PHILCREST->card_code ?? "-" }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th> <b>Universal Card Code:</b> </th>
+                                        <td>{{ @$PHILCREST->u_card_code ?? "-" }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th> <b>Card Name:</b> </th>
+                                        <td>{{ @$PHILCREST->card_name ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Group Name:</b> </th>
+                                        <td>{{ @$PHILCREST->group->name ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>OMS Email:</b> </th>
+                                        <td>{{ @$PHILCREST->user->email ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Email:</b> </th>
+                                        <td>{{ @$PHILCREST->email ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Contact Person Name:</b> </th>
+                                        <td>{{ @$PHILCREST->contact_person ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Class:</b> </th>
+                                        <td>{{ @$PHILCREST->u_class ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Address:</b> </th>
+                                        <td>{{ @$PHILCREST->address ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Territory:</b> </th>
+                                        <td>{{ @$PHILCREST->territories->description ?? "-" }}</td>
+                                      </tr>
+
+                                      @if(userrole() == 1)
+                                      <tr>
+                                        <th> <b>Credit Limit:</b> </th>
+                                        <td>{{ number_format(@$PHILCREST->credit_limit) ?? "-" }}</td>
+                                      </tr>
+                                      @endif
+
+                                      {{-- <tr>
+                                        <th> <b>Max Commitment:</b> </th>
+                                        <td>{{ @$PHILCREST->max_commitment ?? "-" }}</td>
+                                      </tr> --}}
+
+                                      <tr>
+                                        <th> <b>Federal Tax ID:</b> </th>
+                                        <td>{{ @$PHILCREST->federal_tax_id ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Current Account Balance:</b> </th>
+                                        <td>{{ @$PHILCREST->current_account_balance ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Created Date:</b> </th>
+                                        <td>{{ date('M d, Y',strtotime(@$PHILCREST->created_at)) }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th> <b>Status:</b> </th>
+                                        <td><b class="{{ @$PHILCREST->is_active ? "text-success" : "text-danger" }}">{{ @$PHILCREST->is_active == true ? "Active" : "Inactive" }}</b></td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Total Overdue Amount:</b> </th>
+                                        <td>{{number_format(@$totalOverdueAmount)}}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Total Outstanding Amount:</b> </th>
+                                        <td>{{ (number_format(@$PHILCREST->current_account_balance)) ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Open Order Amount:</b> </th>
+                                        <td>{{ (number_format(@$PHILCREST->open_orders_balance)) ?? "-" }}</td>
+                                      </tr>
+
+
+                                      <tr>
+                                        <th> <b>Total Exposure Amount:</b> </th>
+                                        <td>{{ number_format(@$PHILCREST->current_account_balance + @$PHILCREST->open_orders_balance)  ?? "-" }}</td>
+                                      </tr>
+
+                                      <tr>
+                                        <th> <b>Credit Limit:</b> </th>
+                                        <td>{{ number_format(@$PHILCREST->credit_limit) ?? "-" }}</td>
+                                      </tr>
+
+                                      @if(@$PHILCREST->credit_limit > (@$PHILCREST->current_account_balance + @$PHILCREST->open_orders_balance))
+                                      <tr>
+                                        <th> <b>Available Credit Limit:</b> </th>
+                                        <td>{{number_format(@$PHILCREST->credit_limit - ($PHILCREST->current_account_balance + @$PHILCREST->open_orders_balance))}}</td>
+                                      </tr>
+                                      @else
+                                      <tr>
+                                        <th> <b>Over Credit Limit:</b> </th>
+                                        <td>
+                                          {{number_format((float)(($PHILCREST->current_account_balance + @$PHILCREST->open_orders_balance) - @$PHILCREST->credit_limit))}}</td>
+                                      </tr>
+                                      @endif
+                                    </thead>
+                                    @else
+                                    <thead>
+                                      <tr>
+                                        <th> <b>No Data Available</b> </th>
+                                      </tr>
+                                    </thead>
+                                    @endif
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody>
+
+                                    </tbody>
+                                    <!--end::Table body-->
+                                 </table>
+                                 <!--end::Table-->
+                              </div>
+                              <!--end::Table container-->
+
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
                       </div>
                   </div>                
               </div>
@@ -542,10 +1074,20 @@
 
    $('.tab-menu li a').on('click', function(){
         var target = $(this).attr('data-rel');
-      $('.tab-menu li a').removeClass('active');
+        $('.tab-menu li a').removeClass('active');
         $(this).addClass('active');
         $("#"+target).fadeIn('slow').siblings(".tab-box").hide();
         return false;
   });
+
+   $(".nav-link").on('click', function(){
+      var target = $(this).attr('aria-controls');
+      $(".nav-link").removeClass('active');
+      $(this).addClass('active');
+      $("#"+target).fadeIn('slow').siblings(".tab-pane").hide();
+      $("#"+target).addClass("show");
+      $("#"+target).addClass("active");
+   });
+
 </script>
 @endpush
