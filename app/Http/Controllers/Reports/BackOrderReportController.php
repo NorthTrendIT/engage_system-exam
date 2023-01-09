@@ -95,7 +95,8 @@ class BackOrderReportController extends Controller
                             ->addColumn('price_after_vat', function($row) {
                                 $html = '₱ '. "0.00";
                                 if(@$row->price_after_vat){
-                                    $price = @$row->price_after_vat * @$row->quantity;
+                                    $price = @$row->price_after_vat;
+                                   // $price = @$row->price_after_vat * @$row->quantity;
                                     $html = '₱ '.number_format_value(@$price, 2);
                                 }
                                 return $html;
