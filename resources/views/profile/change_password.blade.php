@@ -124,6 +124,11 @@
 
 <script>
   $(document).ready(function() {
+
+    jQuery.validator.addMethod("noSpace", function(value, element) { 
+      return value.indexOf(" ") < 0 && value != ""; 
+    }, "No space please and don't leave it empty");
+
     $('body').on("submit", "#myForm", function (e) {
       e.preventDefault();
       var validator = validate_form();
@@ -166,34 +171,40 @@
             current_password:{
               required:true,
               //minlength:8,
+              noSpace: true,
             },
             new_password:{
               required:true,
               minlength:8,
               maxlength:20,
+              noSpace: true,
             },
             confirm_password:{
               required:true,
               minlength:8,
               maxlength:20,
-              equalTo : "#new_password"
+              equalTo : "#new_password",
+              noSpace: true,
             }
           },
           messages: {
             current_password:{
               required:'Please enter current password.',
               minlength:'Please enter current password greater than 8 digits',
+              noSpace: 'No space allowed',
             },
             new_password:{
               required:'Please enter new password.',
               minlength:'Please enter new password greater than 8 digits',
               maxlength:'Please enter new password less than 20 digits',
+              noSpace: 'No space allowed',
             },
             confirm_password:{
               required:'Please enter confirm password.',
               minlength:'Please enter confirm password greater than 8 digits',
               maxlength:'Please enter confirm password less than 20 digits',
-              equalTo : "Enter confirm password not same as password !"
+              equalTo : "Enter confirm password not same as password !",
+              noSpace: 'No space allowed',
             }
           },
       });
