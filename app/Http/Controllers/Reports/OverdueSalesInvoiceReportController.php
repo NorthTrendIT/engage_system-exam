@@ -54,6 +54,7 @@ class OverdueSalesInvoiceReportController extends Controller
     }
 
     public function getAll(Request $request){
+
         ini_set('memory_limit', '1024M');
         ini_set('max_execution_time', 1800);
         $data = $this->getReportResultData($request);
@@ -63,11 +64,14 @@ class OverdueSalesInvoiceReportController extends Controller
 
         $table = DataTables::of($data)
                             ->addIndexColumn()
-                            ->addColumn('name', function($row) {                                
+                            ->addColumn('name', function($row) {                               
                                 return  @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
+                            ->addColumn('days', function($row) {
+                                return (int)$row->Days - (int)$row->customer->payTerm->number_of_additional_days;
+                            })
                             ->addColumn('doc_entry', function($row) {
-                                return $row->doc_entry;
+                                return $row->doc_num;
                             })
                             ->addColumn('total', function($row) {
                                 return '₱ '. number_format_value($row->doc_total);
@@ -77,7 +81,7 @@ class OverdueSalesInvoiceReportController extends Controller
                             })
                             ->addColumn('due_date', function($row) {
                                 return date('M d, Y',strtotime($row->doc_due_date));
-                            })
+                            })  
                             ->addColumn('company', function($row) {
                                 return @$row->sap_connection->company_name ?? "-";
                             })
@@ -110,7 +114,7 @@ class OverdueSalesInvoiceReportController extends Controller
             $records[] = array(
                             'no' => $key + 1,
                             'company' => @$value->sap_connection->company_name ?? "-",
-                            'doc_entry' => $value->doc_entry ?? "-",
+                            'doc_entry' => $value->doc_num ?? "-",
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
                             'doc_total' => $value->doc_total,
                             'created_at' => date('M d, Y',strtotime($value->doc_date)),
@@ -126,14 +130,20 @@ class OverdueSalesInvoiceReportController extends Controller
     }
 
     public function getReportResultData($request){
-        //$date = date('Y-m-d', strtotime('-2 months'));
 
-        //$data = Invoice::orderBy('created_at', 'DESC');
-        $data = Invoice::selectRaw('*, datediff(now(),doc_date) AS Days')
+        if($request->filter_date_range != ""){
+            $date = date("Y-m-d",strtotime($request->filter_date_range));
+        }else{
+            $date = date("Y-m-d");
+        }
+
+        $data = Invoice::selectRaw('*, datediff("'.$date.'", doc_date) AS Days')
                         ->where(function($query){
                             $query->whereHas('customer', function($q1) {
                                 $q1->whereHas('payTerm', function($q2) {
-                                    $q2->where('number_of_additional_days','<','invoices.Days');
+
+                                    $q2->where('number_of_additional_days','<','invoices.doc_date');
+                                    //$q2->having('invoices.days','>',);
                                 });
                             });
                         })
@@ -157,7 +167,7 @@ class OverdueSalesInvoiceReportController extends Controller
             $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
             $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }else{
-            if($request->filter_customer != ""){
+            if(@$request->filter_customer != ""){
                 $data->where(function($query) use ($request) {
                     $query->orwhereHas('customer', function($q1) use ($request){
                         $q1->where('id', $request->filter_customer);
@@ -172,7 +182,7 @@ class OverdueSalesInvoiceReportController extends Controller
         }
         
 
-        if($request->filter_brand != ""){
+        if(@$request->filter_brand != ""){
             $data->where(function($query) use ($request) {
                 $query->whereHas('customer', function($q) use ($request) {
                     $q->where(function($que) use ($request) {
@@ -222,7 +232,7 @@ class OverdueSalesInvoiceReportController extends Controller
                 });
             });
         }else{
-            if($request->filter_sales_specialist != ""){
+            if(@$request->filter_sales_specialist != ""){
                 $data->where(function($query) use ($request) {
                     $query->whereHas('customer', function($q) use ($request) {
                         $q->where(function($que) use ($request) {
@@ -236,18 +246,18 @@ class OverdueSalesInvoiceReportController extends Controller
         }
         
 
-        if($request->filter_company != ""){
+        if(@$request->filter_company != ""){
             $data->where('sap_connection_id',$request->filter_company);
         }
 
-        if($request->filter_date_range != ""){
-            $date = explode(" - ", $request->filter_date_range);
-            $start = date("Y-m-d", strtotime($date[0]));
-            $end = date("Y-m-d", strtotime($date[1]));
+        // if($request->filter_date_range != ""){
+        //     $date = explode(" - ", $request->filter_date_range);
+        //     $start = date("Y-m-d", strtotime($date[0]));
+        //     $end = date("Y-m-d", strtotime($date[1]));
 
-            $data->whereDate('doc_date', '>=' , $start);
-            $data->whereDate('doc_date', '<=' , $end);
-        }
+        //     $data->whereDate('doc_date', '>=' , $start);
+        //     $data->whereDate('doc_date', '<=' , $end);
+        // }
 
         return $data;
     }
