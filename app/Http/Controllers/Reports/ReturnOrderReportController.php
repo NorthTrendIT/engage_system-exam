@@ -172,7 +172,8 @@ class ReturnOrderReportController extends Controller
                 $customers = Customer::where('id',$request->filter_customer)->first();
                 $data->where(function($query) use ($customers) {
                     $query->whereHas('credit_note', function($q) use ($customers) {
-                        $q->where('card_code', $customers->card_code);
+                        $q->where('card_code', $customers->card_code)
+                            ->where('sap_connection_id',$customers->sap_connection_id);
 
                         // $q->orwhereHas('customer',function($q1) use ($request){
                         //     $q1->where('card_name','LIKE',"%".$request->filter_customer."%");
