@@ -227,7 +227,7 @@ class ProductListController extends Controller
             return DataTables::of($products)->make(true);
         }
 
-        $where = array('is_active' => 1);
+        $where = array('products.is_active' => 1);
 
         $products = Product::where($where);
                 //->whereRaw('quantity_on_stock - quantity_ordered_by_customers > 0');
