@@ -176,7 +176,8 @@ class ActivityLogController extends Controller
                     return $row->ip_address;
                 })
                 ->addColumn('date_time', function($row){
-                    return date("M d, Y h:m A", strtotime($row->created_at));
+                    return get_timezone_date_time($row->created_at);
+                    //return date("M d, Y h:m A", strtotime($row->created_at));
                 })
                 ->orderColumn('date_time', function ($query, $order) {
                     $query->orderBy('created_at', $order);

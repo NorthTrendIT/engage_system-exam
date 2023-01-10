@@ -769,3 +769,12 @@ function get_sap_customer_arr($user){
     //print_r($sap_connection_id);exit();
     return array_combine($sap_connection_id, $customer_id);
 }
+
+function get_timezone_date_time($date){
+    $dt = new DateTime($date);
+    $tz = new DateTimeZone('Asia/Manila'); 
+    $dt->setTimezone($tz);
+    $local_time = $dt->format('Y-m-d H:i:s');
+    return date("M d, Y h:m A", strtotime($local_time));
+    
+}
