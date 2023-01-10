@@ -197,7 +197,7 @@ class InvoiceToDeliveryLeadTimeReportController extends Controller
             }
         }
 
-        if($request->filter_manager != ""){
+        if(@$request->filter_manager != ""){
             $data->where(function($query) use ($request) {
                 $query->whereHas('sales_specialist', function($q2) use ($request){
                     $salesAgent = User::where('parent_id',$request->filter_manager)->pluck('id')->toArray();
@@ -216,7 +216,7 @@ class InvoiceToDeliveryLeadTimeReportController extends Controller
         }
 
         // Date Range Filter
-        if($request->filter_date_range != ""){
+        if(@$request->filter_date_range != ""){
             $date = explode(" - ", $request->filter_date_range);
             $start = date("Y-m-d", strtotime($date[0]));
             $end = date("Y-m-d", strtotime($date[1]));
