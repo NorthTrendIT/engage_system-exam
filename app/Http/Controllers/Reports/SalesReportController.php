@@ -79,7 +79,15 @@ class SalesReportController extends Controller
                                 }
                                 return $html;
                             })
-                            ->rawColumns(['status','action','total_price','total_price_after_vat'])
+                            ->addColumn('total_amount', function($row) {
+                                $html = '₱ '. "0.00";
+                                if(@$row->total_price_after_vat){
+                                    $price = @$row->quantity * $row->total_price_after_vat;
+                                    $html = '₱ '.number_format_value(@$price, 2);
+                                }
+                                return $html;
+                            })
+                            ->rawColumns(['status','action','total_price','total_price_after_vat','total_amount'])
                             ->make(true);
 
         $data = compact(
@@ -209,7 +217,7 @@ class SalesReportController extends Controller
             $data->whereDate('invoices.doc_date', '<=' , $end);
         }
 
-        if(@$request->filter_customer_class != "" || $request->filter_market_sector != "" || $request->filter_market_sub_sector != "" || $request->filter_sales_specialist != ""){
+        if(@$request->filter_customer_class != "" || @$request->filter_market_sector != "" || @$request->filter_market_sub_sector != "" || @$request->filter_sales_specialist != ""){
             $data->join("customers",function($join){
                 $join->on('customers.card_code','=','invoices.card_code')->on('customers.sap_connection_id','=', 'invoices.sap_connection_id');
             });
