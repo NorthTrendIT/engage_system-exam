@@ -440,6 +440,98 @@ class PromotionReportController extends Controller
 
     }
 
+    // public function getChartData(Request $request){
+    //     $company = SapConnection::query();
+
+    //     if($request->filter_company != ""){
+    //         $company->where('id', $request->filter_company);
+    //     }
+
+    //     $company = $company->get();
+
+    //     $pendingPromotion = [];
+    //     $approvedPromotion = [];
+    //     $cancelPromotion = [];
+    //     $totalRevenue = [];
+    //     $category = [];
+
+    //     foreach($company as $key => $item){
+    //         $companyName = $item->company_name;
+
+    //         array_push($category, $companyName);
+    //         /** 1. Number of Promo */
+    //         // Pending
+    //         $totalPending = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'pending'])->count();
+    //         array_push($pendingPromotion, $totalPending);
+
+    //         // Approved
+    //         $totalApproved = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'approved'])->count();
+    //         array_push($approvedPromotion, $totalApproved);
+
+    //         // Revenue
+    //         $revenue = CustomerPromotion::where('sap_connection_id', '=',$item->id)->sum('total_amount');
+    //         array_push($totalRevenue, number_format($revenue, 2));
+
+    //         // Cancel
+    //         $canceled = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'canceled'])->count();
+    //         array_push($cancelPromotion, $canceled);
+
+    //     }
+    //     $data = [];
+    //     array_push($data, array('name' => 'Pending Promotion', 'data' => $pendingPromotion));
+    //     array_push($data, array('name' => 'Approved Promotion', 'data' => $approvedPromotion));
+    //     // array_push($data, array('name' => 'Total Revenue', 'data' => $totalRevenue));
+    //     array_push($data, array('name' => 'Canceled Promotion', 'data' => $cancelPromotion));
+
+    //     return ['status' => true, 'data' => $data, 'category' => $category];
+    // }
+
+    // public function getChartData(Request $request){
+    //     $company = SapConnection::query();
+
+    //     if($request->filter_company != ""){
+    //         $company->where('id', $request->filter_company);
+    //     }
+
+    //     $company = $company->get();
+
+    //     $pendingPromotion = [];
+    //     $approvedPromotion = [];
+    //     $cancelPromotion = [];
+    //     $totalRevenue = [];
+    //     $category = [];
+
+    //     foreach($company as $key => $item){
+    //         $companyName = $item->company_name;
+
+    //         array_push($category, $companyName);
+    //         /** 1. Number of Promo */
+    //         // Pending
+    //         $totalPending = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'pending'])->count();
+    //         array_push($pendingPromotion, $totalPending);
+
+    //         // Approved
+    //         $totalApproved = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'approved'])->count();
+    //         array_push($approvedPromotion, $totalApproved);
+
+    //         // Revenue
+    //         $revenue = CustomerPromotion::where('sap_connection_id', '=',$item->id)->sum('total_amount');
+    //         array_push($totalRevenue, number_format($revenue, 2));
+
+    //         // Cancel
+    //         $canceled = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'canceled'])->count();
+    //         array_push($cancelPromotion, $canceled);
+
+    //     }
+    //     $data = [];
+    //     array_push($data, array('name' => 'Pending Promotion', 'data' => $pendingPromotion));
+    //     array_push($data, array('name' => 'Approved Promotion', 'data' => $approvedPromotion));
+    //     // array_push($data, array('name' => 'Total Revenue', 'data' => $totalRevenue));
+    //     array_push($data, array('name' => 'Canceled Promotion', 'data' => $cancelPromotion));
+
+    //     return ['status' => true, 'data' => $data, 'category' => $category];
+    // }
+
     public function getChartData(Request $request){
         $company = SapConnection::query();
 
@@ -461,27 +553,27 @@ class PromotionReportController extends Controller
             array_push($category, $companyName);
             /** 1. Number of Promo */
             // Pending
-            $totalPending = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'pending'])->count();
-            array_push($pendingPromotion, $totalPending);
+            $totalActive = Promotions::where(['sap_connection_id' => $item->id, 'is_active' => '1'])->count();
+            array_push($pendingPromotion, $totalActive);
 
             // Approved
-            $totalApproved = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'approved'])->count();
-            array_push($approvedPromotion, $totalApproved);
+            $totalAInactive = Promotions::where(['sap_connection_id' => $item->id, 'is_active' => '0'])->count();
+            array_push($approvedPromotion, $totalAInactive);
 
             // Revenue
-            $revenue = CustomerPromotion::where('sap_connection_id', '=',$item->id)->sum('total_amount');
-            array_push($totalRevenue, number_format($revenue, 2));
+            // $revenue = CustomerPromotion::where('sap_connection_id', '=',$item->id)->sum('total_amount');
+            // array_push($totalRevenue, number_format($revenue, 2));
 
-            // Cancel
-            $canceled = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'canceled'])->count();
-            array_push($cancelPromotion, $canceled);
+            // // Cancel
+            // $canceled = CustomerPromotion::where(['sap_connection_id' => $item->id, 'status' => 'canceled'])->count();
+            // array_push($cancelPromotion, $canceled);
 
         }
         $data = [];
-        array_push($data, array('name' => 'Pending Promotion', 'data' => $pendingPromotion));
-        array_push($data, array('name' => 'Approved Promotion', 'data' => $approvedPromotion));
+        array_push($data, array('name' => 'Active Promotion', 'data' => $pendingPromotion));
+        array_push($data, array('name' => 'Inactive Promotion', 'data' => $approvedPromotion));
         // array_push($data, array('name' => 'Total Revenue', 'data' => $totalRevenue));
-        array_push($data, array('name' => 'Canceled Promotion', 'data' => $cancelPromotion));
+        //array_push($data, array('name' => 'Canceled Promotion', 'data' => $cancelPromotion));
 
         return ['status' => true, 'data' => $data, 'category' => $category];
     }
