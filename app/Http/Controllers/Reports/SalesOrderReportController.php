@@ -454,7 +454,7 @@ class SalesOrderReportController extends Controller
         ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
         ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
         ->whereHas('order.invoice',function($q){
-             $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', 'CM');
+             $q->where('cancelled', 'No')->where('u_sostat', 'CM');
         })->count();
 
         $status = [];
