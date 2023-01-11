@@ -88,6 +88,11 @@
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
                 </div>
+                <div class="col-md-6 mt-5">
+                  <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
+                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
+                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
+                </div>
               </div>
 
             </div>
@@ -373,6 +378,25 @@ $(document).ready(function() {
         // minimumInputLength: 1,
         multiple: false,
     });
+
+    $(document).on("click", ".download_excel", function(e) {
+      var url = "{{route('reports.promotion-report.export')}}";
+
+      var data = {};
+      data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+      data.filter_customer_class = $('[name="filter_customer_class"]').find('option:selected').val();
+      data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
+      data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+      data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
+      //data.engage_transaction = $('[name="engage_transaction"]').val();
+      data.filter_manager = $('[name="filter_manager"]').find('option:selected').val();
+      data.filter_date_range = $('[name="filter_date_range"]').val();
+      url = url + '?data=' + btoa(JSON.stringify(data));
+
+      window.location.href = url;
+    });
 });
+
+
 </script>
 @endpush
