@@ -532,7 +532,8 @@ class ProductListController extends Controller
         });
 
         if($request->filter_search != ""){
-            $products->where('item_name','LIKE',"%".$request->filter_search."%");
+            $products->where('item_name','LIKE',"%".$request->filter_search."%")
+                        ->orWhere('item_code','LIKE',"%".$request->filter_search."%");
         }
 
         $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
