@@ -98,6 +98,15 @@ class HomeController extends Controller
                                          $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', 'DL');
                                     })->count();
 
+                $total_completed_order = Quotation::whereNotNull('u_omsno')
+                                    ->where('cancelled','No')
+                                    ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
+                                    ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
+                                    ->whereHas('order.invoice',function($q){
+                                         $q->where('cancelled', 'No')->where('u_sostat', 'CM');
+                                    })->count();
+
+
                 $total_back_order = OrderItem::where('remaining_open_quantity', '>', 0);
                 $total_back_order->whereHas('order', function($q){
                     $q->where('document_status', 'bost_Open');
@@ -105,14 +114,24 @@ class HomeController extends Controller
                     $q->whereIn('u_sostat', ['OP']);
                     $q->whereNotNull('u_omsno');               
                 });
-                $total_back_order->whereHas('order.customer', function($q) {
-                    $q->where('id', Auth::id());
+                $customers = Auth::user()->get_multi_customer_details();            
+                $total_back_order->whereHas('order', function($q) use ($customers) {
+                    $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                    $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
                 });
-                $total_back_order = $total_back_order->count();
+
+                $total_back_order = $total_back_order->sum('remaining_open_quantity');
 
                 $total = $this->getReportResultData();
-                $number_of_overdue_invoices = $total->count();
-                $total_amount_of_overdue_invoices = $total->sum('doc_total');
+                $t1 = $total->get();
+                $number_of_overdue_invoices = $total_amount_of_overdue_invoices = 0;
+                foreach($t1 as $key=>$val){
+                    $sub = (int)$val->Days - (int)$val->customer->payTerm->number_of_additional_days; 
+                    if($sub > 0){
+                        $number_of_overdue_invoices = $number_of_overdue_invoices +1;
+                        $total_amount_of_overdue_invoices = $total_amount_of_overdue_invoices + $val->doc_total;
+                    }
+                }
 
                 $dashboard['total_pending_order'] = $total_pending_order;
                 $dashboard['total_on_process_order'] = $total_on_process_order;
@@ -121,6 +140,7 @@ class HomeController extends Controller
                 $dashboard['total_back_order'] = $total_back_order;
                 $dashboard['total_overdue_invoice'] = $number_of_overdue_invoices;
                 $dashboard['total_amount_of_overdue_invoices'] = $total_amount_of_overdue_invoices; 
+                $dashboard['total_completed_order'] = $total_completed_order;
 
                 //Recent Orders
                 $orders = Quotation::whereNotNull('u_omsno');
@@ -151,9 +171,8 @@ class HomeController extends Controller
     }
 
     public function getReportResultData(){
-        $date = date('Y-m-d', strtotime('-2 months'));
 
-        $data = Invoice::orderBy('created_at', 'DESC');
+        $data = Invoice::selectRaw('*, datediff(now(), doc_date) AS Days');
 
         $data->where(function($query){
             $query->orwhere(function($q){
@@ -166,12 +185,10 @@ class HomeController extends Controller
         });
 
         $data->where(function($query) {
-            $query->orwhereHas('customer', function($q1) {
-                $q1->where('id', Auth::id());
-            });
+            $customers = Auth::user()->get_multi_customer_details();
+            $query->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $query->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         });
-
-        $data->whereDate('doc_date', '<=', $date);
         return $data;
     }
 
