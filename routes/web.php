@@ -446,6 +446,7 @@ Route::middleware(['auth'])->group(function(){
         Route::resource('promotion-report', 'PromotionReportController')->only('index');
         Route::post('promotion-report/get-all', 'PromotionReportController@getAll')->name('promotion-report.get-all');
         Route::post('promotion-report/get-chart-data', 'PromotionReportController@getChartData')->name('promotion-report.get-chart-data');
+        Route::get('promotion-report/export', 'PromotionReportController@export')->name('promotion-report.export');
 
         Route::resource('product-report', 'ProductReportController')->only('index');
         Route::post('product-report/get-all', 'ProductReportController@getAll')->name('product-report.get-all');
