@@ -46,8 +46,8 @@ class BackOrderReportController extends Controller
         
         $data = $this->getReportResultData($request);
 
-        $grand_total_of_quantity_ordered = '₱ '. number_format_value($data->sum('quantity'));
-        $grand_total_of_remaining_open_quantity = '₱ '. number_format_value($data->sum('remaining_open_quantity'));
+        $grand_total_of_quantity_ordered = number_format_value($data->sum('quantity'));
+        $grand_total_of_remaining_open_quantity = number_format_value($data->sum('remaining_open_quantity'));
         $grand_total_of_open_amount = '₱ '. number_format_value($data->sum('open_amount'));
 
         $table = DataTables::of($data)
