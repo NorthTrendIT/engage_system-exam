@@ -164,7 +164,7 @@
                                     @foreach($data->items as $key => $value)
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="pt-6" style="text-align: initial !important;">{{ $key+1 }}</td>
-                                        <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}</td>
+                                        <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}(Code: {{ $value->product->item_code ?? '-' }})</td>
                                         <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
                                         <td class="pt-6">₱ {{ number_format_value($value->gross_price) }}</td>
