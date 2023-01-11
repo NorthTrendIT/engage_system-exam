@@ -121,6 +121,15 @@
                                 </div>
                             </div>
                             <div class="col-md-6 mb-sm-5 mb-md-0 mb-lg-0">
+                                <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center mb-5">
+                                    <a href="" class="text-warning fw-bold fs-6">Total Completed Orders</a>
+                                    <span class="count text-warning fw-bold fs-1">
+                                    <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 40px;display: none;" class="sales_order_to_invoice_lead_time_loader_img"> 
+                                    <span class="sales_order_to_invoice_lead_time_count">{{@$dashboard['total_completed_order']}}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-sm-5 mb-md-0 mb-lg-0">
                                 <div class="bg-light-danger px-6 py-8 rounded-2 min-w-150 position-relative d-flex justify-content-between align-items-center mb-5">
                                     <a href="" class="text-danger fw-bold fs-6">Total Back Order Products</a>
                                     <span class="count text-danger fw-bold fs-1">
@@ -1408,11 +1417,14 @@
                 if(result.data != ""){
                     if(order == 'order'){
                         $.each(result.data, function( index, value ) {
-                          html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
+                            if(type == 'Quantity' || type == 'Amount'){
+                                html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
+                            }
                             if(type == 'Quantity'){
                                 html += '<td>'+value.quantity+'</td>';
                             }else if(type == 'Liters'){
-                                html += '<td>'+value.quantity+'</td>';
+                                html += '<tr><td>'+(index+1)+'</td><td>'+value.product.item_name+'</td>';
+                                html += '<td>'+value.product.sales_unit_weight+'</td>';
                             }else if(type == 'Amount'){
                                 html += '<td>'+value.gross_total+'</td>';
                             }
@@ -1420,11 +1432,14 @@
                         });
                     }else if(order == 'invoice'){
                         $.each(result.data, function( index, value ) {
-                          html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
+                            if(type == 'Quantity' || type == 'Amount'){
+                                html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
+                            }
                             if(type == 'Quantity'){
                                 html += '<td>'+value.quantity+'</td>';
                             }else if(type == 'Liters'){
-                                html += '<td>'+value.quantity+'</td>';
+                                html += '<tr><td>'+(index+1)+'</td><td>'+value.product.item_name+'</td>';
+                                html += '<td>'+value.product.sales_unit_weight+'</td>';
                             }else if(type == 'Amount'){
                                 html += '<td>'+value.gross_total+'</td>';
                             }
@@ -1432,11 +1447,14 @@
                         });
                     }else if(order == 'back_order'){
                         $.each(result.data, function( index, value ) {
-                          html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
+                            if(type == 'Quantity' || type == 'Amount'){
+                                html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
+                            }
                             if(type == 'Quantity'){
                                 html += '<td>'+value.quantity+'</td>';
                             }else if(type == 'Liters'){
-                                html += '<td>'+value.quantity+'</td>';
+                                html += '<tr><td>'+(index+1)+'</td><td>'+value.product.item_name+'</td>';
+                                html += '<td>'+value.product.sales_unit_weight+'</td>';
                             }else if(type == 'Amount'){
                                 html += '<td>'+value.gross_total+'</td>';
                             }
