@@ -236,4 +236,45 @@
 
   });
 </script>
+{{-- Socket Chat --}}
+@if(!in_array(request()->getHttpHost(),['localhost']))
+<!-- <script src="http://205.134.254.135:3031/socket.io/socket.io.js"></script> -->
+<script src="http://20.127.228.253:3031/socket.io/socket.io.js"></script>
+@else
+<script src="http://{{ request()->getHttpHost() }}:3031/socket.io/socket.io.js"></script>
+@endif
+
+<script>
+  @if(!in_array(request()->getHttpHost(),['localhost']))
+  /*const socket = io('http://205.134.254.135:3031')*/
+  const socket = io('http://20.127.228.253:3031')
+  @else
+  const socket = io('http://{{ request()->getHttpHost() }}:3031')
+  @endif
+
+  // Add User
+  socket.emit('adduser','{{ userid() }}')
+
+  @if(!in_array( Route::currentRouteName(), ['conversation.index']))
+
+    @if(get_login_user_un_read_message_count() > 0)
+      $('.new-message').show();
+    @endif
+
+    // Receive Message
+    socket.on('receiveMessage', data => {
+      if(data.to == '{{ userid() }}'){
+        toast_success("You have received one new message !");
+
+        var count = parseInt($('.new-message').text()) + 1;
+        $('.new-message').text(count);
+        $('.new-message').show();
+      }
+
+    })
+  @else
+    $('.new-message').hide();
+  @endif
+
+</script>
 @endpush
