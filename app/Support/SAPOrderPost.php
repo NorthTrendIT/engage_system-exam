@@ -13,6 +13,7 @@ use Mail;
 use App\Models\Customer;
 use App\Models\User;
 use App\Models\CustomerGroup;
+use App\Models\SapConnection;
 
 class SAPOrderPost
 {
@@ -188,12 +189,10 @@ class SAPOrderPost
     public function pushOrder($id){
         $body = $this->madeSapData($id);
         $response = array();
-        Log::info(print_r($body,true));
         if(!empty($body)){
             $response = $this->requestSapApi('/b1s/v1/Quotations', "POST", $body);
             $status = $response['status'];
             $data = $response['data'];
-            Log::info(print_r($response,true));
             $order = LocalOrder::where('id', $id)->first();
             if($status){
                 $order->confirmation_status = 'C';
@@ -208,8 +207,58 @@ class SAPOrderPost
                 $emails = [];
                 $customer_mails = [];
                 $quotation = Quotation::where('doc_entry',$data['DocEntry'])->first();
-                $user = Customer::where('card_code',$data['CardCode'])->first();
-                $group = CustomerGroup::where('code',@$user->group_code)->where('sap_connection_id',@$user->sap_connection_id)->first();
+                
+                $user = Customer::where('card_code',$data['CardCode'])->get();
+
+                foreach ($user as $key => $value) {
+                    $group = CustomerGroup::where('code',@$value->group_code)->where('sap_connection_id',@$value->sap_connection_id)->first();
+
+                    $link = route('orders.show', @$quotation->id);
+
+                    if($value->sap_connection_id == 1){
+                        $from_name = 'AP BLUE WHALE CORP';
+                    }else if($value->sap_connection_id == 2){
+                        $from_name = 'NORTH TREND MARKETING CORP';
+                    }else if($value->sap_connection_id == 3){
+                        $from_name = 'PHILCREST MARKETING CORP';
+                    }else if($value->sap_connection_id == 5){
+                        $from_name = 'SOLID TREND TRADE SALES INC.';
+                    }
+
+                    if($value->email != ""){
+                        $customer_mails = explode("; ", @$value->email);
+                        foreach($customer_mails as $email){
+                            if($email != 'COD ACCT'){
+                                Log::info("customer mail");
+                                Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>$value->card_name), function($message) use($email,$from_name) {
+                                    $message->from('orders@northtrend.com', $from_name);
+                                    $message->to($email, $email)
+                                            ->subject('Order Confirmation');
+                                });
+                            }
+                        }
+                    }
+                    
+                    if(@$group->emails == null || @$group->emails == ""){
+                        Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>$value->card_name), function($message) use($user,$from_name) {
+                            $message->from('orders@northtrend.com', $from_name);
+                            $message->to('mt@mailinator.com', 'orders@northtrend.com')
+                                    ->subject('Order Confirmation');
+                        });
+                    }else{
+                       $emails = explode("; ", @$group->emails);                    
+                        foreach($emails as $email){
+                            if($email != 'COD ACCT'){
+                                Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>@$value->card_name), function($message) use($email,$from_name) {
+                                    $message->from('orders@northtrend.com', $from_name);
+                                    $message->to($email, $email)
+                                            ->subject('Order Confirmation');
+                                });
+                            }
+                        }
+                    } 
+                }
+                /*$group = CustomerGroup::where('code',@$user->group_code)->where('sap_connection_id',@$user->sap_connection_id)->first();
                 $emails = explode("; ", @$group->emails);
                 $customer_mails = explode("; ", @$user->email);
 
@@ -224,31 +273,31 @@ class SAPOrderPost
                 }else if($user->sap_connection_id == 5){
                     $from_name = 'SOLID TREND TRADE SALES INC.';
                 }
-
-                // foreach($customer_mails as $email){
-                //     Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>$user->card_name), function($message) use($email,$from_name) {
-                //         $message->from('orders@northtrend.com', $from_name);
-                //         $message->to($email, $email)
-                //                 ->subject('Order Confirmation');
-                //     });
-                // }
-                
-                // if(@$group->emails == null || @$group->emails == ""){
-                //     Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>$user->card_name), function($message) use($user,$from_name) {
-                //         $message->from('orders@northtrend.com', $from_name);
-                //         $message->to('mt@mailinator.com', 'orders@northtrend.com')
-                //                 ->subject('Order Confirmation');
-                //     });
-                // }else{
+                foreach($customer_mails as $email){
+                    Log::info(print_r("here",true));
+                    Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>$user->card_name), function($message) use($email,$from_name) {
+                        $message->from('orders@northtrend.com', $from_name);
+                        $message->to($email, $email)
+                                ->subject('Order Confirmation');
+                    });
+                }
+                if(@$group->emails == null || @$group->emails == ""){
+                    Log::info(print_r("heresfd",true));
+                    Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>$user->card_name), function($message) use($user,$from_name) {
+                        $message->from('orders@northtrend.com', $from_name);
+                        $message->to('mt@mailinator.com', 'orders@northtrend.com')
+                                ->subject('Order Confirmation');
+                    });
+                }else{
                    
-                //     foreach($emails as $email){
-                //         Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>@$user->card_name), function($message) use($email,$from_name) {
-                //             $message->from('orders@northtrend.com', $from_name);
-                //             $message->to($email, $email)
-                //                     ->subject('Order Confirmation');
-                //         });
-                //     }
-                // }    
+                    foreach($emails as $email){
+                        Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>@$user->card_name), function($message) use($email,$from_name) {
+                            $message->from('orders@northtrend.com', $from_name);
+                            $message->to($email, $email)
+                                    ->subject('Order Confirmation');
+                        });
+                    }
+                } */   
 
             } else {
                 $order->confirmation_status = 'ERR';
