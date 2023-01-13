@@ -775,6 +775,6 @@ function get_timezone_date_time($date){
     $tz = new DateTimeZone('Asia/Manila'); 
     $dt->setTimezone($tz);
     $local_time = $dt->format('Y-m-d H:i:s');
-    return date("M d, Y h:m A", strtotime($local_time));
+    return date("M d, Y h:i A", strtotime($local_time));
     
 }
