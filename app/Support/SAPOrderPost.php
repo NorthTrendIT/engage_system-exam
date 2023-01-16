@@ -233,6 +233,7 @@ class SAPOrderPost
                                 Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>$value->card_name), function($message) use($email,$from_name) {
                                     $message->from('orders@northtrend.com', $from_name);
                                     $message->to($email, $email)
+                                            ->cc('itsupport@northtrend.com')
                                             ->subject('Order Confirmation');
                                 });
                             }

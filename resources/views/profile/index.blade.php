@@ -983,7 +983,9 @@
   $(document).ready(function() {
 
     jQuery.validator.addMethod("noSpace", function(value, element) { 
-      return value.indexOf(" ") < 0 && value != ""; 
+      value = $.trim(value);
+      console.log(value);
+      return value != ""; 
     }, "No space please and don't leave it empty");
 
     $('body').on("submit", "#myForm", function (e) {
@@ -1048,17 +1050,17 @@
               first_name:{
                 required: "Please enter first name.",
                 maxlength:'Please enter first name less than 185 character',
-                noSpace: 'No space allowed',
+                noSpace: 'Only Space not allowed.',
               },
               last_name:{
                 required: "Please enter last name.",
                 maxlength:'Please enter last name less than 185 character',
-                noSpace: 'No space allowed',
+                noSpace: 'Only Space not allowed.',
               },
               email:{
                 required:"Please enter email.",
                 maxlength:'Please enter email less than 185 character',
-                noSpace: 'No space allowed',
+                noSpace: 'Only Space not allowed.',
               },
               profile:{
                 extension: "Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp files.",
