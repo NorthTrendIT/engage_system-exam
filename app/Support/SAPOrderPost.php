@@ -225,12 +225,15 @@ class SAPOrderPost
                         $from_name = 'SOLID TREND TRADE SALES INC.';
                     }
 
-                    if($value->email != ""){
-                        $customer_mails = explode("; ", @$value->email);
-                        foreach($customer_mails as $email){
+                    $user_mail = User::where('u_card_code',$value->u_card_code)->first();
+                    Log::info(print_r($user_mail->email,true));
+
+                    if(@$user_mail->email != ""){
+                        $mail_array = explode("; ", @$user_mail->email);
+                        foreach($mail_array as $email){
                             if($email != 'COD ACCT'){
                                 Log::info("customer mail");
-                                Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>$value->card_name), function($message) use($email,$from_name) {
+                                Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>@$user_mail->first_name." ".$user_mail->last_name), function($message) use($email,$from_name) {
                                     $message->from('orders@northtrend.com', $from_name);
                                     $message->to($email, $email)
                                             ->cc('itsupport@northtrend.com')
@@ -239,25 +242,40 @@ class SAPOrderPost
                             }
                         }
                     }
+
+                    // if($value->email != ""){
+                    //     $customer_mails = explode("; ", @$value->email);
+                    //     foreach($customer_mails as $email){
+                    //         if($email != 'COD ACCT'){
+                    //             Log::info("customer mail");
+                    //             Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>$value->card_name), function($message) use($email,$from_name) {
+                    //                 $message->from('orders@northtrend.com', $from_name);
+                    //                 $message->to($email, $email)
+                    //                         ->cc('itsupport@northtrend.com')
+                    //                         ->subject('Order Confirmation');
+                    //             });
+                    //         }
+                    //     }
+                    // }
                     
-                    if(@$group->emails == null || @$group->emails == ""){
-                        Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>$value->card_name), function($message) use($user,$from_name) {
-                            $message->from('orders@northtrend.com', $from_name);
-                            $message->to('mt@mailinator.com', 'orders@northtrend.com')
-                                    ->subject('Order Confirmation');
-                        });
-                    }else{
-                       $emails = explode("; ", @$group->emails);                    
-                        foreach($emails as $email){
-                            if($email != 'COD ACCT'){
-                                Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>@$value->card_name), function($message) use($email,$from_name) {
-                                    $message->from('orders@northtrend.com', $from_name);
-                                    $message->to($email, $email)
-                                            ->subject('Order Confirmation');
-                                });
-                            }
-                        }
-                    } 
+                    // if(@$group->emails == null || @$group->emails == ""){
+                    //     Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>$value->card_name), function($message) use($user,$from_name) {
+                    //         $message->from('orders@northtrend.com', $from_name);
+                    //         $message->to('mt@mailinator.com', 'orders@northtrend.com')
+                    //                 ->subject('Order Confirmation');
+                    //     });
+                    // }else{
+                    //    $emails = explode("; ", @$group->emails);                    
+                    //     foreach($emails as $email){
+                    //         if($email != 'COD ACCT'){
+                    //             Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>@$value->card_name), function($message) use($email,$from_name) {
+                    //                 $message->from('orders@northtrend.com', $from_name);
+                    //                 $message->to($email, $email)
+                    //                         ->subject('Order Confirmation');
+                    //             });
+                    //         }
+                    //     }
+                    // } 
                 }
                 /*$group = CustomerGroup::where('code',@$user->group_code)->where('sap_connection_id',@$user->sap_connection_id)->first();
                 $emails = explode("; ", @$group->emails);
