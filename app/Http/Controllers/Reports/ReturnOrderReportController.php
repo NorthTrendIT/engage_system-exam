@@ -59,6 +59,7 @@ class ReturnOrderReportController extends Controller
         
         $data = $this->getReportResultData($request);
         $grand_total_of_quantity = $data->sum('quantity');
+        $grand_total_of_quantity = number_format($grand_total_of_quantity);
         $grand_total_of_amount = '₱ '. number_format_value($data->sum('price_after_vat'));
 
         $table = DataTables::of($data)
