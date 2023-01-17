@@ -126,7 +126,7 @@ class SAPAuthentication
             $cookie .= "CompanyDB=".$session->company_name.";";
         }
 
-        $cookie .= "ROUTEID=.node0;";
+        //$cookie .= "ROUTEID=.node0;";
         return $cookie;
     }
 
