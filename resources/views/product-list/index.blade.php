@@ -202,6 +202,7 @@
                               <th>Product Category</th>
                               @if(userrole() != 2)
                               <th>Price</th>
+                              <th>Qty</th>
                               @endif
                               <th>Action</th>
                             </tr>
@@ -280,6 +281,51 @@
 
 @push('css')
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+
+<style>
+    .button-wrap {
+        display: flex;
+        align-items: center;
+    }
+    .button-wrap .counter {
+        margin-right: 22px;
+        display: flex;
+        align-items: center;
+    }
+    .button-wrap .counter i {
+        color: black;
+    }
+    .button-wrap .counter a {
+        color: black;
+        background: #FAFAFB;
+        border: 0.5px solid #E1E1FB !important;
+        Width: 32px !important;
+        Height: 32px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0;
+        font-weight: bold;
+    }
+    .button-wrap input {
+        color: black;
+        background: #FAFAFB;
+        border: 0.5px solid #E1E1FB !important;
+        Width: 100px !important;
+        Height: 32px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0;
+        font-weight: bold;
+    }
+    .button-wrap .remove a {
+        background-color: black;
+        padding: 4px 25px 6px;
+        color: white;
+        text-transform: uppercase;
+    }
+</style>
 @endpush
 
 @push('js')
@@ -288,6 +334,18 @@
 <script>
 $(document).ready(function() {
     render_table();
+
+    $(document).on('click', '.qtyMinus', function(event) {
+        $qty = parseInt($(this).parent().find('.qty').val());
+        $self = $(this);
+        $(this).parent().find('.qty').val($qty - 1);        
+    });
+
+    $(document).on('click', '.qtyPlus', function(event) {
+        $qty = parseInt($(this).parent().find('.qty').val());
+        $self = $(this);
+        $(this).parent().find('.qty').val($qty + 1);        
+    });
 
     function render_table(){
       var table = $("#myTable");
@@ -329,6 +387,7 @@ $(document).ready(function() {
               {data: 'u_tires', name: 'u_tires'},
               @if(userrole() != 2)
               {data: 'price', name: 'price', orderable:false,searchable:false},
+              {data: 'qty', name: 'qty', orderable:false,searchable:false},
               @endif
               {data: 'action', name: 'action', orderable:false,searchable:false},
           ],
@@ -414,11 +473,14 @@ $(document).ready(function() {
       $url = $(this).attr('data-url');
       $addToCartBtn = $(this);
       $goToCartBtn = $(this).parent().find('.goToCart');
+      var value = $url.split("/")[5];
+      $qty = $("#qty_"+value).val();
         $.ajax({
             url: $url,
             method: "POST",
             data: {
-                    _token:'{{ csrf_token() }}'
+                    _token:'{{ csrf_token() }}',
+                    qty:$qty,
                     }
             })
             .done(function(result) {
