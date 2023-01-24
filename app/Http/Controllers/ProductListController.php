@@ -352,6 +352,28 @@ class ProductListController extends Controller
                                     return @$row->u_tires ?? "-";
                                 }
                             })
+                            ->addColumn('qty', function($row) {
+
+                                if(is_in_cart1(@$row->id) == 1){
+                                    $qty = is_in_cart_qty($row->id);
+                                }else{
+                                    $qty = '1';
+                                }
+                                $html= '<div class="button-wrap">
+                                                            <div class="counter">
+                                                                <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyMinus">
+                                                                    <i class="fas fa-minus"></i>
+                                                                </a>
+
+                                                                <input class="form-control qty text-end" type="number" min="1" value="'.$qty.'" id="qty_'.$row->id.'">
+
+                                                                <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyPlus">
+                                                                    <i class="fas fa-plus"></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>';
+                                return $html;
+                            })
                             ->addColumn('price', function($row) use ($customer_price_list_no) {
                                 $sap_connection_id = $row->sap_connection_id;
 
@@ -412,7 +434,7 @@ class ProductListController extends Controller
                                       ->on("products.sap_connection_id","=","product_groups.sap_connection_id");
                               })->orderBy('product_groups.group_name', $order);
                           })
-                          ->rawColumns(['status','action','item_name', 'item_code','brand','u_tires','u_item_line','price'])
+                          ->rawColumns(['status','action','item_name', 'item_code','brand','u_tires','u_item_line','price','qty'])
                           ->make(true);
     }
 
