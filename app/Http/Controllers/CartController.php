@@ -213,7 +213,7 @@ class CartController extends Controller
 
                 $due_date = strtr($request->due_date, '/', '-');
                 $cart = new Cart();
-                $cart->qty = 1;            
+                $cart->qty = $request->qty;            
                 $cart->customer_id = @$sap_customer_arr[$product->sap_connection_id];
                 $cart->product_id = $id; 
                 $cart->address = @$request->address;
