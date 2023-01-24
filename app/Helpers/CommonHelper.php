@@ -151,6 +151,16 @@ function is_in_cart($product_id, $customer_id = null){
     return 0;
 }
 
+function is_in_cart_qty($product_id, $customer_id = null){
+    if($customer_id == null){
+        $cart = Cart::where(['product_id' => $product_id, 'customer_id' => @Auth::user()->customer_id])->orderBy('id','DESC')->first();
+    } else {
+        $cart = Cart::where(['product_id' => $product_id, 'customer_id' => $customer_id])->orderBy('id','DESC')->first();
+    }
+
+    return @$cart->qty;
+}
+
 function is_in_cart1($product_id, $customer_id = null){
     if($customer_id == null){
         $sap_customer_arr = get_sap_customer_arr(@Auth::user());
