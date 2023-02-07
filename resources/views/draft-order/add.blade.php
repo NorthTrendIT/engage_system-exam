@@ -74,7 +74,7 @@
                                             </div>
                                         </div>
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-12">
-                                            <label class="col-form-label text-right">Due Date<span class="asterisk">*</span></label>
+                                            <label class="col-form-label text-right">Delivery Date<span class="asterisk">*</span></label>
                                             <input type="text" class="form-control" placeholder="Invoice Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('d/m/Y',strtotime($edit->due_date))}}" @endif>
                                         </div>
                                     </div>
