@@ -1017,6 +1017,7 @@ $(document).ready(function() {
                         _token:'{{ csrf_token() }}',
                         address: address,
                         due_date:due_date,
+                        qty:1,
                     }
                 })
                 .done(function(result) {
