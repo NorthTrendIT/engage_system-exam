@@ -100,11 +100,11 @@ class RecommendedProductController extends Controller
         $customer = collect();
         $customer_id = [];
         $customer_price_list_no = [];
-
+        $sap_id = [];
         if(userrole() == 4){
-
             $customer_id = explode(',', Auth::user()->multi_customer_id);
-            $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
+            $sap_connection_id = Customer::whereIn('id',$customer_id)->pluck('sap_connection_id')->toArray();
+            //$sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
             $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
 
         }elseif (!is_null(@Auth::user()->created_by)) {
@@ -112,7 +112,8 @@ class RecommendedProductController extends Controller
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
             if(!is_null($customer)){
                 $customer_id = explode(',', @$customer->multi_customer_id);
-                $sap_connection_id = explode(',', @$customer->multi_real_sap_connection_id);
+                $sap_connection_id = Customer::whereIn('id',$customer_id)->pluck('sap_connection_id')->toArray();
+                //$sap_connection_id = explode(',', @$customer->multi_real_sap_connection_id);
                 $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
             }
 
@@ -128,9 +129,7 @@ class RecommendedProductController extends Controller
             $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
             $sap_connection_id = array( @Auth::user()->sap_connection_id );
         }
-
         $sap_customer_arr = array_combine($sap_connection_id, $customer_id);
-        // dd($sap_customer_arr);
 
         $products = LocalOrderItem::orderBy('id', 'DESC');
         if (!empty($customer_id)) {
