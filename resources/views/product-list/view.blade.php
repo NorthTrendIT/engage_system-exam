@@ -315,7 +315,8 @@ $(document).ready(function() {
             url: $url,
             method: "POST",
             data: {
-                _token:'{{ csrf_token() }}'
+                _token:'{{ csrf_token() }}',
+                qty:1,
                 }
         })
         .done(function(result) {
