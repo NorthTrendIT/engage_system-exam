@@ -241,6 +241,7 @@ $(document).ready(function() {
             method: "POST",
             data: {
                     _token:'{{ csrf_token() }}',
+                    qty:1,
                     @if(userrole()== 2)
                     customer_id: $('[name="customer_id"]').val(),
                     @endif
