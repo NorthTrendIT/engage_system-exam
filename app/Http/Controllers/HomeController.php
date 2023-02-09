@@ -139,7 +139,7 @@ class HomeController extends Controller
                 $dashboard['total_delivered_order'] = $total_delivered_order;
                 $dashboard['total_back_order'] = $total_back_order;
                 $dashboard['total_overdue_invoice'] = $number_of_overdue_invoices;
-                $dashboard['total_amount_of_overdue_invoices'] = $total_amount_of_overdue_invoices; 
+                $dashboard['total_amount_of_overdue_invoices'] = number_format_value($total_amount_of_overdue_invoices); 
                 $dashboard['total_completed_order'] = $total_completed_order;
 
                 //Recent Orders
