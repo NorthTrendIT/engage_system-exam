@@ -211,17 +211,34 @@ class CartController extends Controller
         $sap_customer_arr = get_sap_customer_arr(@Auth::user());
         if(isset($id)){
 
-                $due_date = strtr($request->due_date, '/', '-');
-                $cart = new Cart();
-                $cart->qty = $request->qty;            
-                $cart->customer_id = @$sap_customer_arr[$product->sap_connection_id];
-                $cart->product_id = $id; 
-                $cart->address = @$request->address;
-                if($request->due_date != ""){
-                    $cart->due_date = date('Y-m-d',strtotime($due_date)); 
+                $cart_info = Cart::where(['customer_id'=>@$sap_customer_arr[$product->sap_connection_id],'product_id'=>$id])->first();
+                if($cart_info){
+                    $due_date = strtr($request->due_date, '/', '-');
+                    $cart = Cart::find($cart_info->id);
+                    $cart->qty = $cart_info->qty + 1;            
+                    $cart->customer_id = @$sap_customer_arr[$product->sap_connection_id];
+                    $cart->product_id = $id; 
+                    $cart->address = @$request->address;
+                    if($request->due_date != ""){
+                        $cart->due_date = date('Y-m-d',strtotime($due_date)); 
+                    }else{
+                        $cart->due_date = '';
+                    } 
                 }else{
-                    $cart->due_date = '';
-                } 
+                    $due_date = strtr($request->due_date, '/', '-');
+                    $cart = new Cart();
+                    $cart->qty = $request->qty;            
+                    $cart->customer_id = @$sap_customer_arr[$product->sap_connection_id];
+                    $cart->product_id = $id; 
+                    $cart->address = @$request->address;
+                    if($request->due_date != ""){
+                        $cart->due_date = date('Y-m-d',strtotime($due_date)); 
+                    }else{
+                        $cart->due_date = '';
+                    } 
+                }
+
+                
                 $cart->save();
 
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
