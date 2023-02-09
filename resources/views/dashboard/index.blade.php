@@ -1421,12 +1421,12 @@
                                 html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
                             }
                             if(type == 'Quantity'){
-                                html += '<td>'+value.quantity+'</td>';
+                                html += '<td>'+(value.quantity).toLocaleString()+'</td>';
                             }else if(type == 'Liters'){
                                 html += '<tr><td>'+(index+1)+'</td><td>'+value.product.item_name+'</td>';
-                                html += '<td>'+value.product.sales_unit_weight+'</td>';
+                                html += '<td>'+(value.product.sales_unit_weight).toLocaleString()+'</td>';
                             }else if(type == 'Amount'){
-                                html += '<td>'+value.gross_total+'</td>';
+                                html += '<td>'+(value.gross_total).toLocaleString()+'</td>';
                             }
                           html += '</tr>';
                         });
@@ -1436,12 +1436,12 @@
                                 html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
                             }
                             if(type == 'Quantity'){
-                                html += '<td>'+value.quantity+'</td>';
+                                html += '<td>'+(value.quantity).toLocaleString()+'</td>';
                             }else if(type == 'Liters'){
                                 html += '<tr><td>'+(index+1)+'</td><td>'+value.product.item_name+'</td>';
-                                html += '<td>'+value.product.sales_unit_weight+'</td>';
+                                html += '<td>'+(value.product.sales_unit_weight).toLocaleString()+'</td>';
                             }else if(type == 'Amount'){
-                                html += '<td>'+value.gross_total+'</td>';
+                                html += '<td>'+(value.gross_total).toLocaleString()+'</td>';
                             }
                           html += '</tr>';
                         });
@@ -1451,12 +1451,12 @@
                                 html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
                             }
                             if(type == 'Quantity'){
-                                html += '<td>'+value.quantity+'</td>';
+                                html += '<td>'+(value.quantity).toLocaleString()+'</td>';
                             }else if(type == 'Liters'){
                                 html += '<tr><td>'+(index+1)+'</td><td>'+value.product.item_name+'</td>';
-                                html += '<td>'+value.product.sales_unit_weight+'</td>';
+                                html += '<td>'+(value.product.sales_unit_weight).toLocaleString()+'</td>';
                             }else if(type == 'Amount'){
-                                html += '<td>'+value.gross_total+'</td>';
+                                html += '<td>'+(value.gross_total).toLocaleString()+'</td>';
                             }
                           html += '</tr>';
                         });
