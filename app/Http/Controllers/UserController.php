@@ -541,7 +541,7 @@ class UserController extends Controller
     }
 
     public function userChangePassword(Request $request){
-        $filename = public_path('assets/files/NTMC.csv');
+        $filename = public_path('assets/files/NTMC1.csv');
         $file = fopen($filename, "r");
         $all_data = array();
 
