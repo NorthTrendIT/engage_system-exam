@@ -539,4 +539,22 @@ class UserController extends Controller
 
         return $result;
     }
+
+    public function userChangePassword(Request $request){
+        $filename = public_path('assets/files/NTMC.csv');
+        $file = fopen($filename, "r");
+        $all_data = array();
+
+        $i = 0;
+        while ( ($data = fgetcsv($file, 30000, ",")) !==FALSE ) { 
+            if($i > 0){
+                
+                $update = User::where('u_card_code',$data[6])
+                                ->where('email',$data[4])
+                                ->update(['password'=>Hash::make($data[5])]);
+            }
+            $i++;
+        }
+        return "complete";
+    }
 }
