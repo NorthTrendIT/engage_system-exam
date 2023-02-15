@@ -85,6 +85,10 @@ Route::middleware(['auth'])->group(function(){
     	    Route::post('user/get-parents', 'App\Http\Controllers\UserController@getParents')->name('user.get-parents');
             Route::post('user/change-password', 'App\Http\Controllers\UserController@changePasswordStore')->name('user.change-password.store');
             Route::get('user-password-change','App\Http\Controllers\UserController@userChangePassword');
+            Route::get('abpw-user-password-change','App\Http\Controllers\UserController@userChangePasswordABPW');
+            Route::get('solid-user-password-change','App\Http\Controllers\UserController@userChangePasswordSOLID');
+            Route::get('philcrest-user-password-change','App\Http\Controllers\UserController@userChangePasswordPHILCREST');
+            Route::get('philsyn-user-password-change','App\Http\Controllers\UserController@userChangePasswordPHILSYN');
 
     		Route::resource('productfeatures','App\Http\Controllers\ProductFeaturesController')->middleware('super-admin');
     	    Route::post('productfeatures/get-all', 'App\Http\Controllers\ProductFeaturesController@getAll')->name('productfeatures.get-all')->middleware('super-admin');
