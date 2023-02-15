@@ -557,4 +557,76 @@ class UserController extends Controller
         }
         return "complete";
     }
+
+    public function userChangePasswordABPW(Request $request){
+        $filename = public_path('assets/files/APBW.csv');
+        $file = fopen($filename, "r");
+        $all_data = array();
+
+        $i = 0;
+        while ( ($data = fgetcsv($file, 30000, ",")) !==FALSE ) { 
+            if($i > 0){
+                
+                $update = User::where('u_card_code',$data[6])
+                                ->where('email',$data[4])
+                                ->update(['password'=>Hash::make($data[5])]);
+            }
+            $i++;
+        }
+        return "complete";
+    }
+
+    public function userChangePasswordSOLID(Request $request){
+        $filename = public_path('assets/files/SOLID.csv');
+        $file = fopen($filename, "r");
+        $all_data = array();
+
+        $i = 0;
+        while ( ($data = fgetcsv($file, 30000, ",")) !==FALSE ) { 
+            if($i > 0){
+                
+                $update = User::where('u_card_code',$data[6])
+                                ->where('email',$data[4])
+                                ->update(['password'=>Hash::make($data[5])]);
+            }
+            $i++;
+        }
+        return "complete";
+    }
+
+    public function userChangePasswordPHILCREST(Request $request){
+        $filename = public_path('assets/files/PHILCREST.csv');
+        $file = fopen($filename, "r");
+        $all_data = array();
+
+        $i = 0;
+        while ( ($data = fgetcsv($file, 30000, ",")) !==FALSE ) { 
+            if($i > 0){
+                
+                $update = User::where('u_card_code',$data[6])
+                                ->where('email',$data[4])
+                                ->update(['password'=>Hash::make($data[5])]);
+            }
+            $i++;
+        }
+        return "complete";
+    }
+
+    public function userChangePasswordPHILSYN(Request $request){
+        $filename = public_path('assets/files/PHILSYN.csv');
+        $file = fopen($filename, "r");
+        $all_data = array();
+
+        $i = 0;
+        while ( ($data = fgetcsv($file, 30000, ",")) !==FALSE ) { 
+            if($i > 0){
+                
+                $update = User::where('u_card_code',$data[6])
+                                ->where('email',$data[4])
+                                ->update(['password'=>Hash::make($data[5])]);
+            }
+            $i++;
+        }
+        return "complete";
+    }
 }
