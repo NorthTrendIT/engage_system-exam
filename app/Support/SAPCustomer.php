@@ -178,21 +178,45 @@ class SAPCustomer
         if($card_code){
             $url = "/b1s/v1/BusinessPartners('".$card_code."')";
             $response = $this->getCustomerData($url);
-            if($response['status']){
-                $customer = $response['data'];
-                if(!empty($customer)){
-                    $where = array(
-                                'db_name' => $this->database,
-                                'user_name' => $this->username,
-                            );
+            // if($response['status']){
+            //     $customer = $response['data'];
+            //     if(!empty($customer)){
+            //         $where = array(
+            //                     'db_name' => $this->database,
+            //                     'user_name' => $this->username,
+            //                 );
 
-                    $sap_connection = SapConnection::where($where)->first();
-                    $sap_connection_id = $sap_connection->id;
-                    Log::info(print_r(@$customer['CardCode'],true));
-                    $update = Customer::where([
-                                                'card_code' => @$customer['CardCode'],
-                                                'sap_connection_id' => $sap_connection_id,
-                                            ])->update(['payment_group_code'=>@$customer['PayTermsGrpCode']]);
+            //         $sap_connection = SapConnection::where($where)->first();
+            //         $sap_connection_id = $sap_connection->id;
+            //         $data = [
+            //             'frozen' => @$customer['Frozen'] == "tYES" ? 1 : 0,
+            //             'frozen_from' => @$customer['FrozenFrom'],
+            //             'frozen_to' => @$customer['FrozenTo'],
+            //         ];
+
+            //         $update = Customer::where([
+            //                                     'card_code' => @$customer['CardCode'],
+            //                                     'sap_connection_id' => $sap_connection_id,
+            //                                 ])->update($data);
+            //     }
+            // }
+
+            if($response['status']){
+                $data[] = $response['data'];
+                if($data){
+
+                    StoreCustomers::dispatch($data,1);
+                    if(isset($data['odata.nextLink'])){
+
+                        SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
+                        $this->addCustomerDataInDatabase($data['odata.nextLink']);
+                    }else{
+                        if(!empty($this->log_id)){
+                            add_sap_log([
+                                    'status' => "completed",
+                                ], $this->log_id);
+                        }
+                    }
                 }
             }
         }

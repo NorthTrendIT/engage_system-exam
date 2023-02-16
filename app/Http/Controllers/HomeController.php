@@ -325,18 +325,10 @@ class HomeController extends Controller
     public function customerPayment(Request $request){
         ini_set('memory_limit', '10240M');
         ini_set('max_execution_time', 18000);
-        $sap_connections = SapConnection::all();
-        if(!empty($sap_connections)){
-            foreach($sap_connections as $connections){
-                $sap = new SAPCustomer($connections->db_name, $connections->user_name , $connections->password, $connections->id);
-
-                $customer = Customer::where('sap_connection_id',$connections->id)->orderBy('id','DESC')->whereNull('frozen')->get();
-                foreach ($customer as $key => $value) {
-                    $sap->addSpecificCustomerData($value->card_code);
-                } 
-
-            }
-        }
+            
+        $sap = new SAPCustomer('APBW', 'manager' , 'ntmc1234', '1');
+        $sap->addSpecificCustomerData('C13939A');
+        
         return "complete"; 
     }
     
