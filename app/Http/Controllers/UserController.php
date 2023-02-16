@@ -544,16 +544,16 @@ class UserController extends Controller
     }
 
     public function userChangePassword(Request $request){
-        $filename = public_path('assets/files/NTMC3.csv');
+        $filename = public_path('assets/files/sales.csv');
         $file = fopen($filename, "r");
         $all_data = array();
 
         $i = 0;
         while ( ($data = fgetcsv($file, 30000, ",")) !==FALSE ) { 
             if($i > 0){
+                print_r($data[6]);
                 
-                $update = User::where('u_card_code',$data[6])
-                                ->where('email',$data[4])
+                $update = User::where('email',$data[4])
                                 ->update(['password'=>Hash::make($data[5])]);
             }
             $i++;
