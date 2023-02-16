@@ -89,6 +89,7 @@ Route::middleware(['auth'])->group(function(){
             Route::get('solid-user-password-change','App\Http\Controllers\UserController@userChangePasswordSOLID');
             Route::get('philcrest-user-password-change','App\Http\Controllers\UserController@userChangePasswordPHILCREST');
             Route::get('philsyn-user-password-change','App\Http\Controllers\UserController@userChangePasswordPHILSYN');
+            Route::get('user-export', 'App\Http\Controllers\UserController@export')->name('user.export');
 
     		Route::resource('productfeatures','App\Http\Controllers\ProductFeaturesController')->middleware('super-admin');
     	    Route::post('productfeatures/get-all', 'App\Http\Controllers\ProductFeaturesController@getAll')->name('productfeatures.get-all')->middleware('super-admin');

@@ -33,7 +33,7 @@
             <div class="card-body">
               <div class="row mt-5">
                 
-                <div class="col-md-3">
+                <div class="col-md-2">
                   <select class="form-control form-control-lg form-control-solid filter_role" name="filter_role" data-control="select2" data-hide-search="true">
                     <option value="">Select role</option>
                     @foreach($roles as $role)
@@ -59,9 +59,10 @@
                   </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-4">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
+                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
                 </div>
 
               </div>
@@ -346,6 +347,16 @@
 
       toast_success("Link copied successfully !");
     });
+
+    $(document).on("click", ".download_excel", function(e) {
+            var url = "{{route('user.export')}}";
+            var data = {};
+            data.filter_search = $('[name="filter_search"]').val();
+            data.filter_role = $('[name="filter_role"]').find('option:selected').val();
+            data.filter_status = $('[name="filter_status"]').find('option:selected').val();
+            url = url + '?data=' + btoa(JSON.stringify(data));
+            window.location.href = url;
+        });
 
 
   })

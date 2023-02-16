@@ -14,6 +14,9 @@ use Auth;
 use Hash;
 use Mail;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ExportUser;
+
 class UserController extends Controller
 {
     /**
@@ -628,5 +631,61 @@ class UserController extends Controller
             $i++;
         }
         return "complete";
+    }
+
+    public function export(Request $request){
+        $filter = collect();
+        if(@$request->data){
+          $filter = json_decode(base64_decode($request->data));
+        }
+
+        $data = User::where('users.id','!=',1);
+
+        if($filter->filter_role != ""){
+            $data->where('role_id',$filter->filter_role);
+        }
+
+        if($filter->filter_status != ""){
+            $data->where('is_active',$filter->filter_status);
+        }
+
+        if($filter->filter_search != ""){
+            $data->where(function($q) use ($request) {
+                $q->orwhere('first_name','LIKE',"%".$filter->filter_search."%");
+                $q->orwhere('last_name','LIKE',"%".$filter->filter_search."%");
+                $q->orwhere('email','LIKE',"%".$filter->filter_search."%");
+                $q->orwhere('sales_specialist_name','LIKE',"%".$filter->filter_search."%");
+            });
+        }
+
+        if(userrole() != 1){
+            $data->where('created_by',Auth::id());
+        }
+
+        $data->when(!isset($request->order), function ($q) {
+            $q->orderBy('id', 'desc');
+        });
+        $data = $data->get();
+
+        $records = array();
+        foreach($data as $key => $value){
+                                
+            $records[] = array(
+                            'no' => $key + 1,
+                            'role' => @$value->role->name ?? "-",
+                            'first_name' => @$value->first_name ?? "-",
+                            'last_name' => @$value->last_name ?? "-",
+                            'email' => @$value->email ?? "-",
+                            'parent' => @$value->parent->first_name.' '.@$value->parent->last_name,
+                            'status' => ($value->is_active == 1)?'Active':'Inactive',
+                          );
+        }
+        if(count($records)){
+            $title = 'User Report '.date('dmY').'.xlsx';
+            return Excel::download(new ExportUser($records), $title);
+        }
+
+        \Session::flash('error_message', common_error_msg('excel_download'));
+        return redirect()->back();
     }
 }
