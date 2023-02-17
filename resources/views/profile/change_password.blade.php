@@ -63,13 +63,13 @@
 
 
 
-                <div class="row mb-5">
+                <!-- <div class="row mb-5">
                   <div class="col-md-12">
                     <div class="form-group">
                       <a href="javascript:" class="btn btn-light-dark btn-sm password_generate">Password Generate</a>
                     </div>
                   </div>
-                </div>
+                </div> -->
 
                 <div class="row mb-5">
                   <div class="col-md-12">
@@ -90,13 +90,13 @@
                   </div>
                 </div>
 
-                <div class="row mb-5">
+                <!-- <div class="row mb-5">
                   <div class="col-md-12">
                     <div class="form-group">
                       <span class="text-muted">Password has to meet the following criteria: Must be at least 8 characters long. Must contain at least: one lowercase letter, one uppercase letter, one numeric character, and one of the following special characters @$!%*#?&_-~<>;</span>
                     </div>
                   </div>
-                </div>
+                </div> -->
                 
                 <div class="row mb-5">
                   <div class="col-md-12">
@@ -175,14 +175,14 @@
             },
             new_password:{
               required:true,
-              minlength:8,
-              maxlength:20,
+              //minlength:8,
+              //maxlength:20,
               noSpace: true,
             },
             confirm_password:{
               required:true,
-              minlength:8,
-              maxlength:20,
+              //minlength:8,
+              //maxlength:20,
               equalTo : "#new_password",
               noSpace: true,
             }
@@ -190,19 +190,19 @@
           messages: {
             current_password:{
               required:'Please enter current password.',
-              minlength:'Please enter current password greater than 8 digits',
+              //minlength:'Please enter current password greater than 8 digits',
               noSpace: 'No space allowed',
             },
             new_password:{
               required:'Please enter new password.',
-              minlength:'Please enter new password greater than 8 digits',
-              maxlength:'Please enter new password less than 20 digits',
+              //minlength:'Please enter new password greater than 8 digits',
+              //maxlength:'Please enter new password less than 20 digits',
               noSpace: 'No space allowed',
             },
             confirm_password:{
               required:'Please enter confirm password.',
-              minlength:'Please enter confirm password greater than 8 digits',
-              maxlength:'Please enter confirm password less than 20 digits',
+              //minlength:'Please enter confirm password greater than 8 digits',
+              //maxlength:'Please enter confirm password less than 20 digits',
               equalTo : "Enter confirm password not same as password !",
               noSpace: 'No space allowed',
             }
