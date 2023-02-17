@@ -75,7 +75,11 @@ class ProfileController extends Controller
             $user = User::find(Auth::id());
 
             if($user->first_login == 1 && $user->email == $request->email){
-                return $response = ['status'=>false,'message'=>"Oops ! please add new email address."];
+                $check = User::where('email',$request->email)->where('id','!=',Auth::id())->first();
+                if($check){
+                    return $response = ['status'=>false,'message'=>"Oops ! please add new email address."];
+                }
+                
             }
             
             $old_profile = file_exists(public_path('sitebucket/users/') . "/" . $user->profile);
@@ -157,8 +161,9 @@ class ProfileController extends Controller
 
         $rules = array(
                     'current_password' => 'required|string',
-                    'new_password' => 'required|max:20|regex:/^(?=.*\d)(?=.*[@$!%*#?&_-~<>;])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@$!%*#?&_-~<>;]{8,20}$/',
-                    'confirm_password' => 'required|string|min:8|same:new_password',
+                    //'new_password' => 'required|max:20|regex:/^(?=.*\d)(?=.*[@$!%*#?&_-~<>;])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@$!%*#?&_-~<>;]{8,20}$/',
+                    'new_password' => 'required',
+                    'confirm_password' => 'required|same:new_password',
                 );
         $validator = Validator::make($input, $rules);
 

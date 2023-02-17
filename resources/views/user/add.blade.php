@@ -264,7 +264,7 @@
                   </div>
                 </div>
 
-                <div class="row mb-5">
+                <!-- <div class="row mb-5">
                   <div class="col-md-6">
                     <div class="form-group">
                       <span class="text-muted">Password has to meet the following criteria: Must be at least 8 characters long. Must contain at least: one lowercase letter, one uppercase letter, one numeric character, and one of the following special characters @$!%*#?&_-~<>;</span>
@@ -277,7 +277,7 @@
                     </div>
                   </div>
                   
-                </div>
+                </div> -->
 
                 <div class="row mb-5">
                   <div class="col-md-12">
@@ -521,13 +521,13 @@
             @if(!isset($edit))
             password:{
               required:true,
-              minlength:8,
-              maxlength:20,
+              //minlength:8,
+              //maxlength:20,
             },
             confirm_password:{
               required:true,
-              minlength:8,
-              maxlength:20,
+              //minlength:8,
+              //maxlength:20,
               equalTo : "#password"
             }
             @endif
@@ -573,26 +573,26 @@
           rules: {
             new_password:{
               required:true,
-              minlength:8,
-              maxlength:20,
+              //minlength:8,
+              //maxlength:20,
             },
             confirm_password:{
               required:true,
-              minlength:8,
-              maxlength:20,
+              //minlength:8,
+              //maxlength:20,
               equalTo : "#new_password"
             }
           },
           messages: {
             new_password:{
               required:'Please enter new password.',
-              minlength:'Please enter new password greater than 8 digits',
-              maxlength:'Please enter new password less than 20 digits',
+              //minlength:'Please enter new password greater than 8 digits',
+              //maxlength:'Please enter new password less than 20 digits',
             },
             confirm_password:{
               required:'Please enter confirm password.',
-              minlength:'Please enter confirm password greater than 8 digits',
-              maxlength:'Please enter confirm password less than 20 digits',
+              //minlength:'Please enter confirm password greater than 8 digits',
+              //maxlength:'Please enter confirm password less than 20 digits',
               equalTo : "Enter confirm password same as new password !"
             }
           },
