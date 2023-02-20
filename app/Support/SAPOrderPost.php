@@ -187,6 +187,7 @@ class SAPOrderPost
 
 
     public function pushOrder($id){
+        
         $body = $this->madeSapData($id);
         $response = array();
         if(!empty($body)){
@@ -207,7 +208,6 @@ class SAPOrderPost
                 $emails = [];
                 $customer_mails = [];
                 $quotation = Quotation::where('doc_entry',$data['DocEntry'])->first();
-                
                 $user = Customer::where('card_code',$data['CardCode'])->get();
 
                 foreach ($user as $key => $value) {
@@ -226,17 +226,18 @@ class SAPOrderPost
                     }
 
                     $user_mail = User::where('u_card_code',$value->u_card_code)->first();
-                    Log::info(print_r($user_mail->email,true));
+                    //Log::info(print_r($user_mail->email,true));
 
                     if(@$user_mail->email != ""){
                         $mail_array = explode("; ", @$user_mail->email);
                         foreach($mail_array as $email){
                             if($email != 'COD ACCT'){
                                 Log::info("customer mail");
+                                //Log::info(print_r($this->sap_connection_id));
                                 Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>@$user_mail->first_name." ".$user_mail->last_name), function($message) use($email,$from_name) {
                                     $message->from('orders@northtrend.com', $from_name);
                                     $message->to($email, $email)
-                                            ->cc('itsupport@northtrend.com')
+                                            //->cc('itsupport@northtrend.com')
                                             ->subject('Order Confirmation');
                                 });
                             }
