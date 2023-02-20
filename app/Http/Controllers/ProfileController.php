@@ -22,12 +22,11 @@ class ProfileController extends Controller
     {        
 
         if(Auth::user()->role_id == 4){
-            $data = Customer::where('id',Auth::user()->customer_id)->firstOrFail();
-
-            $apbw = Customer::where('card_code',$data->card_code)->where('sap_connection_id',1)->first();
-            $ntmc = Customer::where('card_code',$data->card_code)->where('sap_connection_id',2)->first();
-            $PHILCREST = Customer::where('card_code',$data->card_code)->where('sap_connection_id',3)->first();
-            $PHILSYN = Customer::where('card_code',$data->card_code)->where('sap_connection_id',4)->first();            
+            $data = User::where('u_card_code',Auth::user()->u_card_code)->firstOrFail();
+            $apbw = Customer::where('u_card_code',$data->u_card_code)->where('sap_connection_id',1)->first();
+            $ntmc = Customer::where('u_card_code',$data->u_card_code)->where('sap_connection_id',2)->first();
+            $PHILCREST = Customer::where('u_card_code',$data->u_card_code)->where('sap_connection_id',3)->first();
+            $PHILSYN = Customer::where('u_card_code',$data->u_card_code)->where('sap_connection_id',4)->first();            
 
             $totalOverdueAmount = Invoice::where(['card_code'=>@$data->card_code,'document_status'=>'bost_Open'])->sum('doc_entry');
 
