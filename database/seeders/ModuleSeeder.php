@@ -489,5 +489,39 @@ class ModuleSeeder extends Seeder
             
         );
         Module::insert($data);
+
+        $salesSpecialist = Module::create(
+            array(
+                'title' => 'Sales Specialist Assignment',
+                'slug' => 'sales-specialist-assignment',
+                'parent_id' => null,
+            )
+        );
+
+        $insertSub = array(
+            array(
+                'title' => 'Add',
+                'slug' => 'add-sales-specialist-assignment',
+                'parent_id' => $salesSpecialist->id,
+            ),
+            array(
+                'title' => 'Edit',
+                'slug' => 'edit-sales-specialist-assignment',
+                'parent_id' => $salesSpecialist->id,
+            ),
+            array(
+                'title' => 'View',
+                'slug' => 'view-sales-specialist-assignment',
+                'parent_id' => $salesSpecialist->id,
+            ),
+            array(
+                'title' => 'Delete',
+                'slug' => 'delete-sales-specialist-assignment',
+                'parent_id' => $salesSpecialist->id,
+            ),
+            
+        );
+
+        Module::insert($insertSub);
     }
 }

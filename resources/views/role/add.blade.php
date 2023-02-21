@@ -354,6 +354,49 @@
                             </li>
                             @endif
 
+                            @if(@$modules['sales-specialist-assignment']['id'])
+                            <li>
+                              <i class="fa fa-plus"></i>
+                              <label>
+                                <input data-id="{{ @$modules['sales-specialist-assignment']['id'] }}" type="checkbox" /> {{ @$modules['sales-specialist-assignment']['title'] }}
+                              </label>
+
+                              <ul>
+                                @if(@$modules['add-sales-specialist-assignment']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['add-sales-specialist-assignment']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-sales-specialist-assignment']['id'] }}]" /> {{ @$modules['add-sales-specialist-assignment']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['view-sales-specialist-assignment']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['view-sales-specialist-assignment']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-sales-specialist-assignment']['id'] }}]" /> {{ @$modules['view-sales-specialist-assignment']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['edit-sales-specialist-assignment']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['edit-sales-specialist-assignment']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-sales-specialist-assignment']['id'] }}]" /> {{ @$modules['edit-sales-specialist-assignment']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['delete-sales-specialist-assignment']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['delete-sales-specialist-assignment']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['delete-sales-specialist-assignment']['id'] }}]" /> {{ @$modules['delete-sales-specialist-assignment']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+                              </ul>
+                            </li>
+                            @endif
+
                           </ul>
                         </li>
                         @endif
@@ -813,6 +856,8 @@
                           </ul>
                         </li>
                         @endif
+
+
                         
                       </ul>
                     </div>
