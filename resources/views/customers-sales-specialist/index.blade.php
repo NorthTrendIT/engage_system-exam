@@ -77,8 +77,9 @@
                             <tr>
                               <th>No.</th>
                               <th>Business Unit</th>
-                              <th>Customer</th>
-                              <th>Customer Group</th>
+                              <th>Assignment Name</th>
+                              <!-- <th>Customer</th>
+                              <th>Customer Group</th> -->
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -150,8 +151,9 @@
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'company', name: 'company'},
-              {data: 'customer', name: 'customer'},
-              {data: 'group', name: 'group',orderable:false,searchable:false},
+              {data:'assignment_name', name:'assignment_name'},
+              // {data: 'customer', name: 'customer'},
+              // {data: 'group', name: 'group',orderable:false,searchable:false},
               {data: 'action', name: 'action',orderable:false,searchable:false},
           ],
           drawCallback:function(){

@@ -30,17 +30,23 @@
               <h5>Schedule Details</h5>
             </div> --}}
             <div class="card-body">
-              
+
               <div class="row mb-5">
                 <div class="col-md-12">
                   <div class="form-group d-flex justify-content-between">
-                    <h4>Customer : {{ @$data->card_name ?? "-" }}</h4>
-                    <h5>Customer Group : {{ @$data->group->name ?? "-" }}</h4>
+                    <h4>Assignment Name : {{ @$data->assignment_name ?? "-" }}</h4>
                   </div>
                 </div>
               </div>
-
-
+              @foreach($data->assignment as $val)
+              <div class="row mb-5">
+                <div class="col-md-12">
+                  <div class="form-group d-flex justify-content-between">
+                    <h4>Customer : {{@$val->customer->card_name ?? '-'}}</h4>
+                    <h5>Customer Group : {{@$val->customer->group->name ?? "-"}} </h4>
+                  </div>
+                </div>
+              </div>
               <div class="row mb-5 mt-10">
                 <div class="col-md-12">
                   <div class="form-group text-center">
@@ -52,7 +58,7 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <ul>
-                      @foreach (@$data->sales_specialist as $d)
+                      @foreach (@$val->customer->sales_specialist as $d)
                         <li>{!! $d->sales_person->sales_specialist_name !!} (Email: {!! $d->sales_person->email !!})</li>
                       @endforeach
                     </ul> 
@@ -60,7 +66,6 @@
                 </div>
 
               </div>
-
               <div class="row mb-5 mt-10">
 
                 <div class="col-md-12">
@@ -73,15 +78,13 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <ul>
-                      @foreach (@$data->product_groups as $d)
+                      @foreach (@$val->customer->product_groups as $d)
                         <li>{!! $d->product_group->group_name !!}</li>
                       @endforeach
                     </ul>
                   </div>
                 </div>
               </div>
-
-
               <div class="row mb-5 mt-10">
                 <div class="col-md-12">
                   <div class="form-group text-center">
@@ -93,7 +96,7 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <ul>
-                      @foreach (@$data->product_item_lines as $d)
+                      @foreach (@$val->customer->product_item_lines as $d)
                         <li>{!! @$d->product_item_line->u_item_line_sap_value->value ?? @$d->product_item_line->u_item_line !!}</li>
                       @endforeach
                     </ul> 
@@ -101,7 +104,6 @@
                 </div>
                 
               </div>
-
               <div class="row mb-5 mt-10">
                 
 
@@ -115,15 +117,14 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <ul>
-                      @foreach (@$data->product_tires_categories as $d)
+                      @foreach (@$val->customer->product_tires_categories as $d)
                         <li>{!! $d->product_tires_category->u_tires !!}</li>
                       @endforeach
                     </ul>
                   </div>
                 </div>
               </div>
-
-
+              @endforeach
             </div>
           </div>
         </div>

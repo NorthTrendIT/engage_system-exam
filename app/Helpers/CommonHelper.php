@@ -98,12 +98,10 @@ function get_product_customer_price($item_prices, $number, $discount = false, $d
     if(is_null($number)){
         $number = 1;
     }
-
     $item_prices = json_decode($item_prices,true);
     if(count($item_prices) > 0){
 
         $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
-
         $price = @$prices[$number]['Price'] ?? 0;
 
         if($discount){
