@@ -40,12 +40,22 @@
 
                   <div class="col-md-12">
                     <div class="form-group">
+                      <label>Assignment Name<span class="asterisk">*</span></label>
+                      <input type="text" name="assignment_name" id="assignment_name" placeholder="Enter assignment name" class="form-control" value="{{(isset($edit)?@$edit->assignment_name:'')}}">
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="row mb-5">
+
+                  <div class="col-md-12">
+                    <div class="form-group">
                       <label>Business Unit<span class="asterisk">*</span></label>
                       <select class="form-select form-select-solid" id='selectCompany' data-control="select2" data-hide-search="false" name="company_id" data-allow-clear="true" data-placeholder="Select business unit">
                         <option value=""></option>
-
                         @foreach($company as $c)
-                          <option value="{{ $c->id }}" @if(isset($edit) && $c->id == $edit->sap_connection_id ) selected @endif>{{ $c->company_name }}</option>
+                          <option value="{{ $c->id }}" @if(isset($edit) && $c->id == $edit->assignment[0]->customer->sap_connection_id ) selected @endif>{{ $c->company_name }}</option>
                         @endforeach
                       </select>
                     </div>
@@ -306,40 +316,46 @@ $(document).ready(function() {
     $initialProductLine = [];
     $initialProductCategory = [];
 
-    @if(isset($edit) && !empty($edit))
+    @if(isset($edit) && !empty($edit->assignment))
+        @foreach ($edit->assignment as $data)
         var initialOption = {
-            id: {{ $edit->id }},
-            text: `{!! $edit->card_name.' (Code: '.$edit->card_code. (@$edit->user->email ? ', Email: '.@$edit->user->email : ""). ')' !!}`,
-            sap_connection_id: '{!! $edit->sap_connection_id !!}',
+            id: {{ $data->customer->id }},
+            text: `{!! $data->customer->card_name.' (Code: '.$data->customer->card_code. (@$data->customer->user->email ? ', Email: '.@$data->customer->user->email : ""). ')' !!}`,
+            sap_connection_id: '{!! $data->customer->sap_connection_id !!}',
             selected: true
         }
         $initialCustomer.push(initialOption);
+        @endforeach
     @endif
 
-    @if(isset($edit) && @$edit->sales_specialist)
-      @foreach ($edit->sales_specialist as $data)
+    @if(isset($edit) && @$edit->assignment)
+      
+      @foreach ($edit->assignment[0]->customer->sales_specialist as $data1)
         var initialOption = {
-            id: {{ $data->ss_id }},
-            text: `{!! $data->sales_person->sales_specialist_name !!} (Email: {!! $data->sales_person->email !!})`,
+            id: {{ $data1->ss_id }},
+            text: `{!! $data1->sales_person->sales_specialist_name !!} (Email: {!! $data1->sales_person->email !!})`,
             selected: true
         }
         $initialSalesPerson.push(initialOption);
       @endforeach
+      
     @endif
     
-    @if(isset($edit) && @$edit->product_groups)
-      @foreach ($edit->product_groups as $data)
+    @if(isset($edit) && @$edit->assignment)
+      
+      @foreach ($edit->assignment[0]->customer->product_groups as $data1)
         var initialOption = {
-            id: {{ $data->product_group_id }},
-            text: '{!! $data->product_group->group_name !!}',
+            id: {{ $data1->product_group_id }},
+            text: '{!! $data1->product_group->group_name !!}',
             selected: true
         }
         $initialProductBrand.push(initialOption);
       @endforeach
+      
     @endif
 
-    @if(isset($edit) && @$edit->product_item_lines)
-      @foreach ($edit->product_item_lines as $data)
+    @if(isset($edit) && @$edit->assignment)
+      @foreach ($edit->assignment[0]->customer->product_item_lines as $data)
         var initialOption = {
             id: {{ $data->product_item_line_id }},
             text: '{!! @$data->product_item_line->u_item_line_sap_value->value ?? $data->product_item_line->u_item_line !!}',
@@ -349,8 +365,8 @@ $(document).ready(function() {
       @endforeach
     @endif
 
-    @if(isset($edit) && @$edit->product_tires_categories)
-      @foreach ($edit->product_tires_categories as $data)
+    @if(isset($edit) && @$edit->assignment)
+      @foreach ($edit->assignment[0]->customer->product_tires_categories as $data)
         var initialOption = {
             id: {{ $data->product_tires_category_id }},
             text: '{!! $data->product_tires_category->u_tires !!}',
