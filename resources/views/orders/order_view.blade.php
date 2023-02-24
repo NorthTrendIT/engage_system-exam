@@ -164,10 +164,21 @@
                             <!--end::Col-->
                             <div class="col-sm-6">
                               <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Order Date:</div>
-                              <!--end::Label-->
-                              <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime($data->doc_date)) }} {{ $data->doc_time ? date('H:i A',strtotime($data->doc_time)) : "" }}</div>
+                              <div class="row col-sm-12">
+                              <div class="col-sm-6">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Order Date:</div>
+                                <!--end::Label-->
+                                <!--end::Col-->
+                                <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime($data->doc_date)) }} {{ $data->doc_time ? date('H:i A',strtotime($data->doc_time)) : "" }}</div>
+                              </div>
+
+                              <div class="col-sm-6">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Expected Delivery Date:</div>
+                                <!--end::Label-->
+                                <!--end::Col-->
+                                <div class="fw-bolder fs-6 text-gray-800">{{ $data->doc_due_date ? date('F d, Y',strtotime($data->doc_due_date)) : "" }} </div>
+                              </div>
+                              </div>
                               <!--end::Col-->
                             </div>
                             <!--end::Col-->
