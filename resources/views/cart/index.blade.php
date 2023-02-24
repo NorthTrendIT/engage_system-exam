@@ -461,7 +461,7 @@ $(document).ready(function() {
         format: 'dd/mm/yyyy',
         todayHighlight: true,
         orientation: "bottom left",
-        startDate: "+3d",
+        startDate: "+0d",
         autoclose: true,
 
         @if(count($dates))
