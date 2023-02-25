@@ -101,11 +101,13 @@ class OrdersController extends Controller
             $customers = Auth::user()->created_by_user->get_multi_customer_details();
             $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
             $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        }elseif(userrole() != 1){
-            return abort(404);
         }
+        // }elseif(userrole() != 1){
+        //     return abort(404);
+        // }
 
-        $data = $data->firstOrFail();   
+        $data = $data->firstOrFail();  
+         
         $invoiceDetails = [];
         $Weight = 0;
         $Volume = 0;
