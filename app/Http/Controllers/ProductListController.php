@@ -159,7 +159,6 @@ class ProductListController extends Controller
         $customer_price_list_no = [];
 
         if(userrole() == 4){
-
             // $customer_id = array( @Auth::user()->customer_id );
             // $customer = @Auth::user()->customer;
             // $sap_connection_id = @Auth::user()->sap_connection_id;
@@ -168,6 +167,7 @@ class ProductListController extends Controller
             $customer_id = explode(',', Auth::user()->multi_customer_id);
             $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
             $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+            
         }elseif (!is_null(@Auth::user()->created_by)) {
 
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
@@ -197,7 +197,6 @@ class ProductListController extends Controller
 
         // Is Customer
         if(!empty($customer_id)){
-
             // Product Group
             $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
             $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
@@ -380,6 +379,13 @@ class ProductListController extends Controller
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
                                     return '<span class="text-muted" title="Not Available">₱ '.number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id])).'</span>';
                                 }else{
+                                    // print_r($row->item_prices);
+                                    // echo "===";
+                                    // print_r($customer_price_list_no);
+                                    // echo "===";
+                                    // print_r($sap_connection_id);
+                                    // echo "===";
+                                    // print_r($customer_price_list_no[$sap_connection_id]);exit();
                                     return "₱ ".number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]));
 
                                 }
@@ -597,9 +603,9 @@ class ProductListController extends Controller
           $q->orderBy('item_name', 'asc');
         });
 
-        if(userrole() != 1){
-            $products->havingRaw('quantity_on_stock - quantity_ordered_by_customers > 0');
-        }
+        // if(userrole() != 1){
+        //     $products->havingRaw('quantity_on_stock - quantity_ordered_by_customers > 0');
+        // }
 
         return [ 'products' => $products, 'customer_price_list_no' => $customer_price_list_no];
     }
