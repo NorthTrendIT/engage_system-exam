@@ -429,7 +429,7 @@
                                     format: 'dd/mm/yyyy',
                                     todayHighlight: true,
                                     orientation: "bottom left",
-                                    startDate: "+3d",
+                                    startDate: "+0d",
                                     autoclose: true,
                                     beforeShowDay: function(date){
                                         if ($dates.indexOf(formatDate(date)) < 0)
@@ -447,7 +447,7 @@
                                     format: 'dd/mm/yyyy',
                                     todayHighlight: true,
                                     orientation: "bottom left",
-                                    startDate: "+3d",
+                                    startDate: "+0d",
                                     autoclose: true,
                                 });
                             }
@@ -457,7 +457,7 @@
                                 format: 'dd/mm/yyyy',
                                 todayHighlight: true,
                                 orientation: "bottom left",
-                                startDate: "+3d",
+                                startDate: "+0d",
                                 autoclose: true,
                             });
                         }
