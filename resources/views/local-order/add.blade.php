@@ -228,8 +228,17 @@
                     <div class="row gy-5 g-xl-8">
                         <div class="col-xl-12">
                             <div class="d-flex flex-wrap pt-2 text-center justify-content-center">
-                                <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Save As Draft">
-                                <input type="button" class="btn btn-lg btn-primary placeOrder" value="Save & Place Order">
+                                <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Place Order for Approval">
+                                <input type="button" class="btn btn-lg btn-primary placeOrder" value="Place Order">
+                            </div>
+                        </div>
+                        <div class="col-xl-12">
+                            <div class="d-flex flex-wrap pt-2 text-center justify-content-center">
+                                <span><b>Note:
+                                    Place Order for Approval - will require customer's account approval prior to being pushed into the SAP system.<br>
+
+                                    Place Order - it will be directly pushed to the SAP  system without requesting approval from the customer's account.
+                                </b></span>
                             </div>
                         </div>
                     </div>
