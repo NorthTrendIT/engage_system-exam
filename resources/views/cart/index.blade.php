@@ -458,7 +458,7 @@ $(document).ready(function() {
 
 
     $('[name="due_date"]').datepicker({
-        format: 'dd/mm/yyyy',
+        format: 'mm/dd/yyyy',
         todayHighlight: true,
         orientation: "bottom left",
         startDate: "+0d",
