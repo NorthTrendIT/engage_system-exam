@@ -74,7 +74,7 @@
                                         </div>
                                         <div class="col-xl-4 col-lg-4 col-md-4 col-12">
                                             <label class="col-form-label text-right">Delivery Date<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control" placeholder="Delivery Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('d/m/Y',strtotime($edit->due_date))}}" @endif>
+                                            <input type="text" class="form-control" placeholder="Delivery Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('m/d/Y',strtotime($edit->due_date))}}" @endif>
                                         </div>
                                     </div>
                                 </div>
@@ -228,8 +228,17 @@
                     <div class="row gy-5 g-xl-8">
                         <div class="col-xl-12">
                             <div class="d-flex flex-wrap pt-2 text-center justify-content-center">
-                                <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Save As Draft">
-                                <input type="button" class="btn btn-lg btn-primary placeOrder" value="Save & Place Order">
+                                <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Place Order for Approval">
+                                <input type="button" class="btn btn-lg btn-primary placeOrder" value="Place Order">
+                            </div>
+                        </div>
+                        <div class="col-xl-12">
+                            <div class="d-flex flex-wrap pt-2 text-center justify-content-center">
+                                <span><b>Note:
+                                    Place Order for Approval - will require customer's account approval prior to being pushed into the SAP system.<br>
+
+                                    Place Order - it will be directly pushed to the SAP  system without requesting approval from the customer's account.
+                                </b></span>
                             </div>
                         </div>
                     </div>
@@ -426,10 +435,10 @@
 
                             if($dates.length > 0){
                                 $('[name="due_date"]').datepicker({
-                                    format: 'dd/mm/yyyy',
+                                    format: 'mm/dd/yyyy',
                                     todayHighlight: true,
                                     orientation: "bottom left",
-                                    startDate: "+3d",
+                                    startDate: "+0d",
                                     autoclose: true,
                                     beforeShowDay: function(date){
                                         if ($dates.indexOf(formatDate(date)) < 0)
@@ -444,20 +453,20 @@
                                 });
                             } else {
                                 $('[name="due_date"]').datepicker({
-                                    format: 'dd/mm/yyyy',
+                                    format: 'mm/dd/yyyy',
                                     todayHighlight: true,
                                     orientation: "bottom left",
-                                    startDate: "+3d",
+                                    startDate: "+0d",
                                     autoclose: true,
                                 });
                             }
 
                         }else{
                             $('[name="due_date"]').datepicker({
-                                format: 'dd/mm/yyyy',
+                                format: 'mm/dd/yyyy',
                                 todayHighlight: true,
                                 orientation: "bottom left",
-                                startDate: "+3d",
+                                startDate: "+0d",
                                 autoclose: true,
                             });
                         }
