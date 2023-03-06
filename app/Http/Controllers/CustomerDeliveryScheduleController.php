@@ -173,7 +173,6 @@ class CustomerDeliveryScheduleController extends Controller
 
             $dates = implode(",", $dates);
         }
-
         return view('customer-delivery-schedule.add',compact('edit','dates'));
     }
 
