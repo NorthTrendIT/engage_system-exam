@@ -46,7 +46,7 @@ class LocalOrderController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {        
+    {
         $input = $request->all();
         if(@$request->total_amount < 1){
             // unset($input['total_amount']);
@@ -87,7 +87,7 @@ class LocalOrderController extends Controller
             if( isset($input['products']) && !empty($input['products']) ){
                 foreach($input['products'] as $value){
                     $product = Product::find(@$value['product_id']);
-                    
+
                     $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
                     // if($avl_qty == 0){
                     //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity is not available at the moment please remove from order.'];
@@ -111,12 +111,13 @@ class LocalOrderController extends Controller
             }
 
             $due_date = strtr($input['due_date'], '/', '-');
+            $due_date_new = \Carbon\Carbon::createFromFormat('m-d-Y', $due_date)->format('Y-m-d');
 
             if(!empty($customer) && !empty($address)){
                 $customer = Customer::findOrFail($input['customer_id']);
                 $order->customer_id = $input['customer_id'];
                 $order->address_id = $input['address_id'];
-                $order->due_date = date('Y-m-d',strtotime($due_date));
+                $order->due_date = date('Y-m-d',strtotime($due_date_new));
                 $order->sales_specialist_id = Auth::id();
                 $order->placed_by = "S";
                 $order->confirmation_status = "P";
@@ -171,7 +172,7 @@ class LocalOrderController extends Controller
         } else {
 
             $data = $local_order->quotation;
-            
+
             // if(userrole() == 4){
             //     $data->where('card_code', @Auth::user()->customer->card_code);
             // }elseif(userrole() == 2){
@@ -460,10 +461,10 @@ class LocalOrderController extends Controller
             $order = LocalOrder::where('id', $update['id'])->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
             try{
-                $sap_connection = SapConnection::find(@$order->customer->sap_connection_id);                
-                if(!is_null($sap_connection)){                   
+                $sap_connection = SapConnection::find(@$order->customer->sap_connection_id);
+                if(!is_null($sap_connection)){
                     $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
-                    if($update['id']){                        
+                    if($update['id']){
                         $sap_response = $sap->pushOrder($order->id);
                         if($sap_response['status']){
                             $response = ['status' => true, 'message' => 'Order placed successfully!'];
