@@ -200,12 +200,12 @@ class SAPCustomer
             //                                 ])->update($data);
             //     }
             // }
-
+            Log::info(print_r($response,true));
             if($response['status']){
                 $data[] = $response['data'];
                 if($data){
 
-                    StoreCustomers::dispatch($data,1);
+                    StoreCustomers::dispatch($data,2);
                     if(isset($data['odata.nextLink'])){
 
                         SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
