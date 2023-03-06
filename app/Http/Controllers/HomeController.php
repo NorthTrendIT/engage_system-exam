@@ -326,8 +326,8 @@ class HomeController extends Controller
         ini_set('memory_limit', '10240M');
         ini_set('max_execution_time', 18000);
             
-        $sap = new SAPCustomer('NTMC', 'API' , 'AP@46amb', '1');
-        $sap->addSpecificCustomerData('C14162');
+        $sap = new SAPCustomer('APBW', 'API' , 'AP@46amb', '1');
+        $sap->addSpecificCustomerData('C14018');
                 
         return "complete"; 
     }
