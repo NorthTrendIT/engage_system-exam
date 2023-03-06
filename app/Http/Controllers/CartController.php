@@ -98,7 +98,7 @@ class CartController extends Controller
             $brand_product = Product::where('is_active', true)->whereIn('items_group_code', $product_groups);
             $brand_product->whereHas('group', function($q){
                 $q->where('is_active', true);
-            }); 
+            });
 
             if(in_array(5, $sap_connection_id)){
                 array_push($sap_connection_id, '5');
@@ -215,30 +215,30 @@ class CartController extends Controller
                 if($cart_info){
                     $due_date = strtr($request->due_date, '/', '-');
                     $cart = Cart::find($cart_info->id);
-                    $cart->qty = $cart_info->qty + 1;            
+                    $cart->qty = $cart_info->qty + 1;
                     $cart->customer_id = @$sap_customer_arr[$product->sap_connection_id];
-                    $cart->product_id = $id; 
+                    $cart->product_id = $id;
                     $cart->address = @$request->address;
                     if($request->due_date != ""){
-                        $cart->due_date = date('Y-m-d',strtotime($due_date)); 
+                        $cart->due_date = date('Y-m-d',strtotime($due_date));
                     }else{
                         $cart->due_date = '';
-                    } 
+                    }
                 }else{
                     $due_date = strtr($request->due_date, '/', '-');
                     $cart = new Cart();
-                    $cart->qty = $request->qty;            
+                    $cart->qty = $request->qty;
                     $cart->customer_id = @$sap_customer_arr[$product->sap_connection_id];
-                    $cart->product_id = $id; 
+                    $cart->product_id = $id;
                     $cart->address = @$request->address;
                     if($request->due_date != ""){
-                        $cart->due_date = date('Y-m-d',strtotime($due_date)); 
+                        $cart->due_date = date('Y-m-d',strtotime($due_date));
                     }else{
                         $cart->due_date = '';
-                    } 
+                    }
                 }
 
-                
+
                 $cart->save();
 
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
@@ -254,7 +254,7 @@ class CartController extends Controller
         $data = $request->all();
         if(isset($id) && isset($data['qty'])){
             $cart = Cart::findOrFail($id);
-            
+
             if(is_numeric($data['qty'])){
                 if($data['qty'] > 0){
                     $avl_qty = $cart->product->quantity_on_stock - $cart->product->quantity_ordered_by_customers;
@@ -273,7 +273,7 @@ class CartController extends Controller
 
                     $total = 0;
                     $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
-                    
+
                     $weight = 0;
                     $volume = 0;
                     foreach($data as $item){
@@ -283,7 +283,7 @@ class CartController extends Controller
                         $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
                         $total += $subTotal;
                         $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
-                        $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);                
+                        $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);
 
                     }
                 } else {
@@ -292,7 +292,7 @@ class CartController extends Controller
             } else {
                 return $response = ['status'=>false,'message'=>"Quantity value must be numeric."];
             }
-            
+
 
             return $response = ['status'=>true,'message'=>"Product quantity updated successfully.",'total' => number_format_value($total),'weight' => number_format_value($weight),'volume' => number_format_value($volume),'price' => number_format_value($price),'weight_individual'=>number_format_value($weight_individual)];
         }
@@ -321,7 +321,7 @@ class CartController extends Controller
 
             $total = 0;
             $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
-            
+
             $weight = 0;
             $volume = 0;
             foreach($data as $item){
@@ -331,7 +331,7 @@ class CartController extends Controller
                 $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
                 $total += $subTotal;
                 $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
-                $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);                
+                $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);
 
             }
 
@@ -444,7 +444,7 @@ class CartController extends Controller
         if($total_amount < 1){
             return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
         }
-        
+
         $rules = array(
                 'address_id' => 'required|exists:customer_bp_addresses,id',
                 'due_date' => 'required',
@@ -464,13 +464,14 @@ class CartController extends Controller
             //$customer_id = @Auth::user()->customer_id;
             $address_id = $data['address_id'];
             $due_date = strtr($data['due_date'], '/', '-');
-            
+            $due_date_new = \Carbon\Carbon::createFromFormat('m-d-Y', $due_date)->format('Y-m-d');
+
             $address = CustomerBpAddress::find($address_id);
 
             foreach ($customer_sap_connection_ids as $key => $sap_connection_id) {
-                
+
                 $real_sap_connection_id = $sap_connection_id;
-                
+
                 if($sap_connection_id == 5){ //Solid Trend
                     $sap_connection_id = 1;
                 }
@@ -481,7 +482,7 @@ class CartController extends Controller
                                 })->get();
 
                 if(count($products)){
-                    
+
                     // Start Order
                     $customer = Customer::where('sap_connection_id', $real_sap_connection_id)->where('u_card_code', @Auth::user()->u_card_code)->first();
 
@@ -490,7 +491,7 @@ class CartController extends Controller
                         $order = new LocalOrder();
                         $order->customer_id = $customer->id;
                         $order->address_id = $address_id;
-                        $order->due_date = date('Y-m-d',strtotime($due_date));
+                        $order->due_date = date('Y-m-d',strtotime($due_date_new));
                         $order->placed_by = "C";
                         $order->confirmation_status = "P";
                         $order->sap_connection_id = $real_sap_connection_id;
@@ -511,7 +512,7 @@ class CartController extends Controller
                                 $item->price = get_product_customer_price(@$value->product->item_prices,@$customer->price_list_num);
                                 $item->total = $item->price * $item->quantity;
                                 $item->save();
-                                
+
                                 $total += $item->total;
                             // }else{
                             //     $is_need_delete_order = true;
@@ -520,7 +521,7 @@ class CartController extends Controller
 
                         $order->total = $total;
                         $order->save();
-                        
+
                         // if($is_need_delete_order && count($products) == 1){
                         //     $order->delete();
                         // }else{
@@ -590,7 +591,7 @@ class CartController extends Controller
         return $response = ['status'=>false,'message'=>"Something went wrong please try again."];
     }
 
-    
+
     public function getAllProductList(Request $request){
         $c_product_tires_category = $c_product_item_line = $c_product_group = array();
 
@@ -625,7 +626,7 @@ class CartController extends Controller
             // Product Group
             $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
             $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
-            
+
             // Product Item Line
             $c_product_item_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
             $c_product_item_line = array_column( $c_product_item_line->toArray(), 'product_item_line_id' );
@@ -649,7 +650,7 @@ class CartController extends Controller
         $products->whereHas('group', function($q){
             $q->where('is_active', true);
         });
-        
+
         if(@$request->filter_search != ""){
             $products->where('item_name','LIKE',"%".$request->filter_search."%");
         }
@@ -707,8 +708,8 @@ class CartController extends Controller
                           ->addColumn('item_name', function($row) {
                             $html = "";
                                 $html .= '<div class="d-flex align-items-center">
-                                            
-                                            <div class="d-flex justify-content-start flex-column">';                                 
+
+                                            <div class="d-flex justify-content-start flex-column">';
 
                                 $html .= @$row->item_name ?? " ";
 
@@ -764,7 +765,7 @@ class CartController extends Controller
                                             $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-primary btn-active-color-success btn-sm addToCart custom_add_product" data-url="'.route('cart.add',@$row->id).'" title="Add Product">Add Product</a>';
 
                                             $btn .= '<a class="btn btn-icon btn-bg-primary btn-active-color-primary btn-sm goToCart custom_add_product" href="'.route('cart.index').'" style="display:none" title="Add Product">Add Product</a>';
-                                        
+
                                     }
                                 }
 
