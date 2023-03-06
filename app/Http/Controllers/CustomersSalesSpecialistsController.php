@@ -311,7 +311,7 @@ class CustomersSalesSpecialistsController extends Controller
 
 
     public function getAll(Request $request){
-
+        ini_set('memory_limit', '10240M');
         $data = CustomersSalesSpecialist::with(['customer','sales_person'])
                                             ->has('customer')
                                             ->has('sales_person')
