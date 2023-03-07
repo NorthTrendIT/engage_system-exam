@@ -51,7 +51,7 @@ class DraftOrderController extends Controller
         if(!$customer->sap_connection_id){
             return $response = ['status'=>false,'message'=>"Oops! Customer not found in our database."];
         }
-        
+
         $customer_id = $customer->id;
         $sap_connection_id = $customer->sap_connection_id;
         if($sap_connection_id == 5){ //Solid Trend
@@ -73,11 +73,11 @@ class DraftOrderController extends Controller
         if ($validator->fails()) {
             return $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
-            
+
             if( isset($input['products']) && !empty($input['products']) ){
                 foreach($input['products'] as $value){
                     $product = Product::find(@$value['product_id']);
-                    
+
                     $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
                     if($avl_qty == 0){
                         return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity is not available at the moment please remove from order.'];
@@ -104,9 +104,10 @@ class DraftOrderController extends Controller
 
             if(!empty($customer) && !empty($address)){
                 $due_date = strtr($input['due_date'], '/', '-');
+                $due_date_new = \Carbon\Carbon::createFromFormat('m-d-Y', $due_date)->format('Y-m-d');
                 $order->customer_id = $customer_id;
                 $order->address_id = $input['address_id'];
-                $order->due_date = date('Y-m-d',strtotime($due_date));
+                $order->due_date = date('Y-m-d',strtotime($due_date_new));
                 $order->placed_by = "S";
                 $order->confirmation_status = "P";
                 $order->sap_connection_id = $customer->sap_connection_id;
@@ -168,7 +169,7 @@ class DraftOrderController extends Controller
             }elseif(userrole() != 1){
                 return abort(404);
             }
-        
+
 
             $data = $data->firstOrFail();
 
