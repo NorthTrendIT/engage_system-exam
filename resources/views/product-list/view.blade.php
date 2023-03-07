@@ -72,7 +72,7 @@
                          <h5>{{ @$product->item_name ?? "" }}</h5>
 
                          @if($customer)
-                         <p><span class="mr-1 price"><strong>₱ {{ number_format_value(get_product_customer_price(@$product->item_prices,@$customer->price_list_num)) }}</strong></span></p>
+                         {{-- <p><span class="mr-1 price"><strong>₱ {{ number_format_value(get_product_customer_price(@$product->item_prices,@$customer->price_list_num)) }}</strong></span></p> --}}
                          @endif
                          <p class="pt-1">{!! @$product->technical_specifications ?? "" !!}</p>
                          <div class="table-responsive">

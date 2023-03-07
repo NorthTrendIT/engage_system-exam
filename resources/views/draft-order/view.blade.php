@@ -156,8 +156,8 @@
                                     <th class="min-w-175px pb-2">Product</th>
                                     <th class="min-w-80px text-end pb-2">Delivery Date</th>
                                     <th class="min-w-70px text-end pb-2">Quantity</th>
-                                    <th class="min-w-80px text-end pb-2">Price</th>
-                                    <th class="min-w-100px text-end pb-2">Amount</th>
+                                    {{-- <th class="min-w-80px text-end pb-2">Price</th>
+                                    <th class="min-w-100px text-end pb-2">Amount</th> --}}
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -167,8 +167,8 @@
                                         <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}(Code: {{ $value->product->item_code ?? '-' }})</td>
                                         <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
-                                        <td class="pt-6">₱ {{ number_format_value($value->gross_price) }}</td>
-                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($value->gross_total) }}</td>
+                                        {{-- <td class="pt-6">₱ {{ number_format_value($value->gross_price) }}</td>
+                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($value->gross_total) }}</td> --}}
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -203,10 +203,10 @@
                                 <!--begin::Item-->
                                 <div class="d-flex flex-stack">
                                   <!--begin::Code-->
-                                  <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
+                                  {{-- <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div> --}}
                                   <!--end::Code-->
                                   <!--begin::Label-->
-                                  <div class="text-end fs-5 fw-boldest">₱ {{ number_format_value(@$data->doc_total) }}</div>
+                                  {{-- <div class="text-end fs-5 fw-boldest">₱ {{ number_format_value(@$data->doc_total) }}</div> --}}
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
