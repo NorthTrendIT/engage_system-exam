@@ -78,12 +78,12 @@ class DraftOrderController extends Controller
                 foreach($input['products'] as $value){
                     $product = Product::find(@$value['product_id']);
                     
-                    $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
-                    if($avl_qty == 0){
-                        return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity is not available at the moment please remove from order.'];
-                    }else if($avl_qty < @$value['quantity']){
-                        return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity value must be less then '.$avl_qty.'.'];
-                    }
+                    // $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
+                    // if($avl_qty == 0){
+                    //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity is not available at the moment please remove from order.'];
+                    // }else if($avl_qty < @$value['quantity']){
+                    //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity value must be less then '.$avl_qty.'.'];
+                    // }
 
                     $price = get_product_customer_price(@$product->item_prices,@$customer->price_list_num);
                     if($price < 1){
