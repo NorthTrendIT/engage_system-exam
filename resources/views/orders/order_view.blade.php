@@ -17,6 +17,15 @@
       padding: 5px 10px !important;
       
   }
+
+  .custom_td_order{
+    width: 200px;
+    height: 50px;
+    max-width: 200px;
+    min-width: 21px !important;
+    max-height: 50px;
+    min-height: 50px;
+  }
 </style>
 @section('content')
 @php
@@ -281,13 +290,13 @@
                           <div class="flex-grow-1 mt-10">
                             <!--begin::Table-->
                             <input type="checkbox" name="checked_served_checkbox" id="checked_served_checkbox"> Show Ltrs/Kgs
-                            <div class="sticky_table_custom">
+                            <div class="">
                               <div class="table-responsive border-bottom mb-9">
                                 
                                 <table class="table mb-3 order_class">
                                   <thead>
                                     <tr class="border-bottom fs-6 fw-bolder text-muted">
-                                      <th>Action</th>
+                                      <th style="min">Action</th>
                                       <th>#</th>
                                       <th class="min-w-175px pb-2 product_details">Product</th>
                                       <th>Unit</th>
@@ -307,21 +316,27 @@
                                       
                                     </tr>
                                   </thead>
-                                  <tbody>                                    
+                                  <tbody>   
+                                    <?php $total_qty = 0; ?>                                 
                                     @foreach($invoiceDetails as $k=>$val)
+                                      <?php
+                                      
+                                        // dd($val);
+                                      $total_qty += $val['order_quantity']; ?>
+
                                     <tr class="fw-bolder text-gray-700 fs-5">
-                                      <td class="text-center">
+                                      <td class="text-center custom_td_order">
                                         @if($status != 'Pending')
-                                        <a class="trackStatus btn btn-primary btn-sm" id="item_{{$val['item_code']}}"> Track Delivery</a>
+                                        <a class="trackStatus btn btn-primary btn-sm" id="item_{{$val['item_code']}}"> Track</a>
                                         @endif
                                       </td>
-                                      <td class="text-end">{{$k+1}}</td>
+                                      <td class="text-center">{{$k+1}}</td>
                                       <td class="product_details">{{$val['product']}}</td>
-                                      <td>{{$val['unit']}}</td>
-                                      <td class="text-end">{{$val['order_quantity']}}</td>
-                                      <td class="text-end">{{$val['serverd_quantity']}}</td>
-                                      <td class="text-end ordered_served_class" style="display:none;">{{$val['orderd_weight']}}</td>
-                                      <td class="text-end ordered_served_class" style="display:none;">{{$val['served_weight']}}</td>
+                                      <td class="text-center">{{$val['unit']}}</td>
+                                      <td class="text-center">{{$val['order_quantity']}}</td>
+                                      <td class="text-center">@if(!in_array($status, ['Pending', 'On Process', 'Cancelled'])) {{$val['serverd_quantity']}} @endif</td>
+                                      <td class="text-center ordered_served_class" style="display:none;">{{$val['orderd_weight']}}</td>
+                                      <td class="text-center ordered_served_class" style="display:none;">{{$val['served_weight']}}</td>
                                       @if($data->order_type == 'Promotion')
                                           <td>{{$val['promotion']}}</td>
                                       @endif
@@ -337,8 +352,8 @@
                                       {{-- <td class="text-end">{{$val['price']}}</td>
                                       <td class="text-end">{{$val['price_after_vat']}}</td>
                                       <td class="text-end">{{$val['amount']}}</td> --}}
-                                      <td>{{$val['line_status']}}</td>
-                                      <td>{{$val['line_remarks']}}</td>
+                                      <td class="text-center">@if(!in_array($status, ['Pending', 'On Process', 'Cancelled'])) {{$val['line_status']}} @endif</td>
+                                      <td class="text-center">{{$val['line_remarks']}}</td>
                                     </tr>
                                     @endforeach
                                   </tbody>
@@ -378,6 +393,17 @@
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item--> --}}
+
+                                        <!--begin::Item-->
+                                        <div class="d-flex flex-stack">
+                                          <!--begin::Code-->
+                                          <div class="fw-bold pe-10 text-gray-900 fs-7 ">Total Qty:</div>
+                                          <!--end::Code-->
+                                          <!--begin::Label-->
+                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{ $total_qty }}</div>
+                                          <!--end::Label-->
+                                        </div>
+                                        <!--end::Item-->
 
                                         <!--begin::Item-->
                                         <div class="d-flex flex-stack">
