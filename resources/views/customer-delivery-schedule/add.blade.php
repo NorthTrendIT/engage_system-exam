@@ -95,11 +95,11 @@
 $(document).ready(function() {
 
     $('.dates').datepicker({
-      format: 'dd/mm/yyyy',
+      format: 'mm/dd/yyyy',
       todayHighlight: true,
       orientation: "bottom left",
       {{-- @if(!isset($edit)) --}}
-      startDate:'{{ date('d/m/Y') }}',
+      startDate:'{{ date('m/d/Y') }}',
       {{-- @endif --}}
       autoclose: true,
       multidate: true,
