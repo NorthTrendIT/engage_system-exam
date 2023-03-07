@@ -110,8 +110,8 @@
                                                     <th>Quantity</th>
                                                     <th>Ordered Ltr/Kgs</th>
                                                     <th>Unit</th>
-                                                    <th>Price</th>
-                                                    <th>Amount</th>
+                                                    <th class="d-none">Price</th>
+                                                    <th class="d-none">Amount</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>
@@ -149,10 +149,10 @@
                                                         $customer_id = explode(',', Auth::user()->multi_customer_id);
                                                         $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
                                                     @endphp                    
-                                                    <td class="text-end">
+                                                    <td class="text-end d-none">
                                                         <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) ) }}</span>
                                                     </td>
-                                                    <td class="text-end">
+                                                    <td class="text-end d-none">
                                                         <span class="fw-bolder my-2 price total_price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) * $value->qty ) }}</span>
                                                     </td>
                                                     <td>
@@ -211,12 +211,12 @@
                                             </div>                                            
                                         </div>
                                         <div class="col-xl-4">                                            
-                                            <div class="flex-grow-1 me-2 row mb-4">
+                                            <div class="flex-grow-1 me-2 row mb-4 d-none">
                                                 <span class="fs-8 col-xl-6">Total:</span>
                                                 <span class="fw-bolder fs-6 col-xl-6 total_span">₱ {{ number_format_value($total) }}</span>
                                             </div>
                                             <div class="flex-grow-1 me-2">
-                                               <p class="custom_note">Note: Prices may be subjected with discount. Final <br>amount of order will reflect on the actual invoice.</p>
+                                               <p class="custom_note">Note: Final amount of order will reflect <br>on the actual invoice.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -295,7 +295,7 @@
                                               <th>Product Line</th>
                                               <th>Product Category</th>
                                               @if(userrole() != 2)
-                                              <th>Price</th>
+                                              <th class="d-none">Price</th>
                                               @endif
                                               <th>Action</th>
                                             </tr>
@@ -809,7 +809,7 @@ $(document).ready(function() {
               {data: 'u_item_line', name: 'u_item_line'},
               {data: 'u_tires', name: 'u_tires'},
               @if(userrole() != 2)
-              {data: 'price', name: 'price', orderable:false,searchable:false},
+            //   {data: 'price', name: 'price', orderable:false,searchable:false},
               @endif
               {data: 'action', name: 'action', orderable:false,searchable:false},
           ],
