@@ -299,9 +299,9 @@
                                       <th class="min-w-80px text-end pb-2">Promo Delivery Date</th>
                                       @endif
                                       <!-- <th class="min-w-70px text-end pb-2">Invoice</th> -->
-                                      <th class="min-w-80px text-end pb-2">Price</th>
+                                      {{-- <th class="min-w-80px text-end pb-2">Price</th>
                                       <th class="min-w-80px text-end pb-2">Price After VAT</th>
-                                      <th class="min-w-100px text-end pb-2">Amount</th>
+                                      <th class="min-w-100px text-end pb-2">Amount</th> --}}
                                       <th class="min-w-100px text-end pb-2">Line Status</th>
                                       <th class="min-w-100px text-end pb-2">Line Remarks</th>
                                       
@@ -334,9 +334,9 @@
                                       ?>
                                       <!-- <td class="text-end">
                                         <a href="{{$route}}" target="_blank">{{$val['invoice_num']}}</a></td> -->
-                                      <td class="text-end">{{$val['price']}}</td>
+                                      {{-- <td class="text-end">{{$val['price']}}</td>
                                       <td class="text-end">{{$val['price_after_vat']}}</td>
-                                      <td class="text-end">{{$val['amount']}}</td>
+                                      <td class="text-end">{{$val['amount']}}</td> --}}
                                       <td>{{$val['line_status']}}</td>
                                       <td>{{$val['line_remarks']}}</td>
                                     </tr>
@@ -404,10 +404,10 @@
                                         <!--begin::Item-->
                                         <div class="d-flex flex-stack">
                                           <!--begin::Code-->
-                                          <div class="fw-bold pe-10 text-gray-900 fs-4 ">Total:</div>
+                                          {{-- <div class="fw-bold pe-10 text-gray-900 fs-4 ">Total:</div> --}}
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-4 fw-boldest">₱ {{ number_format_value(round(@$data->doc_total,1)) }}</div>
+                                          {{-- <div class="text-end fw-bolder fs-4 fw-boldest">₱ {{ number_format_value(round(@$data->doc_total,1)) }}</div> --}}
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
@@ -422,7 +422,7 @@
                           <div class="row">
                             <div class="col-md-6"></div>
                             <div class="col-md-6 d-flex align-items-center justify-content-center">
-                              <p>Note: Prices may be subjected with discount. Final <br>amount of order will reflect on the actual invoice.</p>
+                              <p>Note: Final amount of order will reflect <br> on the actual invoice.</p>
                             </div>
                           </div>
                           <!--end::Content-->

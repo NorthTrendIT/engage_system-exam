@@ -75,7 +75,7 @@
                                         </div>
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-12">
                                             <label class="col-form-label text-right">Delivery Date<span class="asterisk">*</span></label>
-                                            <input type="text" class="form-control" placeholder="Invoice Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('m/d/Y',strtotime($edit->due_date))}}" @endif>
+                                            <input type="text" class="form-control" placeholder="Invoice Date" id="kt_datepicker_1" name="due_date" autocomplete="off" @if(isset($edit))  value="{{date('d/m/Y',strtotime($edit->due_date))}}" @endif>
                                         </div>
                                     </div>
                                 </div>
@@ -105,8 +105,8 @@
 
                                                     <th class="min-w-150px">Product</th>
                                                     <th class="min-w-80px">Quantity</th>
-                                                    <th class="min-w-80px" style="text-align:right">Price</th>
-                                                    <th class="min-w-80px" style="text-align:right">Amount</th>
+                                                    <th class="min-w-80px d-none" style="text-align:right">Price</th>
+                                                    <th class="min-w-80px d-none" style="text-align:right">Amount</th>
                                                     <th class="min-w-80px"></th>
                                                     </tr>
                                                 </thead>
@@ -126,10 +126,10 @@
                                                                 <td>
                                                                     <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" placeholder="Enter quantity" value="{{ $value->quantity }}">
                                                                 </td>
-                                                                <td style="text-align:right">
+                                                                <td style="text-align:right" class="d-none">
                                                                     <span class="price text-primary">₱ {{ number_format_value(@$value->price) }}</span>
                                                                 </td>
-                                                                <td style="text-align:right">
+                                                                <td style="text-align:right" class="d-none">
                                                                     <span class="amount text-primary" style="font-weight: bold">₱ {{ number_format_value(@$value->total) }}</span>
                                                                 </td>
                                                                 <td>
@@ -188,7 +188,7 @@
                             <div class="col-md-4 col-12">
                                 <div class="card p-8">
                                     <div class="sub-total-box">
-                                        <div class="row">
+                                        <div class="row d-none">
                                             <div class="col-md-6 mb-3">
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">sub total</span>
                                             </div>
@@ -202,7 +202,7 @@
                                                 <span style="text-align: right; width: 100%;" class="d-block">0%</span>
                                             </div>
                                         </div>
-                                        <div class="row pt-8" style="border-top: 1px solid #e4e6ef;">
+                                        <div class="row pt-8 d-none" style="border-top: 1px solid #e4e6ef;">
                                             <div class="col-md-6 mb-3">
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">total</span>
                                             </div>
@@ -212,7 +212,7 @@
                                         </div>
                                         <div class="row" >
                                             <div class="col-md-12 mb-3">
-                                                <span class="text-muted">Note: Prices may be subjected with discount. Final amount of order will reflect on the actual invoice.</span>
+                                                <span class="text-muted">Note: Final amount of order will reflect <br>on the actual invoice.</span>
                                             </div>
                                         </div>
                                     </div>
@@ -281,7 +281,7 @@
         }
 
         $('[name="due_date"]').datepicker({
-            format: 'mm/dd/yyyy',
+            format: 'dd/mm/yyyy',
             todayHighlight: true,
             orientation: "bottom left",
             startDate: "+3d",

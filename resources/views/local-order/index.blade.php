@@ -81,7 +81,7 @@
                               <th>Customer Name</th>
                               <th>Confirmation Status</th>
                               <th>Order Status</th>
-                              <th>Total</th>
+                              {{-- <th>Total</th> --}}
                               <th>Created Date</th>
                               <th>Action</th>
                             </tr>
@@ -149,7 +149,7 @@ $(document).ready(function() {
               {data: 'customer_name', name: 'customer_name'},
               {data: 'confirmation_status', name: 'confirmation_status'},
               {data: 'order_status', name: 'order_status', orderable:false,searchable:false},
-              {data: 'total', name: 'total'},
+              // {data: 'total', name: 'total'},
               {data: 'created_at', name: 'created_at'},
               {data: 'action', name: 'action'},
           ],

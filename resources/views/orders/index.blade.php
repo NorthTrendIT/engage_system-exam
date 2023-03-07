@@ -171,7 +171,7 @@
                               @if(in_array(userrole(),[1]))
                               <th>Business Unit</th>
                               @endif
-                              <th>Total</th>
+                              {{-- <th>Total</th> --}}
                               <th>Created Date</th>
                               <th>Status</th>
                               <th>Action</th>
@@ -300,7 +300,7 @@
               @if(in_array(userrole(),[1]))
               {data: 'company', name: 'company'},
               @endif
-              {data: 'total', name: 'total'},
+              // {data: 'total', name: 'total'},
               {data: 'date', name: 'date'},
               {data: 'status', name: 'status'},
               {data: 'action', name: 'action'},
