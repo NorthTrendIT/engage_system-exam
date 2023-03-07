@@ -69,11 +69,12 @@ class CustomerDeliveryScheduleController extends Controller
                     foreach(@$input['customer_id'] as $key => $value){
 
                         foreach(explode(",", @$input['date']) as $d_key => $d_value){
-
+                            $schedule_date = strtr($d_value, '/', '-');
+                            $schedule_date_new = \Carbon\Carbon::createFromFormat('m-d-Y', $schedule_date)->format('Y-m-d');
                             CustomerDeliverySchedule::create(
                                                         [
                                                             'user_id' => $value,
-                                                            'date' => date("Y-m-d",strtotime(str_replace("/", "-", $d_value))),
+                                                            'date' => date("Y-m-d",strtotime($schedule_date_new)),
                                                         ]
                                                     );
 
@@ -94,11 +95,11 @@ class CustomerDeliveryScheduleController extends Controller
                                                         'date' => date("Y-m-d",strtotime(str_replace("/", "-", $value))),
                                                     ]
                                                 );
-                        
+
                     }
                 }
             }
-            
+
             if(isset($input['id'])){
                 $message = "Record updated successfully.";
 
@@ -270,7 +271,7 @@ class CustomerDeliveryScheduleController extends Controller
             $data->whereHas('customer', function($q) use ($territory){
                 $q->where('territory', $territory);
             });
-            
+
             $data = $data->limit(50)->get();
 
         }else{
@@ -361,7 +362,7 @@ class CustomerDeliveryScheduleController extends Controller
             }
 
             $data = $data->get();
-            
+
             $dates = array();
             if(count($data)){
                 foreach ($data as $value) {
