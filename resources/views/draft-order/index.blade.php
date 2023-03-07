@@ -63,7 +63,7 @@
                               <th>Sales Specialist Name</th>
                               <th>Confirmation Status</th>
                               <th>Order Status</th>
-                              <th>Total</th>
+                              {{-- <th>Total</th> --}}
                               <th>Due Date</th>
                               <th>Action</th>
                             </tr>
@@ -127,7 +127,7 @@ $(document).ready(function() {
               {data: 'sales_specialist_name', name: 'sales_specialist_name', orderable: false},
               {data: 'confirmation_status', name: 'confirmation_status'},
               {data: 'order_status', name: 'order_status'},
-              {data: 'total', name: 'total', orderable: false},
+              // {data: 'total', name: 'total', orderable: false},
               {data: 'due_date', name: 'due_date'},
               {data: 'action', name: 'action'},
           ],
