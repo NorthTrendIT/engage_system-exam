@@ -54,7 +54,13 @@ function get_user_role_module_access($role_id){
         if(@$value->module->slug){
             $access[$value->module->slug] = $value->access;
         }
+
+        $access['module_id'][] = $value->module_id;
+        $access['role_id'] = $value->role_id;
+        $access['parent_id'][] = @$value->module->parent_id;
     }
+    
+    // dd($access);
 
     return $access;
 }

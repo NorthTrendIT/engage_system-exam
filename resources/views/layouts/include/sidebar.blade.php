@@ -220,7 +220,16 @@
             @endif
 
             {{-- Customer Management --}}
-            @if(Auth::user()->role_id == 1 || ( (isset($access['view-customer-group']) && $access['view-customer-group'] == 1) || (isset($access['view-customer']) && $access['view-customer'] == 1) || (isset($access['view-class']) && $access['view-class'] == 1) ) )
+            @if(
+                  Auth::user()->role_id == 1 || 
+                  ( (isset($access['view-customer-group']) && $access['view-customer-group'] == 1) || 
+                  (isset($access['view-customer']) && $access['view-customer'] == 1) || 
+                  (isset($access['view-class']) && $access['view-class'] == 1) ) || 
+                  (isset($access['view-schedule']) && $access['view-schedule'] == 1)  || 
+                  (isset($access['module_id'][0]) && $access['module_id'][0] == '1001') || 
+                  (isset($access['view-sales-specialist-assignment']) && $access['view-sales-specialist-assignment'] == 1) 
+               )
+
             <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['customer.index','customer.show','customer-group.index','class.index','class.show', 'customers-sales-specialist.index', 'customers-sales-specialist.create', 'customers-sales-specialist.edit', 'customers-sales-specialist.show', 'customer-delivery-schedule.index', 'customer-delivery-schedule.create', 'customer-delivery-schedule.edit', 'customer-delivery-schedule.show', 'customers-sales-specialist.import.index', 'customer-delivery-schedule.all-view', 'customer-tagging.index'])) ? 'hover show' : '' }}">
                <span class="menu-link">
                   <span class="menu-icon">
@@ -280,16 +289,22 @@
                   </div>
                   @endif
 
-                  @if(Auth::user()->role_id == 1)
-                  <div class="menu-item">
-                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer-delivery-schedule.index', 'customer-delivery-schedule.create', 'customer-delivery-schedule.edit', 'customer-delivery-schedule.show', 'customer-delivery-schedule.all-view'])) ? 'active' : '' }}" href="{{ route('customer-delivery-schedule.index') }}">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Delivery Schedule</span>
-                     </a>
-                  </div>
+                  <?php $arr_module = (isset($access['module_id'])) ? $access['module_id'] : [] ?>
 
+                  @if(in_array('1001', array_values($arr_module)) || Auth::user()->role_id == 1)
+                     <div class="menu-item">
+                        <a class="menu-link {{ (in_array(request()->route()->getName(), ['customer-delivery-schedule.index', 'customer-delivery-schedule.create', 'customer-delivery-schedule.edit', 'customer-delivery-schedule.show', 'customer-delivery-schedule.all-view'])) ? 'active' : '' }}" href="{{ route('customer-delivery-schedule.index') }}">
+                           <span class="menu-bullet">
+                           <span class="bullet bullet-dot"></span>
+                           </span>
+                           <span class="menu-title">Delivery Schedule</span>
+                        </a>
+                     </div>
+                  @endif
+                  
+                  <?php $arr_parent = (isset($access['parent_id'])) ? $access['parent_id'] : [] ?>
+
+                  @if(in_array('72', array_values($arr_parent)) || Auth::user()->role_id == 1)
                   <div class="menu-item">
                      <a class="menu-link {{ (in_array(request()->route()->getName(), ['customers-sales-specialist.index', 'customers-sales-specialist.create', 'customers-sales-specialist.edit', 'customers-sales-specialist.show', 'customers-sales-specialist.import.index'])) ? 'active' : '' }}" href="{{ route('customers-sales-specialist.index') }}">
                         <span class="menu-bullet">
@@ -299,6 +314,7 @@
                      </a>
                   </div>
                   @endif
+                  
 
                </div>
             </div>
@@ -598,20 +614,18 @@
 
 
             {{-- Sales Specialist Management --}}
-            @if((isset($access['view-sales-specialist-assignment']) && $access['view-sales-specialist-assignment'] == 1))
+            {{-- @if((isset($access['view-sales-specialist-assignment']) && $access['view-sales-specialist-assignment'] == 1))
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['customers-sales-specialist.index'])) ? 'active' : '' }}" href="{{ route('customers-sales-specialist.index') }}">
                   <span class="menu-icon">
-                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                      <span class="svg-icon svg-icon-2">
                      <i class="fas fa-history"></i>
                      </span>
-                     <!--end::Svg Icon-->
                   </span>
                   <span class="menu-title">Sales Specialist Assignment</span>
                </a>
             </div>
-            @endif           
+            @endif            --}}
 
          </div>
          <!--end::Menu-->
