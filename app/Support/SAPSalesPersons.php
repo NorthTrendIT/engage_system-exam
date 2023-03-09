@@ -98,7 +98,14 @@ class SAPSalesPersons
                 foreach ($data['value'] as $value) {
                     $name = explode(" ", $value['SalesEmployeeName'], 2);
                     $email = strtolower($name[0]).$value['SalesEmployeeCode']."-".@$sap_connection->id.'@mailinator.com';
-                    $password = get_random_password();
+
+                    $check_user = User::where('email',$email)->first();
+                    if($check_user){
+                        $password = $check_user->password_text;
+                    }else{
+                        $password = get_random_password();
+                    } 
+                    //$password = get_random_password();
 
                     $insert = array(
                                     'department_id' => 2,
