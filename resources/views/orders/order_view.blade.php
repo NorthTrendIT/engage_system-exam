@@ -400,7 +400,7 @@
                                           <div class="fw-bold pe-10 text-gray-900 fs-7 ">Total Qty:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{ $total_qty }}</div>
+                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{ number_format($total_qty) }}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
