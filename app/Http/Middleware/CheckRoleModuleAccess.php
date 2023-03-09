@@ -520,6 +520,19 @@ class CheckRoleModuleAccess
                 }
             }
 
+            // Added validation access page =====================================================
+
+            $arr_module = (isset($access['module_id'])) ? $access['module_id'] : []; // delivey schedule
+            if(in_array($request->route()->getName(), ['customer-delivery-schedule.index']) && !in_array('1001', array_values($arr_module))){
+                return redirect()->route('home');
+            }
+
+            $arr_parent = (isset($access['parent_id'])) ? $access['parent_id'] : []; //ss asignment
+            if(in_array($request->route()->getName(), ['customers-sales-specialist.index']) && !in_array('72', array_values($arr_parent))){
+                return redirect()->route('home');
+            }
+
+            //end validation of accessing page ===================================================
 
             if(in_array($request->route()->getName(), ['news-and-announcement.index','news-and-announcement.get-all','news-and-announcement.show'])){
                 $status = true;

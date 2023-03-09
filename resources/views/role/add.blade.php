@@ -354,6 +354,65 @@
                             </li>
                             @endif
 
+                            @if(@$modules['delivery-schedule']['id'])
+                            <li>
+                              <i class="fa fa-plus"></i>
+                              <label>
+                                <input data-id="{{ @$modules['delivery-schedule']['id'] }}" type="checkbox" /> {{ @$modules['delivery-schedule']['title'] }}
+                              </label>
+
+                              <ul>
+                                @if(@$modules['add-schedule']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['add-schedule']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-schedule']['id'] }}]" /> {{ @$modules['add-schedule']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['view-schedule']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['view-schedule']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-schedule']['id'] }}]" /> {{ @$modules['view-schedule']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['edit-schedule']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['edit-schedule']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-schedule']['id'] }}]" /> {{ @$modules['edit-schedule']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['delete-schedule']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['delete-schedule']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['delete-schedule']['id'] }}]" /> {{ @$modules['delete-schedule']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['view-all-schedule']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['view-all-schedule']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-all-schedule']['id'] }}]" /> {{ @$modules['view-all-schedule']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+                              </ul>
+                            </li>
+                            @endif
+
+
+                            {{-- place here the temporary solution --}}
+                            <li>
+                              <i class="fa fa-plus"></i>
+                              <label> <input type="checkbox" data-id="1001" name="modules[1001]" class="hummingbird-end-node"  value="on"/> Delivery Schedule</label>
+                            </li>
+
+
                             @if(@$modules['sales-specialist-assignment']['id'])
                             <li>
                               <i class="fa fa-plus"></i>
@@ -396,6 +455,8 @@
                               </ul>
                             </li>
                             @endif
+
+
 
                           </ul>
                         </li>
