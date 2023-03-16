@@ -327,7 +327,7 @@ class HomeController extends Controller
         ini_set('max_execution_time', 18000);
             
         $sap = new SAPCustomer('NTMC', 'API' , 'AP@46amb', '1');
-        $sap->addSpecificCustomerData('C14071');
+        $sap->addSpecificCustomerData('C02524');
                 
         return "complete"; 
     }
