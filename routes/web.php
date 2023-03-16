@@ -556,3 +556,5 @@ Route::get('clear-cache', function () {
 
 
 Route::get('/testLog', 'App\Http\Controllers\CustomerController@testLog');
+Route::get('/upload-ss', 'App\Http\Controllers\Userupload@index');
+Route::post('/uploadfile','App\Http\Controllers\Userupload@showUploadFile');

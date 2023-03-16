@@ -10,7 +10,7 @@
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Invoices</h1>
       </div>
 
-      @if(userrole() != 4)
+      @if(userrole() == 1)
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->

@@ -10,6 +10,7 @@
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Customer</h1>
       </div>
 
+      @if(userrole() == 1)
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
@@ -17,6 +18,7 @@
         <!--end::Button-->
       </div>
       <!--end::Actions-->
+      @endif
 
     </div>
   </div>

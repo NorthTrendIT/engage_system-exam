@@ -13,7 +13,9 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="javascript:" class="btn btn-sm btn-primary sync-sales-persons" style="display:none">Sync Sales Persons</a>
+        @if(userrole() == 1)
+          <a href="javascript:" class="btn btn-sm btn-primary sync-sales-persons" style="display:none">Sync Sales Persons</a>
+        @endif
         <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary create-btn">Create</a>
         <!--end::Button-->
       </div>

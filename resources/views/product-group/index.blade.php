@@ -10,13 +10,15 @@
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Product Brand</h1>
       </div>
 
-      <!--begin::Actions-->
-      <div class="d-flex align-items-center py-1">
-        <!--begin::Button-->
-        <a href="javascript:" class="btn btn-sm btn-primary sync-product-groups">Sync Product Brands</a>
-        <!--end::Button-->
-      </div>
-      <!--end::Actions-->
+      @if(userrole() == 1)
+        <!--begin::Actions-->
+        <div class="d-flex align-items-center py-1">
+          <!--begin::Button-->
+          <a href="javascript:" class="btn btn-sm btn-primary sync-product-groups">Sync Product Brands</a>
+          <!--end::Button-->
+        </div>
+        <!--end::Actions-->
+      @endif
 
     </div>
   </div>
