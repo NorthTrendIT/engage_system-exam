@@ -205,7 +205,7 @@ class SAPCustomer
                 $data[] = $response['data'];
                 if($data){
 
-                    StoreCustomers::dispatch($data, 5); //1.APBW, 2.NTMC, 3.PHILCREST, 4.PHILSYN, 5.SOLID TREND
+                    StoreCustomers::dispatch($data, 1); //1.APBW, 2.NTMC, 3.PHILCREST, 4.PHILSYN, 5.SOLID TREND
                     if(isset($data['odata.nextLink'])){
 
                         SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
