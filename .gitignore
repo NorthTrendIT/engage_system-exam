@@ -17,3 +17,4 @@ yarn-error.log
 composer.lock
 /node_socket/node_modules
 /node_socket/package-lock.json
+/app/Providers/AppServiceProvider.php
