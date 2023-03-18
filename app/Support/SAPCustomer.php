@@ -96,6 +96,7 @@ class SAPCustomer
             $response = $this->getCustomerData($url);
         }else{
             $latestData = Customer::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
+            $latestData->updated_date = '2023-01-01';
             if(!empty($latestData)){
                 $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\'%20or%20UpdateDate%20eq%20NULL';
                 $response = $this->getCustomerData($url);
