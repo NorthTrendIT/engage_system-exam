@@ -322,7 +322,7 @@
                                       <?php
                                       
                                         // dd($val);
-                                      $total_qty += $val['order_quantity']; ?>
+                                      $total_qty += (int)$val['order_quantity']; ?>
 
                                     <tr class="fw-bolder text-gray-700 fs-5">
                                       <td class="text-center custom_td_order">
