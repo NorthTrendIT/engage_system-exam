@@ -195,6 +195,7 @@ class SAPOrderPost
             $status = $response['status'];
             $data = $response['data'];
             $order = LocalOrder::where('id', $id)->first();
+            
             if($status){
                 $order->confirmation_status = 'C';
                 $order->doc_entry = $data['DocEntry'];
@@ -205,10 +206,27 @@ class SAPOrderPost
                 $this->pushOrderDetailsInDatabase($data);
                 $this->updateNumAtCardInOrder($data['DocEntry']);
 
+                // Sales Specialist Email
+                if($order->sales_specialist_id != ""){
+                    $sales_person_email = $order->sales_specialist->email;
+                    $sales_name = $order->sales_specialist->sales_specialist_name;
+                    $customer_name = $order->customer;
+                    Log::info(print_r($customer_name,true));
+                    $sales_link = route('orders.show', @$order->quotation->id);
+                    //Log::info(print_r($sales_link,true));
+                    Mail::send('emails.order_placed', array('link'=>$sales_link, 'customer'=>@$customer_name->first_name." ".$customer_name->last_name), function($message) use($sales_person_email,$sales_name) {
+                        Log::info("here");
+                        $message->from('orders@northtrend.com', $sales_name);
+                        $message->to($sales_person_email, $sales_person_email)
+                                //->cc('itsupport@northtrend.com')
+                                ->subject('Order Confirmation');
+                    });
+                }
+
                 $emails = [];
                 $customer_mails = [];
                 $quotation = Quotation::where('doc_entry',$data['DocEntry'])->first();
-                $user = Customer::where('card_code',$data['CardCode'])->get();
+                $user = Customer::where('card_code',$data['CardCode'])->where('sap_connection_id',$quotation->sap_connection_id)->get();
 
                 foreach ($user as $key => $value) {
                     $group = CustomerGroup::where('code',@$value->group_code)->where('sap_connection_id',@$value->sap_connection_id)->first();
@@ -232,7 +250,7 @@ class SAPOrderPost
                         $mail_array = explode("; ", @$user_mail->email);
                         foreach($mail_array as $email){
                             if($email != 'COD ACCT'){
-                                Log::info("customer mail");
+                                // Log::info("customer mail");
                                 //Log::info(print_r($this->sap_connection_id));
                                 Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>@$user_mail->first_name." ".$user_mail->last_name), function($message) use($email,$from_name) {
                                     $message->from('orders@northtrend.com', $from_name);
@@ -259,24 +277,24 @@ class SAPOrderPost
                     //     }
                     // }
                     
-                    // if(@$group->emails == null || @$group->emails == ""){
-                    //     Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>$value->card_name), function($message) use($user,$from_name) {
-                    //         $message->from('orders@northtrend.com', $from_name);
-                    //         $message->to('mt@mailinator.com', 'orders@northtrend.com')
-                    //                 ->subject('Order Confirmation');
-                    //     });
-                    // }else{
-                    //    $emails = explode("; ", @$group->emails);                    
-                    //     foreach($emails as $email){
-                    //         if($email != 'COD ACCT'){
-                    //             Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>@$value->card_name), function($message) use($email,$from_name) {
-                    //                 $message->from('orders@northtrend.com', $from_name);
-                    //                 $message->to($email, $email)
-                    //                         ->subject('Order Confirmation');
-                    //             });
-                    //         }
-                    //     }
-                    // } 
+                    if(@$group->emails == null || @$group->emails == ""){
+                        // Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>$value->card_name), function($message) use($user,$from_name) {
+                        //     $message->from('orders@northtrend.com', $from_name);
+                        //     $message->to('mt@mailinator.com', 'orders@northtrend.com')
+                        //             ->subject('Order Confirmation');
+                        // });
+                    }else{
+                       $emails = explode("; ", @$group->emails);                    
+                        foreach($emails as $email){
+                            if($email != 'COD ACCT'){
+                                Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>@$value->card_name), function($message) use($email,$from_name) {
+                                    $message->from('orders@northtrend.com', $from_name);
+                                    $message->to($email, $email)
+                                            ->subject('Order Confirmation');
+                                });
+                            }
+                        }
+                    }
                 }
                 /*$group = CustomerGroup::where('code',@$user->group_code)->where('sap_connection_id',@$user->sap_connection_id)->first();
                 $emails = explode("; ", @$group->emails);
