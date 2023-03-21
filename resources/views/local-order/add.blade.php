@@ -4,7 +4,13 @@
 
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-
+<style type="text/css">
+    .custom_note{
+        background-color: #fff;
+        padding: 20px 23px;
+        border-radius: 10px;
+    }
+</style>
     <div class="toolbar" id="kt_toolbar">
         <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
             <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
@@ -180,6 +186,27 @@
                         </div>
                     </div>
 
+                    <div class="d-flex flex-wrap justify-content-between remark_div">
+                        <div class="col-xl-4">
+                            <div class="align-items-sm-center mb-7">
+                                <div class="">
+                                    <div class="flex-grow-1 me-2">
+                                        <span class="fs-7 fw-bolder">Remarks :</span>
+                                        <textarea type="text" class="form-control" placeholder="Remark" id="remark" name="remark" autocomplete="off" rows="5">{{@$edit->remarks}}</textarea>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-4">                                            
+                            
+                            <div class="flex-grow-1">
+                               <p class="custom_note">Note: Final amount of order will reflect <br>on the actual invoice.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="total-box-section">
 
                         <div class="row gy-5 g-xl-8">
@@ -211,12 +238,7 @@
                                                 <span style="text-align: right; width: 100%;" class="d-block text-primary price grandTotal">@if(isset($edit)) ₱ {{ $edit->total }} @else ₱ 0.00 @endif</span>
                                             </div>
                                         </div>
-
-                                        <div class="row" >
-                                            <div class="col-md-12 mb-3">
-                                                <span class="text-muted">Note:  Final amount of order will reflect <br> on the actual invoice.</span>
-                                            </div>
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>

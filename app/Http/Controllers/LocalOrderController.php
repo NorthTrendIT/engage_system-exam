@@ -124,7 +124,7 @@ class LocalOrderController extends Controller
                 $order->confirmation_status = "P";
                 $order->sap_connection_id = $customer->sap_connection_id;
                 $order->total = $input['total_amount'];
-                // $order->remarks = $input['remark'];
+                $order->remarks = $input['remark'];
                 $order->save();
 
                 $total = 0;
