@@ -48,6 +48,7 @@ class LocalOrderController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
+
         if(@$request->total_amount < 1){
             // unset($input['total_amount']);
             return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
@@ -123,6 +124,7 @@ class LocalOrderController extends Controller
                 $order->confirmation_status = "P";
                 $order->sap_connection_id = $customer->sap_connection_id;
                 $order->total = $input['total_amount'];
+                // $order->remarks = $input['remark'];
                 $order->save();
 
                 $total = 0;
@@ -181,7 +183,7 @@ class LocalOrderController extends Controller
             //     return abort(404);
             // }
 
-            return view('local-order.view', compact('data'));
+            return view('local-order.view', compact('data','local_order'));
         }
     }
 
@@ -333,6 +335,9 @@ class LocalOrderController extends Controller
                             $amount = @$row->quotation->doc_total ?? @$row->total ?? 0.00;
                             return '<b>₱ '. number_format_value($amount).'</b>';
                         })
+                        ->addColumn('total_ltr', function($row) {
+                            return @$row->items->sum('quantity');
+                        })
                         ->addColumn('due_date', function($row) {
                             return date('M d, Y',strtotime($row->due_date));
                         })
@@ -365,14 +370,14 @@ class LocalOrderController extends Controller
                             }
                             return $btn;
                         })
-                        ->rawColumns(['action', 'confirmation_status', 'total', 'order_status'])
+                        ->rawColumns(['action', 'confirmation_status', 'total', 'order_status','total_ltr'])
                         ->make(true);
     }
 
     function getCustomers(Request $request){
         $search = $request->search;
         // return @Auth::user()->id;
-        $data = Customer::select('id','card_name')->whereHas('sales_specialist', function($q){
+        $data = Customer::select('id','card_name', 'sap_connection_id')->whereHas('sales_specialist', function($q){
             $q->where('ss_id', @Auth::user()->id);
         });
 
@@ -390,7 +395,7 @@ class LocalOrderController extends Controller
         foreach($data as $value){
             $response[] = array(
                 "id"=>$value->id,
-                "text"=>$value->card_name
+                "text"=>$value->card_name. ' ('.$value->sap_connection->company_name.')'
             );
         }
 

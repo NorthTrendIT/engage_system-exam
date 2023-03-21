@@ -82,6 +82,7 @@
                               <th>Confirmation Status</th>
                               <th>Order Status</th>
                               {{-- <th>Total</th> --}}
+                              <th>Total Ltrs./Pcs</th>
                               <th>Created Date</th>
                               <th>Action</th>
                             </tr>
@@ -150,6 +151,7 @@ $(document).ready(function() {
               {data: 'confirmation_status', name: 'confirmation_status'},
               {data: 'order_status', name: 'order_status', orderable:false,searchable:false},
               // {data: 'total', name: 'total'},
+              {data: 'total_ltr', name: 'total_ltr'},
               {data: 'created_at', name: 'created_at'},
               {data: 'action', name: 'action'},
           ],
