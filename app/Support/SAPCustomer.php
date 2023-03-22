@@ -26,13 +26,15 @@ class SAPCustomer
 	protected $username;
     protected $password;
 	protected $log_id;
+    protected $search;
 
-    public function __construct($database, $username, $password, $log_id = false)
+    public function __construct($database, $username, $password, $log_id = false, $search)
     {
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
         $this->log_id = $log_id;
+        $this->search = $search;
 
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
@@ -97,8 +99,13 @@ class SAPCustomer
         }else{
             $latestData = Customer::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
-                $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
+                if($this->search){
+                    $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$this->search.'\')';
+                }else{
+                    $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
+                }
                 $response = $this->getCustomerData($url);
+                // Log::info(print_r($response,true));
             } else {
                 $response = $this->getCustomerData();
             }
@@ -113,7 +120,7 @@ class SAPCustomer
 
                 if(isset($data['odata.nextLink'])){
 
-                    SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
+                    SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id, $this->search);
                     $this->addCustomerDataInDatabase($data['odata.nextLink']);
                 }else{
                     if(!empty($this->log_id)){
@@ -175,9 +182,11 @@ class SAPCustomer
 
     public function addSpecificCustomerData($card_code = false)
     {
+        Log::info(print_r($card_code,true));
         if($card_code){
             $url = "/b1s/v1/BusinessPartners('".$card_code."')";
             $response = $this->getCustomerData($url);
+            //Log::info(print_r($response,true));
             // if($response['status']){
             //     $customer = $response['data'];
             //     if(!empty($customer)){
@@ -200,15 +209,15 @@ class SAPCustomer
             //                                 ])->update($data);
             //     }
             // }
-            Log::info(print_r($response,true));
+
             if($response['status']){
                 $data[] = $response['data'];
                 if($data){
 
-                    StoreCustomers::dispatch($data, 5); //1.APBW, 2.NTMC, 3.PHILCREST, 4.PHILSYN, 5.SOLID TREND
+                    StoreCustomers::dispatch($data,2);
                     if(isset($data['odata.nextLink'])){
-
-                        SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
+                        //Log::info(print_r($this->database,true));
+                        SyncNextCustomers::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id, $this->search);
                         $this->addCustomerDataInDatabase($data['odata.nextLink']);
                     }else{
                         if(!empty($this->log_id)){

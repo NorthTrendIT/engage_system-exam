@@ -28,13 +28,15 @@ class SyncNextCustomers implements ShouldQueue
     protected $username;
     protected $password;
     protected $log_id;
+    protected $search;
 
-    public function __construct($database, $username, $password, $next_url, $log_id = false)
+    public function __construct($database, $username, $password, $next_url, $log_id = false, $search)
     {
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
         $this->log_id = $log_id;
+        $this->search = $search;
 
         $this->next_url = $next_url;
     }
@@ -46,7 +48,7 @@ class SyncNextCustomers implements ShouldQueue
      */
     public function handle()
     {
-        $sap_customer = new SAPCustomer($this->database, $this->username, $this->password, $this->log_id);
+        $sap_customer = new SAPCustomer($this->database, $this->username, $this->password, $this->log_id, $this->search);
         
         // Save Data of customer in database
         $sap_customer->addCustomerDataInDatabase($this->next_url);

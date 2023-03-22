@@ -138,7 +138,7 @@ class CustomerController extends Controller
                                 ]);
 
                     // Save Data of customer in database
-                    SyncCustomers::dispatch($sap_connections->db_name, $sap_connections->user_name , $sap_connections->password, $log_id);
+                    SyncCustomers::dispatch($sap_connections->db_name, $sap_connections->user_name , $sap_connections->password, $log_id, $request->filter_search);
             }else{
                 $sap_connections = SapConnection::where('id', '!=', 5)->get();
 
@@ -156,7 +156,7 @@ class CustomerController extends Controller
 
 
                     // Save Data of customer in database
-                    SyncCustomers::dispatch($value->db_name, $value->user_name , $value->password, $log_id);
+                    SyncCustomers::dispatch($value->db_name, $value->user_name , $value->password, $log_id, $request->filter_search);
                 }
             }
             // // Save Data of customer in database
