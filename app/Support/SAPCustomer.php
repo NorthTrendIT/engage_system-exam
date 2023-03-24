@@ -100,9 +100,9 @@ class SAPCustomer
             $latestData = Customer::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
                 if($this->search){
-                    $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$this->search.'\')';
+                    $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$this->search.'\') and Valid eq \''.'tYES'.'\'';
                 }else{
-                    $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
+                    $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\' and Valid eq \''.'tYES'.'\'';
                 }
                 $response = $this->getCustomerData($url);
                 // Log::info(print_r($response,true));
