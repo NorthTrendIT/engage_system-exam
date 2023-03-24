@@ -331,7 +331,9 @@ class UserController extends Controller
 
     public function getAll(Request $request){
 
-        $data = User::where('users.id','!=',1);
+        $data = User::where('users.id','!=',1)->whereHas('sap_connection',function($q){
+            $q->WhereNull('deleted_at');
+        });
 
         if($request->filter_role != ""){
             $data->where('role_id',$request->filter_role);

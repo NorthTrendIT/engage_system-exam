@@ -223,7 +223,9 @@ class ProductController extends Controller
 
   public function getAll(Request $request){
 
-    $data = Product::query();
+    $data = Product::whereHas('sap_connection',function($q){
+              $q->WhereNull('deleted_at');
+            });
 
     if($request->filter_status != ""){
       $data->where('is_active',$request->filter_status);

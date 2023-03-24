@@ -171,9 +171,9 @@ class CustomerController extends Controller
 
     public function getAll(Request $request){
 
-        $data = Customer::/*whereHas('group',function($q){
-                            $q->where('name','!=','EMPLOYEE');
-                        })*/query();
+        $data = Customer::whereHas('sap_connection',function($q){
+                    $q->WhereNull('deleted_at');
+                }); //query();
 
         // if($request->filter_status != ""){
         //     $data->where('is_active',$request->filter_status);
