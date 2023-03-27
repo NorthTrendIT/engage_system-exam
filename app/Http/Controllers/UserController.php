@@ -331,9 +331,7 @@ class UserController extends Controller
 
     public function getAll(Request $request){
 
-        $data = User::where('users.id','!=',1)->whereHas('sap_connection',function($q){
-            $q->WhereNull('deleted_at');
-        });
+        $data = User::where('users.id','!=',1);
 
         if($request->filter_role != ""){
             $data->where('role_id',$request->filter_role);
@@ -355,6 +353,10 @@ class UserController extends Controller
         if(userrole() != 1){
             $data->where('created_by',Auth::id());
         }
+
+        $data->orwhereHas('sap_connection',function($q){
+            $q->WhereNull('deleted_at');
+        });
 
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
