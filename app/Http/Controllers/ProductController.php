@@ -223,7 +223,7 @@ class ProductController extends Controller
 
   public function getAll(Request $request){
 
-    $data = Product::whereHas('sap_connection',function($q){
+    $data = Product::whereRaw('last_sync_at > "2023-03-27 09:39:36"')->whereHas('sap_connection',function($q){
               $q->WhereNull('deleted_at');
             });
 

@@ -228,8 +228,8 @@ class ProductListController extends Controller
 
         $where = array('products.is_active' => 1);
 
-        $products = Product::where($where);
-                //->whereRaw('quantity_on_stock - quantity_ordered_by_customers > 0');
+        $products = Product::where($where)
+                             ->whereRaw('last_sync_at > "2023-03-27 09:39:36"');
 
         $products->whereHas('group', function($q){
             $q->where('is_active', true);
@@ -554,7 +554,7 @@ class ProductListController extends Controller
 
         $where = array('is_active' => true);
 
-        $products = Product::where($where)->limit(50);
+        $products = Product::where($where)->whereRaw('last_sync_at > "2023-03-27 09:39:36"')->limit(50);
 
         $products->whereHas('group', function($q){
             $q->where('is_active', true);

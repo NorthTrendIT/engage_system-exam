@@ -643,7 +643,7 @@ class CartController extends Controller
 
         //$where = array('is_active' => 1);
 
-        $products = Product::query();
+        $products = Product::whereRaw('last_sync_at > "2023-03-27 09:39:36"');
 
         $products->where('products.is_active',1);
 
