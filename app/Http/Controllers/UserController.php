@@ -354,10 +354,6 @@ class UserController extends Controller
             $data->where('created_by',Auth::id());
         }
 
-        $data->orwhereHas('sap_connection',function($q){
-            $q->WhereNull('deleted_at');
-        });
-
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
         });
