@@ -164,7 +164,7 @@ class ProductListController extends Controller
             // $sap_connection_id = @Auth::user()->sap_connection_id;
             // $customer_price_list_no = @Auth::user()->customer->price_list_num;
 
-            $customer_id = explode(',', Auth::user()->multi_customer_id);
+            $customer_id = explode(',', Auth::user()->customer_id);
             $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
             $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
             
@@ -471,6 +471,7 @@ class ProductListController extends Controller
                             'id' => @$request->customer_id,
                         );
                 $customer = Customer::where($where)->first();
+                $customer->sap_connection_id = (@$customer->sap_connection_id == '5') ? 1 : @$customer->sap_connection_id;
                 if(!is_null($customer)){
                     $customer_id = array( @$customer->id );
                     $sap_connection_id = array( @$customer->sap_connection_id);

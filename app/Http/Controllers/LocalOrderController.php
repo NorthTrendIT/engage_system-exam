@@ -407,16 +407,18 @@ class LocalOrderController extends Controller
         $data = app(ProductListController::class)->getProductData($request);
         $products = $data['products'];
 
-        if(isset($data['products'])){
-            if(isset($request->product_ids) && count($request->product_ids)){
-                $products->whereNotIn('id', $request->product_ids);
+        if(isset($request->customer_id))
+        {
+            if(isset($data['products'])){
+                if(isset($request->product_ids) && count($request->product_ids)){
+                    $products->whereNotIn('id', $request->product_ids);
+                }
+
+                $products = $products->get();
+            }else{
+                $products = collect();
             }
-
-            $products = $products->get();
-        }else{
-            $products = collect();
         }
-
         return $products;
     }
 
