@@ -228,13 +228,14 @@ class CartController extends Controller
                     }
                 }else{
                     $due_date = strtr($request->due_date, '/', '-');
+                    $due_date_new = \Carbon\Carbon::createFromFormat('m-d-Y', $due_date)->format('Y-m-d');
                     $cart = new Cart();
                     $cart->qty = $request->qty;
                     $cart->customer_id = @$sap_customer_arr[$product->sap_connection_id];
                     $cart->product_id = $id;
                     $cart->address = @$request->address;
                     if($request->due_date != ""){
-                        $cart->due_date = date('Y-m-d',strtotime($due_date));
+                        $cart->due_date = date('Y-m-d',strtotime($due_date_new));
                     }else{
                         $cart->due_date = '';
                     }
