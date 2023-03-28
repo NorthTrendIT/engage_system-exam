@@ -210,7 +210,7 @@ class CartController extends Controller
 
         $sap_customer_arr = get_sap_customer_arr(@Auth::user());
         if(isset($id)){
-
+                $request->due_date = ($request->due_date === null) ? date('m/d/Y') : $request->due_date;
                 $cart_info = Cart::where(['customer_id'=>@$sap_customer_arr[$product->sap_connection_id],'product_id'=>$id])->first();
                 if($cart_info){
                     $due_date = strtr($request->due_date, '/', '-');
@@ -221,7 +221,6 @@ class CartController extends Controller
                     $cart->product_id = $id;
                     $cart->address = @$request->address;
                     if($request->due_date != ""){
-                        // $cart->due_date = date('Y-m-d',strtotime($due_date));
                         $cart->due_date = date('Y-m-d',strtotime($due_date_new));
                     }else{
                         $cart->due_date = '';
