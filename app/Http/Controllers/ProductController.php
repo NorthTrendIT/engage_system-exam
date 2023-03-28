@@ -646,7 +646,7 @@ class ProductController extends Controller
       $filter = json_decode(base64_decode($request->data));
     }
 
-    $data = Product::orderBy('created_date', 'desc');
+    $data = Product::whereRaw('last_sync_at > "2023-03-27 09:39:36"')->orderBy('created_date', 'desc');
 
     if(@$filter->filter_status != ""){
       $data->where('is_active',$filter->filter_status);
