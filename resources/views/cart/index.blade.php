@@ -404,7 +404,7 @@ $(document).ready(function() {
     var cart_due_date = "{{@$cart_address->due_date}}";
     if(cart_due_date != "" && cart_due_date != "0000-00-00"){
         var split = cart_due_date.split("-");
-        var final_date = split[2]+"/"+split[1]+"/"+split[0];
+        var final_date = split[1]+"/"+split[2]+"/"+split[0];
         $('[name="due_date"]').val(final_date);
     }
     
@@ -436,7 +436,7 @@ $(document).ready(function() {
         $dates = @Auth::user()->customer_delivery_schedules->where('date','>',date("Y-m-d"));
         if(count($dates)){
             $dates = array_map( function ( $t ) {
-                    return date('d/m/Y',strtotime($t));
+                    return date('m/d/Y',strtotime($t));
                 }, array_column( $dates->toArray(), 'date' ) );
         }
     @endphp
@@ -461,7 +461,7 @@ $(document).ready(function() {
         format: 'mm/dd/yyyy',
         todayHighlight: true,
         orientation: "bottom left",
-        startDate: "+0d",
+        startDate: "+3d",
         autoclose: true,
 
         @if(count($dates))
@@ -672,11 +672,13 @@ $(document).ready(function() {
                         } else {
                             toast_error(data.message);
                             $('[type="submit"]').prop('disabled', false);
+                            hide_loader();
                         }
                     },
                     error: function () {
                         toast_error("Something went to wrong !");
                         $('[type="submit"]').prop('disabled', false);
+                        hide_loader();
                     },
                 });
             }
@@ -684,7 +686,9 @@ $(document).ready(function() {
             
         }
     });
-
+    $('#kt_daterangepicker_1').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+    });
     function validate_form(){
         var validator = $("#myForm").validate({
             errorClass: "is-invalid",
