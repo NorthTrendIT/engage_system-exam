@@ -49,10 +49,10 @@ class LocalOrderController extends Controller
     {
         $input = $request->all();
 
-        if(@$request->total_amount < 1){
-            // unset($input['total_amount']);
-            return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
-        }
+        // if(@$request->total_amount < 1){
+        //     // unset($input['total_amount']);
+        //     return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
+        // }
 
         $customer = Customer::find($input['customer_id']);
         $address = CustomerBpAddress::find($input['address_id']);
@@ -96,10 +96,10 @@ class LocalOrderController extends Controller
                     //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity value must be less then '.$avl_qty.'.'];
                     // }
 
-                    $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
-                    if($price < 1){
-                        return $response = ['status'=>false,'message'=>'The product "'.@$product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
-                    }
+                    // $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
+                    // if($price < 1){
+                    //     return $response = ['status'=>false,'message'=>'The product "'.@$product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
+                    // }
                 }
             }
 
