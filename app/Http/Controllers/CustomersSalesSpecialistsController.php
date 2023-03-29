@@ -22,7 +22,7 @@ use Excel;
 
 use Validator;
 use DataTables;
-//use App\Models\salesAssignment;
+use App\Models\salesAssignment;
 
 class CustomersSalesSpecialistsController extends Controller
 {
@@ -64,7 +64,7 @@ class CustomersSalesSpecialistsController extends Controller
         }
 
         $rules = array(
-                    //'assignment_name' => 'required',
+                    'assignment_name' => 'required',
                     'company_id' => 'required|exists:sap_connections,id',
                     
                     'customer_selection' => 'required',
@@ -76,7 +76,7 @@ class CustomersSalesSpecialistsController extends Controller
                     // 'customer_ids.*' => 'required|exists:customers,id,sap_connection_id,'.$input['company_id'],
 
                     'ss_ids' => 'required',
-                    'ss_ids.*' => 'required|exists:users,id,sap_connection_id,'.$sap_connection_id,
+                    'ss_ids.*' => 'required|exists:users,id',
 
                     'product_group_id' => 'nullable|array',
                     'product_group_id.*' => 'exists:product_groups,id,sap_connection_id,'.$sap_connection_id,
@@ -112,75 +112,94 @@ class CustomersSalesSpecialistsController extends Controller
 
             $customer_ids = [];
             if(isset($input['id'])){
-                // $assignment = salesAssignment::find($input['id']);
-                // $customer_ids = CustomersSalesSpecialist::where('assignment_id',$assignment->id)->groupBy('customer_id')->pluck('customer_id')->toArray();
+                $assignment = salesAssignment::find($input['id']);
+                $assignment->assignment_name =  $input['assignment_name'];
+                $assignment->save();
+                $extra_ids = CustomersSalesSpecialist::where('assignment_id',$assignment->id)->groupBy('customer_id')->pluck('customer_id')->toArray();
+                $customer_ids = $input['customer_ids'];
+                #
 
                 $message = "Record updated successfully.";
 
-                $customer_ids = array( $input['id'] );
+                //$customer_ids = array( $input['id'] );
                 //save log
                 add_log(42, $input);
-            }else{
+            }else{                
+                
                 $message = "Record created successfully.";
 
                 //save log
                 add_log(41, $input);
 
-                // $assignment = new salesAssignment();
-                // $assignment->assignment_name = $request->assignment_name;
-                // $assignment->save();
+                $assignment = new salesAssignment();
+                $assignment->assignment_name = $request->assignment_name;
+                $assignment->save();
                 
                 if(@$request->customer_selection == "specific"){
                     $customer_ids = $input['customer_ids'];
+                    $extra_ids = $customer_ids;
                 }else{
                     $customer_ids = Customer::doesnthave('sales_specialist')
                                             ->orderby('card_name','asc')
                                             ->where('sap_connection_id',$input['company_id'])
-                                            ->where('is_active',1)
+                                            //->where('is_active',1)
                                             ->whereHas('group', function($q) use ($input){
                                                 $q->whereIn('id', $input['customer_group_ids']);
                                             })->pluck('id')->toArray();
 
+                    if(isset($input['customer_ids'])){
+                        $extra_ids = $input['customer_ids'];
+                    }else{
+                        $extra_ids = $customer_ids;
+                    }
+
                 }
             }
-
+            CustomersSalesSpecialist::where('assignment_id', $assignment->id)->delete();
+            CustomerProductGroup::where('assignment_id', $assignment->id)->delete();
+            CustomerProductItemLine::where('assignment_id', $assignment->id)->delete();
+            CustomerProductTiresCategory::where('assignment_id', $assignment->id)->delete();
+            //print_r($customer_ids);exit();
             foreach($customer_ids as $key => $customer){
-                CustomersSalesSpecialist::where('customer_id', $customer)->delete();
+                //CustomersSalesSpecialist::where('assignment_id', $assignment->id)->delete();
                 if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
                     foreach($input['ss_ids'] as $value){
                         $ss = new CustomersSalesSpecialist();
-                        //$ss->assignment_id = $assignment->id;
+                        $ss->assignment_id = $assignment->id;
                         $ss->customer_id = $customer;
                         $ss->ss_id = $value;
                         $ss->save();
                     }
                 }
 
-                CustomerProductGroup::where('customer_id', $customer)->delete();
+                //CustomerProductGroup::whereIn('customer_id', $extra_ids)->delete();
                 if(isset($input['product_group_id']) && !empty($input['product_group_id'])){
                     foreach($input['product_group_id'] as $value){
                         $ss = new CustomerProductGroup();
                         $ss->customer_id = $customer;
+                        $ss->assignment_id = $assignment->id;
                         $ss->product_group_id = $value;
                         $ss->save();
                     }
                 }
 
-                CustomerProductItemLine::where('customer_id', $customer)->delete();
+                //CustomerProductItemLine::whereIn('customer_id', $extra_ids)->delete();
                 if(isset($input['product_item_line_id']) && !empty($input['product_item_line_id'])){
                     foreach($input['product_item_line_id'] as $value){
                         $ss = new CustomerProductItemLine();
                         $ss->customer_id = $customer;
+                        $ss->assignment_id = $assignment->id;
                         $ss->product_item_line_id = $value;
                         $ss->save();
                     }
                 }
 
-                CustomerProductTiresCategory::where('customer_id', $customer)->delete();
+                //CustomerProductTiresCategory::whereIn('customer_id', $extra_ids)->delete();
                 if(isset($input['product_tires_category_id']) && !empty($input['product_tires_category_id'])){
                     foreach($input['product_tires_category_id'] as $value){
                         $ss = new CustomerProductTiresCategory();
                         $ss->customer_id = $customer;
+                        $ss->assignment_id = $assignment->id;
                         $ss->product_tires_category_id = $value;
                         $ss->save();
                     }
@@ -201,10 +220,10 @@ class CustomersSalesSpecialistsController extends Controller
      */
     public function show($id)
     {
-        $data = Customer::has('sales_specialist')->findOrFail($id);
-        // $data = salesAssignment::with(['assignment' => function($query){
-        //     $query->groupBy('customer_id');
-        // }])->findOrFail($id);
+        //$data = Customer::has('sales_specialist')->findOrFail($id);
+        $data = salesAssignment::with(['assignment' => function($query){
+            $query->groupBy('customer_id');
+        }])->findOrFail($id);
         // echo "<pre>";
         // print_r($data);exit();
         return view('customers-sales-specialist.view',compact('data'));
@@ -218,16 +237,42 @@ class CustomersSalesSpecialistsController extends Controller
      */
     public function edit($id)
     {
-        $edit = Customer::has('sales_specialist')->findOrFail($id);
-        $company = SapConnection::where('id', $edit->sap_connection_id)->get();
+        $edit = salesAssignment::with(['assignment' => function($query){
+            $query->groupBy('customer_id');
+        }])->findOrFail($id);
+        $brand = salesAssignment::with(['brand' => function($query){
+            $query->groupBy('product_group_id');
+        }])->findOrFail($id);
 
-        // $edit = salesAssignment::with(['assignment' => function($query){
-        //     $query->groupBy('customer_id');
-        // }])->findOrFail($id);
-        // $company = SapConnection::all();
-        // echo "<pre>";
-        // print_r($edit->assignment);exit();
-        return view('customers-sales-specialist.add',compact('edit', 'company'));
+        $item = salesAssignment::with(['item' => function($query){
+            $query->groupBy('product_item_line_id');
+        }])->findOrFail($id);
+
+        $category = salesAssignment::with(['category' => function($query){
+            $query->groupBy('product_tires_category_id');
+        }])->findOrFail($id);
+        
+        $company = SapConnection::all();
+        $ss_ids = salesAssignment::with(['assignment' => function($query){
+            $query->groupBy('ss_id');
+        }])->findOrFail($id);
+
+        $groups = [];
+        foreach($edit->assignment as $key => $val){
+
+            $res = array_search($val->customer->group->id, array_column($groups, 'id'));
+            if($res == ''){
+                $ar = array(
+                    'id'=>$val->customer->group->id,
+                    'name'=>$val->customer->group->name,
+                );
+                if(!in_array($val->customer->group->name, array_column($groups,'name'))){
+                    array_push($groups,$ar); 
+                }
+            }   
+        }   
+        // dd($company);           
+        return view('customers-sales-specialist.add',compact('edit', 'company','ss_ids','brand','item','category','groups'));
     }
 
     /**
@@ -250,23 +295,17 @@ class CustomersSalesSpecialistsController extends Controller
      */
     public function destroy($id)
     {
-        // $del = salesAssignment::find($id);
-        // $data = CustomersSalesSpecialist::where('assignment_id', $del->id)->pluck('customer_id')->toArray();
-        // if(count($data) > 0){
-        $data = CustomersSalesSpecialist::where('customer_id', $id)->count();
-        if($data > 0){
+        $del = salesAssignment::find($id);
+      
+        if($del){
 
             //save log
             add_log(43, ['id'=>$id]);
-            CustomersSalesSpecialist::where('customer_id', $id)->delete();
-            CustomerProductGroup::where('customer_id', $id)->delete();
-            CustomerProductItemLine::where('customer_id', $id)->delete();
-            CustomerProductTiresCategory::where('customer_id', $id)->delete();
-            // salesAssignment::where('id',$id)->delete();
-            // CustomersSalesSpecialist::whereIn('customer_id', $data)->delete();
-            // CustomerProductGroup::whereIn('customer_id', $data)->delete();
-            // CustomerProductItemLine::whereIn('customer_id', $data)->delete();
-            // CustomerProductTiresCategory::whereIn('customer_id', $data)->delete();
+            salesAssignment::where('id',$id)->delete();
+            CustomersSalesSpecialist::where('assignment_id', $id)->delete();
+            CustomerProductGroup::where('assignment_id', $id)->delete();
+            CustomerProductItemLine::where('assignment_id', $id)->delete();
+            CustomerProductTiresCategory::where('assignment_id', $id)->delete();
 
             $response = ['status'=>true,'message'=>'Record deleted successfully !'];
         }else{
@@ -311,74 +350,84 @@ class CustomersSalesSpecialistsController extends Controller
 
 
     public function getAll(Request $request){
-        ini_set('memory_limit', '10240M');
-        $data = CustomersSalesSpecialist::with(['customer','sales_person'])
-                                            ->has('customer')
-                                            ->has('sales_person')
-                                            ->select('ss_id','customer_id')
-                                            ->orderBy('id', 'desc');
 
-        //$data = salesAssignment::with('assignment')->orderBy('id', 'desc');
+        $data = salesAssignment::with(['assignment','assignment.customer','assignment.sales_person', 'assignment.customer.group'])
+                                ->has('assignment.customer')
+                                ->has('assignment.customer.group')
+                                ->has('assignment.sales_person')
+                                ->orderBy('id', 'desc');
 
         if($request->filter_company != ""){
-            $data->whereHas('customer', function($q) use ($request){
+            $data->whereHas('assignment.customer', function($q) use ($request){
                 $q->where('sap_connection_id',$request->filter_company);
             });
         }
 
         if($request->filter_group != ""){
-            $data->whereHas('customer.group', function($q) use ($request){
+            $data->whereHas('assignment.customer.group', function($q) use ($request){
                 $q->where('code',$request->filter_group);
             });
         }
 
-        //$data = $data->get();
-
-        $data = $data->get()->groupBy('customer_id');
+        $data = $data->get();
 
         return DataTables::of($data)
                             ->addIndexColumn()
-                            ->addColumn('sales_specialist', function($row) {
-
-                                $descriptions = array_map( function ( $t ) {
-                                               return $t['sales_specialist_name'];
-                                            }, array_column( $row->toArray(), 'sales_person' ) );
-
-                                return implode(" | ", $descriptions);
+                            ->addColumn('branch', function($row){
+                                $branch = '';
+                                $count = 0;
+                                foreach($row->assignment as $value){
+                                    $comma = ($count > 0) ? ', ' : '';
+                                    if(strpos($branch, $value->customer->group->name) === false){
+                                        $branch .= $comma.$value->customer->group->name;
+                                    }
+                                    $count ++;
+                                }
+                                return $branch;
                             })
-                            ->addColumn('customer', function($row) {
-                                return @$row->first()->customer->card_name ?? "-";
+                            ->addColumn('customer', function($row){
+                                $customer = '';
+                                $count = 0;
+                                foreach($row->assignment as $value){
+                                    $comma = ($count > 0) ? ', ' : '';
+                                    if(strpos($customer, $value->customer->card_name) === false){
+                                        $customer .= $comma.$value->customer->card_name;
+                                    }
+                                    $count ++;
+                                }
+                                return $customer;
                             })
-                            ->addColumn('group', function($row) {
-                                return @$row->first()->customer->group->name ?? "-";
+                            ->addColumn('sales_personnel', function($row){
+                                $sales_person = '';
+                                $count = 0;
+                                foreach($row->assignment as $value){
+                                    $comma = ($count > 0) ? ', ' : '';
+                                    if(strpos($sales_person, $value->sales_person->email) === false){
+                                        $sales_person .= $comma.$value->sales_person->email;
+                                    }
+                                    $count ++;
+                                }
+                                return $sales_person;
                             })
-                            // ->addColumn('assignment_name', function($row) {
-                            //     return $row->assignment_name;
-                            // })
+                            ->addColumn('assignment_name', function($row) {
+                                return $row->assignment_name;
+                            })
                             ->addColumn('company', function($row) {
-                                //return @$row->assignment->first()->customer->sap_connection->company_name;
-                                return @$row->first()->customer->sap_connection->company_name;
+                                return @$row->assignment->first()->customer->sap_connection->company_name;
                             })
                             ->addColumn('action', function($row) {
-                                // $btn = '<a href="' . route('customers-sales-specialist.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
-                                //     <i class="fa fa-pencil"></i>
-                                //   </a>';
-                                // $btn .= '<a href="javascript:void(0)" data-url="' . route('customers-sales-specialist.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete mx-2">
-                                //     <i class="fa fa-trash"></i>
-                                //   </a>';
-                                // $btn .= '<a href="' . route('customers-sales-specialist.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
-                                //     <i class="fa fa-eye"></i>
-                                //   </a>';
+                                $btn = '<a href="' . route('customers-sales-specialist.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                    <i class="fa fa-pencil"></i>
+                                  </a>';
+                                $btn .= '<a href="javascript:void(0)" data-url="' . route('customers-sales-specialist.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete mx-2">
+                                    <i class="fa fa-trash"></i>
+                                  </a>';
+                                $btn .= '<a href="' . route('customers-sales-specialist.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
+                                  </a>';
 
-                                $btn = '<a href="' . route('customers-sales-specialist.edit',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
-                                <i class="fa fa-pencil"></i>
-                                  </a>';
-                                $btn .= '<a href="javascript:void(0)" data-url="' . route('customers-sales-specialist.destroy',$row->first()->customer_id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete mx-2">
-                                <i class="fa fa-trash"></i>
-                                  </a>';
-                                $btn .= '<a href="' . route('customers-sales-specialist.show',$row->first()->customer_id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
-                                <i class="fa fa-eye"></i>
-                                  </a>';
+
+
                                 return $btn;
                             })
                             ->rawColumns(['action'])
@@ -441,9 +490,12 @@ class CustomersSalesSpecialistsController extends Controller
                 $sap_connection_id = 1;
             }
 
-            $data = User::where('sap_connection_id', $sap_connection_id)
-                            ->where('role_id',2)
-                            ->where('is_active', 1)
+            $data = User:://where('sap_connection_id', $sap_connection_id)
+                            where('is_active', 1)
+                            ->whereHas('role',function($q){
+                                $q->where('name','like','%Sales Personnel%');
+                            })
+                            //->where('is_active', 1)
                             ->orderby('sales_specialist_name','asc')
                             ->select('id','sales_specialist_name','email')
                             ->limit(50);
@@ -513,7 +565,14 @@ class CustomersSalesSpecialistsController extends Controller
 
         $response = array();
         if($request->sap_connection_id){
-            $data = CustomerGroup::orderby('name','asc')->where('sap_connection_id',$request->sap_connection_id)->limit(50);
+            $data = CustomerGroup::orderby('name','asc')->where('sap_connection_id',$request->sap_connection_id)
+            ->whereHas('customer',function ($query){
+                $query->doesnthave('sales_specialist')
+                        //->where('is_active',1)
+                ->limit(50);
+            })
+            ->limit(50);
+            
 
             if($search != ''){
                 $data->where('name', 'like', '%' .$search . '%');

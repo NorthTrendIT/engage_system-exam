@@ -302,16 +302,8 @@ Route::middleware(['auth'])->group(function(){
             Route::post('warranty/store-diagnostic-report', 'App\Http\Controllers\WarrantyController@storeDiagnosticReport')->name('warranty.store-diagnostic-report');
             Route::get('warranty/export-view/{id}', 'App\Http\Controllers\WarrantyController@exportView')->name('warranty.export-view');
 
-            // moved out from super-admin middle ware================================================
-            Route::resource('customer-delivery-schedule','App\Http\Controllers\CustomerDeliveryScheduleController');
-            Route::post('customer-delivery-schedule/get-all', 'App\Http\Controllers\CustomerDeliveryScheduleController@getAll')->name('customer-delivery-schedule.get-all');
-            Route::post('customer-delivery-schedule/get-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getCustomerList')->name('customer-delivery-schedule.get-customer-list');
-            Route::post('customer-delivery-schedule/get-territory/','App\Http\Controllers\CustomerDeliveryScheduleController@getTerritory')->name('customer-delivery-schedule.get-territory');
-            // =======================================================================================
 
         });
-
-        //end middle ware check-access
 
         // Customer Orders
         Route::resource('customer-order','App\Http\Controllers\CustomerOrderController');
@@ -370,13 +362,18 @@ Route::middleware(['auth'])->group(function(){
 
 
         // Customer Delivery Schedule
-        Route::get('customer-delivery-schedule/all-view', 'App\Http\Controllers\CustomerDeliveryScheduleController@allView')->name('customer-delivery-schedule.all-view');        
-
+        Route::get('customer-delivery-schedule/all-view', 'App\Http\Controllers\CustomerDeliveryScheduleController@allView')->name('customer-delivery-schedule.all-view');
+        
     });
 
     // For SS Only
     Route::get('customer-delivery-schedule/ss-view', 'App\Http\Controllers\CustomerDeliveryScheduleController@ssView')->name('customer-delivery-schedule.ss-view');
     Route::post('customer-delivery-schedule/get-ss-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getSsCustomerList')->name('customer-delivery-schedule.get-ss-customer-list');
+
+    Route::resource('customer-delivery-schedule','App\Http\Controllers\CustomerDeliveryScheduleController');
+    Route::post('customer-delivery-schedule/get-all', 'App\Http\Controllers\CustomerDeliveryScheduleController@getAll')->name('customer-delivery-schedule.get-all');
+    Route::post('customer-delivery-schedule/get-customer-list/','App\Http\Controllers\CustomerDeliveryScheduleController@getCustomerList')->name('customer-delivery-schedule.get-customer-list');
+    Route::post('customer-delivery-schedule/get-territory/','App\Http\Controllers\CustomerDeliveryScheduleController@getTerritory')->name('customer-delivery-schedule.get-territory');
 
 
     // Super Admin Routes
@@ -422,12 +419,14 @@ Route::middleware(['auth'])->group(function(){
         Route::post('promotion/get-market-sectors/','App\Http\Controllers\PromotionsController@getMarketSectors')->name('promotion.get-market-sectors');
         Route::post('promotion/check-title/','App\Http\Controllers\PromotionsController@checkTitle')->name('promotion.checkTitle');
 
+
         // Company
         Route::resource('sap-connection','App\Http\Controllers\SapConnectionController', [
             'names' => [
                 'index' => 'sap-connection.index',
                 'store' => 'sap-connection.store',
                 'edit' => 'sap-connection.edit',
+                'destroy' => 'sap-connection.destroy',
             ]
         ]);
         Route::post('sap-connection/get-all', 'App\Http\Controllers\SapConnectionController@getAll')->name('sap-connection.get-all');
@@ -442,7 +441,7 @@ Route::middleware(['auth'])->group(function(){
 
     });
 
-
+    
     // Report
     Route::resource('report', 'App\Http\Controllers\ReportController');
     Route::prefix('reports')->namespace('App\Http\Controllers\Reports')->name('reports.')->group(function(){
@@ -555,6 +554,5 @@ Route::get('clear-cache', function () {
 });
 
 
-Route::get('/testLog', 'App\Http\Controllers\CustomerController@testLog');
 Route::get('/upload-ss', 'App\Http\Controllers\Userupload@index');
 Route::post('/uploadfile','App\Http\Controllers\Userupload@showUploadFile');

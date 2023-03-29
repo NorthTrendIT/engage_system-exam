@@ -1,5 +1,17 @@
 @extends('layouts.master')
 
+@push('css')
+<style>
+ #myTable .custom_width{
+     max-width: 100px !important;
+     white-space: nowrap; 
+     width: 50px; 
+     overflow: hidden;
+     text-overflow: ellipsis;
+ }  
+</style>
+@endpush
+
 @section('title','Customers Sales Specialist')
 
 @section('content')
@@ -71,15 +83,16 @@
                     <!--begin::Table container-->
                     <div class="table-responsive">
                        <!--begin::Table-->
-                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered" id="myTable">
                           <!--begin::Table head-->
                           <thead>
                             <tr>
                               <th>No.</th>
                               <th>Business Unit</th>
-                              <!-- <th>Assignment Name</th> -->
+                              <th>Branch</th>
+                              <th>Assignment Name</th>
                               <th>Customer</th>
-                              <th>Customer Group</th>
+                              <th>Sales Personnel</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -151,10 +164,14 @@
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'company', name: 'company'},
-              // {data:'assignment_name', name:'assignment_name'},
+              {data: 'branch', name: 'branch'},
+              {data:'assignment_name', name:'assignment_name'},
               {data: 'customer', name: 'customer'},
-              {data: 'group', name: 'group',orderable:false,searchable:false},
+              {data: 'sales_personnel', name: 'sales_personnel'},
               {data: 'action', name: 'action',orderable:false,searchable:false},
+          ],
+          columnDefs: [
+                {targets: [2, 3, 4, 5], className: "custom_width" }
           ],
           drawCallback:function(){
               $(function () {

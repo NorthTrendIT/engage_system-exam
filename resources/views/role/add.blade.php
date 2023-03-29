@@ -405,13 +405,25 @@
                             </li>
                             @endif
 
-
-                            {{-- place here the temporary solution --}}
+                            {{-- @if(@$modules['customer-delivery-schedule']['id'])
                             <li>
                               <i class="fa fa-plus"></i>
-                              <label> <input type="checkbox" data-id="1001" name="modules[1001]" class="hummingbird-end-node"  value="on"/> Delivery Schedule</label>
-                            </li>
+                              <label>
+                                <input data-id="{{ @$modules['customer-delivery-schedule']['id'] }}" type="checkbox" /> {{ @$modules['customer-delivery-schedule']['title'] }}
+                              </label>
 
+                              <ul>
+                                @if(@$modules['view-all-customer-delivery-schedule']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['view-all-customer-delivery-schedule']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-all-customer-delivery-schedule']['id'] }}]" /> {{ @$modules['view-all-customer-delivery-schedule']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+                               
+                              </ul>
+                            </li>
+                            @endif --}}
 
                             @if(@$modules['sales-specialist-assignment']['id'])
                             <li>
