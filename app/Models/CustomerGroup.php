@@ -24,4 +24,9 @@ class CustomerGroup extends Model
     {
         return $this->belongsTo(SapConnection::class,'sap_connection_id');
     }
+
+    public function customer()
+    {
+        return $this->hasOne(Customer::class, ['group_code', 'sap_connection_id'], ['code', 'sap_connection_id']);
+    }
 }
