@@ -603,7 +603,7 @@ class CartController extends Controller
         $customer_price_list_no = [];
 
         if(userrole() == 4){
-            $customer_id = explode(',', Auth::user()->customer_id);
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
             $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
             $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
         }elseif (!is_null(@Auth::user()->created_by)) {
