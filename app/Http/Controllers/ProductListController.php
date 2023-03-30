@@ -164,7 +164,7 @@ class ProductListController extends Controller
             // $sap_connection_id = @Auth::user()->sap_connection_id;
             // $customer_price_list_no = @Auth::user()->customer->price_list_num;
 
-            $customer_id = explode(',', Auth::user()->customer_id);
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
             $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
             $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
             
@@ -522,8 +522,22 @@ class ProductListController extends Controller
         if(!empty($customer_id)){
 
             // Product Group
-            $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
-            $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
+            $user_role =  User::with(['role'])->whereHas('role', function($q){
+                                $q->where('id', Auth::user()->role_id);
+                          })->first();
+
+            if(strtolower($user_role->role->name) == "sales personnel"){
+                $result = CustomersSalesSpecialist::with(['product_group.product_group'])->where(['ss_id' => userid(), 'customer_id' => $customer_id[0]])->has('product_group')->get()->toArray();
+                $c_product_group = [];
+                foreach($result as $data){
+                    foreach($data['product_group'] as $x => $gr){
+                        $c_product_group[$x] = $gr['product_group']['id']; 
+                    }
+                }
+            }else{
+                $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
+                $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
+            }
             
             // $c_product_group = array_map( function ( $ar ) {
             //     return $ar['number'];
