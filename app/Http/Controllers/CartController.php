@@ -33,7 +33,18 @@ class CartController extends Controller
         $customer_id = explode(',', Auth::user()->multi_customer_id);
         $customer = Customer::where('id',$customer_id[0])->first();
 
-        $address = CustomerBpAddress::whereIn('customer_id', $customer_id)->orderBy('order', 'ASC')->get();
+        $auth_sap_id = Auth::user()->sap_connection_id;
+        $u_card_code = Auth::user()->u_card_code;
+        $customer_id_add = [];
+
+        foreach($customer_id as $id){
+            $cust_id = Customer::select('id', 'sap_connection_id','u_card_code')->where('id',$id)->first();
+            if(($cust_id->sap_connection_id == $auth_sap_id) && ($u_card_code == $cust_id->u_card_code)){
+                array_push($customer_id_add, $cust_id->id);
+            }
+        }
+
+        $address = CustomerBpAddress::whereIn('customer_id', $customer_id_add)->orderBy('order', 'ASC')->get();
 
         $total = 0;
         $weight = 0;
@@ -214,8 +225,8 @@ class CartController extends Controller
                 $cart_info = Cart::where(['customer_id'=>@$sap_customer_arr[$product->sap_connection_id],'product_id'=>$id])->first();
                 if($cart_info){
                     $due_date = strtr($request->due_date, '/', '-');
-                    $cart = Cart::find($cart_info->id);
                     $due_date_new = \Carbon\Carbon::createFromFormat('m-d-Y', $due_date)->format('Y-m-d');
+                    $cart = Cart::find($cart_info->id);
                     $cart->qty = $cart_info->qty + 1;
                     $cart->customer_id = @$sap_customer_arr[$product->sap_connection_id];
                     $cart->product_id = $id;

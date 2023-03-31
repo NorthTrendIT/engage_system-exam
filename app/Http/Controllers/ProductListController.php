@@ -565,6 +565,7 @@ class ProductListController extends Controller
 
         if(empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
             $products = collect([]);
+            return [ 'products' => $products, 'customer_price_list_no' => $customer_price_list_no];
         }
 
         $where = array('is_active' => true);
