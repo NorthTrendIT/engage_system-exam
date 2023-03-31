@@ -88,7 +88,7 @@ class LocalOrderController extends Controller
             if( isset($input['products']) && !empty($input['products']) ){
                 foreach($input['products'] as $value){
                     $product = Product::find(@$value['product_id']);
-
+                    
                     $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
                     // if($avl_qty == 0){
                     //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity is not available at the moment please remove from order.'];
@@ -113,7 +113,6 @@ class LocalOrderController extends Controller
 
             $due_date = strtr($input['due_date'], '/', '-');
             $due_date_new = \Carbon\Carbon::createFromFormat('m-d-Y', $due_date)->format('Y-m-d');
-
             if(!empty($customer) && !empty($address)){
                 $customer = Customer::findOrFail($input['customer_id']);
                 $order->customer_id = $input['customer_id'];
@@ -174,14 +173,13 @@ class LocalOrderController extends Controller
         } else {
 
             $data = $local_order->quotation;
-
             // if(userrole() == 4){
             //     $data->where('card_code', @Auth::user()->customer->card_code);
             // }elseif(userrole() == 2){
             //     $data->where('sales_person_code', @Auth::user()->sales_employee_code);
             // }elseif(userrole() != 1){
             //     return abort(404);
-            // }
+            // }           
 
             return view('local-order.view', compact('data','local_order'));
         }
@@ -377,7 +375,7 @@ class LocalOrderController extends Controller
     function getCustomers(Request $request){
         $search = $request->search;
         // return @Auth::user()->id;
-        $data = Customer::select('id','card_name', 'sap_connection_id')->whereHas('sales_specialist', function($q){
+        $data = Customer::select('id', 'card_code', 'card_name', 'sap_connection_id')->whereHas('sales_specialist', function($q){
             $q->where('ss_id', @Auth::user()->id);
         });
 
@@ -389,13 +387,13 @@ class LocalOrderController extends Controller
 
         $data = $data->orderby('card_name','asc')->limit(50)->get();
 
-        // dd($data);
+        // dd($data[0]->sap_connection->company_name);
 
         $response = array();
         foreach($data as $value){
             $response[] = array(
                 "id"=>$value->id,
-                "text"=>$value->card_name. ' ('.$value->sap_connection->company_name.')'
+                "text"=>$value->card_name.' -'.$value->card_code.' ('.$value->sap_connection->company_name.')'
             );
         }
 
@@ -404,11 +402,13 @@ class LocalOrderController extends Controller
 
     public function getProducts(Request $request)
     {
-        $data = app(ProductListController::class)->getProductData($request);
-        $products = $data['products'];
-
+        $products = collect();
         if(isset($request->customer_id))
         {
+            // $products = app(ProductListController::class)->getCustomerProducts($request);
+            $data = app(ProductListController::class)->getProductData($request);
+            $products = $data['products'];
+
             if(isset($data['products'])){
                 if(isset($request->product_ids) && count($request->product_ids)){
                     $products->whereNotIn('id', $request->product_ids);
@@ -419,6 +419,8 @@ class LocalOrderController extends Controller
                 $products = collect();
             }
         }
+        /*echo "<pre>";
+        print_r($products);exit();*/
         return $products;
     }
 
@@ -468,10 +470,10 @@ class LocalOrderController extends Controller
             $order = LocalOrder::where('id', $update['id'])->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
             try{
-                $sap_connection = SapConnection::find(@$order->customer->sap_connection_id);
-                if(!is_null($sap_connection)){
+                $sap_connection = SapConnection::find(@$order->customer->sap_connection_id);                
+                if(!is_null($sap_connection)){                   
                     $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
-                    if($update['id']){
+                    if($update['id']){                        
                         $sap_response = $sap->pushOrder($order->id);
                         if($sap_response['status']){
                             $response = ['status' => true, 'message' => 'Order placed successfully!'];
