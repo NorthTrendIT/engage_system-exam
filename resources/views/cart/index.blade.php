@@ -226,7 +226,7 @@
                         </div>
                     </div>
                     <div class="place-button">
-                        <button type="submit" href="javascript:placeOrder;" class="placeOrder btn btn-dark" >PLACE ORDER</button>
+                        <button type="submit" href="javascript:;" class="placeOrder btn btn-dark" >PLACE ORDER</button>
                     </div>
                 </div>
                 
