@@ -481,6 +481,7 @@ class LocalOrderController extends Controller
                     }
                 }
             } catch (\Exception $e) {
+                report($e);
                 $response = ['status' => false, 'message' => 'Something went wrong !'];
             }
 
