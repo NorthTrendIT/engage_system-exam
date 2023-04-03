@@ -408,8 +408,7 @@ class LocalOrderController extends Controller
             // $products = app(ProductListController::class)->getCustomerProducts($request);
             $data = app(ProductListController::class)->getProductData($request);
             $products = $data['products'];
-
-            if(isset($data['products'])){
+            if($products->count() > 0){
                 if(isset($request->product_ids) && count($request->product_ids)){
                     $products->whereNotIn('id', $request->product_ids);
                 }
@@ -468,7 +467,7 @@ class LocalOrderController extends Controller
 
         if($update['status']){
             $order = LocalOrder::where('id', $update['id'])->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
-
+            
             try{
                 $sap_connection = SapConnection::find(@$order->customer->sap_connection_id);                
                 if(!is_null($sap_connection)){                   

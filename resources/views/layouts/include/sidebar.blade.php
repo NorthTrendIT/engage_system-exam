@@ -598,23 +598,7 @@
                </a>
             </div>
             @endif 
-
-
-            {{-- Sales Specialist Management --}}
-            @if((isset($access['view-sales-specialist-assignment']) && $access['view-sales-specialist-assignment'] == 1))
-            <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['customers-sales-specialist.index'])) ? 'active' : '' }}" href="{{ route('customers-sales-specialist.index') }}">
-                  <span class="menu-icon">
-                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
-                     <span class="svg-icon svg-icon-2">
-                     <i class="fas fa-history"></i>
-                     </span>
-                     <!--end::Svg Icon-->
-                  </span>
-                  <span class="menu-title">Sales Specialist Assignment</span>
-               </a>
-            </div>
-            @endif           
+        
 
          </div>
          <!--end::Menu-->

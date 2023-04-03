@@ -733,28 +733,28 @@ class CartController extends Controller
                             })
                             ->addColumn('item_code', function($row) {
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="text-muted" title="Not Available">'.(@$row->item_code ?? "").'</span>';
+                                    return '<span class="" title="Not Available">'.(@$row->item_code ?? "").'</span>';
                                 }else{
                                     return @$row->item_code ?? "";
                                 }
                             })
                             ->addColumn('brand', function($row) {
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="text-muted" title="Not Available">'.(@$row->group->group_name ?? "").'</span>';
+                                    return '<span class="" title="Not Available">'.(@$row->group->group_name ?? "").'</span>';
                                 }else{
                                     return @$row->group->group_name ?? "";
                                 }
                             })
                             ->addColumn('u_item_line', function($row) {
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="text-muted" title="Not Available">'.(@$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-").'</span>';
+                                    return '<span class="" title="Not Available">'.(@$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-").'</span>';
                                 }else{
                                     return @$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-";
                                 }
                             })
                             ->addColumn('u_tires', function($row) {
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="text-muted" title="Not Available">'.(@$row->u_tires ?? "").'</span>';
+                                    return '<span class="" title="Not Available">'.(@$row->u_tires ?? "").'</span>';
                                 }else{
                                     return @$row->u_tires ?? "-";
                                 }
