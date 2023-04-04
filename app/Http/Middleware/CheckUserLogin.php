@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Auth;
+use App\Models\Role;
 
 class CheckUserLogin
 {
@@ -20,7 +21,12 @@ class CheckUserLogin
         if(userrole() != 1){ //Not Super Admin
             if(Auth::user()->first_login == 1){
                 \Session::flash('profile_error_message', "");
-                return redirect()->route('profile.index');
+                $role = Role::find(Auth::user()->role_id);
+                if(strtolower($role->name) == 'sales personnel'){
+                    return redirect()->route('profile.change-password.index');
+                }else{
+                    return redirect()->route('profile.index');
+                }
             }
         }
 

@@ -55,8 +55,10 @@ class Userupload extends Controller
                                 'email'         => $request['email'],
                                 'password'      => bcrypt($request['password']),
                                 'is_active'     => 1,
-                                'sales_specialist_name' => $request['name'],
-                                'password_text' => $request['password']
+                                'sales_specialist_name' => $request['first_name'].' '.$request['last_name'],
+                                'password_text' => $request['password'],
+                                'default_profile_color' => get_hex_color(),
+                                'first_login' => 1
                             ]);
                         }
                         $start_row++;
