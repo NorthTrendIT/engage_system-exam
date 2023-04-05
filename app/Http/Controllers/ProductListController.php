@@ -13,6 +13,8 @@ use App\Models\Customer;
 use App\Models\LocalOrderItem;
 use Auth;
 use DataTables;
+use App\Models\ProductGroup;
+use DB;
 
 class ProductListController extends Controller
 {
@@ -164,7 +166,11 @@ class ProductListController extends Controller
             // $sap_connection_id = @Auth::user()->sap_connection_id;
             // $customer_price_list_no = @Auth::user()->customer->price_list_num;
 
+<<<<<<< HEAD
             $customer_id = explode(',', Auth::user()->multi_customer_id);
+=======
+            $customer_id = explode(',', Auth::user()->multi_customer_id); //Auth::user()->multi_customer_id
+>>>>>>> ss_assigment
             $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
             $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
             
@@ -229,7 +235,7 @@ class ProductListController extends Controller
         $where = array('products.is_active' => 1);
 
         $products = Product::where($where)
-                             ->whereRaw('last_sync_at > "2023-03-27 09:39:36"');
+                ->whereRaw('last_sync_at > "2023-03-27 09:39:36"');
 
         $products->whereHas('group', function($q){
             $q->where('is_active', true);
@@ -325,28 +331,28 @@ class ProductListController extends Controller
                             })
                             ->addColumn('item_code', function($row) {
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="text-muted" title="Not Available">'.(@$row->item_code ?? "").'</span>';
+                                    return '<span class="" title="Not Available">'.(@$row->item_code ?? "").'</span>';
                                 }else{
                                     return @$row->item_code ?? "";
                                 }
                             })
                             ->addColumn('brand', function($row) {
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="text-muted" title="Not Available">'.(@$row->group->group_name ?? "").'</span>';
+                                    return '<span class="" title="Not Available">'.(@$row->group->group_name ?? "").'</span>';
                                 }else{
                                     return @$row->group->group_name ?? "";
                                 }
                             })
                             ->addColumn('u_item_line', function($row) {
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="text-muted" title="Not Available">'.(@$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-").'</span>';
+                                    return '<span class="" title="Not Available">'.(@$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-").'</span>';
                                 }else{
                                     return @$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-";
                                 }
                             })
                             ->addColumn('u_tires', function($row) {
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="text-muted" title="Not Available">'.(@$row->u_tires ?? "").'</span>';
+                                    return '<span class="" title="Not Available">'.(@$row->u_tires ?? "").'</span>';
                                 }else{
                                     return @$row->u_tires ?? "-";
                                 }
@@ -458,7 +464,6 @@ class ProductListController extends Controller
 
     public function getProductData($request){
         $c_product_tires_category = $c_product_item_line = $c_product_group = array();
-
         $customer_id = [];
         $customer = collect();
         $sap_connection_id = [];
@@ -522,8 +527,22 @@ class ProductListController extends Controller
         if(!empty($customer_id)){
 
             // Product Group
-            $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
-            $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
+           $user_role =  User::with(['role'])->whereHas('role', function($q){
+                                    $q->where('id', Auth::user()->role_id);
+                         })->first();
+
+           if(strtolower($user_role->role->name) == "sales personnel"){
+                $result = CustomersSalesSpecialist::with(['product_group.product_group'])->where(['ss_id' => userid(), 'customer_id' => $customer_id[0]])->has('product_group')->get()->toArray();
+                $c_product_group = [];
+                foreach($result as $data){
+                    foreach($data['product_group'] as $x => $gr){
+                        $c_product_group[$x] = $gr['product_group']['id']; 
+                    }
+                }
+           }else{
+                $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
+                $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
+           }
             
             // $c_product_group = array_map( function ( $ar ) {
             //     return $ar['number'];
@@ -550,19 +569,23 @@ class ProductListController extends Controller
 
         if(empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
             $products = collect([]);
+            return [ 'products' => $products, 'customer_price_list_no' => $customer_price_list_no];
         }
 
         $where = array('is_active' => true);
 
-        $products = Product::where($where)->whereRaw('last_sync_at > "2023-03-27 09:39:36"')->limit(50);
+        $products = Product::where($where)->limit(50);
 
         $products->whereHas('group', function($q){
             $q->where('is_active', true);
         });
 
         if($request->filter_search != ""){
-            $products->where('item_name','LIKE',"%".$request->filter_search."%")
-                        ->orWhere('item_code','LIKE',"%".$request->filter_search."%");
+            $products->where(function($q) use ($request){
+                $q->where('item_name','LIKE',"%".$request->filter_search."%")
+                       ->orWhere('item_code','LIKE',"%".$request->filter_search."%");
+            });
+            
         }
 
         $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
@@ -578,10 +601,11 @@ class ProductListController extends Controller
             if(!empty($c_product_item_line)){
                 $q->orWhereIn('u_item_line', $c_product_item_line);
             }*/
-
             if(!empty($c_product_group)){
+                
                 $q->orwhereHas('group', function($q1) use ($c_product_group){
-                    $q1->whereIn('id', $c_product_group);
+                    $num = ProductGroup::whereIn('id',$c_product_group)->pluck('number')->toArray();
+                    $q1->whereIn('number', $num);
                 });
             }
 
@@ -623,4 +647,27 @@ class ProductListController extends Controller
         }
         
     }
+
+
+    public function getCustomerProducts(Request $request)
+    {
+       $data =  DB::table('customer_product_groups as cu')
+                    ->select('pr.id', 'pr.item_code', 'pr.item_name', 'pr.items_group_code')
+                    ->join('product_groups as pg', 'cu.product_group_id', '=', 'pg.id')
+                    ->join('products as pr', 'pg.number', '=', 'pr.items_group_code')
+                    ->where([
+                            'cu.customer_id' => $request->customer_id,
+                            'pg.is_active' => '1',
+                            'pr.is_active' => '1'
+                    ]);
+
+                    if($request->filter_search != ""){
+                        $data->where('pr.item_code','LIKE',"%".$request->filter_search."%")
+                             ->orwhere('pr.item_name','LIKE',"%".$request->filter_search."%")->first();
+                    }
+
+        return $data->get();
+    }
+
+
 }

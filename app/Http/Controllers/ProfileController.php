@@ -172,7 +172,8 @@ class ProfileController extends Controller
             $user = User::find(Auth::id());
             if(Hash::check($input['current_password'], $user->password)){
                 $user->password = Hash::make($input['confirm_password']);
-                $user->password_text = NULL;
+                $user->password_text = $input['confirm_password'];
+                $user->first_login = 0;
                 $user->save();
 
                 $response = ['status'=>true,'message'=>'Password changed successfully !'];

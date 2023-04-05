@@ -25,4 +25,8 @@ class CustomersSalesSpecialist extends Model
     public function sales_person(){
         return $this->hasOne(User::class, 'id', 'ss_id');
     }
+    
+    public function product_group(){
+        return $this->hasMany(CustomerProductGroup::class, 'assignment_id', 'assignment_id');
+    }
 }

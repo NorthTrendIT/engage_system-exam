@@ -523,5 +523,45 @@ class ModuleSeeder extends Seeder
         );
 
         Module::insert($insertSub);
+
+        $deliverySchedule = Module::create(
+            array(
+                'title' => 'Delivery Schedule',
+                'slug' => 'delivery-schedule',
+                'parent_id' => null,
+            )
+        );
+
+        $insertSub1 = array(
+            array(
+                'title' => 'Add',
+                'slug' => 'add-schedule',
+                'parent_id' => $deliverySchedule->id,
+            ),
+            array(
+                'title' => 'Edit',
+                'slug' => 'edit-schedule',
+                'parent_id' => $deliverySchedule->id,
+            ),
+            array(
+                'title' => 'View',
+                'slug' => 'view-schedule',
+                'parent_id' => $deliverySchedule->id,
+            ),
+            array(
+                'title' => 'Delete',
+                'slug' => 'delete-schedule',
+                'parent_id' => $deliverySchedule->id,
+            ),
+
+            array(
+                'title' => 'View All',
+                'slug' => 'view-all-schedule',
+                'parent_id' => $deliverySchedule->id,
+            ),
+            
+        );
+
+        Module::insert($insertSub1);
     }
 }

@@ -20,7 +20,11 @@ class Userupload extends Controller
 
         $role = DB::table('roles')
                     ->select('id')
-                    ->where('name', 'Sales Personnel')->get()->toArray();
+                    ->where('name','like','%Sales Personnel%')->get()->toArray();
+        
+        $dept = DB::table('departments')
+                    ->select('id')
+                    ->where('name','like','%Sales%')->get()->toArray();
         
         // dd($role);
         if($role){
@@ -31,32 +35,30 @@ class Userupload extends Controller
 
                         if($start_row != 1){ //not to read header
 
-                            $request['name'] = $read_data[0]; 
-                            $request['email'] = $read_data[1]; 
-                            $request['password'] = $read_data[2]; 
+                            $request['first_name'] = $read_data[0]; 
+                            $request['last_name'] = $read_data[1]; 
+                            $request['email'] =     $read_data[2]; 
+                            $request['password'] =  $read_data[3]; 
+
                             $request->validate([
-                                "name"    => "required",
+                                "first_name"    => "required",
+                                "last_name"    => "required",
                                 "email"    => "required|email|unique:users",
                                 "password"    => "required",
                             ]);
-
-                            $name = (explode(" ", $read_data[0]));
-                            $sliced = array_slice($name, 0, -1);
-                            $firstname = implode(" ", $sliced);
-                            $lastname  = end($name);
-
-                            // echo '<br><br>name: '.$firstname.' lastname: '.$lastname .'<br> username: '.$read_data[1]. ' password: '.$read_data[2].'<br>' ;
                             
                             User::create([
-                                'department_id' => '',
+                                'department_id' => $dept[0]->id,
                                 'role_id'       => $role[0]->id,
-                                'first_name'    => $firstname,
-                                'last_name'     => $lastname,
+                                'first_name'    => $request['first_name'],
+                                'last_name'     => $request['last_name'],
                                 'email'         => $request['email'],
                                 'password'      => bcrypt($request['password']),
                                 'is_active'     => 1,
-                                'sales_specialist_name' => $request['name'],
-                                'password_text' => $request['password']
+                                'sales_specialist_name' => $request['first_name'].' '.$request['last_name'],
+                                'password_text' => $request['password'],
+                                'default_profile_color' => get_hex_color(),
+                                'first_login' => 1
                             ]);
                         }
                         $start_row++;

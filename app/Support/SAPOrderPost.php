@@ -211,11 +211,9 @@ class SAPOrderPost
                     $sales_person_email = $order->sales_specialist->email;
                     $sales_name = $order->sales_specialist->sales_specialist_name;
                     $customer_name = $order->customer;
-                    Log::info(print_r($customer_name,true));
                     $sales_link = route('orders.show', @$order->quotation->id);
                     //Log::info(print_r($sales_link,true));
                     Mail::send('emails.order_placed', array('link'=>$sales_link, 'customer'=>@$customer_name->first_name." ".$customer_name->last_name), function($message) use($sales_person_email,$sales_name) {
-                        Log::info("here");
                         $message->from('orders@northtrend.com', $sales_name);
                         $message->to($sales_person_email, $sales_person_email)
                                 //->cc('itsupport@northtrend.com')
