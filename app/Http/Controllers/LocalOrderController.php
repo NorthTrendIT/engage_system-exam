@@ -393,11 +393,7 @@ class LocalOrderController extends Controller
         foreach($data as $value){
             $response[] = array(
                 "id"=>$value->id,
-<<<<<<< HEAD
                 "text"=>$value->card_name. ' -'.$value->card_code.' ('.$value->sap_connection->company_name.')'
-=======
-                "text"=>$value->card_name.' -'.$value->card_code.' ('.$value->sap_connection->company_name.')'
->>>>>>> ss_assigment
             );
         }
 

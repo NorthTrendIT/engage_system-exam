@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('sapauth:hourly')->cron('*/5 * * * *'); 
         $schedule->command('sync:allmoduledata')->daily();
-        $schedule->command('sync:all_module_data_in_half_hour')->everyThirtyMinutes();
+        $schedule->command('sync:all_module_data_in_half_hour')->everyThirtyMinutes()->timezone('Asia/Manila')->between('8:00', '20:00');
         $schedule->command('sync:all_module_data_in_midnight')->everySixHours();
     }
 
