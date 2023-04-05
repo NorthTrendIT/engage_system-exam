@@ -133,7 +133,7 @@ class StoreCustomers implements ShouldQueue
                                 'payment_group_code' => @$value['PayTermsGrpCode'],
                             );
                 
-                Log::info(print_r($insert,true));   
+                // Log::info(print_r($insert,true));   
                 $obj = Customer::updateOrCreate(
                                         [
                                             'card_code' => @$value['CardCode'],

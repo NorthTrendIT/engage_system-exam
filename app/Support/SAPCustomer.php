@@ -182,7 +182,7 @@ class SAPCustomer
 
     public function addSpecificCustomerData($card_code = false)
     {
-        Log::info(print_r($card_code,true));
+        // Log::info(print_r($card_code,true));
         if($card_code){
             $url = "/b1s/v1/BusinessPartners('".$card_code."')";
             $response = $this->getCustomerData($url);
