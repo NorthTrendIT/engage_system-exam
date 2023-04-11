@@ -161,7 +161,8 @@
                                   </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach(@$data->items as $key => $value)
+                                  @if(!is_null($data->items))
+                                    @foreach($data->items as $key => $value)
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="pt-6" style="text-align: initial !important;">{{ $key+1 }}</td>
                                         <td class="d-flex align-items-center pt-6">{{ $value->product1->item_name ?? '-' }} <span>Code: ({{ $value->product1->item_code ?? '-' }})</span></td>
@@ -171,6 +172,7 @@
                                         <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($value->gross_total) }}</td> --}}
                                     </tr>
                                     @endforeach
+                                  @endif
                                 </tbody>
                               </table>
                             </div>
