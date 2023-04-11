@@ -361,6 +361,23 @@ Route::middleware(['auth'])->group(function () {
 
         // Customer Delivery Schedule
         Route::get('customer-delivery-schedule/all-view', 'App\Http\Controllers\CustomerDeliveryScheduleController@allView')->name('customer-delivery-schedule.all-view');
+
+        Route::resource('help-desk', 'App\Http\Controllers\HelpDeskController');
+        Route::post('help-desk/get-all', 'App\Http\Controllers\HelpDeskController@getAll')->name('help-desk.get-all');
+        Route::post('help-desk/status', 'App\Http\Controllers\HelpDeskController@updateStatus')->name('help-desk.status');
+        Route::post('help-desk/comment/store', 'App\Http\Controllers\HelpDeskController@storeComment')->name('help-desk.comment.store');
+        Route::post('help-desk/comment/get-all', 'App\Http\Controllers\HelpDeskController@getAllComment')->name('help-desk.comment.get-all');
+        Route::post('help-desk/get-department', 'App\Http\Controllers\HelpDeskController@getDepartment')->name('help-desk.get-department');
+        Route::post('help-desk/get-department-user', 'App\Http\Controllers\HelpDeskController@getDepartmentUser')->name('help-desk.get-department-user');
+        Route::post('help-desk/store-assignment', 'App\Http\Controllers\HelpDeskController@storeAssignment')->name('help-desk.store-assignment');
+
+        // Conversation
+        Route::resource('conversation', 'App\Http\Controllers\ConversationController')->except('show');
+        Route::post('conversation/search-new-user', 'App\Http\Controllers\ConversationController@searchNewUser')->name('conversation.search-new-user');
+        Route::post('conversation/store-message', 'App\Http\Controllers\ConversationController@storeMessage')->name('conversation.store-message');
+        Route::post('conversation/update-message', 'App\Http\Controllers\ConversationController@updateMessage')->name('conversation.update-message');
+        Route::post('conversation/get-conversation-list', 'App\Http\Controllers\ConversationController@getConversationList')->name('conversation.get-conversation-list');
+        Route::post('conversation/get-conversation-message-list', 'App\Http\Controllers\ConversationController@getConversationMessageList')->name('conversation.get-conversation-message-list');
     });
 
     // For SS Only
@@ -508,23 +525,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('customer-tagging/get-customer-class', 'App\Http\Controllers\CustomerController@customerTaggingGetCustomerClass')->name('customer-tagging.get-customer-class');
 
 
-
-    Route::resource('help-desk', 'App\Http\Controllers\HelpDeskController');
-    Route::post('help-desk/get-all', 'App\Http\Controllers\HelpDeskController@getAll')->name('help-desk.get-all');
-    Route::post('help-desk/status', 'App\Http\Controllers\HelpDeskController@updateStatus')->name('help-desk.status');
-    Route::post('help-desk/comment/store', 'App\Http\Controllers\HelpDeskController@storeComment')->name('help-desk.comment.store');
-    Route::post('help-desk/comment/get-all', 'App\Http\Controllers\HelpDeskController@getAllComment')->name('help-desk.comment.get-all');
-    Route::post('help-desk/get-department', 'App\Http\Controllers\HelpDeskController@getDepartment')->name('help-desk.get-department');
-    Route::post('help-desk/get-department-user', 'App\Http\Controllers\HelpDeskController@getDepartmentUser')->name('help-desk.get-department-user');
-    Route::post('help-desk/store-assignment', 'App\Http\Controllers\HelpDeskController@storeAssignment')->name('help-desk.store-assignment');
-
-    // Conversation
-    Route::resource('conversation', 'App\Http\Controllers\ConversationController')->except('show');
-    Route::post('conversation/search-new-user', 'App\Http\Controllers\ConversationController@searchNewUser')->name('conversation.search-new-user');
-    Route::post('conversation/store-message', 'App\Http\Controllers\ConversationController@storeMessage')->name('conversation.store-message');
-    Route::post('conversation/update-message', 'App\Http\Controllers\ConversationController@updateMessage')->name('conversation.update-message');
-    Route::post('conversation/get-conversation-list', 'App\Http\Controllers\ConversationController@getConversationList')->name('conversation.get-conversation-list');
-    Route::post('conversation/get-conversation-message-list', 'App\Http\Controllers\ConversationController@getConversationMessageList')->name('conversation.get-conversation-message-list');
 
 
 
