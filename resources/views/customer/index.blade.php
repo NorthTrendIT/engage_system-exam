@@ -351,7 +351,7 @@
       })
     });
 
-    @if(in_array(userrole(),[1]))
+    @if(in_array(userrole(),[1,11]))
         $('[name="filter_company"]').select2({
             ajax: {
                 url: "{{route('common.getBusinessUnits')}}",
