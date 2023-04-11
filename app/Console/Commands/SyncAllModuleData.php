@@ -62,7 +62,7 @@ class SyncAllModuleData extends Command
             SyncQuotations::dispatch($value->db_name, $value->user_name, $value->password);
             SyncInvoices::dispatch($value->db_name, $value->user_name, $value->password);
 
-            SyncSalesPersons::dispatch($value->db_name, $value->user_name, $value->password);
+            // SyncSalesPersons::dispatch($value->db_name, $value->user_name, $value->password);
             SyncTerritories::dispatch($value->db_name, $value->user_name, $value->password);
         }
 
