@@ -40,6 +40,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderExport;
 
 use App\Models\Product;
+use App\Models\CustomersSalesSpecialist;
 
 class OrdersController extends Controller
 {
@@ -328,8 +329,13 @@ class OrdersController extends Controller
             $customers = Auth::user()->get_multi_customer_details();
             $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
             $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        }elseif(userrole() == 2){
-            $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(userrole() == 12){ //sales personnel
+            // $data->where('sales_person_code', @Auth::user()->sales_employee_code); //previous code
+            $data->whereHas('customer', function($q){
+                $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+                $q->whereIn('id', $cus);
+            });
+            // dd($data->get());
         }elseif(userrole() != 1 && userrole()!= 10){
             if (!is_null(@Auth::user()->created_by)) {
                 $customers = @Auth::user()->created_by_user->get_multi_customer_details();
