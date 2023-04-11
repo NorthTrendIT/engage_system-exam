@@ -161,7 +161,10 @@
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  @if(!is_null($data->items))
+                                  @php
+                                    $dataItems = $data->items ?? 'none'
+                                  @endphp
+                                  @if($dataItems !== 'none')
                                     @foreach($data->items as $key => $value)
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="pt-6" style="text-align: initial !important;">{{ $key+1 }}</td>
