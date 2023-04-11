@@ -34,7 +34,7 @@
             <div class="card-body">
               <div class="row">
 
-                @if(in_array(userrole(),[1]))
+                @if(in_array(userrole(),[1, 11]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                     <option value=""></option>
