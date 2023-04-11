@@ -85,10 +85,10 @@
                             <!--end::Col-->
                             <div class="col-sm-5">
                               <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Sales Specialist:</div>
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">Sales Personnel:</div>
                               <!--end::Label-->
                               <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->sales_specialist->sales_specialist_name ?? "-" }}</div>
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$local_order->sales_specialist->sales_specialist_name ?? "-" }}</div>
                               <!--end::Text-->
                             </div>
                             <!--end::Col-->
@@ -137,7 +137,7 @@
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Remarks:</div>
                               <!--end::Label-->
                               <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->u_remarks ?? "-" }}</div>
+                              <div class="fw-bolder fs-6 text-gray-800">{{ @$local_order->remarks ?? "-" }}</div>
                               <!--end::Text-->
                             </div>
                             <!--end::Col-->
@@ -212,6 +212,9 @@
                                 <!--end::Item-->
                               </div>
                               <!--end::Section-->
+                            </div>
+                            <div class="flex-grow-1 text-center">
+                                <p class="custom_note">Note: Final amount of order will reflect <br>on the actual invoice.</p>
                             </div>
                             <!--end::Container-->
                           </div>
