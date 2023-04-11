@@ -110,7 +110,7 @@
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Order Date:</div>
                               <!--end::Label-->
                               <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime($data->doc_date)) }} {{ $data->doc_time ? date('H:i A',strtotime($data->doc_time)) : "" }}</div>
+                              <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime(@$data->doc_date)) }} {{ $data->doc_time ? date('H:i A',strtotime($data->doc_time)) : "" }}</div>
                               <!--end::Col-->
                             </div>
                             <!--end::Col-->
