@@ -35,7 +35,20 @@
                                         <div class="d-flex align-items-sm-center mb-7">
                                             <div class="flex-grow-1 me-2">
                                                 <span class="text-muted fw-bold d-block fs-7">Sales Specialist:</span>
-                                                <span class="text-gray-800 fs-7 fw-bolder">{{@$sales_agent->sales_person->first_name}}  {{@$sales_agent->sales_person->last_name}}</span>
+                                                <span class="text-gray-800 fs-7 fw-bolder">
+                                                    @php
+                                                     $count = 0;
+                                                     if($sales_agent->count() > 0){
+                                                        foreach($sales_agent as $a){
+                                                            $comma = ($count > 0) ? ', ' : '';
+                                                            echo $comma.@$a->sales_person->first_name.' '.@$a->sales_person->last_name;
+                                                            $count++;
+                                                        }
+                                                     }else{
+                                                        echo 'No found';
+                                                     }
+                                                    @endphp
+                                                </span>
                                                 
                                             </div>
                                         </div>

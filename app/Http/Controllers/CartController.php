@@ -62,7 +62,7 @@ class CartController extends Controller
             $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);
         }
 
-        $sales_agent = CustomersSalesSpecialist::with('sales_person')->where('customer_id',$customer_id)->first();
+        $sales_agent = CustomersSalesSpecialist::with('sales_person')->where('customer_id',$customer_id)->get();
 
         $c_product_groups = $c_product_line = $c_product_category = collect();
         $customer_id = $sap_connection_id = [];
