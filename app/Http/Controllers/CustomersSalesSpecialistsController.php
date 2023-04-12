@@ -525,7 +525,8 @@ class CustomersSalesSpecialistsController extends Controller
 
         $response = array();
         if($request->sap_connection_id){
-            $data = Customer::doesnthave('sales_specialist')->orderby('card_name','asc')->where('sap_connection_id',$request->sap_connection_id)
+            // $data = Customer::doesnthave('sales_specialist')->orderby('card_name','asc')->where('sap_connection_id',$request->sap_connection_id)
+            $data = Customer::orderby('card_name','asc')->where('sap_connection_id',$request->sap_connection_id)
                 //->where('is_active',1)
                 ->limit(50);
             if($search != ''){
