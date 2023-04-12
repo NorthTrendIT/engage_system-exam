@@ -570,7 +570,7 @@ class ProductListController extends Controller
 
         $where = array('is_active' => true);
 
-        $products = Product::where($where)->limit(50);
+        $products = Product::whereRaw('last_sync_at > "2023-03-27 09:39:36"')->where($where)->limit(50);
 
         $products->whereHas('group', function($q){
             $q->where('is_active', true);
