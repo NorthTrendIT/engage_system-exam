@@ -332,7 +332,7 @@ $(document).ready(function() {
         @foreach ($edit->assignment as $data)
         var initialOption = {
             id: {{ $data->customer->id }},
-            text: `{!! $data->customer->card_name.' (Code: '.$data->customer->card_code. (@$data->customer->user->email ? ', Email: '.@$data->customer->user->email : ""). ')' !!}`,
+            text: "{!! $data->customer->card_name.' (Code: '.$data->customer->card_code. (@$data->customer->user->email ? ', Email: '.@$data->customer->user->email : ""). ')' !!}",
             sap_connection_id: '{!! $data->customer->sap_connection_id !!}',
             selected: true
         }
@@ -346,7 +346,7 @@ $(document).ready(function() {
 
         var initialOption = {
             id: {{ $data1->ss_id }},
-            text: `{!! $data1->sales_person->sales_specialist_name !!} (Email: {!! $data1->sales_person->email !!})`,
+            text: "{!! $data1->sales_person->sales_specialist_name !!} (Email: {!! $data1->sales_person->email !!})",
             selected: true
         }
         $initialSalesPerson.push(initialOption);
