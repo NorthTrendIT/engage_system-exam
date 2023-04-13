@@ -152,14 +152,14 @@ class RecommendedProductController extends Controller
                           ->addIndexColumn()
                           ->addColumn('item_name', function($row) {
                                 if($row->product->quantity_on_stock - $row->product->quantity_ordered_by_customers < 1){
-                                    return '<span class="text-muted" title="Not Available">'.(@$row->product->item_name ?? "").'</span>';
+                                    return '<span class="" title="Not Available">'.(@$row->product->item_name ?? "").'</span>';
                                 }else{
                                     return @$row->product->item_name ?? "";
                                 }
                           })
                           ->addColumn('item_code', function($row) {
                                 if($row->product->quantity_on_stock - $row->product->quantity_ordered_by_customers < 1){
-                                    return '<span class="text-muted" title="Not Available">'.(@$row->product->item_code ?? "").'</span>';
+                                    return '<span class="" title="Not Available">'.(@$row->product->item_code ?? "").'</span>';
                                 }else{
                                     return @$row->product->item_code ?? "";
                                 }
@@ -168,7 +168,7 @@ class RecommendedProductController extends Controller
                                 $sap_connection_id = @$row->product->sap_connection_id;
                                 
                                 if($row->product->quantity_on_stock - $row->product->quantity_ordered_by_customers < 1){
-                                    return '<span class="text-muted" title="Not Available">₱ '.(number_format_value(get_product_customer_price(@$row->product->item_prices,@$customer_price_list_no[$sap_connection_id]))).'</span>';
+                                    return '<span class="" title="Not Available">₱ '.(number_format_value(get_product_customer_price(@$row->product->item_prices,@$customer_price_list_no[$sap_connection_id]))).'</span>';
                                 }else{
                                     return "₱ ".number_format_value(get_product_customer_price(@$row->product->item_prices,@$customer_price_list_no[$sap_connection_id]));
                                 }

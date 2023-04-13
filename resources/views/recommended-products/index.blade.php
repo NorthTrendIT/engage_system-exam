@@ -72,7 +72,7 @@
                               <th>Name</th>
                               <!-- <th>Brand</th>
                               <th>Code</th> -->
-                              <th>Price</th>
+                              {{-- <th>Price</th> --}}
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -207,7 +207,7 @@ $(document).ready(function() {
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'item_name', name: 'item_name', orderable:false},
-              {data: 'price', name: 'price', orderable:false,searchable:false},
+              // {data: 'price', name: 'price', orderable:false,searchable:false},
               {data: 'action', name: 'action', orderable:false,searchable:false},
           ],
           drawCallback:function(){
