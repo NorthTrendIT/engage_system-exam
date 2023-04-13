@@ -609,21 +609,21 @@ class OrdersController extends Controller
         //     return abort(404);
         // }
 
-        if(userrole() == 4){
-            $customers = Auth::user()->get_multi_customer_details();
-            $quotation->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-            $quotation->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        }elseif(userrole() == 2){
-            $quotation->where('sales_person_code', @Auth::user()->sales_employee_code);
-        }elseif(userrole() != 1){
-            if (!is_null(@Auth::user()->created_by)) {
-                $customers = @Auth::user()->created_by_user->get_multi_customer_details();
-                $quotation->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-                $quotation->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-            } else {
-                return abort(404);
-            }
-        }
+        // if(userrole() == 4){
+        //     $customers = Auth::user()->get_multi_customer_details();
+        //     $quotation->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+        //     $quotation->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+        // }elseif(userrole() == 2){
+        //     $quotation->where('sales_person_code', @Auth::user()->sales_employee_code);
+        // }elseif(userrole() != 1){
+        //     if (!is_null(@Auth::user()->created_by)) {
+        //         $customers = @Auth::user()->created_by_user->get_multi_customer_details();
+        //         $quotation->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+        //         $quotation->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+        //     } else {
+        //         return abort(404);
+        //     }
+        // }
 
         $quotation = $quotation->first();
         if(!empty($quotation)){
