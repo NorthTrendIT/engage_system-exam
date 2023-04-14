@@ -369,7 +369,7 @@ class CustomersSalesSpecialistsController extends Controller
             });
         }
 
-        $data = $data->get();
+        // $data = $data->get();
 
         return DataTables::of($data)
                             ->addIndexColumn()
