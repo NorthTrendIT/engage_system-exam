@@ -100,9 +100,9 @@
                             <!--begin::Table-->
                             <div class="table-responsive border-bottom mb-9">
                               <table class="table mb-3">
-                                <thead class="">
-                                  <tr class="border-bottom fs-6 fw-bolder text-muted">
-                                    <th class="pb-2">Status</th>
+                                <thead class="bg-dark text-white">
+                                  <tr class="border-bottom fs-6 fw-bolder">
+                                    <th class="pb-2 text-center">Status</th>
                                     <th class="pb-2">Code</th>
                                     <th class="min-w-175px pb-2">Product</th>
                                     <th class="min-w-70px text-end pb-2">Quantity</th>
@@ -114,18 +114,18 @@
                                 <tbody>
                                     @foreach($data->items as $value)
                                      @php
-                                      $status = (@$value->product->is_active === 1) ? ['Active', 'btn-light-success'] : ['Inactive', 'btn-light-danger']
+                                      $status = (@$value->product->is_active === 1) ? ['Active', 'text-success'] : ['Inactive', 'text-danger']
                                      @endphp
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
-                                      <td class="pt-6 text-start">
-                                        <a href="javascript:" class="btn btn-sm {{ $status[1] }} btn-inline status">{{ $status[0] }}</a>
+                                      <td class="pt-6 text-centr">
+                                        <p class="{{ $status[1] }}">{{ $status[0] }}</p>
                                       </td>
                                       <td class="pt-6 text-start">{{ $value->product->item_code ?? '-' }}</td>
                                       <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}</td>
-                                        <td class="pt-6">{{ $value->quantity ?? '-' }}</td>
-                                        <td class="pt-6">₱ {{ $value->price ?? '-' }}</td>
+                                        <td class="pt-6">{{ number_format($value->quantity, 2) ?? '-' }}</td>
+                                        <td class="pt-6">₱ {{ number_format($value->price, 2) ?? '-' }}</td>
                                         <td class="pt-6">₱ 0.00 </td>
-                                        <td class="pt-6 text-dark fw-boldest">₱ {{ $value->total ?? '-' }}</td>
+                                        <td class="pt-6 text-dark fw-boldest">₱ {{ number_format($value->total, 2) ?? '-' }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -142,7 +142,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
                                   <!--end::Accountname-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ $data->items()->sum('total'); }}</div>
+                                  <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format($data->items()->sum('total'), 2); }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
@@ -163,7 +163,7 @@
                                   <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
                                   <!--end::Code-->
                                   <!--begin::Label-->
-                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ $data->items()->sum('total'); }}</div>
+                                  <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format($data->items()->sum('total'), 2); }}</div>
                                   <!--end::Label-->
                                 </div>
                                 <!--end::Item-->
