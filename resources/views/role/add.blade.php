@@ -689,28 +689,6 @@
                         </li>
                         @endif
 
-
-                        {{-- activity-log --}}
-                        @if(@$modules['activity-log']['id'])
-                        <li>
-                          <i class="fa fa-plus"></i>
-                          <label>
-                            <input data-id="{{ @$modules['activity-log']['id'] }}" type="checkbox" /> {{ @$modules['activity-log']['title'] }}
-                          </label>
-                          <ul>
-
-                            @if(@$modules['view-activity-log']['id'])
-                            <li>
-                              <label>
-                                <input data-id="{{ @$modules['view-activity-log']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['activity-log']['id'] }}]" /> {{ @$modules['view-activity-log']['title'] }}
-                              </label>
-                            </li>
-                            @endif
-
-                          </ul>
-                        </li>
-                        @endif
-
                         {{-- my-promotions --}}
                         @if(@$modules['my-promotions']['id'])
                         <li>
@@ -922,6 +900,27 @@
                             <li>
                               <label>
                                 <input data-id="{{ @$modules['invoice-to-delivery-lead-time-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['invoice-to-delivery-lead-time-report']['id'] }}]" /> {{ @$modules['invoice-to-delivery-lead-time-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
+                          </ul>
+                        </li>
+                        @endif
+
+                        {{-- activity-log --}}
+                        @if(@$modules['activity-log']['id'])
+                        <li>
+                          <i class="fa fa-plus"></i>
+                          <label>
+                            <input data-id="{{ @$modules['activity-log']['id'] }}" type="checkbox" /> {{ @$modules['activity-log']['title'] }}
+                          </label>
+                          <ul>
+
+                            @if(@$modules['view-activity-log']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['view-activity-log']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['activity-log']['id'] }}]" /> {{ @$modules['view-activity-log']['title'] }}
                               </label>
                             </li>
                             @endif

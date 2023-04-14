@@ -563,5 +563,24 @@ class ModuleSeeder extends Seeder
         );
 
         Module::insert($insertSub1);
+
+        $activity_log = Module::create(
+            array(
+                'title' => 'Activity Log',
+                'slug' => 'activity-log',
+                'parent_id' => null,
+            )
+        );
+
+        $activity_log_access = array(
+            array(
+                'title' => 'View',
+                'slug' => 'view-activity-log',
+                'parent_id' => $activity_log->id,
+            ),            
+        );
+
+        Module::insert($activity_log_access);
+
     }
 }

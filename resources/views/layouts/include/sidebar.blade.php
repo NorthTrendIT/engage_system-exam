@@ -584,7 +584,7 @@
             </div>
             @endif
 
-            @if(Auth::user()->role_id == 1)
+            @if(Auth::user()->role_id == 1 || isset($access['activity-log']))
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['activitylog.index'])) ? 'active' : '' }}" href="{{ route('activitylog.index') }}">
                   <span class="menu-icon">
