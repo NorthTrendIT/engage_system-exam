@@ -117,7 +117,7 @@
                                       $status = (@$value->product->is_active === 1) ? ['Active', 'text-success'] : ['Inactive', 'text-danger']
                                      @endphp
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
-                                      <td class="pt-6 text-centr">
+                                      <td class="pt-6 text-center">
                                         <p class="{{ $status[1] }}">{{ $status[0] }}</p>
                                       </td>
                                       <td class="pt-6 text-start">{{ $value->product->item_code ?? '-' }}</td>
