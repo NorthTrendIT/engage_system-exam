@@ -100,9 +100,10 @@
                             <!--begin::Table-->
                             <div class="table-responsive border-bottom mb-9">
                               <table class="table mb-3">
-                                <thead>
+                                <thead class="">
                                   <tr class="border-bottom fs-6 fw-bolder text-muted">
-                                    <th class="min-w-175px pb-2">Code</th>
+                                    <th class="pb-2">Status</th>
+                                    <th class="pb-2">Code</th>
                                     <th class="min-w-175px pb-2">Product</th>
                                     <th class="min-w-70px text-end pb-2">Quantity</th>
                                     <th class="min-w-80px text-end pb-2">Price</th>
@@ -112,7 +113,13 @@
                                 </thead>
                                 <tbody>
                                     @foreach($data->items as $value)
+                                     @php
+                                      $status = (@$value->product->is_active === 1) ? ['Active', 'btn-light-success'] : ['Inactive', 'btn-light-danger']
+                                     @endphp
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
+                                      <td class="pt-6 text-start">
+                                        <a href="javascript:" class="btn btn-sm {{ $status[1] }} btn-inline status">{{ $status[0] }}</a>
+                                      </td>
                                       <td class="pt-6 text-start">{{ $value->product->item_code ?? '-' }}</td>
                                       <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}</td>
                                         <td class="pt-6">{{ $value->quantity ?? '-' }}</td>
