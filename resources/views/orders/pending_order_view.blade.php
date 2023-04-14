@@ -122,7 +122,7 @@
                                       </td>
                                       <td class="pt-6 text-start">{{ $value->product->item_code ?? '-' }}</td>
                                       <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}</td>
-                                        <td class="pt-6">{{ number_format($value->quantity, 2) ?? '-' }}</td>
+                                        <td class="pt-6">{{ number_format($value->quantity) ?? '-' }}</td>
                                         <td class="pt-6">₱ {{ number_format($value->price, 2) ?? '-' }}</td>
                                         <td class="pt-6">₱ 0.00 </td>
                                         <td class="pt-6 text-dark fw-boldest">₱ {{ number_format($value->total, 2) ?? '-' }}</td>
