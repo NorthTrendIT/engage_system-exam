@@ -105,6 +105,7 @@ class UserController extends Controller
                 $message = "New User created successfully.";
                 $input['password'] = Hash::make($input['confirm_password']);
                 $input['default_profile_color'] = get_hex_color();
+                $input['first_login'] = 1;
 
                 $input['is_sap_user'] = false;
                 if(userrole() != 1){
