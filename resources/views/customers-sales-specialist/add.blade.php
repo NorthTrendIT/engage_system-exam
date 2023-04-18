@@ -390,7 +390,6 @@ $(document).ready(function() {
     @endif
 
     $("#selectCustomerGroup").select2({
-      @if(!isset($edit))
       ajax: {
           url: "{{route('customers-sales-specialist.getCustomerGroups')}}",
           type: "post",
@@ -410,7 +409,6 @@ $(document).ready(function() {
           },
           cache: true
       },
-      @endif
       placeholder: 'Select Customer Group',
       multiple: true,
       data: $initialProductGroups,
