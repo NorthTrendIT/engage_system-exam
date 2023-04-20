@@ -483,6 +483,7 @@ class UserController extends Controller
             if($user){
                 $user->password_text = $input['confirm_password'];
                 $user->password = Hash::make($input['confirm_password']);
+                $user->first_login = 1;
                 $user->save();
 
                 //save log
