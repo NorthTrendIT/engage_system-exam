@@ -21,6 +21,8 @@ class SAPCustomer
 
 	/** @var string */
 	protected $headers;
+    protected $cookie;
+    protected $authentication;
 
 	protected $database;
 	protected $username;
@@ -102,7 +104,8 @@ class SAPCustomer
                 if($this->search){
                     $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$this->search.'\')';
                 }else{
-                    $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\' and Valid eq \''.'tYES'.'\'';
+                    // $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\' and Valid eq \''.'tYES'.'\'';
+                    $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\' or CreateDate ge \''.$latestData->updated_date.'\'';
                 }
                 $response = $this->getCustomerData($url);
                 // Log::info(print_r($response,true));
