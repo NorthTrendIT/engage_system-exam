@@ -82,6 +82,7 @@ class ForgotPasswordController extends Controller
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
             $user->password = \Hash::make($input['confirm_password']);
+            $user->password_text = $input['confirm_password'];
             $user->save();
 
             PasswordReset::where('token',$input['token'])->delete();
