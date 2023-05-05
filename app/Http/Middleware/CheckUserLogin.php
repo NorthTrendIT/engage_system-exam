@@ -25,8 +25,15 @@ class CheckUserLogin
                 if(strtolower($role->name) == 'sales personnel'){
                     return redirect()->route('profile.change-password.index');
                 }else{
+                    if(Auth::user()->password_text == "engage"){
+                        return redirect()->route('profile.change-password.index');
+                    }
                     return redirect()->route('profile.index');
                 }
+            }
+
+            if(strpos(Auth::user()->email, '@mailinator.com') !== false){
+                return redirect()->route('profile.index');
             }
         }
 

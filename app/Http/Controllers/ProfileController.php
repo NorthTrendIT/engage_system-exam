@@ -73,12 +73,15 @@ class ProfileController extends Controller
         }else{
             $user = User::find(Auth::id());
 
+            if($user->first_login == 0 && strpos($request->email, '@mailinator.com') !== false){
+                return $response = ['status'=>false,'message'=>"This email was system generated, please use your own email."];
+            }
+
             if($user->first_login == 1 && $user->email == $request->email){
                 $check = User::where('email',$request->email)->where('id','!=',Auth::id())->first();
                 if($check){
                     return $response = ['status'=>false,'message'=>"Oops ! please add new email address."];
                 }
-                
             }
             
             $old_profile = file_exists(public_path('sitebucket/users/') . "/" . $user->profile);

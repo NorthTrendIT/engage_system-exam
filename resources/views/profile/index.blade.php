@@ -67,20 +67,32 @@ $role = \App\Models\Role::where('id',Auth::user()->role_id)->first();
     </div>
   </div>
 
-  @if(strtolower($role->name) !== 'sales personnel' && Session::has('profile_error_message') && Auth::user()->first_login == 1)
-  <div class="post d-flex flex-column-fluid" id="kt_post">
+  @php
+    $error_message = '';
+    $visibility    = 'd-none'; 
+    if(strtolower($role->name) !== 'sales personnel' && Session::has('profile_error_message') && Auth::user()->first_login == 1){
+        $error_message = 'You have to change your temporary email address to your actual email address in order to access the system.';
+        $visibility    = '';
+    }
+
+    if(strpos(Auth::user()->email, '@mailinator.com') !== false){
+        $error_message = 'Please update your email.';
+        $visibility    = '';
+    }
+
+  @endphp
+
+  <div class="post d-flex flex-column-fluid {{$visibility}}" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="alert alert-custom alert-danger" role="alert">
-            <div class="alert-text">You have to change your temporary email address to your actual email address in order to access the system.</div>
+            <div class="alert-text">{{$error_message}}</div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  @endif
-
 
   <div class="post d-flex flex-column-fluid" id="kt_post">
     <div id="kt_content_container" class="container-xxl">
