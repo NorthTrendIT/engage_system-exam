@@ -676,6 +676,8 @@ class UserController extends Controller
                                 
             $records[] = array(
                             'no' => $key + 1,
+                            'business_unit' => @$value->customer->card_code ?? "-",
+                            'card_code' => @$value->sap_connection->company_name ?? "-",
                             'role' => @$value->role->name ?? "-",
                             'first_name' => @$value->first_name ?? "-",
                             'last_name' => @$value->last_name ?? "-",

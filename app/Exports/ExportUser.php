@@ -28,6 +28,8 @@ class ExportUser implements FromCollection,WithHeadings,WithTitle,ShouldAutoSize
     {
         return [
             'No.',
+            'Card Code',
+            'Business Unit',
             'Role',
             'First Name',
             'Last Name',
