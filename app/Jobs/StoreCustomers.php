@@ -102,7 +102,7 @@ class StoreCustomers implements ShouldQueue
                                 //'max_commitment' => @$value['MaxCommitment'],
                                 'federal_tax_id' => @$value['FederalTaxID'],
                                 'current_account_balance' => @$value['CurrentAccountBalance'],
-                                //'vat_group' => @$value['VatGroup'],
+                                'vat_group' => @$value['VatGroup'],
                                 'u_regowner' => @$value['U_REGOWNER'],
                                 //'u_mp' => @$value['U_MP'],
                                 'u_msec' => @$value['U_MSEC'],

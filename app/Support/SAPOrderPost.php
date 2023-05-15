@@ -191,6 +191,7 @@ class SAPOrderPost
         $body = $this->madeSapData($id);
         $response = array();
         if(!empty($body)){
+            dd($body);
             $response = $this->requestSapApi('/b1s/v1/Quotations', "POST", $body);
             $status = $response['status'];
             $data = $response['data'];
@@ -351,6 +352,13 @@ class SAPOrderPost
         $response = [];
         $order = LocalOrder::where('id', $id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
+        $customer_vat = 0;
+        if(@$order->customer->vat_group !== null){
+            $vat = $this->requestSapApi('/b1s/v1/VatGroups(\''.@$order->customer->vat_group.'\')', "GET");
+            $rounded = $vat['data']['VatGroups_Lines'][0]['Rate'] * 1;
+            $customer_vat = ($rounded === 0) ? 0 : '1.'.$rounded; 
+        }
+
         $response['CardCode'] = @$order->customer->card_code;
         $response['CardName'] = @$order->customer->card_name;
         $response['DocDueDate'] = @$order->due_date;
@@ -384,14 +392,17 @@ class SAPOrderPost
         }
 
         $response['DocumentLines'] = [];
-
+        
         foreach($order->items as $item){
+            $price      = ($customer_vat === 0) ? @$item->price : @$item->price / $customer_vat;
+            $unit_price = ($customer_vat === 0) ? @$item->price : @$item->price / $customer_vat;
+
             $temp = array(
                 'ItemCode' => @$item->product->item_code,
                 'ItemDescription' => @$item->product->item_name,
                 'Quantity' => @$item->quantity,
-                'Price' => @$item->price / env('SAP_VAT'),
-                'UnitPrice' => @$item->price / env('SAP_VAT'),
+                'Price' => $price,
+                'UnitPrice' => $unit_price,
                 'ShipDate' => @$order->due_date,
                 'WarehouseCode' => '01',
             );

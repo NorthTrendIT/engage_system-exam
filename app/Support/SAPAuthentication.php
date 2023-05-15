@@ -78,7 +78,7 @@ class SAPAuthentication
                     'company_name' => $this->database,
                     'username' => $this->username,
                     'session_id' => $response['SessionId'],
-                    'expires_at' => $currentTime->addMinutes(55),
+                    'expires_at' => $currentTime->addMinutes(25),
                 ]);
         }
 
@@ -160,7 +160,7 @@ class SAPAuthentication
                                             'company_name' => $this->database,
                                             'username' => $this->username,
                                             'session_id' => $response['SessionId'],
-                                            'expires_at' => Carbon::now()->addMinutes(55),
+                                            'expires_at' => Carbon::now()->addMinutes(25),
                                         ]
                                     );
             }
