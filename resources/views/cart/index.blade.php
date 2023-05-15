@@ -72,7 +72,7 @@
                                                                     data-state="{{ $item->state }}"
                                                                     data-country="{{ $item->country }}"
 
-                                                                {{@$selected_address->id == $item->id ? 'selected' : ''}}>{{$item->address}}
+                                                                {{@$selected_address->id == $item->id ? 'selected' : ''}}>{{$item->street}}
                                                             </option>
                                                             @endforeach
                                                         @else

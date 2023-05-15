@@ -360,9 +360,9 @@ class SAPOrderPost
         if(strtolower(@$order->address->street) == strtolower(@$order->customer->card_name)){
             $response['Address'] = @$order->address->street;
         }else{
-            $response['Address'] = @$order->address->address;
+            $response['Address'] = '';
             if(!empty(@$order->address->street)){
-                $response['Address'] .= ", ".@$order->address->street;
+                $response['Address'] .= @$order->address->street;
             }
         }
                 

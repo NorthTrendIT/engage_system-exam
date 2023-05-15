@@ -433,9 +433,9 @@ class LocalOrderController extends Controller
         // street, zip, city,country, state
         $response = array();
         foreach($data as $value){
-            $address = $value->address;
+            $address = '';
             if(!empty($value->street)){
-                $address .= ', '.$value->street;
+                $address .= $value->street;
             }
             if(!empty($value->zip_code)){
                 $address .= ', '.$value->zip_code;
