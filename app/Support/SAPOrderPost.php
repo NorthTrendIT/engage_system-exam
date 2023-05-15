@@ -191,7 +191,6 @@ class SAPOrderPost
         $body = $this->madeSapData($id);
         $response = array();
         if(!empty($body)){
-            dd($body);
             $response = $this->requestSapApi('/b1s/v1/Quotations', "POST", $body);
             $status = $response['status'];
             $data = $response['data'];
