@@ -393,10 +393,8 @@ class SAPOrderPost
         $response['DocumentLines'] = [];
         
         foreach($order->items as $item){
-            // $price      = ($customer_vat === 0) ? @$item->price : @$item->price / $customer_vat;
-            // $unit_price = ($customer_vat === 0) ? @$item->price : @$item->price / $customer_vat;
-            $price      =  @$item->price / 1.12;
-            $unit_price =  @$item->price / 1.12;
+            $price      = ($customer_vat === 0) ? @$item->price : @$item->price / $customer_vat;
+            $unit_price = ($customer_vat === 0) ? @$item->price : @$item->price / $customer_vat;
 
             $temp = array(
                 'ItemCode' => @$item->product->item_code,

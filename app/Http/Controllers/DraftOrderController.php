@@ -14,6 +14,7 @@ use App\Support\SAPOrderPost;
 use Validator;
 use Auth;
 use DataTables;
+use App\Support\SAPVatGroup;
 
 class DraftOrderController extends Controller
 {
@@ -85,10 +86,10 @@ class DraftOrderController extends Controller
                     //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity value must be less then '.$avl_qty.'.'];
                     // }
 
-                    // $price = get_product_customer_price(@$product->item_prices,@$customer->price_list_num);
-                    // if($price < 1){
-                    //     return $response = ['status'=>false,'message'=>'The product "'.@$product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
-                    // }
+                    $price = get_product_customer_price(@$product->item_prices,@$customer->price_list_num);
+                    if($price < 1){
+                        return $response = ['status'=>false,'message'=>'The product "'.@$product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
+                    }
                 }
             }
 
@@ -397,8 +398,15 @@ class DraftOrderController extends Controller
 
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
             $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
-
+            
+            $sap_connection = Auth::user()->customer->sap_connection;
+            $vat = new SAPVatGroup($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);                
             $price = get_product_customer_price(@$product->item_prices, @$customer_price_list_no[@$product->sap_connection_id]);
+            $customer_vat = $vat->getVat(Auth::user()->customer->vat_group);
+            if($customer_vat !== 0){
+                $price = get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]) / $customer_vat;
+            }
+
             return $response = ['status' => true, 'price' => $price];
         }
         return $response = ['status' => false, 'message' => "Something went wrong!"];

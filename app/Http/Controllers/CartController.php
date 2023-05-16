@@ -20,6 +20,7 @@ use App\Models\CustomerProductGroup;
 use App\Models\CustomerProductItemLine;
 use App\Models\CustomerProductTiresCategory;
 use DataTables;
+use App\Support\SAPVatGroup;
 
 class CartController extends Controller
 {
@@ -445,18 +446,18 @@ class CartController extends Controller
 
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
 
-                // $price = get_product_customer_price(@$value->product->item_prices, @$customer_price_list_no);
-                // if($price < 1){
-                //     return $response = ['status'=>false,'message'=>'The product "'.@$value->product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
-                // }
+                $price = get_product_customer_price(@$value->product->item_prices, @$customer_price_list_no);
+                if($price < 1){
+                    return $response = ['status'=>false,'message'=>'The product "'.@$value->product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
+                }
 
                 $total_amount += get_product_customer_price(@$value->product->item_prices, @$customer_price_list_no);
             }
         }
 
-        // if($total_amount < 1){
-        //     return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
-        // }
+        if($total_amount < 1){
+            return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
+        }
 
         $rules = array(
                 'address_id' => 'required|exists:customer_bp_addresses,id',
@@ -760,12 +761,22 @@ class CartController extends Controller
                                 }
                             })
                             ->addColumn('price', function($row) use ($customer_price_list_no) {
+
                                 $sap_connection_id = $row->sap_connection_id;
+                                $sap_connection = SapConnection::find($sap_connection_id);  
+                                $vat = new SAPVatGroup($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
+                                
+                                $price = get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]);
+                                $customer_vat = $vat->getVat(Auth::user()->customer->vat_group);
+                                if($customer_vat !== 0){
+                                    $price = get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]) / $customer_vat;
+                                }
+
 
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="text-muted" title="Not Available">₱ '.number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id])).'</span>';
+                                    return '<span class="" title="Not Available">₱ '.number_format_value($price).'</span>';
                                 }else{
-                                    return "₱ ".number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]));
+                                    return "₱ ".number_format_value($price);
 
                                 }
                             })

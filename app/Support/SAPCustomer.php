@@ -49,6 +49,7 @@ class SAPCustomer
     // Get customer data
     public function getCustomerData($url = '/b1s/v1/BusinessPartners')
     {
+        ini_set('memory_limit', '512M');
     	try {
             $response = $this->httpClient->request(
                 'GET',
@@ -107,7 +108,7 @@ class SAPCustomer
                 if($this->search){
                     $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$this->search.'\')';
                 }else{
-                    $url = '/b1s/v1/BusinessPartners?$filter=CreateDate ge \''.'2020-01-01'.'\' and CreateDate le \''.'2021-01-01'.'\' and Valid eq \''.'tYES'.'\'';
+                    $url = '/b1s/v1/BusinessPartners?$filter=CreateDate ge \''.'2022-01-01'.'\' and CreateDate le \''.'2023-01-01'.'\' and Valid eq \''.'tYES'.'\'';
                     // $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\' or CreateDate ge \''.$latestData->updated_date.'\'';
                 }
                 $response = $this->getCustomerData($url);

@@ -16,6 +16,7 @@ use App\Models\Quotation;
 use Validator;
 use Auth;
 use DataTables;
+use App\Support\SAPVatGroup;
 
 class LocalOrderController extends Controller
 {
@@ -96,10 +97,10 @@ class LocalOrderController extends Controller
                     //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity value must be less then '.$avl_qty.'.'];
                     // }
 
-                    // $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
-                    // if($price < 1){
-                    //     return $response = ['status'=>false,'message'=>'The product "'.@$product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
-                    // }
+                    $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
+                    if($price < 1){
+                        return $response = ['status'=>false,'message'=>'The product "'.@$product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
+                    }
                 }
             }
 
@@ -496,7 +497,14 @@ class LocalOrderController extends Controller
         if($input['customer_id'] && $input['product_id']){
             $customer = Customer::findOrFail($input['customer_id']);
             $product = Product::findOrFail($input['product_id']);
+            
+            $vat = new SAPVatGroup($customer->sap_connection->db_name, $customer->sap_connection->user_name , $customer->sap_connection->password, $customer->sap_connection->id);         
             $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
+            $customer_vat = $vat->getVat($customer->vat_group);
+            if($customer_vat !== 0){
+                $price = $price / $customer_vat;
+            }
+
             return $response = ['status' => true, 'price' => $price];
         }
         return $response = ['status' => false, 'message' => "Something went wrong!"];

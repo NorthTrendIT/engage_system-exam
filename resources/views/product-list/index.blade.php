@@ -201,7 +201,7 @@
                               <th>Product Line</th>
                               <th>Product Category</th>
                               @if(userrole() != 2)
-                              {{-- <th>Price</th> --}}
+                              <th>Price</th>
                               <th>Qty</th>
                               @endif
                               <th>Action</th>
@@ -386,7 +386,7 @@ $(document).ready(function() {
               {data: 'u_item_line', name: 'u_item_line'},
               {data: 'u_tires', name: 'u_tires'},
               @if(userrole() != 2)
-              // {data: 'price', name: 'price', orderable:false,searchable:false},
+              {data: 'price', name: 'price', orderable:false,searchable:false},
               {data: 'qty', name: 'qty', orderable:false,searchable:false},
               @endif
               {data: 'action', name: 'action', orderable:false,searchable:false},
