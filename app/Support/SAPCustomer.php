@@ -41,6 +41,7 @@ class SAPCustomer
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
         $this->headers['Cookie'] = $this->authentication->getSessionCookie();
+        $this->headers['Prefer'] = "odata.maxpagesize=0 (get all data)";
 
         $this->httpClient = new Client();
     }
