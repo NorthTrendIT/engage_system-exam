@@ -90,6 +90,8 @@ class SAPCustomer
     // Store All Customer Records In DB
     public function addCustomerDataInDatabase($url = false)
     {
+        ini_set('memory_limit', '512M'); //set limit
+
         $where = array(
                     'db_name' => $this->database,
                     'user_name' => $this->username,
@@ -105,7 +107,7 @@ class SAPCustomer
                 if($this->search){
                     $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$this->search.'\')';
                 }else{
-                    $url = '/b1s/v1/BusinessPartners?$filter=CreateDate ge \''.'2017-01-01'.'\' and Valid eq \''.'tYES'.'\'';
+                    $url = '/b1s/v1/BusinessPartners?$filter=CreateDate ge \''.'2022-01-01'.'\' and CreateDate le \''.'2023-01-01'.'\' and Valid eq \''.'tYES'.'\'';
                     // $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\' or CreateDate ge \''.$latestData->updated_date.'\'';
                 }
                 $response = $this->getCustomerData($url);
