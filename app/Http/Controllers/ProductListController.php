@@ -15,6 +15,8 @@ use Auth;
 use DataTables;
 use App\Models\ProductGroup;
 use DB;
+use App\Support\SAPVatGroup;
+use App\Models\SapConnection;
 
 class ProductListController extends Controller
 {
@@ -376,10 +378,19 @@ class ProductListController extends Controller
                                 return $html;
                             })
                             ->addColumn('price', function($row) use ($customer_price_list_no) {
+                                
                                 $sap_connection_id = $row->sap_connection_id;
+                                $sap_connection = SapConnection::find($sap_connection_id);  
+                                $vat = new SAPVatGroup($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
+                                
+                                $price = get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]);
+                                $customer_vat = $vat->getVat(Auth::user()->customer->vat_group);
+                                if($customer_vat !== 0){
+                                    $price = get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]) / $customer_vat;
+                                }
 
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="" title="Not Available">₱ '.number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id])).'</span>';
+                                    return '<span class="" title="Not Available">₱ '.number_format_value($price).'</span>';
                                 }else{
                                     // print_r($row->item_prices);
                                     // echo "===";
@@ -388,7 +399,7 @@ class ProductListController extends Controller
                                     // print_r($sap_connection_id);
                                     // echo "===";
                                     // print_r($customer_price_list_no[$sap_connection_id]);exit();
-                                    return "₱ ".number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]));
+                                    return "₱ ".number_format_value($price);
 
                                 }
                             })

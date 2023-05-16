@@ -105,9 +105,9 @@
 
                                                     <th class="min-w-150px">Product</th>
                                                     <th class="min-w-80px">Quantity</th>
-                                                    <th class="min-w-80px d-none" style="text-align:right">Price</th>
-                                                    <th class="min-w-80px d-none" style="text-align:right">Amount</th>
-                                                    <th class="min-w-80px"></th>
+                                                    <th class="min-w-80px " style="text-align:right">Price</th>
+                                                    <th class="min-w-80px " style="text-align:right">Amount</th>
+                                                    <th class="min-w-80px">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <!--end::Table head-->
@@ -126,10 +126,10 @@
                                                                 <td>
                                                                     <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" placeholder="Enter quantity" value="{{ $value->quantity }}">
                                                                 </td>
-                                                                <td style="text-align:right" class="d-none">
+                                                                <td style="text-align:right" class="">
                                                                     <span class="price text-primary">₱ {{ number_format_value(@$value->price) }}</span>
                                                                 </td>
-                                                                <td style="text-align:right" class="d-none">
+                                                                <td style="text-align:right" class="">
                                                                     <span class="amount text-primary" style="font-weight: bold">₱ {{ number_format_value(@$value->total) }}</span>
                                                                 </td>
                                                                 <td>
@@ -188,7 +188,7 @@
                             <div class="col-md-4 col-12">
                                 <div class="card p-8">
                                     <div class="sub-total-box">
-                                        <div class="row d-none">
+                                        <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">sub total</span>
                                             </div>
@@ -202,7 +202,7 @@
                                                 <span style="text-align: right; width: 100%;" class="d-block">0%</span>
                                             </div>
                                         </div>
-                                        <div class="row pt-8 d-none" style="border-top: 1px solid #e4e6ef;">
+                                        <div class="row pt-8" style="border-top: 1px solid #e4e6ef;">
                                             <div class="col-md-6 mb-3">
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">total</span>
                                             </div>
