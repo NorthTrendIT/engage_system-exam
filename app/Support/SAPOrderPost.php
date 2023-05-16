@@ -355,7 +355,7 @@ class SAPOrderPost
         if(@$order->customer->vat_group !== null){
             $vat = $this->requestSapApi('/b1s/v1/VatGroups(\''.@$order->customer->vat_group.'\')', "GET");
             $rounded = $vat['data']['VatGroups_Lines'][0]['Rate'] * 1;
-            $customer_vat = ($rounded === 0) ? 0 : '1.'.$rounded; 
+            $customer_vat = ($rounded === 0 || $rounded === 0.0) ? 0 : '1.'.$rounded; 
         }
 
         $response['CardCode'] = @$order->customer->card_code;
