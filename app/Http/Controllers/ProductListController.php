@@ -379,7 +379,7 @@ class ProductListController extends Controller
                                 $sap_connection_id = $row->sap_connection_id;
 
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="text-muted" title="Not Available">₱ '.number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id])).'</span>';
+                                    return '<span class="" title="Not Available">₱ '.number_format_value(get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id])).'</span>';
                                 }else{
                                     // print_r($row->item_prices);
                                     // echo "===";
