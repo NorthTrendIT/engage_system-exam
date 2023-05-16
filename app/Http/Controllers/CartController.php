@@ -445,18 +445,18 @@ class CartController extends Controller
 
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
 
-                // $price = get_product_customer_price(@$value->product->item_prices, @$customer_price_list_no);
-                // if($price < 1){
-                //     return $response = ['status'=>false,'message'=>'The product "'.@$value->product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
-                // }
+                $price = get_product_customer_price(@$value->product->item_prices, @$customer_price_list_no);
+                if($price < 1){
+                    return $response = ['status'=>false,'message'=>'The product "'.@$value->product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
+                }
 
                 $total_amount += get_product_customer_price(@$value->product->item_prices, @$customer_price_list_no);
             }
         }
 
-        // if($total_amount < 1){
-        //     return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
-        // }
+        if($total_amount < 1){
+            return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
+        }
 
         $rules = array(
                 'address_id' => 'required|exists:customer_bp_addresses,id',
