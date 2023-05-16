@@ -48,7 +48,6 @@ class SAPCustomer
     // Get customer data
     public function getCustomerData($url = '/b1s/v1/BusinessPartners')
     {
-        ini_set('memory_limit', '512M');
     	try {
             $response = $this->httpClient->request(
                 'GET',
@@ -90,6 +89,8 @@ class SAPCustomer
     // Store All Customer Records In DB
     public function addCustomerDataInDatabase($url = false)
     {
+        ini_set('memory_limit', '512M'); //set limit
+
         $where = array(
                     'db_name' => $this->database,
                     'user_name' => $this->username,
