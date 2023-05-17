@@ -15,8 +15,6 @@ use Auth;
 use DataTables;
 use App\Models\ProductGroup;
 use DB;
-use App\Support\SAPVatGroup;
-use App\Models\SapConnection;
 
 class ProductListController extends Controller
 {
@@ -171,7 +169,8 @@ class ProductListController extends Controller
             $customer_id = explode(',', Auth::user()->multi_customer_id); //Auth::user()->customer_id
             $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
             $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
-            
+            $customer_vat  = Customer::whereIn('id', $customer_id)->get();
+
         }elseif (!is_null(@Auth::user()->created_by)) {
 
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
@@ -377,17 +376,21 @@ class ProductListController extends Controller
                                                         </div>';
                                 return $html;
                             })
-                            ->addColumn('price', function($row) use ($customer_price_list_no) {
+                            ->addColumn('price', function($row) use ($customer_price_list_no, $customer_vat) {
                                 
                                 $sap_connection_id = $row->sap_connection_id;
-                                // $sap_connection = SapConnection::find($sap_connection_id);  
-                                // $vat = new SAPVatGroup($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
-                                
+
+                                $vat_rate = 0;
+                                foreach($customer_vat as $cust){
+                                    if($sap_connection_id === $cust->real_sap_connection_id){
+                                      $vat_rate = get_vat_rate($cust);
+                                    }
+                                }
+
                                 $price = get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]);
-                                // $customer_vat = $vat->getVat(Auth::user()->customer->vat_group);
-                                // if($customer_vat !== 0){
-                                //     $price = get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]) / $customer_vat;
-                                // }
+                                if($vat_rate !== 0){
+                                    $price = $price / $vat_rate;
+                                }
 
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
                                     return '<span class="" title="Not Available">₱ '.number_format_value($price).'</span>';

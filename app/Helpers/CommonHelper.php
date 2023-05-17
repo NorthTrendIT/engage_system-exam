@@ -792,3 +792,16 @@ function get_timezone_date_time($date){
     return date("M d, Y h:i A", strtotime($local_time));
     
 }
+
+
+function get_vat_rate($customer){
+    $customer_vat = 0;
+    if($customer->vat_group !== null){
+        $lines = json_decode($customer->vatgroup->vatgroups_lines);
+        $rounded = $lines[0]->Rate * 1;
+
+        $customer_vat = ($rounded === 0 || $rounded === 0.0) ? 0 : '1.'.$rounded; 
+    }
+
+    return $customer_vat;
+}

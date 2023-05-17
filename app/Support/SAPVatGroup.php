@@ -2,8 +2,12 @@
 
 namespace App\Support;
 
+use App\Jobs\StoreVatGroups;
 use GuzzleHttp\Client;
 use App\Support\SAPAuthentication;
+use App\Models\SapConnection;
+use App\Jobs\SyncNextVatGroups;
+use Log;
 
 class SAPVatGroup
 {
@@ -19,24 +23,71 @@ class SAPVatGroup
 	protected $database;
 	protected $username;
 	protected $password;
+    protected $log_id;
+    protected $authentication;
 
-    public function __construct($database, $username, $password, $sap_connection_id)
+    public function __construct($database, $username, $password,  $log_id)
     {
         $this->headers = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
+        $this->database = $database;
+        $this->username = $username;
+        $this->password = $password;
+        $this->log_id = $log_id;
+
         $this->headers['Cookie'] = $this->authentication->getSessionCookie();
         $this->headers['Content-Type'] = 'application/json';
         $this->headers['Accept'] = 'application/json';
 
         $this->httpClient = new Client();
 
-        $this->sap_connection_id = $sap_connection_id;
-        if($sap_connection_id == 5){
-            $this->real_sap_connection_id = 1;
-        } else {
-            $this->real_sap_connection_id = $sap_connection_id;
+    }
+
+
+
+
+    // Get Product data
+    public function getVatGroupData($url = '/b1s/v1/VatGroups')
+    {
+    	try {
+            $response = $this->httpClient->request(
+                'GET',
+                get_sap_api_url().$url,
+                [
+                    'headers' => $this->headers,
+                    'verify' => false,
+                ]
+            );
+
+            if(in_array($response->getStatusCode(), [200,201])){
+                $response = json_decode($response->getBody(),true);
+
+                return array(
+                                'status' => true,
+                                'data' => $response
+                            );
+            }
+
+        } catch (\Exception $e) {
+
+            if(!empty($this->log_id)){
+                add_sap_log([
+                                'status' => "error",
+                                'error_data' => $e->getMessage(),
+                            ], $this->log_id);                
+            }
+
+            return array(
+                            'status' => false,
+                            'data' => []
+                        );
         }
     }
+
+
+
+
+
 
     public function requestSapApi($url = "", $method = "", $body = ""){
     	try {
@@ -97,4 +148,49 @@ class SAPVatGroup
 
         return $customer_vat;
     }
+
+
+    public function addVatGroupDataInDatabase($url = false){
+        
+        ini_set('memory_limit', '512M'); //set limit
+
+        $where = array(
+            'db_name' => $this->database,
+            'user_name' => $this->username,
+        );
+
+        $sap_connection = SapConnection::where($where)->first();
+                
+        if($url){
+            $response = $this->getVatGroupData($url);
+        }else{
+            $response = $this->getVatGroupData('/b1s/v1/VatGroups');
+        }
+
+        if($response['status']){
+            $data = $response['data'];
+
+            if($data['value']){
+
+                // Store Data of Product in database
+                StoreVatGroups::dispatch($data['value'],@$sap_connection->id);
+
+                if(isset($data['odata.nextLink'])){
+                    SyncNextVatGroups::dispatch($this->database, $this->username, $this->password, $data['odata.nextLink'], $this->log_id);
+                }else{
+                    if(!empty($this->log_id)){
+                        add_sap_log([
+                                'status' => "completed",
+                            ], $this->log_id);
+                    }
+                }
+            }
+        }        
+    }
+
+
+
+
+
+
 }

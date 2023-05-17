@@ -76,6 +76,9 @@ Route::middleware(['auth'])->group(function () {
             Route::post('customer/get-all-bp-address', 'App\Http\Controllers\CustomerController@getAllBpAddress')->name('customer.get-all-bp-address');
             Route::post('customer/get-territory', 'App\Http\Controllers\CustomerController@getTerritory')->name('customer.get-territory');
 
+            Route::get('vatgroup', 'App\Http\Controllers\VatGroupController@index')->name('vatgroup.index');
+            Route::post('vatgroup/sync-vatgroup', 'App\Http\Controllers\VatGroupController@syncVatGroups')->name('vatgroup.sync-vatgroup');
+            Route::get('vatgroup/fetch', 'App\Http\Controllers\VatGroupController@fetchVatGroups')->name('vatgroup.fetch');
 
             Route::resource('user', 'App\Http\Controllers\UserController');
             Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');

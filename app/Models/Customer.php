@@ -171,4 +171,8 @@ class Customer extends Model
     public function customerOrder(){
         return $this->belongsTo(Quotation::class, ['card_code','sap_connection_id'], ['card_code', 'sap_connection_id']);
     }
+
+    public function vatgroup(){
+        return $this->hasOne(VatGroup::class, 'code', 'vat_group');
+    }
 }

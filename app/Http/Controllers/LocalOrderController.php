@@ -16,7 +16,6 @@ use App\Models\Quotation;
 use Validator;
 use Auth;
 use DataTables;
-use App\Support\SAPVatGroup;
 
 class LocalOrderController extends Controller
 {
@@ -498,12 +497,13 @@ class LocalOrderController extends Controller
             $customer = Customer::findOrFail($input['customer_id']);
             $product = Product::findOrFail($input['product_id']);
             
-            // $vat = new SAPVatGroup($customer->sap_connection->db_name, $customer->sap_connection->user_name , $customer->sap_connection->password, $customer->sap_connection->id);         
+            $vat_rate = 0;
+            $vat_rate = get_vat_rate($customer);
+        
             $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
-            // $customer_vat = $vat->getVat($customer->vat_group);
-            // if($customer_vat !== 0){
-            //     $price = $price / $customer_vat;
-            // }
+            if($vat_rate !== 0){
+                $price = $price / $vat_rate;
+            }
 
             return $response = ['status' => true, 'price' => $price];
         }

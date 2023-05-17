@@ -272,6 +272,11 @@ class ActivityMasterSeeder extends Seeder
                         'id' => 60,
                         'name' => 'Sync SAP API Connection Field Data'
                     ),
+
+                    array(
+                        'id' => 61,
+                        'name' => 'Sync VatGroup in SAP'
+                    ),
         		);
         ActivityMaster::insert($data);
     }
