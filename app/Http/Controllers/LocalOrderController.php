@@ -505,7 +505,7 @@ class LocalOrderController extends Controller
                 $price = $price / $vat_rate;
             }
 
-            return $response = ['status' => true, 'price' => $price];
+            return $response = ['status' => true, 'price' => round($price, 2)];
         }
         return $response = ['status' => false, 'message' => "Something went wrong!"];
     }
