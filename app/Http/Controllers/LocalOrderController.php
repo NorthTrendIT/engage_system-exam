@@ -498,12 +498,12 @@ class LocalOrderController extends Controller
             $customer = Customer::findOrFail($input['customer_id']);
             $product = Product::findOrFail($input['product_id']);
             
-            $vat = new SAPVatGroup($customer->sap_connection->db_name, $customer->sap_connection->user_name , $customer->sap_connection->password, $customer->sap_connection->id);         
+            // $vat = new SAPVatGroup($customer->sap_connection->db_name, $customer->sap_connection->user_name , $customer->sap_connection->password, $customer->sap_connection->id);         
             $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
-            $customer_vat = $vat->getVat($customer->vat_group);
-            if($customer_vat !== 0){
-                $price = $price / $customer_vat;
-            }
+            // $customer_vat = $vat->getVat($customer->vat_group);
+            // if($customer_vat !== 0){
+            //     $price = $price / $customer_vat;
+            // }
 
             return $response = ['status' => true, 'price' => $price];
         }
