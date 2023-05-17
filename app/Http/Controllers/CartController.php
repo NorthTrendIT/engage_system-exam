@@ -215,10 +215,10 @@ class CartController extends Controller
         $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
         $customer_id = explode(',', Auth::user()->multi_customer_id);
         $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
-        // $price = get_product_customer_price(@$product->item_prices,@$customer_price_list_no[$product->sap_connection_id]);
-        // if($price < 1){
-        //     return $response = ['status'=>false,'message'=>"The product price is not a valid."];
-        // }
+        $price = get_product_customer_price(@$product->item_prices,@$customer_price_list_no[$product->sap_connection_id]);
+        if($price < 1){
+            return $response = ['status'=>false,'message'=>"The product price is not a valid."];
+        }
 
         $sap_customer_arr = get_sap_customer_arr(@Auth::user());
         if(isset($id)){
