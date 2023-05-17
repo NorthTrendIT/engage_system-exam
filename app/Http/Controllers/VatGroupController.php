@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SapConnection;
 use App\Jobs\SyncVatGroups;
+use App\Models\VatGroup;
+use DataTables;
 
 class VatGroupController extends Controller
 {
@@ -56,6 +58,32 @@ class VatGroupController extends Controller
           }
           return $response;
 
+    }
+
+
+    public function fetchVatGroups(){
+        $vat = VatGroup::all();
+        
+        return DataTables::of($vat)
+                          ->addIndexColumn()
+                          ->addColumn('business_unit', function($row) {
+                            return $row->sap_connection->company_name;
+                          })
+                          ->addColumn('code', function($row) {
+                            return $row->code;
+                          })
+                          ->addColumn('name', function($row) {
+                            return $row->name;
+                          })
+                          ->addColumn('status', function($row) {
+                            $status = ($row->inactive === 'tYES') ? 'Active' : 'Inactive';
+                            return $status;
+                          })
+                          ->addColumn('rate', function($row) {
+                            $rate = json_decode($row->vatgroups_lines);
+                            return $rate[0]->Rate.'%';
+                          })->make(true)
+                          ;
     }
 
 

@@ -68,7 +68,7 @@ class StoreVatGroups implements ShouldQueue
                                 'cash_discount_account'  => @$value['CashDiscountAccount'],
                                 'vat_deductible_account' => @$value['VATDeductibleAccount'],
                                 'tax_region'             => @$value['TaxRegion'],
-                                'vatgroups_lines'        => @$value['VatGroups_Lines'],
+                                'vatgroups_lines'        => json_encode(@$value['VatGroups_Lines']),
                                 'sap_connection_id'      => $this->sap_connection_id,
                             );
 

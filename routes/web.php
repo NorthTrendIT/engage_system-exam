@@ -78,6 +78,7 @@ Route::middleware(['auth'])->group(function () {
 
             Route::get('vatgroup', 'App\Http\Controllers\VatGroupController@index')->name('vatgroup.index');
             Route::post('vatgroup/sync-vatgroup', 'App\Http\Controllers\VatGroupController@syncVatGroups')->name('vatgroup.sync-vatgroup');
+            Route::get('vatgroup/fetch', 'App\Http\Controllers\VatGroupController@fetchVatGroups')->name('vatgroup.fetch');
 
             Route::resource('user', 'App\Http\Controllers\UserController');
             Route::post('user/get-all', 'App\Http\Controllers\UserController@getAll')->name('user.get-all');

@@ -56,6 +56,7 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>BU</th>
                               <th>Code</th>
                               <th>Name</th>
                               <th>Status</th>
@@ -90,9 +91,8 @@
 @endsection
 
 @push('css')
-<link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
 <link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
 
 <style type="text/css">
   .other_filter_div{
@@ -102,73 +102,69 @@
 @endpush
 
 @push('js')
-<script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
 <script>
   $(document).ready(function() {
     render_table();
 
     function render_table(){
-        var table = $("#myTable").DataTable();
-        // table.DataTable().destroy();
+        var table = $("#myTable");
+        table.DataTable().destroy();
 
-        // table.DataTable({
-        //   scrollX: true,
-        //   scrollY: "800px",
-        //   scrollCollapse: true,
-        //   paging: true,
-        //   fixedColumns:   {
-        //     left: 3,
-        //     right: 0
-        //   },
-        //   order: [],
-        //   ajax: {
-        //       'url': "{{ route('product.get-all') }}",
-        //       'type': 'GET',
-        //       headers: {
-        //         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        //       },
-        //       data:{
-        //         filter_search : $filter_search,
-        //         filter_company : $filter_company,
-        //         filter_brand : $filter_brand,
-        //         filter_status : $filter_status,
-        //         filter_date_range : $filter_date_range,
-        //         filter_product_category : $filter_product_category,
-        //         filter_product_line : $filter_product_line,
-        //         filter_product_class : $filter_product_class,
-        //         filter_product_type : $filter_product_type,
-        //         filter_product_application : $filter_product_application,
-        //         filter_product_pattern : $filter_product_pattern,
-        //       }
-        //   },
-        //   columns: [
-        //       {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+        table.DataTable({
+          scrollX: true,
+          scrollY: "800px",
+          scrollCollapse: true,
+          paging: true,
+          fixedColumns:   {
+            left: 3,
+            right: 0
+          },
+          order: [],
+          ajax: {
+              'url': "{{ route('vatgroup.fetch') }}",
+              'type': 'GET',
+              headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+              },
+            //   data:{
+            //     filter_search : $filter_search,
+            //     filter_company : $filter_company,
+            //   }
+          },
+          columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'business_unit', name: 'business_unit',orderable:true,searchable:true},
+              {data: 'code', name: 'code',orderable:true,searchable:true},
+              {data: 'name', name: 'name',orderable:true,searchable:true},
+              {data: 'status', name: 'status',orderable:true,searchable:true},
+              {data: 'rate', name: 'rate',orderable:true,searchable:true},
               
-        //   ],
-        //   drawCallback:function(){
-        //     //   $(function () {
-        //     //     $('[data-toggle="tooltip"]').tooltip()
-        //     //     $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+          ],
+          drawCallback:function(){
+            //   $(function () {
+            //     $('[data-toggle="tooltip"]').tooltip()
+            //     $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
 
-        //     //     $("#myTable").DataTable().column(7).visible(false);
-        //     //     $("#myTable").DataTable().column(10).visible(false);
+            //     $("#myTable").DataTable().column(7).visible(false);
+            //     $("#myTable").DataTable().column(10).visible(false);
 
-        //     //     $product_category = $('[name="filter_product_category"]').find('option:selected').val().toLowerCase();
-        //     //     if(jQuery.inArray($product_category, ["lubes","chem","tires"]) !== -1){
-        //     //       $("#myTable").DataTable().column(7).visible(true);
-        //     //     }
+            //     $product_category = $('[name="filter_product_category"]').find('option:selected').val().toLowerCase();
+            //     if(jQuery.inArray($product_category, ["lubes","chem","tires"]) !== -1){
+            //       $("#myTable").DataTable().column(7).visible(true);
+            //     }
 
-        //     //     if(jQuery.inArray($product_category, ["tires"]) !== -1){
-        //     //       $("#myTable").DataTable().column(10).visible(true);
-        //     //     }
+            //     if(jQuery.inArray($product_category, ["tires"]) !== -1){
+            //       $("#myTable").DataTable().column(10).visible(true);
+            //     }
 
-        //     //   })
-        //   },
-        //   initComplete: function () {
-        //   }
-        // });
+            //   })
+          },
+          initComplete: function () {
+          }
+        });
 
 
     }

@@ -9,7 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Support\SAPVatGroup;
-
+use Log;
 
 class SyncVatGroups implements ShouldQueue
 {
