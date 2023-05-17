@@ -798,7 +798,7 @@ function get_vat_rate($customer){
     $customer_vat = 0;
     if($customer->vat_group !== null){
         $lines = json_decode($customer->vatgroup->vatgroups_lines);
-        $rounded = $lines * 1;
+        $rounded = $lines[0]->Rate * 1;
 
         $customer_vat = ($rounded === 0 || $rounded === 0.0) ? 0 : '1.'.$rounded; 
     }
