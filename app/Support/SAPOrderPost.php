@@ -396,8 +396,8 @@ class SAPOrderPost
             // $price      = ($customer_vat === 0) ? @$item->price : @$item->price / $customer_vat;
             // $unit_price = ($customer_vat === 0) ? @$item->price : @$item->price / $customer_vat;
 
-            $price      = @$item->price / 1.12;
-            $unit_price = @$item->price / 1.12;
+            $price      = @$item->price;
+            $unit_price = @$item->price;
 
             $temp = array(
                 'ItemCode' => @$item->product->item_code,
