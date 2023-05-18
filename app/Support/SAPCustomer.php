@@ -107,7 +107,7 @@ class SAPCustomer
                 if($this->search){
                     $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$this->search.'\')';
                 }else{
-                    $url = '/b1s/v1/BusinessPartners?$filter=GroupCode eq 108 and Valid eq \''.'tYES'.'\'';
+                    $url = '/b1s/v1/BusinessPartners?$filter=GroupCode eq 109 and Valid eq \''.'tYES'.'\'';
                     // $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\' or CreateDate ge \''.$latestData->updated_date.'\'';
                 }
                 $response = $this->getCustomerData($url);
