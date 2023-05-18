@@ -41,7 +41,7 @@ class SAPCustomer
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
         $this->headers['Cookie'] = $this->authentication->getSessionCookie();
-        // $this->headers['Prefer'] = "odata.maxpagesize=0 (get all data)";
+        $this->headers['Prefer'] = "odata.maxpagesize=0 (get all data)";
 
         $this->httpClient = new Client();
     }
@@ -107,7 +107,7 @@ class SAPCustomer
                 if($this->search){
                     $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$this->search.'\')';
                 }else{
-                    $url = '/b1s/v1/BusinessPartners?$filter=GroupCode eq 103 and Valid eq \''.'tYES'.'\'';
+                    $url = '/b1s/v1/BusinessPartners?$filter=GroupCode eq 100 and Valid eq \''.'tYES'.'\'';
                     // $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\' or CreateDate ge \''.$latestData->updated_date.'\'';
                 }
                 $response = $this->getCustomerData($url);
