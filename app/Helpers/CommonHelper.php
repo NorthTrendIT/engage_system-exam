@@ -99,7 +99,7 @@ function get_modules(){
     return $result;
 }
 
-function get_product_customer_price($item_prices, $number, $discount = false, $discount_fix_amount = false)
+function get_product_customer_price($item_prices, $number, $discount = false, $discount_fix_amount = false, $customer = false)
 {
     if(is_null($number)){
         $number = 1;
@@ -129,11 +129,39 @@ function get_product_customer_price($item_prices, $number, $discount = false, $d
             }
         }
 
+        $vat_rate = 0;
+        if($price !== 0){ //for vatrate
+            if($customer !== false){
+                $vat_rate = get_vat_rate($customer);
+
+                if($vat_rate !== 0){
+                    $price = $price / $vat_rate;
+                    $price = round($price, 2);
+                }
+            }
+        }
+
+
         return $price;
     }
 
     return 0;
 }
+
+
+function get_vat_rate($customer){
+    $customer_vat = 0;
+    if($customer->vat_group !== null){
+        $lines = json_decode($customer->vatgroup->vatgroups_lines);
+        $rounded = $lines[0]->Rate * 1;
+
+        $customer_vat = ($rounded === 0 || $rounded === 0.0) ? 0 : '1.'.$rounded; 
+    }
+
+    return $customer_vat;
+}
+
+
 
 function ordinal($number) {
     $ends = array('th','st','nd','rd','th','th','th','th','th','th');
@@ -791,17 +819,4 @@ function get_timezone_date_time($date){
     $local_time = $dt->format('Y-m-d H:i:s');
     return date("M d, Y h:i A", strtotime($local_time));
     
-}
-
-
-function get_vat_rate($customer){
-    $customer_vat = 0;
-    if($customer->vat_group !== null){
-        $lines = json_decode($customer->vatgroup->vatgroups_lines);
-        $rounded = $lines[0]->Rate * 1;
-
-        $customer_vat = ($rounded === 0 || $rounded === 0.0) ? 0 : '1.'.$rounded; 
-    }
-
-    return $customer_vat;
 }

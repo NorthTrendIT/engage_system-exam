@@ -249,7 +249,7 @@
                                             <a href="{{ route('product-list.show',@$item->product->id) }}">{{ @$item->product->item_name ?? "-" }}</a>
                                         </h3>
 
-                                        <div class="price">₱ {{ number_format_value(get_product_customer_price(@$item->product->item_prices,@$customer->price_list_num)) }}</div>
+                                        <div class="price">₱ {{ number_format_value(get_product_customer_price(@$item->product->item_prices,@$customer->price_list_num, false, false, $customer)) }}</div>
 
                                         @if($item->product->quantity_on_stock - $item->product->quantity_ordered_by_customers > 0)
                                             @if(userdepartment() != 1  && in_array(userrole(), [2,4]))

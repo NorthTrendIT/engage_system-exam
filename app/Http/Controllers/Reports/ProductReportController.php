@@ -12,7 +12,7 @@ use Carbon\Carbon;
 use App\Models\CustomerProductGroup;
 use App\Models\CustomerProductItemLine;
 use App\Models\CustomerProductTiresCategory;
-
+use App\Models\Customer;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ProductReportExport;
 
@@ -1055,6 +1055,8 @@ class ProductReportController extends Controller
         $customer_id = explode(',', Auth::user()->multi_customer_id);
         $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
         $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+        $customer_vat  = Customer::whereIn('id', $customer_id)->get();
+
         if(in_array(5, $sap_connection_id)){
             array_push($sap_connection_id, '5');
         }
@@ -1106,10 +1108,16 @@ class ProductReportController extends Controller
 
         $products1 = $products->whereIn('sap_connection_id', $sap_connection_id)->get();
         
+        $customer_price = 0;
         $sum = 0;
         foreach ($products1 as $key => $value) {
-            $data2[$value->id] = (get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]]));
-            $sum = $sum + (get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]]));
+          foreach($customer_vat as $cust){
+            if($sap_connection_id === $cust->real_sap_connection_id){
+                $customer_price = (get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]], false, false, $cust));
+                $data2[$value->id] = $customer_price;
+                $sum = $sum + $customer_price;
+            }
+          }
         }             
         arsort($data2);           
         $newArray = array_slice($data2, 0, 5, true);
@@ -1180,7 +1188,8 @@ class ProductReportController extends Controller
             $data3 = [];
             $products = $products->get();
             foreach ($products as $key => $value) {
-                $data2[$value->id] = (get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]]));
+              $data2[$value->id] = 0;
+              // $data2[$value->id] = (get_product_customer_price(@$value->item_prices,@$customer_price_list_no[$sap_connection_id[$key]], false, false, ''));
             }
             arsort($data2);           
             $newArray = array_slice($data2, 0, 5, true);

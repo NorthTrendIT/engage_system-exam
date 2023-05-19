@@ -160,13 +160,20 @@
                                                     <td>{{@$value->product->sales_unit}}</td>
                                                     @php
                                                         $customer_id = explode(',', Auth::user()->multi_customer_id);
+                                                        $customer_vat = \App\Models\Customer::whereIn('id', $customer_id)->get();
+
                                                         $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
+                                                        foreach($customer_vat as $cust){
+                                                            if($value->product->sap_connection_id === $cust->real_sap_connection_id){
+                                                                $price = get_product_customer_price(@$value->product->item_prices,$customer_price_list_no, false, false, $cust);
+                                                            }
+                                                        }
                                                     @endphp                    
                                                     <td class="text-end">
-                                                        <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) ) }}</span>
+                                                        <span class="fw-bolder my-2 price">₱ {{ number_format_value($price ) }}</span>
                                                     </td>
                                                     <td class="text-end">
-                                                        <span class="fw-bolder my-2 price total_price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer_price_list_no) * $value->qty ) }}</span>
+                                                        <span class="fw-bolder my-2 price total_price">₱ {{ number_format_value($price * $value->qty ) }}</span>
                                                     </td>
                                                     <td>
                                                         <div class="button-wrap">
