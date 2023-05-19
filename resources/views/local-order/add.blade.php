@@ -215,7 +215,7 @@
                             <div class="col-md-4 col-12">
                                 <div class="card p-8">
                                     <div class="sub-total-box">
-                                        <div class="row">
+                                        <div class="row d-none">
                                             <div class="col-md-6 mb-3">
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">sub total</span>
                                             </div>
