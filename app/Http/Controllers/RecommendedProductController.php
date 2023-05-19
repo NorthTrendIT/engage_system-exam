@@ -262,7 +262,7 @@ class RecommendedProductController extends Controller
         $dates = [];
 
         foreach($data as $item){
-            $subTotal = get_product_customer_price(@$item->product->item_prices,@$customer->price_list_num) * $item->qty;
+            $subTotal = get_product_customer_price(@$item->product->item_prices,@$customer->price_list_num, false, false, $item->customer) * $item->qty;
             $total += $subTotal;
         }
         // dd($data);
@@ -287,7 +287,7 @@ class RecommendedProductController extends Controller
                 return $response = ['status'=>false,'message'=>"The product quantity is not available."];
             }
 
-            $price = get_product_customer_price(@$product->item_prices,@$customer->price_list_num);
+            $price = get_product_customer_price(@$product->item_prices,@$customer->price_list_num, false, false, $customer);
             if($price < 1){
                 return $response = ['status'=>false,'message'=>"The product price is not a valid."];
             }
@@ -355,7 +355,7 @@ class RecommendedProductController extends Controller
             foreach($data as $item){
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
-                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
+                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no, false, false, $item->customer) * $item->qty;
                 $total += $subTotal;
             }
 
@@ -386,7 +386,7 @@ class RecommendedProductController extends Controller
 
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
-                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
+                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no, false, false, $item->customer) * $item->qty;
                 $total += $subTotal;
             }
 
@@ -409,7 +409,7 @@ class RecommendedProductController extends Controller
 
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
-                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
+                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no, false, false, $item->customer) * $item->qty;
                 $total += $subTotal;
             }
 
@@ -453,7 +453,7 @@ class RecommendedProductController extends Controller
                 foreach($products as $value){
                     $product = Product::find(@$value['product_id']);
 
-                    $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
+                    $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num, false, false, $value->customer);
                     if($price < 1){
                         return $response = ['status'=>false,'message'=>'The product "'.@$product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
                     }
@@ -487,7 +487,7 @@ class RecommendedProductController extends Controller
                             $item->product_id = @$value['product_id'];
                             $item->quantity = @$value['qty'];
 
-                            $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num);
+                            $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num, false, false, $order->customer);
                             $item->total = $item->price * $item->quantity;
                             $item->save();
 
@@ -583,7 +583,7 @@ class RecommendedProductController extends Controller
                             $item->product_id = @$value['product_id'];
                             $item->quantity = @$value['qty'];
 
-                            $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num);
+                            $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num, false, false, $order->customer);
                             $item->total = $item->price * $item->quantity;
                             $item->save();
 

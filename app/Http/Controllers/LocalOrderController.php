@@ -96,7 +96,7 @@ class LocalOrderController extends Controller
                     //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity value must be less then '.$avl_qty.'.'];
                     // }
 
-                    $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
+                    $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num, false, false, $customer);
                     if($price < 1){
                         return $response = ['status'=>false,'message'=>'The product "'.@$product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
                     }
@@ -137,7 +137,7 @@ class LocalOrderController extends Controller
                         $item->quantity = @$value['quantity'];
 
                         $productData = Product::find(@$value['product_id']);
-                        $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num);
+                        $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num, false, false, $order->customer);
                         $item->total = $item->price * $item->quantity;
                         $item->save();
                         $total += $item->total;
@@ -496,16 +496,10 @@ class LocalOrderController extends Controller
         if($input['customer_id'] && $input['product_id']){
             $customer = Customer::findOrFail($input['customer_id']);
             $product = Product::findOrFail($input['product_id']);
-            
-            $vat_rate = 0;
-            $vat_rate = get_vat_rate($customer);
-        
-            $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
-            if($vat_rate !== 0){
-                $price = $price / $vat_rate;
-            }
+                 
+            $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num, false, false, $customer);
 
-            return $response = ['status' => true, 'price' => round($price, 2)];
+            return $response = ['status' => true, 'price' => $price];
         }
         return $response = ['status' => false, 'message' => "Something went wrong!"];
     }

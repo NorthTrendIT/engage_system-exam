@@ -85,7 +85,7 @@ class DraftOrderController extends Controller
                     //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity value must be less then '.$avl_qty.'.'];
                     // }
 
-                    $price = get_product_customer_price(@$product->item_prices,@$customer->price_list_num);
+                    $price = get_product_customer_price(@$product->item_prices,@$customer->price_list_num, false, false, $customer);
                     if($price < 1){
                         return $response = ['status'=>false,'message'=>'The product "'.@$product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
                     }
@@ -124,7 +124,7 @@ class DraftOrderController extends Controller
                         $item->quantity = $value['quantity'];
 
                         $productData = Product::find(@$value['product_id']);
-                        $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num);
+                        $item->price = get_product_customer_price(@$productData->item_prices,@$order->customer->price_list_num, false, false, $customer);
                         $item->total = $item->price * $item->quantity;
                         $item->save();
                         $total += $item->total;
@@ -191,7 +191,7 @@ class DraftOrderController extends Controller
         $customer_price_list_no = @$customer->price_list_num;
 
         foreach($edit->items as $value){
-            $total += get_product_customer_price(@$value->product->item_prices, $customer_price_list_no) * $value->quantity;
+            $total += get_product_customer_price(@$value->product->item_prices, $customer_price_list_no, false, false, $customer) * $value->quantity;
         }
         return view('draft-order.add',compact(['edit', 'customer_price_list_no', 'total']));
     }
@@ -399,17 +399,17 @@ class DraftOrderController extends Controller
             $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
             $customer_vat  = Customer::whereIn('id', $customer_id)->get();
             
-            $vat_rate = 0;
+            // $vat_rate = 0;
             foreach($customer_vat as $cust){
                 if(@$product->sap_connection_id === $cust->real_sap_connection_id){
-                    $vat_rate = get_vat_rate($cust);
+                    // $vat_rate = get_vat_rate($cust);
+                    $price = get_product_customer_price(@$product->item_prices, @$customer_price_list_no[@$product->sap_connection_id], false, false, $cust);
                 }
             }    
 
-            $price = get_product_customer_price(@$product->item_prices, @$customer_price_list_no[@$product->sap_connection_id]);
-            if($vat_rate !== 0){
-                $price = $price / $vat_rate;
-            }
+            // if($vat_rate !== 0){
+            //     $price = $price / $vat_rate;
+            // }
 
             return $response = ['status' => true, 'price' => round($price, 2)];
         }

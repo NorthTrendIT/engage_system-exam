@@ -42,7 +42,7 @@
                                         </div>
 
 
-                                        <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer->price_list_num) * $value->qty) }}</span>
+                                        <span class="fw-bolder my-2 price">₱ {{ number_format_value(get_product_customer_price(@$value->product->item_prices,$customer->price_list_num, false, false, $customer) * $value->qty) }}</span>
                                     </div>
                                     <!--end::Section-->
                                 </div>

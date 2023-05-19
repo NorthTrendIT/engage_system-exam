@@ -56,7 +56,7 @@ class CartController extends Controller
 
             $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
-            $subTotal = get_product_customer_price(@$item->product->item_prices, $customer_price_list_no) * $item->qty;
+            $subTotal = get_product_customer_price(@$item->product->item_prices, $customer_price_list_no, false, false, $cust_id) * $item->qty;
             $total += $subTotal;
 
             $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
@@ -215,7 +215,14 @@ class CartController extends Controller
         $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
         $customer_id = explode(',', Auth::user()->multi_customer_id);
         $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
-        $price = get_product_customer_price(@$product->item_prices,@$customer_price_list_no[$product->sap_connection_id]);
+
+        $customer_vat  = Customer::whereIn('id', $customer_id)->get();
+        foreach($customer_vat as $cust){
+            if($product->sap_connection_id === $cust->real_sap_connection_id){
+                $price = get_product_customer_price(@$product->item_prices,@$customer_price_list_no[$product->sap_connection_id], false, false, $cust);
+            }
+        }
+
         if($price < 1){
             return $response = ['status'=>false,'message'=>"The product price is not a valid."];
         }
@@ -283,7 +290,7 @@ class CartController extends Controller
                     $customer_id = explode(',', @Auth::user()->multi_customer_id);
 
                     $price_no = @get_customer_price_list_no_arr($customer_id)[@$cart->product->sap_connection_id];
-                    $price = get_product_customer_price(@$cart->product->item_prices,$price_no) * $cart->qty;
+                    $price = get_product_customer_price(@$cart->product->item_prices,$price_no, false, false, $cart->customer) * $cart->qty;
 
                     $total = 0;
                     $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
@@ -294,7 +301,7 @@ class CartController extends Controller
 
                         $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
-                        $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
+                        $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no, false, false, $item->customer) * $item->qty;
                         $total += $subTotal;
                         $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
                         $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);
@@ -331,7 +338,7 @@ class CartController extends Controller
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
 
             $price_no = @get_customer_price_list_no_arr($customer_id)[@$cart->product->sap_connection_id];
-            $price = get_product_customer_price(@$cart->product->item_prices,$price_no) * $cart->qty;
+            $price = get_product_customer_price(@$cart->product->item_prices,$price_no, false, false, @$cart->customer) * $cart->qty;
 
             $total = 0;
             $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
@@ -342,7 +349,7 @@ class CartController extends Controller
 
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
-                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
+                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no, false, false, $item->customer) * $item->qty;
                 $total += $subTotal;
                 $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
                 $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);
@@ -368,7 +375,7 @@ class CartController extends Controller
             }
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
             $price_no = @get_customer_price_list_no_arr($customer_id)[@$cart->product->sap_connection_id];
-            $price = get_product_customer_price(@$cart->product->item_prices,$price_no) * $cart->qty;
+            $price = get_product_customer_price(@$cart->product->item_prices,$price_no, false, false, $cart->customer) * $cart->qty;
 
             $total = 0;
             $weight = 0;
@@ -382,7 +389,7 @@ class CartController extends Controller
             foreach($data as $item){
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
-                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
+                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no, false, false, $item->customer) * $item->qty;
                 $total += $subTotal;
 
                 $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
@@ -408,7 +415,7 @@ class CartController extends Controller
             foreach($data as $item){
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
-                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
+                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no, false, false, $item->customer) * $item->qty;
                 $total += $subTotal;
 
                 $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
@@ -446,12 +453,12 @@ class CartController extends Controller
 
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
 
-                $price = get_product_customer_price(@$value->product->item_prices, @$customer_price_list_no);
+                $price = get_product_customer_price(@$value->product->item_prices, @$customer_price_list_no, false, false, $value->customer);
                 if($price < 1){
                     return $response = ['status'=>false,'message'=>'The product "'.@$value->product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
                 }
 
-                $total_amount += get_product_customer_price(@$value->product->item_prices, @$customer_price_list_no);
+                $total_amount += $price;
             }
         }
 
@@ -523,7 +530,7 @@ class CartController extends Controller
                                 $item->local_order_id = $order->id;
                                 $item->product_id = @$value['product_id'];
                                 $item->quantity = @$value['qty'];
-                                $item->price = get_product_customer_price(@$value->product->item_prices,@$customer->price_list_num);
+                                $item->price = get_product_customer_price(@$value->product->item_prices,@$customer->price_list_num, false, false, $customer);
                                 $item->total = $item->price * $item->quantity;
                                 $item->save();
 
@@ -591,7 +598,7 @@ class CartController extends Controller
             foreach($data as $item){
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
-                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
+                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no, false, false, $item->customer) * $item->qty;
                 $total += $subTotal;
 
                 $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
@@ -766,17 +773,17 @@ class CartController extends Controller
 
                                 $sap_connection_id = $row->sap_connection_id;
                                 
-                                $vat_rate = 0;
+                                // $vat_rate = 0;
                                 foreach($customer_vat as $cust){
                                     if($sap_connection_id === $cust->real_sap_connection_id){
-                                      $vat_rate = get_vat_rate($cust);
+                                    //   $vat_rate = get_vat_rate($cust);
+                                        $price = get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id], false, false, $cust);
                                     }
                                 }
                                 
-                                $price = get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]);
-                                if($vat_rate !== 0){
-                                    $price = $price / $vat_rate;
-                                }
+                                // if($vat_rate !== 0){
+                                //     $price = $price / $vat_rate;
+                                // }
 
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
                                     return '<span class="" title="Not Available">₱ '.number_format_value($price).'</span>';
