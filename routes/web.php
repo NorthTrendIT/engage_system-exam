@@ -94,6 +94,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('philsyn-user-password-change', 'App\Http\Controllers\UserController@userChangePasswordPHILSYN');
             Route::get('user-export', 'App\Http\Controllers\UserController@export')->name('user.export');
 
+            Route::get('user-test', 'App\Http\Controllers\UserController@test')->name('user.test');
+
             Route::resource('productfeatures', 'App\Http\Controllers\ProductFeaturesController')->middleware('super-admin');
             Route::post('productfeatures/get-all', 'App\Http\Controllers\ProductFeaturesController@getAll')->name('productfeatures.get-all')->middleware('super-admin');
 
