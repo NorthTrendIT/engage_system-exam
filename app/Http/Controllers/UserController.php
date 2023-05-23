@@ -694,9 +694,4 @@ class UserController extends Controller
         \Session::flash('error_message', common_error_msg('excel_download'));
         return redirect()->back();
     }
-
-    public function test(){
-        $time = \Illuminate\Support\Carbon::now()->subMinutes(30);
-        echo $time->toTimeString();
-    }
 }
