@@ -93,7 +93,9 @@ class SAPOrders
         }else{
             $latestData = Order::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
-                $url = '/b1s/v1/Orders?$filter=UpdateDate ge \''.$latestData->updated_date.'\'';
+                $time = Carbon::now()->subMinutes(30);
+                $url = '/b1s/v1/Orders?$filter=UpdateDate ge \''.$latestData->updated_date.'\' and UpdateTime ge \''.$time->toTimeString().'\'';
+
                 $response = $this->getOrderData($url);
             } else {
                 $response = $this->getOrderData();
