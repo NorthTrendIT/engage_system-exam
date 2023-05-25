@@ -421,6 +421,9 @@ class CustomerController extends Controller
                             ->orderColumn('group', function ($query, $order) {
                                 $query->join('customer_groups', 'customers.group_code', '=', 'customer_groups.code')->orderBy('customer_groups.name', $order);
                             })
+                            ->orderColumn('vat', function ($query, $order) {
+                                $query->orderBy('vat_group', $order);
+                            })
                             ->orderColumn('territory', function ($query, $order) {
                                 $query->join('territories', 'customers.territory', '=', 'territories.id')->orderBy('territories.description', $order);
                             })
