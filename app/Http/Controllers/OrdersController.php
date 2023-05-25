@@ -296,18 +296,14 @@ class OrdersController extends Controller
                     // Sync Quotation Data
                     $sap_quotations = new SAPQuotations($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
                     $sap_quotations->addSpecificQuotationsDataInDatabase(@$quotation->doc_entry);
-
+                    
                     // Sync Order Data
-                    if(@$quotation->order->doc_entry){
-                        $sap_orders = new SAPOrders($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
-                        $sap_orders->addSpecificOrdersDataInDatabase(@$quotation->order->doc_entry);
-                    }
+                    $sap_orders = new SAPOrders($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+                    $sap_orders->addSpecificOrdersDataInDatabase(@$quotation->doc_entry);
 
                     // Sync Invoice Data
-                    if(@$quotation->order->invoice->doc_entry){
-                        $sap_invoices = new SAPInvoices($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
-                        $sap_invoices->addSpecificInvoicesDataInDatabase(@$quotation->order->invoice->doc_entry);
-                    }
+                    $sap_invoices = new SAPInvoices($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+                    $sap_invoices->addSpecificInvoicesDataInDatabase(@$quotation->doc_entry);
 
                     $response = ['status' => true, 'message' => 'Sync order details successfully !'];
                 } catch (\Exception $e) {

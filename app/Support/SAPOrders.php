@@ -131,14 +131,16 @@ class SAPOrders
     public function addSpecificOrdersDataInDatabase($doc_entry = false)
     {
         if($doc_entry){
-            $url = '/b1s/v1/Orders('.$doc_entry.')';
+            // $url = '/b1s/v1/Orders('.$doc_entry.')';
+            $url = '/b1s/v1/Orders?$filter=U_OMSNo eq '.$doc_entry.'';
             $response = $this->getOrderData($url);
 
             if($response['status']){
                 $order = $response['data'];
 
                 if(!empty($order)){
-
+                    $order = $order['value'][0];
+                    
                     $where = array(
                                 'db_name' => $this->database,
                                 'user_name' => $this->username,

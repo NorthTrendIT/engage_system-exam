@@ -131,13 +131,15 @@ class SAPInvoices
     public function addSpecificInvoicesDataInDatabase($doc_entry = false)
     {
         if($doc_entry){
-            $url = '/b1s/v1/Invoices('.$doc_entry.')';
+            // $url = '/b1s/v1/Invoices('.$doc_entry.')';
+            $url = '/b1s/v1/Invoices?$filter=U_OMSNo eq '.$doc_entry.'';
             $response = $this->getInvoiceData($url);
 
             if($response['status']){
                 $invoice = $response['data'];
 
-                if(!empty($invoice) && $invoice['U_OMSNo'] != null){
+                if(!empty($invoice)){
+                    $invoice = $invoice['value'][0];
 
                     $where = array(
                                 'db_name' => $this->database,

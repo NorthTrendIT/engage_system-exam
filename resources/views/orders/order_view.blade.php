@@ -138,12 +138,12 @@
                             <!--end::Col-->
 
                             <!--end::Col-->
-                            <div class="col-sm-6">
+                            <div class="col-sm-6 h-25">
                               <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Sales Specialist:</div>
+                              <div class="fw-bold fs-7 text-gray-600 mb-1 d-none">Sales Specialist:</div>
                               <!--end::Label-->
                               <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->sales_specialist->sales_specialist_name ?? "-" }}</div>
+                              <div class="fw-bolder fs-6 text-gray-800 d-none">{{ @$data->sales_specialist->sales_specialist_name ?? "-" }}</div>
                               <!--end::Text-->
                             </div>
                             <!--end::Col-->
@@ -228,7 +228,7 @@
                             <!--end::Col-->
                             <div class="col-sm-6">
                               <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Quotation #:</div>
+                              <div class="fw-bold fs-7 text-gray-600 mb-1">SAP Quotation #:</div>
                               <!--end::Label-->
                               <!--end::Col-->
                               <div class="fw-bolder fs-6 text-gray-800">{{ @$data->doc_num ?? "-"  }}</div>
@@ -308,9 +308,9 @@
                                       <th class="min-w-80px text-end pb-2">Promo Delivery Date</th>
                                       @endif
                                       <!-- <th class="min-w-70px text-end pb-2">Invoice</th> -->
-                                      {{-- <th class="min-w-80px text-end pb-2">Price</th>
+                                      <th class="min-w-80px text-end pb-2">Price</th>
                                       <th class="min-w-80px text-end pb-2">Price After VAT</th>
-                                      <th class="min-w-100px text-end pb-2">Amount</th> --}}
+                                      <th class="min-w-100px text-end pb-2">Amount</th>
                                       <th class="min-w-100px text-end pb-2">Line Status</th>
                                       <th class="min-w-100px text-end pb-2">Line Remarks</th>
                                       
@@ -320,8 +320,6 @@
                                     <?php $total_qty = 0; ?>                                 
                                     @foreach($invoiceDetails as $k=>$val)
                                       <?php
-                                      
-                                        // dd($val);
                                       $total_qty += (int)$val['order_quantity']; ?>
 
                                     <tr class="fw-bolder text-gray-700 fs-5">
@@ -349,9 +347,9 @@
                                       ?>
                                       <!-- <td class="text-end">
                                         <a href="{{$route}}" target="_blank">{{$val['invoice_num']}}</a></td> -->
-                                      {{-- <td class="text-end">{{$val['price']}}</td>
+                                      <td class="text-end">{{$val['price']}}</td>
                                       <td class="text-end">{{$val['price_after_vat']}}</td>
-                                      <td class="text-end">{{$val['amount']}}</td> --}}
+                                      <td class="text-end">{{$val['amount']}}</td>
                                       <td class="text-center">@if(!in_array($status, ['Pending', 'On Process', 'Cancelled'])) {{$val['line_status']}} @endif</td>
                                       <td class="text-center">{{$val['line_remarks']}}</td>
                                     </tr>
@@ -430,10 +428,10 @@
                                         <!--begin::Item-->
                                         <div class="d-flex flex-stack">
                                           <!--begin::Code-->
-                                          {{-- <div class="fw-bold pe-10 text-gray-900 fs-4 ">Total:</div> --}}
+                                          <div class="fw-bold pe-10 text-gray-900 fs-4 ">Total:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          {{-- <div class="text-end fw-bolder fs-4 fw-boldest">₱ {{ number_format_value(round(@$data->doc_total,1)) }}</div> --}}
+                                          <div class="text-end fw-bolder fs-4 fw-boldest">₱ {{ number_format_value(round(@$data->doc_total,1)) }}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
