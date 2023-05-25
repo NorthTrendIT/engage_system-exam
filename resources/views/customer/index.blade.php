@@ -159,6 +159,7 @@
                               <th>Credit Limit</th>
                               @endif
                               <th>Group</th>
+                              <th>Vat</th>
                               <th>Territory</th>
                               <th>Class</th>
                               {{-- <th>Status</th> --}}
@@ -277,6 +278,7 @@
               {data: 'credit_limit', name: 'credit_limit'},
               @endif
               {data: 'group', name: 'group'},
+              {data: 'vat', name: 'vat'},
               {data: 'territory', name: 'territory'},
               {data: 'class', name: 'class'},
               // {data: 'status', name: 'status'},

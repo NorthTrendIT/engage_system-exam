@@ -343,6 +343,9 @@ class CustomerController extends Controller
                             ->addColumn('group', function($row) {
                                 return @$row->group->name ?? "-";
                             })
+                            ->addColumn('vat', function ($row) {
+                                return @$row->vat_group ?? "-";
+                            })
                             ->addColumn('u_card_code', function($row) {
                                 return @$row->u_card_code ?? "-";
                             })
