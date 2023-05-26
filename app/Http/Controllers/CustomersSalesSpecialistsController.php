@@ -369,7 +369,24 @@ class CustomersSalesSpecialistsController extends Controller
             });
         }
 
-        $data = $data->get();
+        if($request->filter_search != ""){
+            $data->where('assignment_name','LIKE',"%".$request->filter_search."%");
+
+            $data->orWhereHas('assignment.customer', function($q) use ($request){
+                $q->where('card_name','LIKE',"%".$request->filter_search."%");
+            });
+
+            $data->orWhereHas('assignment.sales_person', function($q) use ($request){
+                $q->where('first_name','LIKE',"%".$request->filter_search."%");
+                $q->orWhere('last_name','LIKE',"%".$request->filter_search."%");
+                $q->orWhere('email','LIKE',"%".$request->filter_search."%");
+            });
+
+            // $data->whereHas('assignment.customer.group', function($q) use ($request){
+            //     $q->where('name','LIKE',"%".$request->filter_search."%");
+            // });
+
+        }
 
         return DataTables::of($data)
                             ->addIndexColumn()

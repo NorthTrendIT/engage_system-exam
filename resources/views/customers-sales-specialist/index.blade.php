@@ -144,6 +144,7 @@
 
       $filter_company = $('[name="filter_company"]').val();
       $filter_group = $('[name="filter_group"]').val();
+      $filter_search = $('[name="filter_search"]').val();
 
       table.DataTable({
           processing: true,
@@ -159,6 +160,7 @@
               data:{
                 filter_company : $filter_company,
                 filter_group : $filter_group,
+                filter_search : $filter_search
               }
           },
           columns: [
