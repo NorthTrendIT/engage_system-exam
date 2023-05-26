@@ -52,6 +52,10 @@ class DraftOrderController extends Controller
             return $response = ['status'=>false,'message'=>"Oops! Customer not found in our database."];
         }
 
+        if($customer->vat_group === null){
+            return ['status'=>false, 'message' => "VatGroup for this Customer is emtpy, please contact CMD."];  
+        }
+
         $customer_id = $customer->id;
         $sap_connection_id = $customer->sap_connection_id;
         if($sap_connection_id == 5){ //Solid Trend

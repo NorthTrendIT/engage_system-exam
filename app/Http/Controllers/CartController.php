@@ -443,6 +443,10 @@ class CartController extends Controller
         if( !empty($products) ){
             foreach($products as $value){
 
+                if($value->customer->vat_group === null){
+                    return ['status'=>false, 'message' => "VatGroup for this Customer is emtpy, please contact CMD."];  
+                }
+
                 $product = @$value->product;
                 $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
                 // if($avl_qty == 0){
