@@ -402,8 +402,8 @@ class CustomersSalesSpecialistsController extends Controller
                                 $count = 0;
                                 foreach($row->assignment as $value){
                                     $comma = ($count > 0) ? ', ' : '';
-                                    if(strpos($sales_person, $value->sales_person->email) === false){
-                                        $sales_person .= $comma.$value->sales_person->email;
+                                    if(strpos($sales_person, @$value->sales_person->email) === false){
+                                        $sales_person .= $comma.@$value->sales_person->email;
                                     }
                                     $count ++;
                                 }
