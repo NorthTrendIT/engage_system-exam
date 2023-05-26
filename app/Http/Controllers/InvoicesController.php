@@ -331,19 +331,16 @@ class InvoicesController extends Controller
 
                     // Sync Invoice Data
                     $sap_invoices = new SAPInvoices($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
-                    $sap_invoices->addSpecificInvoicesDataInDatabase(@$invoice->doc_entry);
+                    $sap_invoices->addSpecificInvoicesDataInDatabase(@$invoice->order->quotation->doc_entry);
 
                     // Sync Order Data
-                    if(@$invoice->order->doc_entry){
-                        $sap_orders = new SAPOrders($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
-                        $sap_orders->addSpecificOrdersDataInDatabase(@$invoice->order->doc_entry);
-                    }
+                    $sap_orders = new SAPOrders($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+                    $sap_orders->addSpecificOrdersDataInDatabase(@$invoice->order->quotation->doc_entry);
+
 
                     // Sync Quotation Data
-                    if(@$invoice->order->base_entry){
-                        $sap_quotations = new SAPQuotations($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
-                        $sap_quotations->addSpecificQuotationsDataInDatabase(@$invoice->order->base_entry);
-                    }
+                    $sap_quotations = new SAPQuotations($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+                    $sap_quotations->addSpecificQuotationsDataInDatabase(@$invoice->order->quotation->doc_entry);
 
                     $response = ['status' => true, 'message' => 'Sync invoice details successfully !'];
                 } catch (\Exception $e) {
