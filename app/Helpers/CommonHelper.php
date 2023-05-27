@@ -771,6 +771,12 @@ function getOrderStatusBtnHtml($status){
         case "Close":
             $btn = '<b style="color:'.convert_hex_to_rgba('#ffa726').';background-color:'.convert_hex_to_rgba('#ffa726',0.1).';" class="btn btn-sm">'.$status.'</b>';
             break;
+        case "Partially Served":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#29b6f6').';background-color:'.convert_hex_to_rgba('#29b6f6',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
+        case "Fully Served":
+            $btn = '<b style="color:'.convert_hex_to_rgba('#2e7d32').';background-color:'.convert_hex_to_rgba('#2e7d32',0.1).';" class="btn btn-sm">'.$status.'</b>';
+            break;
         default:
             break;
     }

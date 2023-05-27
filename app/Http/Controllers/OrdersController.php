@@ -110,6 +110,7 @@ class OrdersController extends Controller
         $data = $data->firstOrFail();  
          
         $invoiceDetails = [];
+        $line_stat = [];
         $Weight = 0;
         $Volume = 0;
         foreach($data->items as $key=>$value){
@@ -183,7 +184,24 @@ class OrdersController extends Controller
         }
         $orderRemarks = LocalOrder::where('doc_entry',@$data->doc_entry)->first();
         
-        return view('orders.order_view', compact('data','orderRemarks','invoiceDetails','Weight','Volume'));
+        $line_stat = array_unique(array_column($invoiceDetails, 'line_status'));
+        $line_status = '';
+        if( count($line_stat) === 1 && in_array('Unserved', $line_stat) )
+        {
+            $line_status = 'Pending';
+        }
+
+        if( (count($line_stat) === 1 && in_array('Partial Served', $line_stat)) || count($line_stat) > 1 )
+        {
+            $line_status = 'Partially Served';
+        }
+
+        if( count($line_stat) === 1 && in_array('Fully Served', $line_stat) )
+        {
+            $line_status = 'Fully Served';
+        }
+
+        return view('orders.order_view', compact('data','orderRemarks','invoiceDetails','Weight','Volume', 'line_status'));
     }
 
     /**

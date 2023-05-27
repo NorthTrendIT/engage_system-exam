@@ -100,155 +100,90 @@
                           <div class="row g-5 mb-11">
                             <!--end::Col-->
                             <div class="col-sm-6">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Name:</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->card_name ?? @$data->card_name ?? "-" }} (Code: {{ $data->customer->card_code ?? @$data->card_code ?? '-' }})</div>
-                              <!--end::Text-->
+                              <div class="row">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Name:</div>
+                                <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->card_name ?? @$data->card_name ?? "-" }} (Code: {{ $data->customer->card_code ?? @$data->card_code ?? '-' }})</div>
+                              </div>
+                              <div class="row mt-5 d-none">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Sales Specialist:</div>
+                                <div class="fw-bolder fs-6 text-gray-800">{{ @$data->sales_specialist->sales_specialist_name ?? "-" }}</div>
+                              </div>
+                              <div class="row mt-5">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Order Type:</div>
+                                <div class="fw-bolder fs-6 text-gray-800">{{ (!is_null($data->customer_promotion_id)) ? "Promotion" : "Standard" }}</div>
+                              </div>
+                              <div class="row mt-5">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Branch:</div>
+                                <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->group->name ?? '-' }}</div>
+                              </div>
+                              <div class="row mt-5">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Order #:</div>
+                                <div class="fw-bolder fs-6 text-gray-800">{{ '#'.@$data->doc_entry ?? "-"  }}</div>
+                              </div>
+
                             </div>
                             <!--end::Col-->
 
+
                             <!--end::Col-->
                             <div class="col-sm-6">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">
+                              <div class="row">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
+                                <div class="fw-bolder fs-6 text-gray-800">
 
-                                <span class="mr-10">{!! getOrderStatusBtnHtml($status) !!}</span>
+                                  <span class="mr-10">{!! getOrderStatusBtnHtml($line_status) !!}</span>
 
-                                @if($status == "Pending" && !$data->customer_promotion_id)
-                                  <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
-                                @else
-                                  @if($status != "Cancelled")
-                                    <button type="button" class="btn btn-danger btn-sm" title="Cancel Order" disabled>Cancel Order</button>
-                                    <a href="javascript:" class="mx-2 text-dark" title="Promotion Orders can not be Cancelled! "><i class="fa fa-info-circle fs-6"></i></a>
+                                  @if($status == "Pending" && !$data->customer_promotion_id)
+                                    <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
+                                  @else
+                                    @if($status != "Cancelled")
+                                      <button type="button" class="btn btn-danger btn-sm" title="Cancel Order" disabled>Cancel Order</button>
+                                      <a href="javascript:" class="mx-2 text-dark" title="Promotion Orders can not be Cancelled! "><i class="fa fa-info-circle fs-6"></i></a>
+                                    @endif
                                   @endif
-                                @endif
-
-                                {{-- @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->user->id,1]))
-                                  <a href="javascript:" class="btn btn-info btn-sm mark-as-completed-order" title="Mark as Completed">Mark as Completed</a>
-                                @endif --}}
-
+                                  {{-- @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->user->id,1]))
+                                    <a href="javascript:" class="btn btn-info btn-sm mark-as-completed-order" title="Mark as Completed">Mark as Completed</a>
+                                  @endif --}}
+                                </div>
+                                <!--end::Text-->
                               </div>
-                              <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
-
-                            <!--end::Col-->
-                            <div class="col-sm-6 h-25">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1 d-none">Sales Specialist:</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800 d-none">{{ @$data->sales_specialist->sales_specialist_name ?? "-" }}</div>
-                              <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
-
-                            <!--end::Col-->
-                            <div class="col-sm-6">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Delivery Address:</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->address ?? '-' }}</div>
-                              <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
-
-                            <!--end::Col-->
-                            <div class="col-sm-6">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Order Type:</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ (!is_null($data->customer_promotion_id)) ? "Promotion" : "Standard" }}</div>
-                              <!--end::Text-->
-                            </div>
-                            <!--end::Col-->                            
-
-                            <!--end::Col-->
-                            <div class="col-sm-6">
-                              <!--end::Label-->
-                              <div class="row col-sm-12">
-                              <div class="col-sm-6">
-                                <div class="fw-bold fs-7 text-gray-600 mb-1">Order Date:</div>
-                                <!--end::Label-->
-                                <!--end::Col-->
-                                <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime($data->doc_date)) }} {{ $data->doc_time ? date('H:i A',strtotime($data->doc_time)) : "" }}</div>
+                              <div class="row mt-5">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Delivery Address:</div>
+                                <div class="fw-bolder fs-6 text-gray-800">{{ $data->address ?? '-' }}</div>
                               </div>
-
-                              <div class="col-sm-6">
-                                <div class="fw-bold fs-7 text-gray-600 mb-1">Expected Delivery Date:</div>
-                                <!--end::Label-->
-                                <!--end::Col-->
-                                <div class="fw-bolder fs-6 text-gray-800">{{ $data->doc_due_date ? date('F d, Y',strtotime($data->doc_due_date)) : "" }} </div>
+                              <div class="row mt-5">
+                                <div class="col-sm-6">
+                                  <div class="fw-bold fs-7 text-gray-600 mb-1">Order Date:</div>
+                                  <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime($data->doc_date)) }} {{ $data->doc_time ? date('H:i A',strtotime($data->doc_time)) : "" }}</div>
+                                </div>
+                                <div class="col-sm-6">
+                                  <div class="fw-bold fs-7 text-gray-600 mb-1">Expected Delivery Date:</div>
+                                  <div class="fw-bolder fs-6 text-gray-800">{{ $data->doc_due_date ? date('F d, Y',strtotime($data->doc_due_date)) : "" }} </div>
+                                </div>
                               </div>
+                              <div class="row mt-5">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Delivery Date:</div>
+                                <div class="fw-bolder fs-6 text-gray-800">{{(isset($data->order->invoice->u_commitment))?date('F d, Y',strtotime(@$data->order->invoice->u_commitment)) : '-'}}</div>
                               </div>
-                              <!--end::Col-->
-                            </div>
-                            <!--end::Col-->
+                              
+                              @if(!in_array(userrole(),[4]))
+                              <div class="row mt-5">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">SAP Quotation #:</div>
+                                <div class="fw-bolder fs-6 text-gray-800">{{ @$data->doc_num ?? "-"  }}</div>
+                              </div>
+                              @endif
 
-                            <!--end::Col-->
-                            <div class="col-sm-6">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Branch:</div>
-                              <!--end::Label-->
-                              <!--end::Text-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->group->name ?? '-' }}</div>
-                              <!--end::Text-->
-                            </div>
-                            <!--end::Col-->
 
-                            <!--end::Col-->
-                            <div class="col-sm-6">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Delivery Date:</div>
-                              <!--end::Label-->
-                              <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{(isset($data->order->invoice->u_commitment))?date('F d, Y',strtotime(@$data->order->invoice->u_commitment)) : '-'}}</div>
-                              <!--end::Col-->
                             </div>
-                            <!--end::Col-->
-
-                            <!--end::Col-->
-                            <div class="col-sm-6">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">Order #:</div>
-                              <!--end::Label-->
-                              <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ '#'.@$data->doc_entry ?? "-"  }}</div>
-                              <!--end::Col-->
-                            </div>
-                            <!--end::Col-->
-                            @if(!in_array(userrole(),[4]))
-                            <!--end::Col-->
-                            <div class="col-sm-6">
-                              <!--end::Label-->
-                              <div class="fw-bold fs-7 text-gray-600 mb-1">SAP Quotation #:</div>
-                              <!--end::Label-->
-                              <!--end::Col-->
-                              <div class="fw-bolder fs-6 text-gray-800">{{ @$data->doc_num ?? "-"  }}</div>
-                              <!--end::Col-->
-                            </div>
-                            @endif
                             <!--end::Col-->
                           </div>
 
                           <div class="row g-5 mb-11">
-
-                           
                             <!-- <div class="col-sm-2">
                               <div class="fw-bold fs-7 text-gray-600 mb-1">Reference #:</div>
                              
                               <div class="fw-bolder fs-6 text-gray-800">{{ @$data->num_at_card ?? "-"  }}</div>
                             </div> -->
-
-                            
-
                           </div>
                           <!--end::Row-->
 
