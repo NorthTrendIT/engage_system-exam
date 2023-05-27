@@ -47,8 +47,8 @@ class SyncAllModuleDataInHalfHour extends Command
         $sap_connections = SapConnection::all();
 
         foreach($sap_connections as $value){
-            SyncOrders::dispatch($value->db_name, $value->user_name, $value->password);
             SyncQuotations::dispatch($value->db_name, $value->user_name, $value->password);
+            SyncOrders::dispatch($value->db_name, $value->user_name, $value->password);
             SyncInvoices::dispatch($value->db_name, $value->user_name, $value->password);
             SyncCreditNote::dispatch($value->db_name, $value->user_name, $value->password);
         }
