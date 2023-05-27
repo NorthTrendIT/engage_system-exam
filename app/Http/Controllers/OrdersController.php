@@ -110,6 +110,7 @@ class OrdersController extends Controller
         $data = $data->firstOrFail();  
          
         $invoiceDetails = [];
+        $line_stat = [];
         $Weight = 0;
         $Volume = 0;
         foreach($data->items as $key=>$value){
@@ -183,7 +184,24 @@ class OrdersController extends Controller
         }
         $orderRemarks = LocalOrder::where('doc_entry',@$data->doc_entry)->first();
         
-        return view('orders.order_view', compact('data','orderRemarks','invoiceDetails','Weight','Volume'));
+        $line_stat = array_unique(array_column($invoiceDetails, 'line_status'));
+        $line_status = '';
+        if( count($line_stat) === 1 && in_array('Unserved', $line_stat) )
+        {
+            $line_status = 'Pending';
+        }
+
+        if( (count($line_stat) === 1 && in_array('Partial Served', $line_stat)) || count($line_stat) > 1 )
+        {
+            $line_status = 'Partially Served';
+        }
+
+        if( count($line_stat) === 1 && in_array('Fully Served', $line_stat) )
+        {
+            $line_status = 'Fully Served';
+        }
+
+        return view('orders.order_view', compact('data','orderRemarks','invoiceDetails','Weight','Volume', 'line_status'));
     }
 
     /**
@@ -296,21 +314,18 @@ class OrdersController extends Controller
                     // Sync Quotation Data
                     $sap_quotations = new SAPQuotations($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
                     $sap_quotations->addSpecificQuotationsDataInDatabase(@$quotation->doc_entry);
-
+                    
                     // Sync Order Data
-                    if(@$quotation->order->doc_entry){
-                        $sap_orders = new SAPOrders($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
-                        $sap_orders->addSpecificOrdersDataInDatabase(@$quotation->order->doc_entry);
-                    }
+                    $sap_orders = new SAPOrders($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+                    $sap_orders->addSpecificOrdersDataInDatabase(@$quotation->doc_entry);
 
                     // Sync Invoice Data
-                    if(@$quotation->order->invoice->doc_entry){
-                        $sap_invoices = new SAPInvoices($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
-                        $sap_invoices->addSpecificInvoicesDataInDatabase(@$quotation->order->invoice->doc_entry);
-                    }
+                    $sap_invoices = new SAPInvoices($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+                    $sap_invoices->addSpecificInvoicesDataInDatabase(@$quotation->doc_entry);
 
                     $response = ['status' => true, 'message' => 'Sync order details successfully !'];
                 } catch (\Exception $e) {
+                    dd($e);
                     $response = ['status' => false, 'message' => 'Something went wrong !'];
                 }
             }
