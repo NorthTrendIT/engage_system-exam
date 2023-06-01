@@ -235,6 +235,7 @@
                                       <th>#</th>
                                       <th class="min-w-175px pb-2 product_details">Product</th>
                                       <th>Unit</th>
+                                      <th class="min-w-70px text-end pb-2">Invoice</th> 
                                       <th class="min-w-175px pb-2">Ordered Quantity</th>
                                       <th class="min-w-175px pb-2">Served Quantity</th>
                                       <th class="min-w-175px pb-2 ordered_served_class" style="display:none;">Ordered Ltr/Kgs</th>
@@ -242,7 +243,6 @@
                                       @if($data->order_type == 'Promotion')
                                       <th class="min-w-80px text-end pb-2">Promo Delivery Date</th>
                                       @endif
-                                      <!-- <th class="min-w-70px text-end pb-2">Invoice</th> -->
                                       <th class="min-w-80px text-end pb-2">Price</th>
                                       <th class="min-w-80px text-end pb-2">Price After VAT</th>
                                       <th class="min-w-100px text-end pb-2">Amount</th>
@@ -266,13 +266,6 @@
                                       <td class="text-center">{{$k+1}}</td>
                                       <td class="product_details">{{$val['product']}}</td>
                                       <td class="text-center">{{$val['unit']}}</td>
-                                      <td class="text-center">{{$val['order_quantity']}}</td>
-                                      <td class="text-center">@if(!in_array($status, ['Pending', 'On Process', 'Cancelled'])) {{$val['serverd_quantity']}} @endif</td>
-                                      <td class="text-center ordered_served_class" style="display:none;">{{$val['orderd_weight']}}</td>
-                                      <td class="text-center ordered_served_class" style="display:none;">{{$val['served_weight']}}</td>
-                                      @if($data->order_type == 'Promotion')
-                                          <td>{{$val['promotion']}}</td>
-                                      @endif
                                       <?php
                                         if(@$val['id'] == ""){
                                           $route = '#';
@@ -280,8 +273,14 @@
                                           $route = route('invoices.show',@$val['id']);
                                         }
                                       ?>
-                                      <!-- <td class="text-end">
-                                        <a href="{{$route}}" target="_blank">{{$val['invoice_num']}}</a></td> -->
+                                      <td class="text-end"><a href="{{$route}}" target="_blank">{{$val['invoice_num']}}</a></td>
+                                      <td class="text-center">{{$val['order_quantity']}}</td>
+                                      <td class="text-center">@if(!in_array($status, ['Pending', 'On Process', 'Cancelled'])) {{$val['serverd_quantity']}} @endif</td>
+                                      <td class="text-center ordered_served_class" style="display:none;">{{$val['orderd_weight']}}</td>
+                                      <td class="text-center ordered_served_class" style="display:none;">{{$val['served_weight']}}</td>
+                                      @if($data->order_type == 'Promotion')
+                                          <td>{{$val['promotion']}}</td>
+                                      @endif 
                                       <td class="text-end">{{$val['price']}}</td>
                                       <td class="text-end">{{$val['price_after_vat']}}</td>
                                       <td class="text-end">{{$val['amount']}}</td>
@@ -300,7 +299,7 @@
                               <!-- <div class="col-sm-4 col-md-4 d-flex align-items-center justify-content-center">
                                 <p>Note: Prices may be subjected with discount. Final amount of order will reflect on the actual invoice.</p>
                               </div> -->
-                              <div class="col-sm-12 col-md-6 d-flex align-items-center justify-content-center">
+                              <div class="col-sm-12 col-md-6 d-flex align-items-end justify-content-end">
                                                               
                                   <div class="total">
                                     <div class="d-flex justify-content-end">
@@ -380,7 +379,7 @@
                           <br>
                           <div class="row">
                             <div class="col-md-6"></div>
-                            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                            <div class="col-md-6 d-flex align-items-end justify-content-end">
                               <p>Note: Final amount of order will reflect <br> on the actual invoice.</p>
                             </div>
                           </div>
