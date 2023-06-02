@@ -252,10 +252,12 @@
                                     </tr>
                                   </thead>
                                   <tbody>   
-                                    <?php $total_qty = 0; ?>                                 
+                                    <?php $total_qty = 0; $total_served = 0; ?>                                 
                                     @foreach($invoiceDetails as $k=>$val)
                                       <?php
-                                      $total_qty += (int)$val['order_quantity']; ?>
+                                           $total_qty += (int)$val['order_quantity'];
+                                           $total_served += (int)$val['serverd_quantity'];
+                                       ?>
 
                                     <tr class="fw-bolder text-gray-700 fs-5">
                                       <td class="text-center custom_td_order">
@@ -336,6 +338,11 @@
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
+
+                                        <div class="d-flex flex-stack">
+                                          <div class="fw-bold pe-10 text-gray-900 fs-7 ">Total Served:</div>
+                                          <div class="text-end fw-bolder fs-6 fw-boldest">{{ number_format($total_served) }}</div>
+                                        </div>
 
                                         <!--begin::Item-->
                                         <div class="d-flex flex-stack">

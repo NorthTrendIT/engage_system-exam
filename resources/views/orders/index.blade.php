@@ -34,61 +34,54 @@
             <div class="card-body">
               <div class="row">
                 @if(in_array(userrole(),[1]))
-                <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
-                    <option value=""></option>
-                    @foreach($company as $c)
-                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
-                    @endforeach
-                  </select>
-                </div>
+                  <div class="col-md-3 mt-5">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
+                      <option value=""></option>
+                      @foreach($company as $c)
+                        <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                      @endforeach
+                    </select>
+                  </div>
 
-                <!-- Select Customer By -->
-                <div class="col-md-3 mt-5">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectModule" data-hide-search="false" data-allow-clear="true" name="module">
+                  <!-- Select Customer By -->
+                  <div class="col-md-3 mt-5">
+                      <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectModule" data-hide-search="false" data-allow-clear="true" name="module">
+                          <option value=""></option>
+                          <option value="all">All</option>
+                          <option value="brand">By brand</option>
+                          <option value="customer_class">By class</option>
+                          <option value="sales_specialist">By sales specialist</option>
+                          <option value="territory">By territory</option>
+                          <option value="market_sector">By market sector</option>
+                      </select>
+                  </div>
+                  <!-- Brand -->
+                  <div class="col-md-3 mt-5 brand" style="display:none">
+                      <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectBrand" data-hide-search="false" data-allow-clear="true" name="filter_brand" data-placeholder="Select brand">
+                          <option value=""></option>
+                      </select>
+                  </div>
+
+                  <!-- Customer Class -->
+                  <div class="col-md-3 mt-5 customer_class" style="display:none">
+                      <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectCustomerClass" data-hide-search="false" data-allow-clear="true" name="filter_customer_class">
                         <option value=""></option>
-                        <option value="all">All</option>
-                        <option value="brand">By brand</option>
-                        <option value="customer_class">By class</option>
-                        <option value="sales_specialist">By sales specialist</option>
-                        <option value="territory">By territory</option>
-                        <option value="market_sector">By market sector</option>
-                    </select>
-                </div>
-                <!-- Brand -->
-                <div class="col-md-3 mt-5 brand" style="display:none">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectBrand" data-hide-search="false" data-allow-clear="true" name="filter_brand" data-placeholder="Select brand">
+                      </select>
+                  </div>
+
+                  <!-- Sales Specilalist -->
+                  <div class="col-md-3 mt-5 sales_specialist" style="display:none">
+                      <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectSalesSpecialist" data-hide-search="false" data-allow-clear="true" name="filter_sales_specialist">
                         <option value=""></option>
-                    </select>
-                </div>
+                      </select>
+                  </div>
 
-                <!-- Customer Class -->
-                <div class="col-md-3 mt-5 customer_class" style="display:none">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectCustomerClass" data-hide-search="false" data-allow-clear="true" name="filter_customer_class">
-                      <option value=""></option>
-                    </select>
-                </div>
-
-                <!-- Sales Specilalist -->
-                <div class="col-md-3 mt-5 sales_specialist" style="display:none">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectSalesSpecialist" data-hide-search="false" data-allow-clear="true" name="filter_sales_specialist">
-                      <option value=""></option>
-                    </select>
-                </div>
-
-                <!-- Territory -->
-                <div class="col-md-3 mt-5 territory" style="display:none">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectTerritory" data-hide-search="false" data-allow-clear="true" name="filter_territory">
-                      <option value=""></option>
-                    </select>
-                </div>
-
-                <!-- Market Sector -->
-                <div class="col-md-3 mt-5 market_sector" style="display:none">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectMarketSector" data-hide-search="false" data-allow-clear="true" name="filter_market_sector">
-                      <option value=""></option>
-                    </select>
-                </div>
+                  <!-- Market Sector -->
+                  <div class="col-md-3 mt-5 market_sector" style="display:none">
+                      <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectMarketSector" data-hide-search="false" data-allow-clear="true" name="filter_market_sector">
+                        <option value=""></option>
+                      </select>
+                  </div>
                 @endif
 
                 @if(in_array(userrole(),[1,2]))
@@ -109,6 +102,15 @@
                   </select>
                 </div>
 
+                @if(in_array(userrole(),[1,10]))
+                <!-- Territory -->
+                <div class="col-md-3 mt-5 territory" >
+                  <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectTerritory" data-hide-search="false" data-allow-clear="true" name="filter_territory">
+                    <option value=""></option>
+                  </select>
+                </div>
+                @endif
+                
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_order_type" data-control="select2" data-hide-search="false" data-placeholder="Select order type" data-allow-clear="true">
                     <option value=""></option>
@@ -145,7 +147,7 @@
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
 
-                  @if(in_array(userrole(),[1]))
+                  @if(in_array(userrole(),[1,10]))
                   <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
                   @endif
 
@@ -451,7 +453,7 @@
     });
     @endif
 
-    @if(in_array(userrole(),[1]))
+    @if(in_array(userrole(),[1,10]))
         $(document).on("click", ".download_excel", function(e) {
             var url = "{{route('orders.export')}}";
 
