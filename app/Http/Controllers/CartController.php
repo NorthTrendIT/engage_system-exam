@@ -338,7 +338,7 @@ class CartController extends Controller
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
 
             $price_no = @get_customer_price_list_no_arr($customer_id)[@$cart->product->sap_connection_id];
-            $price = get_product_customer_price(@$cart->product->item_prices,$price_no, false, false, @$cart->customer) * $cart->qty;
+            $price = get_product_customer_price(@$cart->product->item_prices,$price_no) * $cart->qty;
 
             $total = 0;
             $data = Cart::with('product')->whereIn('customer_id', $customer_id)->get();
@@ -349,7 +349,7 @@ class CartController extends Controller
 
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
-                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no, false, false, $item->customer) * $item->qty;
+                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
                 $total += $subTotal;
                 $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);
                 $volume = $volume + ($item->qty * @$item->product->sales_unit_volume);
@@ -375,7 +375,7 @@ class CartController extends Controller
             }
             $customer_id = explode(',', @Auth::user()->multi_customer_id);
             $price_no = @get_customer_price_list_no_arr($customer_id)[@$cart->product->sap_connection_id];
-            $price = get_product_customer_price(@$cart->product->item_prices,$price_no, false, false, $cart->customer) * $cart->qty;
+            $price = get_product_customer_price(@$cart->product->item_prices,$price_no) * $cart->qty;
 
             $total = 0;
             $weight = 0;
@@ -389,7 +389,7 @@ class CartController extends Controller
             foreach($data as $item){
                 $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$item->product->sap_connection_id];
 
-                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no, false, false, $item->customer) * $item->qty;
+                $subTotal = get_product_customer_price(@$item->product->item_prices,$customer_price_list_no) * $item->qty;
                 $total += $subTotal;
 
                 $weight = $weight + ($item->qty * @$item->product->sales_unit_weight);

@@ -165,7 +165,7 @@
                                                         $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
                                                         foreach($customer_vat as $cust){
                                                             if($value->product->sap_connection_id === $cust->real_sap_connection_id){
-                                                                $price = get_product_customer_price(@$value->product->item_prices,$customer_price_list_no, false, false, $cust);
+                                                                $price = get_product_customer_price(@$value->product->item_prices,$customer_price_list_no);
                                                             }
                                                         }
                                                     @endphp                    
@@ -481,7 +481,7 @@ $(document).ready(function() {
         format: 'mm/dd/yyyy',
         todayHighlight: true,
         orientation: "bottom left",
-        startDate: "+3d",
+        startDate: "+0d",
         autoclose: true,
 
         @if(count($dates))

@@ -131,7 +131,11 @@
                                 <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
                                 <div class="fw-bolder fs-6 text-gray-800">
 
-                                  <span class="mr-10">{!! getOrderStatusBtnHtml($line_status) !!}</span>
+                                  @php
+                                    $order_stat_final = ($status === 'Cancelled') ? $status : $line_status;
+                                  @endphp
+
+                                  <span class="mr-10">{!! getOrderStatusBtnHtml($order_stat_final) !!}</span>
 
                                   @if($status == "Pending" && !$data->customer_promotion_id)
                                     <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
@@ -517,7 +521,9 @@
     $(".trackStatus").on("click",function(){
       var id = $(this).attr('id').split("item_")[1];
       var product = $(this).closest('tr').find("td:eq(2)").text();
-      var quantity = $(this).closest('tr').find("td:eq(4)").text();
+      var quantity = $(this).closest('tr').find("td:eq(5)").text();
+      var card_code = '{{$data->card_code }}';
+
       $.ajax({
           url: "{{route('orders.item_status-track')}}",
           method: "POST",
@@ -527,6 +533,7 @@
                   details:"{{@$data->u_omsno}}",
                   product : product,
                   quantity : quantity,
+                  card_code : card_code
                 }
         })
         .done(function(result) {

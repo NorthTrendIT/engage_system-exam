@@ -1235,7 +1235,7 @@ class OrdersController extends Controller
                             'type' => $type,
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
                             'doc_total' => number_format_value($value->doc_total),
-                            'created_at' => date('M d, Y',strtotime($value->doc_date)),
+                            'created_at' => date('M d, Y',strtotime($value->doc_date)).' '.date('H:i A',strtotime($value->doc_time)),
                             'status' => getOrderStatusByQuotation($value),
                           );
         }
@@ -1250,7 +1250,7 @@ class OrdersController extends Controller
 
     public function itemStatus(Request $request){
         $orderd_quantity = $request->quantity;
-        $data = Quotation::where('u_omsno', @$request->details)->first();
+        $data = Quotation::where('card_code', $request->card_code)->where('u_omsno', @$request->details)->first();
         $product = $request->product;
         if(!empty($data)){
             $invoice = @$data->order->invoice1;
