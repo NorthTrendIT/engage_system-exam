@@ -244,7 +244,7 @@
                                       <th class="min-w-80px text-end pb-2">Promo Delivery Date</th>
                                       @endif
                                       <th class="min-w-80px text-end pb-2">Price</th>
-                                      <th class="min-w-80px text-end pb-2">Price After VAT</th>
+                                      {{-- <th class="min-w-80px text-end pb-2">Price After VAT</th> --}}
                                       <th class="min-w-100px text-end pb-2">Amount</th>
                                       <th class="min-w-100px text-end pb-2">Line Status</th>
                                       <th class="min-w-100px text-end pb-2">Line Remarks</th>
@@ -283,7 +283,7 @@
                                       @if($data->order_type == 'Promotion')
                                           <td>{{$val['promotion']}}</td>
                                       @endif 
-                                      <td class="text-end">{{$val['price']}}</td>
+                                      {{-- <td class="text-end">{{$val['price']}}</td> --}}
                                       <td class="text-end">{{$val['price_after_vat']}}</td>
                                       <td class="text-end">{{$val['amount']}}</td>
                                       <td class="text-center">@if(!in_array($status, ['Pending', 'On Process', 'Cancelled'])) {{$val['line_status']}} @endif</td>
