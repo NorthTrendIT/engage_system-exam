@@ -99,7 +99,7 @@
                 </div>
                 @endif
 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3 mt-5 d-none">
                   <select class="form-control form-control-lg form-control-solid js-example-basic-multiple" name="filter_status[]" data-control="select2" data-hide-search="false" data-placeholder="Select status" data-allow-clear="true" multiple="multiple">
                     <option value=""></option>
 
@@ -253,6 +253,19 @@
       $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
       $engage_transaction = engage_transaction;
 
+      var hide_targets = [];
+      @if(userrole() === 4)
+        hide_targets.push(4)
+      @endif
+
+      @if(userrole() != 4 && !in_array(userrole(),[1]))
+        hide_targets.push(5)
+      @endif
+
+      @if(in_array(userrole(),[1]))
+        hide_targets.push(6)
+      @endif
+
       table.DataTable({
           processing: true,
           serverSide: true,
@@ -312,7 +325,8 @@
               })
           },
           initComplete: function () {
-          }
+          },
+          aoColumnDefs: [{ "bVisible": false, "aTargets": hide_targets }]
         });
     }
 

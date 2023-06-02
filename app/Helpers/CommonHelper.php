@@ -270,6 +270,29 @@ function getOrderStatus($data){
     return $status;
 }
 
+
+function getOrderStatusV2($line_stat){
+    $line_status = '';
+    if( count($line_stat) === 1 && in_array('Unserved', $line_stat) )
+    {
+        $line_status = 'Pending';
+    }
+
+    if( (count($line_stat) === 1 && in_array('Partial Served', $line_stat)) || count($line_stat) > 1 )
+    {
+        $line_status = 'Partially Served';
+    }
+
+    if( count($line_stat) === 1 && in_array('Fully Served', $line_stat) )
+    {
+        $line_status = 'Completed';
+    }
+
+    return $line_status;
+}
+
+
+
 function get_promotion_type_criteria($scope){
     $value = "";
     if($scope == "P"){

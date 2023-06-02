@@ -184,22 +184,8 @@ class OrdersController extends Controller
         }
         $orderRemarks = LocalOrder::where('doc_entry',@$data->doc_entry)->first();
         
-        $line_stat = array_unique(array_column($invoiceDetails, 'line_status'));
-        $line_status = '';
-        if( count($line_stat) === 1 && in_array('Unserved', $line_stat) )
-        {
-            $line_status = 'Pending';
-        }
-
-        if( (count($line_stat) === 1 && in_array('Partial Served', $line_stat)) || count($line_stat) > 1 )
-        {
-            $line_status = 'Partially Served';
-        }
-
-        if( count($line_stat) === 1 && in_array('Fully Served', $line_stat) )
-        {
-            $line_status = 'Fully Served';
-        }
+        $line_stat   = array_unique(array_column($invoiceDetails, 'line_status'));
+        $line_status = getOrderStatusV2($line_stat);
 
         return view('orders.order_view', compact('data','orderRemarks','invoiceDetails','Weight','Volume', 'line_status'));
     }
@@ -559,7 +545,10 @@ class OrdersController extends Controller
                                 return '₱ '. number_format_value($row->doc_total);
                             })
                             ->addColumn('date', function($row) {
-                                return date('M d, Y',strtotime($row->doc_date));
+                                $date = date('M d, Y',strtotime($row->doc_date));
+                                $time = $row->doc_time ? date('H:i A',strtotime($row->doc_time)) : "";
+                                
+                                return $date.' '.$time;
                             })
                             ->addColumn('due_date', function($row) {
                                 return date('M d, Y',strtotime($row->doc_due_date));

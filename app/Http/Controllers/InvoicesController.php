@@ -79,7 +79,7 @@ class InvoicesController extends Controller
         }
 
         $data = $data->firstOrFail();
-        if( userrole() != 1 && !in_array( Auth::user()->id, array_column($data->customer->sales_specialist->toArray(), 'ss_id') ) ){
+        if( userrole() === 14 && !in_array( Auth::user()->id, array_column($data->customer->sales_specialist->toArray(), 'ss_id') ) ){
             return abort(404);
         }
 
