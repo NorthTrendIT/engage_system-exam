@@ -382,7 +382,7 @@ class ProductListController extends Controller
 
                                 foreach($customer_vat as $cust){
                                     if($sap_connection_id === $cust->real_sap_connection_id){
-                                        $price = get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id], false, false, $cust);
+                                        $price = get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]);
                                     }
                                 }
 

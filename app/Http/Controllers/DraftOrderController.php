@@ -407,7 +407,7 @@ class DraftOrderController extends Controller
             foreach($customer_vat as $cust){
                 if(@$product->sap_connection_id === $cust->real_sap_connection_id){
                     // $vat_rate = get_vat_rate($cust);
-                    $price = get_product_customer_price(@$product->item_prices, @$customer_price_list_no[@$product->sap_connection_id], false, false, $cust);
+                    $price = get_product_customer_price(@$product->item_prices, @$customer_price_list_no[@$product->sap_connection_id]);
                 }
             }    
 

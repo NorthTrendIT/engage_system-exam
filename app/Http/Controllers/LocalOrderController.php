@@ -501,7 +501,7 @@ class LocalOrderController extends Controller
             $customer = Customer::findOrFail($input['customer_id']);
             $product = Product::findOrFail($input['product_id']);
                  
-            $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num, false, false, $customer);
+            $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
 
             return $response = ['status' => true, 'price' => $price];
         }
