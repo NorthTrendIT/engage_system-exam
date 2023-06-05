@@ -100,7 +100,7 @@
                 @endif
 
                 @if(in_array(userrole(),[1,2,10]))
-                <div class="col-md-3 mt-5 d-none">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select customer" data-allow-clear="true">
                     <option value=""></option>
                   </select>
