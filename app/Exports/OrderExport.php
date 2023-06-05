@@ -33,7 +33,7 @@ class OrderExport implements FromCollection,WithHeadings,WithTitle,ShouldAutoSiz
             'Customer Name',
             'Total',
             'Created Date',
-            'Status',
+            // 'Status',
         ];
     }
 

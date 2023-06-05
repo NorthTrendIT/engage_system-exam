@@ -1249,7 +1249,7 @@ class OrdersController extends Controller
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
                             'doc_total' => number_format_value($value->doc_total),
                             'created_at' => date('M d, Y',strtotime($value->doc_date)).' '.date('H:i A',strtotime($value->doc_time)),
-                            'status' => getOrderStatusByQuotation($value),
+                            // 'status' => getOrderStatusByQuotation($value),
                           );
         }
         if(count($records)){
