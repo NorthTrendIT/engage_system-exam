@@ -105,6 +105,7 @@ class SAPOrderPost
                         'doc_type' => $data['DocType'],
                         'document_status' => $data['DocumentStatus'],
                         'doc_date' => $data['DocDate'],
+                        'doc_time' => $data['DocTime'],
                         'doc_due_date' => $data['DocDueDate'],
                         'card_code' => $data['CardCode'],
                         'card_name' => $data['CardName'],
