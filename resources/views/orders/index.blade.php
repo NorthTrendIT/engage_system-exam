@@ -33,7 +33,7 @@
             </div> --}}
             <div class="card-body">
               <div class="row">
-                @if(in_array(userrole(),[1]))
+                @if(in_array(userrole(),[1,10]))
                   <div class="col-md-3 mt-5">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                       <option value=""></option>
@@ -43,8 +43,15 @@
                     </select>
                   </div>
 
+                  <!-- group -->
+                  <div class="col-md-3 mt-5 other_filter_div">
+                    <select class="form-control form-control-lg form-control-solid" name="filter_group" data-control="select2" data-hide-search="false" data-placeholder="Select Branch" data-allow-clear="true">
+                      <option value=""></option>
+                    </select>
+                  </div>
+
                   <!-- Select Customer By -->
-                  <div class="col-md-3 mt-5">
+                  <div class="col-md-3 mt-5 d-none">
                       <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectModule" data-hide-search="false" data-allow-clear="true" name="module">
                           <option value=""></option>
                           <option value="all">All</option>
@@ -55,6 +62,14 @@
                           <option value="market_sector">By market sector</option>
                       </select>
                   </div>
+
+                  <!-- Territory -->
+                  <div class="col-md-3 mt-5 territory" >
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectTerritory" data-hide-search="false" data-allow-clear="true" name="filter_territory">
+                      <option value=""></option>
+                    </select>
+                  </div>
+
                   <!-- Brand -->
                   <div class="col-md-3 mt-5 brand" style="display:none">
                       <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectBrand" data-hide-search="false" data-allow-clear="true" name="filter_brand" data-placeholder="Select brand">
@@ -84,8 +99,8 @@
                   </div>
                 @endif
 
-                @if(in_array(userrole(),[1,2]))
-                <div class="col-md-3 mt-5">
+                @if(in_array(userrole(),[1,2,10]))
+                <div class="col-md-3 mt-5 d-none">
                   <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select customer" data-allow-clear="true">
                     <option value=""></option>
                   </select>
@@ -101,15 +116,6 @@
                     @endforeach
                   </select>
                 </div>
-
-                @if(in_array(userrole(),[1,10]))
-                <!-- Territory -->
-                <div class="col-md-3 mt-5 territory" >
-                  <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectTerritory" data-hide-search="false" data-allow-clear="true" name="filter_territory">
-                    <option value=""></option>
-                  </select>
-                </div>
-                @endif
                 
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_order_type" data-control="select2" data-hide-search="false" data-placeholder="Select order type" data-allow-clear="true">
@@ -170,7 +176,7 @@
                               <th>Customer Name</th>
                               @endif
                               <th>Order Type</th>
-                              @if(in_array(userrole(),[1]))
+                              @if(in_array(userrole(),[1,10]))
                               <th>Business Unit</th>
                               @endif
                               {{-- <th>Total</th> --}}
@@ -248,6 +254,7 @@
       $filter_order_type = $('[name="filter_order_type"]').find('option:selected').val();
       $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
+      $filter_group = $('[name="filter_group"]').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_class = $('[name="filter_class"]').find('option:selected').val();
       $filter_territory = $('[name="filter_territory"]').find('option:selected').val();
@@ -260,11 +267,11 @@
         hide_targets.push(4)
       @endif
 
-      @if(userrole() != 4 && !in_array(userrole(),[1]))
+      @if(userrole() != 4 && !in_array(userrole(),[1,10]))
         hide_targets.push(5)
       @endif
 
-      @if(in_array(userrole(),[1]))
+      @if(in_array(userrole(),[1,10]))
         hide_targets.push(6)
       @endif
 
@@ -296,6 +303,7 @@
                 filter_status : $filter_status,
                 filter_order_type : $filter_order_type,
                 filter_company : $filter_company,
+                filter_group : $filter_group,
                 filter_customer : $filter_customer == 'all' ? '' : $filter_customer,
                 filter_brand : $filter_brand == 'all' ? '' : $filter_brand,
                 filter_class : $filter_class == 'all' ? '' : $filter_class,
@@ -312,7 +320,7 @@
               {data: 'name', name: 'name'},
               @endif
               {data: 'order_type', name: 'order_type', orderable:false},
-              @if(in_array(userrole(),[1]))
+              @if(in_array(userrole(),[1,10]))
               {data: 'company', name: 'company'},
               @endif
               // {data: 'total', name: 'total'},
@@ -384,7 +392,7 @@
       })
     });
 
-    @if(in_array(userrole(),[1,2]))
+    @if(in_array(userrole(),[1,2,10]))
       $('[name="filter_customer"]').select2({
         ajax: {
             url: "{{route('orders.get-customer')}}",
@@ -470,6 +478,7 @@
             data.filter_order_type = $('[name="filter_order_type"]').find('option:selected').val();
             data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
             data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+            data.filter_group = $('[name="filter_group"]').val();
             data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
             data.filter_class = $('[name="filter_class"]').find('option:selected').val();
             data.filter_territory = $('[name="filter_territory"]').find('option:selected').val();
@@ -683,6 +692,40 @@
             // minimumInputLength: 2,
             multiple: false,
         });
+
+        $(document).on('change', '[name="filter_company"]', function(event) {
+          event.preventDefault();
+          $('[name="filter_group"]').val('').trigger('change');
+          if($(this).find('option:selected').val() != ""){
+            $('.other_filter_div').show();
+          }else{
+            $('.other_filter_div').hide();
+          }
+        });
+
+
+        $('[name="filter_group"]').select2({
+          ajax: {
+              url: "{{route('common.getBranch')}}",
+              type: "post",
+              dataType: 'json',
+              delay: 250,
+              data: function (params) {
+                  return {
+                        _token: "{{ csrf_token() }}",
+                        search: params.term,
+                        sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                  };
+              },
+              processResults: function (response) {
+                return {
+                  results: response
+                };
+              },
+              cache: true
+          },
+        });
+
     @endif
   })
 </script>

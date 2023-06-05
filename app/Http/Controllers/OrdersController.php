@@ -55,7 +55,7 @@ class OrdersController extends Controller
     public function index()
     {
         $company = collect();
-        if(userrole() == 1){
+        if(userrole() == 1 || userrole() == 10){
             $company = SapConnection::all();
         }
         return view('orders.index', compact('company'));
@@ -386,6 +386,12 @@ class OrdersController extends Controller
                 $query->whereHas('customer', function($q) use ($request) {
                     $q->where('u_sector', $request->filter_market_sector);
                 });
+            });
+        }
+
+        if($request->filter_group != ""){
+            $data->whereHas('customer.group', function($q) use ($request){
+                $q->where('code',$request->filter_group);
             });
         }
 
@@ -1140,6 +1146,13 @@ class OrdersController extends Controller
                 });
             });
         }
+
+        if(@$filter->filter_group != ""){
+            $data->whereHas('customer.group', function($q) use ($filter){
+                $q->where('code',$filter->filter_group);
+            });
+        }
+
 
         if(@$filter->filter_territory != ""){
             $data->where(function($query) use ($filter) {
