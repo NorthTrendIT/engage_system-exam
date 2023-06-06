@@ -14,6 +14,8 @@ use App\Models\Role;
 use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SalesReportExport;
+use App\Support\SAPInvoices;
+use App\Models\Customer;
 
 class SalesReportController extends Controller
 {
@@ -38,16 +40,28 @@ class SalesReportController extends Controller
 
     public function getAll(Request $request){
         
-        $data = $this->getReportResultData($request);
+        // $data = $this->getReportResultData($request);
+        $data = $this->getInvoiceDataFromSap($request);
 
-        $dataArr = $data->get()->toArray();
+        // $dataArr = $data->get()->toArray();
         
-        $grand_total_of_total_quantity = array_sum(array_column($dataArr, 'total_quantity'));
-        $grand_total_of_total_price = '₱ '. number_format_value(array_sum(array_column($dataArr, 'total_price')));
-        $grand_total_of_total_price_after_vat = '₱ '. number_format_value(array_sum(array_column($dataArr, 'total_price_after_vat')));
+        $grand_total_of_total_quantity = 0;
+        $grand_total_of_total_price = '₱ '. 0;
+        $grand_total_of_total_price_after_vat = '₱ '. 0;
         
+        // $grand_total_of_total_quantity = array_sum(array_column($dataArr, 'total_quantity'));
+        // $grand_total_of_total_price = '₱ '. number_format_value(array_sum(array_column($dataArr, 'total_price')));
+        // $grand_total_of_total_price_after_vat = '₱ '. number_format_value(array_sum(array_column($dataArr, 'total_price_after_vat')));
+        
+
         $table = DataTables::of($data)
                             ->addIndexColumn()
+                            ->addColumn('invoice_no', function($row) {
+                                return "invoice";
+                            })
+                            ->addColumn('invoice_date', function($row) {
+                                return "date";
+                            })
                             ->addColumn('item_name', function($row) {
                                 return @$row->item_name ?? "-";
                             })
@@ -86,6 +100,18 @@ class SalesReportController extends Controller
                                     $html = '₱ '.number_format_value(@$price, 2);
                                 }
                                 return $html;
+                            })
+                            ->addColumn('uom', function($row) {
+                                return "uom";
+                            })
+                            ->addColumn('item_price', function($row) {
+                                return "unit price";
+                            })
+                            ->addColumn('net_amount', function($row) {
+                                return "net_amount";
+                            })
+                            ->addColumn('status', function($row) {
+                                return "status";
                             })
                             ->rawColumns(['status','action','total_price','total_price_after_vat','total_amount'])
                             ->make(true);
@@ -243,5 +269,30 @@ class SalesReportController extends Controller
         $data->groupBy('invoice_items.item_code', 'invoice_items.sap_connection_id');
 
         return $data;
+    }
+
+    public function getInvoiceDataFromSap($request){
+
+        $url = '/b1s/v1/Invoices?$select=DocNum,DocDate,DocumentLines';
+        $limit = '&$top=100&$orderby=DocDate desc';
+        $filter = '&$filter=';
+        $sap_connection = (object)[];
+        if($request->filter_company != '' && $request->filter_customer == ''){
+            $sap_connection = SapConnection::find($request->filter_company);
+        }else{
+            $customer = Customer::find($request->filter_customer);
+            $sap_connection = $customer->sap_connection;
+
+            $filter .= 'CardCode eq \''.$customer->card_code.'\'';
+        }
+
+        $filter = (substr($filter,9) === '') ? '' : $filter ;
+
+        $url .= $url.$filter.$limit;
+
+        $sap_invoices = new SAPInvoices($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+        $sap_invoices->fetchInvoiceDataForReporting($url);
+        
+        dd('done');
     }
 }

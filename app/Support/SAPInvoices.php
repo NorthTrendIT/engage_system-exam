@@ -12,6 +12,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\SapConnection;
 use App\Models\Customer;
+use Log;
 
 class SAPInvoices
 {
@@ -265,4 +266,42 @@ class SAPInvoices
             }
         }
     }
+
+    public function fetchInvoiceDataForReporting($url){
+
+        $response = $this->getInvoiceData($url);
+        if($response['status']){
+            $invoice = $response['data'];
+
+            if(!empty($invoice['value'])){
+
+                $invoices = $invoice['value'];
+                foreach($invoices as $invoice){ //invo
+                    if(!empty($invoice['DocumentLines'])){
+
+                        $invoice_items = @$invoice['DocumentLines'];
+                        foreach($invoice_items as $line){ //invoice items
+                        
+                        }
+                    }
+                }
+            }
+
+            if(isset($response['data']['odata.nextLink'])){ //call loop again
+                $this->fetchInvoiceDataForReportingNext($response['data']['odata.nextLink']);
+            }
+        }    
+    }
+
+
+    public function fetchInvoiceDataForReportingNext($url){
+        $this->fetchInvoiceDataForReporting($url);
+    }
+
+
+
+
+
+
+
 }

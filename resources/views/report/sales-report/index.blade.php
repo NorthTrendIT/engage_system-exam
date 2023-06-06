@@ -46,8 +46,13 @@
             </div> --}}
             <div class="card-body">
               <div class="row" style="align-items: center;">
+                <div class="col-md-3">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
+                  </div>
+                </div>
                 @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                     <option value=""></option>
                     @foreach($company as $c)
@@ -56,21 +61,17 @@
                   </select>
                 </div>
                 @endif   
-                @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))             
-                <div class="col-md-3 mt-5 filter_brand_div" style="display:none;">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
+                <div class="col-md-3">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select customer" data-allow-clear="true">
                     <option value=""></option>
-                    
                   </select>
                 </div>
-                @else
-                <div class="col-md-3 mt-5 filter_brand_div">
+                <div class="col-md-3 filter_brand_div">
                   <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
                     <option value=""></option>
-                    
                   </select>
                 </div>
-                @endif
+
                 @if(in_array(userrole(),[1]))
                 <div class="col-md-3 mt-5 filter_brand_div" style="display:none;">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_manager" data-allow-clear="true" data-placeholder="Select Manager">
@@ -161,13 +162,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
-                  </div>
-                </div>
-
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3 mt-5 d-none">
                   <div class="input-icon engage_transaction">
                     <input type="checkbox" class="" name = "engage_transaction" id="engage_transaction" value="1" checked>
                     <span>
@@ -242,6 +237,8 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>Invoice #</th>
+                              <th>Date</th>
                               <th>Product Code</th>
                               <th>Product Name</th>
                               <th>Brand</th>
@@ -249,6 +246,10 @@
                               <th>Total Quantity</th>
                               <th>Total Price</th>
                               <th>Total Price After VAT</th>
+                              <th>UOM</th>
+                              <th>Unit Price</th>
+                              <th>Net Amount</th>
+                              <th>Status</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -300,7 +301,11 @@
 
     render_table();
 
-    $(document).on('click','.generate-report',function(){
+    $(document).on('click','.generate-report, .search',function(){
+      if($('[name="filter_company"]').val() === "" && $('[name="filter_customer"]').val() === ""){
+        alert('Please select company or customer first');
+        return false;
+      }
       render_data();
     });
     //render_data();
@@ -313,6 +318,7 @@
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
+      $filter_customer = $('[name="filter_customer"]').val();
       $filter_manager = $('[name="filter_manager"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
@@ -337,6 +343,7 @@
                 _token:'{{ csrf_token() }}',
                 filter_search : $filter_search,
                 filter_company : $filter_company,
+                filter_customer : $filter_customer,
                 filter_brand : $filter_brand,
                 filter_status : $filter_status,
                 filter_date_range : $filter_date_range,
@@ -392,6 +399,8 @@
           data: jsonData,
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'invoice_no', name: 'invoice_no',orderable:false,searchable:false},
+              {data: 'invoice_date', name: 'invoice_date',orderable:false,searchable:false},
               {data: 'item_code', name: 'item_code',orderable:false,searchable:false},
               {data: 'item_name', name: 'item_name',orderable:false,searchable:false},
               {data: 'brand', name: 'brand',orderable:false,searchable:false},
@@ -399,6 +408,10 @@
               {data: 'total_quantity', name: 'total_quantity',orderable:false,searchable:false},
               {data: 'total_price', name: 'total_price',orderable:false,searchable:false},
               {data: 'total_price_after_vat', name: 'total_price_after_vat',orderable:false,searchable:false},
+              {data: 'uom', name: 'uom',orderable:false,searchable:false},
+              {data: 'item_price', name: 'item_price',orderable:false,searchable:false},
+              {data: 'net_amount', name: 'net_amount',orderable:false,searchable:false},
+              {data: 'status', name: 'status',orderable:false,searchable:false},
           ],
           drawCallback:function(){
               $(function () {
@@ -408,13 +421,10 @@
               })
           },
           initComplete: function () {
-          }
+          },
+          aoColumnDefs: [{ "bVisible": false, "aTargets": [8,9,10] }]
         });
     }
-
-    $(document).on('click', '.search', function(event) {
-      render_data();
-    });
 
     $(document).on('click', '.clear-search', function(event) {
       $('input').val('');
@@ -722,6 +732,35 @@
         cache: true
       },
     });
+
+    $('[name="filter_customer"]').select2({
+        ajax: {
+            url: "{{route('orders.get-customer')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                };
+            },
+            processResults: function (response) {
+                $options = [{ id: 'all', text: 'All'}];
+                response.forEach(function(value, key) {
+                    $options.push({
+                                text: value.card_name + " (Code: " + value.card_code + ")",
+                                id: value.id
+                            });
+                })
+                return {
+                    results: $options
+                };
+            },
+            cache: true
+        },
+      });
 
     $(document).on("click", ".download_excel", function(e) {
       var url = "{{route('reports.sales-report.export')}}";
