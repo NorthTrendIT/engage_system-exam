@@ -26,6 +26,10 @@ class SAPInvoices
 	protected $username;
 	protected $password;
     protected $log_id;
+    public $invoice_data      = [];
+    public $grand_total_qty   = 0;
+    public $grand_total_price = 0;
+    public $grand_total_price_after_vat = 0;
 
     public function __construct($database, $username, $password, $log_id = false)
     {
@@ -276,12 +280,30 @@ class SAPInvoices
             if(!empty($invoice['value'])){
 
                 $invoices = $invoice['value'];
-                foreach($invoices as $invoice){ //invo
+                foreach($invoices as $invoice){ //invoice details
+                        // Log::info(print_r($invoice['DocNum'],true));
                     if(!empty($invoice['DocumentLines'])){
 
                         $invoice_items = @$invoice['DocumentLines'];
                         foreach($invoice_items as $line){ //invoice items
-                        
+
+                            $status = ($invoice['DocumentStatus'] === 'bost_Open') ? 'Paid' : 'Unpaid';
+                            $this->grand_total_qty   += $line['Quantity'];
+                            $this->grand_total_price += $line['Price'];
+                            $this->grand_total_price_after_vat += $line['PriceAfterVAT'];
+
+                            $this->invoice_data[] = [
+                                            'DocNum'   => $invoice['DocNum'],
+                                            'DocDate'  => $invoice['DocDate'],
+                                            'ItemCode' => $line['ItemCode'],
+                                            'ItemDescription' => $line['ItemDescription'],
+                                            'Brand'      => $line['CostingCode2'],
+                                            'Quantity'   => $line['Quantity'],
+                                            'UoM'      => $line['MeasureUnit'],
+                                            'Price'    => $line['Price'],
+                                            'GrossTotal' => $line['GrossTotal'],
+                                            'Status'    => $status
+                                        ];
                         }
                     }
                 }
@@ -290,6 +312,9 @@ class SAPInvoices
             if(isset($response['data']['odata.nextLink'])){ //call loop again
                 $this->fetchInvoiceDataForReportingNext($response['data']['odata.nextLink']);
             }
+            // else{
+            //     Log::info(print_r($this->invoice_data,true));
+            // }
         }    
     }
 

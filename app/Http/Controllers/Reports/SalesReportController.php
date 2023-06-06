@@ -16,6 +16,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SalesReportExport;
 use App\Support\SAPInvoices;
 use App\Models\Customer;
+use Log;
 
 class SalesReportController extends Controller
 {
@@ -45,75 +46,75 @@ class SalesReportController extends Controller
 
         // $dataArr = $data->get()->toArray();
         
-        $grand_total_of_total_quantity = 0;
-        $grand_total_of_total_price = '₱ '. 0;
-        $grand_total_of_total_price_after_vat = '₱ '. 0;
+        $grand_total_of_total_quantity = $data['grand_total_qty'];
+        $grand_total_of_total_price = '₱ '. number_format($data['grand_total_price'], 2);
+        $grand_total_of_total_price_after_vat = '₱ '. number_format($data['grand_total_price_after_vat'], 2);
         
         // $grand_total_of_total_quantity = array_sum(array_column($dataArr, 'total_quantity'));
         // $grand_total_of_total_price = '₱ '. number_format_value(array_sum(array_column($dataArr, 'total_price')));
         // $grand_total_of_total_price_after_vat = '₱ '. number_format_value(array_sum(array_column($dataArr, 'total_price_after_vat')));
         
 
-        $table = DataTables::of($data)
+        $table = DataTables::of($data['invoice_data'])
                             ->addIndexColumn()
                             ->addColumn('invoice_no', function($row) {
-                                return "invoice";
+                                return $row['DocNum'] ?? '-';
                             })
                             ->addColumn('invoice_date', function($row) {
-                                return "date";
-                            })
-                            ->addColumn('item_name', function($row) {
-                                return @$row->item_name ?? "-";
+                                return $row['DocDate'] ?? '-';
                             })
                             ->addColumn('item_code', function($row) {
-                                return @$row->item_code ?? "-";
+                                return $row['ItemCode'] ?? "-";
+                            })
+                            ->addColumn('item_name', function($row) {
+                                return $row['ItemDescription'] ?? "-";
                             })
                             ->addColumn('brand', function($row) {
-                                return @$row->brand ?? "-";
+                                return $row['Brand'] ?? "-";
                             })
-                            ->addColumn('company', function($row) {
-                                return @$row->company ?? "-";
+                            ->addColumn('company', function($row) use ($data) {
+                                return $data['db_name'] ?? "-";
                             })
                             ->addColumn('total_quantity', function($row) {
-                                return @$row->total_quantity ?? "-";
+                                return $row['Quantity'] ?? "-";
                             })
-                            ->addColumn('total_price', function($row) {
+                            // ->addColumn('total_price', function($row) {
 
-                                $html = '₱ '. "0.00";
-                                if(@$row->total_price){
-                                    $html = '₱ '.number_format_value(@$row->total_price, 2);
-                                }
-                                return $html;
-                            })
-                            ->addColumn('total_price_after_vat', function($row) {
+                            //     $html = '₱ '. "0.00";
+                            //     // if(@$row->total_price){
+                            //     //     $html = '₱ '.number_format_value(@$row->total_price, 2);
+                            //     // }
+                            //     return $html;
+                            // })
+                            // ->addColumn('total_price_after_vat', function($row) {
 
-                                $html = '₱ '. "0.00";
-                                if(@$row->total_price_after_vat){
-                                    $html = '₱ '.number_format_value(@$row->total_price_after_vat, 2);
-                                }
-                                return $html;
-                            })
-                            ->addColumn('total_amount', function($row) {
-                                $html = '₱ '. "0.00";
-                                if(@$row->total_price_after_vat){
-                                    $price = @$row->quantity * $row->total_price_after_vat;
-                                    $html = '₱ '.number_format_value(@$price, 2);
-                                }
-                                return $html;
-                            })
+                            //     $html = '₱ '. "0.00";
+                            //     // if(@$row->total_price_after_vat){
+                            //     //     $html = '₱ '.number_format_value(@$row->total_price_after_vat, 2);
+                            //     // }
+                            //     return $html;
+                            // })
+                            // ->addColumn('total_amount', function($row) {
+                            //     $html = '₱ '. "0.00";
+                            //     // if(@$row->total_price_after_vat){
+                            //     //     $price = @$row->quantity * $row->total_price_after_vat;
+                            //     //     $html = '₱ '.number_format_value(@$price, 2);
+                            //     // }
+                            //     return $html;
+                            // })
                             ->addColumn('uom', function($row) {
-                                return "uom";
+                                return $row['UoM'] ?? '-';
                             })
                             ->addColumn('item_price', function($row) {
-                                return "unit price";
+                                return number_format($row['Price'], 2);
                             })
                             ->addColumn('net_amount', function($row) {
-                                return "net_amount";
+                                return number_format($row['GrossTotal'], 2);
                             })
                             ->addColumn('status', function($row) {
-                                return "status";
+                                return $row['Status'] ?? '-';
                             })
-                            ->rawColumns(['status','action','total_price','total_price_after_vat','total_amount'])
+                            ->rawColumns(['status'])
                             ->make(true);
 
         $data = compact(
@@ -273,26 +274,36 @@ class SalesReportController extends Controller
 
     public function getInvoiceDataFromSap($request){
 
-        $url = '/b1s/v1/Invoices?$select=DocNum,DocDate,DocumentLines';
+        $url = '/b1s/v1/Invoices?$select=DocNum,DocDate,DocumentStatus,DocumentLines';
         $limit = '&$top=100&$orderby=DocDate desc';
         $filter = '&$filter=';
         $sap_connection = (object)[];
+
         if($request->filter_company != '' && $request->filter_customer == ''){
             $sap_connection = SapConnection::find($request->filter_company);
         }else{
             $customer = Customer::find($request->filter_customer);
             $sap_connection = $customer->sap_connection;
-
             $filter .= 'CardCode eq \''.$customer->card_code.'\'';
         }
 
-        $filter = (substr($filter,9) === '') ? '' : $filter ;
+        if(@$request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+            $filter .= ' DocDate ge \''.$start.'\' and DocDate le \''.$end.'\'';
+        }
 
-        $url .= $url.$filter.$limit;
+        $filter = (substr($filter,9) === '') ? '' : $filter ;
+        $url = $url.$filter.$limit;
 
         $sap_invoices = new SAPInvoices($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
         $sap_invoices->fetchInvoiceDataForReporting($url);
         
-        dd('done');
+        return ['invoice_data' => $sap_invoices->invoice_data,
+                'db_name'      => $sap_connection->db_name, 
+                'grand_total_qty' => $sap_invoices->grand_total_qty, 
+                'grand_total_price' => $sap_invoices->grand_total_price,
+                'grand_total_price_after_vat' => $sap_invoices->grand_total_price_after_vat ];
     }
 }

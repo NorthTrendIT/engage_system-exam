@@ -244,9 +244,9 @@
                               <th>Brand</th>
                               <th>Business Unit</th>
                               <th>Total Quantity</th>
-                              <th>Total Price</th>
-                              <th>Total Price After VAT</th>
                               <th>UOM</th>
+                              {{-- <th>Total Price</th>
+                              <th>Total Price After VAT</th> --}}
                               <th>Unit Price</th>
                               <th>Net Amount</th>
                               <th>Status</th>
@@ -281,7 +281,7 @@
 @endsection
 
 @push('css')
-<link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
 <link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
 
@@ -293,17 +293,18 @@
 @endpush
 
 @push('js')
-<script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
 <script>
   $(document).ready(function() {
 
-    render_table();
+    render_table([]);
 
     $(document).on('click','.generate-report, .search',function(){
       if($('[name="filter_company"]').val() === "" && $('[name="filter_customer"]').val() === ""){
-        alert('Please select company or customer first');
+        Swal.fire('Please select Business unit or Customer first.');
         return false;
       }
       render_data();
@@ -385,6 +386,7 @@
     function render_table(jsonData){
       var table = $("#myTable");
       table.DataTable().destroy();
+      // table.rows.add(jsonData).draw();
 
       table.DataTable({
           scrollX: true,
@@ -398,38 +400,42 @@
           order: [],
           data: jsonData,
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
-              {data: 'invoice_no', name: 'invoice_no',orderable:false,searchable:false},
-              {data: 'invoice_date', name: 'invoice_date',orderable:false,searchable:false},
-              {data: 'item_code', name: 'item_code',orderable:false,searchable:false},
-              {data: 'item_name', name: 'item_name',orderable:false,searchable:false},
-              {data: 'brand', name: 'brand',orderable:false,searchable:false},
-              {data: 'company', name: 'company',orderable:false,searchable:false},
-              {data: 'total_quantity', name: 'total_quantity',orderable:false,searchable:false},
-              {data: 'total_price', name: 'total_price',orderable:false,searchable:false},
-              {data: 'total_price_after_vat', name: 'total_price_after_vat',orderable:false,searchable:false},
-              {data: 'uom', name: 'uom',orderable:false,searchable:false},
-              {data: 'item_price', name: 'item_price',orderable:false,searchable:false},
-              {data: 'net_amount', name: 'net_amount',orderable:false,searchable:false},
-              {data: 'status', name: 'status',orderable:false,searchable:false},
+              {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+              {data: 'invoice_no', name: 'invoice_no'},
+              {data: 'invoice_date', name: 'invoice_date'},
+              {data: 'item_code', name: 'item_code'},
+              {data: 'item_name', name: 'item_name'},
+              {data: 'brand', name: 'brand'},
+              {data: 'company', name: 'company'},
+              {data: 'total_quantity', name: 'total_quantity'},
+              {data: 'uom', name: 'uom'},
+              // {data: 'total_price', name: 'total_price'},
+              // {data: 'total_price_after_vat', name: 'total_price_after_vat'},
+              {data: 'item_price', name: 'item_price'},
+              {data: 'net_amount', name: 'net_amount'},
+              {data: 'status', name: 'status'},
           ],
           drawCallback:function(){
-              $(function () {
-                $('[data-toggle="tooltip"]').tooltip()
-                $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+              // $(function () {
+              //   $('[data-toggle="tooltip"]').tooltip()
+              //   $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
 
-              })
+              // })
           },
           initComplete: function () {
           },
-          aoColumnDefs: [{ "bVisible": false, "aTargets": [8,9,10] }]
-        });
+          // aoColumnDefs: [{ "bVisible": false, "aTargets": [9,10] }]
+      });
+
     }
 
     $(document).on('click', '.clear-search', function(event) {
       $('input').val('');
       $('select').val('').trigger('change');
-      render_data();
+      $('.grand_total_of_total_quantity_count').text('');
+      $('.grand_total_of_total_price_count').text('');
+      $('.grand_total_of_total_price_after_vat_count').text('');
+      render_table([]);
     })
 
 
@@ -438,7 +444,7 @@
       $('[name="filter_brand"]').val('').trigger('change');
 
       if($(this).find('option:selected').val() != ""){
-        $('.filter_brand_div').show();
+        // $('.filter_brand_div').show();
       }else{
         $('.filter_brand_div').hide();
         $('.other_filter_div').hide();
