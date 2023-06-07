@@ -287,14 +287,14 @@ class SAPInvoices
                         $invoice_items = @$invoice['DocumentLines'];
                         foreach($invoice_items as $line){ //invoice items
 
-                            $status = ($invoice['DocumentStatus'] === 'bost_Open') ? 'Paid' : 'Unpaid';
+                            $status = ($invoice['DocumentStatus'] === 'bost_Open' && $invoice['Cancelled'] === 'tNO') ? 'Unpaid' : 'Paid';
                             $this->grand_total_qty   += $line['Quantity'];
                             $this->grand_total_price += $line['Price'];
                             $this->grand_total_price_after_vat += $line['PriceAfterVAT'];
 
                             $this->invoice_data[] = [
                                             'DocNum'   => $invoice['DocNum'],
-                                            'DocDate'  => $invoice['DocDate'],
+                                            'DocDate'  => date("m-d-Y", strtotime($invoice['DocDate'])),
                                             'ItemCode' => $line['ItemCode'],
                                             'ItemDescription' => $line['ItemDescription'],
                                             'Brand'      => $line['CostingCode2'],

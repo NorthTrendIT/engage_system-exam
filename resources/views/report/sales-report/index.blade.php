@@ -51,7 +51,7 @@
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
                   </div>
                 </div>
-                @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))
+                @if(in_array(userrole(),[1,6]))
                 <div class="col-md-3">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                     <option value=""></option>
@@ -61,7 +61,7 @@
                   </select>
                 </div>
                 @endif   
-                <div class="col-md-3">
+                <div class="col-md-3 ">
                   <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select customer" data-allow-clear="true">
                     <option value=""></option>
                   </select>
@@ -156,7 +156,7 @@
 
                 <div class="col-md-3">
                   <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1"  readonly>
                     <span>
                     </span>
                   </div>
@@ -174,7 +174,7 @@
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
-                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
+                  <a href="#" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
                 </div>
 
               </div>
@@ -297,19 +297,30 @@
 <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+
 <script>
   $(document).ready(function() {
 
     render_table([]);
 
-    $(document).on('click','.generate-report, .search',function(){
-      if($('[name="filter_company"]').val() === "" && $('[name="filter_customer"]').val() === ""){
+    $(document).on('click','.generate-report, .search',function(e){
+      $stat = check_hasFilter();
+      ($stat === false)? '' : render_data();
+    });
+
+    function check_hasFilter(){
+      if(($('[name="filter_company"]').val() == null || $('[name="filter_company"]').val() === "") && $('[name="filter_customer"]').val() === ""){
         Swal.fire('Please select Business unit or Customer first.');
         return false;
       }
-      render_data();
-    });
-    //render_data();
+    }
+
     function render_data(){
 
       $('.loader_img').show();
@@ -389,6 +400,10 @@
       // table.rows.add(jsonData).draw();
 
       table.DataTable({
+          dom: 'Bfrtip',
+          buttons: [
+              'copy', 'csv', 'excel', 'pdf', 'print'
+          ],
           scrollX: true,
           scrollY: "800px",
           scrollCollapse: true,
@@ -769,11 +784,13 @@
       });
 
     $(document).on("click", ".download_excel", function(e) {
+      $stat = check_hasFilter();
       var url = "{{route('reports.sales-report.export')}}";
 
       var data = {};
       data.filter_search = $('[name="filter_search"]').val();
-      data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+      data.filter_company = $('[name="filter_company"]').find('option:selected').val() ?? '';
+      data.filter_customer = $('[name="filter_customer"]').val();
       data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       data.filter_status = $('[name="filter_status"]').find('option:selected').val();
       data.filter_date_range = $('[name="filter_date_range"]').val();
@@ -791,7 +808,26 @@
       data.engage_transaction = $('[name="engage_transaction"]').val();
       url = url + '?data=' + btoa(JSON.stringify(data));
 
-      window.location.href = url;
+      ($stat === false)? e.preventDefault() : window.location.href = url;
+    });
+
+    console.log(parseInt(moment().format('MM/YYYY')));
+    $('#kt_daterangepicker_1').daterangepicker({
+      autoUpdateInput: false,
+      showDropdowns: true,
+      // minDate: moment(),
+      // "startDate": "-1m",
+      // "endDate": '+1m',
+      minYear: 2000,
+      maxYear: parseInt(moment().format('YYYY')),
+    });
+
+    $('#kt_daterangepicker_1').on('apply.daterangepicker', function(ev, picker) {
+      $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+    });
+
+    $('#kt_daterangepicker_1').on('cancel.daterangepicker', function(ev, picker) {
+      $(this).val('');
     });
 
   })

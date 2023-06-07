@@ -134,22 +134,27 @@ class SalesReportController extends Controller
           $filter = json_decode(base64_decode($request->data));
         }
 
-        $data = $this->getReportResultData($filter);
+        // $data = $this->getReportResultData($filter);
+        // $data = $data->get();
 
-        $data = $data->get();
+        $data = $this->getInvoiceDataFromSap($filter);
 
         $records = array();
-        foreach($data as $key => $value){
+        foreach($data['invoice_data'] as $key => $value){
 
             $records[] = array(
                             'no' => $key + 1,
-                            'item_name' => $value->item_name ?? "-",
-                            'item_code' => $value->item_code ?? "-",
-                            'brand' => @$value->brand ?? "-",
-                            'company' => @$value->company ?? "-",
-                            'total_quantity' => @$value->total_quantity ?? "-",
-                            'total_price' => @$value->total_price ?? "-",
-                            'total_price_after_vat' => @$value->total_price_after_vat ?? "-",
+                            'invoice_num' => $value['DocNum'] ?? "-",
+                            'date' => $value['DocDate'] ?? "-",
+                            'product_code' => @$value['ItemCode'] ?? "-",
+                            'product_name' => @$value['ItemDescription'] ?? "-",
+                            'brand' => @$value['Brand'] ?? "-",
+                            'business_unit' => @$data['db_name'] ?? "-",
+                            'total_qty' => @$value['Quantity'] ?? "-",
+                            'uom' => @$value['UoM'] ?? "-",
+                            'unit_price' => @$value['Price'] ?? "-",
+                            'net_amount' => @$value['GrossTotal'] ?? "-",
+                            'status' => @$value['Status'] ?? "-",
                           );
         }
         if(count($records)){
@@ -274,7 +279,7 @@ class SalesReportController extends Controller
 
     public function getInvoiceDataFromSap($request){
 
-        $url = '/b1s/v1/Invoices?$select=DocNum,DocDate,DocumentStatus,DocumentLines';
+        $url = '/b1s/v1/Invoices?$select=DocNum,DocDate,DocumentStatus,Cancelled,DocumentLines';
         $limit = '&$top=100&$orderby=DocDate desc';
         $filter = '&$filter=';
         $sap_connection = (object)[];
@@ -287,15 +292,23 @@ class SalesReportController extends Controller
             $filter .= 'CardCode eq \''.$customer->card_code.'\'';
         }
 
+        if(@$request->filter_search != ""){
+            $and = (substr($filter,9) === '') ? '' : ' and';
+            $filter .= $and.' DocNum eq '.$request->filter_search;
+        }
+
         if(@$request->filter_date_range != ""){
             $date = explode(" - ", $request->filter_date_range);
             $start = date("Y-m-d", strtotime($date[0]));
             $end = date("Y-m-d", strtotime($date[1]));
-            $filter .= ' DocDate ge \''.$start.'\' and DocDate le \''.$end.'\'';
+            
+            $and = (substr($filter,9) === '') ? '' : ' and';
+            $filter .= $and.' DocDate ge \''.$start.'\' and DocDate le \''.$end.'\'';
         }
 
         $filter = (substr($filter,9) === '') ? '' : $filter ;
-        $url = $url.$filter.$limit;
+        $filter_limit  = ($filter === '') ? $filter.$limit : str_replace('&$top=100','',$filter);
+        $url = $url.$filter_limit;
 
         $sap_invoices = new SAPInvoices($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
         $sap_invoices->fetchInvoiceDataForReporting($url);
