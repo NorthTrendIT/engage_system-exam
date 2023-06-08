@@ -226,7 +226,7 @@ class DraftOrderController extends Controller
     public function getAll(Request $request){
         $customer_id = explode(',', @Auth::user()->multi_customer_id);
 
-        $data = LocalOrder::whereIn('customer_id', $customer_id);
+        $data = LocalOrder::whereIn('customer_id', $customer_id)->whereNull('doc_entry')->where('confirmation_status', 'P');
 
         if($request->filter_search != ""){
             $data->whereHas('sales_specialist', function($q) use ($request) {

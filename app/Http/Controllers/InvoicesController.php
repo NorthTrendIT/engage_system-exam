@@ -12,9 +12,9 @@ use App\Models\InvoiceItem;
 use App\Models\SapConnection;
 use DataTables;
 use Auth;
-
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\InvoiceExport;
+use App\Models\CustomersSalesSpecialist;
 
 class InvoicesController extends Controller
 {
@@ -156,9 +156,13 @@ class InvoicesController extends Controller
             $customers = Auth::user()->get_multi_customer_details();
             $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
             $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        }elseif(userrole() == 2){
-            $data->where('sales_person_code', @Auth::user()->sales_employee_code);
-        }elseif(userrole() != 1){
+        }elseif(userrole() == 14){
+            // $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+            $data->whereHas('customer', function($q){
+                $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+                $q->whereIn('id', $cus);
+            });
+        }elseif(userrole() != 1 && userrole()!= 10){
             if (!is_null(@Auth::user()->created_by)) {
                 $customers = @Auth::user()->created_by_user->get_multi_customer_details();
                 $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
@@ -174,6 +178,7 @@ class InvoicesController extends Controller
             $data->where(function($q) use ($request) {
                 // $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_type','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('doc_num','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");
             });
         }
@@ -260,7 +265,7 @@ class InvoicesController extends Controller
             $q->orderBy('id', 'desc');
         });
 
-        // dd($data->get());
+        // dd($data->toSql());
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('name', function($row) {

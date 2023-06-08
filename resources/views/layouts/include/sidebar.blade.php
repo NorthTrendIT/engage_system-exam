@@ -182,7 +182,7 @@
                      </span>
                      <!--end::Svg Icon-->
                   </span>
-                  <span class="menu-title">Product List</span>
+                  <span class="menu-title">Create Sales Order</span>
                </a>
             </div>
             @endif
@@ -199,7 +199,7 @@
                      </span>
                      <!--end::Svg Icon-->
                   </span>
-                  <span class="menu-title">Orders</span>
+                  <span class="menu-title">Sales Order</span>
                </a>
             </div>
             @endif
@@ -463,7 +463,7 @@
                      </span>
                      <!--end::Svg Icon-->
                   </span>
-                  <span class="menu-title">Place Order For Customer</span>
+                  <span class="menu-title">Create Sales Order to Customer</span>
                </a>
             </div>
             @endif
