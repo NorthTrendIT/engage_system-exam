@@ -467,25 +467,25 @@
 
     });
 
-    $(document).on('change', '[name="filter_brand"]', function(event) {
-      event.preventDefault();
-      $('[name="filter_product_category"]').val('').trigger('change');
-      $('[name="filter_product_line"]').val('').trigger('change');
-      $('[name="filter_product_class"]').val('').trigger('change');
-      $('[name="filter_product_type"]').val('').trigger('change');
-      $('[name="filter_product_application"]').val('').trigger('change');
-      $('[name="filter_product_pattern"]').val('').trigger('change');
-      $('[name="filter_customer_class"]').val('').trigger('change');
-      $('[name="filter_sales_specialist"]').val('').trigger('change');
-      $('[name="filter_market_sector"]').val('').trigger('change');
-      $('[name="filter_market_sub_sector"]').val('').trigger('change');
+    // $(document).on('change', '[name="filter_brand"]', function(event) {
+    //   event.preventDefault();
+    //   $('[name="filter_product_category"]').val('').trigger('change');
+    //   $('[name="filter_product_line"]').val('').trigger('change');
+    //   $('[name="filter_product_class"]').val('').trigger('change');
+    //   $('[name="filter_product_type"]').val('').trigger('change');
+    //   $('[name="filter_product_application"]').val('').trigger('change');
+    //   $('[name="filter_product_pattern"]').val('').trigger('change');
+    //   $('[name="filter_customer_class"]').val('').trigger('change');
+    //   $('[name="filter_sales_specialist"]').val('').trigger('change');
+    //   $('[name="filter_market_sector"]').val('').trigger('change');
+    //   $('[name="filter_market_sub_sector"]').val('').trigger('change');
 
-      if($(this).find('option:selected').val() != ""){
-        $('.other_filter_div').show();
-      }else{
-        $('.other_filter_div').hide();
-      }
-    });
+    //   if($(this).find('option:selected').val() != ""){
+    //     $('.other_filter_div').show();
+    //   }else{
+    //     $('.other_filter_div').hide();
+    //   }
+    // });
 
 
     $('[name="filter_brand"]').select2({
@@ -499,6 +499,7 @@
             _token: "{{ csrf_token() }}",
             search: params.term,
             sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+            filter_customer : $('[name="filter_customer"]').val()
           };
         },
         processResults: function (response) {
@@ -506,7 +507,7 @@
             results:  $.map(response, function (item) {
                         return {
                           text: item.group_name,
-                          id: item.number,
+                          id: item.group_name,
                           data_id: item.id
                         }
                       })

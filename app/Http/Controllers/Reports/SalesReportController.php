@@ -279,9 +279,10 @@ class SalesReportController extends Controller
 
     public function getInvoiceDataFromSap($request){
 
-        $url = '/b1s/v1/Invoices?$select=DocNum,DocDate,DocumentStatus,Cancelled,DocumentLines';
+        $url = '/b1s/v1/$crossjoin(Invoices, Invoices/DocumentLines)?$expand=Invoices($select=DocEntry, DocNum, DocDate, DocumentStatus, Cancelled), Invoices/DocumentLines($select=ItemCode, ItemDescription, CostingCode2, Quantity, MeasureUnit, Price, GrossTotal, PriceAfterVAT)';
         $limit = '&$top=100&$orderby=DocDate desc';
-        $filter = '&$filter=';
+        $filter = '&$filter=Invoices/DocEntry eq Invoices/DocumentLines/DocEntry and';
+        $filter_length = strlen($filter);
         $sap_connection = (object)[];
 
         if($request->filter_company != '' && $request->filter_customer == ''){
@@ -289,12 +290,19 @@ class SalesReportController extends Controller
         }else{
             $customer = Customer::find($request->filter_customer);
             $sap_connection = $customer->sap_connection;
-            $filter .= 'CardCode eq \''.$customer->card_code.'\'';
+
+            $and = (substr($filter, $filter_length) === '') ? '' : ' and';
+            $filter .= $and.' Invoices/CardCode eq \''.$customer->card_code.'\'';
         }
 
         if(@$request->filter_search != ""){
-            $and = (substr($filter,9) === '') ? '' : ' and';
-            $filter .= $and.' DocNum eq '.$request->filter_search;
+            $and = (substr($filter, $filter_length) === '') ? '' : ' and';
+            $filter .= $and.' Invoices/DocNum eq '.$request->filter_search;
+        }
+
+        if(@$request->filter_brand != ""){
+            $and = (substr($filter, $filter_length) === '') ? '' : ' and';
+            $filter .= $and.' Invoices/DocumentLines/CostingCode2 eq \''.$request->filter_brand.'\'';
         }
 
         if(@$request->filter_date_range != ""){
@@ -302,16 +310,16 @@ class SalesReportController extends Controller
             $start = date("Y-m-d", strtotime($date[0]));
             $end = date("Y-m-d", strtotime($date[1]));
             
-            $and = (substr($filter,9) === '') ? '' : ' and';
-            $filter .= $and.' DocDate ge \''.$start.'\' and DocDate le \''.$end.'\'';
+            $and = (substr($filter, $filter_length) === '') ? '' : ' and';
+            $filter .= $and.' Invoices/DocDate ge \''.$start.'\' and Invoices/DocDate le \''.$end.'\'';
         }
 
-        $filter = (substr($filter,9) === '') ? '' : $filter ;
-        $filter_limit  = ($filter === '') ? $filter.$limit : str_replace('&$top=100','',$filter);
+        $filter = (substr($filter, $filter_length) === '') ? '' : $filter ;
+        $filter_limit  = ($filter === '' || ($request->filter_customer == "" && $request->filter_brand != "")) ? $filter.$limit : str_replace('&$top=100','',$filter);
         $url = $url.$filter_limit;
-
+        
         $sap_invoices = new SAPInvoices($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
-        $sap_invoices->fetchInvoiceDataForReporting($url);
+        $sap_invoices->fetchInvoiceDataForReportingV2($url);
         
         return ['invoice_data' => $sap_invoices->invoice_data,
                 'db_name'      => $sap_connection->db_name, 

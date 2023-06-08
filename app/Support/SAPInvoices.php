@@ -281,7 +281,7 @@ class SAPInvoices
 
                 $invoices = $invoice['value'];
                 foreach($invoices as $invoice){ //invoice details
-                        // Log::info(print_r($invoice['DocNum'],true));
+
                     if(!empty($invoice['DocumentLines'])){
 
                         $invoice_items = @$invoice['DocumentLines'];
@@ -319,8 +319,48 @@ class SAPInvoices
     }
 
 
+    public function fetchInvoiceDataForReportingV2($url){
+
+        $response = $this->getInvoiceData($url);
+        if($response['status']){
+            $invoice = $response['data'];
+
+            if(!empty($invoice['value'])){
+
+                $invoices = $invoice['value'];
+                foreach($invoices as $invoice){ //invoice details
+                    $inv     = $invoice['Invoices'];
+                    $line    = $invoice['Invoices/DocumentLines'];
+
+                    $status = ($inv['DocumentStatus'] === 'C' && $inv['Cancelled'] === 'N') ? 'Paid' : 'Unpaid';
+                    $this->grand_total_qty   += $line['Quantity'];
+                    $this->grand_total_price += $line['Price'];
+                    $this->grand_total_price_after_vat += $line['PriceAfterVAT'];
+
+                    $this->invoice_data[] = [
+                                    'DocNum'   => $inv['DocNum'],
+                                    'DocDate'  => date("m-d-Y", strtotime($inv['DocDate'])),
+                                    'ItemCode' => $line['ItemCode'],
+                                    'ItemDescription' => $line['ItemDescription'],
+                                    'Brand'      => $line['CostingCode2'],
+                                    'Quantity'   => $line['Quantity'],
+                                    'UoM'      => $line['MeasureUnit'],
+                                    'Price'    => $line['Price'],
+                                    'GrossTotal' => $line['GrossTotal'],
+                                    'Status'    => $status
+                                ];
+                    
+                }
+            }
+
+            if(isset($response['data']['odata.nextLink'])){ //call loop again
+                $this->fetchInvoiceDataForReportingNext($response['data']['odata.nextLink']);
+            }
+        }
+    }    
+
     public function fetchInvoiceDataForReportingNext($url){
-        $this->fetchInvoiceDataForReporting($url);
+        $this->fetchInvoiceDataForReportingV2($url);
     }
 
 
