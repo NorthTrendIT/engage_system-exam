@@ -252,12 +252,14 @@ class InvoicesController extends Controller
 
         if($request->engage_transaction != 0){
             if($request->filter_date_range != ""){
-                $date = explode(" - ", $request->filter_date_range);
-                $start = date("Y-m-d", strtotime($date[0]));
-                $end = date("Y-m-d", strtotime($date[1]));
+                $data->where(function($query) use ($request) {
+                    $date = explode(" - ", $request->filter_date_range);
+                    $start = date("Y-m-d", strtotime($date[0]));
+                    $end = date("Y-m-d", strtotime($date[1]));
 
-                $data->whereDate('doc_date', '>=' , $start);
-                $data->whereDate('doc_date', '<=' , $end);
+                    $query->whereDate('doc_date', '>=' , $start);
+                    $query->whereDate('doc_date', '<=' , $end);
+                });
             }
         }
 

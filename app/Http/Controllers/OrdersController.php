@@ -317,7 +317,7 @@ class OrdersController extends Controller
     }
 
     public function getAll(Request $request){
-        $data = Quotation::with('order','order.invoice');
+        $data = Quotation::with('order','order.invoice', 'local_order.sales_specialist');
 
         if($request->engage_transaction != 0){
             $data->whereNotNull('u_omsno');
@@ -546,6 +546,13 @@ class OrdersController extends Controller
                             })
                             ->addColumn('total', function($row) {
                                 return '₱ '. number_format_value($row->doc_total);
+                            })
+                            ->addColumn('created_by', function($row) {
+                                if(!empty($row->local_order->sales_specialist_id)){
+                                    return $row->local_order->sales_specialist->sales_specialist_name ?? '-';
+                                } else {
+                                    return "Customer";
+                                }
                             })
                             ->addColumn('date', function($row) {
                                 $date = date('M d, Y',strtotime($row->doc_date));
