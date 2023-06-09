@@ -176,7 +176,41 @@
 
               <div class="row mb-5">
                 <div class="col-md-12">
-                  <div id="number_of_sales_orders_pie_chart_div" class="h-500px"></div>
+                  {{-- <div id="number_of_sales_orders_pie_chart_div" class="h-500px"></div> --}}
+
+                    <!--begin::Table container-->
+                    <div class="table-responsive column-left-right-fix-scroll-hidden">
+                      <!--begin::Table-->
+                      <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                        <!--begin::Table head-->
+                        <thead>
+                          <tr>
+                            <th>No</th>
+                            <th>Order #</th>
+                            @if(userrole() != 4)
+                            <th>Customer Name</th>
+                            @endif
+                            <th>Order Type</th>
+                            @if(in_array(userrole(),[1,10]))
+                            <th>Business Unit</th>
+                            @endif
+                            {{-- <th>Total</th> --}}
+                            <th>Created Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <!--end::Table head-->
+                        <!--begin::Table body-->
+                        <tbody>
+
+                        </tbody>
+                        <!--end::Table body-->
+                      </table>
+                      <!--end::Table-->
+                  </div>
+                  <!--end::Table container-->
+                  
                 </div>
               </div>
 
@@ -187,7 +221,7 @@
       </div>
 
       {{-- Total Sales Quantity --}}
-      <div class="row gy-5 g-xl-8">
+      <div class="row gy-5 g-xl-8 d-none">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
@@ -238,7 +272,7 @@
       </div>
 
       {{-- Total Sales Revenue --}}
-      <div class="row gy-5 g-xl-8">
+      <div class="row gy-5 g-xl-8 d-none">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5 min-0">
@@ -320,10 +354,11 @@
 
 <script>
   $(document).ready(function() {
-    $(document).on('click','.generate-report',function(){
-      render_data();
+    $(document).on('click','.generate-report, .search',function(){
+      alert('Oppss! this functionality is under construction.');
+      // render_data();
     });
-    //render_data();
+
     function render_data(){
 
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
@@ -521,14 +556,10 @@
       return formatter.format(number); 
     }
 
-    $(document).on('click', '.search', function(event) {
-      render_data();
-    });
-
     $(document).on('click', '.clear-search', function(event) {
       $('input').val('');
       $('select').val('').trigger('change');
-      render_data();
+      // render_data();
     })
 
 
