@@ -78,4 +78,9 @@ class Quotation extends Model
     public function invoice(){
         return $this->belongsTo(Invoice::class,'doc_entry');
     }
+
+    public function local_order(){
+        return $this->hasOne(LocalOrder::class, ['doc_entry','sap_connection_id'], ['doc_entry', 'sap_connection_id']);
+    }
+
 }

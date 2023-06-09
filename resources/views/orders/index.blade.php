@@ -179,9 +179,10 @@
                               @if(in_array(userrole(),[1,10]))
                               <th>Business Unit</th>
                               @endif
-                              {{-- <th>Total</th> --}}
                               <th>Created Date</th>
                               <th>Status</th>
+                              <th>DocTotal</th>
+                              <th>Created By</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -323,9 +324,10 @@
               @if(in_array(userrole(),[1,10]))
               {data: 'company', name: 'company'},
               @endif
-              // {data: 'total', name: 'total'},
               {data: 'date', name: 'date'},
               {data: 'status', name: 'status'},
+              {data: 'total', name: 'total'},
+              {data: 'created_by', name: 'created_by'},
               {data: 'action', name: 'action'},
           ],
           drawCallback:function(){
