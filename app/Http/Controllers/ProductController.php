@@ -17,6 +17,7 @@ use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ProductExport;
 use App\Exports\ProductTaggingExport;
+use App\Models\Customer; //added for sap connection only
 
 class ProductController extends Controller
 {
@@ -977,6 +978,13 @@ class ProductController extends Controller
         $user = User::where('id',Auth::id())->first();
         $request->sap_connection_id = $user->sap_connection_id;
     }
+
+    if($request->filter_customer != "" && $request->sap_connection_id == ""){
+            $customer = Customer::find($request->filter_customer);
+            $sap_connection = $customer->sap_connection;
+            $request->sap_connection_id = $sap_connection->id;
+    }
+
     if(@$request->sap_connection_id != ""){
 
       $sap_connection_id = $request->sap_connection_id;

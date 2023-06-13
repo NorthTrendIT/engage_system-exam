@@ -27,13 +27,17 @@ class SalesReportExport implements FromCollection,WithHeadings,WithTitle,ShouldA
     {
         return [
             'No.',
+            'Invoice #',
+            'Date',
             'Product Code',
             'Product Name',
             'Brand',
             'Business Unit',
             'Total Quantity',
-            'Total Price',
-            'Total Price After VAT',
+            'UOM',
+            'Unit Price',
+            'Net Amount',
+            'Status'
         ];
     }
 

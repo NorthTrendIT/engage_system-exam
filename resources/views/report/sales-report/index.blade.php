@@ -46,8 +46,13 @@
             </div> --}}
             <div class="card-body">
               <div class="row" style="align-items: center;">
-                @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3">
+                  <div class="input-icon">
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
+                  </div>
+                </div>
+                @if(in_array(userrole(),[1,6]))
+                <div class="col-md-3">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                     <option value=""></option>
                     @foreach($company as $c)
@@ -56,21 +61,17 @@
                   </select>
                 </div>
                 @endif   
-                @if(in_array(userrole(),[1]) || in_array(userrole(),[6]))             
-                <div class="col-md-3 mt-5 filter_brand_div" style="display:none;">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
+                <div class="col-md-3 ">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select customer" data-allow-clear="true">
                     <option value=""></option>
-                    
                   </select>
                 </div>
-                @else
-                <div class="col-md-3 mt-5 filter_brand_div">
+                <div class="col-md-3 filter_brand_div">
                   <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
                     <option value=""></option>
-                    
                   </select>
                 </div>
-                @endif
+
                 @if(in_array(userrole(),[1]))
                 <div class="col-md-3 mt-5 filter_brand_div" style="display:none;">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_manager" data-allow-clear="true" data-placeholder="Select Manager">
@@ -155,19 +156,13 @@
 
                 <div class="col-md-3">
                   <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1"  readonly>
                     <span>
                     </span>
                   </div>
                 </div>
 
-                <div class="col-md-3 mt-5">
-                  <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
-                  </div>
-                </div>
-
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3 mt-5 d-none">
                   <div class="input-icon engage_transaction">
                     <input type="checkbox" class="" name = "engage_transaction" id="engage_transaction" value="1" checked>
                     <span>
@@ -179,7 +174,7 @@
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
-                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
+                  <a href="#" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
                 </div>
 
               </div>
@@ -242,13 +237,19 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>Invoice #</th>
+                              <th>Date</th>
                               <th>Product Code</th>
                               <th>Product Name</th>
                               <th>Brand</th>
                               <th>Business Unit</th>
                               <th>Total Quantity</th>
-                              <th>Total Price</th>
-                              <th>Total Price After VAT</th>
+                              <th>UOM</th>
+                              {{-- <th>Total Price</th>
+                              <th>Total Price After VAT</th> --}}
+                              <th>Unit Price</th>
+                              <th>Net Amount</th>
+                              <th>Status</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -280,7 +281,7 @@
 @endsection
 
 @push('css')
-<link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
 <link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
 
@@ -292,18 +293,34 @@
 @endpush
 
 @push('js')
-<script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+
 <script>
   $(document).ready(function() {
 
-    render_table();
+    render_table([]);
 
-    $(document).on('click','.generate-report',function(){
-      render_data();
+    $(document).on('click','.generate-report, .search',function(e){
+      $stat = check_hasFilter();
+      ($stat === false)? '' : render_data();
     });
-    //render_data();
+
+    function check_hasFilter(){
+      if(($('[name="filter_company"]').val() == null || $('[name="filter_company"]').val() === "") && $('[name="filter_customer"]').val() === ""){
+        Swal.fire('Please select Business unit or Customer first.');
+        return false;
+      }
+    }
+
     function render_data(){
 
       $('.loader_img').show();
@@ -313,6 +330,7 @@
 
       $filter_search = $('[name="filter_search"]').val();
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
+      $filter_customer = $('[name="filter_customer"]').val();
       $filter_manager = $('[name="filter_manager"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
@@ -337,6 +355,7 @@
                 _token:'{{ csrf_token() }}',
                 filter_search : $filter_search,
                 filter_company : $filter_company,
+                filter_customer : $filter_customer,
                 filter_brand : $filter_brand,
                 filter_status : $filter_status,
                 filter_date_range : $filter_date_range,
@@ -378,8 +397,13 @@
     function render_table(jsonData){
       var table = $("#myTable");
       table.DataTable().destroy();
+      // table.rows.add(jsonData).draw();
 
       table.DataTable({
+          dom: 'Bfrtip',
+          buttons: [
+              'copy', 'csv', 'excel', 'pdf', 'print'
+          ],
           scrollX: true,
           scrollY: "800px",
           scrollCollapse: true,
@@ -391,35 +415,42 @@
           order: [],
           data: jsonData,
           columns: [
-              {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
-              {data: 'item_code', name: 'item_code',orderable:false,searchable:false},
-              {data: 'item_name', name: 'item_name',orderable:false,searchable:false},
-              {data: 'brand', name: 'brand',orderable:false,searchable:false},
-              {data: 'company', name: 'company',orderable:false,searchable:false},
-              {data: 'total_quantity', name: 'total_quantity',orderable:false,searchable:false},
-              {data: 'total_price', name: 'total_price',orderable:false,searchable:false},
-              {data: 'total_price_after_vat', name: 'total_price_after_vat',orderable:false,searchable:false},
+              {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+              {data: 'invoice_no', name: 'invoice_no'},
+              {data: 'invoice_date', name: 'invoice_date'},
+              {data: 'item_code', name: 'item_code'},
+              {data: 'item_name', name: 'item_name'},
+              {data: 'brand', name: 'brand'},
+              {data: 'company', name: 'company'},
+              {data: 'total_quantity', name: 'total_quantity'},
+              {data: 'uom', name: 'uom'},
+              // {data: 'total_price', name: 'total_price'},
+              // {data: 'total_price_after_vat', name: 'total_price_after_vat'},
+              {data: 'item_price', name: 'item_price'},
+              {data: 'net_amount', name: 'net_amount'},
+              {data: 'status', name: 'status'},
           ],
           drawCallback:function(){
-              $(function () {
-                $('[data-toggle="tooltip"]').tooltip()
-                $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+              // $(function () {
+              //   $('[data-toggle="tooltip"]').tooltip()
+              //   $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
 
-              })
+              // })
           },
           initComplete: function () {
-          }
-        });
-    }
+          },
+          // aoColumnDefs: [{ "bVisible": false, "aTargets": [9,10] }]
+      });
 
-    $(document).on('click', '.search', function(event) {
-      render_data();
-    });
+    }
 
     $(document).on('click', '.clear-search', function(event) {
       $('input').val('');
       $('select').val('').trigger('change');
-      render_data();
+      $('.grand_total_of_total_quantity_count').text('');
+      $('.grand_total_of_total_price_count').text('');
+      $('.grand_total_of_total_price_after_vat_count').text('');
+      render_table([]);
     })
 
 
@@ -428,7 +459,7 @@
       $('[name="filter_brand"]').val('').trigger('change');
 
       if($(this).find('option:selected').val() != ""){
-        $('.filter_brand_div').show();
+        // $('.filter_brand_div').show();
       }else{
         $('.filter_brand_div').hide();
         $('.other_filter_div').hide();
@@ -436,25 +467,25 @@
 
     });
 
-    $(document).on('change', '[name="filter_brand"]', function(event) {
-      event.preventDefault();
-      $('[name="filter_product_category"]').val('').trigger('change');
-      $('[name="filter_product_line"]').val('').trigger('change');
-      $('[name="filter_product_class"]').val('').trigger('change');
-      $('[name="filter_product_type"]').val('').trigger('change');
-      $('[name="filter_product_application"]').val('').trigger('change');
-      $('[name="filter_product_pattern"]').val('').trigger('change');
-      $('[name="filter_customer_class"]').val('').trigger('change');
-      $('[name="filter_sales_specialist"]').val('').trigger('change');
-      $('[name="filter_market_sector"]').val('').trigger('change');
-      $('[name="filter_market_sub_sector"]').val('').trigger('change');
+    // $(document).on('change', '[name="filter_brand"]', function(event) {
+    //   event.preventDefault();
+    //   $('[name="filter_product_category"]').val('').trigger('change');
+    //   $('[name="filter_product_line"]').val('').trigger('change');
+    //   $('[name="filter_product_class"]').val('').trigger('change');
+    //   $('[name="filter_product_type"]').val('').trigger('change');
+    //   $('[name="filter_product_application"]').val('').trigger('change');
+    //   $('[name="filter_product_pattern"]').val('').trigger('change');
+    //   $('[name="filter_customer_class"]').val('').trigger('change');
+    //   $('[name="filter_sales_specialist"]').val('').trigger('change');
+    //   $('[name="filter_market_sector"]').val('').trigger('change');
+    //   $('[name="filter_market_sub_sector"]').val('').trigger('change');
 
-      if($(this).find('option:selected').val() != ""){
-        $('.other_filter_div').show();
-      }else{
-        $('.other_filter_div').hide();
-      }
-    });
+    //   if($(this).find('option:selected').val() != ""){
+    //     $('.other_filter_div').show();
+    //   }else{
+    //     $('.other_filter_div').hide();
+    //   }
+    // });
 
 
     $('[name="filter_brand"]').select2({
@@ -468,6 +499,7 @@
             _token: "{{ csrf_token() }}",
             search: params.term,
             sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+            filter_customer : $('[name="filter_customer"]').val()
           };
         },
         processResults: function (response) {
@@ -475,7 +507,7 @@
             results:  $.map(response, function (item) {
                         return {
                           text: item.group_name,
-                          id: item.number,
+                          id: item.group_name,
                           data_id: item.id
                         }
                       })
@@ -723,12 +755,43 @@
       },
     });
 
+    $('[name="filter_customer"]').select2({
+        ajax: {
+            url: "{{route('orders.get-customer')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                };
+            },
+            processResults: function (response) {
+                $options = [{ id: 'all', text: 'All'}];
+                response.forEach(function(value, key) {
+                    $options.push({
+                                text: value.card_name + " (Code: " + value.card_code + ")",
+                                id: value.id
+                            });
+                })
+                return {
+                    results: $options
+                };
+            },
+            cache: true
+        },
+      });
+
     $(document).on("click", ".download_excel", function(e) {
+      $stat = check_hasFilter();
       var url = "{{route('reports.sales-report.export')}}";
 
       var data = {};
       data.filter_search = $('[name="filter_search"]').val();
-      data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+      data.filter_company = $('[name="filter_company"]').find('option:selected').val() ?? '';
+      data.filter_customer = $('[name="filter_customer"]').val();
       data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       data.filter_status = $('[name="filter_status"]').find('option:selected').val();
       data.filter_date_range = $('[name="filter_date_range"]').val();
@@ -746,7 +809,26 @@
       data.engage_transaction = $('[name="engage_transaction"]').val();
       url = url + '?data=' + btoa(JSON.stringify(data));
 
-      window.location.href = url;
+      ($stat === false)? e.preventDefault() : window.location.href = url;
+    });
+
+    console.log(parseInt(moment().format('MM/YYYY')));
+    $('#kt_daterangepicker_1').daterangepicker({
+      autoUpdateInput: false,
+      showDropdowns: true,
+      // minDate: moment(),
+      // "startDate": "-1m",
+      // "endDate": '+1m',
+      minYear: 2000,
+      maxYear: parseInt(moment().format('YYYY')),
+    });
+
+    $('#kt_daterangepicker_1').on('apply.daterangepicker', function(ev, picker) {
+      $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+    });
+
+    $('#kt_daterangepicker_1').on('cancel.daterangepicker', function(ev, picker) {
+      $(this).val('');
     });
 
   })

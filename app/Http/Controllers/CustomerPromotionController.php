@@ -1140,11 +1140,15 @@ class CustomerPromotionController extends Controller
         $data = Customer::has('user')->with('user')->orderBy('card_name','asc');
 
         // Sales specialist can see only assigned customer
-        if(in_array(userrole(),[2])){
-            $data->whereHas('sales_specialist', function($q) {
+        if(in_array(userrole(),[14])){
+            $data->whereHas('sales_specialist.sales_person', function($q) {
                 return $q->where('ss_id', Auth::id());
             });
-        }elseif (!is_null(@Auth::user()->created_by)) {
+        }elseif(in_array(userrole(),[4])){
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
+            $data->whereIn('id', $customer_id);
+        }
+        elseif (!is_null(@Auth::user()->created_by)) {
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
             if(!is_null($customer)){
                 $data->where('id', @$customer->customer_id);
