@@ -57,7 +57,7 @@
                 </div>
                 @endif
                 @if(in_array(userrole(),[1]))
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3 mt-5 d-none">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_manager" data-allow-clear="true" data-placeholder="Select Manager">
                     <option value=""></option>
                     @foreach($managers as $m)
@@ -182,35 +182,35 @@
                     <div class="table-responsive column-left-right-fix-scroll-hidden">
                       <!--begin::Table-->
                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
-                        <!--begin::Table head-->
-                        <thead>
-                          <tr>
-                            <th>No</th>
-                            <th>Order #</th>
-                            @if(userrole() != 4)
-                            <th>Customer Name</th>
-                            @endif
-                            <th>Order Type</th>
-                            @if(in_array(userrole(),[1,10]))
-                            <th>Business Unit</th>
-                            @endif
-                            {{-- <th>Total</th> --}}
-                            <th>Created Date</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <!--end::Table head-->
-                        <!--begin::Table body-->
-                        <tbody>
+                         <!--begin::Table head-->
+                         <thead>
+                           <tr>
+                             <th>No</th>
+                             <th>Order #</th>
+                             @if(userrole() != 4)
+                             <th>Customer Name</th>
+                             @endif
+                             <th>Order Type</th>
+                             @if(in_array(userrole(),[1,10]))
+                             <th>Business Unit</th>
+                             @endif
+                             <th>Created Date</th>
+                             <th>Status</th>
+                             <th>DocTotal</th>
+                             <th>Created By</th>
+                             <th>Action</th>
+                           </tr>
+                         </thead>
+                         <!--end::Table head-->
+                         <!--begin::Table body-->
+                         <tbody>
 
-                        </tbody>
-                        <!--end::Table body-->
+                         </tbody>
+                         <!--end::Table body-->
                       </table>
                       <!--end::Table-->
-                  </div>
-                  <!--end::Table container-->
-                  
+                    </div>
+
                 </div>
               </div>
 
@@ -354,10 +354,153 @@
 
 <script>
   $(document).ready(function() {
+    render_table();
+
     $(document).on('click','.generate-report, .search',function(){
-      alert('Oppss! this functionality is under construction.');
+      // alert('Oppss! this functionality is under construction.');
       // render_data();
+      render_table();
     });
+
+
+    function render_table(){
+      var table = $("#myTable");
+      table.DataTable().destroy();
+
+      if ($('[name="engage_transaction"]').is(':checked')) {
+          var engage_transaction = 1;
+          $("#kt_daterangepicker_1").css("display","block");
+      } else {
+          var engage_transaction = 0;
+          $("#kt_daterangepicker_1").css("display","none");
+      }
+
+      $filter_search = $('[name="filter_search"]').val();
+      $filter_date_range = $('[name="filter_date_range"]').val();
+      $filter_status = $('[name="filter_status[]"]').select2('val');
+      $filter_order_type = $('[name="filter_order_type"]').find('option:selected').val();
+      $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
+      $filter_company = $('[name="filter_company"]').find('option:selected').val();
+      $filter_group = $('[name="filter_group"]').val();
+      $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+      $filter_class = $('[name="filter_class"]').find('option:selected').val();
+      $filter_territory = $('[name="filter_territory"]').find('option:selected').val();
+      $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
+      $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
+      $engage_transaction = engage_transaction;
+
+
+      $.ajax({
+        url: '{{ route('reports.sales-order-report.count-stat') }}',
+        method: "GET",
+        data: {
+                _token:'{{ csrf_token() }}',
+                filter_date_range : $filter_date_range,
+                filter_company: $filter_company,
+                filter_customer: $filter_customer
+            }
+        })
+        .done(function(result) {
+            if(result.status == false){
+                toast_error(result.message);
+            }else{
+                $('.number_of_sales_orders_pending_count').text(result.data.pending);
+            }
+        })
+        .fail(function() {
+            toast_error("error");
+        });
+
+
+
+      var hide_targets = [];
+      // @if(userrole() === 4)
+      //   hide_targets.push(4)
+      // @endif
+
+      // @if(userrole() != 4 && !in_array(userrole(),[1,10]))
+      //   hide_targets.push(5)
+      // @endif
+
+      // @if(in_array(userrole(),[1,10]))
+      //   hide_targets.push(6)
+      // @endif
+      // console.log(hide_targets);
+      table.DataTable({
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollY: "800px",
+          scrollCollapse: true,
+          paging: true,
+          fixedColumns:   {
+            @if(userrole() != 4)
+            left: 3,
+            @else
+            left: 2,
+            @endif
+            right: 0
+          },
+          order: [],
+          ajax: {
+              'url': "{{ route('orders.get-all') }}",
+              'type': 'POST',
+              headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+              },
+              data:{
+                filter_search : $filter_search,
+                filter_date_range : $filter_date_range,
+                filter_status : $filter_status,
+                filter_order_type : $filter_order_type,
+                filter_company : $filter_company,
+                filter_group : $filter_group,
+                filter_customer : $filter_customer == 'all' ? '' : $filter_customer,
+                filter_brand : $filter_brand == 'all' ? '' : $filter_brand,
+                filter_class : $filter_class == 'all' ? '' : $filter_class,
+                filter_sales_specialist : $filter_sales_specialist == 'all' ? '' : $filter_sales_specialist,
+                filter_market_sector : $filter_market_sector == 'all' ? '' : $filter_market_sector,
+                filter_territory : $filter_territory == 'all' ? '' : $filter_territory,
+                engage_transaction : $engage_transaction,
+              }
+          },
+          columns: [
+              {data: 'DT_RowIndex'},
+              {data: 'doc_entry', name: 'doc_entry'},
+              @if(userrole() != 4)
+              {data: 'name', name: 'name'},
+              @endif
+              {data: 'order_type', name: 'order_type', orderable:false},
+              @if(in_array(userrole(),[1,10]))
+              {data: 'company', name: 'company'},
+              @endif
+              {data: 'date', name: 'date'},
+              {data: 'status', name: 'status'},
+              {data: 'total', name: 'total'},
+              {data: 'created_by', name: 'created_by'},
+              {data: 'action', name: 'action'},
+          ],
+          createdRow: function( row, data, dataIndex ) {
+            // console.log(data);
+          },
+          drawCallback:function(settings){
+              $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+                $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+              })
+              // console.log( this.fnSettings().fnRecordsTotal() );
+          },
+          initComplete: function () {
+          },
+          aoColumnDefs: [{ "bVisible": false, "aTargets": hide_targets }]
+        });
+    }
+
+
+
+
+
+
 
     function render_data(){
 
@@ -559,6 +702,7 @@
     $(document).on('click', '.clear-search', function(event) {
       $('input').val('');
       $('select').val('').trigger('change');
+      render_table();
       // render_data();
     })
 

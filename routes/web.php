@@ -482,6 +482,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::resource('sales-order-report', 'SalesOrderReportController')->only('index');
         Route::post('sales-order-report/get-all', 'SalesOrderReportController@getAll')->name('sales-order-report.get-all');
+        Route::get('sales-order-report/count-stat', 'SalesOrderReportController@getCountOrderStat')->name('sales-order-report.count-stat');
 
         Route::resource('overdue-sales-invoice-report', 'OverdueSalesInvoiceReportController')->only('index');
         Route::post('overdue-sales-invoice-report/get-all', 'OverdueSalesInvoiceReportController@getAll')->name('overdue-sales-invoice-report.get-all');

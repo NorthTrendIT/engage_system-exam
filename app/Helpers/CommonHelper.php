@@ -550,6 +550,7 @@ function getOrderStatusArray($key = ""){
                 'CM' => 'Completed',
                 'IN' => 'Invoiced',
                 'CL' => 'Cancelled', //For List only
+                'PS' => 'Partially Served'
             );
 
     if($key != ""){
@@ -569,6 +570,7 @@ function getOrderStatusArray1($key = ""){
                 'CM' => 'Completed',
                 //'IN' => 'Invoiced',
                 'CL' => 'Cancelled', //For List only
+                'PS' => 'Partially Served'
             );
 
     if($key != ""){

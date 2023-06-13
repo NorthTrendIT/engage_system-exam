@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Reports;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\OrdersController;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
 use App\Models\Quotation;
@@ -11,7 +12,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\SapConnection;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use DataTables;
 
 use Auth;
@@ -20,7 +21,7 @@ use App\Models\Role;
 use App\Models\Customer;
 use Carbon\Carbon;
 
-class SalesOrderReportController extends Controller
+class SalesOrderReportController extends OrdersController
 {
     /**
      * Display a listing of the resource.
@@ -423,39 +424,116 @@ class SalesOrderReportController extends Controller
     }
 
     public function getStatusChartData(Request $request){
+        ini_set('memory_limit', '2048M');
+        ini_set('max_execution_time', 36000);
+        
         $customers = Auth::user()->get_multi_customer_details();
 
-        $total_pending_order = Quotation::whereNotNull('u_omsno')->where('cancelled','No')->doesntHave('order')->whereIn('card_code', array_column($customers->toArray(), 'card_code'))->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))->count();
+        $pending = Quotation::whereNotNull('u_omsno')->where('cancelled','No')->doesntHave('order');
+                        if(@Auth::user()->role_id == 4){
+                            $pending->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
+                                    ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+                        }
 
-        $total_on_process_order = Order::whereNotNull('u_omsno')->where('cancelled','No')->doesntHave('invoice')->whereIn('card_code', array_column($customers->toArray(), 'card_code'))->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))->where('document_status', 'bost_Open')->count();
+                        if($request->filter_date_range != ""){
+                            $date = explode(" - ", $request->filter_date_range);
+                            $start = date("Y-m-d", strtotime($date[0]));
+                            $end = date("Y-m-d", strtotime($date[1]));
 
-        $total_for_delivery_order = Quotation::whereNotNull('u_omsno')
-        ->where('cancelled','No')
-        ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
-        ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
-        ->whereHas('order',function($q){
-             $q->where('cancelled', 'No');
-        })
-        ->whereHas('order.invoice',function($q){
-             $q->where('cancelled', 'No')->where('u_sostat','!=', 'DL')->where('u_sostat','!=', 'CM');
-        })                                    
-        ->count();
+                            $pending->whereDate('doc_date', '>=' , $start);
+                            $pending->whereDate('doc_date', '<=' , $end);
+                        }
+                                                  
+        $total_pending_order  = $pending->count();
 
-        $total_delivered_order = Quotation::whereNotNull('u_omsno')
-        ->where('cancelled','No')
-        ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
-        ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
-        ->whereHas('order.invoice',function($q){
-             $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', 'DL');
-        })->count();
 
-        $total_completed_order = Quotation::whereNotNull('u_omsno')
-        ->where('cancelled','No')
-        ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
-        ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
-        ->whereHas('order.invoice',function($q){
-             $q->where('cancelled', 'No')->where('u_sostat', 'CM');
-        })->count();
+
+        $process = Order::whereNotNull('u_omsno')->where('cancelled','No')->doesntHave('invoice');
+                        if(@Auth::user()->role_id == 4){
+                            $process->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
+                                    ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+                        }
+
+                        if($request->filter_date_range != ""){
+                            $date = explode(" - ", $request->filter_date_range);
+                            $start = date("Y-m-d", strtotime($date[0]));
+                            $end = date("Y-m-d", strtotime($date[1]));
+
+                            $process->whereDate('doc_date', '>=' , $start);
+                            $process->whereDate('doc_date', '<=' , $end);
+                        }
+                        
+        $total_on_process_order = $process->where('document_status', 'bost_Open')->count();
+
+
+        $delivery = Quotation::whereNotNull('u_omsno')->where('cancelled','No');
+                            if(@Auth::user()->role_id == 4){
+                                $delivery->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
+                                            ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+                            }
+                         
+                            $delivery->whereHas('order',function($q){
+                                $q->where('cancelled', 'No');
+                            })->whereHas('order.invoice',function($q){
+                                $q->where('cancelled', 'No')->where('u_sostat','!=', 'DL')->where('u_sostat','!=', 'CM');
+                            }); 
+
+                            if($request->filter_date_range != ""){
+                                $date = explode(" - ", $request->filter_date_range);
+                                $start = date("Y-m-d", strtotime($date[0]));
+                                $end = date("Y-m-d", strtotime($date[1]));
+    
+                                $delivery->whereDate('doc_date', '>=' , $start);
+                                $delivery->whereDate('doc_date', '<=' , $end);
+                            } 
+
+        $total_for_delivery_order = $delivery->count();
+
+
+
+        $delivered = Quotation::whereNotNull('u_omsno')->where('cancelled','No');
+                            if(@Auth::user()->role_id == 4){
+                                $delivered->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
+                                        ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+                            }
+
+                            $delivered->whereHas('order.invoice',function($q){
+                                $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', 'DL');
+                            });
+
+                            if($request->filter_date_range != ""){
+                                $date = explode(" - ", $request->filter_date_range);
+                                $start = date("Y-m-d", strtotime($date[0]));
+                                $end = date("Y-m-d", strtotime($date[1]));
+    
+                                $delivered->whereDate('doc_date', '>=' , $start);
+                                $delivered->whereDate('doc_date', '<=' , $end);
+                            }
+
+        $total_delivered_order = $delivered->count();
+
+
+
+        $completed = Quotation::whereNotNull('u_omsno')->where('cancelled','No');
+                            if(@Auth::user()->role_id == 4){
+                                $completed->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
+                                        ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+                            }
+                        
+                            $completed->whereHas('order.invoice',function($q){
+                                $q->where('cancelled', 'No')->where('u_sostat', 'CM');
+                            });
+
+                            if($request->filter_date_range != ""){
+                                $date = explode(" - ", $request->filter_date_range);
+                                $start = date("Y-m-d", strtotime($date[0]));
+                                $end = date("Y-m-d", strtotime($date[1]));
+    
+                                $completed->whereDate('doc_date', '>=' , $start);
+                                $completed->whereDate('doc_date', '<=' , $end);
+                            }
+
+        $total_completed_order = $completed->count();
 
         $status = [];
         array_push($status, $total_pending_order);
@@ -496,6 +574,41 @@ class SalesOrderReportController extends Controller
     public function getCustomerInActiveData(){
         $customer = Customer::where('frozen','1')->where('is_active','0')->whereNull('frozen_from')->whereNull('frozen_to');
         return $customer;
+    }
+
+
+    public function getCountOrderStat(Request $request){
+        $pending = DB::table('quotations as quot');
+                       
+        if($request->filter_customer != ""){
+            $customer = Customer::find($request->filter_customer, ['sap_connection_id']);
+            $pending->join('customers as cust', 'cust.card_code', '=', 'quot.card_code')
+                    ->where('cust.id', $request->filter_customer)
+                    // ->whereRaw('`quot`.`sap_connection_id` = `cust`.`sap_connection_id`');
+                    ->where('cust.sap_connection_id', $customer->sap_connection_id);
+        }
+            $pending->whereNotNull('u_omsno')->where('cancelled','No');
+                    // ->whereRaw('((not exists (select `quot`.`u_omsno` from `orders` where `quot`.`u_omsno` = `orders`.`u_omsno` and `quot`.`sap_connection_id` = `orders`.`sap_connection_id` and `orders`.`deleted_at` is null) and `cancelled` = "No"))');
+        
+        if($request->filter_company != ""){
+            $pending->where('quot.sap_connection_id', $request->filter_company);
+        }
+
+        if($request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+
+            $pending->whereDate('doc_date', '>=' , $start);
+            $pending->whereDate('doc_date', '<=' , $end);
+        }  
+
+        $total_pending_order  = $pending->count();
+
+        $data = [];
+        $data['pending'] = $total_pending_order;
+
+        return ['status' => true, 'data' => $data];
     }
 
 }

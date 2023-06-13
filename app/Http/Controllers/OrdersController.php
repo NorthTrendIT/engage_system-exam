@@ -471,6 +471,14 @@ class OrdersController extends Controller
                             $q1->where('cancelled','No');
                         });
                     });
+
+                    // $query->orWhere(function($q){
+                    //     $q->whereHas('order.invoice',function($q1){
+                    //         $q1->where('cancelled', 'No')->where('document_status', 'bost_Close')->whereHas('order.invoice.items',function($item){
+                    //             $item->havingRaw('sum(remaining_open_quantity) = 0');
+                    //         });
+                    //     })->where('cancelled','No');
+                    // });
                 }
                 if(in_array("IN", $status)){
                     $query->orWhere(function($q){
@@ -505,6 +513,15 @@ class OrdersController extends Controller
                         });
                     });
                 }
+                if(in_array("PS", $status)){
+                    $query->orWhere(function($q){
+                        $q->whereHas('order.invoice',function($q1){
+                            $q1->where('cancelled', 'No')->whereHas('order.invoice.items',function($item){
+                                $item->havingRaw('sum(remaining_open_quantity) > 0');
+                            });
+                        })->where('cancelled','No');
+                    });
+                }
             });
         }
         
@@ -528,17 +545,18 @@ class OrdersController extends Controller
         $data->when(!isset($request->order), function ($q) {
             $q->orderBy('id', 'desc');
         });
+        // dd($data->toSql());
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('name', function($row) {
                                 return  @$row->customer->card_name ?? @$row->card_name ?? "-";
                             })
                             ->addColumn('status', function($row) use ($status) {
-                                // if($status != ""){
-                                //     return getOrderStatusBtnHtml(getOrderStatusArray($status[0]));
-                                // }else{
+                                if(@$status[0] == "PS"){
+                                    return getOrderStatusBtnHtml(getOrderStatusArray('PS'));
+                                }else{
                                     return getOrderStatusBtnHtml(getOrderStatusByQuotation($row));
-                                //}
+                                }
                                 
                             })
                             ->addColumn('doc_entry', function($row) {
