@@ -167,6 +167,7 @@ class StoreInvoices implements ShouldQueue
                         if($check !== '-'){
                             $i_items = DB::table('invoices as inv')
                                             ->join('invoice_items as itm', 'itm.invoice_id', '=', 'inv.id')
+                                            ->where('inv.cancelled', 'No')
                                             ->where('inv.u_omsno', $invoice['U_OMSNo'])
                                             ->where('inv.real_sap_connection_id', $this->real_sap_connection_id)
                                             ->sum('itm.quantity');
