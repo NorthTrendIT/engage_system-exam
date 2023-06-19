@@ -93,15 +93,15 @@ class SAPOrders
         if($url){
             $response = $this->getOrderData($url);
         }else{
-            // $latestData = Order::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
-            // if(!empty($latestData)){
-            //     $time = Carbon::now()->subMinutes(30);
-            //     $url = '/b1s/v1/Orders?$filter=UpdateDate ge \''.$latestData->updated_date.'\' and UpdateTime ge \''.$time->toTimeString().'\'';
+            $latestData = Order::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
+            if(!empty($latestData)){
+                $time = Carbon::now()->subMinutes(30);
+                $url = '/b1s/v1/Orders?$filter=UpdateDate ge \''.$latestData->updated_date.'\' and UpdateTime ge \''.$time->toTimeString().'\'';
 
-            //     $response = $this->getOrderData($url);
-            // } else {
+                $response = $this->getOrderData($url);
+            } else {
                 $response = $this->getOrderData();
-            // }
+            }
         }
 
         if($response['status']){
