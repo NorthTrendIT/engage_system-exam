@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         // $schedule->command('sapauth:hourly')->cron('*/5 * * * *'); 
-        // $schedule->command('sync:all_module_data_in_half_hour')->everyThirtyMinutes()->timezone('Asia/Manila')->between('8:00', '20:00');
+        $schedule->command('sync:all_module_data_in_half_hour')->everyThirtyMinutes()->timezone('Asia/Manila')->between('8:00', '20:00');
         // $schedule->command('sync:all_module_data_in_midnight')->everySixHours();
         $schedule->command('sync:allmoduledata')->daily();
     }
