@@ -476,7 +476,7 @@
             var data = {};
             data.filter_search = $('[name="filter_search"]').val();
             data.filter_date_range = $('[name="filter_date_range"]').val();
-            data.filter_status = $('[name="filter_status"]').find('option:selected').val();
+            data.filter_status = $('[name="filter_status[]"]').select2('val');
             data.filter_order_type = $('[name="filter_order_type"]').find('option:selected').val();
             data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
             data.filter_company = $('[name="filter_company"]').find('option:selected').val();

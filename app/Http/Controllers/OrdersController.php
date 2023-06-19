@@ -1216,7 +1216,7 @@ class OrdersController extends Controller
 
         if(@$filter->filter_status != ""){
             $status = $filter->filter_status;
-
+            
             $data->where(function($query) use ($status){                
                 if(in_array("PN",$status)){
                     $query->orWhere(function($q){
