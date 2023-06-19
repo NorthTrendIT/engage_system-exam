@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Customer;
 use Carbon\Carbon;
+use App\Models\CustomersSalesSpecialist;
 
 class SalesOrderReportController extends OrdersController
 {
@@ -578,37 +579,55 @@ class SalesOrderReportController extends OrdersController
 
 
     public function getCountOrderStat(Request $request){
-        $pending = DB::table('quotations as quot');
-                       
-        if($request->filter_customer != ""){
-            $customer = Customer::find($request->filter_customer, ['sap_connection_id']);
-            $pending->join('customers as cust', 'cust.card_code', '=', 'quot.card_code')
-                    ->where('cust.id', $request->filter_customer)
-                    // ->whereRaw('`quot`.`sap_connection_id` = `cust`.`sap_connection_id`');
-                    ->where('cust.sap_connection_id', $customer->sap_connection_id);
-        }
-            $pending->whereNotNull('u_omsno')->where('cancelled','No');
-                    // ->whereRaw('((not exists (select `quot`.`u_omsno` from `orders` where `quot`.`u_omsno` = `orders`.`u_omsno` and `quot`.`sap_connection_id` = `orders`.`sap_connection_id` and `orders`.`deleted_at` is null) and `cancelled` = "No"))');
-        
-        if($request->filter_company != ""){
-            $pending->where('quot.sap_connection_id', $request->filter_company);
-        }
 
+        $total_pending_order  = $this->getStatFromQuotation($request, 'Pending');
+        $total_on_process_order  = $this->getStatFromQuotation($request, 'On Process');
+        $total_cancelled_order  = $this->getStatFromQuotation($request, 'Cancelled');
+        $total_partially_served_order  = $this->getStatFromQuotation($request, 'Partially Served');
+        $total_completed_order  = $this->getStatFromQuotation($request, 'Completed');
+
+        $data = [];
+        $data['pending'] = number_format($total_pending_order);
+        $data['on_process'] = number_format($total_on_process_order);
+        $data['cancelled'] = number_format($total_cancelled_order);
+        $data['partially_served'] = number_format($total_partially_served_order);
+        $data['completed'] = number_format($total_completed_order);
+
+        return ['status' => true, 'data' => $data];
+    }
+
+
+    private function getStatFromQuotation($request, $stat){
+       
+        $quot = Quotation::query(); 
+        if(userrole() == 4){
+            $customers = Auth::user()->get_multi_customer_details();
+            $quot->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+            $quot->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+        }
+        if(userrole() == 14){
+            $quot->whereHas('customer', function($q){
+                $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+                $q->whereIn('id', $cus);
+            });
+        }           
+        if($request->filter_customer != ""){
+            $quot->where('card_code',$request->filter_customer);
+        }
+        if($request->filter_company != ""){
+            $quot->where('sap_connection_id', $request->filter_company);
+        }
         if($request->filter_date_range != ""){
             $date = explode(" - ", $request->filter_date_range);
             $start = date("Y-m-d", strtotime($date[0]));
             $end = date("Y-m-d", strtotime($date[1]));
 
-            $pending->whereDate('doc_date', '>=' , $start);
-            $pending->whereDate('doc_date', '<=' , $end);
-        }  
+            $quot->whereDate('doc_date', '>=' , $start);
+            $quot->whereDate('doc_date', '<=' , $end);
+        } 
 
-        $total_pending_order  = $pending->count();
+        return $quot->where('status', $stat)->count();
 
-        $data = [];
-        $data['pending'] = $total_pending_order;
-
-        return ['status' => true, 'data' => $data];
     }
 
 }

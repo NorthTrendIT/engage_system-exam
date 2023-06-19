@@ -131,11 +131,11 @@
                                 <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
                                 <div class="fw-bolder fs-6 text-gray-800">
 
-                                  @php
+                                  {{-- @php
                                     $order_stat_final = ($status === 'Cancelled') ? $status : $line_status;
-                                  @endphp
+                                  @endphp --}}
 
-                                  <span class="mr-10">{!! getOrderStatusBtnHtml($order_stat_final) !!}</span>
+                                  <span class="mr-10">{!! getOrderStatusBtnHtml($data->status) !!}</span>
 
                                   @if($status == "Pending" && !$data->customer_promotion_id)
                                     <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>

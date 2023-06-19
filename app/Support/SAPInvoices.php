@@ -146,6 +146,7 @@ class SAPInvoices
                 if(!empty($invoice['value'])){
                     $invoices = $invoice['value'];
 
+                    $grand_total_of_invoice_items = 0;
                     foreach($invoices as $invoice){
 
                         $where = array(
@@ -263,8 +264,22 @@ class SAPInvoices
 
                             InvoiceItem::where('invoice_id', $obj->id)->whereNotIn('item_code', $item_codes)->delete();
                         }
-                        
+
+                        if(@$obj->order->cancelled === "Yes"){
+                            $obj->order->quotation()->update(['status' =>'Cancelled']);
+                        }
+                        if(@$obj->cancelled === "No" && @$obj->order->cancelled === "No"){ //invoice is not cancelled
+                            $check = $obj->order->quotation->items ?? '-';
+                            if($check !== '-'){
+                                $q_items = $obj->order->quotation->items->sum('quantity');
+                                $grand_total_of_invoice_items = $grand_total_of_invoice_items + $obj->items->sum('quantity');
+                                $inv_stat = ($q_items === $grand_total_of_invoice_items)? 'Completed' : 'Partially Served';
+                                
+                                $obj->order->quotation()->update(['status' =>$inv_stat]);
+                            }
+                        }
                     } //end sa foreach
+
 
                 } //end sa if
             }
@@ -335,7 +350,7 @@ class SAPInvoices
                     $status = ($inv['DocumentStatus'] === 'C' && $inv['Cancelled'] === 'N') ? 'Paid' : 'Unpaid';
                     $this->grand_total_qty   += $line['Quantity'];
                     $this->grand_total_price += $line['Price'];
-                    $this->grand_total_price_after_vat += $line['PriceAfterVAT'];
+                    $this->grand_total_price_after_vat += $line['GrossTotal'];
 
                     $this->invoice_data[] = [
                                     'DocNum'   => $inv['DocNum'],

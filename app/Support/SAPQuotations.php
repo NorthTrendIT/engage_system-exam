@@ -204,6 +204,9 @@ class SAPQuotations
                                             ],
                                             $insert
                                         );
+                    if($obj->cancelled === "Yes"){
+                        Quotation::where('id', $obj->id)->update(['status' =>'Cancelled']);
+                    }
 
                     if(!empty($value['DocumentLines'])){
 
@@ -291,6 +294,7 @@ class SAPQuotations
                     $quotation = Quotation::find($id);
                     if(!is_null($quotation)){
                         $quotation->document_status = "Cancelled";
+                        $quotation->status = "Cancelled";
                         $quotation->cancelled = "Yes";
                         $quotation->save();
                     }

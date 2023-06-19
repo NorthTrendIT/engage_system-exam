@@ -323,7 +323,7 @@ class SalesReportController extends Controller
         
         return ['invoice_data' => $sap_invoices->invoice_data,
                 'db_name'      => $sap_connection->db_name, 
-                'grand_total_qty' => $sap_invoices->grand_total_qty, 
+                'grand_total_qty' => number_format($sap_invoices->grand_total_qty), 
                 'grand_total_price' => $sap_invoices->grand_total_price,
                 'grand_total_price_after_vat' => $sap_invoices->grand_total_price_after_vat ];
     }

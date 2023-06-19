@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Log;
 
 class StoreInvoices implements ShouldQueue
 {
@@ -42,6 +43,8 @@ class StoreInvoices implements ShouldQueue
     {
         if(!empty($this->data)){
 
+            $grand_total_of_invoice_items = 0;
+            $prev_quot_doc_entry = 0;
             foreach ($this->data as $invoice) {
                 if($invoice['U_OMSNo'] != null){
 
@@ -155,12 +158,26 @@ class StoreInvoices implements ShouldQueue
                         }
 
                         InvoiceItem::where('invoice_id', $obj->id)->whereNotIn('item_code', $item_codes)->delete();
-
                     }
 
-                }
-            }
+                    if(@$obj->order->cancelled === "Yes"){
+                        $obj->order->quotation()->update(['status' =>'Cancelled']);
+                    }
+                    if(@$obj->cancelled === "No" && @$obj->order->cancelled === "No"){ //invoice is not cancelled
+                        $check = $obj->order->quotation->items ?? '-';
+                        if($check !== '-'){
+                            $q_items = $obj->order->quotation->items->sum('quantity');
+                            $grand_total_of_invoice_items = $grand_total_of_invoice_items + $obj->items->sum('quantity');
+                            $inv_stat = ($q_items == $grand_total_of_invoice_items)? 'Completed' : 'Partially Served';
+                            
+                            Log::info(print_r([$obj->order->quotation->doc_entry, $q_items, $grand_total_of_invoice_items, $inv_stat],true));
+                            $obj->order->quotation()->update(['status' =>$inv_stat]);
+                        }
+                    }
 
+                } //end of !u_omsno
+            } //end of foreach
+            
         }
     }
 }

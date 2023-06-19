@@ -67,7 +67,7 @@
                 </div>
                 @endif
                 @if(in_array(userrole(),[4]) || in_array(userrole(),[2]))
-                <div class="col-md-3 mt-5 filter_brand_div">
+                <div class="col-md-3 mt-5 filter_brand_div d-none">
                   <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
                     <option value=""></option>
                     
@@ -153,14 +153,14 @@
                   <span class="count text-dark fw-bold fs-1 number_of_sales_orders_on_process_count">0</span>
                 </div>
 
-                <div class="col-md-4 bg-light-info px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
+                <div class="col-md-4 bg-light-info px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative d-none">
                   <a href="javascript:" class="text-info fw-bold fs-6">For Delivery</a>
                   <span class="count text-info fw-bold fs-1 number_of_sales_orders_for_delivery_count">0</span>
                 </div>
 
                 <div class="col-md-4 bg-light-primary px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
-                  <a href="javascript:" class="text-primary fw-bold fs-6">Delivered</a>
-                  <span class="count text-primary fw-bold fs-1 number_of_sales_orders_delivered_count">0</span>
+                  <a href="javascript:" class="text-primary fw-bold fs-6">Partially Served</a>
+                  <span class="count text-primary fw-bold fs-1 number_of_sales_orders_partially_served_count">0</span>
                 </div>
 
                 <div class="col-md-4 bg-light-success px-6 py-8 rounded-2 me-7 mb-7 min-w-150 col-box-4 position-relative">
@@ -389,6 +389,9 @@
       $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
       $engage_transaction = engage_transaction;
 
+      // @if(userrole() !== 4)
+      //   data_post['filter_customer'] = $('[name="filter_customer"]').select2('data')[0].code;
+      // @endif
 
       $.ajax({
         url: '{{ route('reports.sales-order-report.count-stat') }}',
@@ -398,13 +401,17 @@
                 filter_date_range : $filter_date_range,
                 filter_company: $filter_company,
                 filter_customer: $filter_customer
-            }
+        }
         })
         .done(function(result) {
             if(result.status == false){
                 toast_error(result.message);
             }else{
                 $('.number_of_sales_orders_pending_count').text(result.data.pending);
+                $('.number_of_sales_orders_cancelled_count').text(result.data.cancelled);
+                $('.number_of_sales_orders_on_process_count').text(result.data.on_process);
+                $('.number_of_sales_orders_partially_served_count').text(result.data.partially_served);
+                $('.number_of_sales_orders_completed_count').text(result.data.completed);
             }
         })
         .fail(function() {
@@ -707,18 +714,18 @@
     })
 
 
-    $(document).on('change', '[name="filter_company"]', function(event) {
-      event.preventDefault();
-      $('[name="filter_brand"]').val('').trigger('change');
+    // $(document).on('change', '[name="filter_company"]', function(event) {
+    //   event.preventDefault();
+    //   $('[name="filter_brand"]').val('').trigger('change');
 
-      if($(this).find('option:selected').val() != ""){
-        $('.filter_brand_div').show();
-      }else{
-        $('.filter_brand_div').hide();
-        $('.other_filter_div').hide();
-      }
+    //   if($(this).find('option:selected').val() != ""){
+    //     $('.filter_brand_div').show();
+    //   }else{
+    //     $('.filter_brand_div').hide();
+    //     $('.other_filter_div').hide();
+    //   }
 
-    });
+    // });
 
     $(document).on('change', '[name="filter_brand"]', function(event) {
       event.preventDefault();
@@ -801,7 +808,8 @@
             results:  $.map(response, function (item) {
                           return {
                             text: item.card_name + " (Code: " + item.card_code + ")",
-                            id: item.id
+                            id: item.card_code,
+                            code: item.id
                           }
                       })
           };

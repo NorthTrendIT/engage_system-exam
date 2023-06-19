@@ -191,25 +191,25 @@
               <div class="row">
                 <div class="col-md-4 mb-sm-5 mb-md-0">
                   <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative h-100">
-                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Quantity: 
+                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Quantity: 
                       <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
-                      <span class="grand_total_of_total_quantity_count text-primary "></span>
+                      <span class="grand_total_of_total_quantity_count text-primary ">0</span>
                     </h6>
                   </div>
                 </div>
-                <div class="col-md-4 mb-sm-5 mb-md-0">
+                <div class="col-md-4 mb-sm-5 mb-md-0 d-none">
                   <div class="bg-light-chocolate px-6 py-8 rounded-2 min-w-150 position-relative h-100">
-                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Price: 
+                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Price: 
                       <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
-                      <span class="grand_total_of_total_price_count text-primary "></span>
+                      <span class="grand_total_of_total_price_count text-primary ">0</span>
                     </h6>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="bg-light-red px-6 py-8 rounded-2 min-w-150 position-relative h-100">
-                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Price After VAT: 
+                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Price After VAT: 
                       <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
-                      <span class="grand_total_of_total_price_after_vat_count text-primary "></span>
+                      <span class="grand_total_of_total_price_after_vat_count text-primary ">0</span>
                     </h6>
                   </div>
                 </div>

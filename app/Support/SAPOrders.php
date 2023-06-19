@@ -12,6 +12,8 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\SapConnection;
 use App\Models\Customer;
+use App\Models\LocalOrder;
+use Illuminate\Support\Facades\Log;
 
 class SAPOrders
 {
@@ -204,6 +206,9 @@ class SAPOrders
                                                 ],
                                                 $insert
                                             );
+                                            
+                        $order_stat = ($obj->cancelled === "Yes")? 'Cancelled' : 'On Process';
+                        $obj->quotation()->update(['status' =>$order_stat]);
 
                         if(!empty($order['DocumentLines'])){
 
