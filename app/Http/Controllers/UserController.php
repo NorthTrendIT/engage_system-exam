@@ -8,6 +8,7 @@ use App\Models\Location;
 use App\Models\Department;
 use App\Models\SapConnection;
 use App\Models\User;
+use App\Models\Customer;
 use Validator;
 use DataTables;
 use Auth;
@@ -693,5 +694,25 @@ class UserController extends Controller
 
         \Session::flash('error_message', common_error_msg('excel_download'));
         return redirect()->back();
+    }
+
+    public function updateUserMultiAccounts($less, $great){
+        $users = User::where('role_id', 4)->where('id', '>=', $less)->where('id', '<=', $great)->get();
+        // dd($users);
+        foreach($users as $check_user){
+            $check_customer = Customer::where('u_card_code', $check_user->u_card_code)->select('id','sap_connection_id', 'real_sap_connection_id')->get()->toArray();
+                        
+            $multi_customer_id = array_column($check_customer, 'id');
+            $multi_sap_connection_id = array_column($check_customer, 'sap_connection_id');
+            $multi_real_sap_connection_id = array_column($check_customer, 'real_sap_connection_id');
+
+
+            $check_user->multi_customer_id = implode(",", $multi_customer_id);
+            $check_user->multi_sap_connection_id = implode(",", $multi_sap_connection_id);
+            $check_user->multi_real_sap_connection_id = implode(",", $multi_real_sap_connection_id);
+            $check_user->save();
+        }
+        
+        echo "done";
     }
 }
