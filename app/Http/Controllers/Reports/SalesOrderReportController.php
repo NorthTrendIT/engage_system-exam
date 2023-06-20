@@ -601,9 +601,10 @@ class SalesOrderReportController extends OrdersController
        
         $quot = Quotation::query(); 
         if(userrole() == 4){
-            $customers = Auth::user()->get_multi_customer_details();
-            $quot->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-            $quot->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+            $quot->whereHas('customer', function($q){
+                $cus = explode(',', Auth::user()->multi_customer_id);
+                $q->whereIn('id', $cus);
+            });
         }
         if(userrole() == 14){
             $quot->whereHas('customer', function($q){
