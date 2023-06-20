@@ -187,7 +187,8 @@ class StoreCustomers implements ShouldQueue
 
 
                     // Store Customer Records in users table
-                    $check_customer = User::where('u_card_code',$obj->u_card_code)->first();
+                    $check_user = User::where('u_card_code',$obj->u_card_code)->first();
+                    $check_customer = Customer::where('u_card_code',$obj->u_card_code)->select('id','sap_connection_id', 'real_sap_connection_id')->get()->toArray();
                     if(is_null($check_customer)){
 
                         $name = explode(" ", $obj->card_name, 2);
@@ -221,17 +222,17 @@ class StoreCustomers implements ShouldQueue
                         User::create($insert_user);
                     }else{
 
-                        $multi_customer_id = explode(",", $check_customer->multi_customer_id);
+                        $multi_customer_id = array_column($check_customer, 'id');
                         if(!in_array($obj->id, $multi_customer_id)){
                             array_push($multi_customer_id, $obj->id);
                         }
 
-                        $multi_sap_connection_id = explode(",", $check_customer->multi_sap_connection_id);
+                        $multi_sap_connection_id = array_column($check_customer, 'sap_connection_id');
                         if(!in_array($obj->sap_connection_id, $multi_sap_connection_id)){
                             array_push($multi_sap_connection_id, $obj->sap_connection_id);
                         }
 
-                        $multi_real_sap_connection_id = explode(",", $check_customer->multi_real_sap_connection_id);
+                        $multi_real_sap_connection_id = array_column($check_customer, 'real_sap_connection_id');
                         if(!in_array($obj->real_sap_connection_id, $multi_real_sap_connection_id)){
                             array_push($multi_real_sap_connection_id, $obj->real_sap_connection_id);
                         }
@@ -241,12 +242,12 @@ class StoreCustomers implements ShouldQueue
 
 
                         if($obj->is_active){
-                            $check_customer->is_active = $obj->is_active;
+                            $check_user->is_active = $obj->is_active;
                         }
-                        $check_customer->multi_customer_id = implode(",", $multi_customer_id);
-                        $check_customer->multi_sap_connection_id = implode(",", $multi_sap_connection_id);
-                        $check_customer->multi_real_sap_connection_id = implode(",", $multi_real_sap_connection_id);
-                        $check_customer->save();
+                        $check_user->multi_customer_id = implode(",", $multi_customer_id);
+                        $check_user->multi_sap_connection_id = implode(",", $multi_sap_connection_id);
+                        $check_user->multi_real_sap_connection_id = implode(",", $multi_real_sap_connection_id);
+                        $check_user->save();
                     }
                 }
             }
