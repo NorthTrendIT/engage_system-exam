@@ -189,7 +189,7 @@ class StoreCustomers implements ShouldQueue
                     // Store Customer Records in users table
                     $check_user = User::where('u_card_code',$obj->u_card_code)->first();
                     $check_customer = Customer::where('u_card_code',$obj->u_card_code)->select('id','sap_connection_id', 'real_sap_connection_id')->get()->toArray();
-                    if(is_null($check_customer)){
+                    if(is_null($check_user)){
 
                         $name = explode(" ", $obj->card_name, 2);
                         $password = get_random_password();
