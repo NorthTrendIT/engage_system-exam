@@ -1404,7 +1404,7 @@ class OrdersController extends Controller
             if($check_inv !== '-'){
                 foreach($quot->order->invoice1 as $inv){
                     // echo $quot->sap_connection_id." ".$quot->doc_entry." ".$inv->items->sum('quantity') .'-'.$quot->items->sum('quantity')."<br>";
-                   if($inv->cancelled === "No"){
+                   if($inv->cancelled === "No" && $quot->order->cancelled === "No"){
                         $order_stat = ($inv->items->sum('quantity') === $quot->items->sum('quantity')) ? 'Completed' : 'Partially Served';
                         Quotation::where('id', $quot->id)->update(['status' =>$order_stat]);
                    }
