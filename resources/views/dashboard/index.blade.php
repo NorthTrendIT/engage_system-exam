@@ -28,7 +28,7 @@
         <div class="row gy-5 g-xl-8">
             @if(Auth::user()->role_id != 1)
             <!--begin::Col-->
-            <div class="col-xl-4">
+            <div class="col-xl-4 @if(Auth::user()->role_id == 4) d-none @endif">
                 <!--begin::List Widget 6-->
                 <div class="card card-xl-stretch mb-xl-8">
                     <!--begin::Header-->
@@ -80,7 +80,7 @@
             </div>
 
             @if(Auth::user()->role_id == 4)
-            <div class="col-xl-8">
+            {{-- <div class="col-xl-8">
                 <div class="card card-xl-stretch mb-xl-8">
                     <div class="card-body">
                         <div class="row">
@@ -159,7 +159,7 @@
                         </div>
                     </div>                        
                 </div>
-            </div>
+            </div> --}}
             @endif
             <!--end::Col-->
             @endif
@@ -406,30 +406,6 @@
 
         @if(@Auth::user()->role_id == 4)
         <div class="row gy-5 g-xl-8">
-            <!-- Back Order Report-->
-            <div class="col-xl-12">
-                <div class="card card-xl-stretch mb-xl-8">
-                    <div class="card-header border-0 pt-5">
-                        <h3 class="card-title align-items-start flex-column">
-                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Status Count</a>
-                        </h3>
-                        
-                    </div>
-
-                    <div class="card-body">
-                        <!--begin::Chart-->
-                        <div id="status_count_chart" style="height: 320px; min-height: 320px;">
-
-                        </div>
-                        <!--end::Chart-->
-                    </div>
-                    <!--end::Body-->
-                </div>
-                <!--end::Charts Widget 1-->
-            </div>
-        </div>
-
-        <div class="row gy-5 g-xl-8">
             <!-- Promotion Report -->
             <div class="col-xl-6">
                 <div class="card card-xl-stretch mb-xl-8">
@@ -451,14 +427,20 @@
                     </div>
 
                     <div class="card-body">
+                        <div class="text-center">
+                            <button class="btn btn-primary " type="button" id="top-products-loader" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                            </button>
+                        </div>
                         <!--begin::Chart-->
-                        <div id="" style="height: 320px; min-height: 320px;">
+                        <div id="top-products-table-wrapper" style="height: 320px; min-height: 320px;">
                             <table id="top_products_per_quantity" class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap">
                                 <thead>
                                     <tr> 
                                         <td>Top</td>
                                         <td>Name</td>
-                                        <td>Total Qty</td>
+                                        <td>Total</td>
                                     </tr>
                                 </thead>
                                 <tbody id="top_products_per_quantity_tbody">
@@ -477,8 +459,13 @@
                     
                     <div class="card-body">
                         <!--begin::Chart-->
+                        <div class="text-center">
+                            <button class="btn btn-primary " type="button" id="top-products-loader-canvas" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                            </button>
+                        </div>
                         <div id="top_products_per_quantity_chart" class="h-500px" style="height: 320px; min-height: 320px;">
-
                         </div>
                         <!--end::Chart-->
                     </div>
@@ -489,6 +476,74 @@
         </div>        
 
         <div class="row gy-5 g-xl-8">
+            <div class="col-xl-6">
+                <div class="card card-xl-stretch mb-5 mb-xl-8">
+                    <div class="card-header border-0 pt-5 min-0">
+                      <h5 class="text-info">Number of Sales Orders</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="bg-light-warning py-4 rounded-2 me-7 mb-2 min-w-150 col-box-6 position-relative">
+                          <a href="javascript:" class="text-warning fw-bold fs-4">Total Pending </a>
+                          <span class="count text-warning fw-bold fs-4 number_of_sales_orders_pending_count float-end text-end">0</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="bg-light-dark py-4 rounded-2 me-7 mb-2 min-w-150 col-box-6 position-relative">
+                            <a href="javascript:" class="text-dark fw-bold fs-4">Total On Process</a>
+                            <span class="count text-dark fw-bold fs-4 number_of_sales_orders_on_process_count float-end text-end">0</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="bg-light-info py-4 rounded-2 me-7 mb-2 min-w-150 col-box-6 position-relative d-none">
+                            <a href="javascript:" class="text-info fw-bold fs-4">Total For Delivery</a>
+                            <span class="count text-info fw-bold fs-4 number_of_sales_orders_for_delivery_count float-end text-end">0</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="bg-light-primary py-4 rounded-2 me-7 mb-2 min-w-150 col-box-6 position-relative">
+                            <a href="javascript:" class="text-primary fw-bold fs-4">Total Partially Served</a>
+                            <span class="count text-primary fw-bold fs-4 number_of_sales_orders_partially_served_count float-end text-end">0</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="bg-light-success py-4 rounded-2 me-7 mb-2 min-w-150 col-box-6 position-relative">
+                            <a href="javascript:" class="text-success fw-bold fs-4">Total Completed</a>
+                            <span class="count text-success fw-bold fs-4 number_of_sales_orders_completed_count float-end text-end">0</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="bg-light-danger py-4 rounded-2 me-7 mb-2 min-w-150 col-box-6 position-relative">
+                            <a href="javascript:" class="text-danger fw-bold fs-4">Total Cancelled</a>
+                            <span class="count text-danger fw-bold fs-4 number_of_sales_orders_cancelled_count float-end text-end">0</span>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Status Count</a>
+                        </h3>     
+                    </div>
+
+                    <div class="card-body">
+                        <!--begin::Chart-->
+                        <div id="status_count_chart" style="height: 320px; min-height: 320px;">
+
+                        </div>
+                        <!--end::Chart-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Charts Widget 1-->
+            </div>
+        </div>
+
+        {{-- <div class="row gy-5 g-xl-8 d-none">
             <!-- Back Order Report-->
             <div class="col-xl-12">
                 <div class="card card-xl-stretch mb-xl-8">
@@ -537,7 +592,7 @@
             </div>
         </div>
 
-        <div class="row gy-5 g-xl-8">
+        <div class="row gy-5 g-xl-8 d-none">
             <!-- Back Order Report-->
             <div class="col-xl-12">
                 <div class="card card-xl-stretch mb-xl-8">
@@ -596,7 +651,7 @@
             </div>
         </div>
 
-        <div class="row gy-5 g-xl-8">
+        <div class="row gy-5 g-xl-8 d-none">
             <!-- Back Order Report-->
             <div class="col-xl-12">
                 <div class="card card-xl-stretch mb-xl-8">
@@ -653,7 +708,7 @@
                 </div>
                 <!--end::Charts Widget 1-->
             </div>
-        </div>
+        </div> --}}
         @endif
      </div>
      <!--end::Container-->
@@ -666,8 +721,9 @@
 @push('js')
 <script src="{{ asset('assets') }}/assets/plugins/custom/flotcharts/flotcharts.bundle.js"></script>
 <script src="http://www.flotcharts.org/flot/source/jquery.flot.legend.js"></script>
+<script type="text/javascript">
 @if(@Auth::user()->role_id == 1)
-<script>
+
     getData();
 
     var data = [];
@@ -942,9 +998,6 @@
         });
     }
 
-    function labelFormatter(label, series) {
-      return "<div class='default_label' style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
-    }
 
     $('#active_customer_graph').bind("plothover", function(event, pos, obj) {
       if(obj){
@@ -1308,14 +1361,14 @@
     @endif  
 
       
-</script>
+
 @endif
 @if(@Auth::user()->role_id == 4)
-<script type="text/javascript">
+
     // Get Status Counting
     $.ajax({
-        url: '{{ route('reports.status-count-chart.get-chart-data') }}',
-        method: "POST",
+        url: '{{ route('reports.sales-order-report.count-stat') }}',
+        method: "GET",
         data: {
                 _token:'{{ csrf_token() }}',
             }
@@ -1324,7 +1377,18 @@
         if(result.status == false){
             toast_error(result.message);
         }else{
-            render_status_chart_graph(result.data, result.category)
+            $('.number_of_sales_orders_pending_count').text(result.data.pending);
+            $('.number_of_sales_orders_cancelled_count').text(result.data.cancelled);
+            $('.number_of_sales_orders_on_process_count').text(result.data.on_process);
+            $('.number_of_sales_orders_partially_served_count').text(result.data.partially_served);
+            $('.number_of_sales_orders_completed_count').text(result.data.completed);
+        var response = [];
+        response[0] = {
+            name: "Total",
+            data: [result.data.pending, result.data.on_process, result.data.partially_served, result.data.completed, result.data.cancelled]
+        };
+
+        render_status_chart_graph(response, ['Pending', 'On Process', 'Partially Served', 'Completed', 'Cancelled']);
         }
     })
     .fail(function() {
@@ -1332,7 +1396,6 @@
     });
 
     function render_status_chart_graph(data, category){
-
         var options = {
             series: data,
             chart: {
@@ -1375,7 +1438,33 @@
                     }
                 }
             },
-            colors:['#0000FF']
+            colors: [
+                function ({ value, seriesIndex, dataPointIndex, w }) {
+                    
+                    var color = '';
+                    switch(dataPointIndex){
+                        case 0:
+                            color = '#ffc700';
+                            break;
+                        case 1:
+                            color = '#181c32';
+                            break;
+                        case 2:
+                            color = '#009ef7';
+                            break;
+                        case 3:
+                            color = '#50cd89';
+                            break;
+                        case 4:
+                            color = '#f1416c';
+                            break;
+                        default:
+                            color = '#D9534F';
+                            break;
+                    }
+                    return color;
+                }
+            ]
         };
 
         var backOrderChart = new ApexCharts(document.querySelector("#status_count_chart"), options);
@@ -1396,71 +1485,68 @@
     });
 
     function getProductData(){
+        $('#top-products-loader').removeClass('d-none');
+        $('#top-products-loader-canvas').removeClass('d-none');
+        $('#top-products-table-wrapper').addClass('d-none');
+        $('#top_products_per_quantity_chart canvas').addClass('d-none');
+
         var type = $("#total_performing_type").val();
         var order = $("#total_performing_orders").val();
         // Get Top Product Data
         $.ajax({
-            url: "{{ route('reports.back-order-report.get-product-data') }}",
-            method: "POST",
+            // url: "{{ route('reports.back-order-report.get-product-data') }}",
+            // method: "POST",
+            url: "{{ route('reports.fetch-top-products') }}",
+            method: "GET",
             data: {
                     _token:'{{ csrf_token() }}',
                     type:type,
                     order:order,
                 }
         })
-        .done(function(result) {    
+        .done(function(result) {  
+            $('#top-products-loader').addClass('d-none');
+            $('#top-products-loader-canvas').addClass('d-none');
+            $('#top-products-table-wrapper').removeClass('d-none');
+            $('#top_products_per_quantity_chart canvas').removeClass('d-none');
+
             if(result.status == false){
                 toast_error(result.message);
             }else{
                 var html = '';
                 render_top_product_quantity_graph(result.data1);
                 if(result.data != ""){
-                    if(order == 'order'){
+                    // if(order == 'order' || order == 'invoice'){
                         $.each(result.data, function( index, value ) {
-                            if(type == 'Quantity' || type == 'Amount'){
+                            // if(type == 'Quantity' || type == 'Amount'){
                                 html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
-                            }
-                            if(type == 'Quantity'){
-                                html += '<td>'+(value.quantity).toLocaleString()+'</td>';
-                            }else if(type == 'Liters'){
-                                html += '<tr><td>'+(index+1)+'</td><td>'+value.product.item_name+'</td>';
-                                html += '<td>'+(value.product.sales_unit_weight).toLocaleString()+'</td>';
-                            }else if(type == 'Amount'){
-                                html += '<td>'+(value.gross_total).toLocaleString()+'</td>';
-                            }
+                            // }
+                            // if(type == 'Quantity'){
+                                html += '<td>'+(value.total_order).toLocaleString()+'</td>';
+                            // }else if(type == 'Liters'){
+                            //     html += '<tr><td>'+(index+1)+'</td><td>'+value.product.item_name+'</td>';
+                            //     html += '<td>'+(value.product.sales_unit_weight).toLocaleString()+'</td>';
+                            // }else if(type == 'Amount'){
+                                // html += '<td>'+(value.total_order).toLocaleString()+'</td>';
+                            // }
                           html += '</tr>';
                         });
-                    }else if(order == 'invoice'){
-                        $.each(result.data, function( index, value ) {
-                            if(type == 'Quantity' || type == 'Amount'){
-                                html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
-                            }
-                            if(type == 'Quantity'){
-                                html += '<td>'+(value.quantity).toLocaleString()+'</td>';
-                            }else if(type == 'Liters'){
-                                html += '<tr><td>'+(index+1)+'</td><td>'+value.product.item_name+'</td>';
-                                html += '<td>'+(value.product.sales_unit_weight).toLocaleString()+'</td>';
-                            }else if(type == 'Amount'){
-                                html += '<td>'+(value.gross_total).toLocaleString()+'</td>';
-                            }
-                          html += '</tr>';
-                        });
-                    }else if(order == 'back_order'){
-                        $.each(result.data, function( index, value ) {
-                            if(type == 'Quantity' || type == 'Amount'){
-                                html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
-                            }
-                            if(type == 'Quantity'){
-                                html += '<td>'+(value.quantity).toLocaleString()+'</td>';
-                            }else if(type == 'Liters'){
-                                html += '<tr><td>'+(index+1)+'</td><td>'+value.product.item_name+'</td>';
-                                html += '<td>'+(value.product.sales_unit_weight).toLocaleString()+'</td>';
-                            }else if(type == 'Amount'){
-                                html += '<td>'+(value.gross_total).toLocaleString()+'</td>';
-                            }
-                          html += '</tr>';
-                        });
-                    }
+                    // }else if(order == 'back_order'){
+                    //     $.each(result.data, function( index, value ) {
+                    //         if(type == 'Quantity' || type == 'Amount'){
+                    //             html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
+                    //         }
+                    //         if(type == 'Quantity'){
+                    //             html += '<td>'+(value.quantity).toLocaleString()+'</td>';
+                    //         }else if(type == 'Liters'){
+                    //             html += '<tr><td>'+(index+1)+'</td><td>'+value.product.item_name+'</td>';
+                    //             html += '<td>'+(value.product.sales_unit_weight).toLocaleString()+'</td>';
+                    //         }else if(type == 'Amount'){
+                    //             html += '<td>'+(value.gross_total).toLocaleString()+'</td>';
+                    //         }
+                    //       html += '</tr>';
+                    //     });
+                    // }
                 }
                 $('#top_products_per_quantity_tbody').html(html);
             }
@@ -1472,14 +1558,14 @@
 
     function render_top_product_quantity_graph(result){ 
       var data = [
-            { label: result[0].name, data: result[0].key, color: '#FFC300' },
-            { label: result[1].name, data: result[1].key, color: '#33BBFF' }, 
-            { label: result[2].name, data: result[2].key, color: '#FFA533' },
-            { label: result[3].name, data: result[3].key, color: '#848BA5' },
-            { label: result[4].name, data: result[4].key, color: '#DA80D5' },
+            { label: result[0].name, data: result[0].key, color: '#006B54' },
+            { label: result[1].name, data: result[1].key, color: '#CD212A' }, 
+            { label: result[2].name, data: result[2].key, color: '#FFA500' },
+            { label: result[3].name, data: result[3].key, color: '#034F84' },
+            { label: result[4].name, data: result[4].key, color: '#4B5335' },
             //{ label: "Others", data: result.others, color: '#90EE90' },
           ];
-        console.log(result);
+
       $.plot('#top_products_per_quantity_chart', data, {
         series: {
           pie: {
@@ -1490,7 +1576,7 @@
             label: {
               show: true,
               radius: 3/4,
-              //formatter: labelFormatter,
+              formatter: labelFormatter,
               threshold: 0.1,
             }
           }
@@ -1528,6 +1614,10 @@
     //     toast_error("error");
     // });    
 
-</script>
- @endif
+@endif
+
+function labelFormatter(label, series) {
+    return "<div class='default_label' style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
+}
+</script>     
 @endpush
