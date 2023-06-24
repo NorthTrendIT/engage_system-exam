@@ -1378,7 +1378,29 @@ class OrdersController extends Controller
             $response = ['status' => true, 'message' => 'Order completed successfully!','data'=>$data];
             return $response;
         }
-
     }
+
+    public function statusSync($less, $great){
+        $quotations = Quotation::where('id', '>=', $less)->where('id', '<=', $great)->get();
+        foreach($quotations as $quot){
+            if($quot->cancelled === "Yes"){
+                // Quotation::where('id', $obj->id)->update(['status' =>'Cancelled']);
+                $quot->update();
+            }
+
+            $check_inv = $quot->order->invoice1 ?? '-';
+            if($check_inv !== '-'){
+                foreach($quot->order->invoice1 as $inv){
+                    // echo $quot->sap_connection_id." ".$quot->doc_entry." ".$inv->items->sum('quantity') .'-'.$quot->items->sum('quantity')."<br>";
+                    // if($inv->items->sum('quantity') === $quot->items->sum('quantity')){
+
+                    // }
+                }
+            }
+        }
+    }
+
+
+
 
 }

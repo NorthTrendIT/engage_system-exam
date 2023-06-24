@@ -138,7 +138,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('orders/notify-customer', 'App\Http\Controllers\OrdersController@notifyCustomer')->name('orders.notify-customer');
             Route::post('orders/cancel-order', 'App\Http\Controllers\OrdersController@cancelOrder')->name('orders.cancel-order');
             Route::post('orders/complete-order', 'App\Http\Controllers\OrdersController@completeOrder')->name('orders.complete-order');
-
             Route::get('pending-orders', 'App\Http\Controllers\OrdersController@pendingOrder')->name('orders.panding-orders');
             Route::get('pending-orders/{id}', 'App\Http\Controllers\OrdersController@pendingOrderView')->name('orders.panding-orders.view');
             Route::post('pending-orders/get-all', 'App\Http\Controllers\OrdersController@getAllPendingOrder')->name('orders.get-all-pending-orders');
@@ -149,8 +148,8 @@ Route::middleware(['auth'])->group(function () {
             Route::post('pending-orders/push-all', 'App\Http\Controllers\OrdersController@pushAllOrder')->name('orders.push-all-order');
             Route::post('pending-promotion/push-all', 'App\Http\Controllers\OrdersController@pushAllPromotion')->name('orders.push-all-promotion');
             Route::post('pending-orders/delete-push-order', 'App\Http\Controllers\OrdersController@deletePushSingleOrder')->name('orders.delete-push-order');
-
             Route::post('orders/item_status-track', 'App\Http\Controllers\OrdersController@itemStatus')->name('orders.item_status-track');
+            Route::get('order/status-sync/{number1}/{number2}', 'App\Http\Controllers\OrdersController@statusSync')->name('order.status-sync');
 
             // Invoices
             Route::get('invoices/export', 'App\Http\Controllers\InvoicesController@export')->name('invoices.export');
