@@ -1223,9 +1223,11 @@ class ProductReportController extends Controller
       }
 
       $items = [];
-      if($request->order == 'back_order'){
+      if(in_array($request->order, ['back_order', 'over_served'])){
         $sum = substr($sum, 5); //'remove item.*'
-        $totalSelectQuery = ($request->type == 'Liters')? '(sum(item.'.$sum.') - sum(item1.'.$sum.') * prod.sales_unit_weight)' : 'sum(item.'.$sum.') - sum(item1.'.$sum.')';
+        $item_diff = ($request->order == 'back_order')? ['item','item1'] : ['item1','item']; //if over served must subtract inv - quot
+        $totalSelectQuery = ($request->type == 'Liters')? '(sum('.$item_diff[0].'.'.$sum.') - sum('.$item_diff[1].'.'.$sum.') * prod.sales_unit_weight)' : '(sum('.$item_diff[0].'.'.$sum.') - sum('.$item_diff[1].'.'.$sum.'))';
+       
         $query = DB::table('quotations as quot')
                     ->join('quotation_items as item', 'item.quotation_id', '=', 'quot.id')
                     // ->join('orders as ord', function($join){
@@ -1244,20 +1246,22 @@ class ProductReportController extends Controller
                       });
                     }
         $query->join('customers as cust', 'cust.card_code', '=', 'quot.card_code')
-                    ->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.' as total_order')
+                    ->selectRaw('item.item_code, item.item_description, greatest('.$totalSelectQuery.', 0) as total_order')
                     ->whereIn('cust.id', $cust_id)
                     ->where('quot.cancelled', 'No')
                     ->where('inv.cancelled', 'No');
                     if($request->type == 'Liters'){
-                      $query->whereIn('prod.items_group_code', [109, 111]); //mobile and castrol
+                      $query->whereIn('prod.items_group_code', [109, 111]); //mobil and castrol
                             // ->havingRaw('(sum(item.'.$sum.') - sum(item1.'.$sum.') * prod.sales_unit_weight) > 0');
                       // $query->where('prod.is_active', 1);
                     }
         $query->groupBy('item.item_code')
                     ->orderBy('total_order', 'desc')
                     ->limit(5);
+
         $items = $query->get();
       }else{
+
         if($request->order == 'order'){
           $table = 'quotation';
           $alias = 'quot';
@@ -1283,7 +1287,7 @@ class ProductReportController extends Controller
                     ->whereIn('cust.id', $cust_id)
                     ->where('cancelled', 'No');
                     if($request->type == 'Liters'){
-                      $query->whereIn('prod.items_group_code', [109, 111]); //mobile and castrol
+                      $query->whereIn('prod.items_group_code', [109, 111]); //mobil and castrol
                       // $query->where('prod.is_active', 1);
                     }
                     $query->groupBy('item.item_code')
@@ -1310,6 +1314,7 @@ class ProductReportController extends Controller
       }
       // dd($items);
       $response = ['status' => true, 'data'=>$items,'data1'=>$data];
+
       return $response;
     }
 

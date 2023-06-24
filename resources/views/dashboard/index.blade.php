@@ -422,6 +422,7 @@
                             <option value="order">Order</option>
                             <option value="invoice">Invoice</option>
                             <option value="back_order">Back Order</option>
+                            <option value="over_served">Over Served</option>
                         </select>
                         
                     </div>
@@ -434,7 +435,7 @@
                             </button>
                         </div>
                         <!--begin::Chart-->
-                        <div id="top-products-table-wrapper" style="height: 320px; min-height: 320px;">
+                        <div id="top-products-table-wrapper" style="height: 320px; min-height: 320px;" class="d-none">
                             <table id="top_products_per_quantity" class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap">
                                 <thead>
                                     <tr> 
@@ -1513,40 +1514,20 @@
             if(result.status == false){
                 toast_error(result.message);
             }else{
+                if(result.data1.length > 0){
+                    render_top_product_quantity_graph(result.data1);
+                }
+
                 var html = '';
-                render_top_product_quantity_graph(result.data1);
-                if(result.data != ""){
-                    // if(order == 'order' || order == 'invoice'){
-                        $.each(result.data, function( index, value ) {
-                            // if(type == 'Quantity' || type == 'Amount'){
-                                html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
-                            // }
-                            // if(type == 'Quantity'){
-                                html += '<td>'+(value.total_order).toLocaleString()+'</td>';
-                            // }else if(type == 'Liters'){
-                            //     html += '<tr><td>'+(index+1)+'</td><td>'+value.product.item_name+'</td>';
-                            //     html += '<td>'+(value.product.sales_unit_weight).toLocaleString()+'</td>';
-                            // }else if(type == 'Amount'){
-                                // html += '<td>'+(value.total_order).toLocaleString()+'</td>';
-                            // }
-                          html += '</tr>';
-                        });
-                    // }else if(order == 'back_order'){
-                    //     $.each(result.data, function( index, value ) {
-                    //         if(type == 'Quantity' || type == 'Amount'){
-                    //             html += '<tr><td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
-                    //         }
-                    //         if(type == 'Quantity'){
-                    //             html += '<td>'+(value.quantity).toLocaleString()+'</td>';
-                    //         }else if(type == 'Liters'){
-                    //             html += '<tr><td>'+(index+1)+'</td><td>'+value.product.item_name+'</td>';
-                    //             html += '<td>'+(value.product.sales_unit_weight).toLocaleString()+'</td>';
-                    //         }else if(type == 'Amount'){
-                    //             html += '<td>'+(value.gross_total).toLocaleString()+'</td>';
-                    //         }
-                    //       html += '</tr>';
-                    //     });
-                    // }
+                if(result.data.length > 0){
+                    $.each(result.data, function( index, value ) {
+                        html += '<tr>';
+                        html += '<td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
+                        html += '<td>'+(value.total_order).toLocaleString()+'</td>';
+                        html += '</tr>';
+                    });
+                }else{
+                    html += '<tr><td colspan="3" class="text-center">No Data Available.</td></tr>';
                 }
                 $('#top_products_per_quantity_tbody').html(html);
             }
