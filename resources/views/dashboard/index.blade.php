@@ -422,7 +422,7 @@
                             <option value="order">Order</option>
                             <option value="invoice">Invoice</option>
                             <option value="back_order">Back Order</option>
-                            <option value="over_served">Over Served</option>
+                            {{-- <option value="over_served">Over Served</option> --}}
                         </select>
                         
                     </div>
