@@ -15,6 +15,8 @@ use App\Models\CustomerProductTiresCategory;
 use App\Models\Customer;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ProductReportExport;
+use Illuminate\Support\Facades\DB;
+use App\Models\Quotation;
 
 class ProductReportController extends Controller
 {
@@ -1205,4 +1207,167 @@ class ProductReportController extends Controller
 
         return ['status' => true, 'data' => $data, 'category' => $category];
     }
-}
+
+
+    public function getProductStatistics(Request $request){
+      $cust_id = explode(',', Auth::user()->multi_customer_id);
+
+      $sum = '';
+      if($request->type == 'Quantity'){
+        $sum = 'item.quantity';
+      }else if($request->type == 'Liters'){ //work
+        $sum = 'item.quantity';
+      }
+      else if($request->type == 'Amount'){
+        $sum = 'item.gross_total';
+      }
+
+      $items = [];
+      if(in_array($request->order, ['back_order', 'over_served'])){
+        $items = $this->getBackOrder($request, $sum, $cust_id);
+
+        // $sum = substr($sum, 5); //'remove item.*'
+        // $item_diff = ($request->order == 'back_order')? ['item','item1'] : ['item1','item']; //if over served must subtract inv - quot
+        // $totalSelectQuery = ($request->type == 'Liters')? '(sum('.$item_diff[0].'.'.$sum.') - sum('.$item_diff[1].'.'.$sum.') * prod.sales_unit_weight)' : '(sum('.$item_diff[0].'.'.$sum.') - sum('.$item_diff[1].'.'.$sum.'))';
+       
+        // $query = DB::table('quotations as quot')
+        //             ->join('quotation_items as item', 'item.quotation_id', '=', 'quot.id')
+        //             // ->join('orders as ord', function($join){
+        //             //    $join->on('ord.base_entry', '=', 'quot.doc_entry');
+        //             //    $join->on('ord.sap_connection_id', '=', 'quot.sap_connection_id');
+        //             // })
+        //             ->join('invoices as inv', function($join){
+        //                $join->on('inv.u_omsno', '=', 'quot.doc_entry');
+        //                $join->on('inv.sap_connection_id', '=', 'quot.sap_connection_id');
+        //             })
+        //             ->join('invoice_items as item1', 'item1.invoice_id', '=', 'inv.id');
+        //             if($request->type == 'Liters'){
+        //               $query->leftJoin('products as prod', function($join){
+        //                 $join->on('prod.item_code', '=', 'item.item_code');
+        //                 $join->on('prod.sap_connection_id', '=', 'item.real_sap_connection_id');
+        //               });
+        //             }
+        // $query->join('customers as cust', 'cust.card_code', '=', 'quot.card_code')
+        //             ->selectRaw('item.item_code, item.item_description, greatest('.$totalSelectQuery.', 0) as total_order')
+        //             ->whereIn('cust.id', $cust_id)
+        //             ->where('quot.cancelled', 'No')
+        //             ->where('inv.cancelled', 'No');
+        //             if($request->type == 'Liters'){
+        //               $query->whereIn('prod.items_group_code', [109, 111]); //mobil and castrol
+        //                     // ->havingRaw('(sum(item.'.$sum.') - sum(item1.'.$sum.') * prod.sales_unit_weight) > 0');
+        //               // $query->where('prod.is_active', 1);
+        //             }
+        // $query->groupBy('item.item_code')
+        //             ->orderBy('total_order', 'desc')
+        //             ->limit(5);
+
+        // $items = $query->get();
+      }else{
+
+        if($request->order == 'order'){
+          $table = 'quotation';
+          $alias = 'quot';
+        }else if($request->order == 'invoice'){
+          $table = 'invoice';
+          $alias = 'inv';
+        }
+
+        $totalSelectQuery = ($request->type == 'Liters')? '(sum('.$sum.') * prod.sales_unit_weight)  as total_order' : 'sum('.$sum.') as total_order';
+        $query = DB::table(''.$table.'s as '.$alias.'')
+                    ->join(''.$table.'_items as item', 'item.'.$table.'_id', '=', $alias.'.id');
+                    if($request->type == 'Liters'){
+                      $query->leftJoin('products as prod', function($join){
+                        $join->on('prod.item_code', '=', 'item.item_code');
+                        $join->on('prod.sap_connection_id', '=', 'item.real_sap_connection_id');
+                      });
+                    }
+                    $query->join('customers as cust', function($join) use ($alias){
+                        $join->on('cust.card_code', '=', $alias.'.card_code');
+                        // $join->on('cust.real_sap_connection_id', '=', $alias.'.real_sap_connection_id');
+                    })
+                    ->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', item.real_sap_connection_id')
+                    ->whereIn('cust.id', $cust_id)
+                    ->where('cancelled', 'No');
+                    if($request->type == 'Liters'){
+                      $query->whereIn('prod.items_group_code', [109, 111]); //mobil and castrol
+                      // $query->where('prod.is_active', 1);
+                    }
+                    $query->groupBy('item.item_code')
+                    ->orderBy('total_order', 'desc')
+                    ->limit(5);
+        $items = $query->get();
+      }
+
+      $data = [];
+      foreach($items as $key=>$val){
+        $data[$key]['name'] = $val->item_code;
+        $data[$key]['key'] = floor($val->total_order);
+      }
+
+      $response = ['status' => true, 'data'=>$items,'data1'=>$data];
+      return $response;
+    }
+
+    private function getBackOrder($request, $sum, $cust_id){
+      
+      $quotations = $this->getQuotInvData('quotation', 'quot', $cust_id, $request, $sum);
+      $invoices = $this->getQuotInvData('invoice', 'inv', $cust_id, $request, $sum);
+
+      $items = [];
+      $diff  = 0;
+      $inv_order = 0;
+      foreach($quotations as $key => $quot){
+        foreach($invoices as $inv){
+
+          if($quot->item_code == $inv->item_code){
+            $inv_order = $inv->total_order;
+          }
+        }
+
+        $diff = ($inv_order > 0)? $quot->total_order - $inv_order : $quot->total_order;
+        $items[$key] = (object) array(
+                                    'item_code' => $quot->item_code,
+                                    'item_description' => $quot->item_description,
+                                    'total_order' => $diff
+                                );
+        $inv_order = 0;
+      }
+
+      $total_orders = array_column($items, 'total_order');
+      array_multisort($total_orders, SORT_DESC, $items);
+      // arsort($total_orders);
+      $items = array_slice($items, 0, 5);
+
+      return ($items[0]->total_order <= 0) ? (object)[] : $items ;
+    }
+
+
+    private function getQuotInvData($table, $alias, $cust_id, $request, $sum){
+      
+      $totalSelectQuery = ($request->type == 'Liters')? '(sum('.$sum.') * prod.sales_unit_weight)  as total_order' : 'sum('.$sum.') as total_order';
+      $query = DB::table(''.$table.'s as '.$alias.'')
+                  ->join(''.$table.'_items as item', 'item.'.$table.'_id', '=', $alias.'.id');
+                  if($request->type == 'Liters'){
+                    $query->leftJoin('products as prod', function($join){
+                      $join->on('prod.item_code', '=', 'item.item_code');
+                      $join->on('prod.sap_connection_id', '=', 'item.real_sap_connection_id');
+                    });
+                  }
+                  $query->join('customers as cust', function($join) use ($alias){
+                      $join->on('cust.card_code', '=', $alias.'.card_code');
+                      // $join->on('cust.real_sap_connection_id', '=', $alias.'.real_sap_connection_id');
+                  })
+                  ->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', item.real_sap_connection_id')
+                  ->whereIn('cust.id', $cust_id)
+                  ->where('cancelled', 'No');
+                  if($request->type == 'Liters'){
+                    $query->whereIn('prod.items_group_code', [109, 111]); //mobil and castrol
+                    // $query->where('prod.is_active', 1);
+                  }
+                  $query->groupBy('item.item_code');
+
+      return $query->get();
+    }
+
+
+  }
