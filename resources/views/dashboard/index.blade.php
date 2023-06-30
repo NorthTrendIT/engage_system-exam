@@ -199,7 +199,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xl-6">
+            {{-- <div class="col-xl-6">
                 <!-- Pending Promotion -->
                 <div class="card card-custom gutter-b">
                     <div class="card-header border-0 pt-5">
@@ -232,9 +232,9 @@
                         @endif
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
-            <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
+            <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12 d-none">
                 <div class="card mb-5 mb-xl-8">
                     <div class="card-body">
                         <div class="row mb-5 ">
@@ -270,7 +270,7 @@
         </div>
 
         @if(@Auth::user()->role_id == 1)
-        <div class="row gy-5 g-xl-8">
+        <div class="row gy-5 g-xl-8 d-none">
             <!-- Promotion Report -->
             <div class="col-xl-6">
                 <div class="card card-xl-stretch mb-xl-8">
@@ -316,7 +316,7 @@
             </div>
         </div>
 
-        <div class="row gy-5 g-xl-8">
+        <div class="row gy-5 g-xl-8 d-none">
             <!-- Back Order Report-->
             <div class="col-xl-12">
                 <div class="card card-xl-stretch mb-xl-8">
@@ -341,7 +341,7 @@
         </div>
 
 
-        <div class="row gy-5 g-xl-8">
+        <div class="row gy-5 g-xl-8 d-none">
             <!-- Promotion Report -->
             <div class="col-xl-6">
                 <div class="card card-xl-stretch mb-xl-8">
@@ -359,7 +359,7 @@
             </div>
         </div>
 
-        <div class="row gy-5 g-xl-8">
+        <div class="row gy-5 g-xl-8 d-none">
             <!-- Back Order Report-->
             <div class="col-xl-12">
                 <div class="card card-xl-stretch mb-xl-8">
@@ -372,7 +372,7 @@
                         <input type="button" name="all_time" id="all_time" value="All Time" class="btn btn-primary btn-sm">
                         <div class="">
                           <div class="input-icon">
-                            <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                            {{-- <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly> --}}
                             <span>
                             </span>
                           </div>
@@ -404,8 +404,8 @@
         
         @endif
 
-        @if(@Auth::user()->role_id == 4)
-        <div class="row gy-5 g-xl-8">
+        @if(in_array(@Auth::user()->role_id, [1,4]))
+        <div class="row gy-5 g-xl-8 mt-1">
             <!-- Promotion Report -->
             <div class="col-xl-6">
                 <div class="card card-xl-stretch mb-xl-8">
@@ -423,12 +423,26 @@
                             <option value="invoice">Invoice</option>
                             <option value="back_order">Back Order</option>
                             {{-- <option value="over_served">Over Served</option> --}}
-                        </select>
-                        
+                        </select>                        
                     </div>
 
                     <div class="card-body">
-                        <div class="text-center">
+                        <div class="row float-end mb-2">
+                            <div class="col-4">
+                                <select id="total_performing_db" class="form-select form-select-sm">
+                                    @foreach($company as $c)
+                                        <option value="{{$c->id}}">{{$c->company_name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-8">
+                                <div class="input-icon">
+                                    <input type="text" class="form-control form-control-sm" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-block text-center">
                             <button class="btn btn-primary " type="button" id="top-products-loader" disabled>
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                 Loading...
@@ -440,7 +454,10 @@
                                 <thead>
                                     <tr> 
                                         <td>Top</td>
-                                        <td>Name</td>
+                                        @if(@Auth::user()->role_id == 1)
+                                         <td>Customer</td>
+                                        @endif
+                                        <td>Product</td>
                                         <td>Total</td>
                                     </tr>
                                 </thead>
@@ -475,7 +492,8 @@
                 <!--end::Charts Widget 1-->
             </div>            
         </div>        
-
+        @endif
+        @if(@Auth::user()->role_id == 4)
         <div class="row gy-5 g-xl-8">
             <div class="col-xl-6">
                 <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -722,516 +740,15 @@
 @push('js')
 <script src="{{ asset('assets') }}/assets/plugins/custom/flotcharts/flotcharts.bundle.js"></script>
 <script src="http://www.flotcharts.org/flot/source/jquery.flot.legend.js"></script>
+
 <script type="text/javascript">
-@if(@Auth::user()->role_id == 1)
+$(document).ready(function() {
+    /**@if(@Auth::user()->role_id == 1)
 
-    getData();
+        // getData(); //previous charts hidden
 
-    var data = [];
-    var category = [];
-
-    var options = {
-        series: data,
-        chart: {
-            type: 'bar',
-            height: 350,
-            toolbar: {
-                show: false
-            }
-        },
-        plotOptions: {
-            bar: {
-                horizontal: false,
-                columnWidth: '35%',
-                endingShape: 'rounded'
-            },
-        },
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            show: true,
-            width: 2,
-            colors: ['transparent']
-        },
-        xaxis: {
-            categories: category,
-        },
-        yaxis: {
-            title: {
-                text: ''
-            }
-        },
-        fill: {
-            opacity: 1
-        },
-        tooltip: {
-            y: {
-                formatter: function (val) {
-                    return  val
-                }
-            }
-        },
-        colors:['#F33A6A']
-    };
-
-    var topPerformingProduct = new ApexCharts(document.querySelector("#top_performing_products_graph"), options);
-    topPerformingProduct.render();
-
-    $(document).on('click', '.push-all-order', function(event) {
-        event.preventDefault();
-
-        Swal.fire({
-            title: 'Are you sure want to push all pending orders?',
-            //text: "Once deleted, you will not be able to recover this record!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, do it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '{{ route('orders.push-all-order') }}',
-                    method: "POST",
-                    data: {
-                            _token:'{{ csrf_token() }}',
-                        }
-                })
-                .done(function(result) {
-                    if(result.status == false){
-                    toast_error(result.message);
-                    }else{
-                    toast_success(result.message);
-                    setTimeout(function(){
-                        window.location.reload();
-                    },500)
-                    }
-                })
-                .fail(function() {
-                    toast_error("error");
-                });
-            }
-        })
-    });
-
-    $(document).on('click', '.push-all-promotion', function(event) {
-      event.preventDefault();
-      var id = $(this).data('id');
-      Swal.fire({
-        title: 'Are you sure want to push all promotion?',
-        //text: "Once deleted, you will not be able to recover this record!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: '{{ route('orders.push-all-promotion') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              setTimeout(function(){
-                window.location.reload();
-              },500)
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
-    });
-
-    function getData(){
-        // Get Promotion Report Chart Data
-        $.ajax({
-            url: '{{ route('reports.promotion-report.get-chart-data') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                }
-        })
-        .done(function(result) {
-            if(result.status == false){
-                toast_error(result.message);
-            }else{
-                render_promotion_graph(result.data, result.category)
-            }
-        })
-        .fail(function() {
-            toast_error("error");
-        });
-
-        // Get Product Report Chart Data
-        $.ajax({
-            url: '{{ route('reports.product-report.get-chart-data') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                }
-        })
-        .done(function(result) {
-            if(result.status == false){
-                toast_error(result.message);
-            }else{
-                render_product_graph(result.data, result.category)
-            }
-        })
-        .fail(function() {
-            toast_error("error");
-        });
-
-
-        // Get Back Order Report Chart Data
-        $.ajax({
-            url: '{{ route('reports.back-order-report.get-chart-data') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                }
-        })
-        .done(function(result) {
-            if(result.status == false){
-                toast_error(result.message);
-            }else{
-                render_back_order_graph(result.data, result.category)
-            }
-        })
-        .fail(function() {
-            toast_error("error");
-        }); 
-
-        // Get Cutomer Buying chart Data
-        $.ajax({
-            url: '{{ route('reports.customer-buying.get-chart-data') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                }
-        })
-        .done(function(result) {
-            if(result.status == false){
-                toast_error(result.message);
-            }else{
-                render_customer_graph(result.data)
-            }
-        })
-        .fail(function() {
-            toast_error("error");
-        });
-
-        // Get Top performing Product Report Chart Data
-        top_perform_product_data();
-    }
-
-    $(document).on("click","#this_month",function(){
-        var range = 'this_month';
-        top_perform_product_data(range);
-    });
-
-    $(document).on("click","#this_week",function(){
-        var range = 'this_week';
-        top_perform_product_data(range);
-    });
-
-    $(document).on("click","#all_time",function(){
-        var range = 'null';
-        top_perform_product_data(range);
-    });
-
-    $('#kt_daterangepicker_1').on('apply.daterangepicker', function(ev, picker){
-        var range = 'custom_date';
-        top_perform_product_data(range);
-    });
-
-    $(document).on("change","#total_performing_type",function(){
-        var range = 'null';
-        top_perform_product_data(range);
-    });
-
-
-    function top_perform_product_data(range){
-        var type = $("#total_performing_type").val();
-        if($("#kt_daterangepicker_1").val() == ""){
-            var custom_date = '';
-        }else{
-            var custom_date = $("#kt_daterangepicker_1").val();
-        }
-        // Get Top performing Product Report Chart Data
-        $.ajax({
-            url: "{{ route('reports.top-performing-graph.get-chart-data') }}",
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                    'type':type,
-                    'range':range,
-                    'custom':custom_date,
-                }
-        })
-        .done(function(result) {
-            if(result.status == false){
-                toast_error(result.message);
-            }else{
-                category = result.category;
-                topPerformingProduct.updateOptions({                
-                    xaxis: { categories: category },
-                });
-                topPerformingProduct.updateSeries([
-                    {
-                      name: result.data[0].name,  
-                      data: result.data[0].data
-                    }
-                ]);
-            }
-        })
-        .fail(function() {
-            toast_error("error");
-        });
-    }
-
-
-    $('#active_customer_graph').bind("plothover", function(event, pos, obj) {
-      if(obj){
-        var percent = Math.round(obj.series.percent);
-        $("#hover").html("<span style='font-weight:bold; color:" + obj.series.color + "'>" + obj.series.label + " (" + percent + "%)</span>");
-        $('#hover').css({'position':'absolute','display':'block','left':pos.pageX,'top':pos.pageY}); 
-      }
-      else {
-        $('#hover').css('display','none');
-      }
-    });
-
-    $('#top_products_per_quantity_chart').bind("plothover", function(event, pos, obj) {
-      if(obj){
-        var percent = Math.round(obj.series.percent);
-        $("#hover").html("<span style='font-weight:bold; color:" + obj.series.color + "'>" + obj.series.label + " (" + percent + "%)</span>");
-        $('#hover').css({'position':'absolute','display':'block','left':pos.pageX,'top':pos.pageY}); 
-      }
-      else {
-        $('#hover').css('display','none');
-      }
-    });
-
-    $('#top_product_per_amount_chart').bind("plothover", function(event, pos, obj) {
-      if(obj){
-        var percent = Math.round(obj.series.percent);
-        $("#hover").html("<span style='font-weight:bold; color:" + obj.series.color + "'>" + obj.series.label + " (" + percent + "%)</span>");
-        $('#hover').css({'position':'absolute','display':'block','left':pos.pageX,'top':pos.pageY}); 
-      }
-      else {
-        $('#hover').css('display','none');
-      }
-    });
-
-    function render_customer_graph(result){
-      var data = [
-
-            { label: "Active", data: result.activeCustomers, color: '#FAA0A0' },
-            { label: "Inactive", data: result.inactiveCustomers, color: '#F33A6A' }, 
-            { label: "Active with Orders", data: result.customerWithOrder, color: '#FFF5EE' },            
-          ];
-      $.plot('#active_customer_graph', data, {
-        series: {
-          pie: {
-            show: true,
-            innerRadius:0.5,
-            radius: 1,
-
-            label: {
-              show: true,
-              radius: 3/4,
-              formatter: labelFormatter,
-              threshold: 0.1,
-            }
-          }
-        },
-        legend: {
-          show: false
-        },
-        grid: {
-          hoverable: true,
-          clickable: true
-        },
-      });
-
-      if(result.inactiveCustomers == 0 && result.activeCustomers == 0){
-        $('#active_customer_graph').removeClass('h-500px');
-      }
-    }
-
-    function render_promotion_graph(data, category){
-
-        var options = {
-            series: data,
-            chart: {
-                type: 'bar',
-                height: 350,
-                toolbar: {
-                    show: false
-                }
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '35%',
-                    endingShape: 'rounded'
-                },
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                show: true,
-                width: 2,
-                colors: ['transparent']
-            },
-            xaxis: {
-                categories: category,
-            },
-            yaxis: {
-                title: {
-                    text: ''
-                }
-            },
-            fill: {
-                opacity: 1
-            },
-            tooltip: {
-                y: {
-                    formatter: function (val) {
-                        return  val
-                    }
-                }
-            },
-            colors:['#A1A5B7', '#009EF7', '#dc3545']
-        };
-
-        var promotionChart = new ApexCharts(document.querySelector("#promotion_report_cart"), options);
-        if (promotionChart.ohYeahThisChartHasBeenRendered) {
-            promotionChart.destroy();
-        }
-        promotionChart.render();
-    }
-
-    function render_product_graph(data, category){
-
-        var options = {
-            series: data,
-            chart: {
-                type: 'bar',
-                height: 350,
-                toolbar: {
-                    show: false
-                }
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '35%',
-                    endingShape: 'rounded'
-                },
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                show: true,
-                width: 2,
-                colors: ['transparent']
-            },
-            xaxis: {
-                categories: category,
-            },
-            yaxis: {
-                title: {
-                    text: ''
-                }
-            },
-            fill: {
-                opacity: 1
-            },
-            tooltip: {
-                y: {
-                    formatter: function (val) {
-                        return  val
-                    }
-                }
-            },
-            colors:['#A1A5B7', '#009EF7', '#dc3545']
-        };
-
-        var productChart = new ApexCharts(document.querySelector("#product_report_cart"), options);
-        if (productChart.ohYeahThisChartHasBeenRendered) {
-            productChart.destroy();
-        }
-        productChart.render();
-    }
-
-    function render_back_order_graph(data, category){
-
-        var options = {
-            series: data,
-            chart: {
-                type: 'bar',
-                height: 350,
-                toolbar: {
-                    show: false
-                }
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '35%',
-                    endingShape: 'rounded'
-                },
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                show: true,
-                width: 2,
-                colors: ['transparent']
-            },
-            xaxis: {
-                categories: category,
-            },
-            yaxis: {
-                title: {
-                    text: ''
-                }
-            },
-            fill: {
-                opacity: 1
-            },
-            tooltip: {
-                y: {
-                    formatter: function (val) {
-                        return  val
-                    }
-                }
-            },
-            colors:['#A1A5B7', '#009EF7', '#dc3545']
-        };
-
-        var backOrderChart = new ApexCharts(document.querySelector("#back_order_report_cart"), options);
-        if (backOrderChart.ohYeahThisChartHasBeenRendered) {
-            backOrderChart.destroy();
-        }
-        backOrderChart.render();
-    }
-
-    function render_top_performing_product_graph(data, category){
+        var data = [];
+        var category = [];
 
         var options = {
             series: data,
@@ -1280,74 +797,13 @@
 
         var topPerformingProduct = new ApexCharts(document.querySelector("#top_performing_products_graph"), options);
         topPerformingProduct.render();
-    }
 
-    $('[name="filter_company"]').select2({
-        ajax: {
-            url: "{{ route('common.getBusinessUnits') }}",
-            type: "post",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    _token: "{{ csrf_token() }}",
-                    search: params.term,
-                    filter_company: $('[name="filter_company"]').find('option:selected').val(),
-                };
-            },
-            processResults: function (response) {
-                return {
-                    results: response
-                };
-            },
-            cache: true
-        },
-        placeholder: 'Businnes Unit',
-        // minimumInputLength: 1,
-        multiple: false,
-    });
-
-
-    @if(userrole() == 1)
-
-        @if(is_null(@$sales_order_to_invoice_lead_time->value) || is_null(@$invoice_to_delivery_lead_time->value))
-            render_report_data();
-        @endif
-
-        function render_report_data(){
-            $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').show();
-            $('.sales_order_to_invoice_lead_time_count, .invoice_to_delivery_lead_time_count').text("");
-            $.ajax({
-                url: '{{ route('home.get-report-data') }}',
-                method: "POST",
-                data: {
-                        _token:'{{ csrf_token() }}',
-                    }
-            })
-            .done(function(result) {
-                if(result.status){
-                    // toast_success(result.message);
-
-                    $('.sales_order_to_invoice_lead_time_count').text(result.data.sales_order_to_invoice_lead_time + " Day(s)");
-                    $('.invoice_to_delivery_lead_time_count').text(result.data.invoice_to_delivery_lead_time + " Day(s)");
-                }else{
-                    toast_error(result.message);
-                }
-                $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
-            })
-            .fail(function() {
-                toast_error("error");
-                $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
-            });  
-        }
-
-
-        $(document).on('click', '.sync-lead-time', function(event) {
+        $(document).on('click', '.push-all-order', function(event) {
             event.preventDefault();
 
             Swal.fire({
-                title: 'Are you sure want to sync details?',
-                text: "It may take some time to sync details.",
+                title: 'Are you sure want to push all pending orders?',
+                //text: "Once deleted, you will not be able to recover this record!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -1355,17 +811,584 @@
                 confirmButtonText: 'Yes, do it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    render_report_data();
+                    $.ajax({
+                        url: '{{ route('orders.push-all-order') }}',
+                        method: "POST",
+                        data: {
+                                _token:'{{ csrf_token() }}',
+                            }
+                    })
+                    .done(function(result) {
+                        if(result.status == false){
+                        toast_error(result.message);
+                        }else{
+                        toast_success(result.message);
+                        setTimeout(function(){
+                            window.location.reload();
+                        },500)
+                        }
+                    })
+                    .fail(function() {
+                        toast_error("error");
+                    });
                 }
             })
         });
-    @endif  
 
-      
+        $(document).on('click', '.push-all-promotion', function(event) {
+        event.preventDefault();
+        var id = $(this).data('id');
+        Swal.fire({
+            title: 'Are you sure want to push all promotion?',
+            //text: "Once deleted, you will not be able to recover this record!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, do it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+            $.ajax({
+                url: '{{ route('orders.push-all-promotion') }}',
+                method: "POST",
+                data: {
+                        _token:'{{ csrf_token() }}',
+                    }
+            })
+            .done(function(result) {
+                if(result.status == false){
+                toast_error(result.message);
+                }else{
+                toast_success(result.message);
+                setTimeout(function(){
+                    window.location.reload();
+                },500)
+                }
+            })
+            .fail(function() {
+                toast_error("error");
+            });
+            }
+        })
+        });
 
-@endif
+        function getData(){
+            // Get Promotion Report Chart Data
+            $.ajax({
+                url: '{{ route('reports.promotion-report.get-chart-data') }}',
+                method: "POST",
+                data: {
+                        _token:'{{ csrf_token() }}',
+                    }
+            })
+            .done(function(result) {
+                if(result.status == false){
+                    toast_error(result.message);
+                }else{
+                    render_promotion_graph(result.data, result.category)
+                }
+            })
+            .fail(function() {
+                toast_error("error");
+            });
+
+            // Get Product Report Chart Data
+            $.ajax({
+                url: '{{ route('reports.product-report.get-chart-data') }}',
+                method: "POST",
+                data: {
+                        _token:'{{ csrf_token() }}',
+                    }
+            })
+            .done(function(result) {
+                if(result.status == false){
+                    toast_error(result.message);
+                }else{
+                    render_product_graph(result.data, result.category)
+                }
+            })
+            .fail(function() {
+                toast_error("error");
+            });
+
+
+            // Get Back Order Report Chart Data
+            $.ajax({
+                url: '{{ route('reports.back-order-report.get-chart-data') }}',
+                method: "POST",
+                data: {
+                        _token:'{{ csrf_token() }}',
+                    }
+            })
+            .done(function(result) {
+                if(result.status == false){
+                    toast_error(result.message);
+                }else{
+                    render_back_order_graph(result.data, result.category)
+                }
+            })
+            .fail(function() {
+                toast_error("error");
+            }); 
+
+            // Get Cutomer Buying chart Data
+            $.ajax({
+                url: '{{ route('reports.customer-buying.get-chart-data') }}',
+                method: "POST",
+                data: {
+                        _token:'{{ csrf_token() }}',
+                    }
+            })
+            .done(function(result) {
+                if(result.status == false){
+                    toast_error(result.message);
+                }else{
+                    render_customer_graph(result.data)
+                }
+            })
+            .fail(function() {
+                toast_error("error");
+            });
+
+            // Get Top performing Product Report Chart Data
+            top_perform_product_data();
+        }
+
+        $(document).on("click","#this_month",function(){
+            var range = 'this_month';
+            top_perform_product_data(range);
+        });
+
+        $(document).on("click","#this_week",function(){
+            var range = 'this_week';
+            top_perform_product_data(range);
+        });
+
+        $(document).on("click","#all_time",function(){
+            var range = 'null';
+            top_perform_product_data(range);
+        });
+
+        $('#kt_daterangepicker_1').on('apply.daterangepicker', function(ev, picker){
+            var range = 'custom_date';
+            top_perform_product_data(range);
+        });
+
+        $(document).on("change","#total_performing_type",function(){
+            var range = 'null';
+            top_perform_product_data(range);
+        });
+
+
+        function top_perform_product_data(range){
+            var type = $("#total_performing_type").val();
+            if($("#kt_daterangepicker_1").val() == ""){
+                var custom_date = '';
+            }else{
+                var custom_date = $("#kt_daterangepicker_1").val();
+            }
+            // Get Top performing Product Report Chart Data
+            $.ajax({
+                url: "{{ route('reports.top-performing-graph.get-chart-data') }}",
+                method: "POST",
+                data: {
+                        _token:'{{ csrf_token() }}',
+                        'type':type,
+                        'range':range,
+                        'custom':custom_date,
+                    }
+            })
+            .done(function(result) {
+                if(result.status == false){
+                    toast_error(result.message);
+                }else{
+                    category = result.category;
+                    topPerformingProduct.updateOptions({                
+                        xaxis: { categories: category },
+                    });
+                    topPerformingProduct.updateSeries([
+                        {
+                        name: result.data[0].name,  
+                        data: result.data[0].data
+                        }
+                    ]);
+                }
+            })
+            .fail(function() {
+                toast_error("error");
+            });
+        }
+
+
+        $('#active_customer_graph').bind("plothover", function(event, pos, obj) {
+        if(obj){
+            var percent = Math.round(obj.series.percent);
+            $("#hover").html("<span style='font-weight:bold; color:" + obj.series.color + "'>" + obj.series.label + " (" + percent + "%)</span>");
+            $('#hover').css({'position':'absolute','display':'block','left':pos.pageX,'top':pos.pageY}); 
+        }
+        else {
+            $('#hover').css('display','none');
+        }
+        });
+
+        $('#top_products_per_quantity_chart').bind("plothover", function(event, pos, obj) {
+        if(obj){
+            var percent = Math.round(obj.series.percent);
+            $("#hover").html("<span style='font-weight:bold; color:" + obj.series.color + "'>" + obj.series.label + " (" + percent + "%)</span>");
+            $('#hover').css({'position':'absolute','display':'block','left':pos.pageX,'top':pos.pageY}); 
+        }
+        else {
+            $('#hover').css('display','none');
+        }
+        });
+
+        $('#top_product_per_amount_chart').bind("plothover", function(event, pos, obj) {
+        if(obj){
+            var percent = Math.round(obj.series.percent);
+            $("#hover").html("<span style='font-weight:bold; color:" + obj.series.color + "'>" + obj.series.label + " (" + percent + "%)</span>");
+            $('#hover').css({'position':'absolute','display':'block','left':pos.pageX,'top':pos.pageY}); 
+        }
+        else {
+            $('#hover').css('display','none');
+        }
+        });
+
+        function render_customer_graph(result){
+        var data = [
+
+                { label: "Active", data: result.activeCustomers, color: '#FAA0A0' },
+                { label: "Inactive", data: result.inactiveCustomers, color: '#F33A6A' }, 
+                { label: "Active with Orders", data: result.customerWithOrder, color: '#FFF5EE' },            
+            ];
+        $.plot('#active_customer_graph', data, {
+            series: {
+            pie: {
+                show: true,
+                innerRadius:0.5,
+                radius: 1,
+
+                label: {
+                show: true,
+                radius: 3/4,
+                formatter: labelFormatter,
+                threshold: 0.1,
+                }
+            }
+            },
+            legend: {
+            show: false
+            },
+            grid: {
+            hoverable: true,
+            clickable: true
+            },
+        });
+
+        if(result.inactiveCustomers == 0 && result.activeCustomers == 0){
+            $('#active_customer_graph').removeClass('h-500px');
+        }
+        }
+
+        function render_promotion_graph(data, category){
+
+            var options = {
+                series: data,
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '35%',
+                        endingShape: 'rounded'
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    show: true,
+                    width: 2,
+                    colors: ['transparent']
+                },
+                xaxis: {
+                    categories: category,
+                },
+                yaxis: {
+                    title: {
+                        text: ''
+                    }
+                },
+                fill: {
+                    opacity: 1
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return  val
+                        }
+                    }
+                },
+                colors:['#A1A5B7', '#009EF7', '#dc3545']
+            };
+
+            var promotionChart = new ApexCharts(document.querySelector("#promotion_report_cart"), options);
+            if (promotionChart.ohYeahThisChartHasBeenRendered) {
+                promotionChart.destroy();
+            }
+            promotionChart.render();
+        }
+
+        function render_product_graph(data, category){
+
+            var options = {
+                series: data,
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '35%',
+                        endingShape: 'rounded'
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    show: true,
+                    width: 2,
+                    colors: ['transparent']
+                },
+                xaxis: {
+                    categories: category,
+                },
+                yaxis: {
+                    title: {
+                        text: ''
+                    }
+                },
+                fill: {
+                    opacity: 1
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return  val
+                        }
+                    }
+                },
+                colors:['#A1A5B7', '#009EF7', '#dc3545']
+            };
+
+            var productChart = new ApexCharts(document.querySelector("#product_report_cart"), options);
+            if (productChart.ohYeahThisChartHasBeenRendered) {
+                productChart.destroy();
+            }
+            productChart.render();
+        }
+
+        function render_back_order_graph(data, category){
+
+            var options = {
+                series: data,
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '35%',
+                        endingShape: 'rounded'
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    show: true,
+                    width: 2,
+                    colors: ['transparent']
+                },
+                xaxis: {
+                    categories: category,
+                },
+                yaxis: {
+                    title: {
+                        text: ''
+                    }
+                },
+                fill: {
+                    opacity: 1
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return  val
+                        }
+                    }
+                },
+                colors:['#A1A5B7', '#009EF7', '#dc3545']
+            };
+
+            var backOrderChart = new ApexCharts(document.querySelector("#back_order_report_cart"), options);
+            if (backOrderChart.ohYeahThisChartHasBeenRendered) {
+                backOrderChart.destroy();
+            }
+            backOrderChart.render();
+        }
+
+        function render_top_performing_product_graph(data, category){
+
+            var options = {
+                series: data,
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '35%',
+                        endingShape: 'rounded'
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    show: true,
+                    width: 2,
+                    colors: ['transparent']
+                },
+                xaxis: {
+                    categories: category,
+                },
+                yaxis: {
+                    title: {
+                        text: ''
+                    }
+                },
+                fill: {
+                    opacity: 1
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return  val
+                        }
+                    }
+                },
+                colors:['#F33A6A']
+            };
+
+            var topPerformingProduct = new ApexCharts(document.querySelector("#top_performing_products_graph"), options);
+            topPerformingProduct.render();
+        }
+
+        $('[name="filter_company"]').select2({
+            ajax: {
+                url: "{{ route('common.getBusinessUnits') }}",
+                type: "post",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        _token: "{{ csrf_token() }}",
+                        search: params.term,
+                        filter_company: $('[name="filter_company"]').find('option:selected').val(),
+                    };
+                },
+                processResults: function (response) {
+                    return {
+                        results: response
+                    };
+                },
+                cache: true
+            },
+            placeholder: 'Businnes Unit',
+            // minimumInputLength: 1,
+            multiple: false,
+        });
+
+
+        @if(userrole() == 1)
+
+            // @if(is_null(@$sales_order_to_invoice_lead_time->value) || is_null(@$invoice_to_delivery_lead_time->value))
+            //     render_report_data();
+            // @endif
+
+            function render_report_data(){
+                $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').show();
+                $('.sales_order_to_invoice_lead_time_count, .invoice_to_delivery_lead_time_count').text("");
+                $.ajax({
+                    url: '{{ route('home.get-report-data') }}',
+                    method: "POST",
+                    data: {
+                            _token:'{{ csrf_token() }}',
+                        }
+                })
+                .done(function(result) {
+                    if(result.status){
+                        // toast_success(result.message);
+
+                        $('.sales_order_to_invoice_lead_time_count').text(result.data.sales_order_to_invoice_lead_time + " Day(s)");
+                        $('.invoice_to_delivery_lead_time_count').text(result.data.invoice_to_delivery_lead_time + " Day(s)");
+                    }else{
+                        toast_error(result.message);
+                    }
+                    $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
+                })
+                .fail(function() {
+                    toast_error("error");
+                    $('.sales_order_to_invoice_lead_time_loader_img, .invoice_to_delivery_lead_time_loader_img').hide();
+                });  
+            }
+
+
+            $(document).on('click', '.sync-lead-time', function(event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: 'Are you sure want to sync details?',
+                    text: "It may take some time to sync details.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, do it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        render_report_data();
+                    }
+                })
+            });
+        @endif  
+
+        
+
+    @endif **/
+
+
+@if(in_array(@Auth::user()->role_id, [1,4]))
+
 @if(@Auth::user()->role_id == 4)
-
     // Get Status Counting
     $.ajax({
         url: '{{ route('reports.sales-order-report.count-stat') }}',
@@ -1474,16 +1497,20 @@
         }
         backOrderChart.render();
     }
-
+@endif
     getProductData();
 
-    $(document).on("change","#total_performing_type",function(){
+    $(document).on("change","#total_performing_type, #total_performing_orders, #total_performing_db",function(){
         getProductData();
     });
 
-    $(document).on("change","#total_performing_orders",function(){
+    $('#kt_daterangepicker_1').on('apply.daterangepicker', function(ev, picker){
         getProductData();
     });
+
+    // $(document).on("change","#total_performing_orders",function(){
+    //     getProductData();
+    // });
 
     function getProductData(){
         $('#top-products-loader').removeClass('d-none');
@@ -1493,17 +1520,27 @@
 
         var type = $("#total_performing_type").val();
         var order = $("#total_performing_orders").val();
+        var filter_date_range = $('[name="filter_date_range"]').val();
+        var filter_company = $('#total_performing_db').val();
+
+        var filter_datas = {
+                    _token:'{{ csrf_token() }}',
+                    type:type,
+                    order:order,
+                }
+                
+        @if(@Auth::user()->role_id == 1)
+          filter_datas['filter_company'] = filter_company;
+          filter_datas['filter_date_range'] = filter_date_range;
+        @endif
+
         // Get Top Product Data
         $.ajax({
             // url: "{{ route('reports.back-order-report.get-product-data') }}",
             // method: "POST",
             url: "{{ route('reports.fetch-top-products') }}",
             method: "GET",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                    type:type,
-                    order:order,
-                }
+            data: filter_datas
         })
         .done(function(result) {  
             $('#top-products-loader').addClass('d-none');
@@ -1522,12 +1559,17 @@
                 if(result.data.length > 0){
                     $.each(result.data, function( index, value ) {
                         html += '<tr>';
-                        html += '<td>'+(index+1)+'</td><td>'+value.item_description+'</td>';
+                        html += '<td>'+(index+1)+'</td>';
+                        @if(@Auth::user()->role_id == 1)
+                        html += '<td></td>';
+                        @endif
+                        html += '<td>'+value.item_description+'</td>';
                         html += '<td>'+(value.total_order).toLocaleString()+'</td>';
                         html += '</tr>';
                     });
                 }else{
-                    html += '<tr><td colspan="3" class="text-center">No Data Available.</td></tr>';
+                    var cspan = ('@Auth::user()->role_id == 1') ? 4 : 3;
+                    html += '<tr><td colspan="'+cspan+'" class="text-center">No Data Available.</td></tr>';
                 }
                 $('#top_products_per_quantity_tbody').html(html);
             }
@@ -1600,5 +1642,7 @@
 function labelFormatter(label, series) {
     return "<div class='default_label' style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
 }
+
+});
 </script>     
 @endpush
