@@ -1231,7 +1231,7 @@ class ProductReportController extends Controller
       }
 
       if(@Auth::user()->role_id === 1){
-        // $items = $this->getCustomserQuotInvData($table, $alias, $request, $sum);
+        $items = $this->getCustomerQuotInvData($table, $alias, $request, $sum);
       }else{ //customer
 
         $cust_id = explode(',', Auth::user()->multi_customer_id);
@@ -1340,9 +1340,38 @@ class ProductReportController extends Controller
       return $query->get();
     }
 
-    private function getCustomserQuotInvData($table, $alias, $request, $sum){
+    private function getCustomerQuotInvData($table, $alias, $request, $sum){
+      $customers = DB::table($table.'s')
+                    ->selectRaw('card_code, card_name, sap_connection_id')
+                       ->where('sap_connection_id', $request->filter_company)
+                       ->where('cancelled', 'No')
+                       ->groupBy('card_code')
+                       ->get();   
+      $items = [];
+      $response = [];
+      foreach($customers as $key => $cust){
+        $response = $this->getQuotInvPerCustomer($table, $alias, $cust->card_code, $request, $sum);
 
+        if(!empty($response)){ //not empty
+          $items[$key] = $response;
+        }
+      }
+
+      $total_orders = array_column($items, 'total_order');
+      if(count($total_orders) > 0){
+        array_multisort($total_orders, SORT_DESC, $items);
+        $items = array_slice($items, 0, 10);
+
+        return ($items[0]->total_order <= 0) ? (object)[] : $items ;
+      }else{
+        return [];
+      }
+      
+    }
+
+    private function getQuotInvPerCustomer($table, $alias, $card_code, $request, $sum){
       $totalSelectQuery = ($request->type == 'Liters')? '(sum('.$sum.') * prod.sales_unit_weight)  as total_order' : 'sum('.$sum.') as total_order';
+      
       $query = DB::table(''.$table.'s as '.$alias.'')
                   ->join(''.$table.'_items as item', 'item.'.$table.'_id', '=', $alias.'.id');
                   if($request->type == 'Liters'){
@@ -1351,20 +1380,33 @@ class ProductReportController extends Controller
                       $join->on('prod.sap_connection_id', '=', 'item.real_sap_connection_id');
                     });
                   }
-                  $query->join('customers as cust', function($join) use ($alias){
-                      $join->on('cust.card_code', '=', $alias.'.card_code');
-                      // $join->on('cust.real_sap_connection_id', '=', $alias.'.real_sap_connection_id');
-                  })
-                  ->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', item.real_sap_connection_id')
+            $query->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', card_code, card_name')
+                  ->where('card_code', $card_code)
+                  ->where($alias.'.sap_connection_id', $request->filter_company)
                   ->where('cancelled', 'No');
+
+                  if($request->filter_date_range != ""){ //date filter
+                    $date = explode(" - ", $request->filter_date_range);
+                    $start = date("Y-m-d", strtotime($date[0]));
+                    $end = date("Y-m-d", strtotime($date[1]));
+              
+                    $query->whereDate($alias.'.created_at', '>=' , $start);
+                    $query->whereDate($alias.'.created_at', '<=' , $end);
+                  }else{ //default filter
+                    $query->whereYear($alias.'.created_at', '=' , date('Y'));
+                    $query->whereMonth($alias.'.created_at', '=' , date('m'));
+                  }
+
                   if($request->type == 'Liters'){
                     $query->whereIn('prod.items_group_code', [109, 111]); //mobil and castrol
-                    // $query->where('prod.is_active', 1);
                   }
-                  $query->groupBy('item.item_code');
-
-      return $query->get();
+            $query->groupBy('item.item_code')
+                  ->orderBy('total_order', 'desc')
+                  ->limit(1);
+      
+      return ($query->get()->count() === 0)? [] : $query->first();
     }
+
 
 
   }

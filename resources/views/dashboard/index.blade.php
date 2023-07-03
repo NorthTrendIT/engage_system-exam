@@ -427,46 +427,50 @@
                     </div>
 
                     <div class="card-body">
-                        <div class="row float-end mb-2">
-                            <div class="col-4">
+                        <div class="row mb-2">
+                            <div class="col-3 align-self-end">
                                 <select id="total_performing_db" class="form-select form-select-sm">
                                     @foreach($company as $c)
                                         <option value="{{$c->id}}">{{$c->company_name}}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-8">
+                            <div class="col-5 align-self-end">
                                 <div class="input-icon">
                                     <input type="text" class="form-control form-control-sm" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1">
                                 </div>
                             </div>
                         </div>
-
-                        <div class="d-block text-center">
-                            <button class="btn btn-primary " type="button" id="top-products-loader" disabled>
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                Loading...
-                            </button>
+                        
+                        <div class="row">
+                            <div class="col">
+                            <div class="d-block text-center">
+                                <button class="btn btn-primary " type="button" id="top-products-loader" disabled>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Loading...
+                                </button>
+                            </div>
+                            <!--begin::Chart-->
+                            <div id="top-products-table-wrapper" style="height: 320px; min-height: 320px;" class="table-responsive d-none">
+                                <table id="top_products_per_quantity" class="table table-bordered table-fit">
+                                    <thead>
+                                        <tr> 
+                                            <td>Top</td>
+                                            @if(@Auth::user()->role_id == 1)
+                                            <td>Customer</td>
+                                            @endif
+                                            <td>Product</td>
+                                            <td>Total</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="top_products_per_quantity_tbody">
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!--end::Chart-->
+                            </div>
                         </div>
-                        <!--begin::Chart-->
-                        <div id="top-products-table-wrapper" style="height: 320px; min-height: 320px;" class="d-none">
-                            <table id="top_products_per_quantity" class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap">
-                                <thead>
-                                    <tr> 
-                                        <td>Top</td>
-                                        @if(@Auth::user()->role_id == 1)
-                                         <td>Customer</td>
-                                        @endif
-                                        <td>Product</td>
-                                        <td>Total</td>
-                                    </tr>
-                                </thead>
-                                <tbody id="top_products_per_quantity_tbody">
-                                    
-                                </tbody>
-                            </table>
-                        </div>
-                        <!--end::Chart-->
                     </div>
                     <!--end::Body-->
                 </div>
@@ -740,6 +744,9 @@
 @push('js')
 <script src="{{ asset('assets') }}/assets/plugins/custom/flotcharts/flotcharts.bundle.js"></script>
 <script src="http://www.flotcharts.org/flot/source/jquery.flot.legend.js"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -1498,6 +1505,7 @@ $(document).ready(function() {
         backOrderChart.render();
     }
 @endif
+    var top_products_per_quantity = $('#top_products_per_quantity').DataTable();
     getProductData();
 
     $(document).on("change","#total_performing_type, #total_performing_orders, #total_performing_db",function(){
@@ -1524,14 +1532,14 @@ $(document).ready(function() {
         var filter_company = $('#total_performing_db').val();
 
         var filter_datas = {
-                    _token:'{{ csrf_token() }}',
-                    type:type,
-                    order:order,
+                    _token: '{{ csrf_token() }}',
+                    type: type,
+                    order: order,
+                    filter_date_range: filter_date_range
                 }
                 
         @if(@Auth::user()->role_id == 1)
           filter_datas['filter_company'] = filter_company;
-          filter_datas['filter_date_range'] = filter_date_range;
         @endif
 
         // Get Top Product Data
@@ -1558,20 +1566,23 @@ $(document).ready(function() {
                 var html = '';
                 if(result.data.length > 0){
                     $.each(result.data, function( index, value ) {
-                        html += '<tr>';
-                        html += '<td>'+(index+1)+'</td>';
-                        @if(@Auth::user()->role_id == 1)
-                        html += '<td></td>';
-                        @endif
-                        html += '<td>'+value.item_description+'</td>';
-                        html += '<td>'+(value.total_order).toLocaleString()+'</td>';
-                        html += '</tr>';
+                        // html += '<tr>';
+                        // html += '<td>'+(index+1)+'</td>';
+                        // @if(@Auth::user()->role_id == 1)
+                        // html += '<td>'+value.card_name+'</td>';
+                        // @endif
+                        // html += '<td>'+value.item_description+'</td>';
+                        // html += '<td>'+(value.total_order).toLocaleString()+'</td>';
+                        // html += '</tr>';
+                        top_products_per_quantity.row.add([(index+1), value.item_description, (value.total_order).toLocaleString()]);
                     });
                 }else{
                     var cspan = ('@Auth::user()->role_id == 1') ? 4 : 3;
                     html += '<tr><td colspan="'+cspan+'" class="text-center">No Data Available.</td></tr>';
                 }
-                $('#top_products_per_quantity_tbody').html(html);
+
+                top_products_per_quantity.draw();
+                // $('#top_products_per_quantity_tbody').html(html);
             }
         })
         .fail(function() {
