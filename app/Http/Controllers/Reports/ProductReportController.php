@@ -1407,7 +1407,6 @@ class ProductReportController extends Controller
     }
 
     private function getQuotInvPerCustomer($table, $alias, $card_code, $request, $sum){
-      dd($sum);
       $totalSelectQuery = ($request->type == 'Liters')? '(sum('.$sum.') * prod.sales_unit_weight)  as total_order' : 'sum('.$sum.') as total_order';
       
       $query = DB::table(''.$table.'s as '.$alias.'')
