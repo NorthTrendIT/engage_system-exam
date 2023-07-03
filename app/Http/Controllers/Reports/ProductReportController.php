@@ -1365,12 +1365,23 @@ class ProductReportController extends Controller
     }
 
     private function getCustomerQuotInvData($table, $alias, $request, $sum){
-      $customers = DB::table($table.'s')
+      $query = DB::table(''.$table.'s as '.$alias.'')
                     ->selectRaw('card_code, card_name, sap_connection_id')
                        ->where('sap_connection_id', $request->filter_company)
-                       ->where('cancelled', 'No')
-                       ->groupBy('card_code')
-                       ->get();   
+                       ->where('cancelled', 'No');
+                       if($request->filter_date_range != ""){ //date filter
+                        $date = explode(" - ", $request->filter_date_range);
+                        $start = date("Y-m-d", strtotime($date[0]));
+                        $end = date("Y-m-d", strtotime($date[1]));
+                  
+                        $query->whereDate($alias.'.created_at', '>=' , $start);
+                        $query->whereDate($alias.'.created_at', '<=' , $end);
+                      }else{ //default filter
+                        $query->whereYear($alias.'.created_at', '=' , date('Y'));
+                        $query->whereMonth($alias.'.created_at', '=' , date('m'));
+                      }
+      $customers = $query->groupBy('card_code')->get();   
+
       $items = [];
       $response = [];
       foreach($customers as $key => $cust){
