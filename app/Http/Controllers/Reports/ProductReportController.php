@@ -1221,7 +1221,7 @@ class ProductReportController extends Controller
       else if($request->type == 'Amount'){
         $sum = 'item.gross_total';
       }
-
+      dd($sum, $request->type);
       if($request->order == 'order'){
         $table = 'quotation';
         $alias = 'quot';
@@ -1369,6 +1369,7 @@ class ProductReportController extends Controller
                     ->selectRaw('card_code, card_name, sap_connection_id')
                        ->where('sap_connection_id', $request->filter_company)
                        ->where('cancelled', 'No');
+
                        if($request->filter_date_range != ""){ //date filter
                         $date = explode(" - ", $request->filter_date_range);
                         $start = date("Y-m-d", strtotime($date[0]));
@@ -1380,6 +1381,7 @@ class ProductReportController extends Controller
                         $query->whereYear($alias.'.created_at', '=' , date('Y'));
                         $query->whereMonth($alias.'.created_at', '=' , date('m'));
                       }
+
       $customers = $query->groupBy('card_code')->get();   
 
       $items = [];
@@ -1405,6 +1407,7 @@ class ProductReportController extends Controller
     }
 
     private function getQuotInvPerCustomer($table, $alias, $card_code, $request, $sum){
+      dd($sum);
       $totalSelectQuery = ($request->type == 'Liters')? '(sum('.$sum.') * prod.sales_unit_weight)  as total_order' : 'sum('.$sum.') as total_order';
       
       $query = DB::table(''.$table.'s as '.$alias.'')

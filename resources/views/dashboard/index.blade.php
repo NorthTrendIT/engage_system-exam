@@ -341,7 +341,7 @@
         </div>
 
 
-        <div class="row gy-5 g-xl-8 d-none">
+        {{-- <div class="row gy-5 g-xl-8 d-none">
             <!-- Promotion Report -->
             <div class="col-xl-6">
                 <div class="card card-xl-stretch mb-xl-8">
@@ -372,7 +372,7 @@
                         <input type="button" name="all_time" id="all_time" value="All Time" class="btn btn-primary btn-sm">
                         <div class="">
                           <div class="input-icon">
-                            {{-- <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly> --}}
+                            /**<input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly> **/
                             <span>
                             </span>
                           </div>
@@ -396,7 +396,7 @@
                 </div>
                 <!--end::Charts Widget 1-->
             </div>
-        </div>
+        </div> --}}
 
         <div id="hover">
         
