@@ -1221,7 +1221,7 @@ class ProductReportController extends Controller
       else if($request->type == 'Amount'){
         $sum = 'item.gross_total';
       }
-      dd($sum, $request->type);
+
       if($request->order == 'order'){
         $table = 'quotation';
         $alias = 'quot';
