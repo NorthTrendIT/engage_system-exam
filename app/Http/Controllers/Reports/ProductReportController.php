@@ -1265,7 +1265,7 @@ class ProductReportController extends Controller
                         $query->whereDate($alias.'.created_at', '>=' , $start);
                         $query->whereDate($alias.'.created_at', '<=' , $end);
                       }
-                      
+
                       if($request->type == 'Liters'){
                         $query->whereIn('prod.items_group_code', [109, 111]); //mobil and castrol
                         // $query->where('prod.is_active', 1);
@@ -1341,6 +1341,16 @@ class ProductReportController extends Controller
                   ->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', item.real_sap_connection_id')
                   ->whereIn('cust.id', $cust_id)
                   ->where('cancelled', 'No');
+
+                  if($request->filter_date_range != ""){ //date filter
+                    $date = explode(" - ", $request->filter_date_range);
+                    $start = date("Y-m-d", strtotime($date[0]));
+                    $end = date("Y-m-d", strtotime($date[1]));
+              
+                    $query->whereDate($alias.'.created_at', '>=' , $start);
+                    $query->whereDate($alias.'.created_at', '<=' , $end);
+                  }
+                  
                   if($request->type == 'Liters'){
                     $query->whereIn('prod.items_group_code', [109, 111]); //mobil and castrol
                     // $query->where('prod.is_active', 1);
