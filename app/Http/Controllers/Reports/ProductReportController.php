@@ -1315,11 +1315,15 @@ class ProductReportController extends Controller
       }
 
       $total_orders = array_column($items, 'total_order');
-      array_multisort($total_orders, SORT_DESC, $items);
-      // arsort($total_orders);
-      $items = array_slice($items, 0, 5);
+      if(count($total_orders) > 0){
+        array_multisort($total_orders, SORT_DESC, $items);
+        // arsort($total_orders);
+        $items = array_slice($items, 0, 5);
 
-      return ($items[0]->total_order <= 0) ? (object)[] : $items ;
+        return ($items[0]->total_order <= 0) ? (object)[] : $items ;
+      }else{
+        return [];
+      }
     }
 
 
@@ -1350,7 +1354,7 @@ class ProductReportController extends Controller
                     $query->whereDate($alias.'.created_at', '>=' , $start);
                     $query->whereDate($alias.'.created_at', '<=' , $end);
                   }
-                  
+
                   if($request->type == 'Liters'){
                     $query->whereIn('prod.items_group_code', [109, 111]); //mobil and castrol
                     // $query->where('prod.is_active', 1);
