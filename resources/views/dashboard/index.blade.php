@@ -1561,6 +1561,8 @@ $(document).ready(function() {
             }else{
                 if(result.data1.length > 0){
                     render_top_product_quantity_graph(result.data1);
+                }else{
+                    $('#top_products_per_quantity_chart canvas').addClass('d-none');
                 }
 
                 var html = '';
