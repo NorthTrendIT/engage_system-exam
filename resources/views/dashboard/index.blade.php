@@ -427,15 +427,15 @@
                     </div>
 
                     <div class="card-body">
-                        <div class="row mb-2">
-                            <div class="col-3 align-self-end">
+                        <div class="d-flex justify-content-end mb-2">
+                            <div class="col-3 @if(Auth::user()->role_id == 4) d-none @endif">
                                 <select id="total_performing_db" class="form-select form-select-sm">
                                     @foreach($company as $c)
                                         <option value="{{$c->id}}">{{$c->company_name}}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-5 align-self-end">
+                            <div class="col-5">
                                 <div class="input-icon">
                                     <input type="text" class="form-control form-control-sm" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1">
                                 </div>
