@@ -453,7 +453,7 @@
                             <!--begin::Chart-->
                             <div id="top-products-table-wrapper" style="height: 320px; min-height: 320px;" class="table-responsive d-none">
                                 <table id="top_products_per_quantity" class="table table-bordered table-fit">
-                                    <thead class="sticky-top">
+                                    <thead class="">
                                         <tr> 
                                             <td>Top</td>
                                             @if(@Auth::user()->role_id == 1)
@@ -1505,7 +1505,7 @@ $(document).ready(function() {
         backOrderChart.render();
     }
 @endif
-    // var top_products_per_quantity = $('#top_products_per_quantity').DataTable();
+    var top_products_per_quantity = $('#top_products_per_quantity').DataTable();
     getProductData();
 
     $(document).on("change","#total_performing_type, #total_performing_orders, #total_performing_db",function(){
@@ -1521,6 +1521,7 @@ $(document).ready(function() {
     // });
 
     function getProductData(){
+        top_products_per_quantity.clear().draw();
         $('#top-products-loader').removeClass('d-none');
         $('#top-products-loader-canvas').removeClass('d-none');
         $('#top-products-table-wrapper').addClass('d-none');
@@ -1568,23 +1569,25 @@ $(document).ready(function() {
                 var html = '';
                 if(result.data.length > 0){
                     $.each(result.data, function( index, value ) {
-                        html += '<tr>';
-                        html += '<td>'+(index+1)+'</td>';
-                        @if(@Auth::user()->role_id == 1)
-                        html += '<td>'+value.card_name+'</td>';
-                        @endif
-                        html += '<td>'+value.item_description+'</td>';
-                        html += '<td>'+(value.total_order).toLocaleString()+'</td>';
-                        html += '</tr>';
-                        // top_products_per_quantity.row.add([(index+1), value.item_description, (value.total_order).toLocaleString()]);
+                        // html += '<tr>';
+                        // html += '<td>'+(index+1)+'</td>';
+                        // @if(@Auth::user()->role_id == 1)
+                        // html += '<td>'+value.card_name+'</td>';
+                        // @endif
+                        // html += '<td>'+value.item_description+'</td>';
+                        // html += '<td>'+(value.total_order).toLocaleString()+'</td>';
+                        // html += '</tr>';
+                        top_products_per_quantity.row.add([(index+1), value.card_name, value.item_description, (value.total_order).toLocaleString()]);
                     });
-                }else{
-                    var cspan = ('@Auth::user()->role_id == 1') ? 4 : 3;
-                    html += '<tr><td colspan="'+cspan+'" class="text-center">No Data Available.</td></tr>';
                 }
+                // else{
+                //     // var cspan = ('@Auth::user()->role_id == 1') ? 4 : 3;
+                //     // html += '<tr><td colspan="'+cspan+'" class="text-center">No Data Available.</td></tr>';
+                //     top_products_per_quantity.row.add();
+                // }
 
-                // top_products_per_quantity.draw();
-                $('#top_products_per_quantity_tbody').html(html);
+                top_products_per_quantity.draw();
+                // $('#top_products_per_quantity_tbody').html(html);
             }
         })
         .fail(function() {
