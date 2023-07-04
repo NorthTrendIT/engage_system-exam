@@ -453,7 +453,7 @@
                             <!--begin::Chart-->
                             <div id="top-products-table-wrapper" style="height: 320px; min-height: 320px;" class="table-responsive d-none">
                                 <table id="top_products_per_quantity" class="table table-bordered table-fit">
-                                    <thead>
+                                    <thead class="sticky-top">
                                         <tr> 
                                             <td>Top</td>
                                             @if(@Auth::user()->role_id == 1)
