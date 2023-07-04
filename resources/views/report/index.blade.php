@@ -28,7 +28,7 @@
                     <div class="card-p">
                         <div class="row">
                             @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['promotion-report']) && $access['promotion-report'] == 1))
-                            <div class="col-md-3 mb-5">
+                            <div class="col-md-3 mb-5 @if(Auth::user()->role_id == 4) d-none @endif">
                                 <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-warning d-block my-2">
                                     
@@ -61,7 +61,7 @@
                             </div>
                             @endif
                             @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['overdue-sales-invoice-report']) && $access['overdue-sales-invoice-report'] == 1))
-                            <div class="col-md-3 mb-5">
+                            <div class="col-md-3 mb-5 @if(Auth::user()->role_id == 4) d-none @endif">
                                 <div class="bg-light-dark px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-dark d-block my-2">
                                     
@@ -83,7 +83,7 @@
                             </div>
                             @endif
                             @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['product-sales-report']) &&  $access['product-sales-report'] == 1))
-                            <div class="col-md-3 mb-5">
+                            <div class="col-md-3 mb-5 @if(Auth::user()->role_id == 4) d-none @endif">
                                 <div class="bg-light-orange px-6 py-8 rounded-2 min-w-150 box">
                                         <span class="svg-icon svg-icon-3x svg-icon-warning d-block my-2">
                                         
@@ -94,7 +94,7 @@
                             </div>
                             @endif
                             @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['product-report']) && $access['product-report'] == 1))
-                            <div class="col-md-3 mb-5">
+                            <div class="col-md-3 mb-5 @if(Auth::user()->role_id == 4) d-none @endif">
                                 <div class="bg-light-purple px-6 py-8 rounded-2 min-w-150 box">
                                         <span class="svg-icon svg-icon-3x svg-icon-primary d-block my-2">
                                         
@@ -105,7 +105,7 @@
                             </div>
                             @endif
                             @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['credit-memo-report']) && $access['credit-memo-report'] == 1))
-                            <div class="col-md-3 mb-5">
+                            <div class="col-md-3 mb-5 @if(Auth::user()->role_id == 4) d-none @endif">
                                 <div class="bg-light-light px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-success d-block my-2">
                                         <object data="{{ asset('assets/assets/media')}}/credit-report.svg" type="image/svg+xml"></object>
@@ -115,7 +115,7 @@
                             </div>
                             @endif
                             @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['debit-memo-report']) && $access['debit-memo-report'] == 1))
-                            <div class="col-md-3 mb-5">
+                            <div class="col-md-3 mb-5 @if(Auth::user()->role_id == 4) d-none @endif">
                                 <div class="bg-light-green px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-dark d-block my-2">
                                         <object data="{{ asset('assets/assets/media')}}/debit-report.svg" type="image/svg+xml"></object>
@@ -125,7 +125,7 @@
                             </div>
                             @endif
                             @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['return-order-report']) &&  $access['return-order-report'] == 1))
-                            <div class="col-md-3 mb-5">
+                            <div class="col-md-3 mb-5 @if(Auth::user()->role_id == 4) d-none @endif">
                                 <div class="bg-light-chocolate px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-danger d-block my-2">
                                         <object data="{{ asset('assets/assets/media')}}/return-order.svg" type="image/svg+xml"></object>
@@ -135,7 +135,7 @@
                             </div>
                             @endif
                             @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['sales-order-to-invoice-lead-time-report']) && $access['sales-order-to-invoice-lead-time-report'] == 1))
-                            <div class="col-md-3 mb-5">
+                            <div class="col-md-3 mb-5 @if(Auth::user()->role_id == 4) d-none @endif">
                                 <div class="bg-light-blue px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-danger d-block my-2">
                                         <object data="{{ asset('assets/assets/media')}}/sales-order-invoice-time.svg" type="image/svg+xml"></object>
@@ -145,7 +145,7 @@
                             </div>
                             @endif
                             @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['invoice-to-delivery-lead-time-report']) && $access['invoice-to-delivery-lead-time-report'] == 1))
-                            <div class="col-md-3 mb-5">
+                            <div class="col-md-3 mb-5 @if(Auth::user()->role_id == 4) d-none @endif">
                                 <div class="bg-light-red px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-danger d-block my-2">
                                         <object data="{{ asset('assets/assets/media')}}/delivery-time.svg" type="image/svg+xml"></object>
