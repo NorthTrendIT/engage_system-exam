@@ -1545,7 +1545,7 @@ $(document).ready(function() {
                                                         className: 'text-end',
                                                         targets: -1
                                                     },
-                                                    { orderable: false, targets: -1 } //last row
+                                                    // { orderable: false, targets: -1 } //last row
                                                 ]
                                         });
     getProductData();
@@ -1714,7 +1714,7 @@ $(document).ready(function() {
               show: true,
               radius: 3/4,
               formatter: labelFormatter,
-              threshold: 0.1,
+            //   threshold: 0.1,
             }
           }
         },
