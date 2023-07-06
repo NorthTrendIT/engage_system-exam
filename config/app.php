@@ -175,6 +175,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Ladumor\OneSignal\OneSignalServiceProvider::class,
+        yajra\Datatables\DatatablesServiceProvider::class
 
     ],
 
@@ -230,6 +231,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'OneSignal' => \Ladumor\OneSignal\OneSignal::class,
+        'Datatables' => yajra\Datatables\Datatables::class
 
     ],
 

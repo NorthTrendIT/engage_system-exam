@@ -18,6 +18,7 @@ use App\Exports\ProductReportExport;
 use Illuminate\Support\Facades\DB;
 use App\Models\Quotation;
 use Illuminate\Support\Facades\Log;
+use DataTables;
 
 class ProductReportController extends Controller
 {
@@ -1253,7 +1254,19 @@ class ProductReportController extends Controller
         $data[$key]['name'] = $val->item_code;
         $data[$key]['key'] = floor($val->total_order);
       }
-
+      // dd($items);
+      // return DataTables::of($items)
+      //                   ->addIndexColumn()
+      //                   ->addColumn('customer', function($row) {
+      //                       return $row->card_name;
+      //                   })
+      //                   ->addColumn('item', function($row) {
+      //                       return $row->card_name;
+      //                   })
+      //                   ->addColumn('total', function($row) {
+      //                       return $row->card_name;
+      //                   })
+      //                   ->make(true);
       $response = ['status' => true, 'data'=>$items,'data1'=>$data];
       return $response;
     }
@@ -1273,7 +1286,7 @@ class ProductReportController extends Controller
                       $join->on('cust.card_code', '=', $alias.'.card_code');
                       // $join->on('cust.real_sap_connection_id', '=', $alias.'.real_sap_connection_id');
                   })
-                  ->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', item.real_sap_connection_id')
+                  ->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', cust.card_code, cust.card_name')
                   ->whereIn('cust.id', $cust_id)
                   ->where('cancelled', 'No');
 
@@ -1284,6 +1297,9 @@ class ProductReportController extends Controller
               
                     $query->whereDate($alias.'.created_at', '>=' , $start);
                     $query->whereDate($alias.'.created_at', '<=' , $end);
+                  }else{ //default filter
+                    $query->whereYear($alias.'.created_at', '=' , date('Y'));
+                    $query->whereMonth($alias.'.created_at', '=' , date('m'));
                   }
 
                   if($request->type == 'Liters'){
@@ -1291,8 +1307,8 @@ class ProductReportController extends Controller
                     // $query->where('prod.is_active', 1);
                   }
                   $query->groupBy('item.item_code')
-                  ->orderBy('total_order', 'desc')
-                  ->limit(5);
+                  ->orderBy('total_order', 'desc');
+                  // ->limit(10);
       return $query->get();
     }
 
@@ -1314,11 +1330,15 @@ class ProductReportController extends Controller
         }
 
         $diff = ($inv_order > 0)? $quot->total_order - $inv_order : $quot->total_order;
-        $items[$key] = (object) array(
-                                    'item_code' => $quot->item_code,
-                                    'item_description' => $quot->item_description,
-                                    'total_order' => $diff
-                                );
+        if($diff > 0){
+          $items[$key] = (object) array(
+                                      'item_code' => $quot->item_code,
+                                      'item_description' => $quot->item_description,
+                                      'total_order' => $diff,
+                                      'card_code' => $quot->card_code,
+                                      'card_name' => $quot->card_name
+                                  );
+        }
         $inv_order = 0;
       }
 
@@ -1326,7 +1346,7 @@ class ProductReportController extends Controller
       if(count($total_orders) > 0){
         array_multisort($total_orders, SORT_DESC, $items);
         // arsort($total_orders);
-        $items = array_slice($items, 0, 5);
+        // $items = array_slice($items, 0, 5);
 
         return ($items[0]->total_order <= 0) ? (object)[] : $items ;
       }else{
@@ -1350,7 +1370,7 @@ class ProductReportController extends Controller
                       $join->on('cust.card_code', '=', $alias.'.card_code');
                       // $join->on('cust.real_sap_connection_id', '=', $alias.'.real_sap_connection_id');
                   })
-                  ->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', item.real_sap_connection_id')
+                  ->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', cust.card_code, cust.card_name')
                   ->whereIn('cust.id', $cust_id)
                   ->where('cancelled', 'No');
 
@@ -1361,6 +1381,9 @@ class ProductReportController extends Controller
               
                     $query->whereDate($alias.'.created_at', '>=' , $start);
                     $query->whereDate($alias.'.created_at', '<=' , $end);
+                  }else{ //default filter
+                    $query->whereYear($alias.'.created_at', '=' , date('Y'));
+                    $query->whereMonth($alias.'.created_at', '=' , date('m'));
                   }
 
                   if($request->type == 'Liters'){
@@ -1413,7 +1436,7 @@ class ProductReportController extends Controller
       $total_orders = array_column($items, 'total_order');
       if(count($total_orders) > 0){
         array_multisort($total_orders, SORT_DESC, $items);
-        $items = array_slice($items, 0, 10);
+        // $items = array_slice($items, 0, 10);
 
         return ($items[0]->total_order <= 0) ? (object)[] : $items ;
       }else{
@@ -1483,13 +1506,15 @@ class ProductReportController extends Controller
         }
 
         $diff = ($inv_order > 0)? $quot->total_order - $inv_order : $quot->total_order;
-        $items[$key] = array(
-                            'item_code' => $quot->item_code,
-                            'item_description' => $quot->item_description,
-                            'total_order' => $diff, 
-                            'card_code' => $quot->card_code,
-                            'card_name' => $quot->card_name
-                        );
+        if($diff > 0){
+          $items[$key] = array(
+                              'item_code' => $quot->item_code,
+                              'item_description' => $quot->item_description,
+                              'total_order' => $diff, 
+                              'card_code' => $quot->card_code,
+                              'card_name' => $quot->card_name
+                          );
+        }
         $inv_order = 0;
       }
 

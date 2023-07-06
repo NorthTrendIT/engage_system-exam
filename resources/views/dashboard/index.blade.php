@@ -451,14 +451,13 @@
                                 </button>
                             </div>
                             <!--begin::Chart-->
-                            <div id="top-products-table-wrapper" style="height: 320px; min-height: 320px;" class="table-responsive d-none">
-                                <table id="top_products_per_quantity" class="table table-bordered table-fit">
+                            <div id="top-products-table-wrapper"  class="container table-responsive d-none">
+                                <table id="top_products_per_quantity" class="table table-bordered display nowrap">
                                     <thead class="">
                                         <tr> 
                                             <td>Top</td>
-                                            @if(@Auth::user()->role_id == 1)
                                             <td>Customer</td>
-                                            @endif
+                                            <td>Code</td>
                                             <td>Product</td>
                                             <td>Total</td>
                                         </tr>
@@ -740,6 +739,10 @@
 </div>
 <!--end::Content-->
 @endsection
+
+@push('css')
+<link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+@endpush
 
 @push('js')
 <script src="{{ asset('assets') }}/assets/plugins/custom/flotcharts/flotcharts.bundle.js"></script>
@@ -1505,7 +1508,35 @@ $(document).ready(function() {
         backOrderChart.render();
     }
 @endif
-    var top_products_per_quantity = $('#top_products_per_quantity').DataTable();
+    var top_products_per_quantity = $('#top_products_per_quantity').DataTable({
+                                            // processing: true,
+                                            // serverSide: true,
+                                            // ajax: {
+                                            //     'url': "{{ route('reports.fetch-top-products') }}",
+                                            //     'type': 'GET',
+                                            //     headers: {
+                                            //     'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                            //     },
+                                            //     data: filter_datas
+                                            // },
+                                            // drawCallback: function(settings) {
+                                            //     $('#top-products-loader').addClass('d-none');
+                                            //     $('#top-products-loader-canvas').addClass('d-none');
+                                            //     $('#top-products-table-wrapper').removeClass('d-none');
+                                            //     $('#top_products_per_quantity_chart canvas').removeClass('d-none');
+                                            // console.log(settings.json);
+                                            // //do whatever  
+                                            // },
+                                            // columns: [
+                                            //     {data: 'DT_RowIndex'},
+                                            //     {data: 'customer'},
+                                            //     {data: 'item'},
+                                            //     {data: 'total'}
+                                            // ],
+                                            // pageLength : 5,
+                                            // lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 30]],
+                                            // aoColumnDefs: [{ "bVisible": false, "aTargets": hide_targets }],
+                                        });
     getProductData();
 
     $(document).on("change","#total_performing_type, #total_performing_orders, #total_performing_db",function(){
@@ -1522,6 +1553,7 @@ $(document).ready(function() {
 
     function getProductData(){
         top_products_per_quantity.clear().draw();
+        
         $('#top-products-loader').removeClass('d-none');
         $('#top-products-loader-canvas').removeClass('d-none');
         $('#top-products-table-wrapper').addClass('d-none');
@@ -1538,9 +1570,14 @@ $(document).ready(function() {
                     order: order,
                     filter_date_range: filter_date_range
                 }
+        var hide_targets = [];
                 
         @if(@Auth::user()->role_id == 1)
-          filter_datas['filter_company'] = filter_company;
+            filter_datas['filter_company'] = filter_company;
+        @endif
+
+        @if(@Auth::user()->role_id == 4)
+            top_products_per_quantity.column( 1 ).visible( false );
         @endif
 
         // Get Top Product Data
@@ -1577,7 +1614,8 @@ $(document).ready(function() {
                         // html += '<td>'+value.item_description+'</td>';
                         // html += '<td>'+(value.total_order).toLocaleString()+'</td>';
                         // html += '</tr>';
-                        top_products_per_quantity.row.add([(index+1), value.card_name, value.item_description, (value.total_order).toLocaleString()]);
+
+                        top_products_per_quantity.row.add([(index+1), value.card_name, value.item_code, value.item_description, (value.total_order).toLocaleString()]);
                     });
                 }
                 // else{
@@ -1587,6 +1625,7 @@ $(document).ready(function() {
                 // }
 
                 top_products_per_quantity.draw();
+                // $('td.dataTables_empty').addClass('text-center');
                 // $('#top_products_per_quantity_tbody').html(html);
             }
         })
@@ -1595,16 +1634,64 @@ $(document).ready(function() {
         });
     }
 
-    function render_top_product_quantity_graph(result){ 
-      var data = [
-            { label: result[0].name, data: result[0].key, color: '#006B54' },
-            { label: result[1].name, data: result[1].key, color: '#CD212A' }, 
-            { label: result[2].name, data: result[2].key, color: '#FFA500' },
-            { label: result[3].name, data: result[3].key, color: '#034F84' },
-            { label: result[4].name, data: result[4].key, color: '#4B5335' },
-            //{ label: "Others", data: result.others, color: '#90EE90' },
-          ];
+    $('#top_products_per_quantity_paginate').on('click', function(){
+        var data = [];
+        var index = 0;
+        top_products_per_quantity.rows( {page:'current'} ).every( function () {
+            var d = this.data();
+            data[index] = {
+                name: d[2],
+                key: d[4].replace(/\,/g,'') //remove comma
+            }
+            index++;
+        });
+        // console.log(data);
+        // console.log(top_products_per_quantity.row( 6 ).data());
+        render_top_product_quantity_graph(data);
+    })
 
+    function render_top_product_quantity_graph(result){ 
+        var data = [];
+        var hex = '';
+       
+        for (var key in result) {
+            switch(key) {
+                case '0':
+                hex = '#006B54';
+                    break;
+                case '1':
+                hex = '#CD212A';
+                    break;
+                case '2':
+                hex = '#FFA500';
+                    break;
+                case '3':
+                hex = '#034F84';
+                    break;
+                case '4':
+                hex = '#4B5335';
+                    break;
+                case '5':
+                hex = '#798EA4';
+                    break;
+                case '6':
+                hex = '#FA7A35';
+                    break;
+                case '7':
+                hex = '#00758F';
+                    break;
+                case '8':
+                hex = '#EDD59E';
+                    break;
+                case '9':
+                hex = '#E8A798';
+                    break;
+            }
+            if(key <= 9){
+                data[key] =  { label: result[key].name, data: result[key].key, color: hex }
+            }
+        }
+    
       $.plot('#top_products_per_quantity_chart', data, {
         series: {
           pie: {
