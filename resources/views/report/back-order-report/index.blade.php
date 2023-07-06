@@ -27,7 +27,7 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
         <!--begin::Button-->
-        <a href="javascript:void(0)" class="btn btn-sm btn-success generate-report" style="margin-right: 5px">Generate Report</a>
+        {{-- <a href="javascript:void(0)" class="btn btn-sm btn-success generate-report" style="margin-right: 5px">Generate Report</a> --}}
         <a href="{{ route('report.index') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
@@ -57,7 +57,7 @@
                 </div>
                 @endif
                 @if(in_array(userrole(),[1]))
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3 mt-5 d-none">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_manager" data-allow-clear="true" data-placeholder="Select Manager">
                     <option value=""></option>
                     @foreach($managers as $m)
@@ -117,7 +117,7 @@
                   </div>
                 </div> --}}
 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3 mt-5 d-none">
                   <div class="input-icon engage_transaction">
                     <input type="checkbox" class="" name = "engage_transaction" id="engage_transaction" value="1" checked>
                     <span>
@@ -127,10 +127,10 @@
                 </div>
 
 
-                <div class="col-md-6 mt-5">
+                <div class="col-md-3 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
-                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
+                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel d-none">Export Excel</a>
                 </div>
 
               </div>
@@ -185,7 +185,7 @@
               
               <div class="row mb-5">
                 <div class="col-md-12">
-                  <div class="form-group">
+                  {{-- <div class="form-group">
                     <!--begin::Table container-->
                     <div class="table-responsive column-left-right-fix-scroll-hidden">
                        <!--begin::Table-->
@@ -228,6 +228,25 @@
                     </div>
                     <!--end::Table container-->
 
+                  </div> --}}
+
+                  <div class="container">
+                    <div class="table-responsive">
+                      <table id="back_order_tbl" class="table table-bordered display nowrap">
+                          <thead class="">
+                              <tr> 
+                                  <th>Top</th>
+                                  <th>Customer</th>
+                                  <th>Code</th>
+                                  <th>Product</th>
+                                  <th class="text-center">Total</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              
+                          </tbody>
+                      </table>
+                    </div> <!--/end of table responsive -->
                   </div>
 
                 </div>
@@ -245,24 +264,39 @@
 @endsection
 
 @push('css')
-<link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
-
-<style type="text/css">
-  .other_filter_div{
-    display: none;
-  }
-</style>
+  <link href="{{ asset('assets')}}/assets/css/switch.css" rel="stylesheet" type="text/css" />
+{{-- <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css"> --}}
+  <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+  <style type="text/css">
+    .other_filter_div{
+      display: none;
+    }
+  </style>
 @endpush
 
 @push('js')
-<script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
-<script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
+  <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
+{{-- <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script> --}}
+  <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 <script>
   $(document).ready(function() {
-    render_table();
+    // render_table();
+    var back_order_tbl = $('#back_order_tbl').DataTable({
+                                                columnDefs: [
+                                                    {
+                                                        className: 'text-center',
+                                                        targets: [0]
+                                                    },
+                                                    {
+                                                        className: 'text-end',
+                                                        targets: -1
+                                                    },
+                                                    // { orderable: false, targets: -1 } //last row
+                                                ]
+                                              });
 
     $(document).on('click','.generate-report',function(){
       render_data();

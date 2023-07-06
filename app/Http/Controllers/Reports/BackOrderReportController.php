@@ -364,4 +364,41 @@ class BackOrderReportController extends Controller
         $response = ['status' => true, 'data'=>$items,'data1'=>$data];
         return $response;
     }
+
+
+    public function getBackOrderData(Request $request){
+        $table = '';
+        $alias = '';
+        $sum = '';
+        $items = [];
+
+        if($request->type == 'Quantity'){
+            $sum = 'item.quantity';
+        }else if($request->type == 'Liters'){
+            $sum = 'item.quantity';
+        }
+        else if($request->type == 'Amount'){
+            $sum = 'item.gross_total';
+        }
+
+        if($request->order == 'order'){
+            $table = 'quotation';
+            $alias = 'quot';
+        }else if($request->order == 'invoice'){
+            $table = 'invoice';
+            $alias = 'inv';
+        }
+
+        if(@Auth::user()->role_id === 1){
+
+        }else{ //customer
+
+        }
+    
+    }
+
+
+
+
+
 }
