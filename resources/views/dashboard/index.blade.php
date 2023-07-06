@@ -1536,6 +1536,17 @@ $(document).ready(function() {
                                             // pageLength : 5,
                                             // lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 30]],
                                             // aoColumnDefs: [{ "bVisible": false, "aTargets": hide_targets }],
+                                            columnDefs: [
+                                                    {
+                                                        className: 'text-center',
+                                                        targets: [0]
+                                                    },
+                                                    {
+                                                        className: 'text-end',
+                                                        targets: -1
+                                                    },
+                                                    { orderable: false, targets: -1 } //last row
+                                                ]
                                         });
     getProductData();
 
