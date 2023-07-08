@@ -367,6 +367,8 @@ class BackOrderReportController extends Controller
 
 
     public function getBackOrderData(Request $request){
+        ini_set('memory_limit', '10240M');
+        ini_set('max_execution_time', 18000);
         $table = '';
         $alias = '';
         $sum = '';
@@ -390,12 +392,240 @@ class BackOrderReportController extends Controller
         }
 
         if(@Auth::user()->role_id === 1){
-
+            $items = $this->getBackOrderPerCustomerData('invoice', 'inv', $request, 'item.quantity');
         }else{ //customer
-
+            $cust_id = explode(',', Auth::user()->multi_customer_id);
+            $items = $this->getBackOrder($request, 'item.quantity', $cust_id);
         }
-    
+        
+        return ['status' => true, 'data'=>$items];
     }
+
+
+    public function getBackOrderPerCustomerData($table, $alias, $request, $sum){ //super admin
+        $query = DB::table(''.$table.'s as '.$alias.'')
+                    ->selectRaw('card_code, card_name, sap_connection_id')
+                    ->where('sap_connection_id', $request->filter_company)
+                    ->where('cancelled', 'No');
+
+                    if($request->filter_customer != ''){
+                      $query->where('card_code', $request->filter_customer);
+                    }
+
+                    if($request->filter_date_range != ""){ //date filter
+                        $date = explode(" - ", $request->filter_date_range);
+                        $start = date("Y-m-d", strtotime($date[0]));
+                        $end = date("Y-m-d", strtotime($date[1]));
+                    
+                        $query->whereDate($alias.'.created_at', '>=' , $start);
+                        $query->whereDate($alias.'.created_at', '<=' , $end);
+                    }else{ //default filter
+                        $query->whereYear($alias.'.created_at', '=' , date('Y'));
+                        $query->whereMonth($alias.'.created_at', '=' , date('m'));
+                    }
+
+        $customers =  $query->groupBy('card_code')->get();
+
+        $items = [];
+        $response = [];
+        $counter = 0;
+        foreach($customers as $key => $cust){
+            $response = $this->getBackOrderPerCustomer($request, $sum, $cust->card_code);
+
+            $response = (array) $response;
+            if(!empty($response)){ //not empty
+                foreach($response as $resp){
+                    $items[$counter] = (object) $resp; //making sure it's object.
+                    $counter++;
+                }
+            }
+        }
+
+        $total_orders = array_column($items, 'total_order');
+        if(count($total_orders) > 0){
+            array_multisort($total_orders, SORT_DESC, $items);
+
+            return ($items[0]->total_order <= 0) ? (object)[] : $items ;
+        }else{
+            return [];
+        }
+
+    }
+
+    private function getBackOrderPerCustomer($request, $sum, $card_code){
+        $quotations = $this->getQuotInvPerCustomer('quotation', 'quot', $card_code, $request, $sum);
+        $invoices = $this->getQuotInvPerCustomer('invoice', 'inv', $card_code, $request, $sum);
+        
+        $items = [];
+        $diff  = 0;
+        $inv_order = 0;
+        foreach($quotations as $key => $quot){
+          foreach($invoices as $inv){
+            if($quot->item_code == $inv->item_code){
+              $inv_order = $inv->total_order;
+            }
+          }
+
+          $diff = ($inv_order > 0)? $quot->total_order - $inv_order : $quot->total_order;
+          if($diff > 0){
+            $items[$key] = array(
+                                'item_code' => $quot->item_code,
+                                'item_description' => $quot->item_description,
+                                'total_order' => $diff, 
+                                'card_code' => $quot->card_code,
+                                'card_name' => $quot->card_name
+                            );
+          }
+          $inv_order = 0;
+        }
+  
+        $total_orders = array_column($items, 'total_order');
+        if(count($total_orders) > 0){
+          array_multisort($total_orders, SORT_DESC, $items);
+          // arsort($total_orders);
+          if($request->filter_customer == ''){ //filter customer is not set (return only 1)
+            $items = array_slice($items, 0, 1);
+          }
+        // dd($items);
+          return ($items[0]['total_order'] <= 0) ? (object)[] : $items ;
+        }else{
+          return [];
+        }
+    }
+
+    private function getQuotInvPerCustomer($table, $alias, $card_code, $request, $sum){
+        $totalSelectQuery = ($request->type == 'Liters')? '(sum('.$sum.') * prod.sales_unit_weight)  as total_order' : 'sum('.$sum.') as total_order';
+        
+        $query = DB::table(''.$table.'s as '.$alias.'')
+                    ->join(''.$table.'_items as item', 'item.'.$table.'_id', '=', $alias.'.id');
+                    // if($request->type == 'Liters'){
+                      $query->leftJoin('products as prod', function($join){
+                        $join->on('prod.item_code', '=', 'item.item_code');
+                        $join->on('prod.sap_connection_id', '=', 'item.real_sap_connection_id');
+                      });
+                    // }
+        $query->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', card_code, card_name')
+              ->where('card_code', $card_code)
+              ->where($alias.'.sap_connection_id', $request->filter_company)
+              ->where('cancelled', 'No');
+  
+              if($request->filter_date_range != ""){ //date filter
+                $date = explode(" - ", $request->filter_date_range);
+                $start = date("Y-m-d", strtotime($date[0]));
+                $end = date("Y-m-d", strtotime($date[1]));
+          
+                $query->whereDate($alias.'.created_at', '>=' , $start);
+                $query->whereDate($alias.'.created_at', '<=' , $end);
+              }else{ //default filter
+                $query->whereYear($alias.'.created_at', '=' , date('Y'));
+                $query->whereMonth($alias.'.created_at', '=' , date('m'));
+              }
+  
+              if($request->type == 'Liters'){
+                $query->whereIn('prod.items_group_code', [109, 111]); //mobil and castrol
+              }
+              if($request->filter_brand != ''){
+                $query->where('prod.items_group_code', $request->filter_brand);
+              }
+        $query->groupBy('item.item_code')
+              ->orderBy('total_order', 'desc');
+              
+        $response = [];
+        // if(!in_array($request->order, ['back_order', 'over_served'])){ //not in array
+        //   $query->limit(1);
+        //   $response = $query->first();
+        // }else{
+          $response = $query->get();
+        // }
+        return ($query->get()->count() === 0)? (object)[] : $response;
+      }
+
+    private function getBackOrder($request, $sum, $cust_id){
+        $quotations = $this->getQuotInvData('quotation', 'quot', $cust_id, $request, $sum);
+        $invoices = $this->getQuotInvData('invoice', 'inv', $cust_id, $request, $sum);
+  
+        $items = [];
+        $diff  = 0;
+        $inv_order = 0;
+        foreach($quotations as $key => $quot){
+          foreach($invoices as $inv){
+  
+            if($quot->item_code == $inv->item_code){
+              $inv_order = $inv->total_order;
+            }
+          }
+  
+          $diff = ($inv_order > 0)? $quot->total_order - $inv_order : $quot->total_order;
+          if($diff > 0){
+            $items[$key] = (object) array(
+                                        'item_code' => $quot->item_code,
+                                        'item_description' => $quot->item_description,
+                                        'total_order' => $diff,
+                                        'card_code' => $quot->card_code,
+                                        'card_name' => $quot->card_name
+                                    );
+          }
+          $inv_order = 0;
+        }
+  
+        $total_orders = array_column($items, 'total_order');
+        if(count($total_orders) > 0){
+          array_multisort($total_orders, SORT_DESC, $items);
+          // arsort($total_orders);
+          // $items = array_slice($items, 0, 5);
+  
+          return ($items[0]->total_order <= 0) ? (object)[] : $items ;
+        }else{
+          return [];
+        }
+    }
+
+
+    private function getQuotInvData($table, $alias, $cust_id, $request, $sum){
+      
+        $totalSelectQuery = ($request->type == 'Liters')? '(sum('.$sum.') * prod.sales_unit_weight)  as total_order' : 'sum('.$sum.') as total_order';
+        $query = DB::table(''.$table.'s as '.$alias.'')
+                    ->join(''.$table.'_items as item', 'item.'.$table.'_id', '=', $alias.'.id');
+                    // if($request->type == 'Liters'){
+                      $query->leftJoin('products as prod', function($join){
+                        $join->on('prod.item_code', '=', 'item.item_code');
+                        $join->on('prod.sap_connection_id', '=', 'item.real_sap_connection_id');
+                      });
+                    // }
+                    $query->join('customers as cust', function($join) use ($alias){
+                        $join->on('cust.card_code', '=', $alias.'.card_code');
+                        // $join->on('cust.real_sap_connection_id', '=', $alias.'.real_sap_connection_id');
+                    })
+                    ->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', cust.card_code, cust.card_name')
+                    ->whereIn('cust.id', $cust_id)
+                    ->where('cancelled', 'No');
+  
+                    if($request->filter_date_range != ""){ //date filter
+                      $date = explode(" - ", $request->filter_date_range);
+                      $start = date("Y-m-d", strtotime($date[0]));
+                      $end = date("Y-m-d", strtotime($date[1]));
+                
+                      $query->whereDate($alias.'.created_at', '>=' , $start);
+                      $query->whereDate($alias.'.created_at', '<=' , $end);
+                    }else{ //default filter
+                      $query->whereYear($alias.'.created_at', '=' , date('Y'));
+                      $query->whereMonth($alias.'.created_at', '=' , date('m'));
+                    }
+  
+                    if($request->type == 'Liters'){
+                      $query->whereIn('prod.items_group_code', [109, 111]); //mobil and castrol
+                      // $query->where('prod.is_active', 1);
+                    }
+                    if($request->filter_brand != ''){
+                        $query->where('prod.items_group_code', $request->filter_brand);
+                    }
+                    $query->groupBy('item.item_code');
+  
+        return $query->get();
+    }
+
+
+    
 
 
 

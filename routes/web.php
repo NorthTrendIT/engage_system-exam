@@ -495,7 +495,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('product-sales-report/export', 'ProductSalesReportController@export')->name('product-sales-report.export');
 
         Route::resource('back-order-report', 'BackOrderReportController')->only('index');
-        Route::post('back-order-report/get-all', 'BackOrderReportController@getAll')->name('back-order-report.get-all');
+        Route::get('back-order-report/get-all', 'BackOrderReportController@getBackOrderData')->name('back-order-report.get-all');
         Route::get('back-order-report/export', 'BackOrderReportController@export')->name('back-order-report.export');
         Route::post('back-order-report/get-chart-data', 'BackOrderReportController@getChartData')->name('back-order-report.get-chart-data');
         Route::post('back-order-report/get-product-data', 'BackOrderReportController@getProductData')->name('back-order-report.get-product-data');

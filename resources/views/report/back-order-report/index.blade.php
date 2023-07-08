@@ -239,7 +239,7 @@
                                   <th>Customer</th>
                                   <th>Code</th>
                                   <th>Product</th>
-                                  <th class="text-center">Total</th>
+                                  <th>Total</th>
                               </tr>
                           </thead>
                           <tbody>
@@ -281,6 +281,12 @@
 <script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script> --}}
   <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
 <script>
   $(document).ready(function() {
     // render_table();
@@ -295,8 +301,15 @@
                                                         targets: -1
                                                     },
                                                     // { orderable: false, targets: -1 } //last row
+                                                ],
+                                                dom: 'Bfrtip',
+                                                buttons: [
+                                                    'copy', 'csv', 'excel', 'pdf', 'print'
                                                 ]
                                               });
+    @if(@Auth::user()->role_id == 4)
+      back_order_tbl.column( 1 ).visible( false );
+    @endif
 
     $(document).on('click','.generate-report',function(){
       render_data();
@@ -318,26 +331,29 @@
       }
 
       $filter_company = $('[name="filter_company"]').find('option:selected').val();
-      $filter_customer = $('[name="filter_customer"]').find('option:selected').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
       $engage_transaction = engage_transaction;
+      $filter_date_range = $('[name="filter_date_range"]').val();
+      var back_order_data = {
+              _token:'{{ csrf_token() }}',
+              filter_company : $filter_company,
+              filter_brand : $filter_brand,
+              filter_date_range: $filter_date_range
+          }
+
+      @if(@Auth::user()->role_id == 1)
+        back_order_data['filter_customer'] = $('[name="filter_customer"]').select2('data')[0]['card_code'];
+      @endif
 
       $.ajax({
         url: '{{ route('reports.back-order-report.get-all') }}',
-        method: "POST",
-        data: {
-                _token:'{{ csrf_token() }}',
-                filter_company : $filter_company,
-                filter_customer : $filter_customer,
-                filter_brand : $filter_brand,
-                filter_sales_specialist : $filter_sales_specialist,
-                engage_transaction : $engage_transaction,
-              }
+        method: "GET",
+        data: back_order_data
       })
       .done(function(result) {
         if(result.status){
-          toast_success(result.message);
+          // toast_success(result.message);
           
           $('.loader_img').hide();
 
@@ -345,7 +361,14 @@
           $('.grand_total_of_remaining_open_quantity_count').text(result.data.grand_total_of_remaining_open_quantity);
           $('.grand_total_of_open_amount_count').text(result.data.grand_total_of_open_amount);
           
-          render_table(result.data.table.original.data);
+          // render_table(result.data);
+          back_order_tbl.clear().draw();
+          if(result.data.length > 0){
+              $.each(result.data, function( index, value ) {
+                back_order_tbl.row.add([(index+1), value.card_name, value.item_code, value.item_description, (value.total_order).toLocaleString()]);
+              });
+          }
+          back_order_tbl.draw();
         }
       })
       .fail(function() {
@@ -433,11 +456,11 @@
       $('[name="filter_customer"]').val('').trigger('change');
       $('[name="filter_sales_specialist"]').val('').trigger('change');
 
-      if($(this).find('option:selected').val() != ""){
-        $('.other_filter_div').show();
-      }else{
-        $('.other_filter_div').hide();
-      }
+      // if($(this).find('option:selected').val() != ""){
+      //   $('.other_filter_div').show();
+      // }else{
+      //   $('.other_filter_div').hide();
+      // }
     });
 
 
@@ -511,7 +534,8 @@
             results:  $.map(response, function (item) {
                           return {
                             text: item.card_name + " (Code: " + item.card_code + ")",
-                            id: item.id
+                            id: item.id,
+                            card_code: item.card_code
                           }
                       })
           };

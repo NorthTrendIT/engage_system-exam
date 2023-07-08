@@ -18,6 +18,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ProductExport;
 use App\Exports\ProductTaggingExport;
 use App\Models\Customer; //added for sap connection only
+use App\Models\CustomerProductGroup;
 
 class ProductController extends Controller
 {
@@ -970,11 +971,16 @@ class ProductController extends Controller
 
   public function getBrandData(Request $request){
     $data = collect();
+    $c_product_group = [];
     if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
         if($request->sap_connection_id == ""){
             return response()->json($data);
         }
     }else{
+        $customer_id = explode(',', Auth::user()->multi_customer_id);
+        $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
+        $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
+
         $user = User::where('id',Auth::id())->first();
         $request->sap_connection_id = $user->sap_connection_id;
     }
@@ -992,7 +998,13 @@ class ProductController extends Controller
         $sap_connection_id = 1;
       }
 
-      $data = ProductGroup::where('sap_connection_id', $sap_connection_id)->orderby('group_name')->where('is_active', true)->limit(50);
+      $data = ProductGroup::query();
+      if(Auth::user()->role_id  === 4){ //distributor
+        $data->whereIn('id', $c_product_group);
+      }else{
+        $data->where('sap_connection_id', $sap_connection_id);
+      }
+      $data->orderby('group_name')->where('is_active', true)->limit(50);
 
       $data->whereNotIn('group_name', ['Items', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT']);
 
