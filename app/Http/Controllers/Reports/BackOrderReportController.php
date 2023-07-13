@@ -9,6 +9,7 @@ use App\Models\OrderItem;
 use App\Models\SapConnection;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\Quotation;
 
 use DB;
 use DataTables;
@@ -391,7 +392,7 @@ class BackOrderReportController extends Controller
             $alias = 'inv';
         }
 
-        if(@Auth::user()->role_id === 1){
+        if(in_array(@Auth::user()->role_id, [1, 14])){
             $items = $this->getBackOrderPerCustomerData('invoice', 'inv', $request, 'item.quantity');
         }else{ //customer
             $cust_id = explode(',', Auth::user()->multi_customer_id);
@@ -402,7 +403,7 @@ class BackOrderReportController extends Controller
     }
 
 
-    public function getBackOrderPerCustomerData($table, $alias, $request, $sum){ //super admin
+    public function getBackOrderPerCustomerData($table, $alias, $request, $sum){ //super admin - agent
         $query = DB::table(''.$table.'s as '.$alias.'')
                     ->selectRaw('card_code, card_name, sap_connection_id')
                     ->where('sap_connection_id', $request->filter_company)
@@ -458,8 +459,10 @@ class BackOrderReportController extends Controller
         
         $items = [];
         $diff  = 0;
+        $ordered = 0;
         $inv_order = 0;
         foreach($quotations as $key => $quot){
+          $ordered = $quot->total_order;
           foreach($invoices as $inv){
             if($quot->item_code == $inv->item_code){
               $inv_order = $inv->total_order;
@@ -471,11 +474,15 @@ class BackOrderReportController extends Controller
             $items[$key] = array(
                                 'item_code' => $quot->item_code,
                                 'item_description' => $quot->item_description,
+                                'ordered' => $ordered,
+                                'invoiced' => $inv_order,
                                 'total_order' => $diff, 
                                 'card_code' => $quot->card_code,
-                                'card_name' => $quot->card_name
+                                'card_name' => $quot->card_name,
+                                'sap_connection_id' => $quot->sap_connection_id
                             );
           }
+          $ordered   = 0;
           $inv_order = 0;
         }
   
@@ -504,7 +511,7 @@ class BackOrderReportController extends Controller
                         $join->on('prod.sap_connection_id', '=', 'item.real_sap_connection_id');
                       });
                     // }
-        $query->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', card_code, card_name')
+        $query->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', card_code, card_name, '.$alias.'.sap_connection_id')
               ->where('card_code', $card_code)
               ->where($alias.'.sap_connection_id', $request->filter_company)
               ->where('cancelled', 'No');
@@ -527,16 +534,14 @@ class BackOrderReportController extends Controller
               if($request->filter_brand != ''){
                 $query->where('prod.items_group_code', $request->filter_brand);
               }
-        $query->groupBy('item.item_code')
-              ->orderBy('total_order', 'desc');
+        $query->groupBy('item.item_code');
+            if($request->filter_customer == ''){
+                $query->limit(1);
+            }
+        $query->orderBy('total_order', 'desc');
               
         $response = [];
-        // if(!in_array($request->order, ['back_order', 'over_served'])){ //not in array
-        //   $query->limit(1);
-        //   $response = $query->first();
-        // }else{
-          $response = $query->get();
-        // }
+        $response = $query->get();
         return ($query->get()->count() === 0)? (object)[] : $response;
       }
 
@@ -546,8 +551,10 @@ class BackOrderReportController extends Controller
   
         $items = [];
         $diff  = 0;
+        $ordered = 0;
         $inv_order = 0;
         foreach($quotations as $key => $quot){
+          $ordered = $quot->total_order;
           foreach($invoices as $inv){
   
             if($quot->item_code == $inv->item_code){
@@ -560,11 +567,15 @@ class BackOrderReportController extends Controller
             $items[$key] = (object) array(
                                         'item_code' => $quot->item_code,
                                         'item_description' => $quot->item_description,
+                                        'ordered' => $ordered,
+                                        'invoiced' => $inv_order,
                                         'total_order' => $diff,
                                         'card_code' => $quot->card_code,
-                                        'card_name' => $quot->card_name
+                                        'card_name' => $quot->card_name,
+                                        'sap_connection_id' => $quot->sap_connection_id
                                     );
           }
+          $ordered   = 0;
           $inv_order = 0;
         }
   
@@ -596,7 +607,7 @@ class BackOrderReportController extends Controller
                         $join->on('cust.card_code', '=', $alias.'.card_code');
                         // $join->on('cust.real_sap_connection_id', '=', $alias.'.real_sap_connection_id');
                     })
-                    ->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', cust.card_code, cust.card_name')
+                    ->selectRaw('item.item_code, item.item_description, '.$totalSelectQuery.', cust.card_code, cust.card_name, '.$alias.'.sap_connection_id')
                     ->whereIn('cust.id', $cust_id)
                     ->where('cancelled', 'No');
   
@@ -624,7 +635,96 @@ class BackOrderReportController extends Controller
         return $query->get();
     }
 
+    public function getBackOrderDetails(Request $request){
+        $quotations = $this->getQuotInvNumber('quotation', 'quot', $request);
+        // $invoices = $this->getQuotInvNumber('invoice', 'inv', $request);
 
+        $items= [];
+        $inv_no = '';
+        $counter = 0;
+        // foreach($invoices as $inv){
+        //     $items[$counter]['invoice_no'] = $inv->doc_num;
+        //     foreach($quotations as $key => $quot){
+        //         if($quot->item_code == $inv->item_code){
+        //             // $inv_no = $inv->doc_num;
+        //             $items[$counter]['quotation_no'] = $quot->doc_num;
+        //         }
+        //         $counter++;
+        //     }
+
+        //     // $items[$key] = (object) array(
+        //     //                                 'quotation_no' => $quot->doc_num,
+        //     //                                 'invoice_no'   => $inv_no
+        //     //                              );
+        //     $inv_no = '';
+        // }
+        foreach($quotations as $key => $quot){
+    
+            $check_inv = $quot->order->invoice1 ?? '-';
+            if($check_inv != '-'){
+                $count_inv = 0;
+                foreach($check_inv as $inv){
+                    if($inv->cancelled == 'No' && $quot->order->cancelled == 'No'){
+                        $comma = ($count_inv > 0) ? ', ' : '';
+                        $inv_no .= $comma.$inv->doc_num;
+                        $count_inv++;
+                    }
+                }
+                $count_inv = 0; //reset
+            }
+            $items[$key]['quotation_no'] = $quot->doc_num;
+            $items[$key]['invoice_no'] = $inv_no;
+            $inv_no = '';
+        }
+
+        return ['data' => $items];
+    }
+
+    private function getQuotInvNumber($table, $alias, $request){
+        $query = 
+        Quotation::where('card_code', $request->filter_customer)
+                          ->where('sap_connection_id', $request->filter_company)
+                          ->where('cancelled', 'No');
+        if($request->filter_date_range != ""){ //date filter
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+    
+            $query->whereDate('created_at', '>=' , $start);
+            $query->whereDate('created_at', '<=' , $end);
+        }else{ //default filter
+            $query->whereYear('created_at', '=' , date('Y'));
+            $query->whereMonth('created_at', '=' , date('m'));
+        }
+        $query->whereHas('items', function($q) use($request){
+            $q->where('item_code', $request->product_code);
+        });
+        
+        // DB::table(''.$table.'s as '.$alias.'')
+        //             ->join(''.$table.'_items as item', 'item.'.$table.'_id', '=', $alias.'.id');
+        // $query->selectRaw('item.item_code, '.$alias.'.doc_num')
+        //       ->where('card_code', $request->filter_customer)
+        //       ->where($alias.'.sap_connection_id', $request->filter_company)
+        //       ->where('cancelled', 'No')
+        //       ->where('item.item_code', $request->product_code);
+  
+        //       if($request->filter_date_range != ""){ //date filter
+        //         $date = explode(" - ", $request->filter_date_range);
+        //         $start = date("Y-m-d", strtotime($date[0]));
+        //         $end = date("Y-m-d", strtotime($date[1]));
+          
+        //         $query->whereDate($alias.'.created_at', '>=' , $start);
+        //         $query->whereDate($alias.'.created_at', '<=' , $end);
+        //       }else{ //default filter
+        //         $query->whereYear($alias.'.created_at', '=' , date('Y'));
+        //         $query->whereMonth($alias.'.created_at', '=' , date('m'));
+        //       }
+  
+        // $query->groupBy($table.'_id');
+            //   ->orderBy($alias.'.doc_num', 'desc');
+              
+        return $query->get();
+    }
     
 
 

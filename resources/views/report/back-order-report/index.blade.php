@@ -147,21 +147,21 @@
               <div class="row">
                 <div class="col-md-4 mb-sm-5 mb-md-0">
                   <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative h-100">
-                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Quantity Ordered: 
+                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Total Quantity Ordered: 
                       <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
-                      <span class="grand_total_of_quantity_ordered_count text-primary"></span>
+                      <span class="total_quantity_ordered_count text-primary"></span>
                     </h6>
                   </div>
                 </div>
                 <div class="col-md-4 mb-sm-5 mb-md-0">
                   <div class="bg-light-chocolate px-6 py-8 rounded-2 min-w-150 position-relative h-100">
-                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Remaining Open Quantity: 
+                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Total Remaining Open Quantity: 
                       <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
-                      <span class="grand_total_of_remaining_open_quantity_count text-primary "></span>
+                      <span class="total_remaining_open_quantity_count text-primary "></span>
                     </h6>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 d-none">
                   <div class="bg-light-red px-6 py-8 rounded-2 min-w-150 position-relative h-100">
                     <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Of Open Amount: 
                       <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
@@ -239,7 +239,10 @@
                                   <th>Customer</th>
                                   <th>Code</th>
                                   <th>Product</th>
-                                  <th>Total</th>
+                                  <th>Ordered Qty</th>
+                                  <th>Invoiced Qty</th>
+                                  <th>Open Qty</th>
+                                  <th>Action</th>
                               </tr>
                           </thead>
                           <tbody>
@@ -261,6 +264,42 @@
     </div>
   </div>
 </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="backorderModal" tabindex="-1" aria-labelledby="backorderModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="backorderModalLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          {{-- <div class="table-responsive"> --}}
+            <table id="back_order_details_tbl" class="table table-bordered table-hover"  width="100%" >
+                <thead class="">
+                    <tr> 
+                        <th>Quotation #</th>
+                        <th>Invoice #</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+          {{-- </div> <!--/end of table responsive --> --}}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        {{-- <button type="button" class="btn btn-primary">Save changes</button> --}}
+      </div>
+    </div>
+  </div>
+</div>
+
+
 @endsection
 
 @push('css')
@@ -290,21 +329,58 @@
 <script>
   $(document).ready(function() {
     // render_table();
+    // var back_order_details_tbl = $('#back_order_details_tbl').DataTable();
     var back_order_tbl = $('#back_order_tbl').DataTable({
                                                 columnDefs: [
-                                                    {
-                                                        className: 'text-center',
-                                                        targets: [0]
-                                                    },
-                                                    {
-                                                        className: 'text-end',
-                                                        targets: -1
-                                                    },
+                                                    // {
+                                                    //     className: 'text-center',
+                                                    //     targets: [0]
+                                                    // },
+                                                    // {
+                                                    //     className: 'text-end',
+                                                    //     targets: -1
+                                                    // },
                                                     // { orderable: false, targets: -1 } //last row
                                                 ],
                                                 dom: 'Bfrtip',
                                                 buttons: [
-                                                    'copy', 'csv', 'excel', 'pdf', 'print'
+                                                    // 'copy', 'csv', 'excel', 'pdf', 'print',
+                                                    {
+                                                        extend: 'copy',
+                                                        className: 'btn btn-secondary btn-sm border border-info',
+                                                        exportOptions: {
+                                                            columns: 'th:not(:last-child)'
+                                                        },
+                                                    },
+                                                    {
+                                                        extend: 'csv',
+                                                        // text: 'Export Search Results',
+                                                        className: 'btn btn-secondary btn-sm border border-info',
+                                                        exportOptions: {
+                                                            columns: 'th:not(:last-child)'
+                                                        },
+                                                    },
+                                                    {
+                                                        extend: 'excel',
+                                                        className: 'btn btn-secondary btn-sm border border-info',
+                                                        exportOptions: {
+                                                            columns: 'th:not(:last-child)'
+                                                        },
+                                                    },
+                                                    {
+                                                        extend: 'pdf',
+                                                        className: 'btn btn-secondary btn-sm border border-info',
+                                                        exportOptions: {
+                                                            columns: 'th:not(:last-child)'
+                                                        },
+                                                    },
+                                                    {
+                                                        extend: 'print',
+                                                        className: 'btn btn-secondary btn-sm border border-info',
+                                                        exportOptions: {
+                                                            columns: 'th:not(:last-child)'
+                                                        },
+                                                    }
                                                 ]
                                               });
     @if(@Auth::user()->role_id == 4)
@@ -330,7 +406,7 @@
           $("#kt_daterangepicker_1").css("display","none");
       }
 
-      $filter_company = $('[name="filter_company"]').find('option:selected').val();
+      $filter_company = $('[name="filter_company"]').find('option:selected').val() ?? $('[name="filter_customer"]').select2('data')[0]['sap_connection_id'];
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
       $engage_transaction = engage_transaction;
@@ -341,8 +417,8 @@
               filter_brand : $filter_brand,
               filter_date_range: $filter_date_range
           }
-
-      @if(@Auth::user()->role_id == 1)
+      
+      @if(in_array(@Auth::user()->role_id, [1, 14]))
         back_order_data['filter_customer'] = $('[name="filter_customer"]').select2('data')[0]['card_code'];
       @endif
 
@@ -353,21 +429,23 @@
       })
       .done(function(result) {
         if(result.status){
-          // toast_success(result.message);
-          
-          $('.loader_img').hide();
-
-          $('.grand_total_of_quantity_ordered_count').text(result.data.grand_total_of_quantity_ordered);
-          $('.grand_total_of_remaining_open_quantity_count').text(result.data.grand_total_of_remaining_open_quantity);
-          $('.grand_total_of_open_amount_count').text(result.data.grand_total_of_open_amount);
-          
+          // toast_success(result.message);         
           // render_table(result.data);
           back_order_tbl.clear().draw();
+          var total_ordered_qty = 0;
+          var total_open_qty = 0;
           if(result.data.length > 0){
               $.each(result.data, function( index, value ) {
-                back_order_tbl.row.add([(index+1), value.card_name, value.item_code, value.item_description, (value.total_order).toLocaleString()]);
+                modal_btn = '<button type="button" class="btn btn-secondary btn-sm border border-info" data-bs-toggle="modal" data-bs-target="#backorderModal" data-card_code="'+value.card_code+'" data-sap_connection="'+value.sap_connection_id+'">View</button>'
+                back_order_tbl.row.add([(index+1), value.card_name, value.item_code, value.item_description, (value.ordered).toLocaleString(), (value.invoiced).toLocaleString(), (value.total_order).toLocaleString(), modal_btn]);
+                total_ordered_qty += value.ordered;
+                total_open_qty += value.total_order;
               });
           }
+          $('.total_quantity_ordered_count').text((total_ordered_qty).toLocaleString());
+          $('.total_remaining_open_quantity_count').text((total_open_qty).toLocaleString());
+          // $('.grand_total_of_open_amount_count').text(result.data.grand_total_of_open_amount);
+          $('.loader_img').hide(); 
           back_order_tbl.draw();
         }
       })
@@ -436,6 +514,46 @@
       $('select').val('').trigger('change');
       render_data();
     })
+
+    $('#back_order_tbl tbody').on( 'click', 'tr button', function () {
+      $product_code = back_order_tbl.row( $(this).closest('tr') ).data()[2];
+      $filter_customer = $(this).attr('data-card_code');
+      $filter_company = $(this).attr('data-sap_connection');
+      $filter_date_range = $('[name="filter_date_range"]').val();
+
+      var back_order_data = {
+              _token:'{{ csrf_token() }}',
+              filter_company : $filter_company,
+              filter_customer : $filter_customer,
+              filter_date_range: $filter_date_range,
+              product_code : $product_code
+          }
+      $('#backorderModalLabel').text($product_code); 
+      $.ajax({
+        url: '{{ route('reports.back-order-report.view-details') }}',
+        method: "GET",
+        data: back_order_data
+      })
+      .done(function(result) {
+        var html = '';
+        if(result.data.length > 0){
+          $.each(result.data, function( index, value ) {
+            html += '<tr><td>'+value.quotation_no+'</td><td>'+value.invoice_no+'</td></tr>'
+          });
+        }else{
+            html += '<tr><td colspan="2" class="text-center">No data found.</td></tr>'
+        }
+
+        $('#back_order_details_tbl tbody').html(html);
+
+      })
+      .fail(function() {
+        toast_error("error");
+      });
+
+
+      //  console.log( back_order_tbl.row( $(this).closest('tr') ).data() ); 
+    });
 
 
     $(document).on('change', '[name="filter_company"]', function(event) {
@@ -535,7 +653,8 @@
                           return {
                             text: item.card_name + " (Code: " + item.card_code + ")",
                             id: item.id,
-                            card_code: item.card_code
+                            card_code: item.card_code,
+                            sap_connection_id: item.sap_connection_id
                           }
                       })
           };
