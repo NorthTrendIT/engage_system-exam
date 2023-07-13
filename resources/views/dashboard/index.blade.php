@@ -164,7 +164,7 @@
             <!--end::Col-->
             @endif
            <!--begin::Col-->
-           @if(Auth::user()->role_id == 1)
+           @if( in_array(Auth::user()->role_id, [1,4,14]) )
            <div class="col-xl-6">
                 <!-- Pending Orders -->
                 <div class="card card-custom gutter-b">
@@ -184,7 +184,7 @@
                                     <div class="d-flex pt-2">
                                         @if(count($local_order) > 0)
                                         <a href="{{ route('orders.panding-orders') }}" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm">View All</a>
-                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5 push-all-order">Push All</a>
+                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5 push-all-order d-none">Push All</a>
                                         @endif
                                     </div>
                                 </div>

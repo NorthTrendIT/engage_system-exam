@@ -11,7 +11,7 @@
       </div>
 
       <!--begin::Actions-->
-      <div class="d-flex align-items-center py-1">
+      <div class="d-flex align-items-center py-1 d-none">
         <!--begin::Button-->
         <a href="javascript:;" class="btn btn-sm btn-info push-all-order">Push All</a>
         <!--end::Button-->

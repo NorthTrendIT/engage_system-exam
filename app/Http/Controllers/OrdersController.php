@@ -831,6 +831,14 @@ class OrdersController extends Controller
     public function getAllPendingOrder(Request $request){
 
         $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items']);
+
+        if(userrole() == 4){
+            $cust_id = explode(',', Auth::user()->multi_customer_id);
+            $data->whereIn('customer_id', $cust_id);
+        }
+        if(userrole() == 14){
+            $data->where('sales_specialist_id', Auth::user()->id);
+        }
         
         $data->where('confirmation_status', 'ERR');
 
