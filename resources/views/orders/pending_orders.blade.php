@@ -69,6 +69,7 @@
                               <th>Status</th>
                               <th>Date</th>
                               <th>Due Date</th>
+                              <th>Created By</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -138,6 +139,7 @@ $(document).ready(function() {
               {data: 'status', name: 'status'},
               {data: 'date', name: 'date'},
               {data: 'due_date', name: 'due_date'},
+              {data: 'created_by', name: 'created_by'},
               {data: 'action', name: 'action'},
           ],
           drawCallback:function(){

@@ -174,7 +174,6 @@ class HomeController extends Controller
                 // $delivery_lead = $delivery_lead->get();
             }
             if(userrole() == 14){
-                // dd(Auth::user()->id);
                 $local_order = LocalOrder::where('confirmation_status', 'ERR')->where('sales_specialist_id', Auth::user()->id)->get();
             }
             return view('dashboard.index', compact('notification','dashboard','orders','invoice_lead','delivery_lead','company', 'local_order'));

@@ -20,6 +20,8 @@ use App\Exports\BackOrderReportExport;
 use Auth;
 use App\Models\User;
 use App\Models\Role;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class BackOrderReportController extends Controller
 {
@@ -393,7 +395,7 @@ class BackOrderReportController extends Controller
         }
 
         if(in_array(@Auth::user()->role_id, [1, 14])){
-            $items = $this->getBackOrderPerCustomerData('invoice', 'inv', $request, 'item.quantity');
+            $items = $this->getBackOrderPerCustomerData('quotation', 'quot', $request, 'item.quantity');
         }else{ //customer
             $cust_id = explode(',', Auth::user()->multi_customer_id);
             $items = $this->getBackOrder($request, 'item.quantity', $cust_id);
@@ -469,7 +471,7 @@ class BackOrderReportController extends Controller
             }
           }
 
-          $diff = ($inv_order > 0)? $quot->total_order - $inv_order : $quot->total_order;
+          $diff =  $quot->total_order - $inv_order;
           if($diff > 0){
             $items[$key] = array(
                                 'item_code' => $quot->item_code,
@@ -535,9 +537,9 @@ class BackOrderReportController extends Controller
                 $query->where('prod.items_group_code', $request->filter_brand);
               }
         $query->groupBy('item.item_code');
-            if($request->filter_customer == ''){
-                $query->limit(1);
-            }
+            // if($request->filter_customer == ''){
+            //     $query->limit(1);
+            // }
         $query->orderBy('total_order', 'desc');
               
         $response = [];
@@ -562,7 +564,7 @@ class BackOrderReportController extends Controller
             }
           }
   
-          $diff = ($inv_order > 0)? $quot->total_order - $inv_order : $quot->total_order;
+          $diff = $quot->total_order - $inv_order;
           if($diff > 0){
             $items[$key] = (object) array(
                                         'item_code' => $quot->item_code,
@@ -637,43 +639,53 @@ class BackOrderReportController extends Controller
 
     public function getBackOrderDetails(Request $request){
         $quotations = $this->getQuotInvNumber('quotation', 'quot', $request);
-        // $invoices = $this->getQuotInvNumber('invoice', 'inv', $request);
-
         $items= [];
         $inv_no = '';
+        $ordered_qty = 0;
+        $served_qty = 0;
+        $back_order_qty = 0;
         $counter = 0;
-        // foreach($invoices as $inv){
-        //     $items[$counter]['invoice_no'] = $inv->doc_num;
-        //     foreach($quotations as $key => $quot){
-        //         if($quot->item_code == $inv->item_code){
-        //             // $inv_no = $inv->doc_num;
-        //             $items[$counter]['quotation_no'] = $quot->doc_num;
-        //         }
-        //         $counter++;
-        //     }
-
-        //     // $items[$key] = (object) array(
-        //     //                                 'quotation_no' => $quot->doc_num,
-        //     //                                 'invoice_no'   => $inv_no
-        //     //                              );
-        //     $inv_no = '';
-        // }
         foreach($quotations as $key => $quot){
-    
+            // $quotation_date = Carbon::parse($quot->created_at)->startOfDay();
+
+            foreach($quot->items as $q_item){
+                if($q_item->item_code == $request->product_code){
+                    $ordered_qty = $q_item->quantity;
+                }
+            }
+
             $check_inv = $quot->order->invoice1 ?? '-';
             if($check_inv != '-'){
                 $count_inv = 0;
+
                 foreach($check_inv as $inv){
-                    if($inv->cancelled == 'No' && $quot->order->cancelled == 'No'){
-                        $comma = ($count_inv > 0) ? ', ' : '';
-                        $inv_no .= $comma.$inv->doc_num;
-                        $count_inv++;
-                    }
+                    // $invoice_date = Carbon::parse($inv->created_at)->startOfDay();
+                    // if($quotation_date->eq($invoice_date)){ 
+                        if($inv->cancelled == 'No' && $quot->order->cancelled == 'No'){
+                            foreach($inv->items as $i_item){
+                                if($i_item->item_code == $request->product_code){
+                                    $served_qty = $i_item->quantity;
+                                }
+                            }
+
+                            $comma = ($count_inv > 0) ? ', ' : '';
+                            $inv_no .= $comma.$inv->doc_num;
+                            $count_inv++;
+                        }
+                    // }
                 }
                 $count_inv = 0; //reset
             }
-            $items[$key]['quotation_no'] = $quot->doc_num;
-            $items[$key]['invoice_no'] = $inv_no;
+
+            $back_order_qty = $ordered_qty - $served_qty ; //of a specific product
+            if($back_order_qty > 0){
+                $items[$counter]['quotation_no'] = $quot->doc_num;
+                $items[$counter]['invoice_no'] = $inv_no;
+                $counter++;
+            }
+
+            $ordered_qty = 0;
+            $served_qty = 0;
             $inv_no = '';
         }
 
@@ -699,30 +711,7 @@ class BackOrderReportController extends Controller
         $query->whereHas('items', function($q) use($request){
             $q->where('item_code', $request->product_code);
         });
-        
-        // DB::table(''.$table.'s as '.$alias.'')
-        //             ->join(''.$table.'_items as item', 'item.'.$table.'_id', '=', $alias.'.id');
-        // $query->selectRaw('item.item_code, '.$alias.'.doc_num')
-        //       ->where('card_code', $request->filter_customer)
-        //       ->where($alias.'.sap_connection_id', $request->filter_company)
-        //       ->where('cancelled', 'No')
-        //       ->where('item.item_code', $request->product_code);
-  
-        //       if($request->filter_date_range != ""){ //date filter
-        //         $date = explode(" - ", $request->filter_date_range);
-        //         $start = date("Y-m-d", strtotime($date[0]));
-        //         $end = date("Y-m-d", strtotime($date[1]));
-          
-        //         $query->whereDate($alias.'.created_at', '>=' , $start);
-        //         $query->whereDate($alias.'.created_at', '<=' , $end);
-        //       }else{ //default filter
-        //         $query->whereYear($alias.'.created_at', '=' , date('Y'));
-        //         $query->whereMonth($alias.'.created_at', '=' , date('m'));
-        //       }
-  
-        // $query->groupBy($table.'_id');
-            //   ->orderBy($alias.'.doc_num', 'desc');
-              
+                     
         return $query->get();
     }
     

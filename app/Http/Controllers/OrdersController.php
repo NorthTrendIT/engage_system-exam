@@ -874,6 +874,13 @@ class OrdersController extends Controller
                         ->addColumn('due_date', function($row) {
                             return date('M d, Y',strtotime($row->due_date));
                         })
+                        ->addColumn('created_by', function($row) {
+                            if(!empty($row->sales_specialist_id)){
+                                return $row->sales_specialist->sales_specialist_name ?? '-';
+                            } else {
+                                return "Customer";
+                            }
+                        })
                         ->orderColumn('due_date', function ($query, $order) {
                             $query->orderBy('due_date', $order);
                         })

@@ -1329,7 +1329,7 @@ class ProductReportController extends Controller
           }
         }
 
-        $diff = ($inv_order > 0)? $quot->total_order - $inv_order : $quot->total_order;
+        $diff = $quot->total_order - $inv_order;
         if($diff > 0){
           $items[$key] = (object) array(
                                       'item_code' => $quot->item_code,
@@ -1505,7 +1505,7 @@ class ProductReportController extends Controller
           }
         }
 
-        $diff = ($inv_order > 0)? $quot->total_order - $inv_order : $quot->total_order;
+        $diff = $quot->total_order - $inv_order;
         if($diff > 0){
           $items[$key] = array(
                               'item_code' => $quot->item_code,

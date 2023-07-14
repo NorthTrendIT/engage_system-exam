@@ -406,19 +406,19 @@
           $("#kt_daterangepicker_1").css("display","none");
       }
 
-      $filter_company = $('[name="filter_company"]').find('option:selected').val() ?? $('[name="filter_customer"]').select2('data')[0]['sap_connection_id'];
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
       $engage_transaction = engage_transaction;
       $filter_date_range = $('[name="filter_date_range"]').val();
       var back_order_data = {
               _token:'{{ csrf_token() }}',
-              filter_company : $filter_company,
+              // filter_company : $filter_company,
               filter_brand : $filter_brand,
               filter_date_range: $filter_date_range
           }
       
       @if(in_array(@Auth::user()->role_id, [1, 14]))
+        back_order_data['filter_company'] = $('[name="filter_company"]').find('option:selected').val() ?? $('[name="filter_customer"]').select2('data')[0]['sap_connection_id'];
         back_order_data['filter_customer'] = $('[name="filter_customer"]').select2('data')[0]['card_code'];
       @endif
 
