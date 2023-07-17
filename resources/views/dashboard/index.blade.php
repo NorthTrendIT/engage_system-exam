@@ -192,7 +192,7 @@
                         @else
                         <div class="d-flex mb-8">
                             <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
-                                <span class="text-dark-75 font-weight-bolder font-size-lg mb-2">No Pending Order to push.</span>
+                                <span class="text-dark-75 font-weight-bolder font-size-lg mb-2">No Error Orders to push.</span>
                             </div>
                         </div>
                         @endif
