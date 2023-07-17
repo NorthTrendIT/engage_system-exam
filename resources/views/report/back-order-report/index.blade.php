@@ -517,6 +517,7 @@
 
     $('#back_order_tbl tbody').on( 'click', 'tr button', function () {
       $product_code = back_order_tbl.row( $(this).closest('tr') ).data()[2];
+      $product_name = back_order_tbl.row( $(this).closest('tr') ).data()[3];
       $filter_customer = $(this).attr('data-card_code');
       $filter_company = $(this).attr('data-sap_connection');
       $filter_date_range = $('[name="filter_date_range"]').val();
@@ -528,7 +529,7 @@
               filter_date_range: $filter_date_range,
               product_code : $product_code
           }
-      $('#backorderModalLabel').text($product_code); 
+      $('#backorderModalLabel').text('['+$product_code+']'+$product_name); 
       $.ajax({
         url: '{{ route('reports.back-order-report.view-details') }}',
         method: "GET",

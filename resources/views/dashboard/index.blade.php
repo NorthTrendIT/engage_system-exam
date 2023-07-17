@@ -166,14 +166,14 @@
            <!--begin::Col-->
            @if( in_array(Auth::user()->role_id, [1,4,14]) )
            <div class="col-xl-6">
-                <!-- Pending Orders -->
+                <!-- Error Orders -->
                 <div class="card card-custom gutter-b">
                     <div class="card-header border-0 pt-5">
                         <h3 class="card-title align-items-start flex-column mb-5">
                             @if(count($local_order) > 0)
-                            <span class="card-label font-weight-bolder fw-bolder text-danger mb-1">Pending Orders ({{ count($local_order) }})</span>
+                            <span class="card-label font-weight-bolder fw-bolder text-danger mb-1">Error Orders ({{ count($local_order) }})</span>
                             @else
-                            <span class="card-label font-weight-bolder fw-bolder text-primary mb-1">Pending Orders</span>
+                            <span class="card-label font-weight-bolder fw-bolder text-primary mb-1">Error Orders</span>
                             @endif
                         </h3>
                     </div>
