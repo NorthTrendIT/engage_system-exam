@@ -138,7 +138,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('orders/notify-customer', 'App\Http\Controllers\OrdersController@notifyCustomer')->name('orders.notify-customer');
             Route::post('orders/cancel-order', 'App\Http\Controllers\OrdersController@cancelOrder')->name('orders.cancel-order');
             Route::post('orders/complete-order', 'App\Http\Controllers\OrdersController@completeOrder')->name('orders.complete-order');
-            Route::get('pending-orders', 'App\Http\Controllers\OrdersController@pendingOrder')->name('orders.panding-orders');
+            Route::get('error-orders', 'App\Http\Controllers\OrdersController@pendingOrder')->name('orders.panding-orders');
             Route::get('pending-orders/{id}', 'App\Http\Controllers\OrdersController@pendingOrderView')->name('orders.panding-orders.view');
             Route::post('pending-orders/get-all', 'App\Http\Controllers\OrdersController@getAllPendingOrder')->name('orders.get-all-pending-orders');
             Route::get('pending-promotion', 'App\Http\Controllers\OrdersController@pendingPromotion')->name('orders.pending-promotion');
@@ -495,7 +495,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('product-sales-report/export', 'ProductSalesReportController@export')->name('product-sales-report.export');
 
         Route::resource('back-order-report', 'BackOrderReportController')->only('index');
-        Route::post('back-order-report/get-all', 'BackOrderReportController@getAll')->name('back-order-report.get-all');
+        Route::get('back-order-report/get-all', 'BackOrderReportController@getBackOrderData')->name('back-order-report.get-all');
+        Route::get('back-order-report/view-details', 'BackOrderReportController@getBackOrderDetails')->name('back-order-report.view-details');
         Route::get('back-order-report/export', 'BackOrderReportController@export')->name('back-order-report.export');
         Route::post('back-order-report/get-chart-data', 'BackOrderReportController@getChartData')->name('back-order-report.get-chart-data');
         Route::post('back-order-report/get-product-data', 'BackOrderReportController@getProductData')->name('back-order-report.get-product-data');

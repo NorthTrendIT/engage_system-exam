@@ -403,7 +403,7 @@ class OrdersController extends Controller
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
-                $q->orwhere('doc_type','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('doc_num','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");
             });
         }
@@ -831,6 +831,14 @@ class OrdersController extends Controller
     public function getAllPendingOrder(Request $request){
 
         $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items']);
+
+        if(userrole() == 4){
+            $cust_id = explode(',', Auth::user()->multi_customer_id);
+            $data->whereIn('customer_id', $cust_id);
+        }
+        if(userrole() == 14){
+            $data->where('sales_specialist_id', Auth::user()->id);
+        }
         
         $data->where('confirmation_status', 'ERR');
 
@@ -865,6 +873,13 @@ class OrdersController extends Controller
                         })
                         ->addColumn('due_date', function($row) {
                             return date('M d, Y',strtotime($row->due_date));
+                        })
+                        ->addColumn('created_by', function($row) {
+                            if(!empty($row->sales_specialist_id)){
+                                return $row->sales_specialist->sales_specialist_name ?? '-';
+                            } else {
+                                return "Customer";
+                            }
                         })
                         ->orderColumn('due_date', function ($query, $order) {
                             $query->orderBy('due_date', $order);

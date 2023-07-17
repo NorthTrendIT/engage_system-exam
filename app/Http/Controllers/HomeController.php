@@ -77,10 +77,13 @@ class HomeController extends Controller
             $invoice_lead = [];
             $delivery_lead = [];
             $company = [];
+            $local_order = [];
 
             if(userrole() == 4){
                 $customers = Auth::user()->get_multi_customer_details();
+                $cust_id = explode(',', Auth::user()->multi_customer_id);
 
+                $local_order = LocalOrder::where('confirmation_status', 'ERR')->whereIn('customer_id', $cust_id)->get();
                 // $total_pending_order = Quotation::whereNotNull('u_omsno')->where('cancelled','No')->doesntHave('order')->whereIn('card_code', array_column($customers->toArray(), 'card_code'))->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))->count();
 
                 // $total_on_process_order = Order::whereNotNull('u_omsno')->where('cancelled','No')->doesntHave('invoice')->whereIn('card_code', array_column($customers->toArray(), 'card_code'))->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))->where('document_status', 'bost_Open')->count();
@@ -170,8 +173,10 @@ class HomeController extends Controller
                 // $delivery_lead->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
                 // $delivery_lead = $delivery_lead->get();
             }
-
-            return view('dashboard.index', compact('notification','dashboard','orders','invoice_lead','delivery_lead','company'));
+            if(userrole() == 14){
+                $local_order = LocalOrder::where('confirmation_status', 'ERR')->where('sales_specialist_id', Auth::user()->id)->get();
+            }
+            return view('dashboard.index', compact('notification','dashboard','orders','invoice_lead','delivery_lead','company', 'local_order'));
         }
 
     	return view('dashboard.index');

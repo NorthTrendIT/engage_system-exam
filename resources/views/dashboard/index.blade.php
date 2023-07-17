@@ -164,16 +164,16 @@
             <!--end::Col-->
             @endif
            <!--begin::Col-->
-           @if(Auth::user()->role_id == 1)
+           @if( in_array(Auth::user()->role_id, [1,4,14]) )
            <div class="col-xl-6">
-                <!-- Pending Orders -->
+                <!-- Error Orders -->
                 <div class="card card-custom gutter-b">
                     <div class="card-header border-0 pt-5">
                         <h3 class="card-title align-items-start flex-column mb-5">
                             @if(count($local_order) > 0)
-                            <span class="card-label font-weight-bolder fw-bolder text-danger mb-1">Pending Orders ({{ count($local_order) }})</span>
+                            <span class="card-label font-weight-bolder fw-bolder text-danger mb-1">Error Orders ({{ count($local_order) }})</span>
                             @else
-                            <span class="card-label font-weight-bolder fw-bolder text-primary mb-1">Pending Orders</span>
+                            <span class="card-label font-weight-bolder fw-bolder text-primary mb-1">Error Orders</span>
                             @endif
                         </h3>
                     </div>
@@ -184,7 +184,7 @@
                                     <div class="d-flex pt-2">
                                         @if(count($local_order) > 0)
                                         <a href="{{ route('orders.panding-orders') }}" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm">View All</a>
-                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5 push-all-order">Push All</a>
+                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5 push-all-order d-none">Push All</a>
                                         @endif
                                     </div>
                                 </div>
@@ -192,7 +192,7 @@
                         @else
                         <div class="d-flex mb-8">
                             <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
-                                <span class="text-dark-75 font-weight-bolder font-size-lg mb-2">No Pending Order to push.</span>
+                                <span class="text-dark-75 font-weight-bolder font-size-lg mb-2">No Error Orders to push.</span>
                             </div>
                         </div>
                         @endif
