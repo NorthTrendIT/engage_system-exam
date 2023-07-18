@@ -286,7 +286,7 @@ class ProductController extends Controller
     }
 
 
-    if(userrole() != 1){
+    if(!in_array(userrole(),[1,11])){
       $data->where('products.is_active', true);
 
       if(@Auth::user()->sap_connection_id){

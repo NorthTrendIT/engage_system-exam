@@ -110,6 +110,7 @@ class StoreCustomers implements ShouldQueue
                                 'u_class' => @$value['U_CLASS'],
                                 'u_rgn' => @$value['U_RGN'],
                                 'price_list_num' => @$value['PriceListNum'],
+                                'currency' => @$value['Currency'],
                                 'territory' => @$value['Territory'],
 
                                 'class_id' => !is_null(@$value['U_Classification']) ? @$obj_class->id : NULL,
