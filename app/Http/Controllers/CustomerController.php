@@ -849,4 +849,17 @@ class CustomerController extends Controller
 
         return response()->json($response);
     }
+
+    public function updateCustomerCurrency($sap_connection){
+        $sap_connections = SapConnection::where('id', $sap_connection)->first();
+
+        $sap_customer = new SAPCustomer($sap_connections->db_name, $sap_connections->user_name , $sap_connections->password, false, '');
+        $customers = $sap_customer->fetchCustomers();
+
+        $customer_ids = [];
+        foreach($customers['value'] as $key => $cust){
+            // $customer_ids[$key] = Customer::where('card_code', $cust['CardCode'])->where('sap_connection_id', $sap_connection)->pluck('id')->toArray();
+            Customer::where('card_code', $cust['CardCode'])->where('sap_connection_id', $sap_connection)->update(['currency' =>$cust['Currency']]);
+        }
+    }
 }

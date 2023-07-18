@@ -75,6 +75,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('customer/sync-customers', 'App\Http\Controllers\CustomerController@syncCustomers')->name('customer.sync-customers');
             Route::post('customer/get-all-bp-address', 'App\Http\Controllers\CustomerController@getAllBpAddress')->name('customer.get-all-bp-address');
             Route::post('customer/get-territory', 'App\Http\Controllers\CustomerController@getTerritory')->name('customer.get-territory');
+            Route::get('customer/update-currency/{id}', 'App\Http\Controllers\CustomerController@updateCustomerCurrency')->name('customer.update-currency');
 
             Route::get('vatgroup', 'App\Http\Controllers\VatGroupController@index')->name('vatgroup.index');
             Route::post('vatgroup/sync-vatgroup', 'App\Http\Controllers\VatGroupController@syncVatGroups')->name('vatgroup.sync-vatgroup');
