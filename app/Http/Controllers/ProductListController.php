@@ -379,15 +379,16 @@ class ProductListController extends Controller
                             ->addColumn('price', function($row) use ($customer_price_list_no, $customer_vat) {
                                 
                                 $sap_connection_id = $row->sap_connection_id;
-
+                                $currency_symbol = '';
                                 foreach($customer_vat as $cust){
-                                    if($sap_connection_id === $cust->real_sap_connection_id){
+                                    if($sap_connection_id === $cust->real_sap_connection_id){                                       
+                                        $currency_symbol = get_product_customer_currency(@$row->item_prices, $cust->price_list_num);
                                         $price = get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]);
                                     }
                                 }
 
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="" title="Not Available">₱ '.number_format_value($price).'</span>';
+                                    return '<span class="" title="Not Available">'.$currency_symbol.' '.number_format_value($price).'</span>';
                                 }else{
                                     // print_r($row->item_prices);
                                     // echo "===";
@@ -396,7 +397,8 @@ class ProductListController extends Controller
                                     // print_r($sap_connection_id);
                                     // echo "===";
                                     // print_r($customer_price_list_no[$sap_connection_id]);exit();
-                                    return "₱ ".number_format_value($price);
+                                    // $
+                                    return $currency_symbol." ".number_format_value($price);
 
                                 }
                             })

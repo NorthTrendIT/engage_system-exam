@@ -778,9 +778,11 @@ class CartController extends Controller
                                 $sap_connection_id = $row->sap_connection_id;
                                 
                                 // $vat_rate = 0;
+                                $currency_symbol = '';
                                 foreach($customer_vat as $cust){
                                     if($sap_connection_id === $cust->real_sap_connection_id){
                                     //   $vat_rate = get_vat_rate($cust);
+                                        $currency_symbol = get_product_customer_currency(@$row->item_prices, $cust->price_list_num);
                                         $price = get_product_customer_price(@$row->item_prices,@$customer_price_list_no[$sap_connection_id]);
                                     }
                                 }
@@ -790,9 +792,9 @@ class CartController extends Controller
                                 // }
 
                                 if(round($row->quantity_on_stock - $row->quantity_ordered_by_customers) < 1){
-                                    return '<span class="" title="Not Available">₱ '.number_format_value($price).'</span>';
+                                    return '<span class="" title="Not Available">'.$currency_symbol.' '.number_format_value($price).'</span>';
                                 }else{
-                                    return "₱ ".number_format_value($price);
+                                    return $currency_symbol." ".number_format_value($price);
 
                                 }
                             })

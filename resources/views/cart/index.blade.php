@@ -163,17 +163,23 @@
                                                         $customer_vat = \App\Models\Customer::whereIn('id', $customer_id)->get();
 
                                                         $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
+                                                        $currency_symbol = '';
                                                         foreach($customer_vat as $cust){
                                                             if($value->product->sap_connection_id === $cust->real_sap_connection_id){
+                                                                $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $cust->price_list_num);
                                                                 $price = get_product_customer_price(@$value->product->item_prices,$customer_price_list_no);
                                                             }
                                                         }
                                                     @endphp                    
                                                     <td class="text-end">
-                                                        <span class="fw-bolder my-2 price">₱ {{ number_format_value($price ) }}</span>
+                                                        <div class="d-flex">
+                                                            <span class="fw-bolder">{{$currency_symbol}}&nbsp;</span> <span class="fw-bolder price">{{ number_format_value($price ) }}</span>
+                                                        </div>
                                                     </td>
                                                     <td class="text-end">
-                                                        <span class="fw-bolder my-2 price total_price">₱ {{ number_format_value($price * $value->qty ) }}</span>
+                                                        <div class="d-flex">
+                                                            <span class="fw-bolder">{{$currency_symbol}}&nbsp;</span> <span class="fw-bolder price total_price">{{ number_format_value($price * $value->qty ) }}</span>
+                                                        </div>
                                                     </td>
                                                     <td>
                                                         <div class="button-wrap">
@@ -233,7 +239,9 @@
                                         <div class="col-xl-4">                                            
                                             <div class="flex-grow-1 me-2 row mb-4">
                                                 <span class="fs-8 col-xl-6">Total:</span>
-                                                <span class="fw-bolder fs-6 col-xl-6 total_span">₱ {{ number_format_value($total) }}</span>
+                                                <div class="col-xl-6 d-inline">
+                                                    <span class="fw-bolder d-inline">{{$currency_symbol}}</span> <span class="fw-bolder total_span">{{ number_format_value($total) }}</span>
+                                                </div>
                                             </div>
                                             <div class="flex-grow-1 me-2">
                                                <p class="custom_note">Note: Final amount of order will reflect <br>on the actual invoice.</p>
@@ -602,7 +610,7 @@ $(document).ready(function() {
                 toast_error(result.message);
                 $this.parent().find('.qty').val($qty);
             }else{
-                ($self.parent().parent().closest('tr').find('.total_price')).text('₱ '+result.price);
+                ($self.parent().parent().closest('tr').find('.total_price')).text(result.price);
                 $(".total_span").html(result.total);
                 $(".weight_span").html(result.weight);
                 $(".volume_span").html(result.volume);
@@ -636,7 +644,7 @@ $(document).ready(function() {
                     $self.closest('.productSection').remove();
                 }
                 if(result.cart_count > 0){
-                    ($self.parent().parent().closest('tr').find('.total_price')).text('₱ '+result.price);
+                    ($self.parent().parent().closest('tr').find('.total_price')).text(result.price);
                     $(".total_span").html(result.total);
                     $(".weight_span").html(result.weight);
                     $(".volume_span").html(result.volume);
