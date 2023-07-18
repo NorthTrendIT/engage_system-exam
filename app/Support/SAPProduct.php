@@ -90,7 +90,7 @@ class SAPProduct
         }else{
             $latestData = Product::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
-                
+                $latestData->updated_date = '2020-07-15'; //temporary
                 $url = '/b1s/v1/Items?$filter=UpdateDate ge \''.$latestData->updated_date.'\' or CreateDate ge \''.$latestData->updated_date.'\'';
                 $response = $this->getProductData($url);
             } else {
