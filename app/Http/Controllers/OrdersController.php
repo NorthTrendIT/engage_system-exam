@@ -110,7 +110,11 @@ class OrdersController extends Controller
         $line_stat = [];
         $Weight = 0;
         $Volume = 0;
+        $currency_symbol = '';
         foreach($data->items as $key=>$value){
+            if($value->product1->sap_connection_id === $data->customer->real_sap_connection_id){
+                $currency_symbol = get_product_customer_currency(@$value->product1->item_prices, $data->customer->price_list_num);
+            }
             $invoiceDetails[$key]['key'] = $key + 1;
             $invoiceDetails[$key]['product'] = @$value->product1->item_name."(Code:".@$value->product1->item_code.")";
             $invoiceDetails[$key]['key'] = @$data->order->id;
@@ -130,7 +134,7 @@ class OrdersController extends Controller
             
             $invoiceDetails[$key]['serverd_quantity'] = $quantityDetails[$key];
             $invoiceDetails[$key]['price'] = number_format_value(@$value->price);
-            $invoiceDetails[$key]['price_after_vat'] = number_format_value($value->price_after_vat);
+            $invoiceDetails[$key]['price_after_vat'] = $currency_symbol.number_format_value($value->price_after_vat);
             $invoiceDetails[$key]['amount'] = '₱'. number_format_value(round($value->gross_total,1));
 
             $Weight = $Weight + (@$value->quantity * @$value->product1->sales_unit_weight);

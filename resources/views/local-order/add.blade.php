@@ -118,8 +118,14 @@
                                                 <!--end::Table head-->
                                                 <!--begin::Table body-->
                                                 <tbody data-repeater-list="products">
+                                                    @php $currency_symbol = '';  @endphp
                                                     @if(isset($edit))
                                                         @foreach($edit->items as $value)
+                                                            @php
+                                                                if($value->product->sap_connection_id === $edit->customer->real_sap_connection_id){
+                                                                    $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $edit->customer->price_list_num);
+                                                                }
+                                                            @endphp
                                                         <tr data-repeater-item name="items">
                                                             <td>
                                                                 <div class="form-group">
@@ -129,13 +135,17 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                                <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" data-currency="{{$currency_symbol}}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                                             </td>
                                                             <td style="text-align:right" class="">
-                                                                <span class="price text-primary">₱ {{ number_format_value(@$value->price) }}</span>
+                                                                <div class="d-flex">
+                                                                    <span class="price text-primary mb-0">{{ $currency_symbol.' '.number_format_value(@$value->price) }}</span>
+                                                                </div>
                                                             </td>
                                                             <td style="text-align:right" class="">
-                                                                <span class="amount text-primary" style="font-weight: bold">₱ {{ number_format_value(@$value->total) }}</span>
+                                                                <div class="d-flex">
+                                                                    <span class="amount text-primary" style="font-weight: bold">{{ number_format_value(@$value->total) }}</span>
+                                                                </div>
                                                             </td>
                                                             <td>
                                                                 <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
@@ -155,10 +165,14 @@
                                                             <input type="number" class="form-control quantity" name="quantity" data-price="0" placeholder="Enter quantity" value="" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                                         </td>
                                                         <td style="text-align:right" class="">
-                                                            <span class="price text-primary">₱ 0</span>
+                                                            <div class="d-flex">
+                                                                <span class="price text-primary mb-0 d-flex">₱ 0</span>
+                                                            </div>
                                                         </td>
                                                         <td style="text-align:right" class="">
-                                                            <span class="amount text-primary" style="font-weight: bold">₱ 0</span>
+                                                            <div class="d-flex">
+                                                                <span class="amount text-primary" style="font-weight: bold">₱ 0</span>
+                                                            </div>
                                                         </td>
                                                         <td>
                                                             <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
@@ -233,9 +247,9 @@
                                             <div class="col-md-6 mb-3">
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">total</span>
                                             </div>
-                                            <div class="col-md-6 mb-3">
+                                            <div class="col-md-6 mb-3 d-inline">
                                                 <input type="hidden" name="total_amount" @if(isset($edit)) value="{{ $edit->total }}" @else value="0" @endif>
-                                                <span style="text-align: right; width: 100%;" class="d-block text-primary price grandTotal">@if(isset($edit)) ₱ {{ $edit->total }} @else ₱ 0.00 @endif</span>
+                                                <span style="text-align: right; width: 100%;" class="text-primary price grandTotal">@if(isset($edit)){{ $edit->total }} @else ₱ 0.00 @endif</span>
                                             </div>
                                         </div>
                                         
@@ -334,8 +348,8 @@
             initEmpty: false,
             show: function () {
                 $(this).slideDown();
-                $(this).find('.price').html('₱ 0.00')
-                $(this).find('.amount').html('₱ 0.00')
+                $(this).find('.price').html('0.00')
+                $(this).find('.amount').html('0.00')
                 var product_ids = [];
                 $('.selectProducts').each(function(){
                     if(this.value){
@@ -387,6 +401,7 @@
                 }).then((result) => {
                     if(result.isConfirmed) {
                         $(this).slideUp(deleteElement);
+                        calculateTotalAmount();
                     }
                 })
             },
@@ -689,8 +704,9 @@
                     },
                     success: function (data) {
                         if (data.status) {
-                            $self.parent().parent().parent().find('.price').html('₱'+ number_format(data.price));
+                            $self.parent().parent().parent().find('.price').html(data.currency_symbol+' '+number_format(data.price));
                             $self.parent().parent().parent().find('.quantity').attr('data-price', data.price);
+                            $self.parent().parent().parent().find('.quantity').attr('data-currency', data.currency_symbol);
                             $qty = parseFloat($self.parent().parent().parent().find(".quantity").val());
                             if(isNaN($qty)){
                                 $self.parent().parent().parent().find(".quantity").val(1).trigger('change');
@@ -711,13 +727,17 @@
 
         $(document).on('change', "input[type=number]",function(event){
             $price = parseFloat($(this).attr('data-price'));
+            $currency = $(this).attr('data-currency');
             $qty = parseFloat($(this).val());
             $amount = $price * $qty;
             if(isNaN($qty) || $qty <= 0){
                 $(this).val(1);
                 $amount = $price;
             }
-            $(this).parent().parent().find('td .amount').html('₱ '+ number_format($amount.toFixed(2)));
+            if($currency == null){ //check if null or undefined.
+                $currency = '₱';
+            }
+            $(this).parent().parent().find('td .amount').html($currency+' '+number_format($amount.toFixed(2)));
 
             /*$grandTotal = 0;
             $("tr[name='items']").each(function(){
@@ -740,17 +760,24 @@
 
         function calculateTotalAmount() {
             $grandTotal = 0;
+            $currency = '';
             $(".quantity").each(function(){
                 $subPrice = parseFloat($(this).attr('data-price'));
+                $currency = $(this).attr('data-currency');
                 $subQty = parseFloat($(this).val());
 
                 if(!isNaN($subQty) && $subQty != "" && $subQty > 0){
                     $grandTotal += $subPrice * $subQty;
                 }
+                // console.log(number_format($grandTotal.toFixed(2)));
             });
-
-            $('.subTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
-            $('.grandTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
+            console.log($(".quantity"));
+            if($currency == null){ //check if null or undefined.
+                $currency = '₱';
+            }
+            
+            $('.subTotal').html(number_format($grandTotal.toFixed(2)));
+            $('.grandTotal').html($currency+' '+number_format($grandTotal.toFixed(2)));
             $('[name="total_amount"]').val($grandTotal.toFixed(2));
         }
     });

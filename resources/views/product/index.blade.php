@@ -98,7 +98,7 @@
                   </select>
                 </div>
 
-                @if(userrole() == 1)
+                @if(in_array(userrole(),[1,11]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_status" data-control="select2" data-hide-search="true">
                     <option value="">Select status</option>
@@ -125,7 +125,7 @@
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
-                  @if(in_array(userrole(),[1]))
+                  @if(in_array(userrole(),[1,11]))
                   <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
                   @endif
                 </div>
@@ -153,7 +153,7 @@
                               <th>Product Application</th>
                               <th>Product Pattern</th>
                               <th>Date</th>
-                              @if(userrole() == 1)
+                              @if(in_array(userrole(),[1,11]))
                               <th>Status</th>
                               <th>Online Price</th>
                               <th>Commercial Price</th>
@@ -274,7 +274,7 @@
               {data: 'u_item_application', name: 'u_item_application'},
               {data: 'u_pattern2', name: 'u_pattern2'},
               {data: 'created_date', name: 'created_date'},
-              @if(userrole() == 1)
+              @if(in_array(userrole(),[1,11]))
               {data: 'status', name: 'status'},
               {data: 'online_price', name: 'online_price',orderable:false,searchable:false},
               {data: 'commercial_price', name: 'commercial_price',orderable:false,searchable:false},
@@ -363,7 +363,7 @@
       })
     });
 
-    @if(in_array(userrole(),[1]))
+    @if(in_array(userrole(),[1,11]))
       $(document).on("click", ".download_excel", function(e) {
         var url = "{{route('product.export')}}";
 

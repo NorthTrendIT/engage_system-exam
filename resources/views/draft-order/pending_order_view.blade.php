@@ -64,7 +64,10 @@
 
                                 <div class="col-sm-3">
                                     <div class="fw-bold fs-7 text-gray-600 mb-1">Order Date:</div>
-                                    <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime($data->doc_date)) }} {{ $data->doc_time ? date('H:i A',strtotime($data->doc_time)) : "" }}</div>
+                                    <div class="fw-bolder fs-6 text-gray-800">
+                                      {{ date('F d, Y', strtotime($data->created_at)) }}
+                                      {{ $data->created_at ? date('H:i A', strtotime($data->created_at)) : '' }}
+                                    </div>
                                 </div>
 
                                 <div class="col-sm-2">
@@ -90,20 +93,26 @@
                                             <th class="min-w-175px pb-2">No</th>
                                             <th class="min-w-175px pb-2">Product</th>
                                             <th class="min-w-70px text-end pb-2">Quantity</th>
-                                            <th class="min-w-80px text-end pb-2 d-none">Price</th>
+                                            <th class="min-w-80px text-end pb-2 ">Price</th>
                                             <th class="min-w-80px text-end pb-2 d-none">Discount</th>
-                                            <th class="min-w-100px text-end pb-2 d-none">Amount</th>
+                                            <th class="min-w-100px text-end pb-2 ">Amount</th>
                                         </tr>
                                         </thead>
                                         <tbody>
+                                            @php $currency_symbol = '';  @endphp
                                             @foreach($data->items as $key => $value)
+                                              @php
+                                                  if($value->product->sap_connection_id === $data->customer->real_sap_connection_id){
+                                                      $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $data->customer->price_list_num);
+                                                  }
+                                              @endphp
                                             <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                                 <td class="pt-6" style="text-align: initial !important;">{{ $key+1 }}</td>
                                                 <td class="d-flex align-items-center pt-6">{{ $value->product->item_name ?? '-' }}(Code: {{ $value->product->item_code ?? '-' }})</td>
                                                 <td class="pt-6">{{ $value->quantity ?? '-' }}</td>
-                                                <td class="pt-6 d-none">₱ {{ number_format_value($value->price) }}</td>
+                                                <td class="pt-6 ">{{ $currency_symbol.' '.number_format_value($value->price) }}</td>
                                                 <td class="pt-6 d-none">₱ 0.00 </td>
-                                                <td class="pt-6 text-dark fw-boldest d-none">₱ {{ number_format_value($value->total) }}</td>
+                                                <td class="pt-6 text-dark fw-boldest">{{ $currency_symbol.' '.number_format_value($value->total) }}</td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -111,20 +120,20 @@
                                 </div>
 
                                 <div class="d-flex justify-content-end">
-                                    <div class="mw-300px d-none">
-                                        <div class="d-flex flex-stack mb-3">
+                                    <div class="mw-300px ">
+                                        <div class="d-flex flex-stack mb-3 d-none">
                                             <div class="fw-bold pe-10 text-gray-600 fs-7">Subtotal:</div>
                                             <div class="text-end fw-bolder fs-6 text-gray-700">₱ {{ number_format_value($data->total) }}</div>
                                         </div>
 
-                                        <div class="d-flex flex-stack mb-3">
+                                        <div class="d-flex flex-stack mb-3 d-none">
                                             <div class="fw-bold pe-10 text-gray-600 fs-7">Discount:</div>
                                             <div class="text-end fw-bolder fs-6 text-gray-700">- ₱ 0.00</div>
                                         </div>
 
                                         <div class="d-flex flex-stack">
-                                            <div class="fw-bold pe-10 text-gray-600 fs-7 ">Total:</div>
-                                            <div class="text-end fw-bolder fs-6 fw-boldest">₱ {{ number_format_value($data->total) }}</div>
+                                            <div class="fw-bold pe-10 text-gray-600 fs-7 ">Grand Total:</div>
+                                            <div class="text-end fw-bolder fs-6 fw-boldest">{{ $currency_symbol.' '.number_format_value($data->total) }}</div>
                                         </div>
                                     </div>
                                 </div>

@@ -238,5 +238,14 @@ class SAPCustomer
         
     }
 
+    public function fetchCustomers(){
+        $this->headers['Prefer'] = "odata.maxpagesize=0 (get all data)";
+        $filter = 'PHP';
+        $url = '/b1s/v1/BusinessPartners/?$filter=Currency ne \''.$filter.'\'&$select=CardCode,Currency';
+        $response = $this->getCustomerData($url);
+
+        return $response['data'];
+    }
+
     
 }

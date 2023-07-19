@@ -404,9 +404,11 @@ class DraftOrderController extends Controller
             $customer_vat  = Customer::whereIn('id', $customer_id)->get();
             
             // $vat_rate = 0;
+            $currency_symbol = '';
             foreach($customer_vat as $cust){
                 if(@$product->sap_connection_id === $cust->real_sap_connection_id){
                     // $vat_rate = get_vat_rate($cust);
+                    $currency_symbol = get_product_customer_currency($product->item_prices, $cust->price_list_num);
                     $price = get_product_customer_price(@$product->item_prices, @$customer_price_list_no[@$product->sap_connection_id]);
                 }
             }    
@@ -415,7 +417,7 @@ class DraftOrderController extends Controller
             //     $price = $price / $vat_rate;
             // }
 
-            return $response = ['status' => true, 'price' => round($price, 2)];
+            return $response = ['status' => true, 'price' => round($price, 2), 'currency_symbol' => $currency_symbol];
         }
         return $response = ['status' => false, 'message' => "Something went wrong!"];
     }

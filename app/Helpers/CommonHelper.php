@@ -851,3 +851,25 @@ function get_timezone_date_time($date){
     return date("M d, Y h:i A", strtotime($local_time));
     
 }
+
+
+function get_product_customer_currency($item_prices, $cust_price_list){
+    $item_currency = json_decode($item_prices);
+    $cust_price_list = $cust_price_list - 1;
+    $currency = $item_currency[$cust_price_list]->Currency;
+
+    $currency_symbol = '';
+    switch($currency){
+        case 'USD':
+            $currency_symbol = '$';
+            break;
+        case 'EUR':
+            $currency_symbol = '€';
+            break;
+        default:
+            $currency_symbol = '₱';
+    }
+
+    return $currency_symbol;
+
+}

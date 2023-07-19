@@ -355,7 +355,7 @@ class SAPOrderPost
         $response['CardCode'] = @$order->customer->card_code;
         $response['CardName'] = @$order->customer->card_name;
         $response['DocDueDate'] = @$order->due_date;
-        $response['DocCurrency'] = 'PHP';
+        $response['DocCurrency'] = @$order->customer->currency; //previous [PHP] 
         $response['Comments'] = @$order->remarks;
 
         if(strtolower(@$order->address->street) == strtolower(@$order->customer->card_name)){
@@ -386,12 +386,16 @@ class SAPOrderPost
 
         $response['DocumentLines'] = [];
         
+        $item_currency = [];
+        $cust_price_list =  @$order->customer->price_list_num - 1; //$item_prices json decode starts with index zero
         foreach($order->items as $item){
+            $item_currency = json_decode(@$item->product->item_prices);
             $temp = array(
                 'ItemCode' => @$item->product->item_code,
                 'ItemDescription' => @$item->product->item_name,
                 'Quantity' => @$item->quantity,
                 'Price' => @$item->price,
+                'Currency' => $item_currency[$cust_price_list]->Currency,
                 'UnitPrice' => @$item->price,
                 'ShipDate' => @$order->due_date,
                 'WarehouseCode' => '01',
