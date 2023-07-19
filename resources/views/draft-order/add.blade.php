@@ -113,8 +113,14 @@
                                                 <!--end::Table head-->
                                                 <!--begin::Table body-->
                                                 <tbody data-repeater-list="products" id="myTableBody">
+                                                    @php $currency_symbol = '';  @endphp
                                                     @if(isset($edit))
                                                         @foreach($edit->items as $value)
+                                                            @php
+                                                                if($value->product->sap_connection_id === $edit->customer->real_sap_connection_id){
+                                                                    $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $edit->customer->price_list_num);
+                                                                }
+                                                            @endphp
                                                             <tr data-repeater-item name="items">
                                                                 <td>
                                                                     <div class="form-group">
@@ -124,16 +130,16 @@
                                                                     </div>
                                                                 </td>
                                                                 <td>
-                                                                    <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" placeholder="Enter quantity" value="{{ $value->quantity }}">
+                                                                    <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" data-currency="{{$currency_symbol}}" placeholder="Enter quantity" value="{{ $value->quantity }}">
                                                                 </td>
                                                                 <td style="text-align:right" class="">
-                                                                    <span class="price text-primary">₱ {{ number_format_value(@$value->price) }}</span>
+                                                                    <span class="price text-primary">{{ $currency_symbol.' '.number_format_value(@$value->price) }}</span>
                                                                 </td>
                                                                 <td style="text-align:right" class="">
-                                                                    <span class="amount text-primary" style="font-weight: bold">₱ {{ number_format_value(@$value->total) }}</span>
+                                                                    <span class="amount text-primary" style="font-weight: bold">{{ number_format_value(@$value->total) }}</span>
                                                                 </td>
                                                                 <td>
-                                                                    <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
+                                                                    <input type="button" class="btn btn-sm btn-danger" data-repeater-delete="" value="Delete">
                                                                 </td>
                                                             </tr>
                                                         @endforeach
@@ -188,12 +194,12 @@
                             <div class="col-md-4 col-12">
                                 <div class="card p-8">
                                     <div class="sub-total-box">
-                                        <div class="row">
+                                        <div class="row d-none">
                                             <div class="col-md-6 mb-3">
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">sub total</span>
                                             </div>
                                             <div class="col-md-6 mb-3 ">
-                                                <span style="text-align: right; width: 100%;" class="d-block price subTotal text-primary">₱ {{ number_format_value($edit->total) }}</span>
+                                                <span style="text-align: right; width: 100%;" class="d-block price subTotal text-primary">{{ number_format_value($edit->total) }}</span>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <span class="text-muted me-2 fs-7 fw-bold text-uppercase">discount</span>
@@ -204,10 +210,10 @@
                                         </div>
                                         <div class="row pt-8" style="border-top: 1px solid #e4e6ef;">
                                             <div class="col-md-6 mb-3">
-                                                <span class="text-muted me-2 fs-7 fw-bold text-uppercase">total</span>
+                                                <span class="text-muted me-2 fs-7 fw-bold text-uppercase">Grand Total</span>
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <span style="text-align: right; width: 100%;" class="d-block price grandTotal text-primary">₱ {{ number_format_value($edit->total) }}</span>
+                                                <span style="text-align: right; width: 100%;" class="d-block price grandTotal text-primary">{{ number_format_value($edit->total) }}</span>
                                             </div>
                                         </div>
                                         <div class="row" >
@@ -578,13 +584,17 @@
 
         $(document).on('keyup', "input[type=number]",function(event){
             $price = parseFloat($(this).attr('data-price'));
+            $currency = $(this).attr('data-currency');
             $qty = parseFloat($(this).val());
             $amount = $price * $qty;
             if(isNaN($qty) || $qty <= 0){
                 $(this).val(1);
                 $amount = $price;
             }
-            $(this).parent().parent().find('td .amount').html('₱ '+number_format($amount.toFixed(2)));
+            if($currency == null){ //check if null or undefined.
+                $currency = '₱';
+            }
+            $(this).parent().parent().find('td .amount').html($currency+' '+number_format($amount.toFixed(2)));
 
             $grandTotal = 0;
             $("tr[name='items']").each(function(){
@@ -593,8 +603,8 @@
                 $grandTotal += $subPrice * $subQty;
             });
 
-            $('.subTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
-            $('.grandTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
+            $('.subTotal').html($currency+' '+number_format($grandTotal.toFixed(2)));
+            $('.grandTotal').html($currency+' '+number_format($grandTotal.toFixed(2)));
         });
 
         $(document).on('change', '.selectProducts',function(event){
@@ -609,7 +619,7 @@
                 },
                 success: function (data) {
                     if (data.status) {
-                        $self.parent().parent().parent().find('.price').html('₱'+ data.price);
+                        $self.parent().parent().parent().find('.price').html(data.currency_symbol+' '+ data.price);
                         $self.parent().parent().parent().find('.quantity').attr('data-price', data.price);
                         $self.parent().parent().parent().find(".quantity").val(1).trigger('keyup');
                     } else {

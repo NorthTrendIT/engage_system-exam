@@ -160,16 +160,16 @@
                                                     <td>{{@$value->product->sales_unit}}</td>
                                                     @php
                                                         $customer_id = explode(',', Auth::user()->multi_customer_id);
-                                                        $customer_vat = \App\Models\Customer::whereIn('id', $customer_id)->get();
+                                                        // $customer_vat = \App\Models\Customer::whereIn('id', $customer_id)->get();
 
                                                         $customer_price_list_no = @get_customer_price_list_no_arr($customer_id)[@$value->product->sap_connection_id];
                                                         $currency_symbol = '';
-                                                        foreach($customer_vat as $cust){
-                                                            if($value->product->sap_connection_id === $cust->real_sap_connection_id){
-                                                                $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $cust->price_list_num);
+                                                        // foreach($customer_vat as $cust){
+                                                            if($value->product->sap_connection_id === $value->customer->real_sap_connection_id){
+                                                                $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $value->customer->price_list_num);
                                                                 $price = get_product_customer_price(@$value->product->item_prices,$customer_price_list_no);
                                                             }
-                                                        }
+                                                        // }
                                                     @endphp                    
                                                     <td class="text-end">
                                                         <div class="d-flex">

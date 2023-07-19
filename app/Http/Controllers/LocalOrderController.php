@@ -500,10 +500,11 @@ class LocalOrderController extends Controller
         if($input['customer_id'] && $input['product_id']){
             $customer = Customer::findOrFail($input['customer_id']);
             $product = Product::findOrFail($input['product_id']);
-                 
+            
+            $currency_symbol = get_product_customer_currency($product->item_prices, $customer->price_list_num);
             $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num);
 
-            return $response = ['status' => true, 'price' => $price];
+            return $response = ['status' => true, 'price' => $price, 'currency_symbol' => $currency_symbol];
         }
         return $response = ['status' => false, 'message' => "Something went wrong!"];
     }
