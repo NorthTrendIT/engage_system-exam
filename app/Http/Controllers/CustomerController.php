@@ -34,7 +34,8 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        return view('customer.index');
+        $sap_connections = SapConnection::all();
+        return view('customer.index', compact('sap_connections'));
     }
 
     /**
@@ -178,6 +179,9 @@ class CustomerController extends Controller
         // if($request->filter_status != ""){
         //     $data->where('is_active',$request->filter_status);
         // }
+        $sap_connections = SapConnection::where('id', $request->filter_company)->first();
+        $sap_priceLists = new SAPCustomer($sap_connections->db_name, $sap_connections->user_name , $sap_connections->password, false, '');
+        $priceLists = $sap_priceLists->fetchPriceLists();
 
         if($request->filter_territory != ""){
             $data->where('territory',$request->filter_territory);
@@ -375,6 +379,9 @@ class CustomerController extends Controller
                             })
                             ->addColumn('company', function($row) {
                                 return @$row->sap_connection->company_name ?? "-";
+                            })
+                            ->addColumn('customer_price_list', function($row) use ($priceLists) {
+                                return $priceLists['value'][$row->price_list_num - 1]['PriceListName'];
                             })
                             ->orderColumn('customer_code', function ($query, $order) {
                                 $query->orderBy('card_code', $order);

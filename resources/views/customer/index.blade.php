@@ -37,7 +37,9 @@
                 @if(in_array(userrole(),[1, 11]))
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
-                    <option value=""></option>
+                    @foreach($sap_connections as $sap)
+                      <option value="{{ $sap->id }}">{{$sap->company_name }}</option>
+                    @endforeach
                   </select>
                 </div>
                 @endif
@@ -150,12 +152,13 @@
                               <th>No.</th>
                               <th>Customer Code</th>
                               <th>Name</th>
+                              <th>PriceList</th>
                               <th>Date Created</th>
-                              @if(in_array(userrole(),[1]))
+                              @if(in_array(userrole(),[1,11]))
                               <th>Business Unit</th>
                               @endif
                               <th>Universal Card Code</th>
-                              @if(userrole() == 1)
+                              @if(in_array(userrole(),[1,11]))
                               <th>Credit Limit</th>
                               @endif
                               <th>Group</th>
@@ -269,12 +272,13 @@
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'customer_code', name: 'customer_code'},
               {data: 'name', name: 'name'},
+              {data: 'customer_price_list', name: 'customer_price_list'},
               {data: 'created_at', name: 'created_at'},
-              @if(in_array(userrole(),[1]))
+              @if(in_array(userrole(),[1,11]))
               {data: 'company', name: 'company'},
               @endif
               {data: 'u_card_code', name: 'u_card_code'},
-              @if(userrole() == 1)
+              @if(in_array(userrole(),[1,11]))
               {data: 'credit_limit', name: 'credit_limit'},
               @endif
               {data: 'group', name: 'group'},
@@ -353,28 +357,28 @@
       })
     });
 
-    @if(in_array(userrole(),[1,11]))
-        $('[name="filter_company"]').select2({
-            ajax: {
-                url: "{{route('common.getBusinessUnits')}}",
-                type: "post",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        _token: "{{ csrf_token() }}",
-                        search: params.term
-                    };
-                },
-                processResults: function (response) {
-                    return {
-                    results: response
-                    };
-                },
-                cache: true
-            },
-        });
-    @endif
+    // @if(in_array(userrole(),[1,11]))
+    //     $('[name="filter_company"]').select2({
+    //         ajax: {
+    //             url: "{{route('common.getBusinessUnits')}}",
+    //             type: "post",
+    //             dataType: 'json',
+    //             delay: 250,
+    //             data: function (params) {
+    //                 return {
+    //                     _token: "{{ csrf_token() }}",
+    //                     search: params.term
+    //                 };
+    //             },
+    //             processResults: function (response) {
+    //                 return {
+    //                 results: response
+    //                 };
+    //             },
+    //             cache: true
+    //         },
+    //     });
+    // @endif
 
     $('[name="filter_territory"]').select2({
       ajax: {
@@ -574,24 +578,24 @@
     });
 
 
-    $(document).on('change', '[name="filter_company"]', function(event) {
-      event.preventDefault();
-      $('[name="filter_market_sector"]').val('').trigger('change');
-      $('[name="filter_market_sub_sector"]').val('').trigger('change');
-      $('[name="filter_region"]').val('').trigger('change');
-      $('[name="filter_province"]').val('').trigger('change');
-      $('[name="filter_city"]').val('').trigger('change');
-      $('[name="filter_branch"]').val('').trigger('change');
-      $('[name="filter_sales_specialist"]').val('').trigger('change');
-      $('[name="filter_customer_class"]').val('').trigger('change');
+    // $(document).on('change', '[name="filter_company"]', function(event) {
+    //   event.preventDefault();
+    //   $('[name="filter_market_sector"]').val('').trigger('change');
+    //   $('[name="filter_market_sub_sector"]').val('').trigger('change');
+    //   $('[name="filter_region"]').val('').trigger('change');
+    //   $('[name="filter_province"]').val('').trigger('change');
+    //   $('[name="filter_city"]').val('').trigger('change');
+    //   $('[name="filter_branch"]').val('').trigger('change');
+    //   $('[name="filter_sales_specialist"]').val('').trigger('change');
+    //   $('[name="filter_customer_class"]').val('').trigger('change');
 
-      if($(this).find('option:selected').val() != ""){
-        $('.other_filter_div').show();
-      }else{
-        $('.other_filter_div').hide();
-      }
+    //   if($(this).find('option:selected').val() != ""){
+    //     $('.other_filter_div').show();
+    //   }else{
+    //     $('.other_filter_div').hide();
+    //   }
 
-    });
+    // });
 
     @if(in_array(userrole(),[1]))
       $(document).on("click", ".download_excel", function(e) {
