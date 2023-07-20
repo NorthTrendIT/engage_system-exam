@@ -307,7 +307,7 @@
       $('[name="filter_search"]').val('');
       $('[name="filter_date_range"]').val('');
       $('[name="filter_territory"]').val('').trigger('change');
-      $('[name="filter_company"]').val('').trigger('change');
+      // $('[name="filter_company"]').val('').trigger('change');
       $('[name="filter_market_sector"]').val('').trigger('change');
       $('[name="filter_market_sub_sector"]').val('').trigger('change');
       $('[name="filter_region"]').val('').trigger('change');
