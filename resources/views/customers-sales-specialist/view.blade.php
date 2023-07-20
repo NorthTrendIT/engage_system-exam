@@ -59,7 +59,9 @@
                   <div class="form-group">
                     <ul>
                       @foreach (@$val->customer->sales_specialist as $d)
-                        <li>{!! $d->sales_person->sales_specialist_name !!} (Email: {!! $d->sales_person->email !!})</li>
+                        @if(isset($d->sales_person->sales_specialist_name))
+                          <li>{!! $d->sales_person->sales_specialist_name !!} (Email: {!! $d->sales_person->email !!})</li>
+                        @endif
                       @endforeach
                     </ul> 
                   </div>

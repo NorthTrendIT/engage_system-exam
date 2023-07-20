@@ -343,13 +343,14 @@ $(document).ready(function() {
     @if(isset($edit) && @$edit->assignment)
       
       @foreach ($ss_ids->assignment as $data1)
-
-        var initialOption = {
-            id: {{ $data1->ss_id }},
-            text: "{!! $data1->sales_person->sales_specialist_name !!} (Email: {!! $data1->sales_person->email !!})",
-            selected: true
-        }
-        $initialSalesPerson.push(initialOption);
+        @if(isset($data1->sales_person->sales_specialist_name))
+          var initialOption = {
+              id: {{ $data1->ss_id }},
+              text: "{!! $data1->sales_person->sales_specialist_name !!} (Email: {!! $data1->sales_person->email !!})",
+              selected: true
+          }
+          $initialSalesPerson.push(initialOption);
+        @endif
       @endforeach
       
     @endif

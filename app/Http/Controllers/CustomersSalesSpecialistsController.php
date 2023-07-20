@@ -354,7 +354,7 @@ class CustomersSalesSpecialistsController extends Controller
         $data = salesAssignment::with(['assignment','assignment.customer','assignment.sales_person', 'assignment.customer.group'])
                                 ->has('assignment.customer')
                                 ->has('assignment.customer.group')
-                                ->has('assignment.sales_person')
+                                // ->has('assignment.sales_person')
                                 ->orderBy('id', 'desc');
 
         if($request->filter_company != ""){
