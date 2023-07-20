@@ -181,7 +181,11 @@ class CustomerController extends Controller
         // }
         $sap_connections = SapConnection::where('id', $request->filter_company)->first();
         $sap_priceLists = new SAPCustomer($sap_connections->db_name, $sap_connections->user_name , $sap_connections->password, false, '');
-        $priceLists = $sap_priceLists->fetchPriceLists();
+        $priceRecord = $sap_priceLists->fetchPriceLists();
+        $priceLists = [];
+            foreach($priceRecord['value'] as $price){
+                $priceLists[$price['PriceListNo']] = $price['PriceListName'];
+            }
 
         if($request->filter_territory != ""){
             $data->where('territory',$request->filter_territory);
@@ -381,7 +385,7 @@ class CustomerController extends Controller
                                 return @$row->sap_connection->company_name ?? "-";
                             })
                             ->addColumn('customer_price_list', function($row) use ($priceLists) {
-                                return $priceLists['value'][$row->price_list_num - 1]['PriceListName'];
+                                return $priceLists[$row->price_list_num];
                             })
                             ->orderColumn('customer_code', function ($query, $order) {
                                 $query->orderBy('card_code', $order);

@@ -249,7 +249,7 @@ class SAPCustomer
 
     public function fetchPriceLists(){
         $this->headers['Prefer'] = "odata.maxpagesize=0 (get all data)";
-        $url = '/b1s/v1/PriceLists';
+        $url = '/b1s/v1/PriceLists?$select=PriceListNo,PriceListName';
         $response = $this->getCustomerData($url);
 
         return $response['data'];

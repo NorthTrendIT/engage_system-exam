@@ -387,15 +387,23 @@ class SAPOrderPost
         $response['DocumentLines'] = [];
         
         $item_currency = [];
-        $cust_price_list =  @$order->customer->price_list_num - 1; //$item_prices json decode starts with index zero
+        $cust_price_list =  @$order->customer->price_list_num; //$item_prices json decode starts with index zero
+       
+        $currency = 'PHP';
         foreach($order->items as $item){
-            $item_currency = json_decode(@$item->product->item_prices);
+            $item_prices = json_decode(@$item->product->item_prices);
+            foreach($item_prices as $price){
+                if($cust_price_list == $price->PriceList){
+                    $currency = $price->Currency;
+                }
+            }
+
             $temp = array(
                 'ItemCode' => @$item->product->item_code,
                 'ItemDescription' => @$item->product->item_name,
                 'Quantity' => @$item->quantity,
                 'Price' => @$item->price,
-                'Currency' => $item_currency[$cust_price_list]->Currency,
+                'Currency' => $currency,
                 'UnitPrice' => @$item->price,
                 'ShipDate' => @$order->due_date,
                 'WarehouseCode' => '01',

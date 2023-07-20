@@ -15,6 +15,7 @@ use App\Models\ConversationMessage;
 use App\Models\CustomerPromotion;
 use App\Models\Customer;
 use App\Models\Product;
+use Illuminate\Support\Facades\Log;
 
 use Auth as Auth;
 
@@ -854,9 +855,16 @@ function get_timezone_date_time($date){
 
 
 function get_product_customer_currency($item_prices, $cust_price_list){
-    $item_currency = json_decode($item_prices);
-    $cust_price_list = $cust_price_list - 1;
-    $currency = $item_currency[$cust_price_list]->Currency;
+    $item_prices = json_decode($item_prices);
+
+    $currency = '';
+    foreach($item_prices as $price){
+        if($cust_price_list == $price->PriceList){
+            $currency = $price->Currency;
+        }
+    }
+    // $cust_price_list = $cust_price_list - 1;
+    // $currency = $item_currency[$cust_price_list]->Currency;
 
     $currency_symbol = '';
     switch($currency){

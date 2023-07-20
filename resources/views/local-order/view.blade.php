@@ -165,13 +165,19 @@
                                     $dataItems = $data->items ?? 'none'
                                   @endphp
                                   @if($dataItems !== 'none')
+                                    @php $currency_symbol = '';  @endphp
                                     @foreach($data->items as $key => $value)
+                                      @php
+                                          if($value->product->sap_connection_id === $data->customer->real_sap_connection_id){
+                                              $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $data->customer->price_list_num);
+                                          }
+                                      @endphp
                                     <tr class="fw-bolder text-gray-700 fs-5 text-end">
                                         <td class="pt-6" style="text-align: initial !important;">{{ $key+1 }}</td>
                                         <td class="d-flex align-items-center pt-6">{{ $value->product1->item_name ?? '-' }} <span>Code: ({{ $value->product1->item_code ?? '-' }})</span></td>
                                         <td class="pt-6">{{  date('F d, Y',strtotime($value->ship_date))  }}</td>
                                         <td class="pt-6">{{ $value->quantity }}</td>
-                                        <td class="pt-6">₱ {{ number_format_value($value->gross_price) }}</td>
+                                        <td class="pt-6">{{ $currency_symbol.' '.number_format_value($value->gross_price) }}</td>
                                         <td class="pt-6 text-dark fw-boldest">₱ {{ number_format_value($value->gross_total) }}</td>
                                     </tr>
                                     @endforeach
