@@ -1339,7 +1339,13 @@ class OrdersController extends Controller
             if(!is_null($value->customer_promotion_id)){
                 $type = "Promotion";
             }
-                                
+            
+            $placed_by = '';
+            if(!empty($value->local_order->sales_specialist_id)){
+                $placed_by =  $value->local_order->sales_specialist->sales_specialist_name ?? '-';
+            } else {
+                $placed_by = "Customer";
+            }                    
             $records[] = array(
                             'no' => $key + 1,
                             'company' => @$value->sap_connection->company_name ?? "-",
@@ -1347,6 +1353,7 @@ class OrdersController extends Controller
                             'type' => $type,
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
                             'doc_total' => number_format_value($value->doc_total),
+                            'placed_by' => $placed_by,
                             'created_at' => date('M d, Y',strtotime($value->doc_date)).' '.date('H:i A',strtotime($value->doc_time)),
                             'status' => $value->status,
                           );
