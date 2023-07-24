@@ -28,6 +28,9 @@ class NewsAndAnnouncementController extends Controller
      */
     public function index()
     {
+        if(Auth::user()->role_id !== 1){
+            return redirect()->route('news-and-announcement.feed');
+        }
         $sap_connection = SapConnection::all();
         return view('news-and-announcement.index',compact('sap_connection'));
     }
@@ -100,122 +103,6 @@ class NewsAndAnnouncementController extends Controller
                 NotificationConnection::where('notification_id', $notification->id)->delete();
             }
 
-            if($input['module'] == 'all'){
-                $data = Customer::where('sap_connection_id', $input['sap_connection_id'])->get();
-                foreach($data as $customer){
-                    // $user = User::where('customer_id', $customer->id)->firstOrFail();
-                    $user = @$customer->user;
-                    if($user){
-                        $connection = new NotificationConnection();
-                        $connection->notification_id = $notification->id;
-                        $connection->user_id = $user->id;
-                        $connection->record_id = $customer->id;
-                        $connection->save();
-                    }
-                }
-            }
-
-            if(isset($input['record_id']) && count($input['record_id']) > 0 ){
-                $records = $input['record_id'];
-                NotificationConnection::where('notification_id', $notification->id)->delete();
-
-                if($input['module'] == 'brand'){
-                    foreach($records as $record_id){
-                        $data = CustomerProductGroup::where('product_group_id', $record_id)->get();
-                        foreach($data as $item){
-
-                            $user = @$item->customer->user;
-                            if($user){
-                                $connection = new NotificationConnection();
-                                $connection->notification_id = $notification->id;
-                                $connection->user_id = $user->id;
-                                $connection->record_id = @$item->customer->id;
-                                $connection->save();
-                            }
-
-                        }
-                    }
-                }
-
-                if($input['module'] == 'customer'){
-                    foreach($records as $customer_id){
-                        $customer = Customer::where('id', $customer_id)->firstOrFail();
-                        $user = @$customer->user;
-
-                        $connection = new NotificationConnection();
-                        $connection->notification_id = $notification->id;
-                        $connection->user_id = $user->id;
-                        $connection->save();
-                    }
-                }
-
-                if($input['module'] == 'customer_class'){
-                    foreach($records as $record_id){
-                        $data = Customer::where(['class_id' => $record_id, 'sap_connection_id' => $input['sap_connection_id']]);
-
-                        if(@$request->select_class_customer == "specific" && !empty(@$request->class_customer)){
-                            $data->whereIn('id', @$request->class_customer);
-                        }
-
-                        $data = $data->get();
-
-                        foreach($data as $customer){
-                            $user = @$customer->user;
-                            $connection = new NotificationConnection();
-                            $connection->notification_id = $notification->id;
-                            $connection->user_id = $user->id;
-                            $connection->record_id = $customer->id;
-                            $connection->save();
-                        }
-                    }
-                }
-
-                if($input['module'] == 'sales_specialist'){
-                    foreach($records as $record_id){
-                        $data = Customer::whereHas('sales_specialist', function($q) use($record_id){
-                            $q->where('ss_id', $record_id);
-                        })->get();
-
-                        foreach($data as $customer){
-                            $user = @$customer->user;
-                            $connection = new NotificationConnection();
-                            $connection->notification_id = $notification->id;
-                            $connection->user_id = $user->id;
-                            $connection->record_id = $customer->id;
-                            $connection->save();
-                        }
-                    }
-                }
-
-                if($input['module'] == 'territory'){
-                    foreach($records as $record_id){
-                        $data = Customer::where('territory', $record_id)->get();
-                        foreach($data as $customer){
-                            $user = @$customer->user;
-                            $connection = new NotificationConnection();
-                            $connection->notification_id = $notification->id;
-                            $connection->user_id = $user->id;
-                            $connection->record_id = $customer->id;
-                            $connection->save();
-                        }
-                    }
-                }
-
-                if($input['module'] == 'market_sector'){
-                    foreach($records as $record_id){
-                        $data = Customer::where(['u_sector' => $record_id, 'sap_connection_id' => $input['sap_connection_id']])->get();
-                        foreach($data as $customer){
-                            $user = @$customer->user;
-                            $connection = new NotificationConnection();
-                            $connection->notification_id = $notification->id;
-                            $connection->user_id = $user->id;
-                            // $connection->record_id = $record_id;
-                            $connection->save();
-                        }
-                    }
-                }
-            }
-
             // Start Notification Document
             $docs_ids = array();
             if(isset($input['documents'])){
@@ -224,16 +111,16 @@ class NewsAndAnnouncementController extends Controller
 
                     if(isset($value['file']) && is_object($value['file'])){
                         $file = $value['file'];
-
-                        if(!in_array($file->extension(),['jpeg','jpg','png','eps','bmp','tif','tiff','webp', 'pdf','doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods'])){
+                        // dd($file->extension());
+                        if(!in_array($file->extension(),['jpeg','jpg','png','eps','bmp','tif','tiff','webp', 'pdf','doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'mp4', 'wmv'])){
                         continue;
                         }
 
-                        if($file->getSize() <= 10 * 1024 * 1024){ //10MB
+                        // if($file->getSize() <= 10 * 1024 * 1024){ //10MB
                             $name = date("YmdHis") . $file->getClientOriginalName() ;
                             $file->move(public_path() . '/sitebucket/news-and-announcement/', $name);
                             $value['file'] = $name;
-                        }
+                        // }
                     }
 
                     if($value['file']){
@@ -261,6 +148,135 @@ class NewsAndAnnouncementController extends Controller
                 $removeDoc->delete();
             }
             // End Notification Document
+
+
+            if($input['module'] == 'all'){
+                $data = Customer::where('is_active', '1')->where('sap_connection_id', $input['sap_connection_id'])->get();
+
+                $connection = [];
+                $counter = 0;
+                foreach($data as $customer){
+                    // $user = User::where('customer_id', $customer->id)->firstOrFail();
+                    $user = @$customer->user;
+                    if($user){
+                        $connection[$counter]['notification_id'] = $notification->id;
+                        $connection[$counter]['user_id'] = $user->id;
+                        $connection[$counter]['record_id'] = $customer->id;
+                        $counter++;
+                    }
+                }
+
+                NotificationConnection::insert($connection);
+            }
+
+            if(isset($input['record_id']) && count($input['record_id']) > 0 ){
+                $records = $input['record_id'];
+                NotificationConnection::where('notification_id', $notification->id)->delete();
+
+                if($input['module'] == 'brand'){
+                    foreach($records as $record_id){
+                        $data = CustomerProductGroup::where('product_group_id', $record_id)->get();
+                        $connection = [];
+                        $counter = 0;
+                        foreach($data as $item){
+                            $user = @$item->customer->user;
+                            if($user){
+                                $connection[$counter]['notification_id'] = $notification->id;
+                                $connection[$counter]['user_id'] = $user->id;
+                                $connection[$counter]['record_id'] = @$item->customer->id;
+                                $counter++;
+                            }
+                        }
+                        NotificationConnection::insert($connection);
+                    }
+                }
+
+                if($input['module'] == 'customer'){
+                    $connection = [];
+                    $counter = 0;
+                    foreach($records as $customer_id){
+                        $customer = Customer::where('is_active', '1')->where('id', $customer_id)->firstOrFail();
+                        $user = @$customer->user;
+
+                        $connection[$counter]['notification_id'] = $notification->id;
+                        $connection[$counter]['user_id'] = $user->id;
+                        $counter++;
+                    }
+                    NotificationConnection::insert($connection);
+                }
+
+                if($input['module'] == 'customer_class'){
+                    foreach($records as $record_id){
+                        $data = Customer::where(['class_id' => $record_id, 'sap_connection_id' => $input['sap_connection_id'], 'is_active' => '1' ]);
+
+                        if(@$request->select_class_customer == "specific" && !empty(@$request->class_customer)){
+                            $data->whereIn('id', @$request->class_customer);
+                        }
+
+                        $data = $data->get();
+                        $connection = [];
+                        $counter = 0;
+                        foreach($data as $customer){
+                            $user = @$customer->user;
+                            $connection[$counter]['notification_id'] = $notification->id;
+                            $connection[$counter]['user_id'] = $user->id;
+                            $connection[$counter]['record_id'] = $customer->id;
+                            $counter++;
+                        }
+                        NotificationConnection::insert($connection);
+                    }
+                }
+
+                if($input['module'] == 'sales_specialist'){
+                    foreach($records as $record_id){
+                        $data = Customer::where('is_active', '1')->whereHas('sales_specialist', function($q) use($record_id){
+                            $q->where('ss_id', $record_id);
+                        })->get();
+
+                        $connection = [];
+                        $counter = 0;
+                        foreach($data as $customer){
+                            $user = @$customer->user;
+                            $connection[$counter]['notification_id'] = $notification->id;
+                            $connection[$counter]['user_id'] = $user->id;
+                            $connection[$counter]['record_id'] = $customer->id;
+                            $counter++;
+                        }
+                        NotificationConnection::insert($connection);
+                    }
+                }
+
+                if($input['module'] == 'territory'){
+                    foreach($records as $record_id){
+                        $data = Customer::where('is_active', '1')->where('territory', $record_id)->get();
+                        $connection = [];
+                        $counter = 0;
+                        foreach($data as $customer){
+                            $user = @$customer->user;
+                            $connection[$counter]['notification_id'] = $notification->id;
+                            $connection[$counter]['user_id'] = $user->id;
+                            $connection[$counter]['record_id'] = $customer->id;
+                            $counter++;
+                        }
+                        NotificationConnection::insert($connection);
+                    }
+                }
+
+                if($input['module'] == 'market_sector'){
+                    foreach($records as $record_id){
+                        $data = Customer::where(['u_sector' => $record_id, 'sap_connection_id' => $input['sap_connection_id'], 'is_active' => '1'])->get();
+                        $connection = [];
+                        $counter = 0;
+                        foreach($data as $customer){
+                            $user = @$customer->user;
+                            $connection[$counter]['notification_id'] = $notification->id;
+                            $connection[$counter]['user_id'] = $user->id;
+                            $counter++;
+                        }
+                        NotificationConnection::insert($connection);
+                    }
+                }
+            }            
 
             // Send Push Notification
             if(isset($notification->id)){
@@ -658,9 +674,9 @@ class NewsAndAnnouncementController extends Controller
         }
 
         if($search == ''){
-            $data = User::orderby('sales_specialist_name','asc')->select('id','sales_specialist_name')->where(['role_id' => 2, 'is_active' => true, 'sap_connection_id' => $sap_connection_id])->limit(50)->get();
+            $data = User::orderby('sales_specialist_name','asc')->select('id','sales_specialist_name')->where(['role_id' => 14, 'is_active' => true])->limit(50)->get();
         }else{
-            $data = User::orderby('sales_specialist_name','asc')->select('id','sales_specialist_name')->where(['role_id' => 2, 'is_active' => true,  'sap_connection_id' => $sap_connection_id])->where('sales_specialist_name', 'like', '%' .$search. '%')->limit(50)->get();
+            $data = User::orderby('sales_specialist_name','asc')->select('id','sales_specialist_name')->where(['role_id' => 14, 'is_active' => true])->where('sales_specialist_name', 'like', '%' .$search. '%')->limit(50)->get();
         }
 
         $response = array();
@@ -1071,4 +1087,27 @@ class NewsAndAnnouncementController extends Controller
                             ->rawColumns(['is_seen'])
                             ->make(true);
     }
+
+    public function fetchNotifications(){
+        $notifications = Notification::whereHas('connections', function($q){
+            $q->where('user_id', Auth::user()->id);
+        })->orderBy('created_at', 'desc')->get()->take(2);
+        
+        return view('news-and-announcement.customer-view', compact('notifications'));
+    }
+
+
+    public function fetchFeedPerId(Request $request){
+        $notifications = Notification::with(['user', 'documents', 'connections'])
+                            ->whereHas('connections', function($q){
+                                $q->where('user_id', Auth::user()->id);
+                            })
+                            ->where('id', '<' ,$request->notif_id)->orderBy('id', 'desc')->get()->take(2);
+
+        return view('news-and-announcement.feed', compact('notifications'));
+    }
+
+
+
+
 }

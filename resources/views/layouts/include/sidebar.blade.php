@@ -49,7 +49,7 @@
 
 
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['news-and-announcement.index', 'news-and-announcement.edit', 'news-and-announcement.create', 'news-and-announcement.show'])) ? 'active' : '' }}" href="{{ route('news-and-announcement.index') }}">
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['news-and-announcement.index', 'news-and-announcement.edit', 'news-and-announcement.create', 'news-and-announcement.show', 'news-and-announcement.feed'])) ? 'active' : '' }}" href="{{ route('news-and-announcement.index') }}">
                   <span class="menu-icon">
                      <span class="svg-icon svg-icon-2">
                      <i class="fas fa-file-alt"></i>

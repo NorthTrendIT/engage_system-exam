@@ -295,6 +295,8 @@ Route::middleware(['auth'])->group(function () {
             Route::post('news-and-announcement/get-all-market-sector', 'App\Http\Controllers\NewsAndAnnouncementController@getAllMarketSector')->name('news-and-announcement.getAllMarketSector');
             Route::post('news-and-announcement/get-all-brands', 'App\Http\Controllers\NewsAndAnnouncementController@getAllBrands')->name('news-and-announcement.getAllBrands');
             Route::post('news-and-announcement/status/{id}', 'App\Http\Controllers\NewsAndAnnouncementController@updateStatus')->name('news-and-announcement.status');
+            Route::get('feed', 'App\Http\Controllers\NewsAndAnnouncementController@fetchNotifications')->name('news-and-announcement.feed');
+            Route::get('feed-previous', 'App\Http\Controllers\NewsAndAnnouncementController@fetchFeedPerId')->name('news-and-announcement.feed-previous');
 
             // Warranty
             Route::resource('warranty', 'App\Http\Controllers\WarrantyController');
