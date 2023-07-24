@@ -29,7 +29,7 @@
               <h1 class="text-dark fw-bolder fs-3 my-1">{{ isset($edit) ? "Update" : "Add" }} Details</h1>
             </div>
             <div class="card-body">
-              <form method="post" id="myForm">
+              <form method="post" id="myForm" enctype="multipart/form-data">
                 @csrf
 
                 @if(isset($edit))
@@ -86,7 +86,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label>Message<span class="asterisk">*</span></label>
-                            <textarea class="form-control form-control-solid" placeholder="Enter your message" name="message" rows="5">@if(isset($edit)){{ $edit->message }}@endif</textarea>
+                            <textarea class="form-control form-control-solid" placeholder="Enter your message" name="message" rows="5" id="editor">@if(isset($edit)){{ $edit->message }}@endif</textarea>
                         </div>
                     </div>
                 </div>
@@ -297,7 +297,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.repeater/1.2.1/jquery.repeater.min.js"></script>
-<script src="https://cdn.ckeditor.com/4.17.1/standard/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/4.22.1/standard-all/ckeditor.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js" ></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" ></script>
 
@@ -305,8 +305,35 @@
   $(document).ready(function() {
 
     CKEDITOR.replace( 'message',{
-      removePlugins: ['image', 'uploadimage']
+      removePlugins: ['image', 'uploadimage'],
+      // removeButtons: 'PasteFromWord',
+      extraPlugins: 'embed,autoembed,image2,justify',
+      height: 500,
+
+      // Load the default contents.css file plus customizations for this sample.
+      contentsCss: [
+        'http://cdn.ckeditor.com/4.22.1/full-all/contents.css',
+        'https://ckeditor.com/docs/ckeditor4/4.22.1/examples/assets/css/widgetstyles.css'
+      ],
+      // Setup content provider. See https://ckeditor.com/docs/ckeditor4/latest/features/media_embed
+      embed_provider: 'https://ckeditor.iframe.ly/api/oembed?url={url}&callback={callback}',
+
+      // Configure the Enhanced Image plugin to use classes instead of styles and to disable the
+      // resizer (because image size is controlled by widget styles or the image takes maximum
+      // 100% of the editor width).
+      image2_alignClasses: ['image-align-left', 'image-align-center', 'image-align-right'],
+      image2_disableResizer: true,
+
     });
+
+    // ClassicEditor
+    //     .create( document.querySelector( '#editor' ) )
+    //     .then( editor => {
+    //             // console.log( editor );
+    //     } )
+    //     .catch( error => {
+    //             console.error( error );
+    //     } );
 
     $('.bussinesUnit').select2({
         placeholder: 'Select Bussines Unit',
@@ -542,11 +569,11 @@
       $('.product_images_image').each(function() {
         $(this).rules('add', {
           required:false,
-          maxsize: 10000000,
-          extension: 'jpeg|jpg|png|eps|bmp|tif|tiff|webp|pdf|doc|docx|xls|xlsx|ppt|pptx|odt|ods',
+          // maxsize: 10000000,
+          extension: 'jpeg|jpg|png|eps|bmp|tif|tiff|webp|pdf|doc|docx|xls|xlsx|ppt|pptx|odt|ods|mp4',
           messages: {
-            extension: "Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp .pdf .doc .docx .xls .xlsx .ppt .pptx .odt .ods files.",
-            maxsize: "File size must not exceed 10MB.",
+            extension: "Allow only .jpeg .jpg .png .eps .bmp .tif .tiff .webp .pdf .doc .docx .xls .xlsx .ppt .pptx .odt .ods .mp4 files.",
+            // maxsize: "File size must not exceed 10MB.",
           }
         });
       });

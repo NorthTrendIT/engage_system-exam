@@ -49,7 +49,13 @@
 
 
             <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['news-and-announcement.index', 'news-and-announcement.edit', 'news-and-announcement.create', 'news-and-announcement.show'])) ? 'active' : '' }}" href="{{ route('news-and-announcement.index') }}">
+               @php 
+                   $news_and_announcement_url = 'news-and-announcement.index';
+                  if(Auth::user()->role_id !== 1){
+                     $news_and_announcement_url = 'news-and-announcement.feed';
+                  }
+               @endphp
+               <a class="menu-link {{ (in_array(request()->route()->getName(), ['news-and-announcement.index', 'news-and-announcement.edit', 'news-and-announcement.create', 'news-and-announcement.show', 'news-and-announcement.feed'])) ? 'active' : '' }}" href="{{ route(''.$news_and_announcement_url.'') }}">
                   <span class="menu-icon">
                      <span class="svg-icon svg-icon-2">
                      <i class="fas fa-file-alt"></i>
