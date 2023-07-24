@@ -28,6 +28,9 @@ class NewsAndAnnouncementController extends Controller
      */
     public function index()
     {
+        if(Auth::user()->role_id !== 1){
+            return redirect()->route('news-and-announcement.feed');
+        }
         $sap_connection = SapConnection::all();
         return view('news-and-announcement.index',compact('sap_connection'));
     }
