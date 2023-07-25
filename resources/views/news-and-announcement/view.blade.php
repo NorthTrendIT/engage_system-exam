@@ -29,7 +29,7 @@
 
                     <div class="card-body">
                         <div class="notif-contents">
-                            <div class="border border-bottom-5 p-3">
+                            <div class="border border-5 border-secondary p-3">
                                 <div class="row mb-5 message-notif" data-id="{{$data->id}}">
                                     <div class="col-md-12">
                                     <div class="form-group">
@@ -41,7 +41,10 @@
                                             <thead>
                                                 <tr>
                                                 {{-- <th> </th> --}}
-                                                <td class="text-center" colspan="2"><p class="lead"><h3 class="display-6">{{ @$data->title ?? "" }}</h3></p></td>
+                                                <td class="text-center" colspan="2">
+                                                    <p class="lead"><h3 class="display-6">{{ @$data->title ?? "" }}</h3></p>
+                                                    <p class="">Posted: <i class="text-info">{{$data->created_at->toDayDateTimeString()}}</i></p>
+                                                </td>
                                                 </tr>
                                                 @if(@Auth::user()->role_id == 1)
                                                 <tr>
@@ -142,7 +145,7 @@
                                 </div>
                                 @if(!empty($data->documents) && count($data->documents) > 0)
                                     <div class="row mb-5">
-                                        <h1 class="d-block mb-5">Documents</h1>
+                                        <h1 class="d-block mb-5 text-center">Attached Documents</h1>
                                         @foreach($data->documents as $item)
                                         @php
                                             $temp = explode('.', $item->file);
@@ -154,22 +157,27 @@
                                                         <img class="img-thumbnail" src="{{ asset('sitebucket/news-and-announcement/'.$item->file) }}" height="240px" width="320px"/>
                                                     </a>
                                                 </div>
-                                            @else
+                                            @elseif(in_array($ext, ['mp4']))
                                                 <div class="col-md-4">
                                                     <video width="320" height="240" class="img-thumbnail" controls>
                                                         <source src="{{ asset('sitebucket/news-and-announcement/'.$item->file) }}" type="video/{{$ext}}">
                                                         Your browser does not support the video tag.
                                                     </video>
                                                 </div>
+                                            @else
+                                                <div class="col-md-4">
+                                                    <iframe src='https://docs.google.com/viewer?url={{ asset('sitebucket/news-and-announcement/'.$item->file) }}&embedded=true' frameborder='0'></iframe>
+                                                </div>
+                                            @endif
                                             @endif
                                         @endforeach
                                     </div>
                                 @endif
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="d-flex justify-content-end">
                                         <p class="">Posted: <i class="text-info">{{$data->created_at->toDayDateTimeString()}}</i></p>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>
