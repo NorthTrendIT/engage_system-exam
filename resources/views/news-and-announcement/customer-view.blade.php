@@ -25,81 +25,85 @@
 
                     <div class="card-body">
                         <div class="notif-contents">
-                            @foreach($notifications as $data)
-                            <div class="mt-5 border border-5 border-secondary p-3">
-                                <div class="row message-notif" data-id="{{$data->id}}">
-                                    <div class="col-md-12">
-                                    <div class="form-group">
-                                        <!--begin::Table container-->
-                                        <div class="table-responsive">
-                                        <!--begin::Table-->
-                                        <table class="table table-bordered" id="myTable">
-                                            <!--begin::Table head-->
-                                            <thead>
-                                                <tr>
-                                                {{-- <th> </th> --}}
-                                                <td class="text-center" colspan="2">
-                                                    <p class="lead"><h3 class="display-6">{{ @$data->title ?? "" }}</h3></p>
-                                                    <p class="">Posted: <i class="text-info">{{$data->created_at->toDayDateTimeString()}}</i></p>
-                                                </td>
-                                                </tr>
+                            @if($notifications->count() > 0)
+                                @foreach($notifications as $data)
+                                    <div class="mt-5 border border-5 border-secondary p-3">
+                                        <div class="row message-notif" data-id="{{$data->id}}">
+                                            <div class="col-md-12">
+                                            <div class="form-group">
+                                                <!--begin::Table container-->
+                                                <div class="table-responsive">
+                                                <!--begin::Table-->
+                                                <table class="table table-bordered" id="myTable">
+                                                    <!--begin::Table head-->
+                                                    <thead>
+                                                        <tr>
+                                                        {{-- <th> </th> --}}
+                                                        <td class="text-center" colspan="2">
+                                                            <p class="lead"><h3 class="display-6">{{ @$data->title ?? "" }}</h3></p>
+                                                            <p class="">Posted: <i class="text-info">{{$data->created_at->toDayDateTimeString()}}</i></p>
+                                                        </td>
+                                                        </tr>
 
-                                                <tr>
-                                                {{-- <th></th> --}}
-                                                <td colspan="2">{!! @$data->message ?? "" !!}</td>
-                                                </tr>
-                                            </thead>
-                                            <!--end::Table head-->
-                                            <!--begin::Table body-->
-                                            <tbody>
+                                                        <tr>
+                                                        {{-- <th></th> --}}
+                                                        <td colspan="2">{!! @$data->message ?? "" !!}</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <!--end::Table head-->
+                                                    <!--begin::Table body-->
+                                                    <tbody>
 
-                                            </tbody>
-                                            <!--end::Table body-->
-                                        </table>
-                                        <!--end::Table-->
+                                                    </tbody>
+                                                    <!--end::Table body-->
+                                                </table>
+                                                <!--end::Table-->
+                                                </div>
+                                                <!--end::Table container-->
+
+                                            </div>
+
+                                            </div>
                                         </div>
-                                        <!--end::Table container-->
-
+                                        @if(!empty($data->documents) && count($data->documents) > 0)
+                                            <div class="row">
+                                                <h1 class="d-block mb-5 text-center">Attached Documents</h1>
+                                                @foreach($data->documents as $item)
+                                                @php
+                                                    $temp = explode('.', $item->file);
+                                                    $ext = strtolower(end($temp));
+                                                @endphp
+                                                    @if(in_array($ext, ['jpeg', 'jpg', 'png', 'bmp', 'tif', 'tiff', 'webp']))
+                                                        <div class="col-md-4">
+                                                            <a href="{{ asset('sitebucket/news-and-announcement/'.$item->file) }}" class="fancybox">
+                                                                <img class="img-thumbnail" src="{{ asset('sitebucket/news-and-announcement/'.$item->file) }}" height="240px" width="320px"/>
+                                                            </a>
+                                                        </div>
+                                                    @elseif(in_array($ext, ['mp4']))
+                                                        <div class="col-md-4">
+                                                            <video width="320" height="240" class="img-thumbnail" controls>
+                                                                <source src="{{ asset('sitebucket/news-and-announcement/'.$item->file) }}" type="video/{{$ext}}">
+                                                                Your browser does not support the video tag.
+                                                            </video>
+                                                        </div>
+                                                    @else
+                                                        <div class="col-md-4">
+                                                            <iframe src='https://docs.google.com/viewer?url={{ asset('sitebucket/news-and-announcement/'.$item->file) }}&embedded=true' frameborder='0'></iframe>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                        {{-- <div class="row">
+                                            <div class="d-flex justify-content-end">
+                                                <p class="">Posted: <i class="text-info">{{$data->created_at->toDayDateTimeString()}}</i></p>
+                                            </div>
+                                        </div> --}}
                                     </div>
-
-                                    </div>
-                                </div>
-                                @if(!empty($data->documents) && count($data->documents) > 0)
-                                    <div class="row">
-                                        <h1 class="d-block mb-5 text-center">Attached Documents</h1>
-                                        @foreach($data->documents as $item)
-                                        @php
-                                            $temp = explode('.', $item->file);
-                                            $ext = strtolower(end($temp));
-                                        @endphp
-                                            @if(in_array($ext, ['jpeg', 'jpg', 'png', 'bmp', 'tif', 'tiff', 'webp']))
-                                                <div class="col-md-4">
-                                                    <a href="{{ asset('sitebucket/news-and-announcement/'.$item->file) }}" class="fancybox">
-                                                        <img class="img-thumbnail" src="{{ asset('sitebucket/news-and-announcement/'.$item->file) }}" height="240px" width="320px"/>
-                                                    </a>
-                                                </div>
-                                            @elseif(in_array($ext, ['mp4']))
-                                                <div class="col-md-4">
-                                                    <video width="320" height="240" class="img-thumbnail" controls>
-                                                        <source src="{{ asset('sitebucket/news-and-announcement/'.$item->file) }}" type="video/{{$ext}}">
-                                                        Your browser does not support the video tag.
-                                                    </video>
-                                                </div>
-                                            @else
-                                                <div class="col-md-4">
-                                                    <iframe src='https://docs.google.com/viewer?url={{ asset('sitebucket/news-and-announcement/'.$item->file) }}&embedded=true' frameborder='0'></iframe>
-                                                </div>
-                                            @endif
-                                        @endforeach
-                                    </div>
-                                @endif
-                                {{-- <div class="row">
-                                    <div class="d-flex justify-content-end">
-                                        <p class="">Posted: <i class="text-info">{{$data->created_at->toDayDateTimeString()}}</i></p>
-                                    </div>
-                                </div> --}}
-                            </div>
-                            @endforeach
+                                @endforeach
+                            @else
+                                <div class="row mt-10 bg-light p-5"><h1 class="notif-contents-end text-center">No more posts to show.</h1></div>
+                            @endif   <!-- end of count -->
                         </div>
                     </div>
 
