@@ -312,7 +312,7 @@
 
       // Load the default contents.css file plus customizations for this sample.
       contentsCss: [
-        'http://cdn.ckeditor.com/4.22.1/full-all/contents.css',
+        'https://cdn.ckeditor.com/4.22.1/full-all/contents.css',
         'https://ckeditor.com/docs/ckeditor4/4.22.1/examples/assets/css/widgetstyles.css'
       ],
       // Setup content provider. See https://ckeditor.com/docs/ckeditor4/latest/features/media_embed
