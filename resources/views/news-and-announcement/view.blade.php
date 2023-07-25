@@ -169,7 +169,6 @@
                                                     <iframe src='https://docs.google.com/viewer?url={{ asset('sitebucket/news-and-announcement/'.$item->file) }}&embedded=true' frameborder='0'></iframe>
                                                 </div>
                                             @endif
-                                            @endif
                                         @endforeach
                                     </div>
                                 @endif
