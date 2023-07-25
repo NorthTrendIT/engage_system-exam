@@ -102,7 +102,7 @@
                                     </div>
                                 @endforeach
                             @else
-                                <div class="row mt-10 bg-light p-5"><h1 class="notif-contents-end text-center">No more posts to show.</h1></div>
+                                <div class="row mt-10 bg-light p-5"><h1 class="notif-contents-end text-center">No posts to show.</h1></div>
                             @endif   <!-- end of count -->
                         </div>
                     </div>
