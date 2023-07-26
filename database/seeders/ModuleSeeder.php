@@ -582,5 +582,34 @@ class ModuleSeeder extends Seeder
 
         Module::insert($activity_log_access);
 
+
+        $recommend_product = Module::create(
+            array(
+                'title' => 'Recommended Products',
+                'slug' => 'recommended-products',
+                'parent_id' => null,
+            )
+        );
+
+        $recommended_prods = array(
+            array(
+                'title' => 'Add',
+                'slug' => 'add-recommended-product',
+                'parent_id' => $recommend_product->id,
+            ),
+            array(
+                'title' => 'Edit',
+                'slug' => 'edit-recommended-product',
+                'parent_id' => $recommend_product->id,
+            ),
+            array(
+                'title' => 'View',
+                'slug' => 'view-recommended-product',
+                'parent_id' => $recommend_product->id,
+            ),
+        );
+
+        Module::insert($recommended_prods);
+
     }
 }

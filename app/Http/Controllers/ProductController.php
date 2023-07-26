@@ -1257,4 +1257,14 @@ class ProductController extends Controller
     return view('product.tagging',compact('company'));
   }
 
+  public function getRecommendedProductLists(){
+    $company = SapConnection::all();
+    return view('product.recommend',compact('company'));
+  }
+
+  public function createRecommendedProducts(){
+    $company = SapConnection::all();
+    return view('product.recommend-create',compact('company'));
+  }
+
 }

@@ -111,6 +111,8 @@ Route::middleware(['auth'])->group(function () {
             Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
 
             // Product
+            Route::get('product/recommended', 'App\Http\Controllers\ProductController@getRecommendedProductLists')->name('product.recommended');
+            Route::get('product/recommended/create', 'App\Http\Controllers\ProductController@createRecommendedProducts')->name('product.recommended-create');
             Route::get('product/export', 'App\Http\Controllers\ProductController@export')->name('product.export');
             Route::resource('product', 'App\Http\Controllers\ProductController');
             Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
