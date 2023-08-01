@@ -881,3 +881,20 @@ function get_product_customer_currency($item_prices, $cust_price_list){
     return $currency_symbol;
 
 }
+
+function get_product_currency($currency){
+    $currency_symbol = '';
+    switch($currency){
+        case 'USD':
+            $currency_symbol = '$';
+            break;
+        case 'EUR':
+            $currency_symbol = '€';
+            break;
+        default:
+            $currency_symbol = '₱';
+    }
+
+    return $currency_symbol;
+
+}

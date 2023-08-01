@@ -422,6 +422,246 @@ class ProductController extends Controller
 
                             return @$row->sap_connection->company_name ?? "-";
                           })
+                          ->addColumn('price1', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[1]['Currency'] ? get_product_currency(@$prices[1]['Currency']) : '₱');
+                                $price = (@$prices[1]['Price'] ? @$prices[1]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price2', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[2]['Currency'] ? get_product_currency(@$prices[2]['Currency']) : '₱');
+                                $price = (@$prices[2]['Price'] ? @$prices[2]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price3', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[3]['Currency'] ? get_product_currency(@$prices[3]['Currency']) : '₱');
+                                $price = (@$prices[3]['Price'] ? @$prices[3]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price4', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[4]['Currency'] ? get_product_currency(@$prices[4]['Currency']) : '₱');
+                                $price = (@$prices[4]['Price'] ? @$prices[4]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price5', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[5]['Currency'] ? get_product_currency(@$prices[5]['Currency']) : '₱');
+                                $price = (@$prices[5]['Price'] ? @$prices[5]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price6', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[6]['Currency'] ? get_product_currency(@$prices[6]['Currency']) : '₱');
+                                $price = (@$prices[6]['Price'] ? @$prices[6]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price7', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[7]['Currency'] ? get_product_currency(@$prices[7]['Currency']) : '₱');
+                                $price = (@$prices[7]['Price'] ? @$prices[7]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price8', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[8]['Currency'] ? get_product_currency(@$prices[8]['Currency']) : '₱');
+                                $price = (@$prices[8]['Price'] ? @$prices[8]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price9', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[9]['Currency'] ? get_product_currency(@$prices[9]['Currency']) : '₱');
+                                $price = (@$prices[9]['Price'] ? @$prices[9]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price10', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[10]['Currency'] ? get_product_currency(@$prices[10]['Currency']) : '₱');
+                                $price = (@$prices[10]['Price'] ? @$prices[10]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price11', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[11]['Currency'] ? get_product_currency(@$prices[11]['Currency']) : '₱');
+                                $price = (@$prices[11]['Price'] ? @$prices[11]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price12', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[12]['Currency'] ? get_product_currency(@$prices[12]['Currency']) : '₱');
+                                $price = (@$prices[12]['Price'] ? @$prices[12]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price13', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[13]['Currency'] ? get_product_currency(@$prices[13]['Currency']) : '₱');
+                                $price = (@$prices[13]['Price'] ? @$prices[13]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price14', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[14]['Currency'] ? get_product_currency(@$prices[14]['Currency']) : '₱');
+                                $price = (@$prices[14]['Price'] ? @$prices[14]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price15', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[15]['Currency'] ? get_product_currency(@$prices[15]['Currency']) : '₱');
+                                $price = (@$prices[15]['Price'] ? @$prices[15]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price16', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[16]['Currency'] ? get_product_currency(@$prices[16]['Currency']) : '₱');
+                                $price = (@$prices[16]['Price'] ? @$prices[16]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price17', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[17]['Currency'] ? get_product_currency(@$prices[17]['Currency']) : '₱');
+                                $price = (@$prices[17]['Price'] ? @$prices[17]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price18', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[18]['Currency'] ? get_product_currency(@$prices[18]['Currency']) : '₱');
+                                $price = (@$prices[18]['Price'] ? @$prices[18]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price19', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[19]['Currency'] ? get_product_currency(@$prices[19]['Currency']) : '₱');
+                                $price = (@$prices[19]['Price'] ? @$prices[19]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
+                          ->addColumn('price20', function($row) {
+                              $price = "0";
+                              $item_prices = json_decode($row->item_prices,true);
+
+                              if(count($item_prices) > 0){
+                                $prices = array_combine(array_column($item_prices, 'PriceList'), array_values($item_prices));
+                                $currency = (@$prices[20]['Currency'] ? get_product_currency(@$prices[20]['Currency']) : '₱');
+                                $price = (@$prices[20]['Price'] ? @$prices[20]['Price'] : '0');
+                              }
+
+                              return $currency.' '.number_format($price, 2);
+                          })
                           ->addColumn('online_price', function($row) {
                             $price = "-";
                             $item_prices = json_decode($row->item_prices,true);
@@ -494,7 +734,7 @@ class ProductController extends Controller
                             if($row->is_active){
                               $btn .= '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
                             }else{
-                              $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline status">Inctive</a>';
+                              $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline status">Inactive</a>';
                             }
 
                             return $btn;
@@ -695,7 +935,7 @@ class ProductController extends Controller
     }
 
     if(@$filter->filter_search != ""){
-      $data->where(function($q) use ($request) {
+      $data->where(function($q) use ($filter) {
         $q->orwhere('item_code','LIKE',"%".$filter->filter_search."%");
         $q->orwhere('item_name','LIKE',"%".$filter->filter_search."%");
       });
@@ -761,13 +1001,22 @@ class ProductController extends Controller
         }
 
         $temp['created_at'] = date('M d, Y',strtotime($value->created_date));
-        $temp['status'] = $value->is_active ? "Active" : "Inctive";
-        $temp['online_price'] = @$prices[11]['Price'] ?? "-";
-        $temp['commercial_price'] = @$prices[12]['Price'] ?? "-";
-        $temp['srp_price'] = @$prices[13]['Price'] ?? "-";
-        $temp['rdlp_price'] = @$prices[14]['Price'] ?? "-";
-        $temp['rdlp2_price'] = @$prices[15]['Price'] ?? "-";
-        $temp['lp_price'] = @$prices[16]['Price'] ?? "-";
+        $temp['status'] = $value->is_active ? "Active" : "Inactive";
+
+        //start diri ang customization
+        foreach(@$filter->priceLists as $pl){
+          $currency = (@$prices[$pl->no]['Currency'] ? get_product_currency(@$prices[$pl->no]['Currency']) : '₱');
+          $price = (@$prices[$pl->no]['Price'] ? @$prices[$pl->no]['Price'] : '0');
+          // $temp['price'.$pl->no] = @$prices[$pl->no]['Price'] ?? "-";
+          $temp['price'.$pl->no] = $currency.' '.number_format($price, 2);
+        }
+
+        // $temp['online_price'] = @$prices[11]['Price'] ?? "-";
+        // $temp['commercial_price'] = @$prices[12]['Price'] ?? "-";
+        // $temp['srp_price'] = @$prices[13]['Price'] ?? "-";
+        // $temp['rdlp_price'] = @$prices[14]['Price'] ?? "-";
+        // $temp['rdlp2_price'] = @$prices[15]['Price'] ?? "-";
+        // $temp['lp_price'] = @$prices[16]['Price'] ?? "-";
 
         $records[] = $temp;
       }else{
@@ -847,7 +1096,7 @@ class ProductController extends Controller
 
         $records[] = $temp;
       }
-    }
+    } //end of foreach
 
     $headers = array();
     // For Headers
@@ -875,12 +1124,17 @@ class ProductController extends Controller
 
       array_push($headers, 'Created Date');
       array_push($headers, 'Status');
-      array_push($headers, 'Online Price');
-      array_push($headers, 'Commercial Price');
-      array_push($headers, 'SRP');
-      array_push($headers, 'DLP');
-      array_push($headers, 'Gross Price');
-      array_push($headers, 'LP');
+
+      foreach(@$filter->priceLists as $pl){
+        array_push($headers, $pl->name);
+      }
+
+      // array_push($headers, 'Online Price');
+      // array_push($headers, 'Commercial Price');
+      // array_push($headers, 'SRP');
+      // array_push($headers, 'DLP');
+      // array_push($headers, 'Gross Price');
+      // array_push($headers, 'LP');
 
 
     }else{
@@ -1255,6 +1509,19 @@ class ProductController extends Controller
     $company = SapConnection::all();
 
     return view('product.tagging',compact('company'));
+  }
+
+  public function productPriceLists(Request $request){
+
+    $sap_connections = SapConnection::where('id', $request->filter_company)->first();
+    $sap_priceLists = new \App\Support\SAPCustomer($sap_connections->db_name, $sap_connections->user_name , $sap_connections->password, false, '');
+    $priceRecord = $sap_priceLists->fetchPriceLists();
+    $priceLists = [];
+    foreach($priceRecord['value'] as $price){
+        $priceLists[$price['PriceListNo']] = $price['PriceListName'];
+    }
+
+    return $priceLists;
   }
 
 }

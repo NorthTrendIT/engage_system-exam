@@ -112,6 +112,7 @@ Route::middleware(['auth'])->group(function () {
 
             // Product
             Route::get('product/export', 'App\Http\Controllers\ProductController@export')->name('product.export');
+            Route::get('product/fetchPriceLists', 'App\Http\Controllers\ProductController@productPriceLists')->name('product.fetchPriceLists');
             Route::resource('product', 'App\Http\Controllers\ProductController');
             Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
             Route::post('product/sync-products', 'App\Http\Controllers\ProductController@syncProducts')->name('product.sync-products');
