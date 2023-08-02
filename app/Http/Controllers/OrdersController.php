@@ -154,6 +154,7 @@ class OrdersController extends Controller
                 $status1 = 'Over Served';
             }
 
+            $inv_item = @$value->item_code;
             if(@$data->order[$key]->line_status == 'bost_Close'){
                 $remarks = 'Served';
             }else if($value->line_status == 'bost_Open'){
@@ -167,7 +168,7 @@ class OrdersController extends Controller
                 $remarks = '-';
             }
 
-            $num = InvoiceItem::with('invoice')->whereIn('invoice_id',$invoiceIds)->where('item_code',@$value->item_code)->pluck('invoice_id');
+            $num = InvoiceItem::with('invoice')->whereIn('invoice_id',$invoiceIds)->where('item_code', $inv_item)->pluck('invoice_id');
             
             $num1 = [];
             $invoice_num = Invoice::whereIn('id',$num)->pluck('doc_num')->implode(',');
