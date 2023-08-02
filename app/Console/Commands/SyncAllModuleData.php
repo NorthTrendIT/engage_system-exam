@@ -14,6 +14,7 @@ use App\Jobs\SyncQuotations;
 use App\Jobs\SyncInvoices;
 use App\Jobs\SyncSalesPersons;
 use App\Jobs\SyncTerritories;
+use Illuminate\Support\Facades\Log;
 
 
 class SyncAllModuleData extends Command
@@ -65,7 +66,8 @@ class SyncAllModuleData extends Command
             // SyncSalesPersons::dispatch($value->db_name, $value->user_name, $value->password);
             SyncTerritories::dispatch($value->db_name, $value->user_name, $value->password);
         }
-
+        
+        Log::channel('midnight-sync')->info('midnight sync has been made!');
         echo "Sync all module data to take from SAP successfully";
         return 0;
     }
