@@ -545,6 +545,7 @@ class ProductListController extends Controller
                         $c_product_group[$x] = $gr['product_group']['id']; 
                     }
                 }
+                $c_product_group = array_unique($c_product_group);
            }else{
                 $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
                 $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
