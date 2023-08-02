@@ -352,6 +352,10 @@ class SAPOrderPost
         $response = [];
         $order = LocalOrder::where('id', $id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
+        if(@$order->customer->currency == '##'){
+            $order->customer->currency = 'PHP';
+        }
+
         $response['CardCode'] = @$order->customer->card_code;
         $response['CardName'] = @$order->customer->card_name;
         $response['DocDueDate'] = @$order->due_date;

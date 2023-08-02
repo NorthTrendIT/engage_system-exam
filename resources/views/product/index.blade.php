@@ -36,7 +36,7 @@
 
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
-                    <option value=""></option>
+                    {{-- <option value=""></option> --}}
                     @foreach($company as $c)
                       <option value="{{ $c->id }}">{{ $c->company_name }}</option>
                     @endforeach
@@ -126,7 +126,7 @@
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
                   @if(in_array(userrole(),[1,11]))
-                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
+                  <button class="btn btn-success font-weight-bold download_excel " disabled>Export Excel</button>
                   @endif
                 </div>
 
@@ -137,7 +137,7 @@
                     <!--begin::Table container-->
                     <div class="table-responsive column-left-right-fix-scroll-hidden">
                        <!--begin::Table-->
-                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                       <table class="table table-bordered display nowrap" id="myTable" style="width:100%">
                           <!--begin::Table head-->
                           <thead>
                             <tr>
@@ -153,15 +153,33 @@
                               <th>Product Application</th>
                               <th>Product Pattern</th>
                               <th>Date</th>
-                              @if(in_array(userrole(),[1,11]))
-                              <th>Status</th>
-                              <th>Online Price</th>
+                              <th id="before_price">Status</th>
+                              <th>price1</th>
+                              <th>price2</th>
+                              <th>price3</th>
+                              <th>price4</th>
+                              <th>price5</th>
+                              <th>price6</th>
+                              <th>price7</th>
+                              <th>price8</th>
+                              <th>price9</th>
+                              <th>price10</th>
+                              <th>price11</th>
+                              <th>price12</th>
+                              <th>price13</th>
+                              <th>price14</th>
+                              <th>price15</th>
+                              <th>price16</th>
+                              <th>price17</th>
+                              <th>price18</th>
+                              <th>price19</th>
+                              <th>price20</th>
+                              {{-- <th>Online Price</th>
                               <th>Commercial Price</th>
                               <th>SRP</th>
                               <th>DLP</th>
                               <th>Gross Price</th>
-                              <th>LP</th>
-                              @endif
+                              <th>LP</th> --}}
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -208,12 +226,14 @@
 <script src="{{ asset('assets') }}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
 <script>
   $(document).ready(function() {
 
+    var sap_priceLists = [];
     render_table();
-
     function render_table(){
+      $('.download_excel').attr('disabled', 'disabled');
       var table = $("#myTable");
       table.DataTable().destroy();
 
@@ -229,17 +249,23 @@
       $filter_product_application = $('[name="filter_product_application"]').find('option:selected').val();
       $filter_product_pattern = $('[name="filter_product_pattern"]').find('option:selected').val();
 
-      table.DataTable({
+      var hide_targets = [];
+      @if(!in_array(userrole(),[1,11]))
+        hide_targets = [];
+      @endif
+
+      table = table.DataTable({
           processing: true,
           serverSide: true,
-          scrollX: true,
-          scrollY: "800px",
-          scrollCollapse: true,
-          paging: true,
           fixedColumns:   {
-            left: 3,
+            left: 2,
             right: 0
           },
+          fixedHeader: true,
+          // paging: false,
+          scrollCollapse: true,
+          scrollX: true,
+          scrollY: 400,
           order: [],
           ajax: {
               'url': "{{ route('product.get-all') }}",
@@ -274,17 +300,36 @@
               {data: 'u_item_application', name: 'u_item_application'},
               {data: 'u_pattern2', name: 'u_pattern2'},
               {data: 'created_date', name: 'created_date'},
-              @if(in_array(userrole(),[1,11]))
               {data: 'status', name: 'status'},
-              {data: 'online_price', name: 'online_price',orderable:false,searchable:false},
-              {data: 'commercial_price', name: 'commercial_price',orderable:false,searchable:false},
-              {data: 'srp_price', name: 'srp_price',orderable:false,searchable:false},
-              {data: 'rdlp_price', name: 'rdlp_price',orderable:false,searchable:false},
-              {data: 'rdlp2_price', name: 'rdlp2_price',orderable:false,searchable:false},
-              {data: 'lp_price', name: 'lp_price',orderable:false,searchable:false},
-              @endif
+              {data: 'price1', name: 'price1',orderable:false,searchable:false},
+              {data: 'price2', name: 'price2',orderable:false,searchable:false},
+              {data: 'price3', name: 'price3',orderable:false,searchable:false},
+              {data: 'price4', name: 'price4',orderable:false,searchable:false},
+              {data: 'price5', name: 'price5',orderable:false,searchable:false},
+              {data: 'price6', name: 'price6',orderable:false,searchable:false},
+              {data: 'price7', name: 'price7',orderable:false,searchable:false},
+              {data: 'price8', name: 'price8',orderable:false,searchable:false},
+              {data: 'price9', name: 'price9',orderable:false,searchable:false},
+              {data: 'price10', name: 'price10',orderable:false,searchable:false},
+              {data: 'price11', name: 'price11',orderable:false,searchable:false},
+              {data: 'price12', name: 'price12',orderable:false,searchable:false},
+              {data: 'price13', name: 'price13',orderable:false,searchable:false},
+              {data: 'price14', name: 'price14',orderable:false,searchable:false},
+              {data: 'price15', name: 'price15',orderable:false,searchable:false},
+              {data: 'price16', name: 'price16',orderable:false,searchable:false},
+              {data: 'price17', name: 'price17',orderable:false,searchable:false},
+              {data: 'price18', name: 'price18',orderable:false,searchable:false},
+              {data: 'price19', name: 'price19',orderable:false,searchable:false},
+              {data: 'price20', name: 'price20',orderable:false,searchable:false},
+              // {data: 'online_price', name: 'online_price',orderable:false,searchable:false},
+              // {data: 'commercial_price', name: 'commercial_price',orderable:false,searchable:false},
+              // {data: 'srp_price', name: 'srp_price',orderable:false,searchable:false},
+              // {data: 'rdlp_price', name: 'rdlp_price',orderable:false,searchable:false},
+              // {data: 'rdlp2_price', name: 'rdlp2_price',orderable:false,searchable:false},
+              // {data: 'lp_price', name: 'lp_price',orderable:false,searchable:false},
               {data: 'action', name: 'action'},
           ],
+          aoColumnDefs: [{ "bVisible": false, "aTargets": hide_targets }],
           drawCallback:function(){
               $(function () {
                 $('[data-toggle="tooltip"]').tooltip()
@@ -307,6 +352,30 @@
           initComplete: function () {
           }
         });
+        
+        $.get("{{ route('product.fetchPriceLists') }}", {filter_company : $filter_company}, function(data, status){
+          
+          var strt_hdr = 13; //start of dynamic header
+          var hide_columns = [];
+          sap_priceLists = [];
+          for(x in data){
+            $(table.column(strt_hdr).header()).text(data[x]);
+            sap_priceLists.push({no: x, name: data[x]});
+            strt_hdr++;
+          }
+          
+          var columns = (20 - (strt_hdr - 13));
+          for (let i = 0; i < columns; i++) {
+            hide_columns.push(strt_hdr + i);
+          }
+
+          table.columns(hide_columns).visible( false );
+          // $(table.column(1).header()).text('My title');
+          $('.download_excel').removeAttr('disabled');
+        });
+
+        // $("#myTable").stickyTable({overflowy: true});
+
     }
 
     $(document).on('click', '.search', function(event) {
@@ -375,7 +444,9 @@
         data.filter_product_category = $('[name="filter_product_category"]').find('option:selected').val();
         data.filter_product_line = $('[name="filter_product_line"]').find('option:selected').val();
         data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+        data.priceLists = sap_priceLists;
 
+        // console.log(data.priceLists);
         // console.log((JSON.stringify(data)));
         // console.log(btoa(JSON.stringify(data)));
         url = url + '?data=' + btoa(JSON.stringify(data));
