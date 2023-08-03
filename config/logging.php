@@ -66,7 +66,11 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 14,
         ],
-
+        'midnight-sync' => [
+            'driver' => 'single',
+                'path' => storage_path('logs/midnight_sync.log'),
+                'level' => 'info',
+        ],
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
