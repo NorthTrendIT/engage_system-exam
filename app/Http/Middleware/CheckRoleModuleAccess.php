@@ -224,6 +224,18 @@ class CheckRoleModuleAccess
                     }
                 }
 
+                //Recommended Product
+                if(in_array($request->route()->getName(), ['product.recommended', 'product.recommended-add'])){
+                    if(@$access['view-recommended-product'] != 1){
+                        $status = false;
+                        $message = "Oops! access denied.";
+                    }
+                    if(@$access['add-recommended-product'] != 1){
+                        $status = false;
+                        $message = "Oops! access denied."; 
+                    }
+                }
+
                 // Invoice Module
                 if(in_array($request->route()->getName(), ['invoices.index','invoices.get-all'])){
                     if(@$access['view-invoice'] != 1){

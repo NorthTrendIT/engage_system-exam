@@ -7,7 +7,7 @@
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Add Recommended Products</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Edit Recommended Products</h1>
       </div>
       <div class="d-flex align-items-center py-1">
         <a href="{{ route('product.recommended') }}" class="btn btn-sm btn-primary">Back</a>
@@ -24,12 +24,13 @@
               <h5>{{ isset($edit) ? "Update" : "Add" }} Details</h5>
             </div> --}}
             <div class="card-body">
-            <form method="post" id="myForm" enctype="multipart/form-data">
-                @csrf
+            <form method="post" id="myForm" enctype="application/x-www-form-urlencoded">
+              @method('PUT')
+              @csrf
               <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
-                        <input type="text" name="title" id="" class="form-control" placeholder="Enter Title">
+                        <input type="text" name="title" value="{{$edit->title}}" id="" class="form-control" placeholder="Enter Title">
                     </div>
                 </div>
               </div>
@@ -38,7 +39,7 @@
                   <select class="form-control form-control-lg form-control-solid bussinesUnit" data-control="select2" data-hide-search="false" name="sap_connection_id" data-allow-clear="true" data-placeholder="Select business unit">
                     {{-- <option value=""></option> --}}
                     @foreach($company as $c)
-                      <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                      <option value="{{ $c->id }}" @if(isset($edit->b_unit) && $edit->b_unit == $c->id) selected @endif>{{ $c->company_name }}</option>
                     @endforeach
                   </select>
                 </div> 
@@ -47,11 +48,11 @@
                     <select class="form-select form-select-solid" data-control="select2" id="selectModule" data-hide-search="false" name="module">
                       <option value="">Select Customer</option>
                       <option value="all" @if(isset($edit->module) && $edit->module == 'all') selected @endif>All</option>
-                      <option value="brand" @if(isset($edit->module) && $edit->module == 'role') selected @endif>By Brand</option>
+                      <option value="brand" @if(isset($edit->module) && $edit->module == 'brand') selected @endif>By Brand</option>
                       <option value="customer_class" @if(isset($edit->module) && $edit->module == 'customer_class') selected @endif>By Class</option>
                       <option value="sales_specialist" @if(isset($edit->module) && $edit->module == 'sales_specialist') selected @endif>By Sales Specialist</option>
                       <option value="territory" @if(isset($edit->module) && $edit->module == 'territory') selected @endif>By Territory</option>
-                      <option value="market_sector" @if(isset($edit->module) && $edit->module == 'territory') selected @endif>By Market Sector</option>
+                      <option value="market_sector" @if(isset($edit->module) && $edit->module == 'market_sector') selected @endif>By Market Sector</option>
                       <option value="customer" @if(isset($edit->module) && $edit->module == 'customer') selected @endif>By Customer</option>
                     </select>
                   </div>   
@@ -124,8 +125,8 @@
                         {{-- <label>Customer Selection<span class="asterisk">*</span></label> --}}
                         <select class="form-select form-select-solid" data-control="select2" id="selectClassCustomer" data-hide-search="false" name="select_class_customer" data-placeholder="Select Class Customer">
                             <option value=""></option>
-                            <option value="all">All Customers</option>
-                            <option value="specific">Specific Customers</option>
+                            <option value="all" @if(isset($edit->cust_select) && $edit->cust_select == 'all') selected @endif>All Customers</option>
+                            <option value="specific" @if(isset($edit->cust_select) && $edit->cust_select == 'specific') selected @endif>Specific Customers</option>
                         </select>
                     </div>
                 </div>
@@ -148,7 +149,7 @@
                 </div>
               </div>
               <div class="row mt-5">
-                <div class="col-md-12"><button class="btn btn-sm btn-primary float-end" type="submit"><span class="fa fa-plus"></span> Add</button></div>
+                <div class="col-md-12"><button class="btn btn-sm btn-primary float-end" type="submit"><span class="fa fa-edit"></span> Update</button></div>
               </div>
             </form>
             </div>
@@ -245,6 +246,18 @@
         }
     });
 
+    var selectedBrands = [];
+    @if(isset($edit) && @$edit->module == 'brand')
+      $('.brand').show();
+      @foreach ($edit->brands as $data)
+        var initialOption = {
+            id: {{ $data->id }},
+            text: `{!! @$data->group_name !!}`,
+            selected: true
+        }
+        selectedBrands.push(initialOption);
+      @endforeach
+    @endif
 
     // Brand
     $("#selectBrand").select2({
@@ -268,9 +281,22 @@
             cache: true
         },
         placeholder: 'Select Brand',
-        // minimumInputLength: 1,
         multiple: true,
+        data: selectedBrands
     });
+
+    var selectedCustomers = [];
+    @if(isset($edit) && @$edit->module == 'customer')
+     $('.customer').show();
+     @foreach ($edit->assignments as $data)
+        var initialOption = {
+            id: {{ $data->customer->id }},
+            text: `{!! "(".@$data->customer->card_code.") ".@$data->customer->card_name !!}`,
+            selected: true
+        }
+        selectedCustomers.push(initialOption);
+     @endforeach
+    @endif
 
     // getCustomer
     $("#selectCustomer").select2({
@@ -294,10 +320,41 @@
             cache: true
         },
         placeholder: 'Select Customer',
-        // minimumInputLength: 2,
         multiple: true,
+        data: selectedCustomers
     });
 
+    var selectedClassCustomers = [];
+    var selectedSpecificClassCustomers = [];
+    @if(isset($edit) && @$edit->module == 'customer_class')
+      $('.customer_class').show();
+      $('.select_class_customer_div').show();
+
+      @foreach ($edit->customer_class as $data)
+
+        var initialOption = {
+            id: {{ $data->id }},
+            text: `{!! @$data->name_sap_value->value ?? $data->name !!}`,
+            selected: true
+        }
+        selectedClassCustomers.push(initialOption);
+      @endforeach
+
+      @if(isset($edit->cust_select) && $edit->cust_select == 'specific')
+        $('.class_customer_div').show();
+
+        @foreach ($edit->assignments as $data)
+            var initialOption = {
+                id: {{ $data->customer->id }},
+                text: `{!! "(".@$data->customer->card_code.") ".@$data->customer->card_name !!}`,
+                selected: true
+            }
+            selectedSpecificClassCustomers.push(initialOption);
+        @endforeach
+        
+      @endif
+    @endif
+    
     // getCustomerClass
     $("#selectCustomerClass").select2({
         ajax: {
@@ -322,7 +379,51 @@
         placeholder: 'Select Customer Class',
         // minimumInputLength: 2,
         multiple: true,
+        data: selectedClassCustomers
     });
+
+
+    // getCustomerBaseOnSelectedClass [if specific was selected]
+    $("#classCustomer").select2({
+        ajax: {
+            url: "{{route('news-and-announcement.getClassCustomer')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    sap_connection_id: $('.bussinesUnit').val(),
+                    class_id: $('#selectCustomerClass').find('option:selected').toArray().map(item => item.value),
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Class Customer',
+        multiple: true,
+        data: selectedSpecificClassCustomers
+    });
+
+    var selectedSalesSpecialist = [];
+    @if(isset($edit) && @$edit->module == 'sales_specialist')
+      $('.sales_specialist').show();
+
+      @foreach ($edit->sales_specialist as $data)
+
+        var initialOption = {
+            id: {{ $data->id }},
+            text: `{!! @$data->sales_specialist_name !!}`,
+            selected: true
+        }
+        selectedSalesSpecialist.push(initialOption);
+      @endforeach
+    @endif
 
     // getSalesSpecialist
     $("#selectSalesSpecialist").select2({
@@ -348,8 +449,24 @@
         placeholder: 'Select Sales Specialist',
         // minimumInputLength: 2,
         multiple: true,
+        data: selectedSalesSpecialist
     });
 
+    var selectedTerritory = [];
+    @if(isset($edit) && @$edit->module == 'territory')
+       $('.territory').show();
+
+       @foreach ($edit->territories as $data)
+
+        var initialOption = {
+            id: {{ $data->id }},
+            text: `{!! @$data->description !!}`,
+            selected: true
+        }
+        selectedTerritory.push(initialOption);
+      @endforeach
+    @endif
+    
     // getTerritory
     $("#selectTerritory").select2({
         ajax: {
@@ -372,10 +489,23 @@
             cache: true
         },
         placeholder: 'Select Territory',
-        // minimumInputLength: 2,
         multiple: true,
+        data: selectedTerritory
     });
+    
+    var selectedMarketSector = [];
+    @if(isset($edit) && @$edit->module == 'market_sector')
+      $('.market_sector').show();
+      @foreach ($edit->market_sector as $data)
 
+        var initialOption = {
+            id: `{!! $data->u_sector !!}`,
+            text: `{!! @$data->u_sector_sap_value->value ?? $data->u_sector !!}`,
+            selected: true
+        }
+        selectedMarketSector.push(initialOption);
+      @endforeach
+    @endif
     // getMarketSector
     $("#selectMarketSector").select2({
         ajax: {
@@ -398,40 +528,23 @@
             cache: true
         },
         placeholder: 'Select Market Sector',
-        // minimumInputLength: 2,
         multiple: true,
+        data: selectedMarketSector
     });
 
+    var selectedProducts = []; 
+    @if(isset($edit) && @$edit->items)
+      @foreach ($edit->items as $data)
+        var initialOption = {
+            id: {{ $data->product->id }},
+            text: `{!! "(".@$data->product->item_code.") ".@$data->product->item_name !!}`,
+            selected: true
+        }
+        selectedProducts.push(initialOption);
+      @endforeach
+    @endif
 
-    // getCustomer
-    $("#classCustomer").select2({
-        ajax: {
-            url: "{{route('news-and-announcement.getClassCustomer')}}",
-            type: "post",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    _token: "{{ csrf_token() }}",
-                    search: params.term,
-                    sap_connection_id: $('.bussinesUnit').val(),
-                    class_id: $('#selectCustomerClass').find('option:selected').toArray().map(item => item.value),
-                };
-            },
-            processResults: function (response) {
-                return {
-                    results: response
-                };
-            },
-            cache: true
-        },
-        placeholder: 'Select Class Customer',
-        // minimumInputLength: 2,
-        multiple: true,
-    });
-
-
-    $("#selectProduct").select2({ //to continue august. 04
+    $("#selectProduct").select2({
       ajax: {
             url: "{{route('product.fetchProducts')}}",
             type: "get",
@@ -453,6 +566,7 @@
         },
         placeholder: 'Select Product',
         multiple: true,
+        data: selectedProducts
     });
 
 
@@ -520,18 +634,35 @@
       var validator = validate_form();
 
       if (validator.form() != false) {
+
+        // $.ajaxSetup({
+        //     headers: {
+        //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //     }
+        // });
+
+
         $.ajax({
-          url: "{{route('product.recommended-add')}}",
-          type: "POST",
-          data: new FormData($("#myForm")[0]),
+          url: `{{route('product.update', [encrypt($edit->id)])}}`,
+          type: "PUT",
+          data: $("#myForm").serializeArray(),
           //async: false,
-          processData: false,
-          contentType: false,
+          // dataType:'JSON',
+          // processData: false,
+          // contentType: false,
+          headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
           success: function (data) {
             if (data.status) {
               toast_success(data.message)
               setTimeout(function(){
-                window.location.href = '{{ route('product.recommended') }}';
+
+                @if(isset($edit->id))
+                  window.location.href = '{{ route('product.recommended') }}';
+                @else
+                  window.location.reload();
+                @endif
               },1500)
             } else {
               toast_error(data.message);

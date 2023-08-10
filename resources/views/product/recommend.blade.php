@@ -50,7 +50,23 @@
               </div>
               <div class="row mb-5 mt-5">
                 <div class="col-md-12">
+                  <div class="table-responsive">
+                    <table class="table" id="recommended_products_tbl">
+                      <thead class="bg-dark text-white">
+                        <tr>
+                          <th>No.</th>
+                          <th>Business Unit</th>
+                          <th>Title</th>
+                          {{-- <th>Customers</th> --}}
+                          <th>Products</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
 
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
 
@@ -64,14 +80,113 @@
 @endsection
 
 @push('css')
-
+<link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+<style>
+  #recommended_products_tbl .custom_width{
+      max-width: 250px !important;
+      white-space: nowrap; 
+      width: 50px; 
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }  
+</style>
 @endpush
 
 @push('js')
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
   $(document).ready(function() {
+    render_table();
 
+    $('.search').on('click', function(){
+      render_table();
+    });
+
+    $('.clear-search').on('click', function(){
+      $('[name="filter_company"]').val('').trigger('change');
+      $('[name="filter_search"]').val('');
+      render_table();
+    })
+
+    function render_table(){
+      var table = $("#recommended_products_tbl");
+      table.DataTable().destroy();
+      
+      $filter_search = $('[name="filter_search"]').val();
+      $filter_company = $('[name="filter_company"]').find('option:selected').val();
+
+      var table = table.DataTable({
+                                      processing: true,
+                                      serverSide: true,
+                                      searching: false,
+                                      bLengthChange: false,
+                                      ajax: {
+                                        'url': "{{ route('product.recommended.lists') }}",
+                                        'type': 'GET',
+                                        headers: {
+                                          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                        },
+                                        data:{
+                                          filter_search : $filter_search,
+                                          filter_company : $filter_company,
+                                        }
+                                      },
+                                      columns: [
+                                        {data: 'DT_RowIndex'},
+                                        {data: 'bu', name: 'bu'},
+                                        {data: 'title', name: 'title'},
+                                        // {data: 'customers', name: 'customers'},
+                                        {data: 'products', name: 'products'},
+                                        {data: 'action', name: 'action'},
+                                      ],
+                                      columnDefs: [
+                                            {targets: [0], className: "ps-2" },
+                                            {targets: [2,3], className: "custom_width" },
+                                            {targets: [4], className: "text-center" }
+                                      ],
+                                  });
+    }
+
+
+    $(document).on('click', '.delete', function(event) {
+      event.preventDefault();
+      $url = $(this).attr('data-url');
+
+      console.log($url);
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Once deleted, you will not be able to recover this record!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: $url,
+            method: "DELETE",
+            data: {
+                    _token:'{{ csrf_token() }}'
+                  }
+          })
+          .done(function(result) {
+            if(result.status == false){
+              toast_error(result.message);
+            }else{
+              console.log(result);
+              toast_success(result.message);
+              render_table();
+            }
+          })
+          .fail(function() {
+            toast_error("error");
+          });
+        }
+      })
+    });
 
   })
 </script>
