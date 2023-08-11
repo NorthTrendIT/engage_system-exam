@@ -237,9 +237,12 @@
       $filter_customer_class = $('[name="filter_customer_class"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
 
+      var width_targets = [];
       var hide_targets = [];
       @if(!in_array(userrole(),[1,11]))
         hide_targets= [5,7,10];
+      @else
+        width_targets = [10];
       @endif
 
       table.DataTable({
@@ -295,7 +298,7 @@
               {data: 'action', name: 'action'},
           ],
           columnDefs: [
-                {targets: [10], className: "custom_width" },
+                {targets: width_targets, className: "custom_width" },
                 {targets: hide_targets, visible: false }
           ],
           drawCallback:function(){
