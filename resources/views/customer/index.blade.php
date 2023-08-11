@@ -154,13 +154,9 @@
                               <th>Name</th>
                               <th>PriceList</th>
                               <th>Date Created</th>
-                              @if(in_array(userrole(),[1,11]))
                               <th>Business Unit</th>
-                              @endif
                               <th>Universal Card Code</th>
-                              @if(in_array(userrole(),[1,11]))
                               <th>Credit Limit</th>
-                              @endif
                               <th>Group</th>
                               <th>Vat</th>
                               <th>Assignment</th>
@@ -241,6 +237,10 @@
       $filter_customer_class = $('[name="filter_customer_class"]').val();
       $filter_status = $('[name="filter_status"]').find('option:selected').val();
 
+      var hide_targets = [];
+      @if(!in_array(userrole(),[1,11]))
+        hide_targets= [5,7,10];
+      @endif
 
       table.DataTable({
           processing: true,
@@ -283,23 +283,20 @@
               {data: 'name', name: 'name'},
               {data: 'customer_price_list', name: 'customer_price_list'},
               {data: 'created_at', name: 'created_at'},
-              @if(in_array(userrole(),[1,11]))
-              {data: 'company', name: 'company'},
-              @endif
+              {data: 'company', name: 'company'}, //hide
               {data: 'u_card_code', name: 'u_card_code'},
-              @if(in_array(userrole(),[1,11]))
-              {data: 'credit_limit', name: 'credit_limit'},
-              @endif
+              {data: 'credit_limit', name: 'credit_limit'}, //hide
               {data: 'group', name: 'group'},
               {data: 'vat', name: 'vat'},
-              {data: 'assignment', name: 'assignment'},
+              {data: 'assignment', name: 'assignment'}, //hide
               {data: 'territory', name: 'territory'},
               {data: 'class', name: 'class'},
               // {data: 'status', name: 'status'},
               {data: 'action', name: 'action'},
           ],
           columnDefs: [
-                {targets: [10], className: "custom_width" }
+                {targets: [10], className: "custom_width" },
+                {targets: hide_targets, visible: false }
           ],
           drawCallback:function(){
               $(function () {
