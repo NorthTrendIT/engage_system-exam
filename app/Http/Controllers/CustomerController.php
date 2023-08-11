@@ -357,6 +357,18 @@ class CustomerController extends Controller
                             ->addColumn('u_card_code', function($row) {
                                 return @$row->u_card_code ?? "-";
                             })
+                            ->addColumn('assignment', function($row) {
+                                $aName = '';
+                                $count = 0;
+                                foreach(@$row->sales_specialist as $ss){
+                                    $comma = ($count > 0) ? ', ' : '';
+                                    if(strpos($aName, $ss->assignment->assignment_name) === false){
+                                        $aName .=  $comma.$ss->assignment->assignment_name;
+                                    }
+                                    $count ++;
+                                }
+                                return $aName;
+                            })
                             ->addColumn('territory', function($row) {
                                 return @$row->territories->description ?? "-";
                             })
@@ -603,6 +615,15 @@ class CustomerController extends Controller
                                     'city' => @$value->city ?? "-",
                                 );
             }else{
+                $aName = '';
+                $count = 0;
+                foreach($value->sales_specialist as $ss){
+                    $comma = ($count > 0) ? ', ' : '';
+                    if(strpos($aName, $ss->assignment->assignment_name) === false){
+                        $aName .=  $comma.$ss->assignment->assignment_name;
+                    }
+                    $count ++;
+                }
                 $records[] = array(
                                     'no' => $key + 1,
                                     'company' => @$value->sap_connection->company_name ?? "-",
@@ -612,6 +633,7 @@ class CustomerController extends Controller
                                     'u_card_code' => $value->u_card_code ?? "-",
                                     'credit_limit' => $value->credit_limit ?? "-",
                                     'group_name' => @$value->group->name ?? "-",
+                                    'assignment_name' => $aName,
                                     'territory' => @$value->territories->description ?? "-",
                                     'class' => @$value->u_classification_sap_value->value ?? @$value->u_classification ?? "-",
                                     'created_at' => date('M d, Y',strtotime($value->created_date)),

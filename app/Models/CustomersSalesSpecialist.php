@@ -29,4 +29,9 @@ class CustomersSalesSpecialist extends Model
     public function product_group(){
         return $this->hasMany(CustomerProductGroup::class, 'assignment_id', 'assignment_id');
     }
+
+    public function assignment(){
+        return $this->belongsTo(salesAssignment::class, 'assignment_id');
+    }
+
 }

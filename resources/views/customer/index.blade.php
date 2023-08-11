@@ -163,6 +163,7 @@
                               @endif
                               <th>Group</th>
                               <th>Vat</th>
+                              <th>Assignment</th>
                               <th>Territory</th>
                               <th>Class</th>
                               {{-- <th>Status</th> --}}
@@ -201,6 +202,14 @@
   .other_filter_div{
     display: none;
   }
+
+  #myTable .custom_width{
+     max-width: 100px !important;
+     white-space: nowrap; 
+     width: 50px; 
+     overflow: hidden;
+     text-overflow: ellipsis;
+ } 
 </style>
 @endpush
 
@@ -283,10 +292,14 @@
               @endif
               {data: 'group', name: 'group'},
               {data: 'vat', name: 'vat'},
+              {data: 'assignment', name: 'assignment'},
               {data: 'territory', name: 'territory'},
               {data: 'class', name: 'class'},
               // {data: 'status', name: 'status'},
               {data: 'action', name: 'action'},
+          ],
+          columnDefs: [
+                {targets: [10], className: "custom_width" }
           ],
           drawCallback:function(){
               $(function () {

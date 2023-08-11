@@ -34,6 +34,7 @@ class CustomerExport implements FromCollection,WithHeadings,WithTitle,ShouldAuto
             'Universal Card Code',
             'Credit Limit',
             'Group',
+            'Assignment Name',
             'Territory',
             'Class',
             'Created Date',
