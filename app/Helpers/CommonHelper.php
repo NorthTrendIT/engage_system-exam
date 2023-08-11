@@ -439,7 +439,9 @@ function getRecommendedProducts($customer_id = false){
             $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
         }
 
-        $data = RecommendedProductItem::whereHas('recommended.assignments.customer', function($q) use ($customer_id){
+        $data = RecommendedProductItem::whereHas('product', function($q){
+                    $q->where('is_active', true);
+                })->whereHas('recommended.assignments.customer', function($q) use ($customer_id){
                     $q->whereIn('customer_id', $customer_id);
                 })->orderBy('id', 'desc')->get()->take(10);
     }

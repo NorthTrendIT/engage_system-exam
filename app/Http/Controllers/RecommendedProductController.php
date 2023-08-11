@@ -274,7 +274,9 @@ class RecommendedProductController extends Controller
         }
         $sap_customer_arr = array_combine($sap_connection_id, $customer_id);
 
-        $products = RecommendedProductItem::query();
+        $products = RecommendedProductItem::whereHas('product', function($q){
+                        $q->where('is_active', true);
+                    });
         if (!empty($customer_id)) {
             $products->whereHas('recommended.assignments.customer', function($q) use ($customer_id){
                 $q->whereIn('customer_id', $customer_id);

@@ -1664,10 +1664,12 @@ class ProductController extends Controller
               foreach($data as $item){
                   $user = @$item->customer->user;
                   if($user){
+                    if(@$item->customer->sap_connection_id == $input['sap_connection_id']){
                       $connection[$counter]['assignment_id'] = $recommend->id;              
                       $connection[$counter]['customer_id'] = @$item->customer->id;
                       $connection[$counter]['created_at'] = Carbon::now();
                       $counter++;
+                    }
                   }
               }
               RecommendedProductAssignment::insert($connection);
@@ -1678,7 +1680,7 @@ class ProductController extends Controller
           $connection = [];
           $counter = 0;
           foreach($records as $customer_id){
-              $customer = Customer::where('is_active', '1')->where('id', $customer_id)->firstOrFail();
+              $customer = Customer::where('is_active', '1')->where('id', $customer_id)->where('sap_connection_id', $input['sap_connection_id'])->firstOrFail();
 
               $connection[$counter]['assignment_id'] = $recommend->id;             
               $connection[$counter]['customer_id'] = $customer->id;
@@ -1730,7 +1732,7 @@ class ProductController extends Controller
 
         if($input['module'] == 'territory'){
           foreach($records as $record_id){
-              $data = Customer::where('is_active', '1')->where('territory', $record_id)->get();
+              $data = Customer::where('is_active', '1')->where('territory', $record_id)->where('sap_connection_id', $input['sap_connection_id'])->get();
               $connection = [];
               $counter = 0;
               foreach($data as $customer){
