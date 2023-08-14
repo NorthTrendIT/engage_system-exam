@@ -15,7 +15,10 @@ use App\Models\ConversationMessage;
 use App\Models\CustomerPromotion;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\RecommendedProductItem;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use App\Models\CustomersSalesSpecialist;
 
 use Auth as Auth;
 
@@ -420,9 +423,27 @@ function getRecommendedProducts($customer_id = false){
     $data = collect([]);
 
     if($customer_id){
-        $data = LocalOrderItem::with('product')->whereHas('order', function($q) use ($customer_id){
-                $q->where('customer_id' ,'=', $customer_id);
-            })->orderBy('id', 'desc')->get()->take(10);
+        // $data = LocalOrderItem::with('product')->whereHas('order', function($q) use ($customer_id){
+        //         $q->where('customer_id' ,'=', $customer_id);
+        //     })->orderBy('id', 'desc')->get()->take(10);
+        
+        $customer_id = [$customer_id];
+        if(userrole() == 4){
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
+        }elseif (!is_null(@Auth::user()->created_by)) {
+            $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
+            if(!is_null($customer)){
+                $customer_id = explode(',', @$customer->multi_customer_id);
+            }
+        }elseif(userrole() == 2){
+            $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
+        }
+
+        $data = RecommendedProductItem::whereHas('product', function($q){
+                    $q->where('is_active', true);
+                })->whereHas('recommended.assignments.customer', function($q) use ($customer_id){
+                    $q->whereIn('customer_id', $customer_id);
+                })->orderBy('id', 'desc')->get()->take(10);
     }
 
     return $data;

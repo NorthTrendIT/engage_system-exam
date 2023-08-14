@@ -14,9 +14,13 @@ use App\Models\LocalOrder;
 use App\Models\LocalOrderItem;
 use App\Models\SapConnection;
 use App\Models\Product;
+use App\Models\RecommendedProduct;
+use App\Models\RecommendedProductAssignment;
 use Validator;
 use Auth;
 use DataTables;
+
+use App\Models\RecommendedProductItem;
 
 class RecommendedProductController extends Controller
 {
@@ -70,7 +74,11 @@ class RecommendedProductController extends Controller
      */
     public function edit($id)
     {
-        //
+        $id = decrypt($id);
+        $company = SapConnection::all();
+        $edit = RecommendedProduct::findOrFail($id);
+
+        return view('product.recommend-edit',compact('company','edit'));
     }
 
     /**
@@ -93,10 +101,22 @@ class RecommendedProductController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $id = decrypt($id);
+        $del = RecommendedProduct::find($id);
+         
+        if($del){
+            $del->delete();
+            RecommendedProductAssignment::where('assignment_id', $id)->delete();
+            RecommendedProductItem::where('assignment_id', $id)->delete();
+            $response = ['status'=>true,'message'=>'Record deleted successfully !'];
+        }else{
+            $response = ['status'=>false,'message'=>'Record not found !'];
+        }
+        
+        return $response;
     }
 
-    public function getAll(Request $request){
+    public function getAll(Request $request){ //previous recommended product
         $customer = collect();
         $customer_id = [];
         $customer_price_list_no = [];
@@ -217,6 +237,131 @@ class RecommendedProductController extends Controller
                           ->rawColumns(['action','price','item_name'])
                           ->make(true);
     }
+
+
+    public function getAll1(Request $request){
+        $customer = collect();
+        $customer_id = [];
+        $customer_price_list_no = [];
+        $sap_id = [];
+        if(userrole() == 4){
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
+            $sap_connection_id = Customer::whereIn('id',$customer_id)->pluck('sap_connection_id')->toArray();
+            //$sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
+            $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+
+        }elseif (!is_null(@Auth::user()->created_by)) {
+
+            $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
+            if(!is_null($customer)){
+                $customer_id = explode(',', @$customer->multi_customer_id);
+                $sap_connection_id = Customer::whereIn('id',$customer_id)->pluck('sap_connection_id')->toArray();
+                //$sap_connection_id = explode(',', @$customer->multi_real_sap_connection_id);
+                $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+            }
+
+        }else if($request->customer_id){
+            $customer = Customer::findOrFail($request->customer_id);
+            if(!is_null($customer)){
+                $customer_id = array($request->customer_id);
+                $sap_connection_id = explode(',', @$customer->real_sap_connection_id);
+                $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+            }
+
+        }elseif(userrole() == 2){
+            $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
+            $sap_connection_id = array( @Auth::user()->sap_connection_id );
+        }
+        $sap_customer_arr = array_combine($sap_connection_id, $customer_id);
+
+        $products = RecommendedProductItem::whereHas('product', function($q){
+                        $q->where('is_active', true);
+                    });
+        if (!empty($customer_id)) {
+            $products->whereHas('recommended.assignments.customer', function($q) use ($customer_id){
+                $q->whereIn('customer_id', $customer_id);
+            });
+        }
+
+        if($request->filter_search != ""){
+            $products->whereHas('recommended.items.product', function($q) use ($request) {
+                $q->where('item_name','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        $products = $products->get();
+
+        return DataTables::of($products)
+                          ->addIndexColumn()
+                          ->addColumn('item_name', function($row) {
+                                if($row->product->quantity_on_stock - $row->product->quantity_ordered_by_customers < 1){
+                                    return '<span class="" title="Not Available">'.(@$row->product->item_name ?? "").'</span>';
+                                }else{
+                                    return @$row->product->item_name ?? "";
+                                }
+                          })
+                          ->addColumn('item_code', function($row) {
+                                if($row->product->quantity_on_stock - $row->product->quantity_ordered_by_customers < 1){
+                                    return '<span class="" title="Not Available">'.(@$row->product->item_code ?? "").'</span>';
+                                }else{
+                                    return @$row->product->item_code ?? "";
+                                }
+                            })
+                          ->addColumn('price', function($row) use ($customer_price_list_no) {
+                                $sap_connection_id = @$row->product->sap_connection_id;
+                                
+                                if($row->product->quantity_on_stock - $row->product->quantity_ordered_by_customers < 1){
+                                    return '<span class="" title="Not Available">₱ '.(number_format_value(get_product_customer_price(@$row->product->item_prices,@$customer_price_list_no[$sap_connection_id]))).'</span>';
+                                }else{
+                                    return "₱ ".number_format_value(get_product_customer_price(@$row->product->item_prices,@$customer_price_list_no[$sap_connection_id]));
+                                }
+                          })
+
+                          ->addColumn('action', function($row) use ($sap_customer_arr) {
+                            $btn = "";
+                            if(userrole() == 2){
+                                if(is_in_cart(@$row->product->id, @$sap_customer_arr[@$row->product->sap_connection_id]) == 1){
+                                    $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2" href="'.route('recommended-products.goToCart', @$sap_customer_arr[@$row->product->sap_connection_id]).'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                }else{
+                                    if(@$row->product->quantity_on_stock - @$row->product->quantity_ordered_by_customers < 1){
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-smmx-2 " title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
+                                    }else{
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm mx-2 addToCart" data-url="'.route('recommended-products.cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
+                                    }
+
+                                    $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2 goToCart" href="'.route('recommended-products.goToCart', @$sap_customer_arr[@$row->product->sap_connection_id]).'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                }
+                            }
+                            if(userrole() == 4){
+                                if(is_in_cart(@$row->product->id, @$sap_customer_arr[@$row->product->sap_connection_id]) == 1){
+                                    $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                }else{
+                                    if(@$row->product->quantity_on_stock - @$row->product->quantity_ordered_by_customers < 1){
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm mx-2" title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
+                                    }else{
+                                        $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm mx-2 addToCart" data-url="'.route('cart.add',@$row->product->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
+                                    }
+
+                                    $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2 goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                }
+                            }
+
+
+                            $btn .= '<a href="' . route('product-list.show',['id' => @$row->product->id, 'customer_id' => @$row->recommended->assignments->first()->customer->customer_id]). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm m-3" target="_blank">
+                                    <i class="fa fa-eye"></i>
+                                </a>';
+                            return $btn;
+                          })
+                        //   ->orderColumn('item_name', function ($query, $order) {
+                        //     $query->join("products",function($join){
+                        //         $join->on("products.id","=","product_id");
+                        //     })->orderBy('product_groups.group_name', $order);
+                        //   })
+                          ->rawColumns(['action','price','item_name'])
+                          ->make(true);
+    }
+
+
 
     function getCustomers(Request $request){
         $search = $request->search;

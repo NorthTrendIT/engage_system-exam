@@ -111,8 +111,13 @@ Route::middleware(['auth'])->group(function () {
             Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
 
             // Product
+            Route::get('product/recommended', 'App\Http\Controllers\ProductController@getRecommendedProductLists')->name('product.recommended');
+            Route::get('product/recommended/lists', 'App\Http\Controllers\ProductController@fetchRecommendedData')->name('product.recommended.lists');
+            Route::get('product/recommended/create', 'App\Http\Controllers\ProductController@createRecommendedProducts')->name('product.recommended-create');
+            Route::post('product/recommended/add', 'App\Http\Controllers\ProductController@addRecommendedProducts')->name('product.recommended-add');
             Route::get('product/export', 'App\Http\Controllers\ProductController@export')->name('product.export');
             Route::get('product/fetchPriceLists', 'App\Http\Controllers\ProductController@productPriceLists')->name('product.fetchPriceLists');
+            Route::get('product/fetchProducts', 'App\Http\Controllers\ProductController@fetchProducts')->name('product.fetchProducts');
             Route::resource('product', 'App\Http\Controllers\ProductController');
             Route::post('product/get-all', 'App\Http\Controllers\ProductController@getAll')->name('product.get-all');
             Route::post('product/sync-products', 'App\Http\Controllers\ProductController@syncProducts')->name('product.sync-products');
@@ -181,8 +186,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('product-list/{id}/{customer_id?}', 'App\Http\Controllers\ProductListController@show')->name('product-list.show')->middleware('not-super-admin');
             Route::post('product-list/get-all', 'App\Http\Controllers\ProductListController@getAll')->name('product-list.get-all')->middleware('not-super-admin');
             Route::post('product-list/get-products', 'App\Http\Controllers\ProductListController@getProducts')->name('product-list.get-products')->middleware('not-super-admin');
-            Route::resource('recommended-products', 'App\Http\Controllers\RecommendedProductController')->middleware('not-super-admin');
-            Route::post('recommended-products/get-all', 'App\Http\Controllers\RecommendedProductController@getAll')->name('recommended-products.get-all')->middleware('not-super-admin');
+            Route::resource('recommended-products', 'App\Http\Controllers\RecommendedProductController');
+            Route::post('recommended-products/get-all', 'App\Http\Controllers\RecommendedProductController@getAll1')->name('recommended-products.get-all')->middleware('not-super-admin');
             Route::post('recommended-products/get-customers/', 'App\Http\Controllers\RecommendedProductController@getCustomers')->name('recommended-products.getCustomers')->middleware('not-super-admin');
             Route::get('recommended-products/customer-cart/{id}', 'App\Http\Controllers\RecommendedProductController@customerCart')->name('recommended-products.goToCart')->middleware('not-super-admin');
             Route::post('recommended-products/customer-cart/add/{id}', 'App\Http\Controllers\RecommendedProductController@addToCart')->name('recommended-products.cart.add')->middleware('not-super-admin');

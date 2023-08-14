@@ -552,6 +552,44 @@
                             </li>
                             @endif
 
+
+                            {{-- Recommended Product --}}
+                            @if(@$modules['recommended-products']['id'])
+                            <li>
+                              <i class="fa fa-plus"></i>
+                              <label>
+                                <input data-id="{{ @$modules['recommended-products']['id'] }}" type="checkbox"  /> {{ @$modules['recommended-products']['title'] }}
+                              </label>
+                              <ul>
+
+                                @if(@$modules['add-recommended-product']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['add-recommended-product']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-recommended-product']['id'] }}]"  /> {{ @$modules['add-recommended-product']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['edit-recommended-product']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['edit-recommended-product']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-recommended-product']['id'] }}]"  /> {{ @$modules['edit-recommended-product']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['view-recommended-product']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['view-recommended-product']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-recommended-product']['id'] }}]"  /> {{ @$modules['view-recommended-product']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                              </ul>
+                            </li>
+                            @endif
+
                           </ul>
                         </li>
                         @endif

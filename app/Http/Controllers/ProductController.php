@@ -19,6 +19,10 @@ use App\Exports\ProductExport;
 use App\Exports\ProductTaggingExport;
 use App\Models\Customer; //added for sap connection only
 use App\Models\CustomerProductGroup;
+use App\Models\RecommendedProduct;
+use App\Models\RecommendedProductAssignment;
+use App\Models\RecommendedProductItem;
+use Carbon\Carbon;
 
 class ProductController extends Controller
 {
@@ -161,7 +165,10 @@ class ProductController extends Controller
    */
   public function update(Request $request, $id)
   {
-      //
+      $recom_id = decrypt($id);
+      $response = $this->addRecommendedProducts($request, $recom_id, 'update');
+
+      return $response;
   }
 
   /**
@@ -1511,6 +1518,16 @@ class ProductController extends Controller
     return view('product.tagging',compact('company'));
   }
 
+  public function getRecommendedProductLists(){
+    $company = SapConnection::all();
+    return view('product.recommend',compact('company'));
+  }
+
+  public function createRecommendedProducts(){
+    $company = SapConnection::all();
+    return view('product.recommend-create',compact('company'));
+  }
+
   public function productPriceLists(Request $request){
 
     $sap_connections = SapConnection::where('id', $request->filter_company)->first();
@@ -1523,5 +1540,287 @@ class ProductController extends Controller
 
     return $priceLists;
   }
+
+
+  public function fetchProducts(Request $request){
+    $search = $request->search;
+    $sap_connection_id = $request->sap_connection_id;
+
+    $response = array();
+    if($sap_connection_id){
+        if($sap_connection_id == 5){
+            $sap_connection_id = 1;
+        }
+
+        $data = Product::orderby('item_name','asc')->where('sap_connection_id', $sap_connection_id)
+                                                   ->where('is_active', true)
+                                                   ->select('id', 'item_code', 'item_name')->limit(50);
+        if($search != ''){
+          $data->where(function($q) use ($search) {
+            $q->orWhere('item_code', 'like', '%' .$search . '%');
+            $q->orWhere('item_name', 'like', '%' .$search . '%');
+          });
+        }
+
+        $data = $data->get();
+
+        foreach($data as $value){
+            $response[] = array(
+                "id"=>$value->id,
+                "text"=> '('.$value->item_code.') '.$value->item_name
+            );
+        }
+    }
+
+    return response()->json($response);
+  }
+
+  public function addRecommendedProducts(Request $request, $recom_id = null, $update = null){
+    // dd($recom_id, $update, $request->all());
+    $response = array();
+    $input = $request->all();
+    $rules = array(
+                'sap_connection_id' => 'required',
+                'product_ids' => 'required'
+            );
+    $validator = Validator::make($input, $rules);
+
+    if ($validator->fails()) {
+      $response = ['status'=>false,'message'=>$validator->errors()->first()];
+    }else{ //success
+
+      $cust_class = ($input['module'] == 'customer_class') ? $request->select_class_customer : NULL;
+      $rec_ids = '';
+      $count = 0;
+      if(isset($input['record_id']) && count($input['record_id']) > 0 ){
+        foreach($input['record_id'] as $id){
+          $comma = ($count > 0) ? ',' : '';
+          if(strpos($rec_ids, $id) === false){
+            $rec_ids .= $comma.$id;
+          }
+          $count ++;
+        }
+
+      }
+
+      if($update === 'update'){
+        // dd($input['module']);
+        $recommend = (object)[];
+        $recommend->id = $recom_id;
+        RecommendedProduct::where('id', $recom_id)->update([
+          'b_unit' => $input['sap_connection_id'],
+          'title' => $input['title'],
+          'module' => $input['module'],
+          'cust_select' => $cust_class,
+          'ids' => $rec_ids,
+        ]);
+        RecommendedProductAssignment::where('assignment_id', $recom_id)->delete();
+        RecommendedProductItem::where('assignment_id', $recom_id)->delete();
+      }else{
+        $recommend = new RecommendedProduct();
+        $recommend->b_unit = $input['sap_connection_id'];
+        $recommend->title = $input['title'];
+        $recommend->module = $input['module'];
+        $recommend->cust_select = $cust_class;
+        $recommend->ids = $rec_ids;
+        $recommend->save();
+      }
+
+      $product = [];
+      $count = 0;
+      foreach($input['product_ids'] as $id){
+        $product[$count]['assignment_id'] = $recommend->id;
+        $product[$count]['product_id'] = $id;
+        $product[$count]['created_at'] = Carbon::now();
+        $count++;
+      }
+      RecommendedProductItem::insert($product);
+
+      if($input['module'] == 'all'){
+        $data = Customer::where('is_active', '1')->where('sap_connection_id', $input['sap_connection_id'])->get();
+
+        $connection = [];
+        $counter = 0;
+        foreach($data as $customer){
+            $user = @$customer->user;
+            if($user){
+                $connection[$counter]['assignment_id'] = $recommend->id;          
+                $connection[$counter]['customer_id'] = $customer->id;
+                $connection[$counter]['created_at'] = Carbon::now();
+                $counter++;
+            }
+        }
+        RecommendedProductAssignment::insert($connection);
+      }
+
+      if(isset($input['record_id']) && count($input['record_id']) > 0 ){
+        $records = $input['record_id'];
+
+        if($input['module'] == 'brand'){
+          foreach($records as $record_id){
+              $data = CustomerProductGroup::where('product_group_id', $record_id)->get();
+              $connection = [];
+              $counter = 0;
+              foreach($data as $item){
+                  $user = @$item->customer->user;
+                  if($user){
+                    if(@$item->customer->sap_connection_id == $input['sap_connection_id']){
+                      $connection[$counter]['assignment_id'] = $recommend->id;              
+                      $connection[$counter]['customer_id'] = @$item->customer->id;
+                      $connection[$counter]['created_at'] = Carbon::now();
+                      $counter++;
+                    }
+                  }
+              }
+              RecommendedProductAssignment::insert($connection);
+          }
+        }
+
+        if($input['module'] == 'customer'){
+          $connection = [];
+          $counter = 0;
+          foreach($records as $customer_id){
+              $customer = Customer::where('is_active', '1')->where('id', $customer_id)->where('sap_connection_id', $input['sap_connection_id'])->firstOrFail();
+
+              $connection[$counter]['assignment_id'] = $recommend->id;             
+              $connection[$counter]['customer_id'] = $customer->id;
+              $connection[$counter]['created_at'] = Carbon::now();
+              $counter++;
+          }
+          RecommendedProductAssignment::insert($connection);
+        }
+
+        if($input['module'] == 'customer_class'){
+          foreach($records as $record_id){
+              $data = Customer::where(['class_id' => $record_id, 'sap_connection_id' => $input['sap_connection_id'], 'is_active' => '1' ]);
+
+              if(@$request->select_class_customer == "specific" && !empty(@$request->class_customer)){
+                  $data->whereIn('id', @$request->class_customer);
+              }
+
+              $data = $data->get();
+              $connection = [];
+              $counter = 0;
+              foreach($data as $customer){
+                  $user = @$customer->user;
+                  $connection[$counter]['assignment_id'] = $recommend->id;                 
+                  $connection[$counter]['customer_id'] = $customer->id;
+                  $connection[$counter]['created_at'] = Carbon::now();
+                  $counter++;
+              }
+              RecommendedProductAssignment::insert($connection);
+          }
+        }
+
+        if($input['module'] == 'sales_specialist'){
+          foreach($records as $record_id){
+              $data = Customer::where('is_active', '1')->where('sap_connection_id', $input['sap_connection_id'])->whereHas('sales_specialist', function($q) use($record_id){
+                  $q->where('ss_id', $record_id);
+              })->get();
+
+              $connection = [];
+              $counter = 0;
+              foreach($data as $customer){
+                  $connection[$counter]['assignment_id'] = $recommend->id;                 
+                  $connection[$counter]['customer_id'] = $customer->id;
+                  $connection[$counter]['created_at'] = Carbon::now();
+                  $counter++;
+              }
+              RecommendedProductAssignment::insert($connection);
+          }
+        }
+
+        if($input['module'] == 'territory'){
+          foreach($records as $record_id){
+              $data = Customer::where('is_active', '1')->where('territory', $record_id)->where('sap_connection_id', $input['sap_connection_id'])->get();
+              $connection = [];
+              $counter = 0;
+              foreach($data as $customer){
+                  $connection[$counter]['assignment_id'] = $recommend->id;        
+                  $connection[$counter]['customer_id'] = $customer->id;
+                  $connection[$counter]['created_at'] = Carbon::now();
+                  $counter++;
+              }
+              RecommendedProductAssignment::insert($connection);
+          }
+        }
+
+        if($input['module'] == 'market_sector'){
+          foreach($records as $record_id){
+              $data = Customer::where(['u_sector' => $record_id, 'sap_connection_id' => $input['sap_connection_id'], 'is_active' => '1'])->get();
+              $connection = [];
+              $counter = 0;
+              foreach($data as $customer){
+                  $connection[$counter]['assignment_id'] = $recommend->id;          
+                  $connection[$counter]['customer_id'] = $customer->id;
+                  $connection[$counter]['created_at'] = Carbon::now();
+                  $counter++;
+              }
+              RecommendedProductAssignment::insert($connection);
+          }
+        }
+        
+      }
+
+      $dyn_word = ($update === 'update') ? 'updated' : 'added';
+      $response = ['status'=>true,'message'=>'Recommended products for '.$input['title'].' '.$dyn_word.' successfully.'];
+    }
+
+    return $response;
+  }
+
+  public function fetchRecommendedData(Request $request){
+    $data = RecommendedProduct::query();
+
+    if($request->filter_company != ""){
+      $data->where('b_unit', $request->filter_company);
+    }
+    
+    if($request->filter_search != ""){
+      $data->where(function($q) use ($request) {
+
+        $q->orwhere('title','LIKE',"%".$request->filter_search."%");
+
+        $q->orWhereHas('items', function($i) use ($request){
+          $i->whereHas('product', function($p) use ($request){
+            $p->where('item_code','LIKE',"%".$request->filter_search."%");
+          });
+        });
+
+      });
+    }
+
+    $response = $data->get();
+    return DataTables::of($response)
+                      ->addIndexColumn()
+                      ->addColumn('bu', function($row) {
+                          return  $row->sap_connection->company_name;
+                      })
+                      ->addColumn('title', function($row) {
+                        return  $row->title;
+                      })
+                      // ->addColumn('customers', function($row) {
+                      //   return  $row->assignments->first()->customer->card_code;
+                      // })
+                      ->addColumn('products', function($row) {
+                        $products = '';
+                        $count = 0;
+                        foreach($row->items as $i){
+                            $comma = ($count > 0) ? ', ' : '';
+                            if(strpos($products, $i->product->item_code) === false){
+                              $products .= $comma.'<code>'.$i->product->item_code.'</code>';
+                            }
+                            $count ++;
+                        }
+                        return $products;
+                      })
+                      ->addColumn('action', function($row) {
+                        return  '<a href="'.route('recommended-products.edit', [encrypt($row->id)]).'" class="btn btn-sm p-1"><i class="fa fa-pencil"></i></a>
+                                 <a href="#" data-url="'.route('recommended-products.destroy', [encrypt($row->id)]).'" class="btn btn-sm p-1 delete"><i class="fa fa-trash"></i></a>';
+                      })
+                      ->rawColumns(['products','action'])
+                      ->make(true);
+  }
+
 
 }
