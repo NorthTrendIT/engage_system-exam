@@ -10,16 +10,14 @@ use App\Models\SapConnection;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Quotation;
-
 use DB;
 use DataTables;
-
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\BackOrderReportExport;
-
 use Auth;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\CustomersSalesSpecialist;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -406,33 +404,50 @@ class BackOrderReportController extends Controller
 
 
     public function getBackOrderPerCustomerData($table, $alias, $request, $sum){ //super admin - agent
-        $query = DB::table(''.$table.'s as '.$alias.'')
-                    ->selectRaw('card_code, card_name, sap_connection_id')
-                    ->where('sap_connection_id', $request->filter_company)
-                    ->where('cancelled', 'No');
+        $query =  Quotation::query();
+        // DB::table(''.$table.'s as '.$alias.'')
+        //             ->join('customers', $alias.'.card_code', '=', 'customers.card_code')
+        //             ->selectRaw(''.$alias.'.card_code, '.$alias.'.card_name, '.$alias.'.sap_connection_id');
 
-                    if($request->filter_customer != ''){
-                      $query->where('card_code', $request->filter_customer);
-                    }
+            if($request->filter_company != ''){
+                $query->where('sap_connection_id', $request->filter_company);
+            }
 
-                    if($request->filter_date_range != ""){ //date filter
-                        $date = explode(" - ", $request->filter_date_range);
-                        $start = date("Y-m-d", strtotime($date[0]));
-                        $end = date("Y-m-d", strtotime($date[1]));
-                    
-                        $query->whereDate($alias.'.created_at', '>=' , $start);
-                        $query->whereDate($alias.'.created_at', '<=' , $end);
-                    }else{ //default filter
-                        $query->whereYear($alias.'.created_at', '=' , date('Y'));
-                        $query->whereMonth($alias.'.created_at', '=' , date('m'));
-                    }
+            if(userrole() == 14 && $request->filter_customer == ''){ //displays all if no customer selected
+                $query->whereHas('customer', function($q){
+                    $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+                    $q->whereIn('id', $cus);
+                });
+            }
 
+            if($request->filter_customer != ''){
+                $query->where('card_code', $request->filter_customer);
+            }
+
+            if($request->filter_date_range != ""){ //date filter
+                $date = explode(" - ", $request->filter_date_range);
+                $start = date("Y-m-d", strtotime($date[0]));
+                $end = date("Y-m-d", strtotime($date[1]));
+            
+                $query->whereDate('created_at', '>=' , $start);
+                $query->whereDate('created_at', '<=' , $end);
+            }else{ //default filter
+                $query->whereYear('created_at', '=' , date('Y'));
+                $query->whereMonth('created_at', '=' , date('m'));
+            }
+                $query->where('cancelled', 'No');
+                        
         $customers =  $query->groupBy('card_code')->get();
 
         $items = [];
         $response = [];
         $counter = 0;
         foreach($customers as $key => $cust){
+
+            if(userrole() == 14 && $request->filter_customer == ''){ //added to mimic the filter enable to display all
+                $request->filter_company = $cust->sap_connection_id;
+            }
+
             $response = $this->getBackOrderPerCustomer($request, $sum, $cust->card_code);
 
             $response = (array) $response;

@@ -29,16 +29,16 @@ class OverdueSalesInvoiceReportController extends Controller
     {
         $company = [];
         $managers = [];
-
         if(Auth::user()->role_id == 1){
             $company = SapConnection::all();
             $role = Role::where('name','Manager')->first();
             $managers = User::where('role_id',@$role->id)->get();
         }
         if(Auth::user()->role_id == 6){
-            $company = SapConnection::all();          
+            $company = SapConnection::all();
         }
-        return view('report.overdue-sales-invoice-report.index', compact('company','managers'));
+        $title = 'Overdue Sales Invoice Report';
+        return view('report.sales-report.index', compact('company','managers', 'title'));
     }
 
     

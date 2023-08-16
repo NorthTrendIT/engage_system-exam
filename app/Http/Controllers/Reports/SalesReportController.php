@@ -36,7 +36,8 @@ class SalesReportController extends Controller
         if(Auth::user()->role_id == 6){
             $company = SapConnection::all();
         }
-        return view('report.sales-report.index', compact('company','managers'));
+        $title = 'Sales Report';
+        return view('report.sales-report.index', compact('company','managers', 'title'));
     }
 
     public function getAll(Request $request){
@@ -312,6 +313,14 @@ class SalesReportController extends Controller
             
             $and = (substr($filter, $filter_length) === '') ? '' : ' and';
             $filter .= $and.' Invoices/DocDate ge \''.$start.'\' and Invoices/DocDate le \''.$end.'\'';
+        }
+
+        if($request->overdue === 'Yes'){
+            $today = date("Y-m-d");
+            $status = 'O';
+            $cancelled = 'N';
+            $and = (substr($filter, $filter_length) === '') ? '' : ' and';
+            $filter .= $and.' Invoices/DocDueDate lt \''.$today.'\' and DocumentStatus eq \''.$status.'\' and Cancelled eq \''.$cancelled.'\'';
         }
 
         $filter = (substr($filter, $filter_length) === '') ? '' : $filter ;

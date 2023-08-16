@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title','Sales Report')
+@section('title', $title)
 
 @section('content')
 <style type="text/css">
@@ -21,7 +21,7 @@
   <div class="toolbar" id="kt_toolbar">
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
       <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Sales Report</h1>
+        <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">{{$title}}</h1>
       </div>
 
       <!--begin::Actions-->
@@ -348,6 +348,11 @@
       $filter_market_sub_sector = $('[name="filter_market_sub_sector"]').find('option:selected').val();
       $engage_transaction = $('[name="engage_transaction"]').val();
 
+      $overdue = 'No';
+      @if($title === 'Overdue Sales Invoice Report')
+        $overdue = 'Yes';
+      @endif
+
       $.ajax({
         url: '{{ route('reports.sales-report.get-all') }}',
         method: "POST",
@@ -373,6 +378,7 @@
 
                 filter_manager : $filter_manager,
                 engage_transaction : $engage_transaction,
+                overdue: $overdue,
               }
       })
       .done(function(result) {
@@ -807,6 +813,12 @@
       data.filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
       data.filter_market_sub_sector = $('[name="filter_market_sub_sector"]').find('option:selected').val();
       data.engage_transaction = $('[name="engage_transaction"]').val();
+     
+      data.overdue = 'No';
+      @if($title === 'Overdue Sales Invoice Report')
+        data.overdue = 'Yes';
+      @endif
+
       url = url + '?data=' + btoa(JSON.stringify(data));
 
       ($stat === false)? e.preventDefault() : window.location.href = url;
