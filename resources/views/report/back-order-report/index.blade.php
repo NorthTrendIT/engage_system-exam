@@ -330,6 +330,50 @@
   $(document).ready(function() {
     // render_table();
     // var back_order_details_tbl = $('#back_order_details_tbl').DataTable();
+
+      var btn_settings = [];
+      @if(!in_array(userrole(),[14]))
+        btn_settings =   [
+          // 'copy', 'csv', 'excel', 'pdf', 'print',
+          {
+              extend: 'copy',
+              className: 'btn btn-secondary btn-sm border border-info',
+              exportOptions: {
+                  columns: 'th:not(:last-child)'
+              },
+          },
+          {
+              extend: 'csv',
+              // text: 'Export Search Results',
+              className: 'btn btn-secondary btn-sm border border-info',
+              exportOptions: {
+                  columns: 'th:not(:last-child)'
+              },
+          },
+          {
+              extend: 'excel',
+              className: 'btn btn-secondary btn-sm border border-info',
+              exportOptions: {
+                  columns: 'th:not(:last-child)'
+              },
+          },
+          {
+              extend: 'pdf',
+              className: 'btn btn-secondary btn-sm border border-info',
+              exportOptions: {
+                  columns: 'th:not(:last-child)'
+              },
+          },
+          {
+              extend: 'print',
+              className: 'btn btn-secondary btn-sm border border-info',
+              exportOptions: {
+                  columns: 'th:not(:last-child)'
+              },
+          }
+      ];
+    @endif
+
     var back_order_tbl = $('#back_order_tbl').DataTable({
                                                 columnDefs: [
                                                     // {
@@ -343,45 +387,7 @@
                                                     // { orderable: false, targets: -1 } //last row
                                                 ],
                                                 dom: 'Bfrtip',
-                                                buttons: [
-                                                    // 'copy', 'csv', 'excel', 'pdf', 'print',
-                                                    {
-                                                        extend: 'copy',
-                                                        className: 'btn btn-secondary btn-sm border border-info',
-                                                        exportOptions: {
-                                                            columns: 'th:not(:last-child)'
-                                                        },
-                                                    },
-                                                    {
-                                                        extend: 'csv',
-                                                        // text: 'Export Search Results',
-                                                        className: 'btn btn-secondary btn-sm border border-info',
-                                                        exportOptions: {
-                                                            columns: 'th:not(:last-child)'
-                                                        },
-                                                    },
-                                                    {
-                                                        extend: 'excel',
-                                                        className: 'btn btn-secondary btn-sm border border-info',
-                                                        exportOptions: {
-                                                            columns: 'th:not(:last-child)'
-                                                        },
-                                                    },
-                                                    {
-                                                        extend: 'pdf',
-                                                        className: 'btn btn-secondary btn-sm border border-info',
-                                                        exportOptions: {
-                                                            columns: 'th:not(:last-child)'
-                                                        },
-                                                    },
-                                                    {
-                                                        extend: 'print',
-                                                        className: 'btn btn-secondary btn-sm border border-info',
-                                                        exportOptions: {
-                                                            columns: 'th:not(:last-child)'
-                                                        },
-                                                    }
-                                                ]
+                                                buttons: btn_settings
                                               });
     @if(@Auth::user()->role_id == 4)
       back_order_tbl.column( 1 ).visible( false );
@@ -539,7 +545,7 @@
         var html = '';
         if(result.data.length > 0){
           $.each(result.data, function( index, value ) {
-            html += '<tr><td>'+value.quotation_no+'</td><td>'+value.invoice_no+'</td></tr>'
+            html += '<tr><td><a href="'+value.backorder_href+'" title="View details">'+value.quotation_no+'</a></td><td>'+value.invoice_no+'</td></tr>'
           });
         }else{
             html += '<tr><td colspan="2" class="text-center">No data found.</td></tr>'

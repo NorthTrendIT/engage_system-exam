@@ -404,14 +404,14 @@
         
         @endif
 
-        @if(in_array(@Auth::user()->role_id, [1,4]))
+        @if(in_array(@Auth::user()->role_id, [1,4,14]))
         <div class="row gy-5 g-xl-8 mt-1">
             <!-- Promotion Report -->
             <div class="col-xl-6">
                 <div class="card card-xl-stretch mb-xl-8">
                     <div class="card-header border-0 pt-5">
                         <h3 class="card-title align-items-start flex-column">
-                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3">Top Products</a>
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3"> @if(in_array(@Auth::user()->role_id, [1,14]))TOP CUSTOMER (Products) @else TOP PRODUCTS @endif</a>
                         </h3>
                         <select id="total_performing_type" class="">
                             <option value="Quantity">Quantity</option>
@@ -428,7 +428,7 @@
 
                     <div class="card-body">
                         <div class="d-flex justify-content-end mb-2">
-                            <div class="col-3 @if(Auth::user()->role_id == 4) d-none @endif">
+                            <div class="col-3 @if(in_array(Auth::user()->role_id, [4, 14])) d-none @endif">
                                 <select id="total_performing_db" class="form-select form-select-sm">
                                     @foreach($company as $c)
                                         <option value="{{$c->id}}">{{$c->company_name}}</option>
@@ -1396,7 +1396,7 @@ $(document).ready(function() {
     @endif **/
 
 
-@if(in_array(@Auth::user()->role_id, [1,4]))
+@if(in_array(@Auth::user()->role_id, [1,4,14]))
 
 @if(@Auth::user()->role_id == 4)
     // Get Status Counting

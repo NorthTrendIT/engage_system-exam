@@ -17,6 +17,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ProductReportExport;
 use Illuminate\Support\Facades\DB;
 use App\Models\Quotation;
+use App\Models\CustomersSalesSpecialist;
 use Illuminate\Support\Facades\Log;
 use DataTables;
 
@@ -1241,7 +1242,7 @@ class ProductReportController extends Controller
 
         $items = $this->getCustomerQuotInvData($table, $alias, $request, $sum);
       }else{ //customer
-        $cust_id = explode(',', Auth::user()->multi_customer_id);
+        $cust_id = (@Auth::user()->role_id === 14) ? CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray() : explode(',', Auth::user()->multi_customer_id);
         if(in_array($request->order, ['back_order', 'over_served'])){
           $items = $this->getBackOrder($request, $sum, $cust_id);
         }else{

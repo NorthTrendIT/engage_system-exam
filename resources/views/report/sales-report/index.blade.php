@@ -174,7 +174,7 @@
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
-                  <a href="#" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
+                  <a href="#" class="btn btn-success font-weight-bold download_excel " style="display: none">Export Excel</a>
                 </div>
 
               </div>
@@ -306,7 +306,6 @@
 
 <script>
   $(document).ready(function() {
-
     render_table([]);
 
     $(document).on('click','.generate-report, .search',function(e){
@@ -405,11 +404,36 @@
       table.DataTable().destroy();
       // table.rows.add(jsonData).draw();
 
+      var btn_settings = [];
+      @if(!in_array(userrole(),[14]))
+        $('.download_excel').show();
+        btn_settings = [
+                          {
+                              extend: 'copy',
+                              className: 'btn btn-secondary btn-sm border border-info',
+                          },
+                          {
+                              extend: 'csv',
+                              className: 'btn btn-secondary btn-sm border border-info',
+                          },
+                          {
+                              extend: 'excel',
+                              className: 'btn btn-secondary btn-sm border border-info',
+                          },
+                          {
+                              extend: 'pdf',
+                              className: 'btn btn-secondary btn-sm border border-info',
+                          },
+                          {
+                              extend: 'print',
+                              className: 'btn btn-secondary btn-sm border border-info',
+                          }
+                      ];
+      @endif
+
       table.DataTable({
           dom: 'Bfrtip',
-          buttons: [
-              'copy', 'csv', 'excel', 'pdf', 'print'
-          ],
+          buttons: btn_settings,
           scrollX: true,
           scrollY: "800px",
           scrollCollapse: true,

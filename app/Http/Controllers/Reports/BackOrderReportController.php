@@ -694,6 +694,7 @@ class BackOrderReportController extends Controller
 
             $back_order_qty = $ordered_qty - $served_qty ; //of a specific product
             if($back_order_qty > 0){
+                $items[$counter]['backorder_href'] = route('orders.show',$quot->id);
                 $items[$counter]['quotation_no'] = $quot->doc_num;
                 $items[$counter]['invoice_no'] = $inv_no;
                 $counter++;
