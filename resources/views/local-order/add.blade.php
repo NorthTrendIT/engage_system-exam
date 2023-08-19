@@ -108,7 +108,7 @@
                                                 <thead>
                                                     <tr class="fw-bolder text-muted">
 
-                                                    <th class="min-w-150px">Product</th>
+                                                    <th class="min-w-200px">Product</th>
                                                     <th class="min-w-80px">Quantity</th>
                                                     <th class="min-w-80px" style="text-align:right">Price</th>
                                                     <th class="min-w-80px" style="text-align:right">Amount</th>
@@ -128,11 +128,9 @@
                                                             @endphp
                                                         <tr data-repeater-item name="items">
                                                             <td>
-                                                                <div class="form-group">
-                                                                    <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
-                                                                        <option value="{{ $value->product->id }}" selected>{{ $value->product->item_name }} ({{ @$value->product->item_code }})</option>
-                                                                    </select>
-                                                                </div>
+                                                                <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
+                                                                    <option value="{{ $value->product->id }}" selected>{{ $value->product->item_name }} ({{ @$value->product->item_code }})</option>
+                                                                </select>
                                                             </td>
                                                             <td>
                                                                 <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" data-currency="{{$currency_symbol}}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">

@@ -69,6 +69,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('role/chart', 'App\Http\Controllers\RoleController@getRoleChart')->name('role.chart')->middleware('super-admin');
 
             // Customer
+            Route::get('customer/target', 'App\Http\Controllers\CustomerController@customerTarget')->name('customer.target');
             Route::get('customer/export', 'App\Http\Controllers\CustomerController@export')->name('customer.export');
             Route::resource('customer', 'App\Http\Controllers\CustomerController');
             Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');

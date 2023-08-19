@@ -611,5 +611,34 @@ class ModuleSeeder extends Seeder
 
         Module::insert($recommended_prods);
 
+
+        $customer_target = Module::create(
+            array(
+                'title' => 'Customer Target',
+                'slug' => 'customer-target',
+                'parent_id' => null,
+            )
+        );
+
+        $customer_target_module = array(
+            array(
+                'title' => 'Add',
+                'slug' => 'add-customer-target',
+                'parent_id' => $customer_target->id,
+            ),
+            array(
+                'title' => 'Edit',
+                'slug' => 'edit-customer-target',
+                'parent_id' => $customer_target->id,
+            ),
+            array(
+                'title' => 'View',
+                'slug' => 'view-customer-target',
+                'parent_id' => $customer_target->id,
+            ),
+        );
+
+        Module::insert($customer_target_module);
+
     }
 }

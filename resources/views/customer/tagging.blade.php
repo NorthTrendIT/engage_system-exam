@@ -34,7 +34,9 @@
                 
                 <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
-                    <option value=""></option>
+                      @foreach($company as $c)
+                        <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                      @endforeach
                   </select>
                 </div>
 
@@ -230,26 +232,26 @@
       render_table();
     })
 
-    $('[name="filter_company"]').select2({
-      ajax: {
-          url: "{{route('common.getBusinessUnits')}}",
-          type: "post",
-          dataType: 'json',
-          delay: 250,
-          data: function (params) {
-              return {
-                    _token: "{{ csrf_token() }}",
-                    search: params.term,
-              };
-          },
-          processResults: function (response) {
-            return {
-              results: response
-            };
-          },
-          cache: true
-      },
-    });
+    // $('[name="filter_company"]').select2({
+    //   ajax: {
+    //       url: "{{route('common.getBusinessUnits')}}",
+    //       type: "post",
+    //       dataType: 'json',
+    //       delay: 250,
+    //       data: function (params) {
+    //           return {
+    //                 _token: "{{ csrf_token() }}",
+    //                 search: params.term,
+    //           };
+    //       },
+    //       processResults: function (response) {
+    //         return {
+    //           results: response
+    //         };
+    //       },
+    //       cache: true
+    //   },
+    // });
 
     $('[name="filter_brand"]').select2({
       ajax: {

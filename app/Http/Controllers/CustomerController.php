@@ -658,7 +658,8 @@ class CustomerController extends Controller
 
 
     public function customerTaggingIndex(){
-        return view('customer.tagging');
+        $company = SapConnection::all();
+        return view('customer.tagging', compact('company'));
     }
 
 
@@ -895,4 +896,10 @@ class CustomerController extends Controller
             Customer::where('card_code', $cust['CardCode'])->where('sap_connection_id', $sap_connection)->update(['currency' =>$cust['Currency']]);
         }
     }
+
+    public function customerTarget(){
+        $company = SapConnection::all();
+        return view('customer-target.view', compact('company'));
+    }
+
 }

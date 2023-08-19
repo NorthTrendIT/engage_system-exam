@@ -468,6 +468,42 @@
                             </li>
                             @endif
 
+                            {{-- Customer Target --}}
+                            @if(@$modules['customer-target']['id'])
+                            <li>
+                              <i class="fa fa-plus"></i>
+                              <label>
+                                <input data-id="{{ @$modules['customer-target']['id'] }}" type="checkbox"  /> {{ @$modules['customer-target']['title'] }}
+                              </label>
+                              <ul>
+
+                                @if(@$modules['add-customer-target']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['add-customer-target']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-customer-target']['id'] }}]"  /> {{ @$modules['add-customer-target']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['edit-customer-target']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['edit-customer-target']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-customer-target']['id'] }}]"  /> {{ @$modules['edit-customer-target']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['view-customer-target']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['view-customer-target']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-customer-target']['id'] }}]"  /> {{ @$modules['view-customer-target']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                              </ul>
+                            </li>
+                            @endif
 
 
                           </ul>
