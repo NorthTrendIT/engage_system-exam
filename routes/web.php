@@ -70,6 +70,7 @@ Route::middleware(['auth'])->group(function () {
 
             // Customer
             Route::get('customer/target', 'App\Http\Controllers\CustomerController@customerTarget')->name('customer.target');
+            Route::get('customer/target/fetch', 'App\Http\Controllers\CustomerController@customerTargetFetch')->name('customer-target.fetch');
             Route::get('customer/export', 'App\Http\Controllers\CustomerController@export')->name('customer.export');
             Route::resource('customer', 'App\Http\Controllers\CustomerController');
             Route::post('customer/get-all', 'App\Http\Controllers\CustomerController@getAll')->name('customer.get-all');

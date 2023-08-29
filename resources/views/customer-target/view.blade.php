@@ -22,6 +22,7 @@
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-body">
 
+              <form method="post" id="myForm">
                 <div class="row">
                     <label class="col-sm-2 col-form-label col-form-label-lg" for="">Company</label>
                     <div class="col-sm-3">
@@ -36,7 +37,7 @@
                 <div class="row mt-2">
                     <label class="col-sm-2 col-form-label col-form-label-lg" for="">Customer</label>
                     <div class="col-sm-8">
-                        <select class="form-control form-control-lg form-control-solid" name="filter_search" data-control="select2" data-hide-search="false" data-placeholder="Select" data-allow-clear="true">
+                        <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-placeholder="Select" data-allow-clear="true">
                             <option value=""></option>
                         </select>
                     </div>             
@@ -66,7 +67,7 @@
                                 <tr data-repeater-item name="items">
                                     <td>1</td>
                                     <td>
-                                        <select class="form-control form-control-sm form-control-solid border border-dark select_brand col-s," name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select" data-allow-clear="true">
+                                        <select class="form-control form-control-sm form-control-solid border border-dark select_brand " name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select" data-allow-clear="true">
                                             <option value=""></option>
                                         </select>
                                     </td>
@@ -76,7 +77,7 @@
                                         </select>
                                     </td>
                                     @for($x = 1; $x <= 12; $x++)
-                                        <td><input type="number" name="month_target" value="0" class="form-control form-control-sm form-control-solid border border-dark" data-month=""></td>
+                                        <td><input type="number" name="month_target" value="0" class="form-control form-control-sm form-control-solid border border-dark months" data-month="{{$x}}"></td>
                                     @endfor
                                     <td><button type="button" class="btn btn-danger btn-sm" data-repeater-delete><span class="fa fa-trash"></span></button></td>
                                 </tr>
@@ -86,6 +87,7 @@
                         </div>
                     </div>
                 </div>
+              </form>
 
                 {{-- <form class="repeater">
                     <!--
@@ -140,6 +142,8 @@
 <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.repeater/1.2.1/jquery.repeater.min.js"></script>
 
 <script>
@@ -160,35 +164,94 @@
                                       $('body').find('.dataTables_scrollBody').addClass("scrollbar");
                                   },
                               });
+    
+    
+    function validate_form(){
+      var validator = $("#myForm").validate({
+          errorClass: "is-invalid",
+          validClass: "is-valid",
+          rules: {
+              filter_company:{
+                  required: true,
+              },
+              filter_customer:{
+                  required: true,
+              },
+              year:{
+                  required: true,
+              }
+          },
+          messages: {
+              filter_company:{
+                  required: "Please select company.",
+              },
+              filter_customer:{
+                  required: "Please select customer.",
+              },
+              year:{
+                  required: "Please input year.",
+              }
+          },
+          errorPlacement: function (error, element) {
+              if (element.hasClass('.select2').length) {
+                  error.insertAfter(element.parent());
+              } else {
+                  error.insertAfter(element);
+              }
+          }
+      });
+
+      // $(".select_brand").each(function() {
+      //     $(this).rules('add', {
+      //         required: true,
+      //     });
+      // });
+
+      // $(".quantity").each(function() {
+      //     $(this).rules('add', {
+      //         required: true,
+      //         min: 1,
+      //     });
+      // });
+      return validator;
+  }
+
+
+    
 
 
     $('[name="year"]').focusout(function(){
-      console.log('fetch to server');
-      
-      // $.ajax({
-      //       url: "{{ route('reports.fetch-top-products') }}",
-      //       method: "GET",
-      //       data: filter_datas
-      //   })
-      //   .done(function(result) {  
-      //       if(result.status == false){
-      //           toast_error(result.message);
-      //       }else{
-      //           var html = '';
-      //           if(result.data.length > 0){
-      //               $.each(result.data, function( index, value ) {
-      //                   top_products_per_quantity.row.add([(index+1), value.card_name, value.item_code, value.item_description, (value.total_order).toLocaleString()]);
-      //               });
-      //           }
-      //           top_products_per_quantity.draw();
-      //       }
-      //   })
-      //   .fail(function() {
-      //       toast_error("error");
-      //   });
+      var validator = validate_form();
+      if (validator.form() != false) {
+        $.ajax({
+              url: "{{ route('customer-target.fetch') }}",
+              method: "GET",
+              data: {
+                  sap_connection_id: $('[name="filter_company"]').val(),
+                  customer_id: $('[name="filter_customer"]').val(),
+                  year: $('[name="year"]').val()
+              }
+          })
+          .done(function(result) { 
+              if(result.status == false){
+                  toast_error(result.message);
+              }else{
+                  var html = '';
+                  if(result.data.length > 0){
+                      $.each(result.data, function( index, value ) {
+                        cutomer_target_tbl.row.add([(index+1), value.card_name, value.item_code, value.item_description, (value.total_order).toLocaleString()]);
+                      });
+                      cutomer_target_tbl.draw();
+                  }
+              }
+          })
+          .fail(function() {
+              toast_error("error");
+          });
 
+      }
     });
-
+        
     $('.repeater').repeater({
         // (Optional)
         // start with an empty list of repeaters. Set your first (and only)
@@ -208,62 +271,132 @@
         // at this point.  If a show callback is not given the item will
         // have $(this).show() called on it.
         show: function () {
-            $(this).slideDown();
-            $(this).find('input').val(0);
 
-            $('.repeater').find('.select_brand').next('.select2-container').remove();
-            $('.repeater').find(".select_brand").select2({
-              ajax: {
-                  url: "{{route('customers-sales-specialist.get-product-brand')}}",
-                  type: "post",
-                  dataType: 'json',
-                  delay: 250,
-                  data: function (params) {
-                    
-                    return {
-                      _token: "{{ csrf_token() }}",
-                      search: params.term,
-                      sap_connection_id: $('[name="filter_company"]').val()
-                    };
-                  },
-                  processResults: function (response) {
-                      return {
-                          results: response
-                      };
-                  },
-                  cache: true
-              },
-              placeholder: 'Select Brand',
-              // multiple: true,
+          var validator = validate_form();
+          var has_brand = false;
+          var has_category = false;
+          var has_target = false;
+
+          $(this).prev().find('.select_brand').each(function(){
+              if(this.value){
+                has_brand = true;
+              }
+          });
+
+          $(this).prev().find('.select_category').each(function(){
+              if(this.value){
+                has_category = true;
+              }
+          });
+
+          $(this).prev().find('.months').each(function(){
+              if(this.value != 0){
+                has_target = true;
+              }
+          });
+
+          if(validator.form() != false && has_target == false){
+            Swal.fire('Please input monthly target', '', 'error');
+          }
+          if(validator.form() != false && has_category == false){
+            Swal.fire('Please select category.', '', 'error');
+          }
+          if(validator.form() != false && has_brand == false){
+            Swal.fire('Please select brand', '', 'error');
+          }
+
+          if (validator.form() != false && (has_brand != false && has_category != false && has_target != false)) {
+            $.ajax({
+                url: "{{ route('customer-target.add') }}",
+                method: "POST",
+                data: {
+                    sap_connection_id: $('[name="filter_company"]').val(),
+                    customer_id: $('[name="filter_customer"]').val(),
+                    year: $('[name="year"]').val(),
+                    brand: brand,
+                    category: category,
+                    monthly_target: monthly_target
+                }
+            })
+            .done(function(result) { 
+                if(result.status == false){
+                    toast_error(result.message);
+                }else{
+                    //success
+                }
+            })
+            .fail(function() {
+                toast_error("error");
             });
 
-            $('.repeater').find('.select_category').next('.select2-container').remove();
-            $('.repeater').find(".select_category").select2({
-              ajax: {
-                  url: "{{route('customers-sales-specialist.get-product-category')}}",
-                  type: "post",
-                  dataType: 'json',
-                  delay: 250,
-                  data: function (params) {
-                    
-                    return {
-                      _token: "{{ csrf_token() }}",
-                      search: params.term,
-                      sap_connection_id: $('[name="filter_company"]').val()
-                    };
-                  },
-                  processResults: function (response) {
-                      return {
-                          results: response
-                      };
-                  },
-                  cache: true
-              },
-              placeholder: 'Select Category',
-            });
+              $(this).slideDown();
+              $(this).find('input').val(0);
 
-            var counter = $("tr[data-repeater-item]").length;
-            $(this).find('td:first-child').text(counter);
+              // var category_ids = [];
+              // $('.repeater').find('.select_category').each(function(){
+              //     if(this.value){
+              //       category_ids.push(this.value);
+              //     }
+              // });
+
+              $('.repeater').find('.select_brand').next('.select2-container').remove();
+              $('.repeater').find('.select_category').next('.select2-container').remove();
+
+              $('.repeater').find(".select_brand").select2({
+                ajax: {
+                    url: "{{route('customers-sales-specialist.get-product-brand')}}",
+                    type: "post",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                      
+                      return {
+                        _token: "{{ csrf_token() }}",
+                        search: params.term,
+                        sap_connection_id: $('[name="filter_company"]').val()
+                      };
+                    },
+                    processResults: function (response) {
+                        return {
+                            results: response
+                        };
+                    },
+                    cache: true
+                },
+                placeholder: 'Select Brand',
+                // multiple: true,
+              });
+
+              $('.repeater').find(".select_category").select2({
+                ajax: {
+                    url: "{{route('customers-sales-specialist.get-product-category')}}",
+                    type: "post",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                      return {
+                        _token: "{{ csrf_token() }}",
+                        search: params.term,
+                        sap_connection_id: $('[name="filter_company"]').val(),
+                        // category_ids : category_ids
+                      };
+                    },
+                    processResults: function (response) {
+                        return {
+                            results: response
+                        };
+                    },
+                    cache: true
+                },
+                placeholder: 'Select Category',
+              });
+
+              var counter = $("tr[data-repeater-item]").length;
+              $(this).find('td:first-child').text(counter);
+            
+          }else{
+            $(this).remove(); //need to remove so it will read freshly created attr.
+          }
         },
         // (Optional)
         // "hide" is called when a user clicks on a data-repeater-delete
@@ -283,15 +416,12 @@
                 }).then((result) => {
                     if(result.isConfirmed) {
                       $(this).slideUp(deleteElement);
+                      $(this).remove();
 
-                      var deleted = $(this).find('td:first-child').text();
+                      new_index = 1;
                       $(document).find("tr[data-repeater-item]").each(function(){
-                          var counter = $(this).find('td:first-child').text();
-                          var new_index = counter;
-                          if(deleted !== counter && deleted < counter){
-                              new_index = counter - 1; 
-                          }
                           $(this).find('td:first-child').text(new_index);
+                          new_index++;
                       });
                     }
                 });
@@ -312,7 +442,7 @@
     });
 
     
-    $('[name="filter_search"]').select2({
+    $('[name="filter_customer"]').select2({
       ajax: {
         url: "{{ route('customer-promotion.get-customer') }}",
         type: "post",

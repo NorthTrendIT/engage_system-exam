@@ -19,6 +19,7 @@ use Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomerExport;
 use App\Exports\CustomerTaggingExport;
+use App\Models\CustomerTarget;
 use App\Models\Invoice;
 use Carbon\Carbon;
 
@@ -901,5 +902,18 @@ class CustomerController extends Controller
         $company = SapConnection::all();
         return view('customer-target.view', compact('company'));
     }
+
+    public function customerTargetFetch(Request $request){
+        
+        $data = CustomerTarget::where(['b_unit' => $request->sap_connection_id,
+                                       'customer_id' => $request->customer_id,
+                                       'year' => $request->year
+                                      ])->get();
+        
+        $response = ['status' => true, 'data'=>$data];
+        return $response;
+    }
+
+
 
 }
