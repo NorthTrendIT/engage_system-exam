@@ -538,6 +538,8 @@ class ProductListController extends Controller
                          })->first();
 
            if(strtolower($user_role->role->name) == "sales personnel"){
+                $custom_group = ProductGroup::where('number', 107)->where('sap_connection_id', $sap_connection_id)->pluck('id')->toArray();
+
                 $result = CustomersSalesSpecialist::with(['product_group.product_group'])->where(['ss_id' => userid(), 'customer_id' => $customer_id[0]])->has('product_group')->get()->toArray();
                 $c_product_group = [];
                 foreach($result as $data){
@@ -546,6 +548,7 @@ class ProductListController extends Controller
                     }
                 }
                 $c_product_group = array_unique($c_product_group);
+                array_push($c_product_group, $custom_group[0]);
            }else{
                 $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
                 $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
@@ -583,17 +586,11 @@ class ProductListController extends Controller
 
         $products = Product::whereRaw('last_sync_at > "2023-03-27 09:39:36"')->where($where)->limit(50);
 
+        $products->whereIn('sap_connection_id', $sap_connection_id);
+
         $products->whereHas('group', function($q){
             $q->where('is_active', true);
         });
-
-        if($request->filter_search != ""){
-            $products->where(function($q) use ($request){
-                $q->where('item_name','LIKE',"%".$request->filter_search."%")
-                       ->orWhere('item_code','LIKE',"%".$request->filter_search."%");
-            });
-            
-        }
 
         $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
 
@@ -629,7 +626,12 @@ class ProductListController extends Controller
             }
         });
 
-        $products->whereIn('sap_connection_id', $sap_connection_id);
+        if($request->filter_search != ""){
+            $products->where(function($q) use ($request){
+                $q->orwhere('item_name','LIKE',"%".$request->filter_search."%")
+                  ->orwhere('item_code','LIKE',"%".$request->filter_search."%");
+            }); 
+        }
 
         $products->when(!isset($request->order), function ($q) {
           $q->orderBy('item_name', 'asc');
@@ -638,7 +640,7 @@ class ProductListController extends Controller
         // if(userrole() != 1){
         //     $products->havingRaw('quantity_on_stock - quantity_ordered_by_customers > 0');
         // }
-
+        // dd($products->get());
         return [ 'products' => $products, 'customer_price_list_no' => $customer_price_list_no];
     }
 
