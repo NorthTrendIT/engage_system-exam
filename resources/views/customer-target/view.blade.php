@@ -277,14 +277,20 @@
           var has_category = false;
           var has_target = false;
 
+          var brand = 0;
+          var category = 0;
+          var monthly_target = {};
+
           $(this).prev().find('.select_brand').each(function(){
               if(this.value){
+                brand = this.value;
                 has_brand = true;
               }
           });
 
           $(this).prev().find('.select_category').each(function(){
               if(this.value){
+                category = this.value;
                 has_category = true;
               }
           });
@@ -293,6 +299,7 @@
               if(this.value != 0){
                 has_target = true;
               }
+              monthly_target[$(this).attr('data-month')] = this.value;
           });
 
           if(validator.form() != false && has_target == false){
@@ -310,6 +317,7 @@
                 url: "{{ route('customer-target.add') }}",
                 method: "POST",
                 data: {
+                    _token: '{{ csrf_token() }}',
                     sap_connection_id: $('[name="filter_company"]').val(),
                     customer_id: $('[name="filter_customer"]').val(),
                     year: $('[name="year"]').val(),

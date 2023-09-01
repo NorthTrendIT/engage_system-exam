@@ -914,6 +914,22 @@ class CustomerController extends Controller
         return $response;
     }
 
+    public function customerTargetAdd(Request $request){
+        // dd($request->all());
+        $target = [];
+        $target['b_unit'] = $request->sap_connection_id;
+        $target['customer_id'] = $request->customer_id;
+        $target['brand_id'] = $request->brand;
+        $target['category_id'] = $request->category;
+        foreach($request->monthly_target as $key => $mt){
+            $month = date("F", strtotime("$key/12/1997"));
+            $target[strtolower($month)] = $mt;
+        }
+        $target['year'] = $request->year;
+
+        CustomerTarget::insert($target);
+    }   
+
 
 
 }
