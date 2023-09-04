@@ -51,7 +51,7 @@
                 <div class="row mt-5">
                     <div class="col-md-12">
                         <div class="table-responsive text-nowrap repeater">
-                        <table class="table table-bordered table-striped table-hover" id="cutomer_target_tbl" data-paging='false'>
+                        <table class="table table-bordered table-hover" id="cutomer_target_tbl" data-paging='false'>
                             <thead class="bg-dark text-white">
                              <tr>
                                 <th>#</th>
@@ -239,10 +239,59 @@
                   var html = '';
                   if(result.data.length > 0){
                       $.each(result.data, function( index, value ) {
-                        cutomer_target_tbl.row.add([(index+1), value.card_name, value.item_code, value.item_description, (value.total_order).toLocaleString()]);
+
+                        html += '<tr data-repeater-item name="items" class="odd">';
+                            html += '<td class="dtfc-fixed-left" style="left: 0px; position: sticky;">'+(index+1)+'</td>';
+                            html += '<td class="dtfc-fixed-left" style="left: 21.6719px; position: sticky;">'+
+                                        '<select class="form-control form-control-sm form-control-solid border border-dark select_brand " name="filter_brand" current-brand="'+value.product_group.id+'" data-control="select2" data-hide-search="false" data-placeholder="Select" data-allow-clear="true">'+
+                                            '<option value="'+value.product_group.id+'">'+value.product_group.group_name+'</option>'+
+                                        '</select>'+
+                                    '</td>';
+                            html += '<td class="dtfc-fixed-left" style="left: 191.172px; position: sticky;">'+
+                                        '<select class="form-control form-control-sm form-control-solid border border-dark select_category" name="filter_category" current-category="'+value.product_category.id+'" data-control="select2" data-hide-search="false" data-placeholder="Select" data-allow-clear="true">'+
+                                            '<option value="'+value.product_category.id+'">'+value.product_category.u_tires+'</option>'+
+                                        '</select>'+
+                                    '</td>';
+                            @for($x = 1; $x <= 12; $x++)
+                            @php 
+                              $month = date("F", strtotime("$x/12/1997"));
+                            @endphp
+
+                            html += '<td><input type="number" name="month_target" value="'+value['{{strtolower($month)}}']+'" class="form-control form-control-sm form-control-solid border border-dark months" data-month="{{$x}}"></td>';
+                            @endfor
+                            html += '<td>'+
+                                      '<button type="button" class="btn btn-primary btn-sm update_target"><span class="fa fa-pencil"></span></button>'+
+                                      '<button type="button" class="btn btn-danger btn-sm" data-repeater-delete><span class="fa fa-trash"></span></button>'+
+                                      '</td>';
+                            html += '</tr>';
+
                       });
-                      cutomer_target_tbl.draw();
+                  }else{
+                      //else html
+                      // $('.btn-success[data-repeater-create]').get(0).click();
+                    html += '<tr data-repeater-item name="items" class="odd">'+
+                                    '<td class="dtfc-fixed-left" style="left: 0px; position: sticky;">1</td>'+
+                                    '<td class="dtfc-fixed-left" style="left: 21.6719px; position: sticky;">'+
+                                        '<select class="form-control form-control-sm form-control-solid border border-dark select_brand " name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select" data-allow-clear="true">'+
+                                            '<option value=""></option>'+
+                                        '</select>'+
+                                    '</td>'+
+                                    '<td class="dtfc-fixed-left" style="left: 191.172px; position: sticky;">'+
+                                        '<select class="form-control form-control-sm form-control-solid border border-dark select_category" name="filter_category" data-control="select2" data-hide-search="false" data-placeholder="Select" data-allow-clear="true">'+
+                                            '<option value=""></option>'+
+                                        '</select>'+
+                                    '</td>';
+                                    @for($x = 1; $x <= 12; $x++)
+                                    html += '<td><input type="number" name="month_target" value="0" class="form-control form-control-sm form-control-solid border border-dark months" data-month="{{$x}}"></td>';
+                                    @endfor
+                                    html += '<td><button type="button" class="btn btn-danger btn-sm" data-repeater-delete><span class="fa fa-trash"></span></button></td>'+
+                              '</tr>';
                   }
+
+                  $('#cutomer_target_tbl tbody').html(html);
+                  select2_brand();
+                  select2_category();
+
               }
           })
           .fail(function() {
@@ -271,12 +320,14 @@
         // at this point.  If a show callback is not given the item will
         // have $(this).show() called on it.
         show: function () {
-
           var validator = validate_form();
+          var has_prev = $(this).prev().find('td').length; 
+          var has_update = $(this).prev().find('.update_target').length;
           var has_brand = false;
           var has_category = false;
           var has_target = false;
-
+          var has_duplicate = false;
+          var check_duplicate = [];
           var brand = 0;
           var category = 0;
           var monthly_target = {};
@@ -295,6 +346,17 @@
               }
           });
 
+          $(document).find("tr[data-repeater-item]").each(function(){
+              var data = $(this).find('.select_brand').val()+','+$(this).find('.select_category').val();
+
+              if(check_duplicate.indexOf(data) == -1){
+                check_duplicate.push(data)
+              }else{
+                has_duplicate = true;
+                return false; //stops loop
+              }
+          });
+
           $(this).prev().find('.months').each(function(){
               if(this.value != 0){
                 has_target = true;
@@ -302,17 +364,24 @@
               monthly_target[$(this).attr('data-month')] = this.value;
           });
 
-          if(validator.form() != false && has_target == false){
-            Swal.fire('Please input monthly target', '', 'error');
-          }
-          if(validator.form() != false && has_category == false){
-            Swal.fire('Please select category.', '', 'error');
-          }
-          if(validator.form() != false && has_brand == false){
-            Swal.fire('Please select brand', '', 'error');
-          }
 
-          if (validator.form() != false && (has_brand != false && has_category != false && has_target != false)) {
+          if(has_prev != 0){ // to avoid pop up if previous row not found.
+            if(validator.form() != false && has_target == false){
+              Swal.fire('Please input monthly target', '', 'error');
+            }
+            if(validator.form() != false && has_duplicate == true){
+              Swal.fire('Brand & Category must be unique.', '', 'error');
+            }
+            if(validator.form() != false && has_category == false){
+              Swal.fire('Please select category.', '', 'error');
+            }
+            if(validator.form() != false && has_brand == false){
+              Swal.fire('Please select brand', '', 'error');
+            }
+          } 
+
+          if (validator.form() != false && (has_brand != false && has_category != false && has_duplicate == false && has_target != false && has_update == 0)) {
+            $(this).prev().find('.btn-danger').parent().prepend('<button type="button" class="btn btn-primary btn-sm update_target"><span class="fa fa-pencil"></span></button>');
             $.ajax({
                 url: "{{ route('customer-target.add') }}",
                 method: "POST",
@@ -326,11 +395,13 @@
                     monthly_target: monthly_target
                 }
             })
-            .done(function(result) { 
+            .done(function(result, status, xhr) { 
                 if(result.status == false){
                     toast_error(result.message);
                 }else{
                     //success
+                    $('[name="year"]').trigger('focusout');
+                    toast_success(result.message);
                 }
             })
             .fail(function() {
@@ -349,61 +420,29 @@
 
               $('.repeater').find('.select_brand').next('.select2-container').remove();
               $('.repeater').find('.select_category').next('.select2-container').remove();
-
-              $('.repeater').find(".select_brand").select2({
-                ajax: {
-                    url: "{{route('customers-sales-specialist.get-product-brand')}}",
-                    type: "post",
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                      
-                      return {
-                        _token: "{{ csrf_token() }}",
-                        search: params.term,
-                        sap_connection_id: $('[name="filter_company"]').val()
-                      };
-                    },
-                    processResults: function (response) {
-                        return {
-                            results: response
-                        };
-                    },
-                    cache: true
-                },
-                placeholder: 'Select Brand',
-                // multiple: true,
-              });
-
-              $('.repeater').find(".select_category").select2({
-                ajax: {
-                    url: "{{route('customers-sales-specialist.get-product-category')}}",
-                    type: "post",
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                      return {
-                        _token: "{{ csrf_token() }}",
-                        search: params.term,
-                        sap_connection_id: $('[name="filter_company"]').val(),
-                        // category_ids : category_ids
-                      };
-                    },
-                    processResults: function (response) {
-                        return {
-                            results: response
-                        };
-                    },
-                    cache: true
-                },
-                placeholder: 'Select Category',
-              });
+              
+              select2_brand();
+              select2_category();
 
               var counter = $("tr[data-repeater-item]").length;
               $(this).find('td:first-child').text(counter);
             
           }else{
-            $(this).remove(); //need to remove so it will read freshly created attr.
+            if( has_duplicate == false && (has_update == 1 || has_prev == 0) ){
+              $(this).slideDown();
+              $(this).find('input').val(0);
+
+              $('.repeater').find('.select_brand').next('.select2-container').remove();
+              $('.repeater').find('.select_category').next('.select2-container').remove();
+              
+              select2_brand();
+              select2_category();
+
+              var counter = $("tr[data-repeater-item]").length;
+              $(this).find('td:first-child').text(counter);
+            }else{
+              $(this).remove(); //need to remove so it will read freshly created attr.
+            }
           }
         },
         // (Optional)
@@ -415,24 +454,49 @@
         // will be deleted.
         hide: function (deleteElement) {
             Swal.fire({
-                    title: 'Are you sure you want to delete this element?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, do it!'
-                }).then((result) => {
-                    if(result.isConfirmed) {
-                      $(this).slideUp(deleteElement);
-                      $(this).remove();
+                title: 'Are you sure you want to delete this element?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, do it!'
+            }).then((result) => {
+                if(result.isConfirmed) {
 
-                      new_index = 1;
-                      $(document).find("tr[data-repeater-item]").each(function(){
-                          $(this).find('td:first-child').text(new_index);
-                          new_index++;
-                      });
-                    }
-                });
+                  $.ajax({
+                      url: "{{ route('customer-target.delete') }}",
+                      method: "POST",
+                      data: {
+                          _token: '{{ csrf_token() }}',
+                          sap_connection_id: $('[name="filter_company"]').val(),
+                          customer_id: $('[name="filter_customer"]').val(),
+                          year: $('[name="year"]').val(),
+                          brand: $(this).find('.select_brand').val(),
+                          category: $(this).find('.select_category').val()
+                      }
+                  })
+                  .done(function(result) { 
+                      if(result.status == false){
+                          toast_error(result.message);
+                      }else{
+                          //success
+                          toast_success(result.message);
+                      }
+                  })
+                  .fail(function() {
+                      toast_error("error");
+                  });
+
+                  $(this).slideUp(deleteElement);
+                  $(this).remove();
+
+                  new_index = 1;
+                  $(document).find("tr[data-repeater-item]").each(function(){
+                      $(this).find('td:first-child').text(new_index);
+                      new_index++;
+                  });
+                }
+            });
 
 
         },
@@ -479,56 +543,163 @@
     //   minimumInputLength: 2,
     });
     
+    select2_brand();
+    select2_category();
 
-    $(document).find(".select_brand").select2({
-      ajax: {
-          url: "{{route('customers-sales-specialist.get-product-brand')}}",
-          type: "post",
-          dataType: 'json',
-          delay: 250,
-          data: function (params) {
-            
-            return {
-              _token: "{{ csrf_token() }}",
-              search: params.term,
-              sap_connection_id: $('[name="filter_company"]').val()
-            };
-          },
-          processResults: function (response) {
+    function select2_brand(){
+      $(document).find(".select_brand").select2({
+        ajax: {
+            url: "{{route('customers-sales-specialist.get-product-brand')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+              
               return {
-                  results: response
+                _token: "{{ csrf_token() }}",
+                search: params.term,
+                sap_connection_id: $('[name="filter_company"]').val()
               };
-          },
-          cache: true
-      },
-      placeholder: 'Select Brand',
-      // multiple: true,
-    });
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Brand',
+        // multiple: true,
+      });
+    }
 
-
-    $(document).find(".select_category").select2({
-      ajax: {
-          url: "{{route('customers-sales-specialist.get-product-category')}}",
-          type: "post",
-          dataType: 'json',
-          delay: 250,
-          data: function (params) {
-            
-            return {
-              _token: "{{ csrf_token() }}",
-              search: params.term,
-              sap_connection_id: $('[name="filter_company"]').val()
-            };
-          },
-          processResults: function (response) {
+    function select2_category(){
+      $(document).find(".select_category").select2({
+        ajax: {
+            url: "{{route('customers-sales-specialist.get-product-category')}}",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+              
               return {
-                  results: response
+                _token: "{{ csrf_token() }}",
+                search: params.term,
+                sap_connection_id: $('[name="filter_company"]').val()
               };
-          },
-          cache: true
-      },
-      placeholder: 'Select Category',
-    });
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Select Category',
+      });
+    }
+
+
+    $(document).on('click', '.update_target', function(){
+
+      var $self = $(this).closest('tr');
+      var validator = validate_form();
+      var has_brand = false;
+      var has_category = false;
+      var has_target = false;
+      var has_duplicate = false;
+      var check_duplicate = [];
+      var brand = 0;
+      var category = 0;
+      var monthly_target = {};
+
+      $($self).find('.select_brand').each(function(){
+          if(this.value){
+            brand = this.value;
+            has_brand = true;
+          }
+      });
+
+      $($self).find('.select_category').each(function(){
+          if(this.value){
+            category = this.value;
+            has_category = true;
+          }
+      });
+
+      $(document).find("tr[data-repeater-item]").each(function(){
+          var data = $(this).find('.select_brand').val()+','+$(this).find('.select_category').val();
+
+          if(check_duplicate.indexOf(data) == -1){
+            check_duplicate.push(data)
+          }else{
+            has_duplicate = true;
+            return false; //stops loop
+          }
+      });
+
+      $($self).find('.months').each(function(){
+          if(this.value != 0){
+            has_target = true;
+          }
+          monthly_target[$(this).attr('data-month')] = this.value;
+      });
+
+
+      if(validator.form() != false && has_target == false){
+        Swal.fire('Please input monthly target', '', 'error');
+      }
+      if(validator.form() != false && has_duplicate == true){
+        Swal.fire('Brand & Category must be unique.', '', 'error');
+      }
+      if(validator.form() != false && has_category == false){
+        Swal.fire('Please select category.', '', 'error');
+      }
+      if(validator.form() != false && has_brand == false){
+        Swal.fire('Please select brand', '', 'error');
+      }
+
+      if (validator.form() != false && (has_brand != false && has_category != false && has_duplicate == false && has_target != false)) {
+        Swal.fire({
+                title: 'Are you sure you want to update this record?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, do it!'
+            }).then((result) => {
+                if(result.isConfirmed) {
+                  $.ajax({
+                      url: "{{ route('customer-target.update') }}",
+                      method: "POST",
+                      data: {
+                          _token: '{{ csrf_token() }}',
+                          sap_connection_id: $('[name="filter_company"]').val(),
+                          customer_id: $('[name="filter_customer"]').val(),
+                          year: $('[name="year"]').val(),
+                          brand: $($self).find('.select_brand').attr('current-brand'),
+                          category: $($self).find('.select_category').attr('current-category'),
+                          new_brand: brand,
+                          new_category: category,
+                          monthly_target: monthly_target
+                      }
+                  })
+                  .done(function(result) { 
+                      if(result.status == false){
+                          toast_error(result.message);
+                      }else{
+                          //success
+                          $('[name="year"]').trigger('focusout');
+                          toast_success(result.message);
+                      }
+                  })
+                  .fail(function() {
+                      toast_error("error");
+                  });
+                } //closing tag of isConfirmed
+        });
+      }
+    })
 
     
 

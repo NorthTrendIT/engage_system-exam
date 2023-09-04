@@ -905,17 +905,18 @@ class CustomerController extends Controller
 
     public function customerTargetFetch(Request $request){
         
-        $data = CustomerTarget::where(['b_unit' => $request->sap_connection_id,
-                                       'customer_id' => $request->customer_id,
-                                       'year' => $request->year
-                                      ])->get();
+        $data = CustomerTarget::with('product_group', 'product_category')
+                                ->where(['b_unit' => $request->sap_connection_id,
+                                        'customer_id' => $request->customer_id,
+                                        'year' => $request->year
+                                        ])->get();
         
         $response = ['status' => true, 'data'=>$data];
         return $response;
     }
 
     public function customerTargetAdd(Request $request){
-        // dd($request->all());
+
         $target = [];
         $target['b_unit'] = $request->sap_connection_id;
         $target['customer_id'] = $request->customer_id;
@@ -928,7 +929,44 @@ class CustomerController extends Controller
         $target['year'] = $request->year;
 
         CustomerTarget::insert($target);
-    }   
+
+        $response = ['status' => true, 'data'=>[], 'message' => 'Monthly target record successfully added.'];
+        return $response;
+    }
+
+    public function customerTargetUpdate(Request $request){
+        $target = [];
+        $target['brand_id'] = $request->new_brand;
+        $target['category_id'] = $request->new_category;
+        foreach($request->monthly_target as $key => $mt){
+            $month = date("F", strtotime("$key/12/1997"));
+            $target[strtolower($month)] = $mt;
+        }
+
+        CustomerTarget::where(['b_unit' => $request->sap_connection_id,
+                               'customer_id' => $request->customer_id,
+                               'year'   => $request->year,
+                               'brand_id' => $request->brand,
+                               'category_id' => $request->category
+                             ])->update($target);
+
+        $response = ['status' => true, 'data'=>[], 'message' => 'Monthly target record updated successfully.'];
+        return $response;
+    }
+
+    
+    public function customerTargetDelete(Request $request){
+
+        CustomerTarget::where(['b_unit' => $request->sap_connection_id,
+                               'customer_id' => $request->customer_id,
+                               'year'   => $request->year,
+                               'brand_id' => $request->brand,
+                               'category_id' => $request->category
+                             ])->delete();
+
+        $response = ['status' => true, 'data'=>[], 'message' => 'Monthly target record successfully removed.'];
+        return $response;
+    }
 
 
 
