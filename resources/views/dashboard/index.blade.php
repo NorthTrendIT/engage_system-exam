@@ -1628,7 +1628,7 @@ $(document).ready(function() {
         var hide_targets = [];
 
         // $('#business_share_dashboard_div').removeClass('d-none');
-        $('#business_share_dashboard_div').find('div.row').remove(); 
+        $('#business_share_dashboard_div').find('div.row, svg').remove(); 
         $('#top-products-div').prependTo('#business_share_dashboard_div');  
         $('#common_three_user_dasboard').find('.col-xl-6').addClass('col-xl-12'); 
         $('#top-products-div').find('h6').text( $('#common_three_user_dasboard').find('.card-title a').text() );
