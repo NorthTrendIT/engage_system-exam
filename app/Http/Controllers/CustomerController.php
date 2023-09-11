@@ -928,9 +928,9 @@ class CustomerController extends Controller
         }
         $target['year'] = $request->year;
 
-        CustomerTarget::insert($target);
+        $id = CustomerTarget::insertGetId($target);
 
-        $response = ['status' => true, 'data'=>[], 'message' => 'Monthly target record successfully added.'];
+        $response = ['status' => true, 'data'=> $target, 'message' => 'Monthly target record successfully added.'];
         return $response;
     }
 

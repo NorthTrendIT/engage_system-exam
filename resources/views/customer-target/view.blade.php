@@ -179,6 +179,10 @@
               },
               year:{
                   required: true,
+                  // min: 2023,
+              },
+              month_target: {
+
               }
           },
           messages: {
@@ -213,6 +217,17 @@
       //         min: 1,
       //     });
       // });
+      
+      // $('.months').each(function(){
+      //     $(this).rules('add', {
+      //         required: true,
+      //         min: 0,
+      //     });
+      // });
+      // $.validator.addClassRules("months", {
+      //               required: true,
+      //               min: 1
+      //           });
       return validator;
   }
 
@@ -358,8 +373,12 @@
           });
 
           $(this).prev().find('.months').each(function(){
-              if(this.value != 0){
+              if(this.value != 0 && this.value >= 1){
                 has_target = true;
+              }
+              if(this.value != 0 && this.value < 1){
+                has_target = false;
+                return false; //stops loop
               }
               monthly_target[$(this).attr('data-month')] = this.value;
           });
@@ -367,7 +386,7 @@
 
           if(has_prev != 0){ // to avoid pop up if previous row not found.
             if(validator.form() != false && has_target == false){
-              Swal.fire('Please input monthly target', '', 'error');
+              Swal.fire('Please input a valid monthly target', '', 'error');
             }
             if(validator.form() != false && has_duplicate == true){
               Swal.fire('Brand & Category must be unique.', '', 'error');
@@ -400,7 +419,11 @@
                     toast_error(result.message);
                 }else{
                     //success
-                    $('[name="year"]').trigger('focusout');
+                    // $('[name="year"]').trigger('focusout');
+                    var prev_row = $(document).find("tr[data-repeater-item]").last().prev();
+                
+                    $(prev_row).find('.select_brand').attr("current-brand", result.data.brand_id);
+                    $(prev_row).find('.select_category').attr("current-category", result.data.category_id);
                     toast_success(result.message);
                 }
             })
@@ -462,30 +485,31 @@
                 confirmButtonText: 'Yes, do it!'
             }).then((result) => {
                 if(result.isConfirmed) {
-
-                  $.ajax({
-                      url: "{{ route('customer-target.delete') }}",
-                      method: "POST",
-                      data: {
-                          _token: '{{ csrf_token() }}',
-                          sap_connection_id: $('[name="filter_company"]').val(),
-                          customer_id: $('[name="filter_customer"]').val(),
-                          year: $('[name="year"]').val(),
-                          brand: $(this).find('.select_brand').val(),
-                          category: $(this).find('.select_category').val()
-                      }
-                  })
-                  .done(function(result) { 
-                      if(result.status == false){
-                          toast_error(result.message);
-                      }else{
-                          //success
-                          toast_success(result.message);
-                      }
-                  })
-                  .fail(function() {
-                      toast_error("error");
-                  });
+                  if($(this).find('.update_target').length == 1){
+                    $.ajax({
+                        url: "{{ route('customer-target.delete') }}",
+                        method: "POST",
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            sap_connection_id: $('[name="filter_company"]').val(),
+                            customer_id: $('[name="filter_customer"]').val(),
+                            year: $('[name="year"]').val(),
+                            brand: $(this).find('.select_brand').val(),
+                            category: $(this).find('.select_category').val()
+                        }
+                    })
+                    .done(function(result) { 
+                        if(result.status == false){
+                            toast_error(result.message);
+                        }else{
+                            //success
+                            toast_success(result.message);
+                        }
+                    })
+                    .fail(function() {
+                        toast_error("error");
+                    });
+                  }
 
                   $(this).slideUp(deleteElement);
                   $(this).remove();
@@ -639,15 +663,19 @@
       });
 
       $($self).find('.months').each(function(){
-          if(this.value != 0){
+          if(this.value != 0 && this.value >= 1){
             has_target = true;
+          }
+          if(this.value != 0 && this.value < 1){
+            has_target = false;
+            return false; //stops loop
           }
           monthly_target[$(this).attr('data-month')] = this.value;
       });
 
 
       if(validator.form() != false && has_target == false){
-        Swal.fire('Please input monthly target', '', 'error');
+        Swal.fire('Please input a valid monthly target', '', 'error');
       }
       if(validator.form() != false && has_duplicate == true){
         Swal.fire('Brand & Category must be unique.', '', 'error');
