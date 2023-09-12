@@ -47,6 +47,9 @@
                     <div class="col-sm-3">
                         <input type="number" name="year" class="form-control" id="">
                     </div>
+                    <div class="col-sm-3">
+                        <button class="btn btn-primary search_it"><i class="fas fa-search"></i>Search</button>
+                    </div>
                 </div>
                 <div class="row mt-5">
                     <div class="col-md-12">
@@ -235,7 +238,8 @@
     
 
 
-    $('[name="year"]').focusout(function(){
+    $('.search_it').on('click', function(e){
+      e.preventDefault();
       var validator = validate_form();
       if (validator.form() != false) {
         $.ajax({
@@ -417,6 +421,7 @@
             .done(function(result, status, xhr) { 
                 if(result.status == false){
                     toast_error(result.message);
+                    $('.search_it').trigger('click');
                 }else{
                     //success
                     // $('[name="year"]').trigger('focusout');
@@ -717,9 +722,9 @@
                           toast_error(result.message);
                       }else{
                           //success
-                          $('[name="year"]').trigger('focusout');
                           toast_success(result.message);
                       }
+                      $('.search_it').trigger('click');
                   })
                   .fail(function() {
                       toast_error("error");

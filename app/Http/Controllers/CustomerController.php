@@ -928,9 +928,19 @@ class CustomerController extends Controller
         }
         $target['year'] = $request->year;
 
-        $id = CustomerTarget::insertGetId($target);
-
-        $response = ['status' => true, 'data'=> $target, 'message' => 'Monthly target record successfully added.'];
+        $record = CustomerTarget::where(['b_unit' => $request->sap_connection_id,
+                                        'customer_id' => $request->customer_id,
+                                        'year'   => $request->year,
+                                        'brand_id' => $request->brand,
+                                        'category_id' => $request->category
+                                        ])->get();        
+        if($record->count() > 0){
+            $response = ['status' => false, 'data'=> [], 'message' => 'Monthly target record already exists. Please add a unique one.'];
+        }else{
+            $id = CustomerTarget::insertGetId($target);
+            $response = ['status' => true, 'data'=> $target, 'message' => 'Monthly target record successfully added.'];
+        }
+        
         return $response;
     }
 
