@@ -105,7 +105,8 @@ class SAPCustomer
             $latestData = Customer::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
                 if($this->search){
-                    $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$this->search.'\')';
+                    $search = str_replace("'","''",$this->search);  //for single quote (') search
+                    $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$search.'\')';
                 }else{
                     // $url = '/b1s/v1/BusinessPartners?$filter=GroupCode eq 103 and VatGroup ne null and Valid eq \''.'tYES'.'\'';
                     $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\' or CreateDate ge \''.$latestData->updated_date.'\'';
