@@ -57,13 +57,13 @@
                         <table class="table table-bordered table-hover" id="cutomer_target_tbl" data-paging='false'>
                             <thead class="bg-dark text-white">
                              <tr>
-                                <th>#</th>
-                                <th class="min-w-150px">Brand</th>
-                                <th class="min-w-150px">Category</th>
+                                <th class="bg-dark text-white">#</th>
+                                <th class="min-w-150px bg-dark text-white">Brand</th>
+                                <th class="min-w-150px bg-dark text-white">Category</th>
                                 @for($x = 1; $x <= 12; $x++)
                                  <th class="min-w-80px">{{ date("F", strtotime("$x/12/1997")) }}</th>
                                 @endfor
-                                <th class="min-w-80px">Action</th>
+                                <th class="min-w-80px bg-dark text-white">Action</th>
                              </tr>
                             </thead>
                             <tbody data-repeater-list="target">
@@ -161,7 +161,7 @@
                                   paging: true,
                                   fixedColumns:   {
                                     left: 3,
-                                    right: 0
+                                    right: 1
                                   },
                                   initComplete: function(settings, json) {
                                       $('body').find('.dataTables_scrollBody').addClass("scrollbar");
@@ -278,8 +278,8 @@
 
                             html += '<td><input type="number" name="month_target" value="'+value['{{strtolower($month)}}']+'" class="form-control form-control-sm form-control-solid border border-dark months" data-month="{{$x}}"></td>';
                             @endfor
-                            html += '<td>'+
-                                      '<button type="button" class="btn btn-primary btn-sm update_target"><span class="fa fa-pencil"></span></button>'+
+                            html += '<td class="dtfc-fixed-right" style="position: sticky; right: 0px;">'+
+                                      '<button type="button" class="btn btn-primary btn-sm update_target"><span class="fa fa-save"></span></button>'+
                                       '<button type="button" class="btn btn-danger btn-sm" data-repeater-delete><span class="fa fa-trash"></span></button>'+
                                       '</td>';
                             html += '</tr>';
@@ -303,7 +303,7 @@
                                     @for($x = 1; $x <= 12; $x++)
                                     html += '<td><input type="number" name="month_target" value="0" class="form-control form-control-sm form-control-solid border border-dark months" data-month="{{$x}}"></td>';
                                     @endfor
-                                    html += '<td><button type="button" class="btn btn-danger btn-sm" data-repeater-delete><span class="fa fa-trash"></span></button></td>'+
+                                    html += '<td class="dtfc-fixed-right" style="position: sticky; right: 0px;"><button type="button" class="btn btn-danger btn-sm" data-repeater-delete><span class="fa fa-trash"></span></button></td>'+
                               '</tr>';
                   }
 
@@ -404,7 +404,7 @@
           } 
 
           if (validator.form() != false && (has_brand != false && has_category != false && has_duplicate == false && has_target != false && has_update == 0)) {
-            $(this).prev().find('.btn-danger').parent().prepend('<button type="button" class="btn btn-primary btn-sm update_target"><span class="fa fa-pencil"></span></button>');
+            $(this).prev().find('.btn-danger').parent().prepend('<button type="button" class="btn btn-primary btn-sm update_target"><span class="fa fa-save"></span></button>');
             $.ajax({
                 url: "{{ route('customer-target.add') }}",
                 method: "POST",
