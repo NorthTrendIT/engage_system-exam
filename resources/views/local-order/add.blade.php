@@ -169,7 +169,7 @@
                                                         </td>
                                                         <td style="text-align:right" class="">
                                                             <div class="d-flex">
-                                                                <span class="amount text-primary" style="font-weight: bold">₱ 0</span>
+                                                                <span class="amount price text-primary mb-0 d-flex" style="font-weight: bold">₱ 0</span>
                                                             </div>
                                                         </td>
                                                         <td>

@@ -183,7 +183,7 @@
             @endif
 
             {{-- Product List --}}
-            @if((isset($access['view-product-list']) && $access['view-product-list'] == 1))
+            @if((isset($access['view-product-list']) && $access['view-product-list'] == 1 && Auth::user()->role_id == 4))
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['product-list.index','product-list.show','recommended-products.index'])) ? 'active' : '' }}" href="{{ route('product-list.index') }}">
                   <span class="menu-icon">

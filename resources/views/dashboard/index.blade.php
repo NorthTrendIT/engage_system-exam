@@ -405,37 +405,62 @@
         @endif
 
         @if(in_array(@Auth::user()->role_id, [1,4,14]))
-        <div class="row gy-5 g-xl-8 mt-1">
+        <div class="row gy-5 g-xl-8 mt-1" id="business_share_dashboard_div">
+            <div class="col-xl-6" id="top-products-div2">
+                <div class="card card-xl-stretch mb-xl-8">
+                    
+                    <div class="card-body">
+                        <!--begin::Chart-->
+                        <div class="text-center">
+                            <i><h6>Top Products vs Total Sales</h6></i>
+                            <button class="btn btn-primary " type="button" id="business-share-loader-canvas" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                            </button>
+                        </div>
+                        <div id="bussiness_share_chart" class="h-350px" style="height: 320px; min-height: 250px;">
+                        </div>
+                        <!--end::Chart-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Charts Widget 1-->
+            </div> 
+        </div>
+
+        <div class="row gy-5 g-xl-8" id="common_three_user_dasboard">
             <!-- Promotion Report -->
             <div class="col-xl-6">
                 <div class="card card-xl-stretch mb-xl-8">
                     <div class="card-header border-0 pt-5">
                         <h3 class="card-title align-items-start flex-column">
-                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3"> @if(in_array(@Auth::user()->role_id, [1,14]))TOP CUSTOMER (Products) @else TOP PRODUCTS @endif</a>
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3"> @if(in_array(@Auth::user()->role_id, [1,14]))TOP 10 CUSTOMER (Products) @else TOP 10 PRODUCTS @endif</a>
                         </h3>
-                        <select id="total_performing_type" class="">
-                            <option value="Quantity">Quantity</option>
-                            <option value="Liters">Liters</option>
-                            <option value="Amount">Amount</option>
-                        </select>
-                        <select id="total_performing_orders" class="">
-                            <option value="order">Order</option>
-                            <option value="invoice">Invoice</option>
-                            <option value="back_order">Back Order</option>
-                            {{-- <option value="over_served">Over Served</option> --}}
-                        </select>                        
+                        <div class="d-flex">
+                            <select id="total_performing_type" class="form-select form-select-sm d-inline-block">
+                                <option value="Quantity">Quantity</option>
+                                <option value="Liters">Liters</option>
+                                <option value="Amount">Amount</option>
+                            </select>
+                            <select id="total_performing_orders" class="form-select form-select-sm">
+                                <option value="order">Order</option>
+                                <option value="invoice">Invoice</option>
+                                <option value="back_order">Back Order</option>
+                                {{-- <option value="over_served">Over Served</option> --}}
+                            </select> 
+                        </div>                       
                     </div>
 
                     <div class="card-body">
                         <div class="d-flex justify-content-end mb-2">
-                            <div class="col-3 @if(in_array(Auth::user()->role_id, [4, 14])) d-none @endif">
+                            <div class="col-2 @if(in_array(Auth::user()->role_id, [4, 14])) d-none @endif">
                                 <select id="total_performing_db" class="form-select form-select-sm">
                                     @foreach($company as $c)
                                         <option value="{{$c->id}}">{{$c->company_name}}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-5">
+                            <div class="col-4">
                                 <div class="input-icon">
                                     <input type="text" class="form-control form-control-sm" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1">
                                 </div>
@@ -452,8 +477,8 @@
                             </div>
                             <!--begin::Chart-->
                             <div id="top-products-table-wrapper"  class="container table-responsive d-none">
-                                <table id="top_products_per_quantity" class="table table-bordered display nowrap">
-                                    <thead class="">
+                                <table id="top_products_per_quantity" class="table table-bordered table-striped display nowrap">
+                                    <thead class="bg-dark text-white">
                                         <tr> 
                                             <td>Top</td>
                                             <td>Customer</td>
@@ -475,18 +500,19 @@
                 </div>
                 <!--end::Charts Widget 1-->
             </div>
-            <div class="col-xl-6">
+            <div class="col-xl-6" id="top-products-div">
                 <div class="card card-xl-stretch mb-xl-8">
                     
                     <div class="card-body">
                         <!--begin::Chart-->
                         <div class="text-center">
+                            <i class="d-none"><h6>TOP CUSTOMER (Products)</h6></i>
                             <button class="btn btn-primary " type="button" id="top-products-loader-canvas" disabled>
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                 Loading...
                             </button>
                         </div>
-                        <div id="top_products_per_quantity_chart" class="h-500px" style="height: 320px; min-height: 320px;">
+                        <div id="top_products_per_quantity_chart" class="h-350px" style="height: 320px; min-height: 250px;">
                         </div>
                         <!--end::Chart-->
                     </div>
@@ -742,6 +768,14 @@
 
 @push('css')
 <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+<style>
+    .custom-shadow{
+        font-size:8pt;
+        padding:2px; 
+        color:white;
+        text-shadow: 1px 1px #010101c7;
+    }
+</style>
 @endpush
 
 @push('js')
@@ -1509,52 +1543,59 @@ $(document).ready(function() {
     }
 @endif
     var top_products_per_quantity = $('#top_products_per_quantity').DataTable({
-                                            // processing: true,
-                                            // serverSide: true,
-                                            // ajax: {
-                                            //     'url': "{{ route('reports.fetch-top-products') }}",
-                                            //     'type': 'GET',
-                                            //     headers: {
-                                            //     'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                            //     },
-                                            //     data: filter_datas
-                                            // },
-                                            // drawCallback: function(settings) {
-                                            //     $('#top-products-loader').addClass('d-none');
-                                            //     $('#top-products-loader-canvas').addClass('d-none');
-                                            //     $('#top-products-table-wrapper').removeClass('d-none');
-                                            //     $('#top_products_per_quantity_chart canvas').removeClass('d-none');
-                                            // console.log(settings.json);
-                                            // //do whatever  
-                                            // },
-                                            // columns: [
-                                            //     {data: 'DT_RowIndex'},
-                                            //     {data: 'customer'},
-                                            //     {data: 'item'},
-                                            //     {data: 'total'}
-                                            // ],
-                                            // pageLength : 5,
-                                            // lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 30]],
-                                            // aoColumnDefs: [{ "bVisible": false, "aTargets": hide_targets }],
-                                            columnDefs: [
-                                                    {
-                                                        className: 'text-center',
-                                                        targets: [0]
-                                                    },
-                                                    {
-                                                        className: 'text-end',
-                                                        targets: -1
-                                                    },
-                                                    // { orderable: false, targets: -1 } //last row
-                                                ]
-                                        });
+                                        // processing: true,
+                                        // serverSide: true,
+                                        // ajax: {
+                                        //     'url': "{{ route('reports.fetch-top-products') }}",
+                                        //     'type': 'GET',
+                                        //     headers: {
+                                        //     'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                        //     },
+                                        //     data: filter_datas
+                                        // },
+                                        // drawCallback: function(settings) {
+                                        //     $('#top-products-loader').addClass('d-none');
+                                        //     $('#top-products-loader-canvas').addClass('d-none');
+                                        //     $('#top-products-table-wrapper').removeClass('d-none');
+                                        //     $('#top_products_per_quantity_chart canvas').removeClass('d-none');
+                                        // console.log(settings.json);
+                                        // //do whatever  
+                                        // },
+                                        // columns: [
+                                        //     {data: 'DT_RowIndex'},
+                                        //     {data: 'customer'},
+                                        //     {data: 'item'},
+                                        //     {data: 'total'}
+                                        // ],
+                                        // pageLength : 5,
+                                        // lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 30]],
+                                        // aoColumnDefs: [{ "bVisible": false, "aTargets": hide_targets }],
+                                        columnDefs: [
+                                                {
+                                                    className: 'text-center',
+                                                    targets: [0]
+                                                },
+                                                {
+                                                    className: 'text-end',
+                                                    targets: -1
+                                                },
+                                                // { orderable: false, targets: -1 } //last row
+                                            ]
+                                    });
+                                    
+    var total_amount_of_top_products = 0;
+    var total_clicks = 0;
     getProductData();
 
     $(document).on("change","#total_performing_type, #total_performing_orders, #total_performing_db",function(){
+        total_amount_of_top_products = 0;
+        total_clicks = 0;
         getProductData();
     });
 
     $('#kt_daterangepicker_1').on('apply.daterangepicker', function(ev, picker){
+        total_amount_of_top_products = 0;
+        total_clicks = 0;
         getProductData();
     });
 
@@ -1567,8 +1608,10 @@ $(document).ready(function() {
         
         $('#top-products-loader').removeClass('d-none');
         $('#top-products-loader-canvas').removeClass('d-none');
+        $('#business-share-loader-canvas').removeClass('d-none');
         $('#top-products-table-wrapper').addClass('d-none');
-        $('#top_products_per_quantity_chart canvas').addClass('d-none');
+        $('#top_products_per_quantity_chart canvas, span.pieLabel').remove();
+        $('#bussiness_share_chart canvas, span.pieLabel').remove();
 
         var type = $("#total_performing_type").val();
         var order = $("#total_performing_orders").val();
@@ -1581,10 +1624,35 @@ $(document).ready(function() {
                     order: order,
                     filter_date_range: filter_date_range
                 }
+
         var hide_targets = [];
-                
+
+        // $('#business_share_dashboard_div').removeClass('d-none');
+        $('#business_share_dashboard_div').find('div.row, svg').remove(); 
+        $('#top-products-div').prependTo('#business_share_dashboard_div');  
+        $('#common_three_user_dasboard').find('.col-xl-6').addClass('col-xl-12'); 
+        $('#top-products-div').find('h6').text( $('#common_three_user_dasboard').find('.card-title a').text() );
+        $('#top-products-div').find('i').removeClass('d-none');
+         
+        var html = '<div class="form-check">'+
+                    '<input class="form-check-input border border-5 border-white" type="checkbox" value="" id="flexCheckDefault" style="background-color: #034F84 ">'+
+                    '<label class="form-check-label" for="flexCheckDefault">'+
+                        'Top 10 Product Sales'+
+                    '</label>'+
+                    '</div>'+
+                    '<div class="form-check mt-1">'+
+                    '<input class="form-check-input border border-5 border-white " type="checkbox" value="" id="flexCheckChecked" style="background-color: #FA7A35 ">'+
+                    '<label class="form-check-label" for="flexCheckChecked">'+
+                        'Remaining Product Sales'+
+                    '</label>'+
+                    '</div>';
+
+        $('#bussiness_share_chart').after('<div class="row">'+html+'</div>');          
+        
         @if(@Auth::user()->role_id == 1)
             filter_datas['filter_company'] = filter_company;
+        // @else
+        //     $('#business_share_dashboard_div').addClass('d-none');
         @endif
 
         @if(@Auth::user()->role_id == 4)
@@ -1602,18 +1670,12 @@ $(document).ready(function() {
         .done(function(result) {  
             $('#top-products-loader').addClass('d-none');
             $('#top-products-loader-canvas').addClass('d-none');
-            $('#top-products-table-wrapper').removeClass('d-none');
-            $('#top_products_per_quantity_chart canvas').removeClass('d-none');
+            $('#business-share-loader-canvas').addClass('d-none');
+            $('#top-products-table-wrapper').removeClass('d-none');          
 
             if(result.status == false){
                 toast_error(result.message);
             }else{
-                if(result.data1.length > 0){
-                    render_top_product_quantity_graph(result.data1);
-                }else{
-                    $('#top_products_per_quantity_chart canvas').addClass('d-none');
-                }
-
                 var html = '';
                 if(result.data.length > 0){
                     $.each(result.data, function( index, value ) {
@@ -1627,6 +1689,7 @@ $(document).ready(function() {
                         // html += '</tr>';
 
                         top_products_per_quantity.row.add([(index+1), value.card_name, value.item_code, value.item_description, (value.total_order).toLocaleString()]);
+                        total_amount_of_top_products = total_amount_of_top_products + value.total_order;
                     });
                 }
                 // else{
@@ -1638,6 +1701,43 @@ $(document).ready(function() {
                 top_products_per_quantity.draw();
                 // $('td.dataTables_empty').addClass('text-center');
                 // $('#top_products_per_quantity_tbody').html(html);
+
+                if(result.data1.length > 0){
+                    render_top_product_quantity_graph(result.data1);
+                }else{
+                    var svg = '<svg width="127px" height="127px" viewBox="-6.4 -6.4 76.80 76.80" id="svg5" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" fill="#4bd999">'+
+                                    '<g id="SVGRepo_bgCarrier" stroke-width="0">'+
+                                        '<path transform="translate(-6.4, -6.4), scale(2.4)" d="M16,28.419758373405784C18.706044986601906,28.78538711285768,21.456883896542053,30.888030942637958,23.94099374092184,29.754204621863074C26.391026377574274,28.63593221676837,27.06291763631191,25.455917154776063,28.013905746111014,22.936231716535985C28.855199192087518,20.707187185620015,29.00904204184031,18.37933986667975,29.13215167541057,16C29.26134725491711,13.503037057264299,30.110158573515733,10.737019221760887,28.753784291067696,8.636599206365648C27.39761351407382,6.536494330334742,24.493642191313846,6.25500488093523,22.198811897775162,5.263342846490975C20.1576345732142,4.381291540111231,18.206727431998335,3.3987702501033663,16,3.125322964042425C13.586887194214794,2.8263013730055473,10.715394359972786,2.053890878639736,8.845885996008295,3.6087110619463445C6.919897450126046,5.210504304317709,8.103126039586186,8.548223359032683,6.862695733182685,10.724574921885502C5.632982427599568,12.88212336346328,2.3465832239985116,13.58132382695202,1.7833642065525055,15.999999999999998C1.2243707866452378,18.400529853823564,2.708613371944921,20.829943994060446,4.024178829049042,22.914243576815345C5.309043566468769,24.9499028605392,7.021105473892899,26.758096746929812,9.208289701957248,27.763587306498792C11.310639195070399,28.73007771051505,13.706970084915113,28.109934389869288,16,28.419758373405784" fill="#7ed0ec" strokewidth="0"></path>'+
+                                    '</g>'+
+                                    '<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>'+
+                                        '<g id="SVGRepo_iconCarrier"> <defs id="defs2"></defs> <g id="layer1" transform="translate(-384,-96)">'+
+                                            '<path d="m 393.99999,105 h 49 v 6 h -49 z" id="path27804" style="fill:#3e4f59;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"></path>'+
+                                            '<path d="m 393.99999,111 h 49 v 40 h -49 z" id="path27806" style="fill:#acbec2;fill-opacity:1;fill-rule:evenodd;stroke-width:2.00001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"></path>'+
+                                            '<path d="m 393.99999,111 v 40 h 29.76954 a 28.484051,41.392605 35.599482 0 0 18.625,-40 z" id="path27808" style="fill:#e8edee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.00002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"></path>'+
+                                            '<path d="m 395.99999,104 c -1.64501,0 -3,1.355 -3,3 v 40 c 0,0.55229 0.44772,1 1,1 0.55229,0 1,-0.44771 1,-1 v -40 c 0,-0.56413 0.43587,-1 1,-1 h 45 c 0.56414,0 1,0.43587 1,1 v 3 h -42 c -0.55228,0 -1,0.44772 -1,1 0,0.55229 0.44772,1 1,1 h 42 v 37 c 0,0.56413 -0.43586,1 -1,1 h -49 c -0.55228,0 -1,0.44772 -1,1 0,0.55229 0.44772,1 1,1 h 49 c 1.64501,0 3,-1.35499 3,-3 0,-14 0,-28 0,-42 0,-1.645 -1.35499,-3 -3,-3 z" id="path27810" style="color:#181c32;fill:#181c32;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"></path>'+
+                                            '<path d="m 438.99999,107 c -0.55228,0 -1,0.44772 -1,1 0,0.55229 0.44772,1 1,1 0.55229,0 1,-0.44771 1,-1 0,-0.55228 -0.44771,-1 -1,-1 z" id="path27812" style="color:#181c32;fill:#ed7161;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"></path>'+
+                                            '<path d="m 434.99999,107 c -0.55228,0 -1,0.44772 -1,1 0,0.55229 0.44772,1 1,1 0.55229,0 1,-0.44771 1,-1 0,-0.55228 -0.44771,-1 -1,-1 z" id="path27814" style="color:#181c32;fill:#181c32;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"></path>'+
+                                            '<path d="m 430.99999,107 c -0.55228,0 -1,0.44772 -1,1 0,0.55229 0.44772,1 1,1 0.55229,0 1,-0.44771 1,-1 0,-0.55228 -0.44771,-1 -1,-1 z" id="path27816" style="color:#181c32;fill:#42b05c;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"></path>'+
+                                            '<path d="m 388.99999,150 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path27818" style="color:#181c32;fill:#181c32;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"></path>'+
+                                            '<path d="m 396.99999,110 c -0.55228,0 -1,0.44772 -1,1 0,0.55229 0.44772,1 1,1 0.55229,0 1,-0.44771 1,-1 0,-0.55228 -0.44771,-1 -1,-1 z" id="path27820" style="color:#181c32;fill:#181c32;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"></path> <rect height="22" id="rect4427" rx="2" ry="2" style="fill:#e8edee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1" width="29" x="404" y="120"></rect>'+
+                                            '<path d="m 406,120 c -1.108,0 -2,0.892 -2,2 v 18 c 0,1.108 0.892,2 2,2 h 19.58398 A 19.317461,16.374676 0 0 0 430.2207,131.36719 19.317461,16.374676 0 0 0 424.80273,120 Z" id="path27648" style="fill:#e8edee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"></path>'+
+                                            '<rect height="6" id="rect8552" style="fill:#181c32;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1" width="29" x="404" y="120"></rect> <path d="m 404,120 v 6 h 24.58984 a 14,8.5 0 0 0 0.10938,-1 14,8.5 0 0 0 -2.67969,-5 z" id="path8626" style="fill:#181c32;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"></path>'+
+                                            '<g id="path4429" transform="translate(0,-4)">'+
+                                                '<path d="m 404,130 h 29" id="path7162" style="color:#181c32;fill:#918383;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"></path>'+ 
+                                                '<path d="m 406,123 c -1.6447,0 -3,1.3553 -3,3 0,1.97201 0,3.94401 0,5.91602 0,0.55228 0.44772,1 1,1 0.55228,0 1,-0.44772 1,-1 V 131 h 27 v 6 c 0,0.55228 0.44772,1 1,1 0.55228,0 1,-0.44772 1,-1 0,-3.66667 0,-7.33333 0,-11 0,-1.6447 -1.3553,-3 -3,-3 z m 0,2 h 25 c 0.5713,0 1,0.4287 1,1 v 3 h -27 v -3 c 0,-0.5713 0.4287,-1 1,-1 z m -2,10 c -0.55228,0 -1,0.44772 -1,1 v 8 c 0,1.6447 1.3553,3 3,3 h 25 c 1.6447,0 3,-1.3553 3,-3 v -3 c 0,-0.55228 -0.44772,-1 -1,-1 -0.55228,0 -1,0.44772 -1,1 v 3 c 0,0.5713 -0.4287,1 -1,1 h -25 c -0.5713,0 -1,-0.4287 -1,-1 v -8 c 0,-0.55228 -0.44772,-1 -1,-1 z" id="path7164" style="color:#181c32;fill:#181c32;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"></path>'+ 
+                                            '</g>'+
+                                            '<path d="m 409.93555,129.00195 c -0.45187,0.0293 -0.82765,0.35863 -0.91602,0.80274 l -1,5 C 407.89645,135.42313 408.36944,135.99975 409,136 h 3 v 2 c 0,0.55228 0.44772,1 1,1 0.55228,0 1,-0.44772 1,-1 0,-1.66667 0,-3.33333 0,-5 0,-0.55228 -0.44772,-1 -1,-1 -0.55228,0 -1,0.44772 -1,1 v 1 h -1.78125 l 0.76172,-3.80469 c 0.10771,-0.54147 -0.24375,-1.06778 -0.78516,-1.17578 -0.0854,-0.0172 -0.17278,-0.0231 -0.25976,-0.0176 z" id="path8873" style="color:#181c32;fill:#181c32;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"></path>'+
+                                            '<path d="m 418.99999,130 c 1.10801,0 2.00002,0.89201 2.00002,2.00002 v 2.99996 c 0,1.10801 -0.89201,2.00002 -2.00002,2.00002 -1.10801,0 -2.00002,-0.89201 -2.00002,-2.00002 v -2.99996 c 0,-1.10801 0.89201,-2.00002 2.00002,-2.00002 z" id="rect5745" style="fill:#181c32;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"></path>'+
+                                            '<path d="m 419,129 c -1.64471,0 -3,1.35529 -3,3 v 3 c 0,1.64471 1.35529,3 3,3 1.64471,0 3,-1.35529 3,-3 v -3 a 1,1 0 0 0 -1,-1 1,1 0 0 0 -1,1 v 3 c 0,0.57131 -0.42869,1 -1,1 -0.57131,0 -1,-0.42869 -1,-1 v -3 c 0,-0.57131 0.42869,-1 1,-1 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path7169" style="color:#181c32;fill:#181c32;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"></path>'+ 
+                                            '<path d="m 425.93555,129.00195 c -0.45187,0.0293 -0.82765,0.35863 -0.91602,0.80274 l -1,5 C 423.89645,135.42313 424.36944,135.99975 425,136 h 3 v 2 c 0,0.55228 0.44772,1 1,1 0.55228,0 1,-0.44772 1,-1 0,-1.66667 0,-3.33333 0,-5 0,-0.55228 -0.44772,-1 -1,-1 -0.55228,0 -1,0.44772 -1,1 v 1 h -1.78125 l 0.76172,-3.80469 c 0.10771,-0.54147 -0.24375,-1.06778 -0.78516,-1.17578 -0.0854,-0.0172 -0.17278,-0.0231 -0.25976,-0.0176 z" id="path69785" style="color:#181c32;fill:#181c32;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"></path>'+
+                                        '</g>'+ 
+                                    '</g>'+
+                                '</svg>';
+
+                    $('#top_products_per_quantity_chart').html(svg);
+                    $('#bussiness_share_chart').html(svg);
+                    $('#top-products-div2').find('.row').remove();
+                }
             }
         })
         .fail(function() {
@@ -1658,41 +1758,45 @@ $(document).ready(function() {
         });
         // console.log(data);
         // console.log(top_products_per_quantity.row( 6 ).data());
+        total_clicks++
         render_top_product_quantity_graph(data);
     })
 
     function render_top_product_quantity_graph(result){ 
         var data = [];
+        var data2 = [];
         var hex = '';
-       
+        var total_ten = 0;
+        var total_rest = 0;
+
         for (var key in result) {
             switch(key) {
                 case '0':
-                hex = '#006B54';
+                hex = '#006B54'; //green
                     break;
                 case '1':
-                hex = '#CD212A';
+                hex = '#FFA500'; //yellow
                     break;
                 case '2':
-                hex = '#FFA500';
+                hex = '#034F84'; //blue
                     break;
                 case '3':
-                hex = '#034F84';
+                hex = '#CD212A'; //red
                     break;
                 case '4':
-                hex = '#4B5335';
+                hex = '#00758F'; //turqoise
                     break;
                 case '5':
-                hex = '#798EA4';
+                hex = '#810CA8'; //violet
                     break;
                 case '6':
-                hex = '#FA7A35';
+                hex = '#87431D';
                     break;
                 case '7':
-                hex = '#00758F';
+                hex = '#FA7A35'; //brown
                     break;
                 case '8':
-                hex = '#EDD59E';
+                hex = '#519872';
                     break;
                 case '9':
                 hex = '#E8A798';
@@ -1700,32 +1804,63 @@ $(document).ready(function() {
             }
             if(key <= 9){
                 data[key] =  { label: result[key].name, data: result[key].key, color: hex }
+                total_ten = total_ten + parseFloat(result[key].key);
             }
         }
-    
-      $.plot('#top_products_per_quantity_chart', data, {
-        series: {
-          pie: {
-            show: true,
-            innerRadius:0.5,            
-            radius: 1,
+        total_rest = total_amount_of_top_products - total_ten ;
 
-            label: {
-              show: true,
-              radius: 3/4,
-              formatter: labelFormatter,
-            //   threshold: 0.1,
+        data2[0] = {label: 'MM17039', color: '#034F84', data: total_ten}
+        data2[1] = {label: 'MM17039', color: '#FA7A35', data: Math.round(total_rest)}
+        
+        $.plot('#top_products_per_quantity_chart', data, {
+            series: {
+            pie: {
+                show: true,
+                innerRadius:0.5,            
+                radius: 1,
+
+                label: {
+                show: true,
+                radius: 3/4,
+                formatter: labelFormatter,
+                //   threshold: 0.1,
+                }
             }
-          }
-        },
-        legend: {
-          show: false
-        },
-        grid: {
-          hoverable: true,
-          clickable: true
-        },
-      });
+            },
+            legend: {
+            show: false
+            },
+            grid: {
+            hoverable: true,
+            clickable: true
+            },
+        });
+
+        if(total_clicks === 0){
+            $.plot('#bussiness_share_chart', data2, {
+                series: {
+                pie: {
+                    show: true,
+                    innerRadius:0.5,            
+                    radius: 1,
+
+                    label: {
+                    show: true,
+                    radius: 3/4,
+                    formatter: businessSharelabelFormatter,
+                    //   threshold: 0.1,
+                    }
+                }
+                },
+                legend: {
+                show: false
+                },
+                grid: {
+                hoverable: true,
+                clickable: true
+                },
+            });
+        }
 
     }
 
@@ -1754,7 +1889,11 @@ $(document).ready(function() {
 @endif
 
 function labelFormatter(label, series) {
-    return "<div class='default_label' style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
+    return "<div class='default_label' style='text-align:center;'> <small class='custom-shadow'>" + label + "</small><br> <small class='custom-shadow'>" + Math.round(series.percent) + "% </small></div>";
+}
+
+function businessSharelabelFormatter(label, series) {
+    return "<div class='default_label' style='text-align:center;'> <small class='custom-shadow'>" + Math.round(series.percent) + "% </small></div>";
 }
 
 });
