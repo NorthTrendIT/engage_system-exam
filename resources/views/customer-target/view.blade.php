@@ -43,9 +43,18 @@
                     </div>             
                 </div>
                 <div class="row mt-2">
+                  @php
+                    $year1 = date("Y")+1;
+                    $endyear = $year1-10;
+                  @endphp
                     <label class="col-sm-2 col-form-label col-form-label-lg" for="">Year</label>
                     <div class="col-sm-3">
-                        <input type="number" name="year" class="form-control" id="">
+                      <select class="form-control form-control-lg form-control-solid" name="year" data-control="select2" data-hide-search="false" data-placeholder="Select" data-allow-clear="true">
+                          <option value=""></option>
+                          @for ($year = $year1; $year >= $endyear; $year--)
+                              <option value="{{$year}}">{{ $year }}</option>
+                          @endfor 
+                      </select>
                     </div>
                     <div class="col-sm-3">
                         <button class="btn btn-primary search_it"><i class="fas fa-search"></i>Search</button>

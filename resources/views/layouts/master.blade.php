@@ -57,7 +57,7 @@
       <!--end::Main-->
       @include('layouts.include.script')
       <!-- OneSignalJS -->
-      @include('layouts.include.one_signal')
+      {{-- @include('layouts.include.one_signal') --}}
    </body>
    <!--end::Body-->
 </html>

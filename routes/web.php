@@ -71,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
             // Customer
             Route::get('customer/target', 'App\Http\Controllers\CustomerController@customerTarget')->name('customer.target');
             Route::get('customer/target/fetch', 'App\Http\Controllers\CustomerController@customerTargetFetch')->name('customer-target.fetch');
+            Route::get('customer/sales-target/fetch', 'App\Http\Controllers\CustomerController@fetchActualSalesAndTargetSales')->name('customer-sales-target.fetch');
             Route::post('customer/target/add', 'App\Http\Controllers\CustomerController@customerTargetAdd')->name('customer-target.add');
             Route::post('customer/target/update', 'App\Http\Controllers\CustomerController@customerTargetUpdate')->name('customer-target.update');
             Route::post('customer/target/delete', 'App\Http\Controllers\CustomerController@customerTargetDelete')->name('customer-target.delete');

@@ -21,7 +21,9 @@ use App\Exports\CustomerExport;
 use App\Exports\CustomerTaggingExport;
 use App\Models\CustomerTarget;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
@@ -976,6 +978,111 @@ class CustomerController extends Controller
 
         $response = ['status' => true, 'data'=>[], 'message' => 'Monthly target record successfully removed.'];
         return $response;
+    }
+
+
+    public function fetchActualSalesAndTargetSales(Request $request){
+        // dd($request->all());
+        $actual = [];
+        // for($x = 1; $x <= 12; $x++){
+
+        //     $year = $request->year;
+        //     $month =  date("m", strtotime("$x/12/$year"));
+
+        //     $inv = InvoiceItem::where('real_sap_connection_id', $request->sap_connection_id);
+            
+        //     $inv->where(function($query) use ($month, $request) {
+        //             $query->whereHas('invoice', function($q) use ($month, $request){
+        //                         $q->whereHas('customer', function($q1) use ($request){
+        //                             $q1->where('id', $request->customer_id);
+        //                         })->where('cancelled', 'No')
+        //                             ->whereMonth('doc_date', $month)
+        //                             ->whereYear('doc_date', $request->year);
+        //                     });
+        //         });
+
+        //     $inv->where(function($query) use ($request) {
+        //             $query->whereHas('product1.group', function($q) use ($request){
+        //                         $q->where('id', $request->brand);
+        //                     });
+        //         });
+
+        //     $actual[$x] =  $inv->sum('quantity');
+            
+        // }
+        
+        $target = CustomerTarget::selectRaw('SUM(january) as January, SUM(february) as February, SUM(march) as March, SUM(april) as April,
+                                                     SUM(may) as May, SUM(june) as June, SUM(july) as July, SUM(august) as August, SUM(september) as September,
+                                                     SUM(october) as October, SUM(november) as November, SUM(december) as December')
+                                ->where(['b_unit' => $request->sap_connection_id,
+                                            'customer_id' => $request->customer_id,
+                                            'year'   => $request->year,
+                                        ]);
+
+        if($request->brand_id !== null){                                
+            $target->where('brand_id', $request->brand_id);
+        }else{
+            $target->where('category_id', $request->category_id);
+        }
+
+        $target_results =  $target->groupBy('year')->get();
+
+        $actual = InvoiceItem::selectRaw('MONTH(invoices.doc_date) as month, SUM(invoice_items.quantity) as total_quantity')
+                            ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
+                            ->join('products', 'invoice_items.item_code', '=', 'products.item_code')
+                            ->where('invoice_items.real_sap_connection_id', $request->sap_connection_id)
+                            ->where('invoices.card_code', $request->customer_code)
+                            ->where('invoices.cancelled', 'No')
+                            ->whereYear('invoices.doc_date', $request->year)
+                            ->where('invoices.real_sap_connection_id', $request->sap_connection_id); //to make sure
+        
+        if($request->brand !== null){                    
+            $actual->where('products.items_group_code', $request->brand);
+        }else{
+            $actual->where('products.u_tires', $request->category);
+        }
+
+        $actual_results = $actual->where('products.sap_connection_id', $request->sap_connection_id) //to make sure
+                                 ->groupBy(DB::raw('MONTH(invoices.doc_date)'))
+                                 ->orderBy(DB::raw('MONTH(invoices.doc_date)'), 'ASC')
+                                 ->get();
+
+        $adata = [];
+        foreach($actual_results as $result){ //recreate data
+            $year = $request->year;
+            $month = date('F', strtotime("$result->month/12/$year"));
+
+            $adata[$month] = $result->total_quantity;
+        }
+        
+        $response = [];
+        $actual_sales = [];
+        $target_sales = [];
+        for($x = 1; $x <= 12; $x++){
+
+            $year = $request->year;
+            $month =  date("F", strtotime("$x/12/$year"));
+            if(isset($adata[$month])){
+                $actual_sales[] = $adata[$month];
+            }else{
+                $actual_sales[] = 0;
+            }
+
+            if($target_results->count() > 0){ //in database, it's already set to zero.
+                $target_sales[] = (int) $target_results[0]->$month;
+            }else{
+                $target_sales[] = 0;
+            }
+
+        }
+
+        $response = [
+                     ['name' => 'Actual Sales','data' => $actual_sales], 
+                     ['name' => 'Target Sales','data' => $target_sales]
+                    ];
+
+       return ['status' => true, 'data'=> $response, 'message' => 'Record successfully fetch.'];
+
     }
 
 

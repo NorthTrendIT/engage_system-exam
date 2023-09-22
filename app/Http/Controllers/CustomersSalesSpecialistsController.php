@@ -622,7 +622,7 @@ class CustomersSalesSpecialistsController extends Controller
 
             $data = ProductGroup::where('sap_connection_id',$sap_connection_id)
                                 ->orderby('group_name','asc')
-                                ->select('id','group_name')
+                                ->select('id','group_name', 'number')
                                 ->where('is_active', true)
                                 ->limit(50);
 
@@ -637,7 +637,8 @@ class CustomersSalesSpecialistsController extends Controller
             foreach($data as $value){
                 $response[] = array(
                     "id" => $value->id,
-                    "text" => $value->group_name
+                    "text" => $value->group_name,
+                    "code" => $value->number
                 );
             }
         }
@@ -703,7 +704,8 @@ class CustomersSalesSpecialistsController extends Controller
             foreach($data as $value){
                 $response[] = array(
                     "id" => $value->id,
-                    "text" => $value->u_tires
+                    "text" => $value->u_tires,
+                    "code" => $value->u_tires //text was stored in products
                 );
             }
         }

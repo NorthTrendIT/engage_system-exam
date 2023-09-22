@@ -1137,7 +1137,9 @@ class CustomerPromotionController extends Controller
     public function getCustomer(Request $request){
         $search = $request->search;
 
-        $data = Customer::has('user')->with('user')->orderBy('card_name','asc');
+        $data = Customer::whereNotIn('sap_connection_id', [4])
+                          ->where('is_active', true)->has('user')
+                          ->with(['user','sap_connection:id,company_name,db_name'])->orderBy('card_name','asc');
 
         // Sales specialist can see only assigned customer
         if(in_array(userrole(),[14])){
