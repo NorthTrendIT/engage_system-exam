@@ -434,7 +434,7 @@
                 <div class="card card-xl-stretch mb-xl-8">
                     <div class="card-header border-0 pt-5">
                         <h3 class="card-title align-items-start flex-column">
-                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3"> @if(in_array(@Auth::user()->role_id, [1,14]))TOP 10 CUSTOMER (Products) @else TOP 10 PRODUCTS @endif</a>
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3"> @if(in_array(@Auth::user()->role_id, [1,14]))TOP 20 CUSTOMER (Products) @else TOP 20 PRODUCTS @endif</a>
                         </h3>
                         <div class="d-flex">
                             <select id="total_performing_type" class="form-select form-select-sm d-inline-block">
@@ -539,7 +539,7 @@
                             @endphp
                             <div class="row">
                                 <label class="col-auto col-form-label col-form-label-sm" for="">Customer</label>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="filter_customer_brand" data-allow-clear="true" data-placeholder="Select">
                                         {{-- <option value=""></option> --}}
                                     </select>
@@ -552,7 +552,7 @@
                                 </div>
                                 <label class="col-auto col-form-label col-form-label-sm" for="">Year</label>
                                 <div class="col-sm-2">
-                                    <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="year_brand" data-allow-clear="true" data-placeholder="Select">
+                                    <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="year_brand"  data-placeholder="Select">
                                         {{-- <option value=""></option> --}}
                                         @for ($year = $year1; $year >= $endyear; $year--)
                                             <option value="{{$year}}">{{ $year }}</option>
@@ -570,6 +570,16 @@
                                             <input class="form-check-input" type="radio" name="targetBrandOptions" id="brandPercentageOptions"  value="Percentage">
                                             <label class="form-check-label" for="brandPercentageOptions">Percentage</label>
                                         </div> --}}
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="mt-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="brandRadio" id="quarterBrand" isCheck="no">
+                                            <label class="form-check-label" for="quarterBrand">
+                                              Quarter
+                                            </label>
+                                          </div>
                                     </div>
                                 </div>
                             </div>
@@ -634,7 +644,7 @@
                             @endphp
                             <div class="row">
                                 <label class="col-auto col-form-label col-form-label-sm" for="">Customer</label>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="filter_customer_category" data-allow-clear="true" data-placeholder="Select">
                                         {{-- <option value=""></option> --}}
                                     </select>
@@ -657,6 +667,16 @@
                                 <div class="col-sm-1">
                                     <div class="d-flex justify-content-end ">
                                         <button class="btn btn-sm btn-primary" id="resync_categorychart-data"><i class="fas fa-sync-alt"></i></button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="mt-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="categoryRadio" id="quarterCategory" isCheck="no">
+                                            <label class="form-check-label" for="quarterCategory">
+                                              Quarter
+                                            </label>
+                                          </div>
                                     </div>
                                 </div>
                             </div>
@@ -1759,8 +1779,8 @@ $(document).ready(function() {
                                         //     {data: 'item'},
                                         //     {data: 'total'}
                                         // ],
-                                        // pageLength : 5,
-                                        // lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 30]],
+                                        pageLength : 20,
+                                        lengthMenu: [[10, 20, 30, 40, 50], [10, 20, 30, 40, 50]],
                                         // aoColumnDefs: [{ "bVisible": false, "aTargets": hide_targets }],
                                         columnDefs: [
                                                 {
@@ -1829,7 +1849,7 @@ $(document).ready(function() {
         var html = '<div class="form-check">'+
                     '<input class="form-check-input border border-5 border-white" type="checkbox" value="" id="flexCheckDefault" style="background-color: #034F84 ">'+
                     '<label class="form-check-label" for="flexCheckDefault">'+
-                        'Top 10 Product Sales'+
+                        'Top <b id="top_product_sales_count"></b> Product Sales'+
                     '</label>'+
                     '</div>'+
                     '<div class="form-check mt-1">'+
@@ -1938,6 +1958,16 @@ $(document).ready(function() {
     }
 
     $('#top_products_per_quantity_paginate').on('click', function(){
+        var data = fetchCurrentPageIn_topProducts();
+        render_top_product_quantity_graph(data);
+    })
+
+    $('select[name=top_products_per_quantity_length]').on('change', function(){
+        var data = fetchCurrentPageIn_topProducts();
+        render_top_product_quantity_graph(data);
+    })
+
+    function fetchCurrentPageIn_topProducts(){
         var data = [];
         var index = 0;
         top_products_per_quantity.rows( {page:'current'} ).every( function () {
@@ -1951,8 +1981,9 @@ $(document).ready(function() {
         // console.log(data);
         // console.log(top_products_per_quantity.row( 6 ).data());
         total_clicks++
-        render_top_product_quantity_graph(data);
-    })
+
+        return data;
+    }
 
     function render_top_product_quantity_graph(result){ 
         var data = [];
@@ -1993,8 +2024,38 @@ $(document).ready(function() {
                 case '9':
                 hex = '#E8A798';
                     break;
+                case '10':
+                hex = '#b30000';
+                    break;
+                case '11':
+                hex = '#7c1158';
+                    break;
+                case '12':
+                hex = '#4421af';
+                    break;
+                case '13':
+                hex = '#1a53ff';
+                    break;
+                case '14':
+                hex = '#0d88e6';
+                    break;
+                case '15':
+                hex = '#00b7c7';
+                    break;
+                case '16':
+                hex = '#5ad45a';
+                    break;
+                case '17':
+                hex = '#8be04e';
+                    break;
+                case '18':
+                hex = '#ebdc78';
+                    break;
+                case '19':
+                hex = '#fd7f6f';
+                    break;
             }
-            if(key <= 9){
+            if(key <= 19){ 
                 data[key] =  { label: result[key].name, data: result[key].key, color: hex }
                 total_ten = total_ten + parseFloat(result[key].key);
             }
@@ -2029,6 +2090,7 @@ $(document).ready(function() {
         });
 
         if(total_clicks === 0){
+            $('#top_product_sales_count').text(data.length);
             $.plot('#bussiness_share_chart', data2, {
                 series: {
                 pie: {
@@ -2080,12 +2142,40 @@ $(document).ready(function() {
 
 
     //============================= START FOR BRAND COLUMN CHART ========================================
+    var count_customer_acc = '';
+    var role_customer_acc = '{{@Auth::user()->role_id}}';
+    @if(@Auth::user()->role_id == 4)
+        @php 
+            $cus = explode(',', Auth::user()->multi_customer_id);
+        @endphp
+
+        count_customer_acc = +'{{ count($cus)}}';
+
+        $('[name="filter_customer_brand"]').parent().prev().text('Account');
+        $('[name="filter_customer_category"]').parent().prev().text('Account');
+        if (count_customer_acc !== undefined && count_customer_acc < 2) {
+            $('[name="filter_customer_brand"]').parent().prev().remove();
+            $('[name="filter_customer_brand"]').parent().remove();
+            $('[name="filter_customer_category"]').parent().prev().remove();
+            $('[name="filter_customer_category"]').parent().remove();
+
+            console.log('{{Auth::user()->sap_connection->id}}');
+        }
+    @endif
 
     $('#resync_brandchart-data').on('click', function(e){
-        var sap_connection_id = ($('[name="filter_customer_brand"]').val() !== null ) ? $('[name="filter_customer_brand"]').select2('data')[0]['sap_connection_id'] : null;
+        var sap_connection_id = null;
         var brand_code = $('[name="filter_brand"]').select2('data')[0]['code'];
-        var customer_code =  $('[name="filter_customer_brand"]').select2('data')[0]['code'];
+        var customer_code =  null;
         
+        if(count_customer_acc < 2 && role_customer_acc == 4){
+            sap_connection_id = '{{@Auth::user()->sap_connection->id}}';
+            customer_code = '{{@Auth::user()->customer->card_code}}';
+        }else{
+            sap_connection_id = ($('[name="filter_customer_brand"]').val() !== null ) ? $('[name="filter_customer_brand"]').select2('data')[0]['sap_connection_id'] : null;
+            customer_code =  $('[name="filter_customer_brand"]').select2('data')[0]['code'];
+        }
+
         $('#bdp_target_brand_column_chart').find('.apexcharts-canvas').remove();
         $('#brand-chart-loader').removeClass('d-none');
         $.ajax({
@@ -2105,12 +2195,28 @@ $(document).ready(function() {
             if(result.status == false){
                 toast_error(result.message);
             }else{
-                render_target_brand_column_chart(result.data);
+                // $('#quarterBrand').prop("checked", false);
+                chart_datas_brand = result.data;
+                result = ($('#quarterBrand').attr("isCheck") == 'yes') ? result.data.quarter : result.data.year;
+                render_target_column_chart(result, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
             }
           }).fail(function() {
               toast_error("error");
           });
     
+    });
+
+    $('#quarterBrand').on('click', function(){
+        $('#bdp_target_brand_column_chart').find('.apexcharts-canvas').remove();
+        if($(this).attr("isCheck") == 'no') { 
+            $(this).attr("isCheck", "yes");
+            $(this).prop("checked", true);
+            render_target_column_chart(chart_datas_brand.quarter, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
+        }else{
+            $(this).attr("isCheck", "no");
+            $(this).prop("checked", false);
+            render_target_column_chart(chart_datas_brand.year, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
+        }
     });
 
 
@@ -2135,7 +2241,7 @@ $(document).ready(function() {
                             text: item.card_name + " (Code: " + item.card_code + " -"+item.sap_connection.company_name+")",
                             id: item.id,
                             code: item.card_code,
-                            sap_connection_id : item.real_sap_connection_id
+                            sap_connection_id : item.sap_connection_id
                           }
                       })
           };
@@ -2154,8 +2260,14 @@ $(document).ready(function() {
             dataType: 'json',
             delay: 250,
             data: function (params) {
-              var sap_connection_id = ($('[name="filter_customer_brand"]').val() !== null ) ? $('[name="filter_customer_brand"]').select2('data')[0]['sap_connection_id'] : null;
-              
+
+              var sap_connection_id = null;
+              if(count_customer_acc < 2 && role_customer_acc == 4){
+                sap_connection_id = '{{@Auth::user()->sap_connection->id}}';
+              }else{
+                sap_connection_id = ($('[name="filter_customer_brand"]').val() !== null ) ? $('[name="filter_customer_brand"]').select2('data')[0]['sap_connection_id'] : null;
+              }
+
               return {
                 _token: "{{ csrf_token() }}",
                 search: params.term,
@@ -2173,88 +2285,25 @@ $(document).ready(function() {
         // multiple: true,
     });
 
+    var chart_datas_brand = {year: {series : [{name: 'Actual Sales', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, 
+                                              {name: 'Target Sales', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }
+                                             ],
+                                    bar: {columnWidth: '55%'},
+                                    stroke: { width: 3},
+                                    categories : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                                    colors: ['#034F84', '#FA7A35']
+                              },
+                            quarter : {series : [{name: 'Actual Sales', data: [0, 0, 0, 0] }, 
+                                                {name: 'Target Sales', data: [0, 0, 0, 0] }
+                                                ],
+                                        bar: {columnWidth: '-10%'},
+                                        stroke: { width: 20},
+                                        categories : ['Q1', 'Q2', 'Q3', 'Q4'],
+                                        colors: ['#afafaf', '#12365d']
+                                    }}; //dummy datas
+    var chart_datas_category =  chart_datas_brand;
 
-    render_target_brand_column_chart([{name: 'Actual Sales', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, 
-                     {name: 'Target Sales', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}]);
-
-    function render_target_brand_column_chart(data){
-
-        var categories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-        var options = {
-            series: data,
-            chart: {
-            type: 'bar',
-            height: 350
-            },
-            plotOptions: {
-            bar: {
-                horizontal: false,
-                columnWidth: '55%',
-                // barWidth: '150%',
-                endingShape: 'rounded'
-            },
-            },
-            dataLabels: {
-            enabled: false
-            },
-            stroke: {
-            show: true,
-            width: 3,
-            colors: ['transparent']
-            },
-            xaxis: {
-            categories: categories,
-            },
-            yaxis: {
-            title: {
-                text: '(Quantity)'
-            }
-            },
-            fill: {
-            opacity: 1
-            },
-            tooltip: {
-            y: {
-                formatter: function (val, series) {
-                    var sIdx = series.seriesIndex;
-                    var dIdx = series.dataPointIndex;
-                    var actualSales = series.series[0][dIdx];
-                    var targetSales = series.series[1][dIdx];
-
-                    // var diff = 0;
-                    // var percentage = 0;
-                    var adetails = '';
-
-                    diff = actualSales - targetSales;
-                    diffAbs = Math.abs(diff);
-                    percentage = (diffAbs / targetSales) * 100;
-
-                    adetails += '| ';
-                    if(diff > 0){ //exceed
-                        adetails += 'Exceed: '+ (diff).toLocaleString() +' ('+Math.round(100 + percentage)+'%)';
-                    }else if(diff < 0){ //short
-                        adetails += 'Short: '+ (diffAbs).toLocaleString() +' ('+Math.round(100 - percentage)+'%)';
-                    }else{ //meet
-                        adetails += 'Meet (100%)';
-                    }
-
-                    return "" + (val).toLocaleString()+" "+adetails;
-                }
-                
-            }
-            // custom: function({ series, seriesIndex, dataPointIndex, w }) {
-            //     return '<div class="custom-tooltip">Value: ' + series[seriesIndex][dataPointIndex] + '</div>';
-            // },
-            },
-            colors: ["#034F84", "#FA7A35"]
-        };
-
-        var chart_brand = new ApexCharts(document.querySelector("#bdp_target_brand_column_chart"), options);
-        chart_brand.render();
-
-        render_target_tbl(data, categories, 'filter_brand', 'tbl_brand_target_tbody');
-    }
+    render_target_column_chart(chart_datas_brand.year, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
 
     //============================= END FOR BRAND COLUMN CHART ========================================
 
@@ -2262,9 +2311,17 @@ $(document).ready(function() {
     //============================= START FOR CATEGORY COLUMN CHART ===================================
 
     $('#resync_categorychart-data').on('click', function(e){
-        var sap_connection_id = ($('[name="filter_customer_category"]').val() !== null ) ? $('[name="filter_customer_category"]').select2('data')[0]['sap_connection_id'] : null;
+        var sap_connection_id = null;
         var category_code = $('[name="filter_category"]').select2('data')[0]['code'];
-        var customer_code =  $('[name="filter_customer_category"]').select2('data')[0]['code'];
+        var customer_code =  null;
+
+        if(count_customer_acc < 2 && role_customer_acc == 4){
+            sap_connection_id = '{{@Auth::user()->sap_connection->id}}';
+            customer_code = '{{@Auth::user()->customer->card_code}}';
+        }else{
+            sap_connection_id = ($('[name="filter_customer_category"]').val() !== null ) ? $('[name="filter_customer_category"]').select2('data')[0]['sap_connection_id'] : null;
+            customer_code =  $('[name="filter_customer_category"]').select2('data')[0]['code'];
+        }
         
         $('#bdp_target_category_column_chart').find('.apexcharts-canvas').remove();
         $('#category-chart-loader').removeClass('d-none');
@@ -2285,11 +2342,28 @@ $(document).ready(function() {
             if(result.status == false){
                 toast_error(result.message);
             }else{
-                render_target_category_column_chart(result.data);
+                // $('#quarterQuarter').prop("checked", false);
+                chart_datas_category = result.data;
+                result = ($('#quarterCategory').attr("isCheck") == 'yes') ? result.data.quarter : result.data.year;
+                render_target_column_chart(result, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
             }
           }).fail(function() {
               toast_error("error");
           });
+    });
+
+
+    $('#quarterCategory').on('click', function(){
+        $('#bdp_target_category_column_chart').find('.apexcharts-canvas').remove();
+        if($(this).attr("isCheck") == 'no') { 
+            $(this).attr("isCheck", "yes");
+            $(this).prop("checked", true);
+            render_target_column_chart(chart_datas_category.quarter, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
+        }else{
+            $(this).attr("isCheck", "no");
+            $(this).prop("checked", false);
+            render_target_column_chart(chart_datas_category.year, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
+        }
     });
 
     $(document).find(".select_category").select2({
@@ -2299,7 +2373,13 @@ $(document).ready(function() {
             dataType: 'json',
             delay: 250,
             data: function (params) {
-                var sap_connection_id = ($('[name="filter_customer_category"]').val() !== null ) ? $('[name="filter_customer_category"]').select2('data')[0]['sap_connection_id'] : null;
+
+              var sap_connection_id = null;
+              if(count_customer_acc < 2 && role_customer_acc == 4){
+                sap_connection_id = '{{@Auth::user()->sap_connection->id}}';
+              }else{
+                sap_connection_id = ($('[name="filter_customer_category"]').val() !== null ) ? $('[name="filter_customer_category"]').select2('data')[0]['sap_connection_id'] : null;
+              }
 
               return {
                 _token: "{{ csrf_token() }}",
@@ -2318,33 +2398,31 @@ $(document).ready(function() {
     });
 
 
-    render_target_category_column_chart([{name: 'Actual Sales', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, 
-                     {name: 'Target Sales', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}]);
+    render_target_column_chart(chart_datas_category.year, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
 
-    function render_target_category_column_chart(data){
-        var categories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
+    function render_target_column_chart(data, tableID, opt, tbl){
+        var categories = data.categories
         var options = {
-            series: data,
+            series: data.series,
             chart: {
-            type: 'bar',
-            height: 350
+                type: 'bar',
+                height: 350
             },
             plotOptions: {
             bar: {
                 horizontal: false,
-                columnWidth: '55%',
+                columnWidth: data.bar.columnWidth, //55
                 // barWidth: '150%',
                 endingShape: 'rounded'
             },
             },
             dataLabels: {
-            enabled: false
+                enabled: false
             },
             stroke: {
-            show: true,
-            width: 3,
-            colors: ['transparent']
+                show: true,
+                width: data.stroke.width, //3
+                colors: ['transparent']
             },
             xaxis: {
             categories: categories,
@@ -2374,12 +2452,14 @@ $(document).ready(function() {
                     percentage = (diffAbs / targetSales) * 100;
 
                     adetails += '| ';
-                    if(diff > 0){ //exceed
+                    if(diff > 0 && targetSales > 0){ //exceed
                         adetails += 'Exceed: '+ (diff).toLocaleString() +' ('+Math.round(100 + percentage)+'%)';
-                    }else if(diff < 0){ //short
+                    }else if(diff < 0 && targetSales > 0){ //short
                         adetails += 'Short: '+ (diffAbs).toLocaleString() +' ('+Math.round(100 - percentage)+'%)';
-                    }else{ //meet
+                    }else if(diff == 0 && targetSales > 0){ //meet
                         adetails += 'Meet (100%)';
+                    }else{
+                        adetails += 'Undefined Target: - (0%)';
                     }
 
                     return "" + (val).toLocaleString()+" "+adetails;
@@ -2390,13 +2470,13 @@ $(document).ready(function() {
             //     return '<div class="custom-tooltip">Value: ' + series[seriesIndex][dataPointIndex] + '</div>';
             // },
             },
-            colors: ["#034F84", "#FA7A35"]
+            colors: data.colors
         };
 
-        var chart_brand = new ApexCharts(document.querySelector("#bdp_target_category_column_chart"), options);
+        var chart_brand = new ApexCharts(document.querySelector("#"+tableID), options);
         chart_brand.render();
 
-        render_target_tbl(data, categories, 'filter_category', 'tbl_category_target_tbody');
+        render_target_tbl(data.series, categories, opt, tbl );
     }
 
     function render_target_tbl(data, categories, opt, tbl){
@@ -2417,9 +2497,9 @@ $(document).ready(function() {
                     '<td>'+actualSales+'</td>';
 
             var status = 'Undefined Target';
-            var short = '';
-            var over = '';
-            var percent = '';
+            var short = '-';
+            var over = '-';
+            var percent = '0%';
             if(diff > 0 && targetSales > 0){ //exceed
                 status = 'Exceed';
                 over = (diff).toLocaleString();

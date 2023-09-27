@@ -982,35 +982,7 @@ class CustomerController extends Controller
 
 
     public function fetchActualSalesAndTargetSales(Request $request){
-        // dd($request->all());
         $actual = [];
-        // for($x = 1; $x <= 12; $x++){
-
-        //     $year = $request->year;
-        //     $month =  date("m", strtotime("$x/12/$year"));
-
-        //     $inv = InvoiceItem::where('real_sap_connection_id', $request->sap_connection_id);
-            
-        //     $inv->where(function($query) use ($month, $request) {
-        //             $query->whereHas('invoice', function($q) use ($month, $request){
-        //                         $q->whereHas('customer', function($q1) use ($request){
-        //                             $q1->where('id', $request->customer_id);
-        //                         })->where('cancelled', 'No')
-        //                             ->whereMonth('doc_date', $month)
-        //                             ->whereYear('doc_date', $request->year);
-        //                     });
-        //         });
-
-        //     $inv->where(function($query) use ($request) {
-        //             $query->whereHas('product1.group', function($q) use ($request){
-        //                         $q->where('id', $request->brand);
-        //                     });
-        //         });
-
-        //     $actual[$x] =  $inv->sum('quantity');
-            
-        // }
-        
         $target = CustomerTarget::selectRaw('SUM(january) as January, SUM(february) as February, SUM(march) as March, SUM(april) as April,
                                                      SUM(may) as May, SUM(june) as June, SUM(july) as July, SUM(august) as August, SUM(september) as September,
                                                      SUM(october) as October, SUM(november) as November, SUM(december) as December')
@@ -1026,6 +998,10 @@ class CustomerController extends Controller
         }
 
         $target_results =  $target->groupBy('year')->get();
+        
+        if($request->sap_connection_id == 5){
+            $request->sap_connection_id = 1; //apbw
+        }
 
         $actual = InvoiceItem::selectRaw('MONTH(invoices.doc_date) as month, SUM(invoice_items.quantity) as total_quantity')
                             ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
@@ -1056,29 +1032,57 @@ class CustomerController extends Controller
         }
         
         $response = [];
-        $actual_sales = [];
-        $target_sales = [];
+        $actual_sales_year = [];
+        $target_sales_year = [];
         for($x = 1; $x <= 12; $x++){
 
             $year = $request->year;
             $month =  date("F", strtotime("$x/12/$year"));
             if(isset($adata[$month])){
-                $actual_sales[] = $adata[$month];
+                $actual_sales_year[] = $adata[$month];
             }else{
-                $actual_sales[] = 0;
+                $actual_sales_year[] = 0;
             }
 
             if($target_results->count() > 0){ //in database, it's already set to zero.
-                $target_sales[] = (int) $target_results[0]->$month;
+                $target_sales_year[] = (int) $target_results[0]->$month;
             }else{
-                $target_sales[] = 0;
+                $target_sales_year[] = 0;
             }
 
         }
+        $acQ1 = $actual_sales_year[0] + $actual_sales_year[1] + $actual_sales_year[2];
+        $acQ2 = $actual_sales_year[3] + $actual_sales_year[4] + $actual_sales_year[5];
+        $acQ3 = $actual_sales_year[6] + $actual_sales_year[7] + $actual_sales_year[8];
+        $acQ4 = $actual_sales_year[9] + $actual_sales_year[10] + $actual_sales_year[11];
 
-        $response = [
-                     ['name' => 'Actual Sales','data' => $actual_sales], 
-                     ['name' => 'Target Sales','data' => $target_sales]
+        $actual_sales_quarter = [$acQ1, $acQ2, $acQ3, $acQ4];
+
+        $taQ1 = $target_sales_year[0] + $target_sales_year[1] + $target_sales_year[2];
+        $taQ2 = $target_sales_year[3] + $target_sales_year[4] + $target_sales_year[5];
+        $taQ3 = $target_sales_year[6] + $target_sales_year[7] + $target_sales_year[8];
+        $taQ4 = $target_sales_year[9] + $target_sales_year[10] + $target_sales_year[11];
+        
+        $target_sales_quarter = [$taQ1, $taQ2, $taQ3, $taQ4];
+
+        $response = ['year' => [ 'series' =>[
+                                    ['name' => 'Actual Sales','data' => $actual_sales_year], 
+                                    ['name' => 'Target Sales','data' => $target_sales_year]
+                                  ],
+                                'bar' => ['columnWidth' => '55%'],
+                                'stroke' => ['width' => 3],
+                                'categories' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                                'colors' => ['#034F84', '#FA7A35']
+                            ],
+                     'quarter' => [ 'series' =>[
+                                        ['name' => 'Actual Sales','data' => $actual_sales_quarter], 
+                                        ['name' => 'Target Sales','data' => $target_sales_quarter]
+                                    ],
+                                'bar' => ['columnWidth' => '-10%'],
+                                'stroke' => ['width' => 20],
+                                'categories' => ['Q1', 'Q2', 'Q3', 'Q4'],
+                                'colors' => ['#afafaf', '#12365d']
+                            ],
                     ];
 
        return ['status' => true, 'data'=> $response, 'message' => 'Record successfully fetch.'];

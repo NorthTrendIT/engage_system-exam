@@ -551,6 +551,11 @@
         isFirstItemUndeletable: false
     });
 
+    $('[name="filter_company"]').on('change', function(){
+      $('[name="filter_customer"]').val('').trigger('change');
+      // $('.search_it').trigger('click');
+    });
+
     
     $('[name="filter_customer"]').select2({
       ajax: {
