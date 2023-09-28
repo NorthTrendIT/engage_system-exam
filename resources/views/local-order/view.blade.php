@@ -168,7 +168,7 @@
                                     @php $currency_symbol = '';  @endphp
                                     @foreach($data->items as $key => $value)
                                       @php
-                                          if($value->product->sap_connection_id === $data->customer->real_sap_connection_id){
+                                          if(@$value->product->sap_connection_id === $data->customer->real_sap_connection_id){
                                               $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $data->customer->price_list_num);
                                           }
                                       @endphp
