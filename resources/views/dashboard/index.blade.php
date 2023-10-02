@@ -2090,7 +2090,7 @@ $(document).ready(function() {
         });
 
         if(total_clicks === 0){
-            $('#top_product_sales_count').text(data.length);
+            $('#top_product_sales_count').text('20');
             $.plot('#bussiness_share_chart', data2, {
                 series: {
                 pie: {
