@@ -987,12 +987,25 @@
         padding: 10px;
         border-radius: 5px;
     }
+
+    .flotTip {
+        padding: 3px 5px;
+        background-color: #000;
+        z-index: 100;
+        color: #fff;
+        opacity: .80;
+        filter: alpha(opacity=85);
+    }
 </style>
 @endpush
 
 @push('js')
 <script src="{{ asset('assets') }}/assets/plugins/custom/flotcharts/flotcharts.bundle.js"></script>
-<script src="http://www.flotcharts.org/flot/source/jquery.flot.legend.js"></script>
+{{-- <script src="http://www.flotcharts.org/flot/source/jquery.flot.legend.js"></script> --}}
+{{-- <script src="https://envato.stammtec.de/themeforest/melon/plugins/flot/jquery.flot.min.js"></script>
+<script src="https://envato.stammtec.de/themeforest/melon/plugins/flot/jquery.flot.pie.min.js"></script>
+<script src="https://envato.stammtec.de/themeforest/melon/plugins/flot/jquery.flot.tooltip.min.js"></script> --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flot.tooltip/0.9.0/jquery.flot.tooltip.js"></script>
 
 <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
@@ -1974,6 +1987,7 @@ $(document).ready(function() {
             var d = this.data();
             data[index] = {
                 name: d[2],
+                description: d[3],
                 key: d[4].replace(/\,/g,'') //remove comma
             }
             index++;
@@ -2056,7 +2070,7 @@ $(document).ready(function() {
                     break;
             }
             if(key <= 19){ 
-                data[key] =  { label: result[key].name, data: result[key].key, color: hex }
+                data[key] =  { label: result[key].name, label2: result[key].description, data: result[key].key, color: hex }
                 total_ten = total_ten + parseFloat(result[key].key);
             }
         }
@@ -2087,6 +2101,16 @@ $(document).ready(function() {
             hoverable: true,
             clickable: true
             },
+            tooltip: true, // Enable tooltips
+            tooltipOpts: {
+                    cssClass: "flotTip",
+                    content: toolTipFormatter,
+                    shifts: {
+                        x: 20,
+                        y: 0
+                    },
+                    defaultTheme: false
+            },
         });
 
         if(total_clicks === 0){
@@ -2113,10 +2137,39 @@ $(document).ready(function() {
                 hoverable: true,
                 clickable: true
                 },
+                tooltip: false, // Enable tooltips
+                tooltipOpts: {
+                    cssClass: "flotTip",
+                    content: "%s (%p.0%)",
+                    shifts: {
+                        x: 20,
+                        y: 0
+                    },
+                    defaultTheme: false
+                },
             });
         }
 
     }
+
+    // Add tooltip functionality
+    // $("#top_products_per_quantity_chart").on("plothover", function (event, pos, item) {
+    //     if (item) {
+    //         console.log(item);
+    //         var percent = parseFloat(item.series.percent).toFixed(2);
+    //         // Customize the tooltip content as needed
+    //         $("#tooltip").html(item.series.label + ": " + percent + "%")
+    //             .css({ top: item.pageY + 5, left: item.pageX + 5 })
+    //             .fadeIn(200);
+    //     } else {
+    //         $("#tooltip").hide();
+    //     }
+    // });
+
+    // // Hide the tooltip on mouse leave
+    // $("#top_products_per_quantity_chart").mouseleave(function () {
+    //     $("#tooltip").hide();
+    // });
 
     
 
@@ -2529,6 +2582,10 @@ $(document).ready(function() {
 
 function labelFormatter(label, series) {
     return "<div class='default_label' style='text-align:center;'> <small class='custom-shadow'>" + label + "</small><br> <small class='custom-shadow'>" + Math.round(series.percent) + "% </small></div>";
+}
+
+function toolTipFormatter(label, series, x, w){
+    return ""+w.series.label+" | " +w.series.label2+ " | ("+ Math.round(w.series.percent) + "%)";
 }
 
 function businessSharelabelFormatter(label, series) {

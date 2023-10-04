@@ -1253,6 +1253,7 @@ class ProductReportController extends Controller
       $data = [];
       foreach($items as $key=>$val){
         $data[$key]['name'] = $val->item_code;
+        $data[$key]['description'] = $val->item_description;
         $data[$key]['key'] = floor($val->total_order);
       }
       // dd($items);
