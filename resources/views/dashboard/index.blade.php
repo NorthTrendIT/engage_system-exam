@@ -434,7 +434,7 @@
                 <div class="card card-xl-stretch mb-xl-8">
                     <div class="card-header border-0 pt-5">
                         <h3 class="card-title align-items-start flex-column">
-                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3"> @if(in_array(@Auth::user()->role_id, [1,14]))TOP 20 CUSTOMER (Products) @else TOP 20 PRODUCTS @endif</a>
+                            <a href="#" class="text-dark text-hover-primary fw-bolder fs-3"> TOP 20 PRODUCTS </a>
                         </h3>
                         <div class="d-flex">
                             <select id="total_performing_type" class="form-select form-select-sm d-inline-block">
@@ -460,7 +460,12 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-4">
+                            <div class="col-3">
+                                <select class="form-control form-control-sm form-control-solid" name="filter_customer_top_prod" data-control="select2" data-hide-search="false" data-placeholder="Select customer" data-allow-clear="true">
+                                    <option value=""></option>
+                                  </select>
+                            </div>
+                            <div class="col-3">
                                 <div class="input-icon">
                                     <input type="text" class="form-control form-control-sm" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1">
                                 </div>
@@ -1810,9 +1815,52 @@ $(document).ready(function() {
                                     
     var total_amount_of_top_products = 0;
     var total_clicks = 0;
+    var defaultCustomerforTopProducts = [];
+
+    @if(isset($default_customer_top_products) && !empty($default_customer_top_products))
+        defaultCustomerforTopProducts.push(
+            {
+                id: {{$default_customer_top_products->id}}, 
+                text: `{!! $default_customer_top_products->card_name !!}` + " (Code: " + '{{$default_customer_top_products->card_code}}' + ")", 
+                selected: true, 
+                card_code: '{{$default_customer_top_products->card_code}}', 
+                sap_connection_id: 1 
+            });
+    @endif
+
+    $('[name="filter_customer_top_prod"]').select2({
+      ajax: {
+        url: "{{route('customer-promotion.get-customer')}}",
+        type: "post",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+            return {
+                _token: "{{ csrf_token() }}",
+                search: params.term,
+                sap_connection_id: $('#total_performing_db').find('option:selected').val(),
+            };
+        },
+        processResults: function (response) {
+          return {
+            results:  $.map(response, function (item) {
+                          return {
+                            text: item.card_name + " (Code: " + item.card_code + ")",
+                            id: item.id,
+                            card_code: item.card_code,
+                            sap_connection_id: item.sap_connection_id
+                          }
+                      })
+          };
+        },
+        cache: true
+      }, 
+      data: defaultCustomerforTopProducts
+    });
+
     getProductData();
 
-    $(document).on("change","#total_performing_type, #total_performing_orders, #total_performing_db",function(){
+    $(document).on("change",'#total_performing_type, #total_performing_orders, #total_performing_db, [name="filter_customer_top_prod"]',function(){
         total_amount_of_top_products = 0;
         total_clicks = 0;
         getProductData();
@@ -1842,6 +1890,7 @@ $(document).ready(function() {
         var order = $("#total_performing_orders").val();
         var filter_date_range = $('[name="filter_date_range"]').val();
         var filter_company = $('#total_performing_db').val();
+        var filter_customer = $('[name="filter_customer_top_prod"]').val();
 
         var filter_datas = {
                     _token: '{{ csrf_token() }}',
@@ -1875,13 +1924,22 @@ $(document).ready(function() {
         $('#bussiness_share_chart').after('<div class="row">'+html+'</div>');          
         
         @if(@Auth::user()->role_id == 1)
+            // $('#total_performing_db').on('change', function(){
+            //     $('[name="filter_customer_top_prod"]').val('').trigger('change');
+            // });
             filter_datas['filter_company'] = filter_company;
+            filter_datas['filter_customer_code'] = $('[name="filter_customer_top_prod"]').select2('data')[0]['card_code'];
         // @else
         //     $('#business_share_dashboard_div').addClass('d-none');
         @endif
 
         @if(@Auth::user()->role_id == 4)
+            $('[name="filter_customer_top_prod"]').parent().remove();
             top_products_per_quantity.column( 1 ).visible( false );
+        @endif
+
+        @if(@Auth::user()->role_id == 14)
+            filter_datas['filter_customer'] = filter_customer;
         @endif
 
         // Get Top Product Data
@@ -1916,12 +1974,12 @@ $(document).ready(function() {
                         top_products_per_quantity.row.add([(index+1), value.card_name, value.item_code, value.item_description, (value.total_order).toLocaleString()]);
                         total_amount_of_top_products = total_amount_of_top_products + value.total_order;
                     });
+                }else{
+                    total_amount_of_top_products = 1 //to display the Top Products vs Total Sales chart (if no data)
+                    // var cspan = ('@Auth::user()->role_id == 1') ? 4 : 3;
+                    // html += '<tr><td colspan="'+cspan+'" class="text-center">No Data Available.</td></tr>';
+                    // top_products_per_quantity.row.add();
                 }
-                // else{
-                //     // var cspan = ('@Auth::user()->role_id == 1') ? 4 : 3;
-                //     // html += '<tr><td colspan="'+cspan+'" class="text-center">No Data Available.</td></tr>';
-                //     top_products_per_quantity.row.add();
-                // }
 
                 top_products_per_quantity.draw();
                 // $('td.dataTables_empty').addClass('text-center');

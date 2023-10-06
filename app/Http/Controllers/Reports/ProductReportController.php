@@ -1242,7 +1242,8 @@ class ProductReportController extends Controller
 
         $items = $this->getCustomerQuotInvData($table, $alias, $request, $sum);
       }else{ //customer
-        $cust_id = (@Auth::user()->role_id === 14) ? CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray() : explode(',', Auth::user()->multi_customer_id);
+        $pnels_cs = ($request->filter_customer != "") ? [$request->filter_customer] : CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+        $cust_id = (@Auth::user()->role_id === 14) ? $pnels_cs : explode(',', Auth::user()->multi_customer_id);
         if(in_array($request->order, ['back_order', 'over_served'])){
           $items = $this->getBackOrder($request, $sum, $cust_id);
         }else{
@@ -1269,6 +1270,19 @@ class ProductReportController extends Controller
       //                       return $row->card_name;
       //                   })
       //                   ->make(true);
+
+      if(count($data) === 0){
+        $data[0]['name'] = 'no data';
+        $data[0]['description'] = 'no data';
+        $data[0]['key'] = 1;
+
+        // $items[0] = (object) array('item_code' => 'no data',
+        //                             'item_description' => 'no data',
+        //                             'total_order' => 1,
+        //                             'card_code' => 'no data',
+        //                             'card_name' => 'no data',
+        //                             );
+      }
       $response = ['status' => true, 'data'=>$items,'data1'=>$data];
       return $response;
     }
@@ -1405,6 +1419,10 @@ class ProductReportController extends Controller
                        ->where('sap_connection_id', $request->filter_company)
                        ->where('cancelled', 'No');
 
+                       if($request->filter_customer_code != ""){
+                        $query->where($alias.'.card_code', $request->filter_customer_code);
+                       }
+
                        if($request->filter_date_range != ""){ //date filter
                         $date = explode(" - ", $request->filter_date_range);
                         $start = date("Y-m-d", strtotime($date[0]));
@@ -1429,10 +1447,19 @@ class ProductReportController extends Controller
           $response = $this->getQuotInvPerCustomer($table, $alias, $cust->card_code, $request, $sum);
         }
 
-        $response = (array) $response;
-        if(!empty($response)){ //not empty
-          $items[$key] = (object) $response; //revert backt to object
-        }
+          // $items[$key] = (object) $response; //revert backt to object
+
+          $xcounter = 0;
+          foreach($response as $value){
+            $key_x = ($request->filter_customer_code != "") ? $xcounter : $key;
+            $items[$key_x] = (object) array('item_code' => @$value->item_code,
+                                          'item_description' => @$value->item_description,
+                                          'total_order' => @$value->total_order,
+                                          'card_code' => @$value->card_code,
+                                          'card_name' => @$value->card_name,
+                                          );
+            $xcounter++;
+          } 
       }
       // Log::info(print_r($items,true));
       $total_orders = array_column($items, 'total_order');
@@ -1483,8 +1510,10 @@ class ProductReportController extends Controller
             
       $response = [];
       if(!in_array($request->order, ['back_order', 'over_served'])){ //not in array
-        $query->limit(1);
-        $response = $query->first();
+        if($request->filter_customer_code == ""){
+          $query->limit(1);
+        }
+        $response = $query->get();
       }else{
         $response = $query->get();
       }
@@ -1509,13 +1538,13 @@ class ProductReportController extends Controller
 
         $diff = $quot->total_order - $inv_order;
         if($diff > 0){
-          $items[$key] = array(
-                              'item_code' => $quot->item_code,
-                              'item_description' => $quot->item_description,
-                              'total_order' => $diff, 
-                              'card_code' => $quot->card_code,
-                              'card_name' => $quot->card_name
-                          );
+          $items[$key] = (object) array(
+                                      'item_code' => $quot->item_code,
+                                      'item_description' => $quot->item_description,
+                                      'total_order' => $diff, 
+                                      'card_code' => $quot->card_code,
+                                      'card_name' => $quot->card_name
+                                  );
         }
         $inv_order = 0;
       }
@@ -1524,9 +1553,11 @@ class ProductReportController extends Controller
       if(count($total_orders) > 0){
         array_multisort($total_orders, SORT_DESC, $items);
         // arsort($total_orders);
-        $items = array_slice($items, 0, 1);
-        
-        return ($items[0]['total_order'] <= 0) ? (object)[] : $items[0] ;
+        if($request->filter_customer_code == ""){
+          $items = array_slice($items, 0, 1);
+        }
+
+        return ($items[0]->total_order <= 0) ? (object)[] : $items ;
       }else{
         return [];
       }
