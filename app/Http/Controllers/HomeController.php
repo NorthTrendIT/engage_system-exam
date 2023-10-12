@@ -28,158 +28,62 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
+        $dashboard = [];
+        $data1 = [];
+        $data2 = [];
+        $data3 = [];
+        $orders = [];
+        $invoice_lead = [];
+        $delivery_lead = [];
+        $company = [];
+        $notification = [];
+        $local_order = [];
+        $sales_order_to_invoice_lead_time = '';
+        $invoice_to_delivery_lead_time = '';
+        $promotion = '';
+        $default_customer_top_products = [];
 
         if(Auth::user()->role_id == 1){
-
-            // $promotion = collect([]);
-            // $not_pushed_promotion = CustomerPromotionProductDelivery::has('customer_promotion_product')
-            //                                     ->where('is_sap_pushed', false)
-            //                                     ->with('customer_promotion_product')
-            //                                     ->whereHas('customer_promotion_product.customer_promotion', function($q){
-            //                                         $q->where('status', 'approved');
-            //                                     })
-            //                                     ->get();
-
-            // if(!empty($not_pushed_promotion)){
-
-            //     $not_pushed_promotion = array_map( function ( $ar ) {
-            //                return $ar['customer_promotion_id'];
-            //             }, array_column( $not_pushed_promotion->toArray(), 'customer_promotion_product' ) );
-
-            //     if(!empty($not_pushed_promotion)){
-            //         $promotion =  CustomerPromotion::whereIn('id', $not_pushed_promotion)->get();
-            //     }
-            // }
-
             $local_order = LocalOrder::where('confirmation_status', 'ERR')->get();
             $company = SapConnection::all();
-            // // $promotion =  CustomerPromotion::where(['is_sap_pushed' => 0, 'status' => 'approved'])->get();
-
-            // $sales_order_to_invoice_lead_time = SystemSetting::where('key', 'sales_order_to_invoice_lead_time')->first();
-            // $invoice_to_delivery_lead_time = SystemSetting::where('key', 'invoice_to_delivery_lead_time')->first();
-
-            $sales_order_to_invoice_lead_time = '';
-            $invoice_to_delivery_lead_time = '';
-            // $local_order = [];
-            $promotion = '';
-            
-            return view('dashboard.index', compact('sales_order_to_invoice_lead_time','invoice_to_delivery_lead_time','local_order','promotion', 'company'));
         }
 
-        if(Auth::user()->role_id != 1){
+        if(Auth::user()->role_id != 1){ //common for agent and customer
             $notification = getMyNotifications();
-
-            $dashboard = [];
-            $data1 = [];
-            $data2 = [];
-            $data3 = [];
-            $orders = [];
-            $invoice_lead = [];
-            $delivery_lead = [];
-            $company = [];
-            $local_order = [];
 
             if(userrole() == 4){
                 $customers = Auth::user()->get_multi_customer_details();
                 $cust_id = explode(',', Auth::user()->multi_customer_id);
 
                 $local_order = LocalOrder::where('confirmation_status', 'ERR')->whereIn('customer_id', $cust_id)->get();
-                // $total_pending_order = Quotation::whereNotNull('u_omsno')->where('cancelled','No')->doesntHave('order')->whereIn('card_code', array_column($customers->toArray(), 'card_code'))->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))->count();
-
-                // $total_on_process_order = Order::whereNotNull('u_omsno')->where('cancelled','No')->doesntHave('invoice')->whereIn('card_code', array_column($customers->toArray(), 'card_code'))->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))->where('document_status', 'bost_Open')->count();
-
-                // $total_for_delivery_order = Quotation::whereNotNull('u_omsno')
-                //                     ->where('cancelled','No')
-                //                     ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
-                //                     ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
-                //                     ->whereHas('order',function($q){
-                //                          $q->where('cancelled', 'No');
-                //                     })
-                //                     ->whereHas('order.invoice',function($q){
-                //                          $q->where('cancelled', 'No')->where('u_sostat','!=', 'DL')->where('u_sostat','!=', 'CM');
-                //                     })                                    
-                //                     ->count();
-
-                // $total_delivered_order = Quotation::whereNotNull('u_omsno')
-                //                     ->where('cancelled','No')
-                //                     ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
-                //                     ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
-                //                     ->whereHas('order.invoice',function($q){
-                //                          $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', 'DL');
-                //                     })->count();
-
-                // $total_completed_order = Quotation::whereNotNull('u_omsno')
-                //                     ->where('cancelled','No')
-                //                     ->whereIn('card_code', array_column($customers->toArray(), 'card_code'))
-                //                     ->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'))
-                //                     ->whereHas('order.invoice',function($q){
-                //                          $q->where('cancelled', 'No')->where('u_sostat', 'CM');
-                //                     })->count();
-
-
-                // $total_back_order = OrderItem::where('remaining_open_quantity', '>', 0);
-                // $total_back_order->whereHas('order', function($q){
-                //     $q->where('document_status', 'bost_Open');
-                //     $q->where('cancelled', 'No');
-                //     $q->whereIn('u_sostat', ['OP']);
-                //     $q->whereNotNull('u_omsno');               
-                // });
-                // $customers = Auth::user()->get_multi_customer_details();            
-                // $total_back_order->whereHas('order', function($q) use ($customers) {
-                //     $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-                //     $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-                // });
-
-                // $total_back_order = $total_back_order->sum('remaining_open_quantity');
-
-                // $total = $this->getReportResultData();
-                // $t1 = $total->get();
-                // $number_of_overdue_invoices = $total_amount_of_overdue_invoices = 0;
-                // foreach($t1 as $key=>$val){
-                //     $sub = (int)$val->Days - (int)$val->customer->payTerm->number_of_additional_days; 
-                //     if($sub > 0){
-                //         $number_of_overdue_invoices = $number_of_overdue_invoices +1;
-                //         $total_amount_of_overdue_invoices = $total_amount_of_overdue_invoices + $val->doc_total;
-                //     }
-                // }
-
-                // $dashboard['total_pending_order'] = $total_pending_order;
-                // $dashboard['total_on_process_order'] = $total_on_process_order;
-                // $dashboard['total_for_delivery_order'] = $total_for_delivery_order;
-                // $dashboard['total_delivered_order'] = $total_delivered_order;
-                // $dashboard['total_back_order'] = $total_back_order;
-                // $dashboard['total_overdue_invoice'] = $number_of_overdue_invoices;
-                // $dashboard['total_amount_of_overdue_invoices'] = number_format_value($total_amount_of_overdue_invoices); 
-                // $dashboard['total_completed_order'] = $total_completed_order;
-
-                // //Recent Orders
-                // $orders = Quotation::whereNotNull('u_omsno');
-                // $customers = Auth::user()->get_multi_customer_details();
-                // $orders->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-                // $orders->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-                // $orders = $orders->orderBy('created_at','DESC')->take(5)->get();
-
-                // //Order to invoice lead time
-                // $invoice_lead = Invoice::has('order')->orderby('doc_date', 'desc')->whereNotNull('u_omsno')->orderBy('id','DESC')->take(5);
-                // $customers = Auth::user()->get_multi_customer_details();
-                // $invoice_lead->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-                // $invoice_lead->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-                // $invoice_lead = $invoice_lead->get();
-
-                // //invoice to delivery lead time
-                // $delivery_lead = Invoice::has('order')->orderby('doc_date', 'desc')->whereNotNull('u_omsno')->whereNotNull('u_delivery')->orderBy('id','DESC')->take(5);
-                // $customers = Auth::user()->get_multi_customer_details();
-                // $delivery_lead->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-                // $delivery_lead->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-                // $delivery_lead = $delivery_lead->get();
             }
             if(userrole() == 14){
                 $local_order = LocalOrder::where('confirmation_status', 'ERR')->where('sales_specialist_id', Auth::user()->id)->get();
             }
-            return view('dashboard.index', compact('notification','dashboard','orders','invoice_lead','delivery_lead','company', 'local_order'));
         }
 
-    	return view('dashboard.index');
+        if(in_array(userrole(),[1, 14])){ //common for agent and super admin
+            $data = Customer::whereNotIn('sap_connection_id', [4])
+                          ->where('is_active', true)->has('user')
+                          ->with(['user','sap_connection:id,company_name,db_name'])->orderBy('card_name','asc');
+
+            if(in_array(userrole(),[14])){
+                $data->whereHas('sales_specialist.sales_person', function($q) {
+                    return $q->where('ss_id', Auth::id());
+                });
+            } 
+            if(in_array(userrole(),[1])){
+                $data->where('sap_connection_id', 1); //apbw as default
+            }
+
+            $default_customer_top_products = $data->first();
+        }
+
+
+
+        return view('dashboard.index', compact('notification','dashboard','orders','invoice_lead','delivery_lead','company', 'local_order',
+                                               'sales_order_to_invoice_lead_time','invoice_to_delivery_lead_time','local_order','promotion', 'company', 'default_customer_top_products'
+                                              ));
     }
 
     public function getReportResultData(){
