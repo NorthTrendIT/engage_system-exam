@@ -1003,36 +1003,15 @@ class CustomerController extends Controller
             $request->sap_connection_id = 1; //apbw
         }
 
-        $actual = InvoiceItem::selectRaw('MONTH(invoices.doc_date) as month, SUM(invoice_items.quantity) as total_quantity')
-                            ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
-                            ->join('products', 'invoice_items.item_code', '=', 'products.item_code')
-                            ->where('invoice_items.real_sap_connection_id', $request->sap_connection_id)
-                            ->where('invoices.card_code', $request->customer_code)
-                            ->where('invoices.cancelled', 'No')
-                            ->whereYear('invoices.doc_date', $request->year)
-                            ->where('invoices.real_sap_connection_id', $request->sap_connection_id); //to make sure
-        
-        if($request->brand !== null){                    
-            $actual->where('products.items_group_code', $request->brand);
-        }else{
-            $actual->where('products.u_tires', $request->category);
-        }
+        $request->year = $request->year - 1;
+        $prdata = $this->getActualSales($request);
 
-        $actual_results = $actual->where('products.sap_connection_id', $request->sap_connection_id) //to make sure
-                                 ->groupBy(DB::raw('MONTH(invoices.doc_date)'))
-                                 ->orderBy(DB::raw('MONTH(invoices.doc_date)'), 'ASC')
-                                 ->get();
-
-        $adata = [];
-        foreach($actual_results as $result){ //recreate data
-            $year = $request->year;
-            $month = date('F', strtotime("$result->month/12/$year"));
-
-            $adata[$month] = $result->total_quantity;
-        }
+        $request->year = $request->year + 1;
+        $adata = $this->getActualSales($request);
         
         $response = [];
         $actual_sales_year = [];
+        $prev_sales_year = [];
         $target_sales_year = [];
         for($x = 1; $x <= 12; $x++){
 
@@ -1044,19 +1023,32 @@ class CustomerController extends Controller
                 $actual_sales_year[] = 0;
             }
 
+            if(isset($prdata[$month])){ //prev year sales
+                $prev_sales_year[] = $prdata[$month];
+            }else{
+                $prev_sales_year[] = 0;
+            }
+
             if($target_results->count() > 0){ //in database, it's already set to zero.
                 $target_sales_year[] = (int) $target_results[0]->$month;
             }else{
                 $target_sales_year[] = 0;
             }
-
         }
+
         $acQ1 = $actual_sales_year[0] + $actual_sales_year[1] + $actual_sales_year[2];
         $acQ2 = $actual_sales_year[3] + $actual_sales_year[4] + $actual_sales_year[5];
         $acQ3 = $actual_sales_year[6] + $actual_sales_year[7] + $actual_sales_year[8];
         $acQ4 = $actual_sales_year[9] + $actual_sales_year[10] + $actual_sales_year[11];
 
         $actual_sales_quarter = [$acQ1, $acQ2, $acQ3, $acQ4];
+
+        $prQ1 = $prev_sales_year[0] + $prev_sales_year[1] + $prev_sales_year[2];
+        $prQ2 = $prev_sales_year[3] + $prev_sales_year[4] + $prev_sales_year[5];
+        $prQ3 = $prev_sales_year[6] + $prev_sales_year[7] + $prev_sales_year[8];
+        $prQ4 = $prev_sales_year[9] + $prev_sales_year[10] + $prev_sales_year[11];
+
+        $prev_sales_quarter = [$prQ1, $prQ2, $prQ3, $prQ4];
 
         $taQ1 = $target_sales_year[0] + $target_sales_year[1] + $target_sales_year[2];
         $taQ2 = $target_sales_year[3] + $target_sales_year[4] + $target_sales_year[5];
@@ -1083,10 +1075,51 @@ class CustomerController extends Controller
                                 'categories' => ['Q1', 'Q2', 'Q3', 'Q4'],
                                 'colors' => ['#afafaf', '#12365d']
                             ],
+                      'year_comparison' => [ 'series' =>[
+                                        ['name' => 'Previous Year','data' => $prev_sales_quarter], 
+                                        ['name' => 'Current Year','data' => $actual_sales_quarter]
+                                    ],
+                                'bar' => ['columnWidth' => '-10%'],
+                                'stroke' => ['width' => 20],
+                                'categories' => ['Q1', 'Q2', 'Q3', 'Q4'],
+                                'colors' => ['#afafaf', '#12365d']
+                            ],
                     ];
 
        return ['status' => true, 'data'=> $response, 'message' => 'Record successfully fetch.'];
 
+    }
+
+    private function getActualSales($request){
+        $actual = InvoiceItem::selectRaw('MONTH(invoices.doc_date) as month, SUM(invoice_items.quantity) as total_quantity')
+                            ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
+                            ->join('products', 'invoice_items.item_code', '=', 'products.item_code')
+                            ->where('invoice_items.real_sap_connection_id', $request->sap_connection_id)
+                            ->where('invoices.card_code', $request->customer_code)
+                            ->where('invoices.cancelled', 'No')
+                            ->whereYear('invoices.doc_date', $request->year)
+                            ->where('invoices.real_sap_connection_id', $request->sap_connection_id); //to make sure
+        
+        if($request->brand !== null){                    
+            $actual->where('products.items_group_code', $request->brand);
+        }else{
+            $actual->where('products.u_tires', $request->category);
+        }
+
+        $actual_results = $actual->where('products.sap_connection_id', $request->sap_connection_id) //to make sure
+                                 ->groupBy(DB::raw('MONTH(invoices.doc_date)'))
+                                 ->orderBy(DB::raw('MONTH(invoices.doc_date)'), 'ASC')
+                                 ->get();
+        
+        $adata = [];
+        foreach($actual_results as $result){ //recreate data
+            $year = $request->year;
+            $month = date('F', strtotime("$result->month/12/$year"));
+
+            $adata[$month] = $result->total_quantity;
+        }
+
+        return $adata;
     }
 
 

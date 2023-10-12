@@ -572,14 +572,20 @@
                                         </div> --}}
                                     </div>
                                 </div>
-                                <div class="col-sm-1">
-                                    <div class="mt-2">
+                                <div class="col-sm-1 d-flex">
+                                    <div class="align-self-center">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="brandRadio" id="quarterBrand" isCheck="no">
                                             <label class="form-check-label" for="quarterBrand">
                                               Quarter
                                             </label>
-                                          </div>
+                                        </div>
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="radio" name="brandRadioYearComparison" id="yearComparisonBrand" isCheck="no">
+                                            <label class="form-check-label" for="yearComparisonBrand" style="min-width: 115px !important;">
+                                              Year Comparison
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -669,14 +675,20 @@
                                         <button class="btn btn-sm btn-primary" id="resync_categorychart-data"><i class="fas fa-sync-alt"></i></button>
                                     </div>
                                 </div>
-                                <div class="col-sm-1">
-                                    <div class="mt-2">
+                                <div class="col-sm-1 d-flex">
+                                    <div class="align-self-center">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="categoryRadio" id="quarterCategory" isCheck="no">
                                             <label class="form-check-label" for="quarterCategory">
                                               Quarter
                                             </label>
-                                          </div>
+                                        </div>
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="radio" name="categoryRadioYearComparison" id="yearComparisonCategory" isCheck="no">
+                                            <label class="form-check-label" for="yearComparisonCategory" style="min-width: 115px !important;">
+                                              Year Comparison
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -2250,7 +2262,9 @@ $(document).ready(function() {
             }else{
                 // $('#quarterBrand').prop("checked", false);
                 chart_datas_brand = result.data;
-                result = ($('#quarterBrand').attr("isCheck") == 'yes') ? result.data.quarter : result.data.year;
+                console.log(result.data);
+                main_result = ($('#quarterBrand').attr("isCheck") == 'yes') ? result.data.quarter : result.data.year;
+                result = ($('#yearComparisonBrand').attr("isCheck") == 'yes') ? result.data.year_comparison : main_result;
                 render_target_column_chart(result, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
             }
           }).fail(function() {
@@ -2261,13 +2275,36 @@ $(document).ready(function() {
 
     $('#quarterBrand').on('click', function(){
         $('#bdp_target_brand_column_chart').find('.apexcharts-canvas').remove();
-        if($(this).attr("isCheck") == 'no') { 
+        if($(this).attr("isCheck") == 'no') {
+            $('#yearComparisonBrand').attr("isCheck", "no");
+            $('#yearComparisonBrand').prop("checked", false); 
             $(this).attr("isCheck", "yes");
             $(this).prop("checked", true);
+            $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(3)').html("Target");
+            $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(4)').html("Actual");
             render_target_column_chart(chart_datas_brand.quarter, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
         }else{
             $(this).attr("isCheck", "no");
             $(this).prop("checked", false);
+            render_target_column_chart(chart_datas_brand.year, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
+        }
+    });
+
+    $('#yearComparisonBrand').on('click', function(){
+        $('#bdp_target_brand_column_chart').find('.apexcharts-canvas').remove();
+        if($(this).attr("isCheck") == 'no') { 
+            $('#quarterBrand').attr("isCheck", "no");
+            $('#quarterBrand').prop("checked", false);
+            $(this).attr("isCheck", "yes");
+            $(this).prop("checked", true);
+            $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(3)').html("Previous Year");
+            $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(4)').html("Current Year");
+            render_target_column_chart(chart_datas_brand.year_comparison, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
+        }else{
+            $(this).attr("isCheck", "no");
+            $(this).prop("checked", false);
+            $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(3)').html("Target");
+            $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(4)').html("Actual");
             render_target_column_chart(chart_datas_brand.year, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
         }
     });
@@ -2353,7 +2390,16 @@ $(document).ready(function() {
                                         stroke: { width: 20},
                                         categories : ['Q1', 'Q2', 'Q3', 'Q4'],
                                         colors: ['#afafaf', '#12365d']
-                                    }}; //dummy datas
+                                    },
+                            year_comparison : {series : [{name: 'Previous Year', data: [0, 0, 0, 0] }, 
+                                                         {name: 'Current Year', data: [0, 0, 0, 0] }
+                                                        ],
+                                bar: {columnWidth: '-10%'},
+                                stroke: { width: 20},
+                                categories : ['Q1', 'Q2', 'Q3', 'Q4'],
+                                colors: ['#afafaf', '#12365d']
+                            }
+                            }; //dummy datas
     var chart_datas_category =  chart_datas_brand;
 
     render_target_column_chart(chart_datas_brand.year, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
@@ -2397,7 +2443,8 @@ $(document).ready(function() {
             }else{
                 // $('#quarterQuarter').prop("checked", false);
                 chart_datas_category = result.data;
-                result = ($('#quarterCategory').attr("isCheck") == 'yes') ? result.data.quarter : result.data.year;
+                main_result = ($('#quarterCategory').attr("isCheck") == 'yes') ? result.data.quarter : result.data.year;
+                result = ($('#yearComparisonCategory').attr("isCheck") == 'yes') ? result.data.year_comparison : main_result;
                 render_target_column_chart(result, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
             }
           }).fail(function() {
@@ -2409,12 +2456,35 @@ $(document).ready(function() {
     $('#quarterCategory').on('click', function(){
         $('#bdp_target_category_column_chart').find('.apexcharts-canvas').remove();
         if($(this).attr("isCheck") == 'no') { 
+            $('#yearComparisonCategory').attr("isCheck", "no");
+            $('#yearComparisonCategory').prop("checked", false); 
             $(this).attr("isCheck", "yes");
             $(this).prop("checked", true);
+            $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(3)').html("Target");
+            $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(4)').html("Actual");
             render_target_column_chart(chart_datas_category.quarter, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
         }else{
             $(this).attr("isCheck", "no");
             $(this).prop("checked", false);
+            render_target_column_chart(chart_datas_category.year, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
+        }
+    });
+
+    $('#yearComparisonCategory').on('click', function(){
+        $('#bdp_target_category_column_chart').find('.apexcharts-canvas').remove();
+        if($(this).attr("isCheck") == 'no') { 
+            $('#quarterCategory').attr("isCheck", "no");
+            $('#quarterCategory').prop("checked", false);
+            $(this).attr("isCheck", "yes");
+            $(this).prop("checked", true);
+            $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(3)').html("Previous Year");
+            $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(4)').html("Current Year");
+            render_target_column_chart(chart_datas_category.year_comparison, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
+        }else{
+            $(this).attr("isCheck", "no");
+            $(this).prop("checked", false);
+            $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(3)').html("Target");
+            $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(4)').html("Actual");
             render_target_column_chart(chart_datas_category.year, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
         }
     });
@@ -2491,10 +2561,13 @@ $(document).ready(function() {
             tooltip: {
             y: {
                 formatter: function (val, series) {
+                    var condition = ($('#yearComparisonBrand').attr("isCheck") == 'yes' && tbl == 'tbl_brand_target_tbody') || 
+                                    ($('#yearComparisonCategory').attr("isCheck") == 'yes' && tbl == 'tbl_category_target_tbody');
+                    var sales_index = ( condition ) ? [1,0] : [0,1]; //need to switch cause it was switch in table
                     var sIdx = series.seriesIndex;
                     var dIdx = series.dataPointIndex;
-                    var actualSales = series.series[0][dIdx];
-                    var targetSales = series.series[1][dIdx];
+                    var actualSales = series.series[ sales_index[0] ][dIdx];
+                    var targetSales = series.series[ sales_index[1] ][dIdx];
                     var catName = series.w.globals.labels[dIdx];
                     // var diff = 0;
                     // var percentage = 0;
@@ -2512,7 +2585,8 @@ $(document).ready(function() {
                     }else if(diff == 0 && targetSales > 0){ //meet
                         adetails += 'Meet (100%)';
                     }else{
-                        adetails += 'Undefined Target: - (0%)';
+                        var status = ( condition ) ? 'No Previous Year Sales' : 'Undefined Target';
+                        adetails += status+': - (0%)';
                     }
 
                     return "" + (val).toLocaleString()+" "+adetails;
@@ -2534,10 +2608,14 @@ $(document).ready(function() {
 
     function render_target_tbl(data, categories, opt, tbl){
         var html = '';
+        var condition = ($('#yearComparisonBrand').attr("isCheck") == 'yes' && tbl == 'tbl_brand_target_tbody') || 
+                        ($('#yearComparisonCategory').attr("isCheck") == 'yes' && tbl == 'tbl_category_target_tbody'); 
+        var sales_index = ( condition ) ? [1,0] : [0,1]; //need to switch cause it was switch in table
+        
         $.each(categories, function(index, value) {
             // console.log('Month ' + (index + 1) + ': ' + value);
-            var actualSales = data[0].data[index];
-            var targetSales = data[1].data[index];
+            var actualSales = data[ sales_index[0] ].data[index];
+            var targetSales = data[ sales_index[1] ].data[index];
 
             diff = actualSales - targetSales;
             diffAbs = Math.abs(diff);
@@ -2546,10 +2624,10 @@ $(document).ready(function() {
             html += '<tr>'+
                     '<td>'+value+'</td>'+
                     '<td>'+$('[name="'+opt+'"]').select2('data')[0]['text']+'</td>'+
-                    '<td>'+targetSales+'</td>'+
-                    '<td>'+actualSales+'</td>';
+                    '<td>'+(targetSales).toLocaleString()+'</td>'+
+                    '<td>'+(actualSales).toLocaleString()+'</td>';
 
-            var status = 'Undefined Target';
+            var status = ( condition ) ? 'No Previous Year Sales' : 'Undefined Target';
             var short = '-';
             var over = '-';
             var percent = '0%';
