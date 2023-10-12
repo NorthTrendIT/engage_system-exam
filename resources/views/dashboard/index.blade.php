@@ -545,13 +545,13 @@
                             <div class="row">
                                 <label class="col-auto col-form-label col-form-label-sm" for="">Customer</label>
                                 <div class="col-sm-3">
-                                    <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="filter_customer_brand" data-allow-clear="true" data-placeholder="Select">
+                                    <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="filter_customer_brand" data-placeholder="Select">
                                         {{-- <option value=""></option> --}}
                                     </select>
                                 </div>
                                 <label class="col-auto col-form-label col-form-label-sm" for="">Brand</label>
                                 <div class="col-sm-2">
-                                    <select class="form-control form-control-sm form-control-solid select_brand" data-control="select2" data-hide-search="false" name="filter_brand" data-allow-clear="true" data-placeholder="Select">
+                                    <select class="form-control form-control-sm form-control-solid select_brand" data-control="select2" data-hide-search="false" name="filter_brand" data-placeholder="Select">
                                         <option value=""></option>
                                     </select>
                                 </div>
@@ -656,19 +656,19 @@
                             <div class="row">
                                 <label class="col-auto col-form-label col-form-label-sm" for="">Customer</label>
                                 <div class="col-sm-3">
-                                    <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="filter_customer_category" data-allow-clear="true" data-placeholder="Select">
+                                    <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="filter_customer_category"  data-placeholder="Select">
                                         {{-- <option value=""></option> --}}
                                     </select>
                                 </div>
                                 <label class="col-auto col-form-label col-form-label-sm" for="">Category</label>
                                 <div class="col-sm-2">
-                                    <select class="form-control form-control-sm form-control-solid select_category" data-control="select2" data-hide-search="false" name="filter_category" data-allow-clear="true" data-placeholder="Select">
+                                    <select class="form-control form-control-sm form-control-solid select_category" data-control="select2" data-hide-search="false" name="filter_category"  data-placeholder="Select">
                                         <option value=""></option>
                                     </select>
                                 </div>
                                 <label class="col-auto col-form-label col-form-label-sm" for="">Year</label>
                                 <div class="col-sm-2">
-                                    <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="year_category" data-allow-clear="true" data-placeholder="Select">
+                                    <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="year_category" data-placeholder="Select">
                                         {{-- <option value=""></option> --}}
                                         @for ($year = $year1; $year >= $endyear; $year--)
                                             <option value="{{$year}}">{{ $year }}</option>
