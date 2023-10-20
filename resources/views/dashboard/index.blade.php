@@ -28,7 +28,7 @@
         <div class="row gy-5 g-xl-8">
             @if(Auth::user()->role_id != 1)
             <!--begin::Col-->
-            <div class="col-xl-4 @if(Auth::user()->role_id == 4) d-none @endif">
+            <div class="col-xl-3 @if(Auth::user()->role_id == 4) d-none @endif">
                 <!--begin::List Widget 6-->
                 <div class="card card-xl-stretch mb-xl-8">
                     <!--begin::Header-->
@@ -165,40 +165,82 @@
             @endif
            <!--begin::Col-->
            @if( in_array(Auth::user()->role_id, [1,4,14]) )
-           <div class="col-xl-6">
+           <div class="col-xl-2">
                 <!-- Error Orders -->
-                <div class="card card-custom gutter-b">
-                    <div class="card-header border-0 pt-5">
-                        <h3 class="card-title align-items-start flex-column mb-5">
-                            @if(count($local_order) > 0)
-                            <span class="card-label font-weight-bolder fw-bolder text-danger mb-1">Error Orders ({{ count($local_order) }})</span>
-                            @else
-                            <span class="card-label font-weight-bolder fw-bolder text-primary mb-1">Error Orders</span>
-                            @endif
+                <div class="card" style="width: 166px; height: 150px;">
+                    <div class="card-header border-0">
+                        <h3 class="card-title align-items-start flex-column">   
                         </h3>
                     </div>
-                    <div class="card-body pt-2">
-                        @if(isset($local_order) && count($local_order) > 0)
-                            <div class="d-flex mb-8">
-                                <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
-                                    <div class="d-flex pt-2">
-                                        @if(count($local_order) > 0)
-                                        <a href="{{ route('orders.panding-orders') }}" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm">View All</a>
-                                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5 push-all-order d-none">Push All</a>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        @else
-                        <div class="d-flex mb-8">
-                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pr-3">
-                                <span class="text-dark-75 font-weight-bolder font-size-lg mb-2">No Error Orders to push.</span>
-                            </div>
-                        </div>
-                        @endif
+                    <div class="card-body text-center">
+                        <span class="card-label font-weight-bolder fw-bolder text-danger">Error Orders</span>
+                        <span class="card-label font-weight-bolder fw-bolder d-block fs-2">{{ (count($local_order) > 0) ? count($local_order) : 0 }}</span>
+                        
+                        <a href="{{ route('orders.panding-orders') }}" class="btn btn-primary btn-sm font-weight-bolder py-2 font-size-sm {{ (isset($local_order) && count($local_order) == 0) ? 'disabled' : ''}}">Push Orders</a>
+                        <a href="#" class="btn btn-light-primary font-weight-bolder py-2 font-size-sm mx-5 push-all-order d-none">Push All</a>
                     </div>
                 </div>
             </div>
+            @if( in_array(Auth::user()->role_id, [4,14]) ) <!-- for agent and customer only -->
+                <div class="col-xl-7">
+                    <div class="card" style="height: 150px;">
+                        {{-- <div class="card-header border-0">
+                            <h3 class="card-title align-items-start flex-column">   
+                            </h3>
+                        </div> --}}
+                        <div class="card-body text-center">
+                            @if( in_array(Auth::user()->role_id, [14]) ) <!-- agent only -->
+                                <div class="row">
+                                    <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="filter_customer_balance"  data-placeholder="Select Customer">
+                                        <option value="{{$default_customer_top_products['id']}}">{{ $default_customer_top_products['card_name'].' (Code: '.$default_customer_top_products->card_code.' -'.$default_customer_top_products->sap_connection->db_name.')' }}</option>
+                                    </select>
+                                </div>
+                            @endif
+                            <div class="d-flex">
+                                <div class="flex-column p-3">
+                                    <div class="row g-0">
+                                        <div class="col-md-5">
+                                        <img src="data:image/png;base64,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" class="img-fluid rounded-start" alt="...">
+                                        </div>
+                                        <div class="col-md-7">
+                                            <p class="card-text total_due_balance">{{ $due_invoices['total_due'] }}</p>
+                                            <h5 class="card-title">Balance</h5>
+                                            {{-- <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> --}}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex-column p-3">
+                                    <div class="row g-0">
+                                        <div class="col-md-5">
+                                        <img src="data:image/png;base64,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" class="img-fluid rounded-start" alt="...">
+                                        </div>
+                                        <div class="col-md-7">
+                                            <p class="card-text within_due_balance">{{ $due_invoices['within_due'] }}</p>
+                                            <h5 class="card-title">Within Due</h5>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex-column p-3">
+                                    <div class="row g-0">
+                                        <div class="col-md-5">
+                                        <img src="data:image/png;base64,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" class="img-fluid rounded-start" alt="...">
+                                        </div>
+                                        <div class="col-md-7">
+                                            <p class="card-text over_due_balance">{{ $due_invoices['over_due'] }}</p>
+                                            <h5 class="card-title">Over Due</h5>
+                                            {{-- <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> --}}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            @endif
             {{-- <div class="col-xl-6">
                 <!-- Pending Promotion -->
                 <div class="card card-custom gutter-b">
@@ -1784,6 +1826,28 @@ $(document).ready(function() {
         backOrderChart.render();
     }
 @endif
+
+    $('[name="filter_customer_balance"]').on('change', function(){
+        fetchDueBalance();
+    });
+    
+    function fetchDueBalance(){
+        $.ajax({
+            url: "{{ route('fetchDueBalances') }}",
+            method: "GET",
+            data: {
+                customer_id: [$('[name="filter_customer_balance"]').val()]
+            }
+        })
+        .done(function(result) { 
+            $('.total_due_balance').text(result.total_due);
+            $('.within_due_balance').text(result.within_due);
+            $('.over_due_balance').text(result.over_due);
+        }).fail(function() {
+            toast_error("error");
+        });
+    }
+
     var top_products_per_quantity = $('#top_products_per_quantity').DataTable({
                                         // processing: true,
                                         // serverSide: true,
@@ -2320,10 +2384,16 @@ $(document).ready(function() {
             }else{
                 // $('#quarterBrand').prop("checked", false);
                 chart_datas_brand = result.data;
-                console.log(result.data);
-                main_result = ($('#quarterBrand').attr("isCheck") == 'yes') ? result.data.quarter : result.data.year;
-                result = ($('#yearComparisonBrand').attr("isCheck") == 'yes') ? result.data.year_comparison : main_result;
-                render_target_column_chart(result, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
+                var response = ($('#quarterBrand').attr("isCheck") == 'yes') ? result.data.quarter : result.data.year;
+                
+                if($('#yearComparisonBrand').attr("isCheck") == 'yes' && $('#quarterBrand').attr("isCheck") == 'yes'){
+                   response =  result.data.quarterly_comparison;
+                }
+                if($('#yearComparisonBrand').attr("isCheck") == 'yes' && $('#quarterBrand').attr("isCheck") == 'no'){
+                   response =  result.data.monthly_comparison;
+                }
+                
+                render_target_column_chart(response, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
             }
           }).fail(function() {
               toast_error("error");
@@ -2333,43 +2403,71 @@ $(document).ready(function() {
 
     $('#quarterBrand').on('click', function(){
         $('#bdp_target_brand_column_chart').find('.apexcharts-canvas').remove();
+        
+        var result = []; 
         if($(this).attr("isCheck") == 'no') {
-            $('#yearComparisonBrand').attr("isCheck", "no");
-            $('#yearComparisonBrand').prop("checked", false); 
+            // $('#yearComparisonBrand').attr("isCheck", "no");
+            // $('#yearComparisonBrand').prop("checked", false); 
             $(this).attr("isCheck", "yes");
             $(this).prop("checked", true);
             $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(3)').html("Target");
             $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(4)').html("Actual");
-            render_target_column_chart(chart_datas_brand.quarter, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
+
+            if($('#yearComparisonBrand').attr("isCheck") == 'yes'){
+                result = chart_datas_brand.quarterly_comparison;
+            }else{
+                result = chart_datas_brand.quarter;
+            }
         }else{
             $(this).attr("isCheck", "no");
             $(this).prop("checked", false);
-            render_target_column_chart(chart_datas_brand.year, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
+
+            if($('#yearComparisonBrand').attr("isCheck") == 'yes'){
+                result = chart_datas_brand.monthly_comparison;
+            }else{
+                result = chart_datas_brand.year
+            }
         }
+        
+        render_target_column_chart(result, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
     });
 
     $('#yearComparisonBrand').on('click', function(){
         $('#bdp_target_brand_column_chart').find('.apexcharts-canvas').remove();
+        
+        var result = []; 
         if($(this).attr("isCheck") == 'no') { 
-            $('#quarterBrand').attr("isCheck", "no");
-            $('#quarterBrand').prop("checked", false);
+            // $('#quarterBrand').attr("isCheck", "no");
+            // $('#quarterBrand').prop("checked", false);
             $(this).attr("isCheck", "yes");
             $(this).prop("checked", true);
             $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(3)').html("Previous Year");
             $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(4)').html("Current Year");
-            render_target_column_chart(chart_datas_brand.year_comparison, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
+
+            if($('#quarterBrand').attr("isCheck") == 'yes'){
+                result = chart_datas_brand.quarterly_comparison;
+            }else{
+                result = chart_datas_brand.monthly_comparison;
+            }
         }else{
             $(this).attr("isCheck", "no");
             $(this).prop("checked", false);
             $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(3)').html("Target");
             $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(4)').html("Actual");
-            render_target_column_chart(chart_datas_brand.year, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
+
+            if($('#quarterBrand').attr("isCheck") == 'yes'){
+                result = chart_datas_brand.quarter;
+            }else{
+                result = chart_datas_brand.year;
+            }
         }
+
+        render_target_column_chart(result, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
     });
 
 
 
-    $('[name="filter_customer_brand"], [name="filter_customer_category"]').select2({ //Make IT AVAILABLE FOR BOTH COLUMN CHART
+    $('[name="filter_customer_brand"], [name="filter_customer_category"], [name="filter_customer_balance"]').select2({ //Make IT AVAILABLE FOR BOTH COLUMN CHART
       ajax: {
         url: "{{ route('customer-promotion.get-customer') }}",
         type: "post",
@@ -2449,7 +2547,7 @@ $(document).ready(function() {
                                         categories : ['Q1', 'Q2', 'Q3', 'Q4'],
                                         colors: ['#afafaf', '#12365d']
                                     },
-                            year_comparison : {series : [{name: 'Previous Year', data: [0, 0, 0, 0] }, 
+                            quarterly_comparison : {series : [{name: 'Previous Year', data: [0, 0, 0, 0] }, 
                                                          {name: 'Current Year', data: [0, 0, 0, 0] }
                                                         ],
                                 bar: {columnWidth: '-10%'},
@@ -2501,9 +2599,17 @@ $(document).ready(function() {
             }else{
                 // $('#quarterQuarter').prop("checked", false);
                 chart_datas_category = result.data;
-                main_result = ($('#quarterCategory').attr("isCheck") == 'yes') ? result.data.quarter : result.data.year;
-                result = ($('#yearComparisonCategory').attr("isCheck") == 'yes') ? result.data.year_comparison : main_result;
-                render_target_column_chart(result, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
+                var response = ($('#quarterCategory').attr("isCheck") == 'yes') ? result.data.quarter : result.data.year;
+                
+                if($('#yearComparisonCategory').attr("isCheck") == 'yes' && $('#quarterCategory').attr("isCheck") == 'yes'){
+                    response = result.data.quarterly_comparison;
+                }
+
+                if($('#yearComparisonCategory').attr("isCheck") == 'yes' && $('#quarterCategory').attr("isCheck") == 'no'){
+                    response = result.data.monthly_comparison;
+                }
+
+                render_target_column_chart(response, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
             }
           }).fail(function() {
               toast_error("error");
@@ -2513,38 +2619,66 @@ $(document).ready(function() {
 
     $('#quarterCategory').on('click', function(){
         $('#bdp_target_category_column_chart').find('.apexcharts-canvas').remove();
+
+        var result = [];
         if($(this).attr("isCheck") == 'no') { 
-            $('#yearComparisonCategory').attr("isCheck", "no");
-            $('#yearComparisonCategory').prop("checked", false); 
+            // $('#yearComparisonCategory').attr("isCheck", "no");
+            // $('#yearComparisonCategory').prop("checked", false); 
             $(this).attr("isCheck", "yes");
             $(this).prop("checked", true);
             $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(3)').html("Target");
             $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(4)').html("Actual");
-            render_target_column_chart(chart_datas_category.quarter, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
+
+            if($('#yearComparisonCategory').attr("isCheck") == 'yes'){
+                result =  chart_datas_category.quarterly_comparison;
+            }else{
+                result = chart_datas_category.quarter;
+            }
         }else{
             $(this).attr("isCheck", "no");
             $(this).prop("checked", false);
-            render_target_column_chart(chart_datas_category.year, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
+
+            if($('#yearComparisonCategory').attr("isCheck") == 'yes'){
+                result =  chart_datas_category.monthly_comparison;
+            }else{
+                result = chart_datas_category.year
+            }
         }
+        
+        render_target_column_chart(result, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
     });
 
     $('#yearComparisonCategory').on('click', function(){
         $('#bdp_target_category_column_chart').find('.apexcharts-canvas').remove();
+        
+        var result = [];
         if($(this).attr("isCheck") == 'no') { 
-            $('#quarterCategory').attr("isCheck", "no");
-            $('#quarterCategory').prop("checked", false);
+            // $('#quarterCategory').attr("isCheck", "no");
+            // $('#quarterCategory').prop("checked", false);
             $(this).attr("isCheck", "yes");
             $(this).prop("checked", true);
             $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(3)').html("Previous Year");
             $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(4)').html("Current Year");
-            render_target_column_chart(chart_datas_category.year_comparison, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
+
+            if($('#quarterCategory').attr("isCheck") == 'yes'){
+                result = chart_datas_category.quarterly_comparison;
+            }else{
+                result = chart_datas_category.monthly_comparison;
+            }
         }else{
             $(this).attr("isCheck", "no");
             $(this).prop("checked", false);
             $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(3)').html("Target");
             $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(4)').html("Actual");
-            render_target_column_chart(chart_datas_category.year, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
+
+            if($('#quarterCategory').attr("isCheck") == 'yes'){
+                result = chart_datas_category.quarter,
+            }else{
+                result = chart_datas_category.year,
+            }
         }
+
+        render_target_column_chart(result, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
     });
 
     $(document).find(".select_category").select2({

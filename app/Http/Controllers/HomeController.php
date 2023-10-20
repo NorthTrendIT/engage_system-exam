@@ -21,7 +21,7 @@ use App\Models\CustomerProductItemLine;
 use App\Models\CustomerProductTiresCategory;
 use App\Models\Product;
 use App\Models\Customer;
-
+use App\Models\InvoiceItem;
 use App\Support\SAPCustomer;
 
 class HomeController extends Controller
@@ -42,24 +42,11 @@ class HomeController extends Controller
         $invoice_to_delivery_lead_time = '';
         $promotion = '';
         $default_customer_top_products = [];
+        $due_invoices = [];
 
         if(Auth::user()->role_id == 1){
             $local_order = LocalOrder::where('confirmation_status', 'ERR')->get();
             $company = SapConnection::all();
-        }
-
-        if(Auth::user()->role_id != 1){ //common for agent and customer
-            $notification = getMyNotifications();
-
-            if(userrole() == 4){
-                $customers = Auth::user()->get_multi_customer_details();
-                $cust_id = explode(',', Auth::user()->multi_customer_id);
-
-                $local_order = LocalOrder::where('confirmation_status', 'ERR')->whereIn('customer_id', $cust_id)->get();
-            }
-            if(userrole() == 14){
-                $local_order = LocalOrder::where('confirmation_status', 'ERR')->where('sales_specialist_id', Auth::user()->id)->get();
-            }
         }
 
         if(in_array(userrole(),[1, 14])){ //common for agent and super admin
@@ -79,10 +66,27 @@ class HomeController extends Controller
             $default_customer_top_products = $data->first();
         }
 
+        if(Auth::user()->role_id != 1){ //common for agent and customer
+            $notification = getMyNotifications();
 
+            if(userrole() == 4){
+                $customers = Auth::user()->get_multi_customer_details();
+                $cust_id = explode(',', Auth::user()->multi_customer_id);
+                $customer_ids = $cust_id;
+
+                $local_order = LocalOrder::where('confirmation_status', 'ERR')->whereIn('customer_id', $cust_id)->get();
+            }
+            if(userrole() == 14){
+                $local_order = LocalOrder::where('confirmation_status', 'ERR')->where('sales_specialist_id', Auth::user()->id)->get();
+                $customer_ids = [$default_customer_top_products['id']];
+            }
+
+            $due_invoices = $this->getDueInvoices($customer_ids);
+        }
 
         return view('dashboard.index', compact('notification','dashboard','orders','invoice_lead','delivery_lead','company', 'local_order',
-                                               'sales_order_to_invoice_lead_time','invoice_to_delivery_lead_time','local_order','promotion', 'company', 'default_customer_top_products'
+                                               'sales_order_to_invoice_lead_time','invoice_to_delivery_lead_time','local_order','promotion', 
+                                               'company', 'default_customer_top_products', 'due_invoices'
                                               ));
     }
 
@@ -246,6 +250,37 @@ class HomeController extends Controller
         $sap->addSpecificCustomerData('C14135');
                 
         return "complete"; 
+    }
+
+    public function getDueInvoicesAjax(Request $request){
+        $customer_ids = $request->input('customer_id');
+
+        return $this->getDueInvoices($customer_ids);
+    }
+
+    public function getDueInvoices($customer_ids){
+
+        $w_due =  InvoiceItem::whereHas('invoice', function($q) use ($customer_ids){
+                        $q->where('cancelled', 'No')
+                        ->where('document_status', 'bost_Open')
+                        ->whereDate('doc_due_date', '>=' , date("Y-m-d"));
+
+                        $q->whereHas('customer', function($q) use ($customer_ids){
+                            $q->whereIn('id', $customer_ids);
+                        });
+                    })->count();
+
+        $o_due =  InvoiceItem::whereHas('invoice', function($q) use ($customer_ids){
+                        $q->where('cancelled', 'No')
+                        ->where('document_status', 'bost_Open')
+                        ->whereDate('doc_due_date', '<' , date("Y-m-d"));
+
+                        $q->whereHas('customer', function($q) use ($customer_ids){ 
+                            $q->whereIn('id', $customer_ids);
+                        });
+                    })->count();
+        $total = $w_due + $o_due;
+        return [ 'within_due' => number_format($w_due, 2), 'over_due' => number_format($o_due, 2), 'total_due' => number_format($total, 2) ];
     }
     
 }

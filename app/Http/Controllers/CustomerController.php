@@ -1075,7 +1075,16 @@ class CustomerController extends Controller
                                 'categories' => ['Q1', 'Q2', 'Q3', 'Q4'],
                                 'colors' => ['#afafaf', '#12365d']
                             ],
-                      'year_comparison' => [ 'series' =>[
+                      'monthly_comparison' => [ 'series' =>[
+                                    ['name' => 'Previous Year','data' => $prev_sales_year], 
+                                    ['name' => 'Current Year','data' => $actual_sales_year]
+                                ],
+                            'bar' => ['columnWidth' => '55%'],
+                            'stroke' => ['width' => 3],
+                            'categories' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                            'colors' => ['#034F84', '#FA7A35']
+                        ],
+                      'quarterly_comparison' => [ 'series' =>[
                                         ['name' => 'Previous Year','data' => $prev_sales_quarter], 
                                         ['name' => 'Current Year','data' => $actual_sales_quarter]
                                     ],
