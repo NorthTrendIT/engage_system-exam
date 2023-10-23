@@ -574,7 +574,7 @@
                 <div class="card card-xl-stretch mb-xl-8">  
                     <div class="row ">
                         <div class="col-sm-12 text-center mt-2">
-                            <h5 class="">Sales vs Target</h5>
+                            <h5 class="brandHeadTitle">Sales vs Target</h5>
                             <h6>(Brand)</h6>
                         </div>
                     </div>
@@ -630,7 +630,7 @@
                                         <div class="form-check mt-2">
                                             <input class="form-check-input" type="radio" name="brandRadioYearComparison" id="yearComparisonBrand" isCheck="no">
                                             <label class="form-check-label" for="yearComparisonBrand" style="min-width: 115px !important;">
-                                              Year Comparison
+                                              Monthly Comparison
                                             </label>
                                         </div>
                                     </div>
@@ -685,7 +685,7 @@
                 <div class="card card-xl-stretch mb-xl-8">  
                     <div class="row ">
                         <div class="col-sm-12 text-center mt-2">
-                            <h5 class="">Sales vs Target</h5>
+                            <h5 class="categoryHeadTitle">Sales vs Target</h5>
                             <h6>(Category)</h6>
                         </div>
                     </div>
@@ -733,7 +733,7 @@
                                         <div class="form-check mt-2">
                                             <input class="form-check-input" type="radio" name="categoryRadioYearComparison" id="yearComparisonCategory" isCheck="no">
                                             <label class="form-check-label" for="yearComparisonCategory" style="min-width: 115px !important;">
-                                              Year Comparison
+                                              Monthly Comparison
                                             </label>
                                         </div>
                                     </div>
@@ -2410,6 +2410,7 @@ $(document).ready(function() {
             // $('#yearComparisonBrand').prop("checked", false); 
             $(this).attr("isCheck", "yes");
             $(this).prop("checked", true);
+            $('#yearComparisonBrand').next().text('Quarterly Comparison');
             $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(3)').html("Target");
             $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(4)').html("Actual");
 
@@ -2421,7 +2422,7 @@ $(document).ready(function() {
         }else{
             $(this).attr("isCheck", "no");
             $(this).prop("checked", false);
-
+            $('#yearComparisonBrand').next().text('Monthly Comparison');
             if($('#yearComparisonBrand').attr("isCheck") == 'yes'){
                 result = chart_datas_brand.monthly_comparison;
             }else{
@@ -2439,6 +2440,7 @@ $(document).ready(function() {
         if($(this).attr("isCheck") == 'no') { 
             // $('#quarterBrand').attr("isCheck", "no");
             // $('#quarterBrand').prop("checked", false);
+            $('.brandHeadTitle').text('Previous Year vs Current Year');
             $(this).attr("isCheck", "yes");
             $(this).prop("checked", true);
             $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(3)').html("Previous Year");
@@ -2450,6 +2452,7 @@ $(document).ready(function() {
                 result = chart_datas_brand.monthly_comparison;
             }
         }else{
+            $('.brandHeadTitle').text('Sales vs Target');
             $(this).attr("isCheck", "no");
             $(this).prop("checked", false);
             $("#tbl_brand_target_tbody").parent().find('thead tr td:nth-child(3)').html("Target");
@@ -2547,6 +2550,14 @@ $(document).ready(function() {
                                         categories : ['Q1', 'Q2', 'Q3', 'Q4'],
                                         colors: ['#afafaf', '#12365d']
                                     },
+                            monthly_comparison: {series : [{name: 'Previous Year', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, 
+                                              {name: 'Current Year', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }
+                                             ],
+                                    bar: {columnWidth: '55%'},
+                                    stroke: { width: 3},
+                                    categories : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                                    colors: ['#034F84', '#FA7A35']
+                              },
                             quarterly_comparison : {series : [{name: 'Previous Year', data: [0, 0, 0, 0] }, 
                                                          {name: 'Current Year', data: [0, 0, 0, 0] }
                                                         ],
@@ -2626,6 +2637,7 @@ $(document).ready(function() {
             // $('#yearComparisonCategory').prop("checked", false); 
             $(this).attr("isCheck", "yes");
             $(this).prop("checked", true);
+            $('#yearComparisonCategory').next().text('Quarterly Comparison');
             $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(3)').html("Target");
             $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(4)').html("Actual");
 
@@ -2637,6 +2649,7 @@ $(document).ready(function() {
         }else{
             $(this).attr("isCheck", "no");
             $(this).prop("checked", false);
+            $('#yearComparisonCategory').next().text('Monthly Comparison');
 
             if($('#yearComparisonCategory').attr("isCheck") == 'yes'){
                 result =  chart_datas_category.monthly_comparison;
@@ -2655,6 +2668,7 @@ $(document).ready(function() {
         if($(this).attr("isCheck") == 'no') { 
             // $('#quarterCategory').attr("isCheck", "no");
             // $('#quarterCategory').prop("checked", false);
+            $('.categoryHeadTitle').text('Previous Year vs Current Year');
             $(this).attr("isCheck", "yes");
             $(this).prop("checked", true);
             $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(3)').html("Previous Year");
@@ -2666,15 +2680,16 @@ $(document).ready(function() {
                 result = chart_datas_category.monthly_comparison;
             }
         }else{
+            $('.categoryHeadTitle').text('Sales vs Target');
             $(this).attr("isCheck", "no");
             $(this).prop("checked", false);
             $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(3)').html("Target");
             $("#tbl_category_target_tbody").parent().find('thead tr td:nth-child(4)').html("Actual");
 
             if($('#quarterCategory').attr("isCheck") == 'yes'){
-                result = chart_datas_category.quarter,
+                result = chart_datas_category.quarter;
             }else{
-                result = chart_datas_category.year,
+                result = chart_datas_category.year;
             }
         }
 
