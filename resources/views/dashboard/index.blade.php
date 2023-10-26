@@ -608,7 +608,7 @@
                                 </div>
                                 <div class="col-sm-1">
                                     <div class="d-flex justify-content-end ">
-                                        <button class="btn btn-sm btn-primary" id="resync_brandchart-data"><i class="fas fa-sync-alt"></i></button>
+                                        <button class="btn btn-sm btn-primary" id="resync_brandchart-data">search</button>
                                         {{-- <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="targetBrandOptions" id="brandQtyOptions"  value="Quantity" checked>
                                             <label class="form-check-label" for="brandQtyOptions">Qty</label>
@@ -719,7 +719,7 @@
                                 </div>
                                 <div class="col-sm-1">
                                     <div class="d-flex justify-content-end ">
-                                        <button class="btn btn-sm btn-primary" id="resync_categorychart-data"><i class="fas fa-sync-alt"></i></button>
+                                        <button class="btn btn-sm btn-primary" id="resync_categorychart-data">search</i></button>
                                     </div>
                                 </div>
                                 <div class="col-sm-1 d-flex">
