@@ -81,7 +81,7 @@ class HomeController extends Controller
                 $customer_ids = [$default_customer_top_products['id']];
             }
 
-            $due_invoices = $this->getDueInvoices($customer_ids);
+            // $due_invoices = $this->getDueInvoices($customer_ids);
         }
 
         return view('dashboard.index', compact('notification','dashboard','orders','invoice_lead','delivery_lead','company', 'local_order',
