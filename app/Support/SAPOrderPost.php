@@ -349,6 +349,10 @@ class SAPOrderPost
 
     public function madeSapData($id){
 
+        $url = '/b1s/v1/EmployeesInfo?$filter= contains(LastName, \'Engage\')&$select=EmployeeID';
+        $response = $this->requestSapApi($url, "GET");
+        $documentOwner = $response['data']['value'][0]['EmployeeID'];
+        
         $response = [];
         $order = LocalOrder::where('id', $id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
@@ -387,6 +391,8 @@ class SAPOrderPost
         if(@$order->sales_specialist->sales_employee_code && @$order->sales_specialist->is_active){
             $response['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
         }
+
+        $response['DocumentsOwner'] = $documentOwner;
 
         $response['DocumentLines'] = [];
         
