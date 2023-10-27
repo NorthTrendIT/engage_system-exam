@@ -247,6 +247,18 @@ class SAPInvoices
                                     'real_sap_connection_id' => $sap_connection->id,
                                 );
 
+                                $currentInvItemCount = InvoiceItem::where([
+                                                            'invoice_id' => $obj->id,
+                                                            'item_code' => @$value['ItemCode'],
+                                                        ])->count();
+ 
+                                if($currentInvItemCount > 1){
+                                    InvoiceItem::where([
+                                                            'invoice_id' => $obj->id,
+                                                            'item_code' => @$value['ItemCode'],
+                                                        ])->orderBy('id','desc')->first()->delete();
+                                } 
+
                                 $item_obj = InvoiceItem::updateOrCreate([
                                                 'invoice_id' => $obj->id,
                                                 'item_code' => @$value['ItemCode'],
