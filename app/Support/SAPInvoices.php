@@ -250,12 +250,14 @@ class SAPInvoices
                                 $currentInvItemCount = InvoiceItem::where([
                                                             'invoice_id' => $obj->id,
                                                             'item_code' => @$value['ItemCode'],
+                                                            'price' => @$value['Price']
                                                         ])->count();
  
                                 if($currentInvItemCount > 1){
                                     InvoiceItem::where([
                                                             'invoice_id' => $obj->id,
                                                             'item_code' => @$value['ItemCode'],
+                                                            'price' => @$value['Price']
                                                         ])->orderBy('id','desc')->first()->delete();
                                 } 
 
