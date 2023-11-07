@@ -235,7 +235,7 @@ class CartController extends Controller
                     $due_date = strtr($request->due_date, '/', '-');
                     $due_date_new = \Carbon\Carbon::createFromFormat('m-d-Y', $due_date)->format('Y-m-d');
                     $cart = Cart::find($cart_info->id);
-                    $cart->qty = $cart_info->qty + 1;
+                    $cart->qty = $cart_info->qty + $request->qty;
                     $cart->customer_id = @$sap_customer_arr[$product->sap_connection_id];
                     $cart->product_id = $id;
                     $cart->address = @$request->address;
