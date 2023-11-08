@@ -92,9 +92,12 @@
 
 
 .product-img-container {
+  display: flex;
   position: relative;
+  height: 253px;
   /* width: 50%;
   max-width: 300px; */
+  align-items: center !important;
 }
 
 .image {
@@ -176,7 +179,7 @@
                   <!-- <a id="pro_btn" href="#" title="Hello from speech bubble!" class="tooltip">CSS Tooltip! Hover me!</a> -->
 
                    <div class="tipClick">
-                    <a href="#"><img src="{{ asset('assets') }}/assets/media/help_icon.png" style="width: 60%;"></a>
+                    <a href="#"><img src="{{ asset('assets') }}/assets/media/help_icon.png" class="img-fluid" width="35" height="35"></a>
                     <strong class="tooltipT">
                       <p> Search products here by name e.g. ‘4T-10W' and code e.g. '3428396’</p>
                       <span><a href="#">&#10005;</a></span>
@@ -249,92 +252,93 @@
                     </div>
 
                     <div class="row row-cols-1 row-cols-md-4 g-4">
-                      @foreach($product_lists as $p)
-                        <div class="col">
-                          <div class="card h-100 border border-3 m-0">
-                            <div class="product-img-container">
-                              @if($p->product_images->count() > 0)
-                                <img src="{{ get_valid_file_url('sitebucket/products', $p->product_images->first()->image) }}" class="card-img-top" width="225" height="225" alt="...">
-                              @else
-                                @if($p->group->group_name === "DELKOR")
-                                  <img src="{{ get_valid_file_url('sitebucket/products/default', 'delkor.png') }}" class="card-img-top" alt="...">
-                                @elseif($p->group->group_name === "CASTROL")
-                                  <img src="{{ get_valid_file_url('sitebucket/products/default', 'castrol-1L.png') }}" class="card-img-top" alt="...">
+                      @if($product_lists->total() > 0)
+                        @foreach($product_lists as $p)
+                          <div class="col">
+                            <div class="card h-100 border border-3 m-0">
+                              <div class="product-img-container">
+                                @if($p->product_images->count() > 0)
+                                  <img src="{{ get_valid_file_url('sitebucket/products', $p->product_images->first()->image) }}" class="card-img-top" alt="...">
                                 @else
-                                  <img src="{{ get_valid_file_url('sitebucket/products/default', 'tire.png') }}" class="card-img-top" alt="...">
-                                @endif
+                                  @if($p->group->group_name === "DELKOR")
+                                    <img src="{{ get_valid_file_url('sitebucket/products/default', 'delkor.png') }}" class="card-img-top" alt="...">
+                                  @elseif($p->group->group_name === "CASTROL")
+                                    <img src="{{ get_valid_file_url('sitebucket/products/default', 'castrol-1L.png') }}" class="card-img-top" alt="...">
+                                  @else
+                                    <img src="{{ get_valid_file_url('sitebucket/products/default', 'tire.png') }}" class="card-img-top" alt="...">
+                                  @endif
 
-                                {{-- <svg class="bd-placeholder-img card-img-top" width="100%" height="180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: No Image" preserveAspectRatio="xMidYMid slice" focusable="false"><title>No Image</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em" dx="-2.7em">No Image</text></svg> --}}
-                              @endif
-                              <div class="product-img-overlay">
-                                @if (strpos($p->group->group_name, 'CASTROL') !== false)
-                                  <img src="{{ get_valid_file_url('sitebucket/products/brand', 'CASTROL.png') }}" class="card-img-top" alt="...">
-                                @elseif (strpos($p->group->group_name, 'MAXXIS') !== false)
-                                  <img src="{{ get_valid_file_url('sitebucket/products/brand', 'MAXXIS.png') }}" class="card-img-top" alt="...">
-                                @elseif (strpos($p->group->group_name, 'CST') !== false)
-                                  <img src="{{ get_valid_file_url('sitebucket/products/brand', 'CST.png') }}" class="card-img-top" alt="...">
-                                @elseif (strpos($p->group->group_name, 'ARISUN') !== false)
-                                  <img src="{{ get_valid_file_url('sitebucket/products/brand', 'arisun-badge.png') }}" class="card-img-top" alt="...">
-                                @elseif (strpos($p->group->group_name, 'BFG') !== false)
-                                  <img src="{{ get_valid_file_url('sitebucket/products/brand', 'BFGOODRICH.png') }}" class="card-img-top" alt="...">
-                                @elseif (strpos($p->group->group_name, 'DELKOR') !== false)
-                                  <img src="{{ get_valid_file_url('sitebucket/products/brand', 'DELKOR.png') }}" class="card-img-top" alt="...">
-                                @elseif (strpos($p->group->group_name, 'MICHELIN') !== false)
-                                  <img src="{{ get_valid_file_url('sitebucket/products/brand', 'MICHELIN.png') }}" class="card-img-top" alt="...">
-                                @elseif (strpos($p->group->group_name, 'PRESA') !== false)
-                                  <img src="{{ get_valid_file_url('sitebucket/products/brand', 'PRESA.png') }}" class="card-img-top" alt="...">
+                                  {{-- <svg class="bd-placeholder-img card-img-top" width="100%" height="180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: No Image" preserveAspectRatio="xMidYMid slice" focusable="false"><title>No Image</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em" dx="-2.7em">No Image</text></svg> --}}
                                 @endif
+                                <div class="product-img-overlay">
+                                  @if (strpos($p->group->group_name, 'CASTROL') !== false)
+                                    <img src="{{ get_valid_file_url('sitebucket/products/brand', 'CASTROL.png') }}" class="card-img-top" alt="...">
+                                  @elseif (strpos($p->group->group_name, 'MAXXIS') !== false)
+                                    <img src="{{ get_valid_file_url('sitebucket/products/brand', 'MAXXIS.png') }}" class="card-img-top" alt="...">
+                                  @elseif (strpos($p->group->group_name, 'CST') !== false)
+                                    <img src="{{ get_valid_file_url('sitebucket/products/brand', 'CST.png') }}" class="card-img-top" alt="...">
+                                  @elseif (strpos($p->group->group_name, 'ARISUN') !== false)
+                                    <img src="{{ get_valid_file_url('sitebucket/products/brand', 'arisun-badge.png') }}" class="card-img-top" alt="...">
+                                  @elseif (strpos($p->group->group_name, 'BFG') !== false)
+                                    <img src="{{ get_valid_file_url('sitebucket/products/brand', 'BFGOODRICH.png') }}" class="card-img-top" alt="...">
+                                  @elseif (strpos($p->group->group_name, 'DELKOR') !== false)
+                                    <img src="{{ get_valid_file_url('sitebucket/products/brand', 'DELKOR.png') }}" class="card-img-top" alt="...">
+                                  @elseif (strpos($p->group->group_name, 'MICHELIN') !== false)
+                                    <img src="{{ get_valid_file_url('sitebucket/products/brand', 'MICHELIN.png') }}" class="card-img-top" alt="...">
+                                  @elseif (strpos($p->group->group_name, 'PRESA') !== false)
+                                    <img src="{{ get_valid_file_url('sitebucket/products/brand', 'PRESA.png') }}" class="card-img-top" alt="...">
+                                  @endif
+                                </div>
+                              </div>
+                              
+                              <div class="card-body p-2" style="position: relative;">
+                                <h5 class="card-title m-0">{{ $p->item_name }}</h5>
+                                <p class="card-text text-muted">{{ $p->item_code }}</p>
+                                <p class="card-text h4">
+                                  @php
+                                    $sap_connection_id = $p->sap_connection_id;
+                                    $currency_symbol = '';
+                                    $price = 0;
+                                    foreach($customer_vat as $cust){
+                                        if($sap_connection_id === $cust->real_sap_connection_id){                                       
+                                            $currency_symbol = get_product_customer_currency(@$p->item_prices, $cust->price_list_num);
+                                            $price = get_product_customer_price(@$p->item_prices,@$customer_price_list_no[$sap_connection_id]);
+                                        }
+                                    }
+
+                                    if(round($p->quantity_on_stock - $p->quantity_ordered_by_customers) < 1){
+                                        echo $currency_symbol.' '.number_format_value($price);
+                                    }else{
+                                        echo $currency_symbol." ".number_format_value($price);
+                                    }
+                                  @endphp
+                                </p>
+
+                              </div>
+                              <div class="card-footer p-2 d-flex align-items-center">
+                                @php
+                                  $qty = '1';
+                                  $html= '<div class="button-wrap">
+                                                <div class="counter">
+                                                    <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyMinus">
+                                                        <i class="fas fa-minus"></i>
+                                                    </a>
+
+                                                    <input class="form-control qty text-center" type="number" min="1" value="'.$qty.'" id="qty_'.$p->id.'">
+
+                                                    <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyPlus">
+                                                        <i class="fas fa-plus"></i>
+                                                    </a>
+                                                </div>
+                                            </div>';
+                                  echo $html;    
+                                @endphp
+                                <button class="btn btn-primary btn-sm addToCart" data-url="{{ route('cart.add',@$p->id) }}" title="Add to Cart" {{ $price > 0 ? '' : 'disabled' }}><i class="fa fa-shopping-cart"></i></button>
                               </div>
                             </div>
-                            
-                            <div class="card-body p-2">
-                              <h5 class="card-title m-0">{{ $p->item_name }}</h5>
-                              <p class="card-text text-muted">{{ $p->item_code }}</p>
-                              <p class="card-text h4">
-                                @php
-                                  $sap_connection_id = $p->sap_connection_id;
-                                  $currency_symbol = '';
-                                  $price = 0;
-                                  foreach($customer_vat as $cust){
-                                      if($sap_connection_id === $cust->real_sap_connection_id){                                       
-                                          $currency_symbol = get_product_customer_currency(@$p->item_prices, $cust->price_list_num);
-                                          $price = get_product_customer_price(@$p->item_prices,@$customer_price_list_no[$sap_connection_id]);
-                                      }
-                                  }
-
-                                  if(round($p->quantity_on_stock - $p->quantity_ordered_by_customers) < 1){
-                                      echo $currency_symbol.' '.number_format_value($price);
-                                  }else{
-                                      echo $currency_symbol." ".number_format_value($price);
-                                  }
-                                @endphp
-                              </p>
-
-                            </div>
-                            <div class="card-footer p-2 d-flex align-items-center">
-                              @php
-                                $qty = '1';
-                                $html= '<div class="button-wrap">
-                                              <div class="counter">
-                                                  <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyMinus">
-                                                      <i class="fas fa-minus"></i>
-                                                  </a>
-
-                                                  <input class="form-control qty text-center" type="number" min="1" value="'.$qty.'" id="qty_'.$p->id.'">
-
-                                                  <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyPlus">
-                                                      <i class="fas fa-plus"></i>
-                                                  </a>
-                                              </div>
-                                          </div>';
-                                echo $html;    
-                              @endphp
-                              <button class="btn btn-primary btn-sm addToCart" data-url="{{ route('cart.add',@$p->id) }}" title="Add to Cart" {{ $price > 0 ? '' : 'disabled' }}><i class="fa fa-shopping-cart"></i></button>
-                            </div>
                           </div>
-                        </div>
-                      @endforeach
-                      @if($product_lists->count() === 0)
+                        @endforeach
+                      @else
                         <div class="col-md-12">
                            <h1 class="text-center mt-15"><em><span class="fa fa-search text-danger"></span> No result found.</em></h1>
                         </div>
@@ -533,7 +537,7 @@ $(document).ready(function() {
       var result = url.search.substring(0, url.search.indexOf("&"));
       var search = ( result === "" ) ? url.search : result ;
 
-      window.location.href =  url.origin + url.pathname + search + ins + url_str(); 
+      window.location.href =  url.origin + url.pathname + "?" + url_str(); 
     });
 
     $(document).on('click', 'a.page-link', function(event) {

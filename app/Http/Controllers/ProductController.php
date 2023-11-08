@@ -1233,6 +1233,7 @@ class ProductController extends Controller
   public function getBrandData(Request $request){
     $data = collect();
     $c_product_group = [];
+    $sap_conn_id = $request->sap_connection_id;
     if(Auth::user()->role_id == 1 || Auth::user()->role_id == 6){
         if($request->sap_connection_id == ""){
             return response()->json($data);
@@ -1252,10 +1253,10 @@ class ProductController extends Controller
             $request->sap_connection_id = $sap_connection->id;
     }
 
-    if(@$request->sap_connection_id != ""){
+    if($sap_conn_id != ""){
 
-      $sap_connection_id = $request->sap_connection_id;
-      if($request->sap_connection_id == 5){ //Solid Trend
+      $sap_connection_id = $sap_conn_id;
+      if($sap_connection_id == 5){ //Solid Trend
         $sap_connection_id = 1;
       }
 
