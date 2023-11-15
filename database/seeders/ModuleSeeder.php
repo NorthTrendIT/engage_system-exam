@@ -640,5 +640,38 @@ class ModuleSeeder extends Seeder
 
         Module::insert($customer_target_module);
 
+
+
+        $product_benefits = Module::create(
+            array(
+                'title' => 'Product Benefits',
+                'slug' => 'product-benefits',
+                'parent_id' => null,
+            )
+        );
+
+        $product_benefits_module = array(
+            array(
+                'title' => 'Add',
+                'slug' => 'add-product-benefits',
+                'parent_id' => $product_benefits->id,
+            ),
+            array(
+                'title' => 'Edit',
+                'slug' => 'edit-product-benefits',
+                'parent_id' => $product_benefits->id,
+            ),
+            array(
+                'title' => 'View',
+                'slug' => 'view-product-benefits',
+                'parent_id' => $product_benefits->id,
+            ),
+        );
+
+        Module::insert($product_benefits_module);
+
+
+
+
     }
 }

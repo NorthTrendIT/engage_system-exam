@@ -626,6 +626,44 @@
                             </li>
                             @endif
 
+
+                            {{-- Product Benefits --}}
+                            @if(@$modules['product-benefits']['id'])
+                            <li>
+                              <i class="fa fa-plus"></i>
+                              <label>
+                                <input data-id="{{ @$modules['product-benefits']['id'] }}" type="checkbox"  /> {{ @$modules['product-benefits']['title'] }}
+                              </label>
+                              <ul>
+
+                                @if(@$modules['add-product-benefits']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['add-product-benefits']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['add-product-benefits']['id'] }}]"  /> {{ @$modules['add-product-benefits']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['edit-product-benefits']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['edit-product-benefits']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-product-benefits']['id'] }}]"  /> {{ @$modules['edit-product-benefits']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['view-product-benefits']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['view-product-benefits']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['view-product-benefits']['id'] }}]"  /> {{ @$modules['view-product-benefits']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                              </ul>
+                            </li>
+                            @endif
+
                           </ul>
                         </li>
                         @endif

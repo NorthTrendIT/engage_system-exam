@@ -19,10 +19,13 @@ use App\Exports\ProductExport;
 use App\Exports\ProductTaggingExport;
 use App\Models\Customer; //added for sap connection only
 use App\Models\CustomerProductGroup;
+use App\Models\ProductBenefits;
 use App\Models\RecommendedProduct;
 use App\Models\RecommendedProductAssignment;
 use App\Models\RecommendedProductItem;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -1821,6 +1824,252 @@ class ProductController extends Controller
                       })
                       ->rawColumns(['products','action'])
                       ->make(true);
+  }
+
+  public function showBenefits(){
+    $benefits = ProductBenefits::all();
+    return view('product.benefits', compact('benefits'));
+  }
+
+  public function updateBenefits(Request $request){
+    $benefits = ProductBenefits::find($request->id);
+
+    $update = [
+                'code' => $request->code,
+                'name'  => $request->description,
+              ];
+    $request->validate(['icon' => 'mimes:jpg,jpeg,png|max:2048']);
+    if ($request->file('icon') !== null && $request->file('icon')->isValid()) {
+      $file = $request->file('icon');
+      $fileName = Str::random(10).$file->getClientOriginalName();
+
+      if(!Storage::disk('public')->has('products/benefits')){
+          Storage::disk('public')->makeDirectory('products/benefits/');
+      }
+
+      Storage::disk('public')->delete('products/benefits/'.$benefits->icon);
+      $file->storeAs('products/benefits/', $fileName, 'public');
+      $update += ['icon' => $fileName];
+    } 
+
+    $benefits->update($update);
+
+    return back()
+            ->with('success','File has been uploaded.');
+  }
+
+  public function benefitsAssignment(){
+    $company = SapConnection::all();
+    $benefits = ProductBenefits::pluck('code')->all();
+    return view('product.benefits-assignment',compact('company', 'benefits'));
+  }
+
+  public function addBenefitsAssignment(Request $request){
+    foreach($request->bnf_assignment as $b){
+      Product::find($b['product_id'])->update([ 'product_benefits' => $b['benefit_ids'] ]);
+    }
+
+    return ['status' => true, 'message' => 'Product Benefits updated successfully!'];
+  }
+
+
+  public function getAllAssignedProductBenefits(Request $request){
+
+    $data = Product::whereRaw('last_sync_at > "2023-03-27 09:39:36"')->whereHas('sap_connection',function($q){
+              $q->WhereNull('deleted_at');
+            });
+
+    if($request->filter_status != ""){
+      $data->where('is_active',$request->filter_status);
+    }
+
+    if($request->filter_company != ""){
+      $filter_company = $request->filter_company;
+      if($request->filter_company == 5){ //Solid Trend
+        $filter_company = 1;
+      }
+      $data->where('products.sap_connection_id',$filter_company);
+    }
+
+    if($request->filter_search != ""){
+      $data->where(function($q) use ($request) {
+        $q->orwhere('products.item_code','LIKE',"%".$request->filter_search."%");
+        $q->orwhere('products.item_name','LIKE',"%".$request->filter_search."%");
+      });
+    }
+
+    if($request->filter_date_range != ""){
+      $date = explode(" - ", $request->filter_date_range);
+      $start = date("Y-m-d", strtotime($date[0]));
+      $end = date("Y-m-d", strtotime($date[1]));
+
+      $data->whereDate('created_date', '>=' , $start);
+      $data->whereDate('created_date', '<=' , $end);
+    }
+
+
+    if(!in_array(userrole(),[1,11])){
+      $data->where('products.is_active', true);
+
+      if(@Auth::user()->sap_connection_id){
+        $data->where('products.sap_connection_id', @Auth::user()->sap_connection_id);
+      }
+
+      $data->whereHas('group', function($q){
+        $q->where('is_active', true);
+      });
+
+    }
+
+    $data->when(!isset($request->order), function ($q) {
+      $q->orderBy('products.created_date', 'desc');
+    });
+
+    
+
+    return DataTables::of($data)
+                          ->addIndexColumn()
+                          ->addColumn('item_name', function($row) {
+                            return @$row->item_name ?? "-";
+                          })
+                          ->addColumn('item_code', function($row) {
+                            return @$row->item_code ?? "-";
+                          })
+                          ->addColumn('brand', function($row) {
+                            return @$row->group->group_name ?? "-";
+                          })
+                          ->addColumn('u_item_line', function($row) {
+                            return @$row->u_item_line_sap_value->value ?? @$row->u_item_line ?? "-";
+                          })
+                          ->addColumn('u_tires', function($row) {
+                            return @$row->u_tires ?? "-";
+                          })
+                          ->addColumn('item_class', function($row) {
+                            return @$row->item_class ?? "-";
+                          })
+                          ->addColumn('u_item_type', function($row) {
+                            return @$row->u_item_type_sap_value->value ?? @$row->u_item_type ?? "-";
+                          })
+                          ->addColumn('u_item_application', function($row) {
+                            return @$row->u_item_application_sap_value->value ?? @$row->u_item_application ?? "-";
+                          })
+                          ->addColumn('u_pattern2', function($row) {
+                            return @$row->u_pattern2_sap_value->value ?? @$row->u_pattern2 ?? "-" ;
+                          })
+                          ->addColumn('created_date', function($row) {
+                            return date('M d, Y',strtotime($row->created_date));
+                          })
+                          ->addColumn('company', function($row) use ($request){
+                            if(@$request->filter_company == 5){ //Solid Trend
+                              return "SOLID TREND";
+                            }
+
+                            return @$row->sap_connection->company_name ?? "-";
+                          })
+
+                          ->addColumn('status', function($row) {
+
+                            $btn = "";
+                            if($row->is_active){
+                              $btn .= '<a href="javascript:" class="btn btn-sm btn-light-success btn-inline status">Active</a>';
+                            }else{
+                              $btn .= '<a href="javascript:" class="btn btn-sm btn-light-danger btn-inline status">Inactive</a>';
+                            }
+
+                            return $btn;
+                          })
+                          ->addColumn('bnf1', function($row) {
+                            $ids = explode(",",$row->product_benefits);
+                            $checked = (in_array("1", $ids)) ? 'checked' : '';
+
+                            $cbox = '<div class="form-check">
+                                      <input class="form-check-input" type="checkbox" id="gridCheck" value="1" '.$checked.'>
+                                     </div>';
+                            return $cbox;
+                          })
+                          ->addColumn('bnf2', function($row) {
+                            $ids = explode(",",$row->product_benefits);
+                            $checked = (in_array("2", $ids)) ? 'checked' : '';
+
+                            $cbox = '<div class="form-check">
+                                      <input class="form-check-input" type="checkbox" id="gridCheck" value="2" '.$checked.'>
+                                     </div>';
+                            return $cbox;
+                          })
+                          ->addColumn('bnf3', function($row) {
+                            $ids = explode(",",$row->product_benefits);
+                            $checked = (in_array("3", $ids)) ? 'checked' : '';
+
+                            $cbox = '<div class="form-check">
+                                      <input class="form-check-input" type="checkbox" id="gridCheck" value="3" '.$checked.'>
+                                     </div>';
+                            return $cbox;
+                          })
+                          ->addColumn('bnf4', function($row) {
+                            $ids = explode(",",$row->product_benefits);
+                            $checked = (in_array("4", $ids)) ? 'checked' : '';
+
+                            $cbox = '<div class="form-check">
+                                      <input class="form-check-input" type="checkbox" id="gridCheck" value="4" '.$checked.'>
+                                     </div>';
+                            return $cbox;
+                          })
+                          ->addColumn('bnf5', function($row) {
+                            $ids = explode(",",$row->product_benefits);
+                            $checked = (in_array("5", $ids)) ? 'checked' : '';
+
+                            $cbox = '<div class="form-check">
+                                      <input class="form-check-input" type="checkbox" id="gridCheck" value="5" '.$checked.'>
+                                     </div>';
+                            return $cbox;
+                          })
+                          ->addColumn('bnf6', function($row) {
+                            $ids = explode(",",$row->product_benefits);
+                            $checked = (in_array("6", $ids)) ? 'checked' : '';
+
+                            $cbox = '<div class="form-check">
+                                      <input class="form-check-input" type="checkbox" id="gridCheck" value="6" '.$checked.'>
+                                     </div>';
+                            return $cbox;
+                          })
+                          ->addColumn('bnf7', function($row) {
+                            $ids = explode(",",$row->product_benefits);
+                            $checked = (in_array("7", $ids)) ? 'checked' : '';
+
+                            $cbox = '<div class="form-check">
+                                      <input class="form-check-input" type="checkbox" id="gridCheck" value="7" '.$checked.'>
+                                     </div>';
+                            return $cbox;
+                          })
+                          ->addColumn('bnf8', function($row) {
+                            $ids = explode(",",$row->product_benefits);
+                            $checked = (in_array("8", $ids)) ? 'checked' : '';
+
+                            $cbox = '<div class="form-check">
+                                      <input class="form-check-input" type="checkbox" id="gridCheck" value="8" '.$checked.'>
+                                     </div>';
+                            return $cbox;
+                          })
+                          ->addColumn('bnf9', function($row) {
+                            $ids = explode(",",$row->product_benefits);
+                            $checked = (in_array("9", $ids)) ? 'checked' : '';
+
+                            $cbox = '<div class="form-check">
+                                      <input class="form-check-input" type="checkbox" id="gridCheck" value="9" '.$checked.'>
+                                     </div>';
+                            return $cbox;
+                          })
+                          ->addColumn('bnf10', function($row) {
+                            $ids = explode(",",$row->product_benefits);
+                            $checked = (in_array("10", $ids)) ? 'checked' : '';
+
+                            $cbox = '<div class="form-check">
+                                      <input class="form-check-input" type="checkbox" id="gridCheck" value="10" '.$checked.'>
+                                     </div>';
+                            return $cbox;
+                          })
+                          ->rawColumns(['status', 'bnf1','bnf2','bnf3','bnf4','bnf5','bnf6','bnf7','bnf8','bnf9','bnf10'])
+                          ->make(true);
   }
 
 

@@ -113,6 +113,11 @@ Route::middleware(['auth'])->group(function () {
             Route::post('sales-persons/sync-sales-persons', 'App\Http\Controllers\SalesPersonsController@syncSalesPersons')->name('sales-persons.sync-sales-persons');
 
             // Product
+            Route::post('product/get-all-benefits', 'App\Http\Controllers\ProductController@getAllAssignedProductBenefits')->name('product.get-all-benefits');
+            Route::get('product/benefits/assignment', 'App\Http\Controllers\ProductController@benefitsAssignment')->name('benefits.assignment');
+            Route::post('product/benefits/assignment/add', 'App\Http\Controllers\ProductController@addBenefitsAssignment')->name('benefits.assignment.add');
+            Route::get('product/benefits', 'App\Http\Controllers\ProductController@showBenefits')->name('product.benefits');
+            Route::post('product/benefits/update', 'App\Http\Controllers\ProductController@updateBenefits')->name('product.benefits.update');
             Route::get('product/recommended', 'App\Http\Controllers\ProductController@getRecommendedProductLists')->name('product.recommended');
             Route::get('product/recommended/lists', 'App\Http\Controllers\ProductController@fetchRecommendedData')->name('product.recommended.lists');
             Route::get('product/recommended/create', 'App\Http\Controllers\ProductController@createRecommendedProducts')->name('product.recommended-create');

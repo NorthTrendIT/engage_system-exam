@@ -125,6 +125,19 @@
   opacity: 1;
 }
 
+.benefits-container{
+  display: flex;
+  position: relative;
+}
+
+.benefits-img-container {
+  display: flex;
+  padding: 1px;
+  height: 27px;
+  /* width: 25%; */
+  max-width: 300px;
+  align-items: center !important;
+}
 
 
 </style>
@@ -194,7 +207,7 @@
                   <select class="form-control form-control-lg form-control-solid" name="filter_brand" id="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($c_product_groups as $key)
-                      <option value="{{ $key->product_group->group_name }}" {{ request()->brand === $key->product_group->group_name ? 'selected' : '' }}>{{ $key->product_group->group_name }}</option>
+                      <option value="{{ urlencode($key->product_group->group_name) }}" {{ request()->brand === $key->product_group->group_name ? 'selected' : '' }}>{{ $key->product_group->group_name }}</option>
                     @endforeach
                   </select>
                 </div>
@@ -203,7 +216,7 @@
                   <select class="form-control form-control-lg form-control-solid" name="filter_product_category" id="filter_product_category" data-control="select2" data-hide-search="false" data-placeholder="Select product category" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($c_product_category as $key => $c)
-                    <option value="{{ $c }}" {{ request()->cat === $c ? 'selected' : '' }}>{{ $c }}</option>
+                    <option value="{{ urlencode($c) }}" {{ request()->cat === $c ? 'selected' : '' }}>{{ $c }}</option>
                     @endforeach
                   </select>
                 </div>
@@ -212,7 +225,7 @@
                   <select class="form-control form-control-lg form-control-solid" name="filter_product_line" id="filter_product_line" data-control="select2" data-hide-search="false" data-placeholder="Select product line" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($c_product_line as $key => $l)
-                    <option value="{{ $l->u_item_line }}" {{ request()->line === $l->u_item_line ? 'selected' : '' }}>{{ @$l->u_item_line_sap_value->value ?? $l->u_item_line }}</option>
+                    <option value="{{ urlencode($l->u_item_line) }}" {{ request()->line === $l->u_item_line ? 'selected' : '' }}>{{ @$l->u_item_line_sap_value->value ?? $l->u_item_line }}</option>
                     @endforeach
                   </select>
                 </div>
@@ -290,7 +303,17 @@
                                   @endif
                                 </div>
                               </div>
-                              
+                              <div class="benefits-container justify-content-center">
+                                @php
+                                  $ids = explode(",",$p->product_benefits);
+                                  $benefits_list = \App\Models\ProductBenefits::whereIn('id', $ids)->get();
+                                @endphp
+                                @foreach($benefits_list as $bnf)
+                                  <div class="benefits-img-container border border-3">
+                                    <img src="{{ asset('storage/products/benefits/'.$bnf->icon.'')}}" class="card-img-top rounded " title="{{$bnf->name}}" height="20">
+                                  </div>
+                                @endforeach
+                              </div>
                               <div class="card-body p-2" style="position: relative;">
                                 <h5 class="card-title m-0">{{ $p->item_name }}</h5>
                                 <p class="card-text text-muted">{{ $p->item_code }}</p>

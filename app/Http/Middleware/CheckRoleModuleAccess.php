@@ -530,6 +530,16 @@ class CheckRoleModuleAccess
 
                     }
                 }
+
+                // Benefits Module
+                if(in_array($request->route()->getName(), ['product.benefits','benefits.assignment'])){
+                    if(@$access['view-product-benefits'] != 1){
+
+                        $status = false;
+                        $message = "Oops ! you have not access for this module.";
+
+                    }
+                }
             }
 
             // Added validation access page =====================================================
