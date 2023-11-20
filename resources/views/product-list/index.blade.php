@@ -35,16 +35,22 @@
       color: #636363;
       padding:15px 5px 5px;
       font-family:Arial;
-      font-size: 15px;
+      font-size: .75em;
       text-align: center;
       text-align:left;
       bottom:30px;
-      left: -280px;
-    right:0px;
+      right:0px;
       z-index: 99;
-    max-width:300px
+      width: 384px;
+
+    @media screen and (max-width: 600px) {
+      font-size: .60em;
+      width: 280px;
+      left: -230px;
+    }
   }
   .tooltipT p{
+       position: relative !important;
        margin:10px;
     }
     /*=====CLOSE BUTTON=====*/
@@ -182,28 +188,32 @@
                     </select>
                   </div> -->
 
-                <div class="col-md-5 mt-5">
-                  <div class="input-icon">
+                <div class="col-md-5 ">
+                  <div class="input-group">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search product" name="filter_search1" value="{{ request()->search }}" autocomplete="off">
+                    {{-- <span class="input-group-text" id="basic-addon2">@example.com</span> --}}
+                    <div class="input-group-text p-0">
+                      <div class="tipClick ">
+                        <a href="#"><img src="{{ asset('assets') }}/assets/media/help_icon.png" class="img-fluid" width="35" height="35"></a>
+                        <strong class="tooltipT">
+                          <p class="d-re"> Search products here by name e.g. ‘4T-10W' and code e.g. '3428396’</p>
+                          <span><a href="#">&#10005;</a></span>
+                          <div class="arrow"></div>
+                        </strong>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                 <div class="col-md-1 mt-5">
+                 {{-- <div class="col-md-1 mt-5">
                   <!-- <a id="pro_btn" href="#" title="Hello from speech bubble!" class="tooltip">CSS Tooltip! Hover me!</a> -->
 
-                   <div class="tipClick">
-                    <a href="#"><img src="{{ asset('assets') }}/assets/media/help_icon.png" class="img-fluid" width="35" height="35"></a>
-                    <strong class="tooltipT">
-                      <p> Search products here by name e.g. ‘4T-10W' and code e.g. '3428396’</p>
-                      <span><a href="#">&#10005;</a></span>
-                      <div class="arrow"></div>
-                    </strong>
-                  </div>
-                </div>
+                   
+                </div> --}}
 
                  
 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-2">
                   <select class="form-control form-control-lg form-control-solid" name="filter_brand" id="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($c_product_groups as $key)
@@ -212,7 +222,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3">
                   <select class="form-control form-control-lg form-control-solid" name="filter_product_category" id="filter_product_category" data-control="select2" data-hide-search="false" data-placeholder="Select product category" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($c_product_category as $key => $c)
@@ -221,18 +231,25 @@
                   </select>
                 </div>
 
-                <div class="col-md-3 mt-5">
+                {{-- <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_product_line" id="filter_product_line" data-control="select2" data-hide-search="false" data-placeholder="Select product line" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($c_product_line as $key => $l)
                     <option value="{{ urlencode($l->u_item_line) }}" {{ request()->line === $l->u_item_line ? 'selected' : '' }}>{{ @$l->u_item_line_sap_value->value ?? $l->u_item_line }}</option>
                     @endforeach
                   </select>
-                </div>
+                </div> --}}
 
-                <div class="col-md-3 mt-5">
+                <div class="mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
+
+                  <div class="form-check d-inline-block">
+                    <input class="form-check-input" name="products" type="checkbox" value="" id="products_chx">
+                    <label class="form-check-label" for="products_chx">
+                      Show Products Only
+                    </label>
+                  </div>
                 </div>
 
               </div>
@@ -241,7 +258,7 @@
                   <div class="form-group mb-3">
                     <div class="table-responsive d-none">
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
-                          <thead>
+                          <thead class="bg-dark text-white">
                             <tr>
                               <th style="width:24px !important">No.</th>
                               <!-- <th>Product Code</th> -->
@@ -253,7 +270,7 @@
                               <th>Product Category</th>
                               @if(userrole() != 2)
                               <th>Price</th>
-                              <th>Qty</th>
+                              <th class="text-center">Qty</th>
                               @endif
                               <th>Action</th>
                             </tr>
@@ -264,7 +281,7 @@
                        </table>
                     </div>
 
-                    <div class="row row-cols-1 row-cols-md-4 g-4">
+                    <div class="row row-cols-1 row-cols-md-4 g-4 d-none">
                       @if($product_lists->total() > 0)
                         @foreach($product_lists as $p)
                           <div class="col">
@@ -366,9 +383,11 @@
                            <h1 class="text-center mt-15"><em><span class="fa fa-search text-danger"></span> No result found.</em></h1>
                         </div>
                       @endif
+                      <div class="col-md-12">
+                        {{ $product_lists->links('pagination::bootstrap-4') }}
+                      </div>
                     </div>
                   </div>
-                  {{ $product_lists->links('pagination::bootstrap-4') }}
 
                 </div>
               </div>
@@ -490,6 +509,12 @@
 <script>
 $(document).ready(function() {
     render_table();
+    if(window.location.search.indexOf("checked=yes") === -1){
+      $('.table-responsive').removeClass('d-none');
+    }else{
+      $('.table-responsive').next().removeClass('d-none');
+      $('#products_chx').trigger('click');
+    }
 
     function render_table(){
       var table = $("#myTable");
@@ -523,12 +548,12 @@ $(document).ready(function() {
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               // {data: 'item_code', name: 'item_code'},
-              {data: 'item_name', name: 'item_name'},
+              {data: 'item_name', name: 'item_name', orderable:false},
             //   {data: 'brand', name: 'brand'},
               
-              {data: 'brand', name: 'brand'},
-              {data: 'u_item_line', name: 'u_item_line'},
-              {data: 'u_tires', name: 'u_tires'},
+              {data: 'brand', name: 'brand', orderable:false},
+              {data: 'u_item_line', name: 'u_item_line', orderable:false},
+              {data: 'u_tires', name: 'u_tires', orderable:false},
               @if(userrole() != 2)
               {data: 'price', name: 'price', orderable:false,searchable:false},
               {data: 'qty', name: 'qty', orderable:false,searchable:false},
@@ -554,18 +579,19 @@ $(document).ready(function() {
     }
 
     $(document).on('click', '.search', function(event) {
-      // render_table();
       var url = window.location;
-      var ins = (url.search === "") ? "?" : "&"; 
-      var result = url.search.substring(0, url.search.indexOf("&"));
-      var search = ( result === "" ) ? url.search : result ;
-
-      window.location.href =  url.origin + url.pathname + "?" + url_str(); 
+      var chbx = "";
+      if($('#products_chx').is(":checked")){
+        chbx = "&checked=yes";
+      }else{
+        // render_table();
+      }
+      window.location.href =  url.origin + url.pathname + "?" + url_str() +chbx; 
     });
 
     $(document).on('click', 'a.page-link', function(event) {
       event.preventDefault();
-      window.location.href = $(this).attr('href') +"&"+ url_str();
+      window.location.href = $(this).attr('href') +"&"+ url_str() +"&checked=yes";
     });
 
     $(document).on('click', '.clear-search', function(event) {
@@ -644,7 +670,11 @@ $(document).ready(function() {
       $addToCartBtn = $(this);
       $goToCartBtn = $(this).parent().find('.goToCart');
       var value = $url.split("/")[5];
-      $qty = $("#qty_"+value).val();
+      if($('#products_chx').is(":checked")){
+        $qty = $(this).parent().find("#qty_"+value).val();
+      }else{
+        $qty = $("#qty_"+value).val();
+      }
       console.log($qty);
       if($qty < 1){
         Swal.fire({
@@ -685,7 +715,7 @@ $(document).ready(function() {
   @endif
 
   @if(@Auth::user()->role_id == 4) //customer
-    $('.table-responsive').remove();
+    // $('.table-responsive').remove();
   @else
     $('.table-responsive').next().remove();
   @endif
@@ -734,9 +764,8 @@ $(document).ready(function() {
   $(document).on('change','#filter_product_line',function(){
     $('.search').click();
   });
-});
 
-$(document).on('click','#pro_btn',function(){
+  $(document).on('click','#pro_btn',function(){
     var product = $('[name="filter_search1"]').val();
     $.ajax({
       url: "{{route('product-list.get-product-details')}}",
@@ -757,7 +786,39 @@ function url_str(){
   $filter_product_category = $('[name="filter_product_category"]').find('option:selected').val();
   $filter_product_line = $('[name="filter_product_line"]').find('option:selected').val();
 
-  return "search="+$filter_search1+"&brand="+$filter_brand+"&cat="+$filter_product_category+"&line="+$filter_product_line;
+  return "search="+$filter_search1+"&brand="+$filter_brand+"&cat="+$filter_product_category;
 }
+
+$('#products_chx').on('click', function(e){
+  var refresh = '';
+  var url = window.location;
+  var ins = (url.search === "") ? "?" : "&"; 
+  var result = url.search.substring(0, url.search.indexOf("checked=yes"));
+  var chbx_yes = url.search.substring(0, ( url.search.indexOf("checked=yes") - 1 ));
+  var url_param = ( result === "" ) ? ins+'checked=yes' : '';
+
+  if($(this).is(":checked")){
+    $('.table-responsive').addClass('d-none');
+    $('.table-responsive').next().removeClass('d-none');
+    
+    refresh = url.href + url_param;
+  }else{
+    $('.table-responsive').removeClass('d-none');
+    $('.table-responsive').next().addClass('d-none');
+    // render_table();
+    $(window).trigger('resize');
+    refresh = (chbx_yes === "") ? url.origin + url.pathname : chbx_yes;
+  }
+
+  window.history.pushState({ path: refresh }, '', refresh);
+})
+
+// $(window).resize(function() {
+//     $('.table-responsive').height($(window).height() - 0);
+// });
+
+
+});
+
 </script>
 @endpush

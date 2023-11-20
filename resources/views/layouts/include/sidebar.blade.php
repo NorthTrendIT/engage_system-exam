@@ -520,7 +520,7 @@
 
 
             {{-- Warranty --}}
-            @if(Auth::user()->role_id == 1 || (isset($access['view-warranty']) && $access['view-warranty'] == 1))            
+            {{-- @if(Auth::user()->role_id == 1 || (isset($access['view-warranty']) && $access['view-warranty'] == 1))            
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['warranty.index','warranty.show', 'warranty.edit', 'warranty.create'])) ? 'active' : '' }}" href="{{ route('warranty.index') }}">
                   <span class="menu-icon">
@@ -533,7 +533,7 @@
                   <span class="menu-title">Warranty</span>
                </a>
             </div>
-            @endif
+            @endif --}}
 
 
             {{-- Help Desk --}}
@@ -566,7 +566,7 @@
             </div>
             @endif
 
-            <div class="menu-item">
+            {{-- <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['conversation.index','conversation.create','conversation.show'])) ? 'active' : '' }}" href="{{ route('conversation.index') }}">
                   <span class="menu-icon">
                      <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
@@ -584,9 +584,8 @@
                   @if($count > 0)
                   <span class="badge badge-circle badge-light-success new-message" aria-hidden="true" style="display: none;">{{ $count }}</span>
                   @endif
-                  {{-- <i class="fa fa-circle new-message text-primary" aria-hidden="true" style="display: none;"></i> --}}
                </a>
-            </div>
+            </div> --}}
             @endif
 
             {{-- SAP API Connection --}}

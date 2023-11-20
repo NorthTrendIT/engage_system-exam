@@ -181,7 +181,7 @@ class ProductListController extends Controller
         }
 
         $products->orderBy('item_name', 'asc');
-        $product_lists = $products->paginate(32);
+        $product_lists = $products->paginate(28);
 
       	return view('product-list.index',compact('c_product_groups','c_product_line','c_product_category', 'product_lists', 'customer_price_list_no', 'customer_vat'));
   	}
@@ -430,7 +430,7 @@ class ProductListController extends Controller
                                                                     <i class="fas fa-minus"></i>
                                                                 </a>
 
-                                                                <input class="form-control qty text-end" type="number" min="1" value="'.$qty.'" id="qty_'.$row->id.'">
+                                                                <input class="form-control qty text-end" type="number" min="1" value="1" id="qty_'.$row->id.'">
 
                                                                 <a href="javascript:;" class="btn btn-xs btn-icon mr-2 qtyPlus">
                                                                     <i class="fas fa-plus"></i>
@@ -468,9 +468,9 @@ class ProductListController extends Controller
                             ->addColumn('action', function($row) {
                                 $btn = "";
                                 if(@Auth::user()->role_id == 4){
-                                    if(is_in_cart1(@$row->id) == 1){
-                                        $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
-                                    }else{
+                                    // if(is_in_cart1(@$row->id) == 1){
+                                        // $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" href="'.route('cart.index').'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                    // }else{
 
                                         // if($row->quantity_on_stock - $row->quantity_ordered_by_customers < 1){
                                         //     $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" title="Not Available"><i class="fa fa-cart-arrow-down"></i></a>';
@@ -478,8 +478,8 @@ class ProductListController extends Controller
                                             $btn .= '<a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm addToCart" data-url="'.route('cart.add',@$row->id).'" title="Add to Cart"><i class="fa fa-cart-arrow-down"></i></a>';
                                         //}
 
-                                        $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
-                                    }
+                                        // $btn .= '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm goToCart" href="'.route('cart.index').'" style="display:none" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
+                                    // }
                                 }
 
                                 $btn .= '<a href="' . route('product-list.show',@$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm m-3">
