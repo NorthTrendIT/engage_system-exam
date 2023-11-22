@@ -72,7 +72,16 @@
                          <h5>{{ @$product->item_name ?? "" }}</h5>
 
                          @if($customer)
-                         {{-- <p><span class="mr-1 price"><strong>₱ {{ number_format_value(get_product_customer_price(@$product->item_prices,@$customer->price_list_num)) }}</strong></span></p> --}}
+                         @php
+                            $sap_connection_id = $product->sap_connection_id;
+                            $currency_symbol = '';
+                            foreach($customer_vat as $cust){
+                                if($sap_connection_id === $cust->real_sap_connection_id){                                       
+                                    $currency_symbol = get_product_customer_currency(@$product->item_prices, $cust->price_list_num);
+                                }
+                            }
+                         @endphp
+                         <p><span class="mr-1 price"><strong>{{ $currency_symbol .' '. number_format_value(get_product_customer_price(@$product->item_prices,@$customer->price_list_num)) }}</strong></span></p>
                          @endif
                          <p class="pt-1">{!! @$product->technical_specifications ?? "" !!}</p>
                          <div class="table-responsive">
@@ -113,14 +122,14 @@
                          </div> -->
                          @if(userdepartment() != 1 && $customer && in_array(userrole(), [2,4]))
                             @if($product->quantity_on_stock - $product->quantity_ordered_by_customers > 0)
-                                 <button type="button" class="btn btn-primary btn-md mr-1 mb-2">Buy now</button>
+                                 {{-- <button type="button" class="btn btn-primary btn-md mr-1 mb-2">Buy now</button> --}}
                                  @if(is_in_cart(@$product->id) == 1)
                                  <a class="btn btn-light btn-md mr-1 mb-2" href="{{ route('cart.index') }}">
                                      <i class="fas fa-shopping-cart pr-2"></i>Go to cart
                                  </a>
                                  @else
-                                 <button type="button" class="btn btn-light btn-md mr-1 mb-2 add_to_cart" data-url="{{ route('cart.add',@$product->id) }}">
-                                     <i class="fas fa-shopping-cart pr-2"></i>Add to cart
+                                 <button type="button" class="btn btn-primary btn-md mr-1 mb-2 add_to_cart" data-url="{{ route('cart.add',@$product->id) }}">
+                                     <i class="fas fa-shopping-cart pr-2"></i>Buy now
                                  </button>
                                  @endif
                             @else
@@ -248,8 +257,19 @@
                                         <h3 class="title">
                                             <a href="{{ route('product-list.show',@$item->product->id) }}">{{ @$item->product->item_name ?? "-" }}</a>
                                         </h3>
+                                        @php
+                                            $sap_connection_id = $item->product->sap_connection_id;
+                                            $currency_symbol = '';
+                                            $price = 0;
+                                            foreach($customer_vat as $cust){
+                                                if($sap_connection_id === $cust->real_sap_connection_id){                                       
+                                                    $currency_symbol = get_product_customer_currency(@$item->product->item_prices, $cust->price_list_num);
+                                                    $price = get_product_customer_price(@$item->product->item_prices,@$customer_price_list_no[$sap_connection_id]);
+                                                }
+                                            }
+                                        @endphp
 
-                                        <div class="price">₱ {{ number_format_value(get_product_customer_price(@$item->product->item_prices,@$customer->price_list_num, false, false, $customer)) }}</div>
+                                        <div class="price"> {{ $currency_symbol .' '. number_format_value($price) }}</div>
 
                                         @if($item->product->quantity_on_stock - $item->product->quantity_ordered_by_customers > 0)
                                             @if(userdepartment() != 1  && in_array(userrole(), [2,4]))

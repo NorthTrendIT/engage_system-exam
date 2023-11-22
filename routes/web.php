@@ -195,6 +195,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('product-list/get-products', 'App\Http\Controllers\ProductListController@getProducts')->name('product-list.get-products')->middleware('not-super-admin');
             Route::resource('recommended-products', 'App\Http\Controllers\RecommendedProductController');
             Route::post('recommended-products/get-all', 'App\Http\Controllers\RecommendedProductController@getAll1')->name('recommended-products.get-all')->middleware('not-super-admin');
+            Route::post('order-history-products/get-all', 'App\Http\Controllers\RecommendedProductController@getAll')->name('order-history-products.get-all')->middleware('not-super-admin');
             Route::post('recommended-products/get-customers/', 'App\Http\Controllers\RecommendedProductController@getCustomers')->name('recommended-products.getCustomers')->middleware('not-super-admin');
             Route::get('recommended-products/customer-cart/{id}', 'App\Http\Controllers\RecommendedProductController@customerCart')->name('recommended-products.goToCart')->middleware('not-super-admin');
             Route::post('recommended-products/customer-cart/add/{id}', 'App\Http\Controllers\RecommendedProductController@addToCart')->name('recommended-products.cart.add')->middleware('not-super-admin');

@@ -118,7 +118,7 @@
   /* background: rgb(0, 0, 0); */
   /*background: rgba(0, 0, 0, 0.5); */ /* Black see-through */
   color: #f1f1f1; 
-  width: 60%;
+  width: 45%;
   transition: .5s ease;
   opacity:1;
   color: white;
@@ -244,10 +244,10 @@
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search">Clear</a>
 
-                  <div class="form-check d-inline-block">
+                  <div class="form-check d-inline-block mt-5">
                     <input class="form-check-input" name="products" type="checkbox" value="" id="products_chx">
                     <label class="form-check-label" for="products_chx">
-                      Show Products Only
+                      Show Products Images
                     </label>
                   </div>
                 </div>
@@ -260,7 +260,7 @@
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <thead class="bg-dark text-white">
                             <tr>
-                              <th style="width:24px !important">No.</th>
+                              <th style="width:55px !important">No.</th>
                               <!-- <th>Product Code</th> -->
                               <th>Name</th>
                               <!-- <th>Brand</th> -->
@@ -559,6 +559,9 @@ $(document).ready(function() {
               {data: 'qty', name: 'qty', orderable:false,searchable:false},
               @endif
               {data: 'action', name: 'action', orderable:false,searchable:false},
+          ],
+          columnDefs: [
+            {targets: [0], className: "text-center" },
           ],
           drawCallback:function(){
               $(function () {

@@ -195,18 +195,23 @@ class ProductListController extends Controller
 
             $customer_id = @get_sap_customer_arr(Auth::user())[$product->sap_connection_id];
             $customer = Customer::findOrFail($customer_id);
+            $customer_id = explode(',', Auth::user()->multi_customer_id);
         }elseif (!is_null(@Auth::user()->created_by)) {
             $customer = User::where('role_id', 4)->where('id', @Auth::user()->created_by)->first();
             if(!is_null($customer)){
-                //$customer = @$customer->customer;
+                $cust = $customer;
 
                 $customer_id = @get_sap_customer_arr($customer)[$product->sap_connection_id];
                 $customer = Customer::findOrFail($customer_id);
+                $customer_id = explode(',', @$cust->multi_customer_id);
             }
         }elseif($customer_id){
             $customer = Customer::findOrFail($customer_id);
         }
-      	return view('product-list.view',compact('product','customer'));
+        $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
+        $customer_vat  = Customer::whereIn('id', $customer_id)->get();
+
+      	return view('product-list.view',compact('product','customer','customer_price_list_no', 'customer_vat'));
   	}
 
 
