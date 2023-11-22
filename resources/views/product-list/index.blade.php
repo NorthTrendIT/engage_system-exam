@@ -109,6 +109,7 @@
 .product-img-container>img{
   height: 100%;
   width: auto;
+  padding: 18px;
 }
 
 .image {
