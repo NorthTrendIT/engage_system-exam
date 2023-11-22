@@ -106,6 +106,11 @@
   align-items: center !important;
 }
 
+.product-img-container img{
+  height: 100%;
+  width: auto;
+}
+
 .image {
   display: block;
   width: 100%;
@@ -115,6 +120,7 @@
 .product-img-overlay {
   position: absolute; 
   top: -7px; 
+  left: -5px;
   /* background: rgb(0, 0, 0); */
   /*background: rgba(0, 0, 0, 0.5); */ /* Black see-through */
   color: #f1f1f1; 
@@ -286,7 +292,7 @@
                         @foreach($product_lists as $p)
                           <div class="col">
                             <div class="card h-100 border border-3 m-0">
-                              <div class="product-img-container">
+                              <div class="product-img-container justify-content-center">
                                 @if($p->product_images->count() > 0)
                                   <img src="{{ get_valid_file_url('sitebucket/products', $p->product_images->first()->image) }}" class="card-img-top" alt="...">
                                 @else
