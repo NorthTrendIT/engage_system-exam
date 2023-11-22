@@ -106,7 +106,7 @@
   align-items: center !important;
 }
 
-.product-img-container img{
+.product-img-container>img{
   height: 100%;
   width: auto;
 }
