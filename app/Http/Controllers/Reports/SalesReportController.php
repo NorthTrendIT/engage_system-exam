@@ -16,7 +16,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SalesReportExport;
 use App\Support\SAPInvoices;
 use App\Models\Customer;
-use Log;
+use Illuminate\Support\Carbon;
 
 class SalesReportController extends Controller
 {
@@ -335,5 +335,135 @@ class SalesReportController extends Controller
                 'grand_total_qty' => number_format($sap_invoices->grand_total_qty), 
                 'grand_total_price' => $sap_invoices->grand_total_price,
                 'grand_total_price_after_vat' => $sap_invoices->grand_total_price_after_vat ];
+
     }
+
+    public function collectionIndex(){
+        
+        $company = [];
+        $managers = [];
+        if(Auth::user()->role_id == 1){
+            $company = SapConnection::all();
+            $role = Role::where('name','Manager')->first();
+            $managers = User::where('role_id',@$role->id)->get();
+        }
+        if(Auth::user()->role_id == 6){
+            $company = SapConnection::all();
+        }
+        $title = 'Collection Report';
+        return view('report.collection-report.index', compact('company','managers', 'title'));
+        
+    }
+
+    public function collectionGetAll(Request $request){
+
+        $data = $this->getInvoiceDataFromSapForCollection($request);
+
+        $table = DataTables::of($data['invoice_data'])
+                            ->addIndexColumn()
+                            ->addColumn('invoice_no', function($row) {
+                                return $row['DocNum'] ?? '-';
+                            })
+                            ->addColumn('invoice_date', function($row) {
+                                return date("m-d-Y", strtotime($row['DocDate'])) ?? '-';
+                            })
+                            ->addColumn('doc_total', function($row) {
+                                return '₱ '.number_format($row['DocTotal'], 2) ?? "-";
+                            })
+                            ->addColumn('delivery_date', function($row) {
+                                return date("m-d-Y", strtotime($row['DocDueDate'])) ?? "-";
+                            })
+                            ->addColumn('current_date', function($row) {
+                                return date('m-d-Y');
+                            })
+                            ->addColumn('thirthy', function($row) {
+                                $start_date= Carbon::parse(date('Y-m-d'));
+                                $finish_date = Carbon::parse($row['DocDueDate']);
+
+                                $result = $start_date->diffInDays($finish_date, false);
+                                return ($result <= 30) ? number_format($row['DocTotal'], 2) : "";
+                            })
+                            ->addColumn('sixthy', function($row) {
+                                $start_date= Carbon::parse(date('Y-m-d'));
+                                $finish_date = Carbon::parse($row['DocDueDate']);
+
+                                $result = $start_date->diffInDays($finish_date, false);
+                                return ($result <= 60 && $result >= 31) ? number_format($row['DocTotal'], 2) : "";
+                            })
+                            ->addColumn('ninethy', function($row) {
+                                $start_date= Carbon::parse(date('Y-m-d'));
+                                $finish_date = Carbon::parse($row['DocDueDate']);
+
+                                $result = $start_date->diffInDays($finish_date, false);
+                                return ($result <= 90 && $result >= 61) ? number_format($row['DocTotal'], 2) : "";
+                            })
+                            ->addColumn('htwenthy', function($row) {
+                                $start_date= Carbon::parse(date('Y-m-d'));
+                                $finish_date = Carbon::parse($row['DocDueDate']);
+
+                                $result = $start_date->diffInDays($finish_date, false);
+                                return ($result <= 120 && $result >= 91) ? number_format($row['DocTotal'], 2) : "";
+                            })
+                            ->addColumn('htwenthyplus', function($row) {
+                                $start_date= Carbon::parse(date('Y-m-d'));
+                                $finish_date = Carbon::parse($row['DocDueDate']);
+
+                                $result = $start_date->diffInDays($finish_date, false);
+                                return ($result > 120) ? number_format($row['DocTotal'], 2) : "";
+                            })
+                            ->addColumn('status', function($row) {
+                                return 'status' ?? '-';
+                            })
+                            ->rawColumns(['status'])
+                            ->make(true);
+
+        return [ 'status' => true , 'message' => 'Report details fetched successfully !' , 'data' => compact('table') ];
+    }
+
+    public function getInvoiceDataFromSapForCollection($request){
+
+        $url = '/b1s/v1/Invoices?$select=DocEntry, DocNum, DocDate, DocTotal, DocDueDate';
+        $limit = '&$top=100&$orderby=DocDate desc';
+        $filter = '';
+        $filter_length = strlen($filter);
+        $sap_connection = (object)[];
+
+        if($request->filter_company != '' && $request->filter_customer == ''){
+            $sap_connection = SapConnection::find($request->filter_company);
+        }else{
+            $customer = Customer::find($request->filter_customer);
+            $sap_connection = $customer->sap_connection;
+
+            $filter .= '&$filter= CardCode eq \''.$customer->card_code.'\'';
+        }
+
+        if(@$request->filter_search != ""){
+            $and = (substr($filter, $filter_length) === '') ? '' : ' and';
+            $filter .= $and.' DocNum eq '.$request->filter_search;
+        }
+
+        if(@$request->filter_date_range != ""){
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
+            
+            $and = (substr($filter, $filter_length) === '') ? '' : ' and';
+            $filter .= $and.' DocDate ge \''.$start.'\' and DocDate le \''.$end.'\'';
+        }
+
+
+        $filter = (substr($filter, $filter_length) === '') ? '' : $filter ;
+        $filter_limit  = ($filter === '' || ($request->filter_customer == "" && $request->filter_brand != "")) ? $filter.$limit : str_replace('&$top=100','',$filter);
+        $url = $url.$filter_limit;
+        
+        $sap_invoices = new SAPInvoices($sap_connection->db_name, $sap_connection->user_name, $sap_connection->password);
+        $sap_invoices->fetchInvoiceDataForCollectionReport($url);
+        
+        return ['invoice_data' => $sap_invoices->invoice_data ];
+
+    }
+    
+
+
+
 }

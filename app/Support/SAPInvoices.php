@@ -393,6 +393,37 @@ class SAPInvoices
     }
 
 
+    public function fetchInvoiceDataForCollectionReport($url){
+
+        $response = $this->getInvoiceData($url);
+        if($response['status']){
+            $invoice = $response['data'];
+
+            if(!empty($invoice['value'])){
+
+                $invoices = $invoice['value'];
+                foreach($invoices as $invoice){ //invoice details
+                    $inv     = $invoice;
+                    $this->invoice_data[] = [
+                                    'DocNum'   => $inv['DocNum'],
+                                    'DocDate'  => $inv['DocDate'],
+                                    'DocTotal' => $inv['DocTotal'],
+                                    'DocDueDate' => $inv['DocDueDate']
+                                ];  
+                }
+            }
+
+            if(isset($response['data']['odata.nextLink'])){ //call loop again
+                $this->fetchInvoiceDataForCollectionReportNext($response['data']['odata.nextLink']);
+            }
+        }
+    } 
+
+    public function fetchInvoiceDataForCollectionReportNext($url){
+        $this->fetchInvoiceDataForCollectionReport($url);
+    }
+
+
 
 
 

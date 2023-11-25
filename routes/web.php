@@ -482,6 +482,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('sales-report', 'SalesReportController')->only('index');
         Route::post('sales-report/get-all', 'SalesReportController@getAll')->name('sales-report.get-all');
         Route::get('sales-report/export', 'SalesReportController@export')->name('sales-report.export');
+        Route::get('collection-report/index', 'SalesReportController@collectionIndex')->name('collection-report.index');
+        Route::post('collection-report/get-all', 'SalesReportController@collectionGetAll')->name('collection-report.get-all');
 
         Route::resource('promotion-report', 'PromotionReportController')->only('index');
         Route::post('promotion-report/get-all', 'PromotionReportController@getAll')->name('promotion-report.get-all');

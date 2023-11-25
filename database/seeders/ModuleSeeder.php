@@ -486,7 +486,11 @@ class ModuleSeeder extends Seeder
                 'slug' => 'invoice-to-delivery-lead-time-report',
                 'parent_id' => $reports->id,
             ),
-            
+            array(
+                'title' => 'Collection Report',
+                'slug' => 'collection-report',
+                'parent_id' => $reports->id,
+            ),
         );
         Module::insert($data);
 

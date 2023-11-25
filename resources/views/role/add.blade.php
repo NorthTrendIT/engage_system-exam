@@ -1016,6 +1016,14 @@
                             </li>
                             @endif
 
+                            @if(@$modules['collection-report']['id'])
+                            <li>
+                              <label>
+                                <input data-id="{{ @$modules['collection-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['collection-report']['id'] }}]" /> {{ @$modules['collection-report']['title'] }}
+                              </label>
+                            </li>
+                            @endif
+
                           </ul>
                         </li>
                         @endif

@@ -187,41 +187,6 @@
       <div class="row gy-5 g-xl-8">
         <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
           <div class="card card-xl-stretch mb-5 mb-xl-8">
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-4 mb-sm-5 mb-md-0">
-                  <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 position-relative h-100">
-                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Quantity: 
-                      <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
-                      <span class="grand_total_of_total_quantity_count text-primary ">0</span>
-                    </h6>
-                  </div>
-                </div>
-                <div class="col-md-4 mb-sm-5 mb-md-0 d-none">
-                  <div class="bg-light-chocolate px-6 py-8 rounded-2 min-w-150 position-relative h-100">
-                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Price: 
-                      <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
-                      <span class="grand_total_of_total_price_count text-primary ">0</span>
-                    </h6>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="bg-light-red px-6 py-8 rounded-2 min-w-150 position-relative h-100">
-                    <h6 class="d-flex justify-content-between align-items-center m-0 h-100">Grand Total Price After VAT: 
-                      <img src="{{ asset('assets/assets/media/loader-gray.gif') }}" style="width: 20px;display: none;" class="loader_img"> 
-                      <span class="grand_total_of_total_price_after_vat_count text-primary ">0</span>
-                    </h6>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row gy-5 g-xl-8">
-        <div class="col-xl-12 col-md-12 col-lg-12 col-sm-12">
-          <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-5">
               <h5 class="text-info">List Of Records</h5>
             </div>
@@ -238,18 +203,15 @@
                             <tr>
                               <th>No.</th>
                               <th>Invoice #</th>
-                              <th>Date</th>
-                              <th>Product Code</th>
-                              <th>Product Name</th>
-                              <th>Brand</th>
-                              <th>Business Unit</th>
-                              <th>Total Quantity</th>
-                              <th>UOM</th>
-                              {{-- <th>Total Price</th>
-                              <th>Total Price After VAT</th> --}}
-                              <th>Unit Price</th>
-                              <th>Net Amount</th>
-                              <th>Status</th>
+                              <th>Invoice Date</th>
+                              <th>Doc Total</th>
+                              <th>Delivery Date</th>
+                              <th>Current Date</th>
+                              <th>0-30 Days</th>
+                              <th>31-60 Days</th>
+                              <th>61-90 Days</th>
+                              <th>91-120 Days</th>
+                              <th>120 Days +</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -258,6 +220,21 @@
 
                           </tbody>
                           <!--end::Table body-->
+                          <tfoot>
+                              <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                              </tr>
+                          </tfoot>
 
 
                        </table>
@@ -347,13 +324,8 @@
       $filter_market_sub_sector = $('[name="filter_market_sub_sector"]').find('option:selected').val();
       $engage_transaction = $('[name="engage_transaction"]').val();
 
-      $overdue = 'No';
-      @if($title === 'Overdue Sales Invoice Report')
-        $overdue = 'Yes';
-      @endif
-
       $.ajax({
-        url: '{{ route('reports.sales-report.get-all') }}',
+        url: '{{ route('reports.collection-report.get-all') }}',
         method: "POST",
         data: {
                 _token:'{{ csrf_token() }}',
@@ -377,7 +349,7 @@
 
                 filter_manager : $filter_manager,
                 engage_transaction : $engage_transaction,
-                overdue: $overdue,
+                collection: 'Yes'
               }
       })
       .done(function(result) {
@@ -386,10 +358,6 @@
           
           $('.loader_img').hide();
 
-          $('.grand_total_of_total_quantity_count').text(result.data.grand_total_of_total_quantity);
-          $('.grand_total_of_total_price_count').text(result.data.grand_total_of_total_price);
-          $('.grand_total_of_total_price_after_vat_count').text(result.data.grand_total_of_total_price_after_vat);
-          
           render_table(result.data.table.original.data);
         }
       })
@@ -448,28 +416,43 @@
               {data: 'DT_RowIndex', name: 'DT_RowIndex'},
               {data: 'invoice_no', name: 'invoice_no'},
               {data: 'invoice_date', name: 'invoice_date'},
-              {data: 'item_code', name: 'item_code'},
-              {data: 'item_name', name: 'item_name'},
-              {data: 'brand', name: 'brand'},
-              {data: 'company', name: 'company'},
-              {data: 'total_quantity', name: 'total_quantity'},
-              {data: 'uom', name: 'uom'},
-              // {data: 'total_price', name: 'total_price'},
-              // {data: 'total_price_after_vat', name: 'total_price_after_vat'},
-              {data: 'item_price', name: 'item_price'},
-              {data: 'net_amount', name: 'net_amount'},
-              {data: 'status', name: 'status'},
+              {data: 'doc_total', name: 'doc_total'},
+              {data: 'delivery_date', name: 'delivery_date'},
+              {data: 'current_date', name: 'current_date'},
+              {data: 'thirthy', name: 'thirthy'},
+              {data: 'sixthy', name: 'sixthy'},
+              {data: 'ninethy', name: 'ninethy'},
+              {data: 'htwenthy', name: 'htwenthy'},
+              {data: 'htwenthyplus', name: 'htwenthyplus'},
           ],
-          drawCallback:function(){
-              // $(function () {
-              //   $('[data-toggle="tooltip"]').tooltip()
-              //   $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
-
-              // })
-          },
-          initComplete: function () {
-          },
-          // aoColumnDefs: [{ "bVisible": false, "aTargets": [9,10] }]
+          footerCallback: function (row, data, start, end, display) {
+              let api = this.api();
+      
+              // Remove the formatting to get integer data for summation
+              let intVal = function (i) {
+                  return typeof i === 'string'
+                      ? i.replace(/[\$₱,]/g, '') * 1
+                      : typeof i === 'number'
+                      ? i
+                      : 0;
+              };
+      
+              // Total over all pages
+              total = api
+                  .column(3)
+                  .data()
+                  .reduce((a, b) => intVal(a) + intVal(b), 0);
+      
+              // Total over this page
+              pageTotal = api
+                  .column(3, { page: 'current' })
+                  .data()
+                  .reduce((a, b) => intVal(a) + intVal(b), 0);
+      
+              // Update footer
+              api.column(3).footer().innerHTML =
+                  '₱ ' + (pageTotal).toLocaleString() + ' ( ₱ ' + (total).toLocaleString() + ' Total)';
+          }
       });
 
     }
@@ -800,8 +783,8 @@
                 };
             },
             processResults: function (response) {
-                // $options = [{ id: 'all', text: 'All'}];
                 $options = [];
+                // $options = [{ id: 'all', text: 'All'}];
                 response.forEach(function(value, key) {
                     $options.push({
                                 text: value.card_name + " (Code: " + value.card_code + ")",
@@ -809,6 +792,7 @@
                                 sap_connection_id: value.sap_connection_id
                             });
                 })
+                
                 return {
                     results: $options
                 };
@@ -818,40 +802,10 @@
       });
 
     $(document).on("click", ".download_excel", function(e) {
-      $stat = check_hasFilter();
-      var url = "{{route('reports.sales-report.export')}}";
+      $('.buttons-excel').trigger('click');
 
-      var data = {};
-      data.filter_search = $('[name="filter_search"]').val();
-      data.filter_company = $('[name="filter_company"]').find('option:selected').val() ?? '';
-      data.filter_customer = $('[name="filter_customer"]').val();
-      data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
-      data.filter_status = $('[name="filter_status"]').find('option:selected').val();
-      data.filter_date_range = $('[name="filter_date_range"]').val();
-      data.filter_product_category = $('[name="filter_product_category"]').find('option:selected').val();
-      data.filter_product_line = $('[name="filter_product_line"]').find('option:selected').val();
-      data.filter_product_class = $('[name="filter_product_class"]').find('option:selected').val();
-      data.filter_product_type = $('[name="filter_product_type"]').find('option:selected').val();
-      data.filter_product_application = $('[name="filter_product_application"]').find('option:selected').val();
-      data.filter_product_pattern = $('[name="filter_product_pattern"]').find('option:selected').val();
-
-      data.filter_customer_class = $('[name="filter_customer_class"]').find('option:selected').val();
-      data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
-      data.filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
-      data.filter_market_sub_sector = $('[name="filter_market_sub_sector"]').find('option:selected').val();
-      data.engage_transaction = $('[name="engage_transaction"]').val();
-     
-      data.overdue = 'No';
-      @if($title === 'Overdue Sales Invoice Report')
-        data.overdue = 'Yes';
-      @endif
-
-      url = url + '?data=' + btoa(JSON.stringify(data));
-
-      ($stat === false)? e.preventDefault() : window.location.href = url;
     });
 
-    console.log(parseInt(moment().format('MM/YYYY')));
     $('#kt_daterangepicker_1').daterangepicker({
       autoUpdateInput: false,
       showDropdowns: true,
