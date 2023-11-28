@@ -192,7 +192,7 @@
                             @if( in_array(Auth::user()->role_id, [14]) ) <!-- agent only -->
                                 <div class="row">
                                     <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="filter_customer_balance"  data-placeholder="Select Customer">
-                                        <option value="{{$default_customer_top_products['id']}}">{{ $default_customer_top_products['card_name'].' (Code: '.$default_customer_top_products->card_code.' -'.$default_customer_top_products->sap_connection->db_name.')' }}</option>
+                                        <option value="{{@$default_customer_top_products['id']}}">{{ @$default_customer_top_products['card_name'].' (Code: '.@$default_customer_top_products->card_code.' -'.@$default_customer_top_products->sap_connection->db_name.')' }}</option>
                                     </select>
                                 </div>
                             @endif
@@ -1893,13 +1893,13 @@ $(document).ready(function() {
     var total_clicks = 0;
     var defaultCustomerforTopProducts = [];
 
-    @if(isset($default_customer_top_products) && !empty($default_customer_top_products))
+    @if(isset(@$default_customer_top_products) && !empty(@$default_customer_top_products))
         defaultCustomerforTopProducts.push(
             {
-                id: {{$default_customer_top_products->id}}, 
-                text: `{!! $default_customer_top_products->card_name !!}` + " (Code: " + '{{$default_customer_top_products->card_code}}' + ")", 
+                id: {{@$default_customer_top_products->id}}, 
+                text: `{!! @$default_customer_top_products->card_name !!}` + " (Code: " + '{{@$default_customer_top_products->card_code}}' + ")", 
                 selected: true, 
-                card_code: '{{$default_customer_top_products->card_code}}', 
+                card_code: '{{@$default_customer_top_products->card_code}}', 
                 sap_connection_id: 1 
             });
     @endif
