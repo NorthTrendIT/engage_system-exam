@@ -66,11 +66,11 @@
                     <option value=""></option>
                   </select>
                 </div>
-                <div class="col-md-3 filter_brand_div">
+                {{-- <div class="col-md-3 filter_brand_div">
                   <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
                     <option value=""></option>
                   </select>
-                </div>
+                </div> --}}
 
                 @if(in_array(userrole(),[1]))
                 <div class="col-md-3 mt-5 filter_brand_div" style="display:none;">
@@ -224,7 +224,7 @@
                               <tr>
                                 <th></th>
                                 <th></th>
-                                <th></th>
+                                <th class="text-end">Total</th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
@@ -408,7 +408,7 @@
           paging: true,
           fixedColumns:   {
             left: 2,
-            right: 0
+            // right: 0
           },
           order: [],
           data: jsonData,
@@ -438,20 +438,34 @@
               };
       
               // Total over all pages
-              total = api
-                  .column(3)
-                  .data()
-                  .reduce((a, b) => intVal(a) + intVal(b), 0);
+              doc_total = api.column(3).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              thirthy_total = api.column(6).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              sixthy_total = api.column(7).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              ninethy_total = api.column(8).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              htwenthy_total = api.column(9).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              htwenthyplus_total = api.column(10).data().reduce((a, b) => intVal(a) + intVal(b), 0);
       
               // Total over this page
-              pageTotal = api
-                  .column(3, { page: 'current' })
-                  .data()
-                  .reduce((a, b) => intVal(a) + intVal(b), 0);
+              doc_pageTotal = api.column(3, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              thirthy_pageTotal = api.column(6, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              sixthy_pageTotal = api.column(7, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              ninethy_pageTotal = api.column(8, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              htwenthy_pageTotal = api.column(9, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              htwenthyplus_pageTotal = api.column(10, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
       
               // Update footer
               api.column(3).footer().innerHTML =
-                  '₱ ' + (pageTotal).toLocaleString() + ' ( ₱ ' + (total).toLocaleString() + ' Total)';
+                  '₱ ' + (doc_pageTotal).toLocaleString() + ' ( ₱ ' + (doc_total).toLocaleString() + ' )';
+              api.column(6).footer().innerHTML =
+                  '₱ ' + (thirthy_pageTotal).toLocaleString() + ' ( ₱ ' + (thirthy_total).toLocaleString() + ' )';
+              api.column(7).footer().innerHTML =
+                  '₱ ' + (sixthy_pageTotal).toLocaleString() + ' ( ₱ ' + (sixthy_total).toLocaleString() + ' )';
+              api.column(8).footer().innerHTML =
+                  '₱ ' + (ninethy_pageTotal).toLocaleString() + ' ( ₱ ' + (ninethy_total).toLocaleString() + ' )';
+              api.column(9).footer().innerHTML =
+                  '₱ ' + (htwenthy_pageTotal).toLocaleString() + ' ( ₱ ' + (htwenthy_total).toLocaleString() + ' )';
+              api.column(10).footer().innerHTML =
+                  '₱ ' + (htwenthyplus_pageTotal).toLocaleString() + ' ( ₱ ' + (htwenthyplus_total).toLocaleString() + ' )';
           }
       });
 
