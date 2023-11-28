@@ -1893,7 +1893,7 @@ $(document).ready(function() {
     var total_clicks = 0;
     var defaultCustomerforTopProducts = [];
 
-    @if(isset(@$default_customer_top_products) && !empty(@$default_customer_top_products))
+    @if(count(@$default_customer_top_products) > 1 && !empty(@$default_customer_top_products))
         defaultCustomerforTopProducts.push(
             {
                 id: {{@$default_customer_top_products->id}}, 
