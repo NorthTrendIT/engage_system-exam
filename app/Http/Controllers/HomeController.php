@@ -78,7 +78,7 @@ class HomeController extends Controller
             }
             if(userrole() == 14){
                 $local_order = LocalOrder::where('confirmation_status', 'ERR')->where('sales_specialist_id', Auth::user()->id)->get();
-                $customer_ids = [$default_customer_top_products['id']];
+                $customer_ids = [@$default_customer_top_products['id']];
             }
 
             // $due_invoices = $this->getDueInvoices($customer_ids);
