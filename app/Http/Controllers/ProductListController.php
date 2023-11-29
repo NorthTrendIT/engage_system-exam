@@ -97,7 +97,14 @@ class ProductListController extends Controller
 
             $brand_product->whereIn('sap_connection_id', $sap_connection_id);
 
-            $c_product_line = $brand_product->groupBy('u_item_line')->get();
+            if(request()->brand != ""){
+                $brand = request()->brand;
+                $brand_product->whereHas('group', function($q) use ($brand){
+                    $q->where('group_name', $brand);
+                });
+            }
+
+            $c_product_line = $brand_product->groupBy('u_tires')->get();
             
 
             $brand_product = $brand_product->get()->toArray();
