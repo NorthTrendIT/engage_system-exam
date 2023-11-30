@@ -371,42 +371,42 @@ class SalesReportController extends Controller
                                 return '₱ '.number_format($row['DocTotal'], 2) ?? "-";
                             })
                             ->addColumn('delivery_date', function($row) {
-                                return date("m-d-Y", strtotime($row['DocDueDate'])) ?? "-";
+                                return date("m-d-Y", strtotime($row['DeliveryDate'])) ?? "-";
                             })
                             ->addColumn('current_date', function($row) {
                                 return date('m-d-Y');
                             })
                             ->addColumn('thirthy', function($row) {
                                 $start_date= Carbon::parse(date('Y-m-d'));
-                                $finish_date = Carbon::parse($row['DocDueDate']);
+                                $finish_date = Carbon::parse($row['DeliveryDate']);
 
                                 $result = $start_date->diffInDays($finish_date, false);
                                 return ($result <= 30) ? number_format($row['DocTotal'], 2) : "";
                             })
                             ->addColumn('sixthy', function($row) {
                                 $start_date= Carbon::parse(date('Y-m-d'));
-                                $finish_date = Carbon::parse($row['DocDueDate']);
+                                $finish_date = Carbon::parse($row['DeliveryDate']);
 
                                 $result = $start_date->diffInDays($finish_date, false);
                                 return ($result <= 60 && $result >= 31) ? number_format($row['DocTotal'], 2) : "";
                             })
                             ->addColumn('ninethy', function($row) {
                                 $start_date= Carbon::parse(date('Y-m-d'));
-                                $finish_date = Carbon::parse($row['DocDueDate']);
+                                $finish_date = Carbon::parse($row['DeliveryDate']);
 
                                 $result = $start_date->diffInDays($finish_date, false);
                                 return ($result <= 90 && $result >= 61) ? number_format($row['DocTotal'], 2) : "";
                             })
                             ->addColumn('htwenthy', function($row) {
                                 $start_date= Carbon::parse(date('Y-m-d'));
-                                $finish_date = Carbon::parse($row['DocDueDate']);
+                                $finish_date = Carbon::parse($row['DeliveryDate']);
 
                                 $result = $start_date->diffInDays($finish_date, false);
                                 return ($result <= 120 && $result >= 91) ? number_format($row['DocTotal'], 2) : "";
                             })
                             ->addColumn('htwenthyplus', function($row) {
                                 $start_date= Carbon::parse(date('Y-m-d'));
-                                $finish_date = Carbon::parse($row['DocDueDate']);
+                                $finish_date = Carbon::parse($row['DeliveryDate']);
 
                                 $result = $start_date->diffInDays($finish_date, false);
                                 return ($result > 120) ? number_format($row['DocTotal'], 2) : "";
@@ -422,7 +422,7 @@ class SalesReportController extends Controller
 
     public function getInvoiceDataFromSapForCollection($request){
 
-        $url = '/b1s/v1/Invoices?$select=DocEntry, DocNum, DocDate, DocTotal, DocDueDate';
+        $url = '/b1s/v1/Invoices?$select=DocEntry, DocNum, DocDate, DocTotal, U_COMMITMENT';
         $limit = '&$top=100&$orderby=DocDate desc';
         $filter = '';
         $filter_length = strlen($filter);

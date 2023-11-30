@@ -222,17 +222,17 @@
                           <!--end::Table body-->
                           <tfoot>
                               <tr>
-                                <th></th>
-                                <th></th>
-                                <th class="text-end">Total</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                {{-- <td></td> --}}
+                                <td colspan="3" class="text-center">Total</td>
+                                {{-- <td></td> --}}
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                               </tr>
                           </tfoot>
 
@@ -265,6 +265,13 @@
 <style type="text/css">
   .other_filter_div{
     display: none;
+  }
+  tfoot>tr td:first-child{
+    left: 0px; 
+    position: sticky;
+    z-index: 1;
+    box-shadow: 8px 0px 14px 0px rgb(76 87 125 / 6%) !important;
+    background-color: #fff;
   }
 </style>
 @endpush
@@ -378,22 +385,27 @@
         btn_settings = [
                           {
                               extend: 'copy',
+                              footer: true,
                               className: 'btn btn-secondary btn-sm border border-info',
                           },
                           {
                               extend: 'csv',
+                              footer: true,
                               className: 'btn btn-secondary btn-sm border border-info',
                           },
                           {
                               extend: 'excel',
+                              footer: true,
                               className: 'btn btn-secondary btn-sm border border-info',
                           },
                           {
                               extend: 'pdf',
+                              footer: true,
                               className: 'btn btn-secondary btn-sm border border-info',
                           },
                           {
                               extend: 'print',
+                              footer: true,
                               className: 'btn btn-secondary btn-sm border border-info',
                           }
                       ];
@@ -408,7 +420,7 @@
           paging: true,
           fixedColumns:   {
             left: 2,
-            // right: 0
+            right: 0
           },
           order: [],
           data: jsonData,
@@ -436,7 +448,7 @@
                       ? i
                       : 0;
               };
-      
+
               // Total over all pages
               doc_total = api.column(3).data().reduce((a, b) => intVal(a) + intVal(b), 0);
               thirthy_total = api.column(6).data().reduce((a, b) => intVal(a) + intVal(b), 0);
@@ -466,7 +478,7 @@
                   '₱ ' + (htwenthy_pageTotal).toLocaleString() + ' ( ₱ ' + (htwenthy_total).toLocaleString() + ' )';
               api.column(10).footer().innerHTML =
                   '₱ ' + (htwenthyplus_pageTotal).toLocaleString() + ' ( ₱ ' + (htwenthyplus_total).toLocaleString() + ' )';
-          }
+          },
       });
 
     }
