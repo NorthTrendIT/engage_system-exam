@@ -162,19 +162,20 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 mt-5 d-none">
-                  <div class="input-icon engage_transaction">
-                    <input type="checkbox" class="" name = "engage_transaction" id="engage_transaction" value="1" checked>
-                    <span>
-                      Engage Transactions Only
+                <div class="col-md-12 mt-5">
+                  <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search d-inline-block">Search</a>
+                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2 d-inline-block">Clear</a>
+                  <a href="#" class="btn btn-success font-weight-bold download_excel d-inline-block" style="display: none">Export Excel</a>
+                  <div class="form-check d-inline-block">
+                    <input type="checkbox" class="form-check-input" name="paid_invoices" id="paid_invoices" value="1" >
+                    <span class="form-check-label">
+                      Show Paid Invoices
                     </span>
                   </div>
                 </div>
 
-                <div class="col-md-6 mt-5">
-                  <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
-                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
-                  <a href="#" class="btn btn-success font-weight-bold download_excel " style="display: none">Export Excel</a>
+                <div class="col-md-3 mt-5 ">
+                  
                 </div>
 
               </div>
@@ -204,7 +205,8 @@
                               <th>No.</th>
                               <th>Invoice #</th>
                               <th>Invoice Date</th>
-                              <th>Doc Total</th>
+                              <th>Invoice Amount</th>
+                              <th>Balance Due</th>
                               <th>Delivery Date</th>
                               <th>Current Date</th>
                               <th>0-30 Days</th>
@@ -223,8 +225,9 @@
                           <tfoot>
                               <tr>
                                 {{-- <td></td> --}}
-                                <td colspan="3" class="text-center">Total</td>
-                                {{-- <td></td> --}}
+                                <td colspan="2" class="text-center"></td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -329,7 +332,7 @@
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
       $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
       $filter_market_sub_sector = $('[name="filter_market_sub_sector"]').find('option:selected').val();
-      $engage_transaction = $('[name="engage_transaction"]').val();
+      $paid_invoices = $('[name="paid_invoices"]:checked').val();
 
       $.ajax({
         url: '{{ route('reports.collection-report.get-all') }}',
@@ -355,7 +358,7 @@
                 filter_market_sub_sector : $filter_market_sub_sector,
 
                 filter_manager : $filter_manager,
-                engage_transaction : $engage_transaction,
+                paid_invoices : $paid_invoices,
                 collection: 'Yes'
               }
       })
@@ -412,12 +415,12 @@
       @endif
 
       table.DataTable({
-          dom: 'Bfrtip',
+          dom: 'Bflrtip',
           buttons: btn_settings,
           scrollX: true,
           scrollY: "800px",
           scrollCollapse: true,
-          paging: true,
+          // paging: true,
           fixedColumns:   {
             left: 2,
             right: 0
@@ -429,8 +432,9 @@
               {data: 'invoice_no', name: 'invoice_no'},
               {data: 'invoice_date', name: 'invoice_date'},
               {data: 'doc_total', name: 'doc_total'},
+              {data: 'bal_due', name: 'bal_due'},
               {data: 'delivery_date', name: 'delivery_date'},
-              {data: 'current_date', name: 'current_date'},
+              {data: 'current_date', name: 'current_date', 'visible' : false},
               {data: 'thirthy', name: 'thirthy'},
               {data: 'sixthy', name: 'sixthy'},
               {data: 'ninethy', name: 'ninethy'},
@@ -451,6 +455,7 @@
 
               // Total over all pages
               doc_total = api.column(3).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              baldue_total = api.column(4).data().reduce((a, b) => intVal(a) + intVal(b), 0);
               thirthy_total = api.column(6).data().reduce((a, b) => intVal(a) + intVal(b), 0);
               sixthy_total = api.column(7).data().reduce((a, b) => intVal(a) + intVal(b), 0);
               ninethy_total = api.column(8).data().reduce((a, b) => intVal(a) + intVal(b), 0);
@@ -459,26 +464,35 @@
       
               // Total over this page
               doc_pageTotal = api.column(3, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              thirthy_pageTotal = api.column(6, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              sixthy_pageTotal = api.column(7, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              ninethy_pageTotal = api.column(8, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              htwenthy_pageTotal = api.column(9, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              htwenthyplus_pageTotal = api.column(10, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              baldue_pageTotal = api.column(4, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              thirthy_pageTotal = api.column(7, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              sixthy_pageTotal = api.column(8, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              ninethy_pageTotal = api.column(9, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              htwenthy_pageTotal = api.column(10, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              htwenthyplus_pageTotal = api.column(11, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
       
               // Update footer
+              api.column(1).footer().innerHTML =
+                  '<b>Total</b>';
               api.column(3).footer().innerHTML =
-                  '₱ ' + (doc_pageTotal).toLocaleString() + ' ( ₱ ' + (doc_total).toLocaleString() + ' )';
-              api.column(6).footer().innerHTML =
-                  '₱ ' + (thirthy_pageTotal).toLocaleString() + ' ( ₱ ' + (thirthy_total).toLocaleString() + ' )';
+                  '<b>₱ ' + (doc_pageTotal).toLocaleString() + '</b>';
+              api.column(4).footer().innerHTML =
+                  '<b>₱ ' + (baldue_pageTotal).toLocaleString() + '</b>';
               api.column(7).footer().innerHTML =
-                  '₱ ' + (sixthy_pageTotal).toLocaleString() + ' ( ₱ ' + (sixthy_total).toLocaleString() + ' )';
+                  '<b>₱ ' + (thirthy_pageTotal).toLocaleString() + '</b>';
               api.column(8).footer().innerHTML =
-                  '₱ ' + (ninethy_pageTotal).toLocaleString() + ' ( ₱ ' + (ninethy_total).toLocaleString() + ' )';
+                  '<b>₱ ' + (sixthy_pageTotal).toLocaleString() + '</b>';
               api.column(9).footer().innerHTML =
-                  '₱ ' + (htwenthy_pageTotal).toLocaleString() + ' ( ₱ ' + (htwenthy_total).toLocaleString() + ' )';
+                  '<b>₱ ' + (ninethy_pageTotal).toLocaleString() + '</b>';
               api.column(10).footer().innerHTML =
-                  '₱ ' + (htwenthyplus_pageTotal).toLocaleString() + ' ( ₱ ' + (htwenthyplus_total).toLocaleString() + ' )';
+                  '<b>₱ ' + (htwenthy_pageTotal).toLocaleString() + '</b>';
+              api.column(11).footer().innerHTML =
+                  '<b>₱ ' + (htwenthyplus_pageTotal).toLocaleString() + '</b>';
           },
+          lengthMenu: [
+            [50, 100, -1],
+            [50, 100, 'All']
+          ]
       });
 
     }

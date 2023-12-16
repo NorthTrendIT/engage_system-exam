@@ -370,8 +370,11 @@ class SalesReportController extends Controller
                             ->addColumn('doc_total', function($row) {
                                 return '₱ '.number_format($row['DocTotal'], 2) ?? "-";
                             })
+                            ->addColumn('bal_due', function($row) {
+                                return '₱ '.number_format($row['BalanceDue'], 2) ?? "-";
+                            })
                             ->addColumn('delivery_date', function($row) {
-                                return date("m-d-Y", strtotime($row['DeliveryDate'])) ?? "-";
+                                return ($row['DeliveryDate']) ? date("m-d-Y", strtotime($row['DeliveryDate'])) :  "-";
                             })
                             ->addColumn('current_date', function($row) {
                                 return date('m-d-Y');
@@ -381,35 +384,35 @@ class SalesReportController extends Controller
                                 $finish_date = Carbon::parse(date('Y-m-d'));
 
                                 $result = $start_date->diffInDays($finish_date, false);
-                                return ($result <= 30) ? number_format($row['DocTotal'], 2) : "";
+                                return ($result <= 30) ? '₱ '.number_format($row['BalanceDue'], 2) : "";
                             })
                             ->addColumn('sixthy', function($row) {
                                 $start_date= Carbon::parse($row['DeliveryDate']);
                                 $finish_date = Carbon::parse(date('Y-m-d'));
 
                                 $result = $start_date->diffInDays($finish_date, false);
-                                return ($result <= 60 && $result >= 31) ? number_format($row['DocTotal'], 2) : "";
+                                return ($result <= 60 && $result >= 31) ? '₱ '.number_format($row['BalanceDue'], 2) : "";
                             })
                             ->addColumn('ninethy', function($row) {
                                 $start_date= Carbon::parse($row['DeliveryDate']);
                                 $finish_date = Carbon::parse(date('Y-m-d'));
 
                                 $result = $start_date->diffInDays($finish_date, false);
-                                return ($result <= 90 && $result >= 61) ? number_format($row['DocTotal'], 2) : "";
+                                return ($result <= 90 && $result >= 61) ? '₱ '.number_format($row['BalanceDue'], 2) : "";
                             })
                             ->addColumn('htwenthy', function($row) {
                                 $start_date= Carbon::parse($row['DeliveryDate']);
                                 $finish_date = Carbon::parse(date('Y-m-d'));
 
                                 $result = $start_date->diffInDays($finish_date, false);
-                                return ($result <= 120 && $result >= 91) ? number_format($row['DocTotal'], 2) : "";
+                                return ($result <= 120 && $result >= 91) ? '₱ '.number_format($row['BalanceDue'], 2) : "";
                             })
                             ->addColumn('htwenthyplus', function($row) {
                                 $start_date= Carbon::parse($row['DeliveryDate']);
                                 $finish_date = Carbon::parse(date('Y-m-d'));
 
                                 $result = $start_date->diffInDays($finish_date, false);
-                                return ($result > 120) ? number_format($row['DocTotal'], 2) : "";
+                                return ($result > 120) ? '₱ '.number_format($row['BalanceDue'], 2) : "";
                             })
                             ->addColumn('status', function($row) {
                                 return 'status' ?? '-';
@@ -421,8 +424,7 @@ class SalesReportController extends Controller
     }
 
     public function getInvoiceDataFromSapForCollection($request){
-
-        $url = '/b1s/v1/Invoices?$select=DocEntry, DocNum, DocDate, DocTotal, U_COMMITMENT';
+        $url = '/b1s/v1/Invoices?$select=DocEntry, DocNum, DocDate, DocTotal, U_DELIVERY, U_BalanceAmt';
         $limit = '&$top=100&$orderby=DocDate desc';
         $filter = '';
         $filter_length = strlen($filter);
@@ -435,6 +437,14 @@ class SalesReportController extends Controller
             $sap_connection = $customer->sap_connection;
 
             $filter .= '&$filter= CardCode eq \''.$customer->card_code.'\'';
+        }
+
+        if(@$request->paid_invoices == "1"){
+            $and = (substr($filter, $filter_length) === '') ? '' : ' and';
+            $filter .= $and.' U_BalanceAmt eq 0';
+        }else{
+            $and = (substr($filter, $filter_length) === '') ? '' : ' and';
+            $filter .= $and.' U_BalanceAmt gt 0';
         }
 
         if(@$request->filter_search != ""){
