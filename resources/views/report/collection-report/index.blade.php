@@ -208,7 +208,7 @@
                               <th>Invoice Amount</th>
                               <th>Balance Due</th>
                               <th>Delivery Date</th>
-                              <th>Current Date</th>
+                              {{-- <th>Current Date</th> --}}
                               <th>0-30 Days</th>
                               <th>31-60 Days</th>
                               <th>61-90 Days</th>
@@ -235,7 +235,7 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td></td>
+                                {{-- <td></td> --}}
                               </tr>
                           </tfoot>
 
@@ -434,7 +434,7 @@
               {data: 'doc_total', name: 'doc_total'},
               {data: 'bal_due', name: 'bal_due'},
               {data: 'delivery_date', name: 'delivery_date'},
-              {data: 'current_date', name: 'current_date', 'visible' : false},
+              // {data: 'current_date', name: 'current_date', 'visible' : false},
               {data: 'thirthy', name: 'thirthy'},
               {data: 'sixthy', name: 'sixthy'},
               {data: 'ninethy', name: 'ninethy'},
@@ -465,11 +465,11 @@
               // Total over this page
               doc_pageTotal = api.column(3, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
               baldue_pageTotal = api.column(4, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              thirthy_pageTotal = api.column(7, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              sixthy_pageTotal = api.column(8, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              ninethy_pageTotal = api.column(9, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              htwenthy_pageTotal = api.column(10, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              htwenthyplus_pageTotal = api.column(11, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              thirthy_pageTotal = api.column(6, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              sixthy_pageTotal = api.column(7, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              ninethy_pageTotal = api.column(8, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              htwenthy_pageTotal = api.column(9, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              htwenthyplus_pageTotal = api.column(10, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
       
               // Update footer
               api.column(1).footer().innerHTML =
@@ -478,15 +478,15 @@
                   '<b>₱ ' + (doc_pageTotal).toLocaleString() + '</b>';
               api.column(4).footer().innerHTML =
                   '<b>₱ ' + (baldue_pageTotal).toLocaleString() + '</b>';
-              api.column(7).footer().innerHTML =
+              api.column(6).footer().innerHTML =
                   '<b>₱ ' + (thirthy_pageTotal).toLocaleString() + '</b>';
-              api.column(8).footer().innerHTML =
+              api.column(7).footer().innerHTML =
                   '<b>₱ ' + (sixthy_pageTotal).toLocaleString() + '</b>';
-              api.column(9).footer().innerHTML =
+              api.column(8).footer().innerHTML =
                   '<b>₱ ' + (ninethy_pageTotal).toLocaleString() + '</b>';
-              api.column(10).footer().innerHTML =
+              api.column(9).footer().innerHTML =
                   '<b>₱ ' + (htwenthy_pageTotal).toLocaleString() + '</b>';
-              api.column(11).footer().innerHTML =
+              api.column(10).footer().innerHTML =
                   '<b>₱ ' + (htwenthyplus_pageTotal).toLocaleString() + '</b>';
           },
           lengthMenu: [
