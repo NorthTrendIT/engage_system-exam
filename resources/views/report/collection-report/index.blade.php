@@ -244,7 +244,7 @@
                        <!--end::Table-->
                     </div>
                     <!--end::Table container-->
-                    <p class="text-danger p-5">Note: Counting is based on the delivery date -  current date. The balance due base on the query on the backend. If there's no delivery date in the data, it falls into the 0-30 days category.</p>
+                    <p class="p-5"><b>Note:</b> <i class="text-danger">Counting is based on the delivery date -  current date. The balance due base on the query on the backend. If there's no delivery date in the data, it falls into the 0-30 days category.</i></p>
                   </div>
 
                 </div>
