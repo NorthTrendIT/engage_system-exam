@@ -550,7 +550,7 @@ class CheckRoleModuleAccess
             }
 
             $arr_parent = (isset($access['parent_id'])) ? $access['parent_id'] : []; //ss asignment
-            if(in_array($request->route()->getName(), ['customers-sales-specialist.index']) && !in_array('72', array_values($arr_parent))){
+            if(in_array($request->route()->getName(), ['customers-sales-specialist.index']) && !in_array('73', array_values($arr_parent))){
                 return redirect()->route('home');
             }
 
