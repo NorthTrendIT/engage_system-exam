@@ -380,35 +380,40 @@ class SalesReportController extends Controller
                                 return date('m-d-Y');
                             })
                             ->addColumn('thirthy', function($row) {
-                                $start_date= Carbon::parse($row['DeliveryDate']);
+                                $start = ($row['DeliveryDate']) ? $row['DeliveryDate'] : $row['DocDate'];
+                                $start_date= Carbon::parse($start);
                                 $finish_date = Carbon::parse(date('Y-m-d'));
 
                                 $result = $start_date->diffInDays($finish_date, false);
                                 return ($result <= 30) ? '₱ '.number_format($row['BalanceDue'], 2) : "";
                             })
                             ->addColumn('sixthy', function($row) {
-                                $start_date= Carbon::parse($row['DeliveryDate']);
+                                $start = ($row['DeliveryDate']) ? $row['DeliveryDate'] : $row['DocDate'];
+                                $start_date= Carbon::parse($start);
                                 $finish_date = Carbon::parse(date('Y-m-d'));
 
                                 $result = $start_date->diffInDays($finish_date, false);
                                 return ($result <= 60 && $result >= 31) ? '₱ '.number_format($row['BalanceDue'], 2) : "";
                             })
                             ->addColumn('ninethy', function($row) {
-                                $start_date= Carbon::parse($row['DeliveryDate']);
+                                $start = ($row['DeliveryDate']) ? $row['DeliveryDate'] : $row['DocDate'];
+                                $start_date= Carbon::parse($start);
                                 $finish_date = Carbon::parse(date('Y-m-d'));
 
                                 $result = $start_date->diffInDays($finish_date, false);
                                 return ($result <= 90 && $result >= 61) ? '₱ '.number_format($row['BalanceDue'], 2) : "";
                             })
                             ->addColumn('htwenthy', function($row) {
-                                $start_date= Carbon::parse($row['DeliveryDate']);
+                                $start = ($row['DeliveryDate']) ? $row['DeliveryDate'] : $row['DocDate'];
+                                $start_date= Carbon::parse($start);
                                 $finish_date = Carbon::parse(date('Y-m-d'));
 
                                 $result = $start_date->diffInDays($finish_date, false);
                                 return ($result <= 120 && $result >= 91) ? '₱ '.number_format($row['BalanceDue'], 2) : "";
                             })
                             ->addColumn('htwenthyplus', function($row) {
-                                $start_date= Carbon::parse($row['DeliveryDate']);
+                                $start = ($row['DeliveryDate']) ? $row['DeliveryDate'] : $row['DocDate'];
+                                $start_date= Carbon::parse($start);
                                 $finish_date = Carbon::parse(date('Y-m-d'));
 
                                 $result = $start_date->diffInDays($finish_date, false);
