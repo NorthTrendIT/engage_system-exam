@@ -379,9 +379,11 @@ class LocalOrderController extends Controller
     function getCustomers(Request $request){
         $search = $request->search;
         // return @Auth::user()->id;
-        $data = Customer::select('id', 'card_code', 'card_name', 'sap_connection_id')->whereHas('sales_specialist', function($q){
-            $q->where('ss_id', @Auth::user()->id);
-        });
+        $data = Customer::select('id', 'card_code', 'card_name', 'sap_connection_id')
+                        ->where('is_active', true)
+                        ->whereHas('sales_specialist', function($q){
+                            $q->where('ss_id', @Auth::user()->id);
+                        });
 
         // dd($data);
 
