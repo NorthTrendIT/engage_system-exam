@@ -55,7 +55,7 @@
                       <select class="form-select form-select-solid" id='selectCompany' data-control="select2" data-hide-search="false" name="company_id" data-allow-clear="true" data-placeholder="Select business unit">
                         <option value=""></option>
                         @foreach($company as $c)
-                          <option value="{{ $c->id }}" @if(isset($edit) && $c->id == $edit->assignment[0]->customer->sap_connection_id ) selected @endif>{{ $c->company_name }}</option>
+                          <option value="{{ $c->id }}" @if(isset($edit) && $c->id == $edit->assignment[0]->customer->real_sap_connection_id ) selected @endif>{{ $c->company_name }}</option>
                         @endforeach
                       </select>
                     </div>
