@@ -59,13 +59,13 @@ class StoreCustomers implements ShouldQueue
                 }
 
 
-                if($this->real_sap_connection_id == 1){ // GROUP Cagayan, Davao NEED TO STORE in Solid Trend 
-                    if(in_array(@$value['GroupCode'], [103, 105])){
-                        $this->sap_connection_id = 5;
-                    }else{
-                        $this->sap_connection_id = 1;
-                    }
-                }
+                // if($this->real_sap_connection_id == 1){ // GROUP Cagayan, Davao NEED TO STORE in Solid Trend 
+                //     if(in_array(@$value['GroupCode'], [103, 105])){
+                //         $this->sap_connection_id = 5;
+                //     }else{
+                //         $this->sap_connection_id = 1;
+                //     }
+                // }
 
                 if(!is_null(@$value['U_Classification']) || @$value['U_Classification'] != ""){
                     $obj_class = Classes::updateOrCreate(
