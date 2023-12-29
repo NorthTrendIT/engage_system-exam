@@ -56,7 +56,7 @@ class Quotation extends Model
     }
 
     public function customer(){
-        return $this->hasOne(Customer::class, ['card_code', 'sap_connection_id'], ['card_code', 'sap_connection_id']);
+        return $this->hasOne(Customer::class, ['card_code', 'real_sap_connection_id'], ['card_code', 'real_sap_connection_id']);
     }
 
     public function sales_specialist(){
