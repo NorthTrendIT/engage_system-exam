@@ -170,6 +170,7 @@ class StoreCustomers implements ShouldQueue
                             $bp_obj = CustomerBpAddress::updateOrCreate(
                                                 [
                                                     'order' => @$bp['RowNum'],
+                                                    'address' => @$bp['AddressName'],
                                                     'customer_id' => $obj->id,
                                                 ],
                                                 $insert
