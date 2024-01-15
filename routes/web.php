@@ -472,6 +472,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('sap-connection-api-field/get-all', 'App\Http\Controllers\SapConnectionApiFieldController@getAll')->name('sap-connection-api-field.get-all');
         Route::post('sap-connection-api-field/sync-all', 'App\Http\Controllers\SapConnectionApiFieldController@syncAll')->name('sap-connection-api-field.sync-all');
         Route::post('sap-connection-api-field/sync-specific', 'App\Http\Controllers\SapConnectionApiFieldController@syncSpecific')->name('sap-connection-api-field.sync-specific');
+        Route::get('maintenance/user', 'App\Http\Controllers\MaintenanceController@user')->name('user-maintenance');
+        Route::get('maintenance/user/get-all', 'App\Http\Controllers\MaintenanceController@userGetAll')->name('user-maintenance-get-all');
     });
 
 

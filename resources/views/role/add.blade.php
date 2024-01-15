@@ -1028,6 +1028,46 @@
                         </li>
                         @endif
 
+                        {{-- Maintenance --}}
+                        @if(@$modules['maintenance']['id'])
+                        <li>
+                          <i class="fa fa-plus"></i>
+                          <label>
+                            <input data-id="{{ @$modules['maintenance']['id'] }}" type="checkbox" 
+                              @if(@$role_module_access[@$modules['user-maintenance']['id']]['access'] == 1) checked="" @endif
+                              /> {{ @$modules['maintenance']['title'] }}
+                          </label>
+                          <ul>
+                            {{-- User Maintenance --}}
+                            @if(@$modules['user-maintenance']['id'])
+                            <li>
+                              <i class="fa fa-plus"></i>
+                              <label>
+                                <input data-id="{{ @$modules['user-maintenance']['id'] }}" type="checkbox" /> {{ @$modules['user-maintenance']['title'] }}
+                              </label>
+                              <ul>
+                                @if(@$modules['edit-user-maintenance']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['edit-user-maintenance']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['edit-user-maintenance']['id'] }}]"  /> {{ @$modules['edit-user-maintenance']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+
+                                @if(@$modules['delete-user-maintenance']['id'])
+                                <li>
+                                  <label>
+                                    <input data-id="{{ @$modules['delete-user-maintenance']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['delete-user-maintenance']['id'] }}]"  /> {{ @$modules['delete-user-maintenance']['title'] }}
+                                  </label>
+                                </li>
+                                @endif
+                              </ul>
+                            </li>
+                            @endif
+                          </ul>
+                        </li>
+                        @endif
+
                         {{-- activity-log --}}
                         @if(@$modules['activity-log']['id'])
                         <li>

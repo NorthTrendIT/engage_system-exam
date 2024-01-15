@@ -676,6 +676,39 @@ class ModuleSeeder extends Seeder
 
 
 
+        $maintenance = Module::create(
+            array(
+                'title' => 'Maintenance',
+                'slug' => 'maintenance',
+                'parent_id' => null,
+            )
+        );
+
+        $user_mntnce = Module::create(
+            array(
+                'title' => 'User',
+                'slug' => 'user-maintenance',
+                'parent_id' => null,
+            )
+        );
+
+        $user_mntnce_module = array(
+            array(
+                'title' => 'Edit',
+                'slug' => 'edit-user-maintenance',
+                'parent_id' => $user_mntnce->id,
+            ),
+            array(
+                'title' => 'Delete',
+                'slug' => 'delete-user-maintenance',
+                'parent_id' => $user_mntnce->id,
+            ),
+        );
+
+        Module::insert($user_mntnce_module);
+
+
+
 
     }
 }
