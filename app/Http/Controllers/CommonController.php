@@ -221,7 +221,7 @@ class CommonController extends Controller
             }
 
             if(@$request->sap_connection_id != ''){
-                $data->where('sap_connection_id',@$request->sap_connection_id);
+                $data->where('real_sap_connection_id',@$request->sap_connection_id);
             }
 
             $data = $data->get();

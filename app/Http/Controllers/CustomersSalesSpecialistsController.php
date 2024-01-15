@@ -57,7 +57,7 @@ class CustomersSalesSpecialistsController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-        
+
         $sap_connection_id = $input['company_id'];
         if($input['company_id'] == 5){ //Solid Trend
             $sap_connection_id = 1;
@@ -69,10 +69,10 @@ class CustomersSalesSpecialistsController extends Controller
                     
                     'customer_selection' => 'required',
 
-                    'customer_group_ids' => 'required',
-                    'customer_group_ids.*' => 'required|exists:customer_groups,id,sap_connection_id,'.$input['company_id'],
+                    // 'customer_group_ids' => 'required',
+                    // 'customer_group_ids.*' => 'required|exists:customer_groups,id,sap_connection_id,'.$input['company_id'],
 
-                    // 'customer_ids' => 'required',
+                    'customer_ids' => 'required',
                     // 'customer_ids.*' => 'required|exists:customers,id,sap_connection_id,'.$input['company_id'],
 
                     'ss_ids' => 'required',
@@ -90,7 +90,7 @@ class CustomersSalesSpecialistsController extends Controller
 
         if(!isset($input['id']) && @$request->customer_selection == "specific"){
             $rules['customer_ids'] = 'required';
-            $rules['customer_ids.*'] = 'required|exists:customers,id,sap_connection_id,'.$input['company_id'];
+            // $rules['customer_ids.*'] = 'required|exists:customers,id,sap_connection_id,'.$input['company_id'];
         }
 
         if(isset($input['id'])){
@@ -141,7 +141,7 @@ class CustomersSalesSpecialistsController extends Controller
                 }else{
                     $customer_ids = Customer::doesnthave('sales_specialist')
                                             ->orderby('card_name','asc')
-                                            ->where('sap_connection_id',$input['company_id'])
+                                            ->where('real_sap_connection_id',$input['company_id'])
                                             //->where('is_active',1)
                                             ->whereHas('group', function($q) use ($input){
                                                 $q->whereIn('id', $input['customer_group_ids']);
@@ -260,13 +260,13 @@ class CustomersSalesSpecialistsController extends Controller
         $groups = [];
         foreach($edit->assignment as $key => $val){
 
-            $res = array_search($val->customer->group->id, array_column($groups, 'id'));
+            $res = array_search(@$val->customer->group->id, array_column($groups, 'id'));
             if($res == ''){
                 $ar = array(
-                    'id'=>$val->customer->group->id,
-                    'name'=>$val->customer->group->name,
+                    'id'=>@$val->customer->group->id,
+                    'name'=>@$val->customer->group->name,
                 );
-                if(!in_array($val->customer->group->name, array_column($groups,'name'))){
+                if(!in_array(@$val->customer->group->name, array_column($groups,'name'))){
                     array_push($groups,$ar); 
                 }
             }   
@@ -359,7 +359,7 @@ class CustomersSalesSpecialistsController extends Controller
 
         if($request->filter_company != ""){
             $data->whereHas('assignment.customer', function($q) use ($request){
-                $q->where('sap_connection_id',$request->filter_company);
+                $q->where('real_sap_connection_id',$request->filter_company);
             });
         }
 
@@ -395,7 +395,7 @@ class CustomersSalesSpecialistsController extends Controller
                                 $count = 0;
                                 foreach($row->assignment as $value){
                                     $comma = ($count > 0) ? ', ' : '';
-                                    if(strpos($branch, $value->customer->group->name) === false){
+                                    if(strpos($branch, @$value->customer->group->name) === false){
                                         $branch .= $comma.$value->customer->group->name;
                                     }
                                     $count ++;
@@ -543,7 +543,7 @@ class CustomersSalesSpecialistsController extends Controller
         $response = array();
         if($request->sap_connection_id){
             // $data = Customer::doesnthave('sales_specialist')->orderby('card_name','asc')->where('sap_connection_id',$request->sap_connection_id)
-            $data = Customer::orderby('card_name','asc')->where('sap_connection_id',$request->sap_connection_id)
+            $data = Customer::orderby('card_name','asc')->where('real_sap_connection_id',$request->sap_connection_id)
                 //->where('is_active',1)
                 ->limit(50);
             if($search != ''){
@@ -583,12 +583,12 @@ class CustomersSalesSpecialistsController extends Controller
 
         $response = array();
         if($request->sap_connection_id){
-            $data = CustomerGroup::orderby('name','asc')->where('sap_connection_id',$request->sap_connection_id)
-            ->whereHas('customer',function ($query){
-                $query->doesnthave('sales_specialist')
-                        //->where('is_active',1)
-                ->limit(50);
-            })
+            $data = CustomerGroup::orderby('name','asc')->where('real_sap_connection_id',$request->sap_connection_id)
+            // ->whereHas('customer',function ($query){
+            //     $query->doesnthave('sales_specialist')
+            //             //->where('is_active',1)
+            //     ->limit(50);
+            // })
             ->limit(50);
             
 

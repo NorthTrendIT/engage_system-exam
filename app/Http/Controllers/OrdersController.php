@@ -112,7 +112,7 @@ class OrdersController extends Controller
         $Volume = 0;
         $currency_symbol = '';
         foreach($data->items as $key=>$value){
-            if($value->product1->sap_connection_id === $data->customer->real_sap_connection_id){
+            if($value->product1->sap_connection_id === @$data->customer->real_sap_connection_id){
                 $currency_symbol = get_product_customer_currency(@$value->product1->item_prices, $data->customer->price_list_num);
             }
             $invoiceDetails[$key]['key'] = $key + 1;
