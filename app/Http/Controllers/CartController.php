@@ -35,6 +35,7 @@ class CartController extends Controller
         $customer = Customer::where('id',$customer_id[0])->first();
 
         $auth_sap_id = Auth::user()->sap_connection_id;
+        $auth_sap_id = ($auth_sap_id == 5) ? 1 : $auth_sap_id;
         $u_card_code = Auth::user()->u_card_code;
         $customer_id_add = [];
 
