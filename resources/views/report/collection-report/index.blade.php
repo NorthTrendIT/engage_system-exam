@@ -227,7 +227,10 @@
                           <tfoot>
                               <tr>
                                 {{-- <td></td> --}}
-                                <td colspan="6" class="text-center"></td>
+                                <td colspan="3" class="text-center"></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -479,9 +482,9 @@
               // Update footer
               api.column(1).footer().innerHTML =
                   '<b>Total</b>';
-              api.column(6).footer().innerHTML =
+              api.column(3).footer().innerHTML =
                   '<b>₱ ' + (doc_pageTotal).toLocaleString() + '</b>';
-              api.column(7).footer().innerHTML =
+              api.column(6).footer().innerHTML =
                   '<b>₱ ' + (baldue_pageTotal).toLocaleString() + '</b>';
               api.column(8).footer().innerHTML =
                   '<b>₱ ' + (thirthy_pageTotal).toLocaleString() + '</b>';
