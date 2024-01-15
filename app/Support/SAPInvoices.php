@@ -408,6 +408,8 @@ class SAPInvoices
                                     'DocNum'   => $inv['DocNum'],
                                     'DocDate'  => $inv['DocDate'],
                                     'DocTotal' => $inv['DocTotal'],
+                                    'PoNo'     => $inv['U_POSONO'],
+                                    'Brand'    => $inv['U_BRAND'],
                                     'DeliveryDate' => $inv['U_DELIVERY'],
                                     'BalanceDue' => $inv['U_BalanceAmt']
                                 ];  

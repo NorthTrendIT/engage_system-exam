@@ -206,6 +206,8 @@
                               <th>Invoice #</th>
                               <th>Invoice Date</th>
                               <th>Invoice Amount</th>
+                              <th>P.O #</th>
+                              <th>Brand</th>
                               <th>Balance Due</th>
                               <th>Delivery Date</th>
                               {{-- <th>Current Date</th> --}}
@@ -225,9 +227,7 @@
                           <tfoot>
                               <tr>
                                 {{-- <td></td> --}}
-                                <td colspan="2" class="text-center"></td>
-                                <td></td>
-                                <td></td>
+                                <td colspan="6" class="text-center"></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -432,6 +432,8 @@
               {data: 'invoice_no', name: 'invoice_no'},
               {data: 'invoice_date', name: 'invoice_date'},
               {data: 'doc_total', name: 'doc_total'},
+              {data: 'po_no', name: 'po_no'},
+              {data: 'brand', name: 'brand'},
               {data: 'bal_due', name: 'bal_due'},
               {data: 'delivery_date', name: 'delivery_date'},
               // {data: 'current_date', name: 'current_date', 'visible' : false},
@@ -440,6 +442,9 @@
               {data: 'ninethy', name: 'ninethy'},
               {data: 'htwenthy', name: 'htwenthy'},
               {data: 'htwenthyplus', name: 'htwenthyplus'},
+          ],
+          columnDefs: [
+              {targets: [], className: "text-center" }
           ],
           footerCallback: function (row, data, start, end, display) {
               let api = this.api();
@@ -455,38 +460,38 @@
 
               // Total over all pages
               doc_total = api.column(3).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              baldue_total = api.column(4).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              thirthy_total = api.column(6).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              sixthy_total = api.column(7).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              ninethy_total = api.column(8).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              htwenthy_total = api.column(9).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              htwenthyplus_total = api.column(10).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              baldue_total = api.column(6).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              thirthy_total = api.column(8).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              sixthy_total = api.column(9).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              ninethy_total = api.column(10).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              htwenthy_total = api.column(11).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              htwenthyplus_total = api.column(12).data().reduce((a, b) => intVal(a) + intVal(b), 0);
       
               // Total over this page
               doc_pageTotal = api.column(3, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              baldue_pageTotal = api.column(4, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              thirthy_pageTotal = api.column(6, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              sixthy_pageTotal = api.column(7, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              ninethy_pageTotal = api.column(8, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              htwenthy_pageTotal = api.column(9, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
-              htwenthyplus_pageTotal = api.column(10, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              baldue_pageTotal = api.column(6, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              thirthy_pageTotal = api.column(8, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              sixthy_pageTotal = api.column(9, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              ninethy_pageTotal = api.column(10, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              htwenthy_pageTotal = api.column(11, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+              htwenthyplus_pageTotal = api.column(12, { page: 'current' }).data().reduce((a, b) => intVal(a) + intVal(b), 0);
       
               // Update footer
               api.column(1).footer().innerHTML =
                   '<b>Total</b>';
-              api.column(3).footer().innerHTML =
-                  '<b>₱ ' + (doc_pageTotal).toLocaleString() + '</b>';
-              api.column(4).footer().innerHTML =
-                  '<b>₱ ' + (baldue_pageTotal).toLocaleString() + '</b>';
               api.column(6).footer().innerHTML =
-                  '<b>₱ ' + (thirthy_pageTotal).toLocaleString() + '</b>';
+                  '<b>₱ ' + (doc_pageTotal).toLocaleString() + '</b>';
               api.column(7).footer().innerHTML =
-                  '<b>₱ ' + (sixthy_pageTotal).toLocaleString() + '</b>';
+                  '<b>₱ ' + (baldue_pageTotal).toLocaleString() + '</b>';
               api.column(8).footer().innerHTML =
-                  '<b>₱ ' + (ninethy_pageTotal).toLocaleString() + '</b>';
+                  '<b>₱ ' + (thirthy_pageTotal).toLocaleString() + '</b>';
               api.column(9).footer().innerHTML =
-                  '<b>₱ ' + (htwenthy_pageTotal).toLocaleString() + '</b>';
+                  '<b>₱ ' + (sixthy_pageTotal).toLocaleString() + '</b>';
               api.column(10).footer().innerHTML =
+                  '<b>₱ ' + (ninethy_pageTotal).toLocaleString() + '</b>';
+              api.column(11).footer().innerHTML =
+                  '<b>₱ ' + (htwenthy_pageTotal).toLocaleString() + '</b>';
+              api.column(12).footer().innerHTML =
                   '<b>₱ ' + (htwenthyplus_pageTotal).toLocaleString() + '</b>';
           },
           lengthMenu: [

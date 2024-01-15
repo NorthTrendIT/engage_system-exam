@@ -370,6 +370,12 @@ class SalesReportController extends Controller
                             ->addColumn('doc_total', function($row) {
                                 return '₱ '.number_format($row['DocTotal'], 2) ?? "-";
                             })
+                            ->addColumn('po_no', function($row) {
+                                return $row['PoNo'];
+                            })
+                            ->addColumn('brand', function($row) {
+                                return $row['Brand'];
+                            })
                             ->addColumn('bal_due', function($row) {
                                 return '₱ '.number_format($row['BalanceDue'], 2) ?? "-";
                             })
@@ -429,7 +435,7 @@ class SalesReportController extends Controller
     }
 
     public function getInvoiceDataFromSapForCollection($request){
-        $url = '/b1s/v1/Invoices?$select=DocEntry, DocNum, DocDate, DocTotal, U_DELIVERY, U_BalanceAmt';
+        $url = '/b1s/v1/Invoices?$select=DocEntry, DocNum, DocDate, DocTotal, U_DELIVERY, U_BalanceAmt, U_POSONO, U_BRAND';
         $limit = '&$top=100&$orderby=DocDate desc';
         $filter = '';
         $filter_length = strlen($filter);
