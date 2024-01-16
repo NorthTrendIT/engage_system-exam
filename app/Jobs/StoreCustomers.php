@@ -191,9 +191,9 @@ class StoreCustomers implements ShouldQueue
                     // Store Customer Records in users table
                     $check_user = User::where('u_card_code',$obj->u_card_code)->first();
                     $check_customer = Customer::where('u_card_code',$obj->u_card_code)->select('id','sap_connection_id', 'real_sap_connection_id')->get()->toArray();
+                    $name = explode(" ", $obj->card_name, 2);
                     if(is_null($check_user)){
 
-                        $name = explode(" ", $obj->card_name, 2);
                         $password = get_random_password();
 
                         $insert_user =  array(
@@ -246,6 +246,9 @@ class StoreCustomers implements ShouldQueue
                         if($obj->is_active){
                             $check_user->is_active = $obj->is_active;
                         }
+                        $check_user->first_name = !empty($name[0]) ? $name[0] : null;
+                        $check_user->last_name = !empty($name[1]) ? $name[1] : null;
+                        $check_user->sales_specialist_name = @$obj->card_name;
                         $check_user->multi_customer_id = implode(",", $multi_customer_id);
                         $check_user->multi_sap_connection_id = implode(",", $multi_sap_connection_id);
                         $check_user->multi_real_sap_connection_id = implode(",", $multi_real_sap_connection_id);
