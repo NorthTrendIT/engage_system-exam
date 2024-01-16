@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Role;
 use App\Models\User;
 use DataTables;
+use Illuminate\Support\Carbon;
 
 class MaintenanceController extends Controller
 {
@@ -17,7 +18,9 @@ class MaintenanceController extends Controller
     }
 
     public function userGetAll(Request $request){
-        $data = User::where('users.id','!=',1)->where('is_active', 0);
+        $data = User::where('users.id','!=', 1)->where(function($q){
+                    $q->where('is_active', 0)->orWhereNotNull('resignation_date');
+                });
 
         if($request->filter_role != ""){
             $data->where('role_id',$request->filter_role);
@@ -64,10 +67,19 @@ class MaintenanceController extends Controller
                                 }
                             })
                             ->addColumn('resignation_date',function($row){
-                                return 'resignation date';
+                                return ($row->resignation_date) ? Carbon::parse($row->resignation_date)->format('M d, Y') : '-';
                             })
                             ->addColumn('no_of_days',function($row){
-                                return 'no of days';
+                                $days_count_str = '';
+                                $resg_date = ($row->resignation_date) ? $row->resignation_date : date('Y-m-d');
+                                $start_date= Carbon::parse(date('Y-m-d'));
+                                $finish_date = Carbon::parse($resg_date);
+
+                                $days = $start_date->diffInDays($finish_date, false);
+                                $days = abs($days);
+                                $preposition = ($days > 1) ? ' days' : ' day';
+                                $days_count_str .= $days.$preposition;
+                                return $days_count_str;
                             })
                             ->addColumn('status', function($row) {
 
@@ -112,6 +124,12 @@ class MaintenanceController extends Controller
                             })
                             ->orderColumn('email', function ($query, $order) {
                                 $query->orderBy('email', $order);
+                            })
+                            ->orderColumn('resignation_date', function ($query, $order) {
+                                $query->orderBy('resignation_date', $order);
+                            })
+                            ->orderColumn('no_of_days', function ($query, $order) {
+                                $query->orderBy('resignation_date', $order);
                             })
                             ->orderColumn('status', function ($query, $order) {
                                 $query->orderBy('is_active', $order);

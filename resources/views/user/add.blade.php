@@ -203,6 +203,14 @@
                       @endif
                     </div>
                   </div>
+                  @if(isset($edit))
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label>Resignation Date</span></label>
+                        <input type="date" class="form-control form-control-solid" placeholder="Select Resignation Date" name="resignation_date" @if($edit->resignation_date !== null) value="{{ $edit->resignation_date }}" @endif>
+                      </div>
+                    </div>
+                  @endif
                 </div>
 
                 <div class="row mb-5">

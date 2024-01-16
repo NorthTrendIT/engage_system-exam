@@ -135,7 +135,7 @@
             left: 2,  
             right: 0
           },
-          order: [],
+          order: [6, 'desc'],
           ajax: {
               'url': "{{ route('user-maintenance-get-all') }}",
               'type': 'GET',
@@ -153,10 +153,10 @@
               {data: 'first_name', name: 'first_name'},
               {data: 'last_name', name: 'last_name'},
               {data: 'email', name: 'email'},
-              {data: 'territory', name: 'territory'},
+              {data: 'territory', name: 'territory', orderable: false, searchable: false},
               {data: 'resignation_date', name: 'resignation_date'},
               {data: 'no_of_days', name: 'no_of_days'},
-              {data: 'status', name: 'status'},
+              {data: 'status', name: 'status', orderable: false, searchable: false},
               {data: 'action', name: 'action', orderable: false, searchable: false},
           ],
           drawCallback:function(){

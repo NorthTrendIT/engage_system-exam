@@ -50,6 +50,7 @@ class User extends Authenticatable
         'multi_sap_connection_id',
         'multi_real_sap_connection_id',
         'multi_sap_connections',
+        'resignation_date'
     ];
 
     /**

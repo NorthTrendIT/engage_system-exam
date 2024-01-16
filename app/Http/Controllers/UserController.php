@@ -77,6 +77,7 @@ class UserController extends Controller
                     'role_id' => 'required|exists:roles,id',
                     'city_id' => 'nullable|exists:locations,id',
                     'province_id' => 'nullable|exists:locations,id',
+                    'resignation_date' => 'date|date_format:Y-m-d|nullable',
                     //'password' => 'required|max:20|regex:/^(?=.*\d)(?=.*[@$!%*#?&_-~<>;])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@$!%*#?&_-~<>;]{8,20}$/',   
                     'password' => 'required',              
                     'confirm_password' => 'required|same:password',
