@@ -630,10 +630,8 @@
 
                   <div class="menu-item">
                      <a class="menu-link {{ (in_array(request()->route()->getName(), ['sap-connection.index', 'sap-connection.edit', 'sap-connection.create'])) ? 'active' : '' }}" href="{{ route('sap-connection.index') }}">
-                        <span class="menu-icon">
-                           <span class="svg-icon svg-icon-2">
-                              <i class="bullet bullet-dot"></i>
-                           </span>
+                        <span class="menu-bullet">
+                           <span class="bullet bullet-dot"></span>
                         </span>
                         <span class="menu-title">SAP API Connection</span>
                      </a>
@@ -641,10 +639,8 @@
       
                   <div class="menu-item">
                      <a class="menu-link {{ (in_array(request()->route()->getName(), ['sap-connection-api-field.index', 'sap-connection-api-field.edit', 'sap-connection-api-field.create'])) ? 'active' : '' }}" href="{{ route('sap-connection-api-field.index') }}">
-                        <span class="menu-icon">
-                           <span class="svg-icon svg-icon-2">
-                              <i class="bullet bullet-dot"></i>
-                           </span>
+                        <span class="menu-bullet">
+                           <span class="bullet bullet-dot"> </span>
                         </span>
                         <span class="menu-title">SAP API Connection Field</span>
                      </a>
