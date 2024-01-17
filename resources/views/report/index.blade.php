@@ -154,13 +154,13 @@
                                 </div>
                             </div>
                             @endif
-                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['collection-report']) && $access['collection-report'] == 1))
+                            @if(Auth::user()->role_id == 1 || ((Auth::user()->role_id != 1) && isset($access['invoice-status-report']) && $access['invoice-status-report'] == 1))
                             <div class="col-md-3 mb-5">
                                 <div class="bg-light-warning px-6 py-8 rounded-2 min-w-150 box">
                                     <span class="svg-icon svg-icon-3x svg-icon-danger d-block my-2">
-                                        <object data="{{ asset('assets/assets/media')}}/delivery-time.svg" type="image/svg+xml"></object>
+                                        <object data="{{ asset('assets/assets/media')}}/invoice.svg" type="image/svg+xml"></object>
                                     </span>
-                                    <a href="{{ route('reports.collection-report.index') }}" class="text-red fw-bold fs-6">Collection Report </a>
+                                    <a href="{{ route('reports.collection-report.index') }}" class="text-red fw-bold fs-6">Invoice Status Report </a>
                                 </div>
                             </div>
                             @endif

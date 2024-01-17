@@ -487,8 +487,8 @@ class ModuleSeeder extends Seeder
                 'parent_id' => $reports->id,
             ),
             array(
-                'title' => 'Collection Report',
-                'slug' => 'collection-report',
+                'title' => 'Invoice Status Report',
+                'slug' => 'invoice-status-report',
                 'parent_id' => $reports->id,
             ),
         );

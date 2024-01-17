@@ -350,7 +350,7 @@ class SalesReportController extends Controller
         if(Auth::user()->role_id == 6){
             $company = SapConnection::all();
         }
-        $title = 'Collection Report';
+        $title = 'Invoice Status Report';
         return view('report.collection-report.index', compact('company','managers', 'title'));
         
     }

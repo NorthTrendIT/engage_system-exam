@@ -1016,10 +1016,10 @@
                             </li>
                             @endif
 
-                            @if(@$modules['collection-report']['id'])
+                            @if(@$modules['invoice-status-report']['id'])
                             <li>
                               <label>
-                                <input data-id="{{ @$modules['collection-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['collection-report']['id'] }}]" /> {{ @$modules['collection-report']['title'] }}
+                                <input data-id="{{ @$modules['invoice-status-report']['id'] }}" type="checkbox" class="hummingbird-end-node"  name="modules[{{ @$modules['invoice-status-report']['id'] }}]" /> {{ @$modules['invoice-status-report']['title'] }}
                               </label>
                             </li>
                             @endif
