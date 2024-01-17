@@ -159,6 +159,10 @@
               {data: 'status', name: 'status', orderable: false, searchable: false},
               {data: 'action', name: 'action', orderable: false, searchable: false},
           ],
+          columnDefs: [
+              // { visible: false, targets: [8] },
+
+          ],
           drawCallback:function(){
               $(function () {
                 $('[data-toggle="tooltip"]').tooltip()
@@ -240,41 +244,41 @@
       })
     });
 
-    $(document).on('click', '.status', function(event) {
-      event.preventDefault();
-      $url = $(this).attr('data-url');
+    // $(document).on('click', '.status', function(event) {
+    //   event.preventDefault();
+    //   $url = $(this).attr('data-url');
 
-      Swal.fire({
-        title: 'Are you sure want to change status?',
-        //text: "Once deleted, you will not be able to recover this record!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, change it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: $url,
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}'
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              render_table();
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
-    });
+    //   Swal.fire({
+    //     title: 'Are you sure want to change status?',
+    //     //text: "Once deleted, you will not be able to recover this record!",
+    //     icon: 'warning',
+    //     showCancelButton: true,
+    //     confirmButtonColor: '#3085d6',
+    //     cancelButtonColor: '#d33',
+    //     confirmButtonText: 'Yes, change it!'
+    //   }).then((result) => {
+    //     if (result.isConfirmed) {
+    //       $.ajax({
+    //         url: $url,
+    //         method: "POST",
+    //         data: {
+    //                 _token:'{{ csrf_token() }}'
+    //               }
+    //       })
+    //       .done(function(result) {
+    //         if(result.status == false){
+    //           toast_error(result.message);
+    //         }else{
+    //           toast_success(result.message);
+    //           render_table();
+    //         }
+    //       })
+    //       .fail(function() {
+    //         toast_error("error");
+    //       });
+    //     }
+    //   })
+    // });
 
 
 

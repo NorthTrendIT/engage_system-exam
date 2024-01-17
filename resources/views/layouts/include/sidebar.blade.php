@@ -588,31 +588,6 @@
             </div> --}}
             @endif
 
-            {{-- SAP API Connection --}}
-            @if(Auth::user()->role_id == 1)
-            <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['sap-connection.index', 'sap-connection.edit', 'sap-connection.create'])) ? 'active' : '' }}" href="{{ route('sap-connection.index') }}">
-                  <span class="menu-icon">
-                     <span class="svg-icon svg-icon-2">
-                     <i class="fas fa-ethernet"></i>
-                     </span>
-                  </span>
-                  <span class="menu-title">SAP API Connection</span>
-               </a>
-            </div>
-
-            <div class="menu-item">
-               <a class="menu-link {{ (in_array(request()->route()->getName(), ['sap-connection-api-field.index', 'sap-connection-api-field.edit', 'sap-connection-api-field.create'])) ? 'active' : '' }}" href="{{ route('sap-connection-api-field.index') }}">
-                  <span class="menu-icon">
-                     <span class="svg-icon svg-icon-2">
-                     <i class="fas fa-cabinet-filing"></i>
-                     </span>
-                  </span>
-                  <span class="menu-title">SAP API Connection Field</span>
-               </a>
-            </div>
-            @endif
-
             @if(Auth::user()->role_id == 1) 
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['report.index', 'report.promotion.index', 'reports.sales-report.index', 'reports.sales-order-report.index', 'reports.overdue-sales-invoice-report.index', 'reports.back-order-report.index', 'reports.credit-memo-report.index', 'reports.debit-memo-report.index', 'reports.return-order-report.index', 'reports.product-report.index', 'reports.product-sales-report.index', 'reports.sales-order-to-invoice-lead-time-report.index', 'reports.invoice-to-delivery-lead-time-report.index', 'reports.promotion-report.index' ])) ? 'active' : '' }}" href="{{ route('report.index') }}">
@@ -629,7 +604,7 @@
             @endif
 
             @if(Auth::user()->role_id == 1) 
-            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['user-maintenance'])) ? 'hover show' : '' }}">
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['user-maintenance', 'sap-connection.index', 'sap-connection.edit', 'sap-connection.create', 'sap-connection-api-field.index', 'sap-connection-api-field.edit', 'sap-connection-api-field.create'])) ? 'hover show' : '' }}">
 
                <span class="menu-link">
                   <span class="menu-icon">
@@ -647,9 +622,31 @@
                   <div class="menu-item">
                      <a class="menu-link {{ (in_array(request()->route()->getName(), ['user-maintenance'])) ? 'active' : '' }}" href="{{ route('user-maintenance') }}">
                         <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
+                           <span class="bullet bullet-dot"></span>
                         </span>
                         <span class="menu-title">User</span>
+                     </a>
+                  </div>
+
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['sap-connection.index', 'sap-connection.edit', 'sap-connection.create'])) ? 'active' : '' }}" href="{{ route('sap-connection.index') }}">
+                        <span class="menu-icon">
+                           <span class="svg-icon svg-icon-2">
+                              <i class="bullet bullet-dot"></i>
+                           </span>
+                        </span>
+                        <span class="menu-title">SAP API Connection</span>
+                     </a>
+                  </div>
+      
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['sap-connection-api-field.index', 'sap-connection-api-field.edit', 'sap-connection-api-field.create'])) ? 'active' : '' }}" href="{{ route('sap-connection-api-field.index') }}">
+                        <span class="menu-icon">
+                           <span class="svg-icon svg-icon-2">
+                              <i class="bullet bullet-dot"></i>
+                           </span>
+                        </span>
+                        <span class="menu-title">SAP API Connection Field</span>
                      </a>
                   </div>
 

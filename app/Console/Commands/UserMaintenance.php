@@ -39,7 +39,7 @@ class UserMaintenance extends Command
     public function handle()
     {
         User::whereNotNull('resignation_date')
-             ->whereDate('resignation_date', date('Y-m-d'))
+             ->whereDate('resignation_date','<=', date('Y-m-d'))
              ->update(['is_active' => 0]);
 
         return 0;

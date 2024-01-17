@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('sync:all_module_data_in_half_hour')->everyThirtyMinutes()->timezone('Asia/Manila')->between('8:00', '20:00');
         // $schedule->command('sync:all_module_data_in_midnight')->everySixHours();
         $schedule->command('sync:allmoduledata')->daily();
-        $schedule->command('maintenance:user_disable')->everyMinute();
+        $schedule->command('maintenance:user_disable')->daily();
     }
 
     /**

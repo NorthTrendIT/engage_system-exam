@@ -76,7 +76,7 @@ class MaintenanceController extends Controller
                                 $finish_date = Carbon::parse($resg_date);
 
                                 $days = $start_date->diffInDays($finish_date, false);
-                                $days = abs($days);
+                                $days = ( ($finish_date->format('Y-m-d') >= date('Y-m-d')) && $days > 0 ) ? 0 : abs($days);
                                 $preposition = ($days > 1) ? ' days' : ' day';
                                 $days_count_str .= $days.$preposition;
                                 return $days_count_str;
@@ -89,7 +89,7 @@ class MaintenanceController extends Controller
                                     <div class="col-3">
                                      <span class="switch">
                                       <label>
-                                       <input type="checkbox" checked="checked" name="status" class="status" data-url="' . route('user.status',$row->id) . '"/>
+                                       <input type="checkbox" checked="checked" name="status" class="status" data-url="' . route('user.status',$row->id) . '" disabled/>
                                        <span></span>
                                       </label>
                                      </span>
@@ -99,7 +99,7 @@ class MaintenanceController extends Controller
                                     <div class="col-3">
                                      <span class="switch">
                                       <label>
-                                       <input type="checkbox" name="status" class="status" data-url="' . route('user.status',$row->id) . '"/>
+                                       <input type="checkbox" name="status" class="status" data-url="' . route('user.status',$row->id) . '" disabled/>
                                        <span></span>
                                       </label>
                                      </span>

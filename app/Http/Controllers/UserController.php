@@ -129,6 +129,12 @@ class UserController extends Controller
                 $input['profile'] = $name;
             }
 
+            if( ( $user->is_active === 0 && $input['resignation_date'] >= date('Y-m-d') ) || @$input['resignation_date'] === null ){ //set auto active of user if extend
+                $input['is_active'] = 1;
+            }else if( ( $user->is_active === 1 && $input['resignation_date'] <= date('Y-m-d') ) && @$input['resignation_date'] !== null ){ //if resignation date is lesser than the current date disable right away
+                $input['is_active'] = 0;
+            }
+
             $input['sales_specialist_name'] = $input['first_name']." ".$input['last_name'];
 
             $user->fill($input)->save();
@@ -415,7 +421,7 @@ class UserController extends Controller
                                     <div class="col-3">
                                      <span class="switch">
                                       <label>
-                                       <input type="checkbox" checked="checked" name="status" class="status" data-url="' . route('user.status',$row->id) . '"/>
+                                       <input type="checkbox" checked="checked" name="status" class="status" data-url="' . route('user.status',$row->id) . '" disabled/>
                                        <span></span>
                                       </label>
                                      </span>
@@ -425,7 +431,7 @@ class UserController extends Controller
                                     <div class="col-3">
                                      <span class="switch">
                                       <label>
-                                       <input type="checkbox" name="status" class="status" data-url="' . route('user.status',$row->id) . '"/>
+                                       <input type="checkbox" name="status" class="status" data-url="' . route('user.status',$row->id) . '" disabled/>
                                        <span></span>
                                       </label>
                                      </span>

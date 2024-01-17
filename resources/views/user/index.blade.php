@@ -254,41 +254,41 @@
       })
     });
 
-    $(document).on('click', '.status', function(event) {
-      event.preventDefault();
-      $url = $(this).attr('data-url');
+    // $(document).on('click', '.status', function(event) { //remove enable/disable status
+    //   event.preventDefault();
+    //   $url = $(this).attr('data-url');
 
-      Swal.fire({
-        title: 'Are you sure want to change status?',
-        //text: "Once deleted, you will not be able to recover this record!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, change it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: $url,
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}'
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
-            }else{
-              toast_success(result.message);
-              render_table();
-            }
-          })
-          .fail(function() {
-            toast_error("error");
-          });
-        }
-      })
-    });
+    //   Swal.fire({
+    //     title: 'Are you sure want to change status?',
+    //     //text: "Once deleted, you will not be able to recover this record!",
+    //     icon: 'warning',
+    //     showCancelButton: true,
+    //     confirmButtonColor: '#3085d6',
+    //     cancelButtonColor: '#d33',
+    //     confirmButtonText: 'Yes, change it!'
+    //   }).then((result) => {
+    //     if (result.isConfirmed) {
+    //       $.ajax({
+    //         url: $url,
+    //         method: "POST",
+    //         data: {
+    //                 _token:'{{ csrf_token() }}'
+    //               }
+    //       })
+    //       .done(function(result) {
+    //         if(result.status == false){
+    //           toast_error(result.message);
+    //         }else{
+    //           toast_success(result.message);
+    //           render_table();
+    //         }
+    //       })
+    //       .fail(function() {
+    //         toast_error("error");
+    //       });
+    //     }
+    //   })
+    // });
 
     $(document).on('click', '.sync-sales-persons', function(event) {
       event.preventDefault();
