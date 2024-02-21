@@ -101,7 +101,7 @@ class LocalOrderController extends Controller
                     // }
 
                     $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num, false, false, $customer);
-                    if($price < 1 && $product->items_group_code != 107){ //exept for mktg. items.
+                    if($price <= 0 && $product->items_group_code != 107){ //exept for mktg. items.
                         return $response = ['status'=>false,'message'=>'The product "'.@$product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
                     }
                 }
