@@ -76,6 +76,7 @@ class LocalOrderController extends Controller
                 'due_date' => 'required',
                 'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.$sap_connection_id,
                 'products.*.quantity' => 'required',
+                'remark' => 'nullable|max:254'
             );
 
         $messages = array(

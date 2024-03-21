@@ -475,6 +475,7 @@ class CartController extends Controller
                 'address_id' => 'required|exists:customer_bp_addresses,id',
                 'due_date' => 'required',
                 // 'products.*.product_id' => 'distinct|exists:products,id,sap_connection_id,'.@Auth::user()->customer->sap_connection_id,
+                'remark' => 'nullable|max:254'
             );
 
         $messages = array(
