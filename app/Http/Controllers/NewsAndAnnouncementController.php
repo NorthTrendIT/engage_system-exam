@@ -1098,11 +1098,13 @@ class NewsAndAnnouncementController extends Controller
 
 
     public function fetchFeedPerId(Request $request){
+        $notif_id = ($request->notif_id) ? $request->notif_id : 0;
+
         $notifications = Notification::with(['user', 'documents', 'connections'])
                             ->whereHas('connections', function($q){
                                 $q->where('user_id', Auth::user()->id);
                             })
-                            ->where('id', '<' ,$request->notif_id)->orderBy('id', 'desc')->get()->take(2);
+                            ->where('id', '<' , $notif_id)->orderBy('id', 'desc')->get()->take(2);
 
         return view('news-and-announcement.feed', compact('notifications'));
     }
