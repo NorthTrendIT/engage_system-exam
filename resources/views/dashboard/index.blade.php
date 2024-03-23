@@ -2346,7 +2346,6 @@ $(document).ready(function() {
             $('[name="filter_customer_category"]').parent().prev().remove();
             $('[name="filter_customer_category"]').parent().remove();
 
-            console.log('{{Auth::user()->sap_connection->id}}');
         }
     @endif
 
