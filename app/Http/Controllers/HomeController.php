@@ -23,6 +23,7 @@ use App\Models\Product;
 use App\Models\Customer;
 use App\Models\InvoiceItem;
 use App\Support\SAPCustomer;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -43,50 +44,57 @@ class HomeController extends Controller
         $promotion = '';
         $default_customer_top_products = [];
         $due_invoices = [];
+        $quotation_date = ['startDate'=> date('m/d/Y'), 'endDate' => date('m/d/Y')];
 
-        if(Auth::user()->role_id == 1){
+        $notification = getMyNotifications();
+        $customerQuot = Customer::with(['user','sap_connection:id,company_name,db_name', 'quotation'])
+                              ->whereNotIn('sap_connection_id', [4])
+                              ->where('is_active', true)
+                              ->has('user')
+                              ->whereHas('quotation', function($q){
+                                $q->where('cancelled', 'No');
+                              });
+
+        if(Auth::user()->role_id == 1){ //admin
             $local_order = LocalOrder::where('confirmation_status', 'ERR')->get();
             $company = SapConnection::all();
+            $default_customer_top_products = $customerQuot->orderBy('card_name','asc')->first();
         }
 
-        if(in_array(userrole(),[1, 14])){ //common for agent and super admin
-            $data = Customer::whereNotIn('sap_connection_id', [4])
-                          ->where('is_active', true)->has('user')
-                          ->with(['user','sap_connection:id,company_name,db_name'])->orderBy('card_name','asc');
 
-            if(in_array(userrole(),[14])){
-                $data->whereHas('sales_specialist.sales_person', function($q) {
-                    return $q->where('ss_id', Auth::id());
-                });
-            } 
-            if(in_array(userrole(),[1])){
-                $data->where('sap_connection_id', 1); //apbw as default
-            }
+        if(in_array(userrole(),[14])){ //agent
+            $local_order = LocalOrder::where('confirmation_status', 'ERR')->where('sales_specialist_id', Auth::user()->id)->get();
 
-            $default_customer_top_products = $data->first();
+            $customerQuot->whereHas('sales_specialist.sales_person', function($q) {
+                return $q->where('ss_id', Auth::id());
+            });
+
+            $default_customer_top_products = $customerQuot->orderBy('card_name','asc')->first();
+            $customer_ids = [@$default_customer_top_products['id']];
+        } 
+
+        if(userrole() == 4){ //customer
+            $customers = Auth::user()->get_multi_customer_details();
+            $cust_id = explode(',', Auth::user()->multi_customer_id);
+            $customer_ids = $cust_id;
+
+            $customerQuot->whereIn('id', $customer_ids);
+            $default_customer_top_products = $customerQuot->orderBy('card_name','asc')->first();
+            $local_order = LocalOrder::where('confirmation_status', 'ERR')->whereIn('customer_id', $cust_id)->get();
         }
 
-        if(Auth::user()->role_id != 1){ //common for agent and customer
-            $notification = getMyNotifications();
 
-            if(userrole() == 4){
-                $customers = Auth::user()->get_multi_customer_details();
-                $cust_id = explode(',', Auth::user()->multi_customer_id);
-                $customer_ids = $cust_id;
+        
 
-                $local_order = LocalOrder::where('confirmation_status', 'ERR')->whereIn('customer_id', $cust_id)->get();
-            }
-            if(userrole() == 14){
-                $local_order = LocalOrder::where('confirmation_status', 'ERR')->where('sales_specialist_id', Auth::user()->id)->get();
-                $customer_ids = [@$default_customer_top_products['id']];
-            }
-
-            // $due_invoices = $this->getDueInvoices($customer_ids);
-        }
+        $result_quot_date = (@$default_customer_top_products->quotation !== null) ? $default_customer_top_products->quotation->last()->doc_date : date('m-d-Y');
+        $quot_date_parse = Carbon::parse($result_quot_date);
+        $quotation_date = ['startDate' => $quot_date_parse->firstOfMonth()->format('m/d/Y'),
+                            'endDate'   => $quot_date_parse->endOfMonth()->format('m/d/Y')
+                            ];
 
         return view('dashboard.index', compact('notification','dashboard','orders','invoice_lead','delivery_lead','company', 'local_order',
                                                'sales_order_to_invoice_lead_time','invoice_to_delivery_lead_time','local_order','promotion', 
-                                               'company', 'default_customer_top_products', 'due_invoices'
+                                               'company', 'default_customer_top_products', 'due_invoices', 'quotation_date'
                                               ));
     }
 

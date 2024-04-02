@@ -498,7 +498,7 @@
                             <div class="col-2 @if(in_array(Auth::user()->role_id, [4, 14])) d-none @endif">
                                 <select id="total_performing_db" class="form-select form-select-sm">
                                     @foreach($company as $c)
-                                        <option value="{{$c->id}}">{{$c->company_name}}</option>
+                                        <option value="{{$c->id}}" {{($c->id === @$default_customer_top_products->real_sap_connection_id) ? 'selected' : ''}}>{{$c->company_name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -1900,7 +1900,7 @@ $(document).ready(function() {
                 text: `{!! @$default_customer_top_products->card_name !!}` + " (Code: " + '{{@$default_customer_top_products->card_code}}' + ")", 
                 selected: true, 
                 card_code: '{{@$default_customer_top_products->card_code}}', 
-                sap_connection_id: 1 
+                sap_connection_id: '{{@$default_customer_top_products->real_sap_connection_id}}' 
             });
     @endif
 
@@ -1932,6 +1932,10 @@ $(document).ready(function() {
         cache: true
       }, 
       data: defaultCustomerforTopProducts
+    });
+    $('#kt_daterangepicker_1').daterangepicker({
+        startDate: "{{ $quotation_date['startDate'] }}",
+        endDate: "{{ $quotation_date['endDate'] }}",
     });
 
     getProductData();
@@ -2353,6 +2357,13 @@ $(document).ready(function() {
         var sap_connection_id = null;
         var brand_code = $('[name="filter_brand"]').select2('data')[0]['code'];
         var customer_code =  null;
+
+        if(($('[name="filter_customer_brand"]').val() === null )){
+            alert_filters('Customer');
+        }else if(($('[name="filter_brand"]').val() === '' )){
+            alert_filters('Brand');
+        }
+        
         
         if(count_customer_acc < 2 && role_customer_acc == 4){
             sap_connection_id = '{{@Auth::user()->sap_connection->id}}';
@@ -2579,6 +2590,12 @@ $(document).ready(function() {
         var sap_connection_id = null;
         var category_code = $('[name="filter_category"]').select2('data')[0]['code'];
         var customer_code =  null;
+
+        if(($('[name="filter_customer_category"]').val() === null )){
+            alert_filters('Customer');
+        }else if(($('[name="filter_category"]').val() === '' )){
+            alert_filters('Brand');
+        }
 
         if(count_customer_acc < 2 && role_customer_acc == 4){
             sap_connection_id = '{{@Auth::user()->sap_connection->id}}';
@@ -2874,6 +2891,14 @@ function toolTipFormatter(label, series, x, w){
 
 function businessSharelabelFormatter(label, series) {
     return "<div class='default_label' style='text-align:center;'> <small class='custom-shadow'>" + Math.round(series.percent) + "% </small></div>";
+}
+
+function alert_filters(field){
+    Swal.fire({
+        title: "Please select "+field+".",
+        icon: "info",
+        confirmButtonColor: "#3085d6",
+    });
 }
 
 });

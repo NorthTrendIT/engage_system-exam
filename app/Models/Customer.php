@@ -175,4 +175,8 @@ class Customer extends Model
     public function vatgroup(){
         return $this->hasOne(VatGroup::class, 'code', 'vat_group');
     }
+
+    public function quotation(){
+        return $this->hasMany(Quotation::class, ['card_code', 'real_sap_connection_id'], ['card_code', 'real_sap_connection_id']);
+    }
 }
