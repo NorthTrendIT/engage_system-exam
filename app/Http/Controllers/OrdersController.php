@@ -1352,6 +1352,7 @@ class OrdersController extends Controller
                             'company' => @$value->sap_connection->company_name ?? "-",
                             'doc_entry' => $value->doc_entry ?? "-",
                             'type' => $type,
+                            'card_code' => @$value->customer->card_code ?? @$value->card_code ?? "-",
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
                             'doc_total' => number_format_value($value->doc_total),
                             'placed_by' => $placed_by,
