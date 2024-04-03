@@ -602,7 +602,7 @@
                                     <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="year_brand"  data-placeholder="Select">
                                         {{-- <option value=""></option> --}}
                                         @for ($year = $year1; $year >= $endyear; $year--)
-                                            <option value="{{$year}}">{{ $year }}</option>
+                                            <option value="{{$year}}" {{($quotation_date['year'] == $year)? 'selected': ''}}>{{ $year }}</option>
                                         @endfor  
                                     </select>
                                 </div>
@@ -713,7 +713,7 @@
                                     <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="year_category" data-placeholder="Select">
                                         {{-- <option value=""></option> --}}
                                         @for ($year = $year1; $year >= $endyear; $year--)
-                                            <option value="{{$year}}">{{ $year }}</option>
+                                            <option value="{{$year}}" {{($quotation_date['year'] == $year)? 'selected': ''}}>{{ $year }}</option>
                                         @endfor  
                                     </select>
                                 </div>
@@ -1898,9 +1898,10 @@ $(document).ready(function() {
             {
                 id: {{@$default_customer_top_products->id}}, 
                 text: `{!! @$default_customer_top_products->card_name !!}` + " (Code: " + '{{@$default_customer_top_products->card_code}}' + ")", 
-                selected: true, 
                 card_code: '{{@$default_customer_top_products->card_code}}', 
-                sap_connection_id: '{{@$default_customer_top_products->real_sap_connection_id}}' 
+                code: '{{@$default_customer_top_products->card_code}}', //dependency to other select input
+                sap_connection_id: '{{@$default_customer_top_products->real_sap_connection_id}}', 
+                selected: true, 
             });
     @endif
 
@@ -2354,15 +2355,19 @@ $(document).ready(function() {
     @endif
 
     $('#resync_brandchart-data').on('click', function(e){
+        fetchSalesTargetBrand();
+    });
+
+    function fetchSalesTargetBrand(){
         var sap_connection_id = null;
         var brand_code = $('[name="filter_brand"]').select2('data')[0]['code'];
         var customer_code =  null;
 
-        if(($('[name="filter_customer_brand"]').val() === null )){
-            alert_filters('Customer');
-        }else if(($('[name="filter_brand"]').val() === '' )){
-            alert_filters('Brand');
-        }
+        // if(($('[name="filter_customer_brand"]').val() === null )){
+        //     alert_filters('Customer');
+        // }else if(($('[name="filter_brand"]').val() === '' )){
+        //     alert_filters('Brand');
+        // }
         
         
         if(count_customer_acc < 2 && role_customer_acc == 4){
@@ -2408,8 +2413,7 @@ $(document).ready(function() {
           }).fail(function() {
               toast_error("error");
           });
-    
-    });
+    }
 
     $('#quarterBrand').on('click', function(){
         $('#bdp_target_brand_column_chart').find('.apexcharts-canvas').remove();
@@ -2509,8 +2513,19 @@ $(document).ready(function() {
       },
     //   tags: true,
     //   minimumInputLength: 2,
+      data: defaultCustomerforTopProducts
     });
 
+    var defaultSelectedBrand = [];
+    @if(!empty(@$quotation_brand))
+        defaultSelectedBrand.push(
+            {
+                id: {{@$quotation_brand->id}}, 
+                text: `{!! @$quotation_brand->group_name !!}`,
+                code: `{!! @$quotation_brand->number !!}`, 
+                selected: true,  
+            });
+    @endif
     
     $(document).find(".select_brand").select2({
         ajax: {
@@ -2542,7 +2557,10 @@ $(document).ready(function() {
         },
         placeholder: 'Select Brand',
         // multiple: true,
+        data: defaultSelectedBrand
     });
+
+    fetchSalesTargetBrand();
 
     var chart_datas_brand = {year: {series : [{name: 'Actual Sales', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, 
                                               {name: 'Target Sales', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }
@@ -2587,15 +2605,19 @@ $(document).ready(function() {
     //============================= START FOR CATEGORY COLUMN CHART ===================================
 
     $('#resync_categorychart-data').on('click', function(e){
+        fetchSalesTargetCategory();
+    });
+
+    function fetchSalesTargetCategory(){
         var sap_connection_id = null;
         var category_code = $('[name="filter_category"]').select2('data')[0]['code'];
         var customer_code =  null;
 
-        if(($('[name="filter_customer_category"]').val() === null )){
-            alert_filters('Customer');
-        }else if(($('[name="filter_category"]').val() === '' )){
-            alert_filters('Brand');
-        }
+        // if(($('[name="filter_customer_category"]').val() === null )){
+        //     alert_filters('Customer');
+        // }else if(($('[name="filter_category"]').val() === '' )){
+        //     alert_filters('Category');
+        // }
 
         if(count_customer_acc < 2 && role_customer_acc == 4){
             sap_connection_id = '{{@Auth::user()->sap_connection->id}}';
@@ -2618,8 +2640,8 @@ $(document).ready(function() {
                   category_id: $('[name="filter_category"]').val(),
                   year: $('[name="year_category"]').val()
               }
-          })
-          .done(function(result) {
+        })
+        .done(function(result){
             $('#category-chart-loader').addClass('d-none');
             if(result.status == false){
                 toast_error(result.message);
@@ -2638,10 +2660,10 @@ $(document).ready(function() {
 
                 render_target_column_chart(response, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
             }
-          }).fail(function() {
-              toast_error("error");
-          });
-    });
+        }).fail(function() {
+            toast_error("error");
+        });
+    }
 
 
     $('#quarterCategory').on('click', function(){
@@ -2712,6 +2734,17 @@ $(document).ready(function() {
         render_target_column_chart(result, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
     });
 
+    var defaultSelectedCategory = [];
+    @if(!empty(@$quotation_category))
+        defaultSelectedCategory.push(
+            {
+                id: {{@$quotation_category->id}}, 
+                text: `{!! @$quotation_category->u_tires !!}`,
+                code: `{!! @$quotation_category->u_tires !!}`, 
+                selected: true,  
+            });
+    @endif
+
     $(document).find(".select_category").select2({
         ajax: {
             url: "{{route('customers-sales-specialist.get-product-category')}}",
@@ -2741,8 +2774,10 @@ $(document).ready(function() {
             cache: true
         },
         placeholder: 'Select Category',
+        data: defaultSelectedCategory
     });
 
+    fetchSalesTargetCategory(); //fetch data 
 
     render_target_column_chart(chart_datas_category.year, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
 

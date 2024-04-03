@@ -104,12 +104,12 @@ class Product extends Model
         return $this->belongsTo(ProductItemLine::class, ['u_item_line','sap_connection_id'], ['u_item_line', 'sap_connection_id']);
     }
 
-    public function product_tires_category()
+    public function product_tires_category() //category
     {
         return $this->belongsTo(ProductTiresCategory::class, ['u_tires','sap_connection_id'], ['u_tires', 'sap_connection_id']);
     }
 
-    public function group()
+    public function group() //brand
     {
         return $this->belongsTo(ProductGroup::class, ['items_group_code','sap_connection_id'], ['number', 'sap_connection_id']);
     }

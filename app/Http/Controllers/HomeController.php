@@ -44,7 +44,7 @@ class HomeController extends Controller
         $promotion = '';
         $default_customer_top_products = [];
         $due_invoices = [];
-        $quotation_date = ['startDate'=> date('m/d/Y'), 'endDate' => date('m/d/Y')];
+        $quotation_date = ['startDate'=> date('m/d/Y'), 'endDate' => date('m/d/Y'), 'year' => date('Y')];
 
         $notification = getMyNotifications();
         $customerQuot = Customer::with(['user','sap_connection:id,company_name,db_name', 'quotation'])
@@ -83,18 +83,28 @@ class HomeController extends Controller
             $local_order = LocalOrder::where('confirmation_status', 'ERR')->whereIn('customer_id', $cust_id)->get();
         }
 
+        $quotation_brand    = null;
+        $quotation_category = null;
+        if((@$default_customer_top_products->quotation !== null)){
+            $latest_quotation = $default_customer_top_products->quotation->last();
+            $result_quot_date = $latest_quotation->doc_date; 
 
+            $quotation_brand     = $latest_quotation->items->first()->product1->group;
+            $quotation_category  = $latest_quotation->items->first()->product1->product_tires_category;
+
+        }else{
+            $result_quot_date =  date('m-d-Y');
+        }
         
-
-        $result_quot_date = (@$default_customer_top_products->quotation !== null) ? $default_customer_top_products->quotation->last()->doc_date : date('m-d-Y');
         $quot_date_parse = Carbon::parse($result_quot_date);
         $quotation_date = ['startDate' => $quot_date_parse->firstOfMonth()->format('m/d/Y'),
-                            'endDate'   => $quot_date_parse->endOfMonth()->format('m/d/Y')
-                            ];
+                           'endDate'   => $quot_date_parse->endOfMonth()->format('m/d/Y'),
+                           'year'      => $quot_date_parse->format('Y')
+                          ];
 
         return view('dashboard.index', compact('notification','dashboard','orders','invoice_lead','delivery_lead','company', 'local_order',
                                                'sales_order_to_invoice_lead_time','invoice_to_delivery_lead_time','local_order','promotion', 
-                                               'company', 'default_customer_top_products', 'due_invoices', 'quotation_date'
+                                               'company', 'default_customer_top_products', 'due_invoices', 'quotation_date', 'quotation_brand', 'quotation_category'
                                               ));
     }
 
