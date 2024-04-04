@@ -2597,7 +2597,7 @@ $(document).ready(function() {
                             }; //dummy datas
     var chart_datas_category =  chart_datas_brand;
 
-    render_target_column_chart(chart_datas_brand.year, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
+    // render_target_column_chart(chart_datas_brand.year, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
 
     //============================= END FOR BRAND COLUMN CHART ========================================
 
@@ -2779,7 +2779,7 @@ $(document).ready(function() {
 
     fetchSalesTargetCategory(); //fetch data 
 
-    render_target_column_chart(chart_datas_category.year, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
+    // render_target_column_chart(chart_datas_category.year, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');
 
     function render_target_column_chart(data, tableID, opt, tbl){
         var categories = data.categories
