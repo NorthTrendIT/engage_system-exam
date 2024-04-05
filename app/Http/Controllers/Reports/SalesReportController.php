@@ -280,9 +280,9 @@ class SalesReportController extends Controller
 
     public function getInvoiceDataFromSap($request){
 
-        $url = '/b1s/v1/$crossjoin(Invoices, Invoices/DocumentLines)?$expand=Invoices($select=DocEntry, DocNum, DocDate, DocumentStatus, Cancelled), Invoices/DocumentLines($select=ItemCode, ItemDescription, CostingCode2, Quantity, MeasureUnit, Price, GrossTotal, PriceAfterVAT)';
+        $url = '/b1s/v1/$crossjoin(Invoices, Invoices/DocumentLines, Items, ItemGroups)?$expand=Invoices($select=DocEntry, DocNum, DocDate, DocumentStatus, Cancelled), Invoices/DocumentLines($select=ItemCode, ItemDescription, CostingCode2, Quantity, MeasureUnit, Price, GrossTotal, PriceAfterVAT), ItemGroups($select=GroupName)';
         $limit = '&$top=100&$orderby=DocDate desc';
-        $filter = '&$filter=Invoices/DocEntry eq Invoices/DocumentLines/DocEntry and';
+        $filter = '&$filter=Invoices/DocEntry eq Invoices/DocumentLines/DocEntry and Invoices/DocumentLines/ItemCode eq Items/ItemCode and Items/ItemsGroupCode eq ItemGroups/Number and Invoices/Cancelled eq \'tNO\' and Invoices/CancelStatus eq \'csNo\' and ';
         $filter_length = strlen($filter);
         $sap_connection = (object)[];
 
@@ -303,7 +303,7 @@ class SalesReportController extends Controller
 
         if(@$request->filter_brand != ""){
             $and = (substr($filter, $filter_length) === '') ? '' : ' and';
-            $filter .= $and.' Invoices/DocumentLines/CostingCode2 eq \''.$request->filter_brand.'\'';
+            $filter .= $and.' ItemGroups/GroupName eq \''.$request->filter_brand.'\'';
         }
 
         if(@$request->filter_date_range != ""){

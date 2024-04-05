@@ -2334,7 +2334,7 @@ $(document).ready(function() {
 
 
     //============================= START FOR BRAND COLUMN CHART ========================================
-    var count_customer_acc = '';
+    var count_customer_acc = 0;
     var role_customer_acc = '{{@Auth::user()->role_id}}';
     @if(@Auth::user()->role_id == 4)
         @php 
@@ -2354,6 +2354,10 @@ $(document).ready(function() {
         }
     @endif
 
+    $('[name="filter_customer_brand"], [name="filter_customer_category"]').on('change', function(){
+        $(this).parent().parent().find('select[name="filter_brand"], select[name="filter_category"]').val(null).trigger('change');
+    })
+
     $('#resync_brandchart-data').on('click', function(e){
         fetchSalesTargetBrand();
     });
@@ -2363,11 +2367,12 @@ $(document).ready(function() {
         var brand_code = $('[name="filter_brand"]').select2('data')[0]['code'];
         var customer_code =  null;
 
-        // if(($('[name="filter_customer_brand"]').val() === null )){
-        //     alert_filters('Customer');
-        // }else if(($('[name="filter_brand"]').val() === '' )){
-        //     alert_filters('Brand');
-        // }
+        if (count_customer_acc !== undefined && (count_customer_acc == 0 || count_customer_acc >= 2)) {
+            if(($('[name="filter_brand"]').val() === '' )){
+                alert_filters('Brand');
+            }
+        }
+        
         
         
         if(count_customer_acc < 2 && role_customer_acc == 4){
@@ -2613,11 +2618,11 @@ $(document).ready(function() {
         var category_code = $('[name="filter_category"]').select2('data')[0]['code'];
         var customer_code =  null;
 
-        // if(($('[name="filter_customer_category"]').val() === null )){
-        //     alert_filters('Customer');
-        // }else if(($('[name="filter_category"]').val() === '' )){
-        //     alert_filters('Category');
-        // }
+        if (count_customer_acc !== undefined && (count_customer_acc == 0 || count_customer_acc >= 2)) {
+            if(($('[name="filter_category"]').val() === '' )){
+                alert_filters('Category');
+            }
+        }
 
         if(count_customer_acc < 2 && role_customer_acc == 4){
             sap_connection_id = '{{@Auth::user()->sap_connection->id}}';

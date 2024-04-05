@@ -100,7 +100,7 @@ class SAPInvoices
             $latestData = Invoice::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
                 $time = Carbon::now()->subMinutes(60);
-                $url = '/b1s/v1/Invoices?$filter=UpdateDate ge \''.$latestData->updated_date.'\' and UpdateTime ge \''.$time->toTimeString().'\'';
+                $url = '/b1s/v1/Invoices?$filter=UpdateDate ge \''.$latestData->updated_date.'\' and UpdateTime ge \''.$time->toTimeString().'\' and Cancelled eq \'tNO\' and CancelStatus eq \'csNo\'';
                 $response = $this->getInvoiceData($url);
             } else {
                 $response = $this->getInvoiceData();
@@ -137,7 +137,7 @@ class SAPInvoices
     {
         if($doc_entry){
             // $url = '/b1s/v1/Invoices('.$doc_entry.')';
-            $url = '/b1s/v1/Invoices?$filter=U_OMSNo eq '.$doc_entry.'';
+            $url = '/b1s/v1/Invoices?$filter=U_OMSNo eq '.$doc_entry.' and Cancelled eq \'tNO\' and CancelStatus eq \'csNo\'';
             $response = $this->getInvoiceData($url);
 
             if($response['status']){
@@ -147,6 +147,7 @@ class SAPInvoices
                     $invoices = $invoice['value'];
 
                     $grand_total_of_invoice_items = 0;
+                    $doc_entries = [];
                     foreach($invoices as $invoice){
 
                         $where = array(
@@ -203,6 +204,20 @@ class SAPInvoices
                                 );
                         if(!empty($invoice['DocumentLines'])){
                             array_push($insert, array('base_entry' => $invoice['DocumentLines'][0]['BaseEntry']));
+                        }
+
+                        array_push($doc_entries, @$invoice['DocEntry']);
+
+                        $check_duplicate_inv = Invoice::where([
+                                                            'doc_entry' => @$invoice['DocEntry'],
+                                                            'sap_connection_id' => $sap_connection_id,
+                                                        ])->get();
+
+                        if($check_duplicate_inv->count() > 1){ //delete invoice if there is duplicate and create new one.
+                            foreach($check_duplicate_inv as $inv){
+                                InvoiceItem::where('invoice_id', $inv->id)->delete(); //delete items in inv first.
+                                Invoice::where('id', $inv->id)->delete(); //delete inv
+                            }
                         }
 
                         $obj = Invoice::updateOrCreate([
@@ -294,6 +309,12 @@ class SAPInvoices
                         }
                     } //end sa foreach
 
+                    $inv_ids = Invoice::where('u_omsno', $doc_entry)
+                                        ->where('sap_connection_id', $sap_connection_id)
+                                        ->whereNotIn('doc_entry', $doc_entries)->pluck('id');
+
+                    InvoiceItem::whereIn('invoice_id', $inv_ids)->delete(); //delete items in inv first.
+                    Invoice::whereIn('id', $inv_ids)->delete(); //delete inv
 
                 } //end sa if
             }
@@ -360,6 +381,7 @@ class SAPInvoices
                 foreach($invoices as $invoice){ //invoice details
                     $inv     = $invoice['Invoices'];
                     $line    = $invoice['Invoices/DocumentLines'];
+                    $itemGroup    = $invoice['ItemGroups'];
 
                     $status = ($inv['DocumentStatus'] === 'C' && $inv['Cancelled'] === 'N') ? 'Paid' : 'Unpaid';
                     $this->grand_total_qty   += $line['Quantity'];
@@ -371,7 +393,7 @@ class SAPInvoices
                                     'DocDate'  => date("m-d-Y", strtotime($inv['DocDate'])),
                                     'ItemCode' => $line['ItemCode'],
                                     'ItemDescription' => $line['ItemDescription'],
-                                    'Brand'      => $line['CostingCode2'],
+                                    'Brand'      => $itemGroup ['GroupName'],
                                     'Quantity'   => $line['Quantity'],
                                     'UoM'      => $line['MeasureUnit'],
                                     'Price'    => $line['Price'],
