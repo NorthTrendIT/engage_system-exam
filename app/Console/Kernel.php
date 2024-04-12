@@ -31,6 +31,8 @@ class Kernel extends ConsoleKernel
         // $schedule->command('sync:all_module_data_in_midnight')->everySixHours();
         $schedule->command('sync:allmoduledata')->daily();
         $schedule->command('maintenance:user_disable')->daily();
+        $schedule->command('sync:apbw_inv')->dailyAt('02:00');
+        $schedule->command('sync:ntmc_inv')->dailyAt('04:00');
     }
 
     /**
