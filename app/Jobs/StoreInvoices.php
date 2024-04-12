@@ -43,9 +43,13 @@ class StoreInvoices implements ShouldQueue
     public function handle()
     {
         if(!empty($this->data)){
-
+            // Log::info($this->data);
+            
+            $doc_entry = null;
+            $doc_entries = [];
             foreach ($this->data as $invoice) {
                 if($invoice['U_OMSNo'] != null){
+                    $doc_entry = $invoice['U_OMSNo'];
 
                     if($this->real_sap_connection_id == 1){ // GROUP Cagayan, Davao NEED TO STORE in Solid Trend 
                         $customer = Customer::where('card_code', $invoice['CardCode'])->where('sap_connection_id', 5)->first();
@@ -99,6 +103,20 @@ class StoreInvoices implements ShouldQueue
                         array_push($insert, array('base_entry' => $invoice['DocumentLines'][0]['BaseEntry']));
                     }
 
+                    array_push($doc_entries, @$invoice['DocEntry']);
+
+                    $check_duplicate_inv = Invoice::where([
+                                                        'doc_entry' => @$invoice['DocEntry'],
+                                                        'sap_connection_id' => $this->sap_connection_id,
+                                                    ])->get();
+
+                    if($check_duplicate_inv->count() > 1){ //delete invoice if there is duplicate and create new one.
+                        foreach($check_duplicate_inv as $inv){
+                            InvoiceItem::where('invoice_id', $inv->id)->delete(); //delete items in inv first.
+                            Invoice::where('id', $inv->id)->delete(); //delete inv
+                        }
+                    }
+
                     $obj = Invoice::updateOrCreate([
                                                 'doc_entry' => @$invoice['DocEntry'],
                                                 'sap_connection_id' => $this->sap_connection_id,
@@ -141,6 +159,21 @@ class StoreInvoices implements ShouldQueue
                                 'real_sap_connection_id' => $this->real_sap_connection_id,
                             );
 
+
+                            $currentInvItemCount = InvoiceItem::where([
+                                'invoice_id' => $obj->id,
+                                'item_code' => @$value['ItemCode'],
+                                'price' => @$value['Price']
+                            ])->count();
+
+                            if($currentInvItemCount > 1){
+                                InvoiceItem::where([
+                                                        'invoice_id' => $obj->id,
+                                                        'item_code' => @$value['ItemCode'],
+                                                        'price' => @$value['Price']
+                                                    ])->orderBy('id','desc')->first()->delete();
+                            }
+
                             $item_obj = InvoiceItem::updateOrCreate([
                                             'invoice_id' => $obj->id,
                                             'item_code' => @$value['ItemCode'],
@@ -182,6 +215,15 @@ class StoreInvoices implements ShouldQueue
 
                 } //end of !u_omsno
             } //end of foreach
+
+            if($doc_entry != null){
+                $inv_ids = Invoice::where('u_omsno', $doc_entry)
+                                    ->where('sap_connection_id', $this->sap_connection_id)
+                                    ->whereNotIn('doc_entry', $doc_entries)->pluck('id');
+
+                InvoiceItem::whereIn('invoice_id', $inv_ids)->delete(); //delete items in inv first.
+                Invoice::whereIn('id', $inv_ids)->delete(); //delete inv
+            }
             
         }
     }

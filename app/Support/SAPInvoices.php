@@ -133,7 +133,7 @@ class SAPInvoices
 
 
     // Store Specific Invoices Data
-    public function addSpecificInvoicesDataInDatabase($doc_entry = false)
+    public function addSpecificInvoicesDataInDatabase($doc_entry = false, $synced = false, $sap_conn = 0)
     {
         if($doc_entry){
             // $url = '/b1s/v1/Invoices('.$doc_entry.')';
@@ -145,6 +145,10 @@ class SAPInvoices
 
                 if(!empty($invoice['value'])){
                     $invoices = $invoice['value'];
+
+                    if($synced){
+                        StoreInvoices::dispatch($invoices, $sap_conn);
+                    }
 
                     $grand_total_of_invoice_items = 0;
                     $doc_entries = [];

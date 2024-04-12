@@ -240,6 +240,8 @@ class SAPOrderPost
                         $from_name = 'PHILCREST MARKETING CORP';
                     }else if($value->sap_connection_id == 5){
                         $from_name = 'SOLID TREND TRADE SALES INC.';
+                    }else{
+                        $from_name = 'TEST';
                     }
 
                     $user_mail = User::where('u_card_code',$value->u_card_code)->first();

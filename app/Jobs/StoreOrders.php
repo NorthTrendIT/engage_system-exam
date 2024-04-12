@@ -101,11 +101,10 @@ class StoreOrders implements ShouldQueue
                                         ],
                                         $insert
                                     );
-                $check_inv = $obj->invoice1 ?? '-';
-                if($check_inv === '-'){
-                    $order_stat = ($obj->cancelled === "Yes")? 'Cancelled' : 'On Process';
-                    $obj->quotation()->update(['status' =>$order_stat]);
-                }
+
+                $order_stat = ($obj->cancelled === "Yes")? 'Cancelled' : 'On Process';
+                $obj->quotation()->update(['status' =>$order_stat]);
+
 
                 if(!empty($order['DocumentLines'])){
 
