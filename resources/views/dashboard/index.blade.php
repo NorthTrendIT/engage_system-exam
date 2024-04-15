@@ -2367,20 +2367,19 @@ $(document).ready(function() {
         var brand_code = $('[name="filter_brand"]').select2('data')[0]['code'];
         var customer_code =  null;
 
-        if (count_customer_acc !== undefined && (count_customer_acc == 0 || count_customer_acc >= 2)) {
+        if ((role_customer_acc != 14 && count_customer_acc == 0) || count_customer_acc >= 2 ) {
             if(($('[name="filter_brand"]').val() === '' )){
                 alert_filters('Brand');
             }
         }
-        
-        
         
         if(count_customer_acc < 2 && role_customer_acc == 4){
             sap_connection_id = '{{@Auth::user()->sap_connection->id}}';
             customer_code = '{{@Auth::user()->customer->card_code}}';
         }else{
             sap_connection_id = ($('[name="filter_customer_brand"]').val() !== null ) ? $('[name="filter_customer_brand"]').select2('data')[0]['sap_connection_id'] : null;
-            customer_code =  $('[name="filter_customer_brand"]').select2('data')[0]['code'];
+            cust_brand  = $('[name="filter_customer_brand"]').select2('data');
+            customer_code =  (cust_brand.length !== 0) ? cust_brand[0]['code'] : null;
         }
 
         $('#bdp_target_brand_column_chart').find('.apexcharts-canvas').remove();
@@ -2541,16 +2540,25 @@ $(document).ready(function() {
             data: function (params) {
 
               var sap_connection_id = null;
+              var customer_id = null;
               if(count_customer_acc < 2 && role_customer_acc == 4){
                 sap_connection_id = '{{@Auth::user()->sap_connection->id}}';
               }else{
-                sap_connection_id = ($('[name="filter_customer_brand"]').val() !== null ) ? $('[name="filter_customer_brand"]').select2('data')[0]['sap_connection_id'] : null;
+                if($('[name="filter_customer_brand"]').val() !== null ){
+                    sap_connection_id =  $('[name="filter_customer_brand"]').select2('data')[0]['sap_connection_id'];
+                    customer_id = $('[name="filter_customer_brand"]').val();
+                    console.log(customer_id);
+                }else{
+                    sap_connection_id = null;
+                    customer_id = null;
+                } 
               }
 
               return {
                 _token: "{{ csrf_token() }}",
                 search: params.term,
-                sap_connection_id: sap_connection_id
+                sap_connection_id: sap_connection_id,
+                customer_id: customer_id
               };
             },
             processResults: function (response) {
@@ -2615,10 +2623,10 @@ $(document).ready(function() {
 
     function fetchSalesTargetCategory(){
         var sap_connection_id = null;
-        var category_code = $('[name="filter_category"]').select2('data')[0]['code'];
+        var category_code = $('[name="filter_category"]').select2('data')[0]['code'] ?? null;
         var customer_code =  null;
 
-        if (count_customer_acc !== undefined && (count_customer_acc == 0 || count_customer_acc >= 2)) {
+        if ((role_customer_acc != 14 && count_customer_acc == 0) || count_customer_acc >= 2 ) {
             if(($('[name="filter_category"]').val() === '' )){
                 alert_filters('Category');
             }
@@ -2629,7 +2637,8 @@ $(document).ready(function() {
             customer_code = '{{@Auth::user()->customer->card_code}}';
         }else{
             sap_connection_id = ($('[name="filter_customer_category"]').val() !== null ) ? $('[name="filter_customer_category"]').select2('data')[0]['sap_connection_id'] : null;
-            customer_code =  $('[name="filter_customer_category"]').select2('data')[0]['code'];
+            cust_cat      =  $('[name="filter_customer_category"]').select2('data');
+            customer_code = (cust_cat.length !== 0) ? cust_cat[0]['code'] : null;
         }
         
         $('#bdp_target_category_column_chart').find('.apexcharts-canvas').remove();

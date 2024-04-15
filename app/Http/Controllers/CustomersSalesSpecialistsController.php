@@ -23,6 +23,7 @@ use Excel;
 use Validator;
 use DataTables;
 use App\Models\salesAssignment;
+use Illuminate\Support\Facades\Auth;
 
 class CustomersSalesSpecialistsController extends Controller
 {
@@ -620,11 +621,33 @@ class CustomersSalesSpecialistsController extends Controller
                 $sap_connection_id = 1;
             }
 
+            if(userrole() == 4){
+                $customer_id = explode(',', Auth::user()->multi_customer_id);
+                if(count($customer_id) === 1){
+                    $request->customer_id = Auth::user()->customer->id;
+                }
+            }
+
+            $product_groups = [-1];
+            if(!empty($request->customer_id)){
+                // Product Group
+                $c_product_groups = CustomerProductGroup::with('product_group')->where('customer_id', $request->customer_id)->get()->unique('product_group_id');
+                $c_product_group = array_column( $c_product_groups->toArray(), 'product_group_id' );
+
+                $product_groups = array_map( function ( $ar ) {
+                    return $ar['number'];
+                }, array_column( $c_product_groups->toArray(), 'product_group' ) );
+            }
+
             $data = ProductGroup::where('sap_connection_id',$sap_connection_id)
                                 ->orderby('group_name','asc')
                                 ->select('id','group_name', 'number')
                                 ->where('is_active', true)
                                 ->limit(50);
+
+            // if(count($product_groups) > 0){
+                $data->whereIn('number', $product_groups);
+            // }
 
             if($search != ''){
                 $data->where('group_name', 'like', '%' .$search . '%');
