@@ -93,7 +93,7 @@ class HomeController extends Controller
             $quotation_category  = $latest_quotation->items->first()->product1->product_tires_category;
 
         }else{
-            $result_quot_date =  date('m-d-Y');
+            $result_quot_date =  date('y-m-d');
         }
         
         $quot_date_parse = Carbon::parse($result_quot_date);
