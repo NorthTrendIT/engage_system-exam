@@ -206,9 +206,10 @@ class SAPOrders
                                                 ],
                                                 $insert
                                             );
-                                            
-                        $order_stat = ($obj->cancelled === "Yes")? 'Cancelled' : 'On Process';
-                        $obj->quotation()->update(['status' =>$order_stat]);
+                        if(!@$obj->invoice1){                   
+                            $order_stat = ($obj->cancelled === "Yes")? 'Cancelled' : 'On Process';
+                            $obj->quotation()->update(['status' =>$order_stat]);
+                        }
 
                         if(!empty($order['DocumentLines'])){
 
