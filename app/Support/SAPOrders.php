@@ -96,7 +96,7 @@ class SAPOrders
             $latestData = Order::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
                 $time = Carbon::now()->subMinutes(60);
-                $url = '/b1s/v1/Orders?$filter=UpdateDate ge \''.$latestData->updated_date.'\' and UpdateTime ge \''.$time->toTimeString().'\'';
+                $url = '/b1s/v1/Orders?$filter=UpdateDate ge \''.$latestData->updated_date.'\' and UpdateTime ge \''.$time->toTimeString().'\' and Cancelled eq \'tNO\' and CancelStatus eq \'csNo\'';
 
                 $response = $this->getOrderData($url);
             } else {
@@ -134,7 +134,7 @@ class SAPOrders
     {
         if($doc_entry){
             // $url = '/b1s/v1/Orders('.$doc_entry.')';
-            $url = '/b1s/v1/Orders?$filter=U_OMSNo eq '.$doc_entry.'';
+            $url = '/b1s/v1/Orders?$filter=U_OMSNo eq '.$doc_entry.' and Cancelled eq \'tNO\' and CancelStatus eq \'csNo\'';
             $response = $this->getOrderData($url);
 
             if($response['status']){
@@ -206,9 +206,10 @@ class SAPOrders
                                                 ],
                                                 $insert
                                             );
-                                            
-                        $order_stat = ($obj->cancelled === "Yes")? 'Cancelled' : 'On Process';
-                        $obj->quotation()->update(['status' =>$order_stat]);
+                        // if(!@$obj->invoice1){                   
+                            $order_stat = ($obj->cancelled === "Yes")? 'Cancelled' : 'On Process';
+                            $obj->quotation()->update(['status' =>$order_stat]);
+                        // }
 
                         if(!empty($order['DocumentLines'])){
 
