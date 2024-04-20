@@ -30,7 +30,7 @@
             <!--begin::Col-->
             <div class="col-xl-3 @if(Auth::user()->role_id == 4) d-none @endif">
                 <!--begin::List Widget 6-->
-                <div class="card card-xl-stretch mb-xl-8">
+                {{-- <div class="card card-xl-stretch mb-xl-8">
                     <!--begin::Header-->
                     <div class="card-header border-0 mt-5">
                         <h3 class="card-title fw-bolder text-dark">Notifications</h3>
@@ -75,7 +75,7 @@
                         @endif
                     </div>
                     <!--end::Body-->
-                </div>
+                </div> --}}
                 <!--end::List Widget 6-->
             </div>
 
@@ -165,13 +165,13 @@
             @endif
            <!--begin::Col-->
            @if( in_array(Auth::user()->role_id, [1,4,14]) )
-           <div class="col-xl-2">
+           <div class=" error_orders d-flex align-items-stretch flex-shrink-0">
                 <!-- Error Orders -->
-                <div class="card" style="width: 166px; height: 150px;">
-                    <div class="card-header border-0">
+                <div class="card" style="width: 166px; height: 130px;">
+                    {{-- <div class="card-header border-0">
                         <h3 class="card-title align-items-start flex-column">   
                         </h3>
-                    </div>
+                    </div> --}}
                     <div class="card-body text-center">
                         <span class="card-label font-weight-bolder fw-bolder text-danger">Error Orders</span>
                         <span class="card-label font-weight-bolder fw-bolder d-block fs-2">{{ (count($local_order) > 0) ? count($local_order) : 0 }}</span>
@@ -502,8 +502,8 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-3">
-                                <select class="form-control form-control-sm form-control-solid" name="filter_customer_top_prod" data-control="select2" data-hide-search="false" data-placeholder="Select customer" data-allow-clear="true">
+                            <div class="col-5">
+                                <select class="form-control form-control-sm form-control-solid" name="filter_customer_top_prod" data-control="select2" data-hide-search="false" data-placeholder="Select customer">
                                     <option value=""></option>
                                   </select>
                             </div>
@@ -586,7 +586,7 @@
                             @endphp
                             <div class="row">
                                 <label class="col-auto col-form-label col-form-label-sm" for="">Customer</label>
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="filter_customer_brand" data-placeholder="Select">
                                         {{-- <option value=""></option> --}}
                                     </select>
@@ -598,7 +598,7 @@
                                     </select>
                                 </div>
                                 <label class="col-auto col-form-label col-form-label-sm" for="">Year</label>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="year_brand"  data-placeholder="Select">
                                         {{-- <option value=""></option> --}}
                                         @for ($year = $year1; $year >= $endyear; $year--)
@@ -697,7 +697,7 @@
                             @endphp
                             <div class="row">
                                 <label class="col-auto col-form-label col-form-label-sm" for="">Customer</label>
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="filter_customer_category"  data-placeholder="Select">
                                         {{-- <option value=""></option> --}}
                                     </select>
@@ -709,7 +709,7 @@
                                     </select>
                                 </div>
                                 <label class="col-auto col-form-label col-form-label-sm" for="">Year</label>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <select class="form-control form-control-sm form-control-solid" data-control="select2" data-hide-search="false" name="year_category" data-placeholder="Select">
                                         {{-- <option value=""></option> --}}
                                         @for ($year = $year1; $year >= $endyear; $year--)
@@ -1055,6 +1055,12 @@
         opacity: .80;
         filter: alpha(opacity=85);
     }
+
+    .toolbar{
+        --kt-toolbar-height:85px;
+        --kt-toolbar-height-tablet-and-mobile:85px;
+        border-top: 0px solid #eff2f5 !important;
+    }
 </style>
 @endpush
 
@@ -1071,6 +1077,7 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
+    $('.error_orders').insertBefore("#kt_header_user_menu_toggle"); //.user_prof_area
     /**@if(@Auth::user()->role_id == 1)
 
         // getData(); //previous charts hidden
@@ -1879,13 +1886,13 @@ $(document).ready(function() {
                                         columnDefs: [
                                                 {
                                                     className: 'text-center',
-                                                    targets: [0]
+                                                    targets: [0, 4]
                                                 },
                                                 {
                                                     className: 'text-end',
                                                     targets: -1
                                                 },
-                                                // { orderable: false, targets: -1 } //last row
+                                                { orderable: false, targets: -1 } //last row
                                             ]
                                     });
                                     
@@ -1897,7 +1904,7 @@ $(document).ready(function() {
         defaultCustomerforTopProducts.push(
             {
                 id: {{@$default_customer_top_products->id}}, 
-                text: `{!! @$default_customer_top_products->card_name !!}` + " (Code: " + '{{@$default_customer_top_products->card_code}}' + ")", 
+                text: `{!! @$default_customer_top_products->card_name !!}` + " (Code: " + '{{@$default_customer_top_products->card_code}}' + ") - "+'{{@$default_customer_top_products->sap_connection->company_name}}', 
                 card_code: '{{@$default_customer_top_products->card_code}}', 
                 code: '{{@$default_customer_top_products->card_code}}', //dependency to other select input
                 sap_connection_id: '{{@$default_customer_top_products->real_sap_connection_id}}', 
@@ -1922,7 +1929,7 @@ $(document).ready(function() {
           return {
             results:  $.map(response, function (item) {
                           return {
-                            text: item.card_name + " (Code: " + item.card_code + ")",
+                            text: item.card_name + " (Code: " + item.card_code + ") - "+item.sap_connection.company_name,
                             id: item.id,
                             card_code: item.card_code,
                             sap_connection_id: item.sap_connection_id
@@ -2354,7 +2361,51 @@ $(document).ready(function() {
         }
     @endif
 
+    var chart_datas_brand = {year: {series : [{name: 'Actual Sales', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, 
+                                              {name: 'Target Sales', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }
+                                             ],
+                                    bar: {columnWidth: '55%'},
+                                    stroke: { width: 3},
+                                    categories : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                                    colors: ['#034F84', '#FA7A35']
+                              },
+                            quarter : {series : [{name: 'Actual Sales', data: [0, 0, 0, 0] }, 
+                                                {name: 'Target Sales', data: [0, 0, 0, 0] }
+                                                ],
+                                        bar: {columnWidth: '-10%'},
+                                        stroke: { width: 20},
+                                        categories : ['Q1', 'Q2', 'Q3', 'Q4'],
+                                        colors: ['#afafaf', '#12365d']
+                                    },
+                            monthly_comparison: {series : [{name: 'Previous Year', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, 
+                                              {name: 'Current Year', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }
+                                             ],
+                                    bar: {columnWidth: '55%'},
+                                    stroke: { width: 3},
+                                    categories : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                                    colors: ['#034F84', '#FA7A35']
+                              },
+                            quarterly_comparison : {series : [{name: 'Previous Year', data: [0, 0, 0, 0] }, 
+                                                         {name: 'Current Year', data: [0, 0, 0, 0] }
+                                                        ],
+                                bar: {columnWidth: '-10%'},
+                                stroke: { width: 20},
+                                categories : ['Q1', 'Q2', 'Q3', 'Q4'],
+                                colors: ['#afafaf', '#12365d']
+                            }
+                            }; //dummy datas
+    var reset_datas_chart = chart_datas_category =  chart_datas_brand;
+
     $('[name="filter_customer_brand"], [name="filter_customer_category"]').on('change', function(){
+        
+        if($(this).attr('name') === 'filter_customer_brand'){
+            $('#bdp_target_brand_column_chart').find('.apexcharts-canvas').remove();
+            render_target_column_chart(reset_datas_chart.year, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
+        }else{
+            $('#bdp_target_category_column_chart').find('.apexcharts-canvas').remove();
+            render_target_column_chart(reset_datas_chart.year, 'bdp_target_category_column_chart', 'filter_category', 'tbl_category_target_tbody');  
+        }
+
         $(this).parent().parent().find('select[name="filter_brand"], select[name="filter_category"]').val(null).trigger('change');
     })
 
@@ -2505,7 +2556,7 @@ $(document).ready(function() {
           return {
             results:  $.map(response, function (item) {
                           return {
-                            text: item.card_name + " (Code: " + item.card_code + " -"+item.sap_connection.company_name+")",
+                            text: item.card_name + " (Code: " + item.card_code +") - "+item.sap_connection.company_name,
                             id: item.id,
                             code: item.card_code,
                             sap_connection_id : item.sap_connection_id
@@ -2574,43 +2625,6 @@ $(document).ready(function() {
     });
 
     fetchSalesTargetBrand();
-
-    var chart_datas_brand = {year: {series : [{name: 'Actual Sales', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, 
-                                              {name: 'Target Sales', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }
-                                             ],
-                                    bar: {columnWidth: '55%'},
-                                    stroke: { width: 3},
-                                    categories : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                                    colors: ['#034F84', '#FA7A35']
-                              },
-                            quarter : {series : [{name: 'Actual Sales', data: [0, 0, 0, 0] }, 
-                                                {name: 'Target Sales', data: [0, 0, 0, 0] }
-                                                ],
-                                        bar: {columnWidth: '-10%'},
-                                        stroke: { width: 20},
-                                        categories : ['Q1', 'Q2', 'Q3', 'Q4'],
-                                        colors: ['#afafaf', '#12365d']
-                                    },
-                            monthly_comparison: {series : [{name: 'Previous Year', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, 
-                                              {name: 'Current Year', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }
-                                             ],
-                                    bar: {columnWidth: '55%'},
-                                    stroke: { width: 3},
-                                    categories : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                                    colors: ['#034F84', '#FA7A35']
-                              },
-                            quarterly_comparison : {series : [{name: 'Previous Year', data: [0, 0, 0, 0] }, 
-                                                         {name: 'Current Year', data: [0, 0, 0, 0] }
-                                                        ],
-                                bar: {columnWidth: '-10%'},
-                                stroke: { width: 20},
-                                categories : ['Q1', 'Q2', 'Q3', 'Q4'],
-                                colors: ['#afafaf', '#12365d']
-                            }
-                            }; //dummy datas
-    var chart_datas_category =  chart_datas_brand;
-
-    // render_target_column_chart(chart_datas_brand.year, 'bdp_target_brand_column_chart', 'filter_brand', 'tbl_brand_target_tbody');
 
     //============================= END FOR BRAND COLUMN CHART ========================================
 
