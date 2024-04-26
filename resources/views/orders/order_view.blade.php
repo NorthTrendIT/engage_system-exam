@@ -13,7 +13,7 @@
   .order_class th{text-align: center !important;}
 
   .order_class td {
-      border-left: 2px solid #eff2f5 !important;
+      /*border-left: 2px solid #eff2f5 !important;*/
       padding: 5px 10px !important;
       
   }
@@ -26,6 +26,17 @@
     max-height: 50px;
     min-height: 50px;
   }
+
+  .table-responsive {
+    scrollbar-color: #c1c1c1 transparent;
+  }
+
+  @media (min-width: 992px) {
+      div, ol, pre, span, ul {
+          scrollbar-width: revert !important;
+      }
+  }
+
 </style>
 @section('content')
 @php
@@ -232,7 +243,7 @@
                             <div class="">
                               <div class="table-responsive border-bottom mb-9">
                                 
-                                <table class="table mb-3 order_class">
+                                <table class="table mb-3 order_class align-middle">
                                   <thead>
                                     <tr class="border-bottom fs-6 fw-bolder text-muted">
                                       <th style="min">Action</th>

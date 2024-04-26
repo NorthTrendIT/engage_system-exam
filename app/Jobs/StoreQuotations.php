@@ -103,9 +103,9 @@ class StoreQuotations implements ShouldQueue
                                         ],
                                         $insert
                                     );
-                if($obj->cancelled === "Yes"){
-                    Quotation::where('id', $obj->id)->update(['status' =>'Cancelled']);
-                }
+                                    
+                $quot_stat = ($obj->cancelled === "Yes") ? 'Cancelled' : 'Pending';
+                Quotation::where('id', $obj->id)->update(['status' => $quot_stat]);
 
                 if(!empty($value['DocumentLines'])){
 

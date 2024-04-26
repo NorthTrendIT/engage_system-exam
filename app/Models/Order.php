@@ -73,4 +73,8 @@ class Order extends Model
     public function sales_specialist(){
         return $this->belongsTo(User::class, ['sales_person_code','real_sap_connection_id'], ['sales_employee_code', 'sap_connection_id']);
     }
+
+    public function items(){
+        return $this->hasMany(OrderItem::class, 'order_id', 'id');
+    }
 }

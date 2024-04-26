@@ -302,9 +302,9 @@ class SAPInvoices
                             $obj->order->quotation()->update(['status' =>'Cancelled']);
                         }
                         if(@$obj->cancelled === "No" && @$obj->order->cancelled === "No"){ //invoice is not cancelled
-                            $check = $obj->order->quotation->items ?? '-';
+                            $check = $obj->order->items ?? '-';
                             if($check !== '-'){
-                                $q_items = $obj->order->quotation->items->sum('quantity');
+                                $q_items = $obj->order->items->sum('quantity');
                                 $grand_total_of_invoice_items = $grand_total_of_invoice_items + $obj->items->sum('quantity');
                                 $inv_stat = ($q_items === $grand_total_of_invoice_items)? 'Completed' : 'Partially Served';
                                 

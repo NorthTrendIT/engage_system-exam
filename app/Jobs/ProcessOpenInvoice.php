@@ -12,6 +12,7 @@ use App\Support\SAPInvoices;
 use App\Support\SAPOrders;
 use App\Models\Quotation;
 use App\Models\SapConnection;
+use App\Support\SAPQuotations;
 use Illuminate\Support\Facades\Log;
 
 class ProcessOpenInvoice implements ShouldQueue
@@ -46,8 +47,9 @@ class ProcessOpenInvoice implements ShouldQueue
      */
     public function handle()
     {
-        $sap_orders = new SAPOrders($this->database, $this->username, $this->password, $this->log_id);
-        $sap_invoices = new SAPInvoices($this->database, $this->username, $this->password, $this->log_id);
+        // $sap_quotations = new SAPQuotations($this->database, $this->username, $this->password, $this->log_id);
+        // $sap_orders     = new SAPOrders($this->database, $this->username, $this->password, $this->log_id);
+        $sap_invoices   = new SAPInvoices($this->database, $this->username, $this->password, $this->log_id);
 
         // $where = array(
         //     'db_name' => $this->database,
@@ -66,11 +68,16 @@ class ProcessOpenInvoice implements ShouldQueue
         //     // $sap_invoices->addSpecificInvoicesDataInDatabase($q->doc_entry, true, $sap_connection->id);
         //     $count++;
         // }
-
-        $ord_url = '/b1s/v1/Orders?$filter=Cancelled eq \'tNO\' and CancelStatus eq \'csNo\' and CreationDate ge \'2022-01-01\' and CreationDate le \'2022-12-31\''.$str;
-        $inv_url = '/b1s/v1/Invoices?$filter=Cancelled eq \'tNO\' and CancelStatus eq \'csNo\' and CreationDate ge \'2022-01-01\' and CreationDate le \'2022-12-31\''.$str;
         
-        $sap_orders->addOrdersDataInDatabase($ord_url);
+        $date_from = '2024-01-01';
+        $date_to   = '2024-03-31';
+
+        $quot_url = '/b1s/v1/Quotations?$filter=Cancelled eq \'tNO\' and CancelStatus eq \'csNo\' and CreationDate ge \''.$date_from.'\' and CreationDate le \''.$date_to.'\''.$str;
+        $ord_url = '/b1s/v1/Orders?$filter=Cancelled eq \'tNO\' and CancelStatus eq \'csNo\' and CreationDate ge \''.$date_from.'\' and CreationDate le \''.$date_to.'\''.$str;
+        $inv_url = '/b1s/v1/Invoices?$filter=Cancelled eq \'tNO\' and CancelStatus eq \'csNo\' and CreationDate ge \''.$date_from.'\' and CreationDate le \''.$date_to.'\''.$str;
+        
+        // $sap_quotations->addQuotationsDataInDatabase($quot_url);
+        // $sap_orders->addOrdersDataInDatabase($ord_url);
         $sap_invoices->addInvoicesDataInDatabase($inv_url);
     }
 }

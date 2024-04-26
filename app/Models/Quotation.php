@@ -67,6 +67,10 @@ class Quotation extends Model
         return $this->hasOne(Order::class, ['u_omsno', 'sap_connection_id'], ['u_omsno', 'sap_connection_id'])->latest();
     }
 
+    public function order1(){
+        return $this->hasOne(Order::class, ['base_entry', 'sap_connection_id'], ['doc_entry', 'sap_connection_id'])->latest();
+    }
+
     public function sap_connection(){
         return $this->belongsTo(SapConnection::class,'sap_connection_id');
     }
