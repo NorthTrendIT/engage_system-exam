@@ -200,20 +200,22 @@ class StoreInvoices implements ShouldQueue
                     if(@$obj->cancelled === "No" && @$obj->order->cancelled === "No"){ //invoice is not cancelled
                         $check = $obj->order->items ?? '-';
                         if($check !== '-'){
-                            $q_o = Quotation::where('doc_entry', $obj->order->quotation->doc_entry)
-                                              ->where('real_sap_connection_id', $obj->real_sap_connection_id)->first();
-                            $q_items = $obj->order->items->sum('quantity');
+                            if($obj->order->quotation->count() > 0){
+                                $q_o = Quotation::where('doc_entry', $obj->order->quotation->doc_entry)
+                                                ->where('real_sap_connection_id', $obj->real_sap_connection_id)->first();
+                                $q_items = $obj->order->items->sum('quantity');
 
-                            $grand_total_of_invoice_items = 0;
-                            foreach($q_o->order1->invoice1 as $inv){
-                                $grand_total_of_invoice_items +=  $inv->items->sum('quantity');
+                                $grand_total_of_invoice_items = 0;
+                                foreach($q_o->order1->invoice1 as $inv){
+                                    $grand_total_of_invoice_items +=  $inv->items->sum('quantity');
+                                }
+
+                                $inv_stat = ($q_items <= $grand_total_of_invoice_items)? 'Completed' : 'Partially Served';
+                                $grand_total_of_invoice_items = 0;
+                                
+                                // Log::info(print_r([$obj->order->quotation->doc_entry, $q_items, $i_items, $inv_stat],true));
+                                $obj->order->quotation()->update(['status' =>$inv_stat]);
                             }
-
-                            $inv_stat = ($q_items <= $grand_total_of_invoice_items)? 'Completed' : 'Partially Served';
-                            $grand_total_of_invoice_items = 0;
-                            
-                            // Log::info(print_r([$obj->order->quotation->doc_entry, $q_items, $i_items, $inv_stat],true));
-                            $obj->order->quotation()->update(['status' =>$inv_stat]);
                         }
                     }
 
