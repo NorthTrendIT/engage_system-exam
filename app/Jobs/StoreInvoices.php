@@ -209,7 +209,7 @@ class StoreInvoices implements ShouldQueue
                                 $grand_total_of_invoice_items +=  $inv->items->sum('quantity');
                             }
 
-                            $inv_stat = ($q_items === $grand_total_of_invoice_items)? 'Completed' : 'Partially Served';
+                            $inv_stat = ($q_items <= $grand_total_of_invoice_items)? 'Completed' : 'Partially Served';
                             $grand_total_of_invoice_items = 0;
                             
                             // Log::info(print_r([$obj->order->quotation->doc_entry, $q_items, $i_items, $inv_stat],true));

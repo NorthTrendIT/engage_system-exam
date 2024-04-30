@@ -306,7 +306,7 @@ class SAPInvoices
                             if($check !== '-'){
                                 $q_items = $obj->order->items->sum('quantity');
                                 $grand_total_of_invoice_items = $grand_total_of_invoice_items + $obj->items->sum('quantity');
-                                $inv_stat = ($q_items === $grand_total_of_invoice_items)? 'Completed' : 'Partially Served';
+                                $inv_stat = ($q_items <= $grand_total_of_invoice_items)? 'Completed' : 'Partially Served';
                                 
                                 $obj->order->quotation()->update(['status' =>$inv_stat]);
                             }

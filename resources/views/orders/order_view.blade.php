@@ -7,6 +7,7 @@
   .order_class td:nth-child(4){min-width: 80px;}
   .order_class td:nth-child(5){min-width: 80px;}
   .order_class td:nth-child(6){min-width: 80px;}
+  .order_class td:nth-child(7){min-width: 80px;}
   .order_class td:nth-child(2){min-width: 45px;}
   .order_class td:nth-child(3){min-width: 280px;}
   .order_class th.min-w-175px{min-width: auto !important;}
@@ -35,6 +36,24 @@
       div, ol, pre, span, ul {
           scrollbar-width: revert !important;
       }
+  }
+
+
+  .tableFixHead          { overflow: auto; height: 378px; }
+  .tableFixHead thead th { position: sticky; top: 0; z-index: 1; background-color: white}
+
+  /* Just common table stuff. Really. */
+  table  { border-collapse: collapse; width: 100%; }
+  th, td { padding: 8px 16px; }
+  th     { background:#eee; }
+
+  .note_order{
+    width: 6% !important;
+  }
+  @media only screen and (max-width: 944px) {
+    .note_order{
+      width: 18% !important;
+    }
   }
 
 </style>
@@ -79,7 +98,7 @@
 
               <div class="row mb-5 mt-5">
                 <div class="col-md-12">
-                  <div class="form-group">
+                  {{-- <div class="form-group"> --}}
 
                     <!--begin::Content-->
                     <div class="flex-lg-row-fluid me-xl-18 mb-10 mb-xl-0">
@@ -241,9 +260,9 @@
                             <!--begin::Table-->
                             <input type="checkbox" name="checked_served_checkbox" id="checked_served_checkbox"> Show Ltrs/Kgs
                             <div class="">
-                              <div class="table-responsive border-bottom mb-9">
+                              <div class="table-responsive border-bottom mb-9 tableFixHead">
                                 
-                                <table class="table mb-3 order_class align-middle">
+                                <table class="table table-striped mb-3 order_class align-middle">
                                   <thead>
                                     <tr class="border-bottom fs-6 fw-bolder text-muted">
                                       <th style="min">Action</th>
@@ -274,7 +293,7 @@
                                            $total_served += (int)$val['serverd_quantity'];
                                        ?>
 
-                                    <tr class="fw-bolder text-gray-700 fs-5">
+                                    <tr class=" text-gray-700 fs-5">
                                       <td class="text-center custom_td_order">
                                         @if($status != 'Pending')
                                         <a class="trackStatus btn btn-primary btn-sm" id="item_{{$val['item_code']}}"> Track</a>
@@ -290,7 +309,7 @@
                                           $route = route('invoices.show',@$val['id']);
                                         }
                                       ?>
-                                      <td class="text-end"><a href="{{$route}}" target="_blank">{{$val['invoice_num']}}</a></td>
+                                      <td class="text-end"><a href="{{$route}}" class="text-decoration-underline" target="_blank">{{$val['invoice_num']}}</a></td>
                                       <td class="text-center">{{$val['order_quantity']}}</td>
                                       <td class="text-center">@if(!in_array($status, ['Pending', 'On Process', 'Cancelled'])) {{$val['serverd_quantity']}} @endif</td>
                                       <td class="text-center ordered_served_class" style="display:none;">{{$val['orderd_weight']}}</td>
@@ -400,9 +419,11 @@
                           </div>
                           <br>
                           <div class="row">
-                            <div class="col-md-6"></div>
-                            <div class="col-md-6 d-flex align-items-end justify-content-end">
-                              <p>Note: Final amount of order will reflect <br> on the actual invoice.</p>
+                            <div class="col-md-1 note_order"><p>Note:</p></div>
+                            <div class="col-md-11 d-flex align-items-start justify-content-start">
+                              <p class="fst-italic text-danger"> The final amount of the order will be reflected on the actual invoice.<br><br> 
+                                The ordered quantity is based on SQ and SO, while the served quantity is based on the invoice. 
+                                Discrepancies may occur due to returned items, leading to misalignments.</p>
                             </div>
                           </div>
                           <!--end::Content-->
@@ -413,7 +434,7 @@
                     </div>
                     <!--end::Content-->
 
-                  </div>
+                  {{-- </div> --}}
 
                 </div>
               </div>

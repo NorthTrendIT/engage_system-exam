@@ -167,7 +167,19 @@
            @if( in_array(Auth::user()->role_id, [1,4,14]) )
            <div class=" error_orders d-flex align-items-stretch flex-shrink-0">
                 <!-- Error Orders -->
-                <div class="card" style="width: 166px; height: 130px;">
+                <div class="btn-group mobile_error_icon">
+                    <button type="button" class="btn btn-primary position-relative dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                        <i class="fas fa-briefcase"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ (count($local_order) > 0) ? count($local_order) : 0 }}
+                            <span class="visually-hidden">unread messages</span>
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+                        <li class="text-center"><a href="{{ route('orders.panding-orders') }}" class="btn btn-primary btn-sm font-weight-bolder py-2 font-size-sm {{ (isset($local_order) && count($local_order) == 0) ? 'disabled' : ''}}">Push Orders</a></li>
+                      </ul>
+                </div>
+                <div class="card  web_error_icon" style="width: 166px; height: 130px; margin-top: -21px;">
                     {{-- <div class="card-header border-0">
                         <h3 class="card-title align-items-start flex-column">   
                         </h3>
@@ -1061,6 +1073,27 @@
         --kt-toolbar-height-tablet-and-mobile:85px;
         border-top: 0px solid #eff2f5 !important;
     }
+
+    .web_error_icon{
+        display: block; 
+    }
+
+    .mobile_error_icon{
+        display: none; 
+    }
+
+    @media only screen and (max-width: 991px) {
+        .web_error_icon{
+            display: none; 
+        }
+
+        .mobile_error_icon{
+            display: block; 
+            margin-top: 7px;
+            margin-right: 10px;
+        }
+    }
+
 </style>
 @endpush
 
