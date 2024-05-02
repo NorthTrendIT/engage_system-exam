@@ -1266,11 +1266,11 @@ class ProductController extends Controller
       }
 
       $data = ProductGroup::query();
-      // if(Auth::user()->role_id  === 4){ //distributor
+      if(Auth::user()->role_id !== 1){ //distributor
         $data->whereIn('id', $c_product_group);
-      // }else{
+      }else{
         $data->where('sap_connection_id', $sap_connection_id);
-      // }
+      }
       $data->orderby('group_name')->where('is_active', true)->limit(50);
 
       $data->whereNotIn('group_name', ['Items', 'MKTG. MATERIALS', 'OFFICIAL DOCUMENT']);

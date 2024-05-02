@@ -43,7 +43,7 @@
                   </select>
                 </div>
 
-                <div class="col-md-3 mt-5 filter_brand_div" style="display:none;">
+                <div class="col-md-3 mt-5 filter_brand_div">
                   <select class="form-control form-control-lg form-control-solid" name="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
                     <option value=""></option>
                     {{-- @foreach($product_groups as $product_group)
