@@ -48,8 +48,8 @@ class ProcessOpenInvoice implements ShouldQueue
     public function handle()
     {
         // $sap_quotations = new SAPQuotations($this->database, $this->username, $this->password, $this->log_id);
-        $sap_orders     = new SAPOrders($this->database, $this->username, $this->password, $this->log_id);
-        // $sap_invoices   = new SAPInvoices($this->database, $this->username, $this->password, $this->log_id);
+        // $sap_orders     = new SAPOrders($this->database, $this->username, $this->password, $this->log_id);
+        $sap_invoices   = new SAPInvoices($this->database, $this->username, $this->password, $this->log_id);
 
         // $where = array(
         //     'db_name' => $this->database,
@@ -70,14 +70,14 @@ class ProcessOpenInvoice implements ShouldQueue
         // }
         
         $date_from = '2022-01-01';
-        $date_to   = '2022-06-30';
+        $date_to   = '2022-12-31';
 
         $quot_url = '/b1s/v1/Quotations?$filter=Cancelled eq \'tNO\' and CancelStatus eq \'csNo\' and CreationDate ge \''.$date_from.'\' and CreationDate le \''.$date_to.'\''.$str;
         $ord_url = '/b1s/v1/Orders?$filter=Cancelled eq \'tNO\' and CancelStatus eq \'csNo\' and CreationDate ge \''.$date_from.'\' and CreationDate le \''.$date_to.'\''.$str;
         $inv_url = '/b1s/v1/Invoices?$filter=Cancelled eq \'tNO\' and CancelStatus eq \'csNo\' and CreationDate ge \''.$date_from.'\' and CreationDate le \''.$date_to.'\''.$str;
         
         // $sap_quotations->addQuotationsDataInDatabase($quot_url);
-        $sap_orders->addOrdersDataInDatabase($ord_url);
-        // $sap_invoices->addInvoicesDataInDatabase($inv_url);
+        // $sap_orders->addOrdersDataInDatabase($ord_url);
+        $sap_invoices->addInvoicesDataInDatabase($inv_url);
     }
 }
