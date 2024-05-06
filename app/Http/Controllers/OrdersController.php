@@ -558,7 +558,7 @@ class OrdersController extends Controller
         }
 
         $data->when(!isset($request->order), function ($q) {
-            $q->orderBy('id', 'desc');
+            $q->orderBy('doc_date', 'desc');
         });
         // dd($data->toSql());
         return DataTables::of($data)
