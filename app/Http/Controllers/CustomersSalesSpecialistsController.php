@@ -645,9 +645,9 @@ class CustomersSalesSpecialistsController extends Controller
                                 ->where('is_active', true)
                                 ->limit(50);
 
-            // if(count($product_groups) > 0){
+            if($product_groups[0] !== -1){
                 $data->whereIn('number', $product_groups);
-            // }
+            }
 
             if($search != ''){
                 $data->where('group_name', 'like', '%' .$search . '%');
