@@ -69,8 +69,8 @@ class ProcessOpenInvoice implements ShouldQueue
         //     $count++;
         // }
         
-        $date_from = '2022-09-01';
-        $date_to   = '2022-10-31';
+        $date_from = '2022-11-01';
+        $date_to   = '2022-12-31';
 
         $quot_url = '/b1s/v1/Quotations?$filter=Cancelled eq \'tNO\' and CancelStatus eq \'csNo\' and CreationDate ge \''.$date_from.'\' and CreationDate le \''.$date_to.'\' &$orderby=CreationDate'.$str;
         $ord_url = '/b1s/v1/Orders?$filter=Cancelled eq \'tNO\' and CancelStatus eq \'csNo\' and CreationDate ge \''.$date_from.'\' and CreationDate le \''.$date_to.'\' &$orderby=CreationDate'.$str;
