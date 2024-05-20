@@ -47,8 +47,8 @@ class ProcessOpenInvoice implements ShouldQueue
      */
     public function handle()
     {
-        $sap_quotations = new SAPQuotations($this->database, $this->username, $this->password, $this->log_id);
-        // $sap_orders     = new SAPOrders($this->database, $this->username, $this->password, $this->log_id);
+        // $sap_quotations = new SAPQuotations($this->database, $this->username, $this->password, $this->log_id);
+        $sap_orders     = new SAPOrders($this->database, $this->username, $this->password, $this->log_id);
         // $sap_invoices   = new SAPInvoices($this->database, $this->username, $this->password, $this->log_id);
 
         // $where = array(
@@ -76,8 +76,8 @@ class ProcessOpenInvoice implements ShouldQueue
         $ord_url = '/b1s/v1/Orders?$filter=Cancelled eq \'tNO\' and CancelStatus eq \'csNo\' and CreationDate ge \''.$date_from.'\' and CreationDate le \''.$date_to.'\' &$orderby=CreationDate'.$str;
         $inv_url = '/b1s/v1/Invoices?$filter=Cancelled eq \'tNO\' and CancelStatus eq \'csNo\' and CreationDate ge \''.$date_from.'\' and CreationDate le \''.$date_to.'\' &$orderby=DocNum'.$str;
         
-        $sap_quotations->addQuotationsDataInDatabase($quot_url);
-        // $sap_orders->addOrdersDataInDatabase($ord_url);
+        // $sap_quotations->addQuotationsDataInDatabase($quot_url);
+        $sap_orders->addOrdersDataInDatabase($ord_url);
         // $sap_invoices->addInvoicesDataInDatabase($inv_url);
     }
 }
