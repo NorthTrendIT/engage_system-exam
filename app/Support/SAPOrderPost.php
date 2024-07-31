@@ -394,6 +394,8 @@ class SAPOrderPost
             $response['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
         }
 
+        $response["PayToCode"] = @$order->address->address;
+
         $response['DocumentsOwner'] = $documentOwner;
 
         $response['DocumentLines'] = [];
