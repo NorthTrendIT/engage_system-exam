@@ -249,6 +249,7 @@ class SAPQuotations
                             $item_obj = QuotationItem::updateOrCreate([
                                             'quotation_id' => $obj->id,
                                             'item_code' => @$item['ItemCode'],
+                                            'line_num' => $fields['line_num']
                                         ],
                                         $fields
                                     );

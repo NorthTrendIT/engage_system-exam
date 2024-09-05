@@ -179,6 +179,7 @@ class StoreInvoices implements ShouldQueue
                             $item_obj = InvoiceItem::updateOrCreate([
                                             'invoice_id' => $obj->id,
                                             'item_code' => @$value['ItemCode'],
+                                            'line_num' => $item['line_num']
                                         ],
                                         $item
                                     );

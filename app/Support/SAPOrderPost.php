@@ -178,6 +178,7 @@ class SAPOrderPost
                     $item_obj = QuotationItem::updateOrCreate([
                                     'quotation_id' => $fields['quotation_id'],
                                     'item_code' => $item['ItemCode'],
+                                    'line_num' => $fields['line_num']
                                 ],
                                 $fields
                             );

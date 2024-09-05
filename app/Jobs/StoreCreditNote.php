@@ -138,6 +138,7 @@ class StoreCreditNote implements ShouldQueue
                         $item_obj = CreditNoteItem::updateOrCreate([
                                         'credit_note_id' => $obj->id,
                                         'item_code' => @$d_item['ItemCode'],
+                                        'line_num' => $item['line_num']
                                     ],
                                     $item
                                 );
