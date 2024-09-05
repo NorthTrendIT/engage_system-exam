@@ -115,7 +115,7 @@
                                                 <tbody data-repeater-list="products" id="myTableBody">
                                                     @php $currency_symbol = '';  @endphp
                                                     @if(isset($edit))
-                                                        @foreach($edit->items as $value)
+                                                        @foreach($edit->items->where('type', 'product') as $value)
                                                             @php
                                                                 if($value->product->sap_connection_id === $edit->customer->real_sap_connection_id){
                                                                     $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $edit->customer->price_list_num);

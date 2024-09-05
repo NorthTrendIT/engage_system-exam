@@ -623,7 +623,9 @@ class ProductListController extends Controller
                     }
                 }
                 $c_product_group = array_unique($c_product_group);
-                array_push($c_product_group, $custom_group[0]);
+                if(isset($request->inc_mktg) && $request->inc_mktg == 'yes' || !isset($request->inc_mktg)){
+                    array_push($c_product_group, $custom_group[0]);
+                }
            }else{
                 $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
                 $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
@@ -659,7 +661,7 @@ class ProductListController extends Controller
 
         $where = array('is_active' => true);
 
-        $products = Product::whereRaw('last_sync_at > "2023-03-27 09:39:36"')->where($where)->limit(50);
+        $products = Product::with(['sap_connection:id,company_name', 'group'])->whereRaw('last_sync_at > "2023-03-27 09:39:36"')->where($where)->limit(50);
 
         $products->whereIn('sap_connection_id', $sap_connection_id);
 

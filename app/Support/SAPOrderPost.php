@@ -421,6 +421,7 @@ class SAPOrderPost
                 'UnitPrice' => @$item->price,
                 'ShipDate' => @$order->due_date,
                 'WarehouseCode' => '01',
+                'FreeText' => @$item->line_remarks
             );
             array_push($response['DocumentLines'], $temp);
         }

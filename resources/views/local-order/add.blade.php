@@ -101,16 +101,31 @@
 
                                     <div class="card-body py-3">
 
-                                        <div class="table-responsive">
+                                        <div class="table-responsive" id="productFormTbl">
+                                            <div class="row">
+                                                <div class="col-md-6">
+
+                                                </div>
+                                                <div class="col-md-6 d-flex justify-content-end">
+                                                    <div class="p-1">
+                                                        <input type="button" class="btn btn-sm btn-primary therepeat2" data-repeater-create value="Add Product">
+                                                    </div>
+                                                    <div class="p-1 prmoSlotBtn">
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <!--begin::Table-->
                                             <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
                                                 <!--begin::Table head-->
                                                 <thead>
                                                     <tr class="fw-bolder text-muted">
-
+                                                    <th class="min-w-20px">No.</th>
                                                     <th class="min-w-200px">Product</th>
                                                     <th class="min-w-80px">Quantity</th>
                                                     <th class="min-w-80px" style="text-align:right">Price</th>
+                                                    <th class="min-w-100px">Item Group</th>
+                                                    <th class="min-w-80px">DB</th>
                                                     <th class="min-w-80px" style="text-align:right">Amount</th>
                                                     <th class="min-w-80px"></th>
                                                     </tr>
@@ -119,14 +134,16 @@
                                                 <!--begin::Table body-->
                                                 <tbody data-repeater-list="products">
                                                     @php $currency_symbol = '';  @endphp
-                                                    @if(isset($edit))
-                                                        @foreach($edit->items as $value)
+                                                    @if(isset($edit) && $edit->items->where('type', 'product')->count() > 0 )
+                                                    @php $pCounter = 1; @endphp
+                                                        @foreach($edit->items->where('type', 'product') as $value)
                                                             @php
                                                                 if($value->product->sap_connection_id === $edit->customer->real_sap_connection_id){
                                                                     $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $edit->customer->price_list_num);
                                                                 }
                                                             @endphp
                                                         <tr data-repeater-item name="items">
+                                                            <td>{{$pCounter}}</td>
                                                             <td>
                                                                 <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
                                                                     <option value="{{ $value->product->id }}" selected>{{ $value->product->item_name }} ({{ @$value->product->item_code }})</option>
@@ -137,21 +154,25 @@
                                                             </td>
                                                             <td style="text-align:right" class="">
                                                                 <div class="d-flex">
-                                                                    <span class="price text-primary mb-0">{{ $currency_symbol.' '.number_format_value(@$value->price) }}</span>
+                                                                    <span class="price text-primary mb-0">{{ $currency_symbol.''.number_format_value(@$value->price) }}</span>
                                                                 </div>
                                                             </td>
+                                                            <td>{{ $value->product->group->group_name}}</td>
+                                                            <td>{{ $value->product->sap_connection->company_name}}</td>
                                                             <td style="text-align:right" class="">
                                                                 <div class="d-flex">
-                                                                    <span class="amount text-primary" style="font-weight: bold">{{ number_format_value(@$value->total) }}</span>
+                                                                    <span class="amount text-primary" style="font-weight: bold">{{number_format_value(@$value->total) }}</span>
                                                                 </div>
                                                             </td>
                                                             <td>
                                                                 <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
                                                             </td>
                                                         </tr>
+                                                        @php $pCounter++;  @endphp
                                                         @endforeach
                                                     @else
                                                     <tr data-repeater-item name="items">
+                                                        <td>1</td>
                                                         <td>
                                                             <div class="form-group">
                                                                 <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
@@ -167,6 +188,8 @@
                                                                 <span class="price text-primary mb-0 d-flex">₱ 0</span>
                                                             </div>
                                                         </td>
+                                                        <td>-</td>
+                                                        <td>-</td>
                                                         <td style="text-align:right" class="">
                                                             <div class="d-flex">
                                                                 <span class="amount price text-primary mb-0 d-flex" style="font-weight: bold">₱ 0</span>
@@ -183,19 +206,129 @@
                                             <!--end::Table-->
                                         </div>
 
-                                        <div class="add-btn-wrap mb-5">
-                                            <div class="row">
-                                                <div class="col-md-12 text-center">
-                                                    <input type="button" class="btn btn-sm btn-primary" data-repeater-create value="Add Product">
-                                                </div>
-                                            </div>
-                                        </div>
-
                                     </div>
 
                                 </div>
                             </div>
                         </div>
+
+                    {{-- custom table repeater start --}}
+                    <div class="row g-xl-8">
+                        <div class="col-xl-12">
+                            <div class="card card-xl-stretch mb-5 mb-xl-8">
+
+                                <div class="card-header border-0 pt-5">
+                                    <h3 class="card-title align-items-start flex-column">
+                                        <span class="card-label fw-bolder fs-3 mb-1">Promo / Marketing Items</span>
+                                    </h3>
+                                </div>
+
+                                <div class="card-body py-3">
+                                    <div class="table-responsive" id="promoFormTbl">
+                                        <input type="button" class="btn btn-sm btn-primary therepeat" data-repeater-create value="Add Promo / Marketing Items">
+                                        <!--begin::Table-->
+                                        <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+                                            <!--begin::Table head-->
+                                            <thead>
+                                                <tr class="fw-bolder text-muted">
+                                                <th class="min-w-20px">No.</th>
+                                                <th class="min-w-200px">Product</th>
+                                                <th class="min-w-80px">Quantity</th>
+                                                <th class="min-w-80px d-none" style="text-align:right">Price</th>
+                                                <th class="min-w-100px">Item Group</th>
+                                                <th class="min-w-80px">DB</th>
+                                                <th class="min-w-80px d-none" style="text-align:right">Amount</th>
+                                                <th class="min-w-200px">Remarks</th>
+                                                <th class="min-w-80px"></th>
+                                                </tr>
+                                            </thead>
+                                            <!--end::Table head-->
+                                            <!--begin::Table body-->
+                                            <tbody data-repeater-list="promos">
+                                                @php $currency_symbol = '';  @endphp
+                                                @if(isset($edit) && $edit->items->where('type', 'promo')->count() > 0)
+                                                    @php $pCounter = 1; @endphp
+                                                    @foreach($edit->items->where('type', 'promo') as $value)
+                                                    @php
+                                                        if($value->product->sap_connection_id === $edit->customer->real_sap_connection_id){
+                                                            $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $edit->customer->price_list_num);
+                                                        }
+                                                    @endphp
+                                                    <tr data-repeater-item name="items">
+                                                        <td>{{$pCounter}}</td>
+                                                        <td>
+                                                            <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
+                                                                <option value="{{ $value->product->id }}" selected>{{ $value->product->item_name }} ({{ @$value->product->item_code }})</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" data-currency="{{$currency_symbol}}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                        </td>
+                                                        <td style="text-align:right" class="d-none">
+                                                            <div class="d-flex">
+                                                                <span class="price text-primary mb-0">{{ $currency_symbol.' '.number_format_value(@$value->price) }}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>{{ $value->product->group->group_name}} </td>
+                                                        <td>{{ $value->product->sap_connection->company_name}}</td>
+                                                        <td style="text-align:right" class="d-none">
+                                                            <div class="d-flex">
+                                                                <span class="amount text-primary" style="font-weight: bold">{{number_format_value(@$value->total)}}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <textarea name="promo_remarks" class="form-control" id="" cols="30" rows="2">{{ $value->line_remarks }}</textarea>
+                                                        </td>
+                                                        <td>
+                                                            <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
+                                                        </td>
+                                                    </tr>
+                                                    @php $pCounter++;  @endphp
+                                                    @endforeach
+                                                @else
+                                                <tr data-repeater-item name="items">
+                                                    <td>1</td>
+                                                    <td>
+                                                        <div class="form-group">
+                                                            <select class="form-select  selectProducts" data-control="select2" data-hide-search="false" name="product_id">
+                                                                <option value="">Select Product</option>
+                                                            </select>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" class="form-control quantity" name="quantity" data-price="0" placeholder="Enter quantity" value="" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                    </td>
+                                                    <td style="text-align:right" class="d-none">
+                                                        <div class="d-flex">
+                                                            <span class="price text-primary mb-0 d-flex">₱ 0</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td style="text-align:right" class="d-none">
+                                                        <div class="d-flex">
+                                                            <span class="amount price text-primary mb-0 d-flex" style="font-weight: bold">₱ 0</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <textarea name="promo_remarks" class="form-control" id="" cols="30" rows="2"></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
+                                                    </td>
+                                                </tr>
+                                                @endif
+                                            </tbody>
+                                            <!--end::Table body-->
+                                        </table>
+                                        <!--end::Table-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- custom table repeater end --}}
+
                     </div>
 
                     <div class="d-flex flex-wrap justify-content-between remark_div">
@@ -311,6 +444,8 @@
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {
+                    var tableId = $(this).closest('.table-responsive').attr('id');
+                    var incMktg = tableId == 'productFormTbl' ? 'no' : 'yes';
                     var product_ids = [];
                     $('.selectProducts').each(function(){
                         if(this.value){
@@ -321,7 +456,8 @@
                         _token: "{{ csrf_token() }}",
                         filter_search: params.term,
                         customer_id: $('[name="customer_id"]').find('option:selected').val(),
-                        product_ids: product_ids,
+                        // product_ids: product_ids,
+                        inc_mktg : incMktg
                     };
                 },
                 processResults: function (response) {
@@ -329,7 +465,9 @@
                         results:  $.map(response, function (item) {
                                     return {
                                         text: item.item_name+ " (Code: " + item.item_code + ")",
-                                        id: item.id
+                                        id: item.id,
+                                        db: item.sap_connection.company_name,
+                                        group: item.group.group_name
                                     }
                                 })
                         };
@@ -342,7 +480,7 @@
             // data: $initialOptions
         });
 
-        form.repeater({
+        $('#productFormTbl, #promoFormTbl').repeater({
             initEmpty: false,
             show: function () {
                 $(this).slideDown();
@@ -362,11 +500,14 @@
                         dataType: 'json',
                         delay: 250,
                         data: function (params) {
+                            var tableId = $(this).closest('.table-responsive').attr('id');
+                            var incMktg = tableId == 'productFormTbl' ? 'no' : 'yes';
                             return {
                                 _token: "{{ csrf_token() }}",
                                 filter_search: params.term,
                                 customer_id: $('[name="customer_id"]').val(),
-                                product_ids: product_ids,
+                                // product_ids: product_ids,
+                                inc_mktg : incMktg
                             };
                         },
                         processResults: function (response) {
@@ -374,7 +515,9 @@
                                 results:  $.map(response, function (item) {
                                             return {
                                                 text: item.item_name+ " (Code: " + item.item_code + ")",
-                                                id: item.id
+                                                id: item.id,
+                                                db: item.sap_connection.company_name,
+                                                group: item.group.group_name
                                             }
                                         })
                                 };
@@ -398,13 +541,41 @@
                     confirmButtonText: 'Yes, do it!'
                 }).then((result) => {
                     if(result.isConfirmed) {
+                        var tableId = $(this).closest('.table-responsive').attr('id');
                         $(this).slideUp(deleteElement);
-                        calculateTotalAmount();
+                        
+                        setTimeout(function() {
+                            addTblIndex('#'+tableId);
+                            calculateTotalAmount();
+                        }, 500); // 2000 milliseconds = 2 seconds
+
                     }
                 })
             },
             //isFirstItemUndeletable: true
         });
+
+        $('#promoFormTbl input[type="button"].therepeat').appendTo('.prmoSlotBtn');
+
+        $('.selectProducts').on('select2:select', function (e) {
+            var data = e.params.data;
+            $(this).closest('tr').find('td').eq(4).text(data.group);
+            $(this).closest('tr').find('td').eq(5).text(data.db);
+        });
+
+        $('.therepeat2').on('click', function(){
+            addTblIndex('#productFormTbl');
+        });
+
+        $('.therepeat').on('click', function(){
+            addTblIndex('#promoFormTbl');
+        })
+
+        function addTblIndex(tbl){
+            $(tbl+' tbody tr').each(function(index, row) {
+                $(this).find('td:first').text(index+1);
+            });
+        }
 
         $("#selectCustomers").select2({
             ajax: {
@@ -673,13 +844,13 @@
                 }
             });
 
-            $(".selectProducts").each(function() {
+            $("#productFormTbl .selectProducts").each(function() {
                 $(this).rules('add', {
                     required: true,
                 });
             });
 
-            $(".quantity").each(function() {
+            $("#productFormTbl .quantity").each(function() {
                 $(this).rules('add', {
                     required: true,
                     min: 1,
@@ -690,6 +861,10 @@
 
         $(document).on('change', '.selectProducts',function(event){
             $self = $(this);
+            var data = $self.select2('data')[0];
+            $self.closest('tr').find('td').eq(4).text(data.group);
+            $self.closest('tr').find('td').eq(5).text(data.db);
+
             $customer_id = $('[name="customer_id"]').val();
             if($customer_id){
                 $.ajax({
@@ -735,7 +910,7 @@
             if($currency == null){ //check if null or undefined.
                 $currency = '₱';
             }
-            $(this).parent().parent().find('td .amount').html($currency+' '+number_format($amount.toFixed(2)));
+            $(this).parent().parent().find('td .amount').html($currency+''+number_format($amount.toFixed(2)));
 
             /*$grandTotal = 0;
             $("tr[name='items']").each(function(){
@@ -749,7 +924,9 @@
             $('.subTotal').html('₱ '+number_format($grandTotal.toFixed(2)));
             $('.grandTotal').html('₱ '+number_format($grandTotal.toFixed(2)));*/
 
-            calculateTotalAmount();
+            setTimeout(function() {
+                calculateTotalAmount();
+            }, 500);
         });
 
         @if(isset($edit))
@@ -759,7 +936,7 @@
         function calculateTotalAmount() {
             $grandTotal = 0;
             $currency = '';
-            $(".quantity").each(function(){
+            $("#productFormTbl .quantity").each(function(){
                 $subPrice = parseFloat($(this).attr('data-price'));
                 $currency = $(this).attr('data-currency');
                 $subQty = parseFloat($(this).val());
@@ -775,7 +952,7 @@
             }
             
             $('.subTotal').html(number_format($grandTotal.toFixed(2)));
-            $('.grandTotal').html($currency+' '+number_format($grandTotal.toFixed(2)));
+            $('.grandTotal').html($currency+''+number_format($grandTotal.toFixed(2)));
             $('[name="total_amount"]').val($grandTotal.toFixed(2));
         }
     });
