@@ -115,7 +115,7 @@
                                                 <tbody data-repeater-list="products" id="myTableBody">
                                                     @php $currency_symbol = '';  @endphp
                                                     @if(isset($edit))
-                                                        @foreach($edit->items->where('type', 'product') as $value)
+                                                        @foreach($edit->items->where('type', 'product')->unique('product_id')->values() as $value)
                                                             @php
                                                                 if($value->product->sap_connection_id === $edit->customer->real_sap_connection_id){
                                                                     $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $edit->customer->price_list_num);
@@ -130,7 +130,7 @@
                                                                     </div>
                                                                 </td>
                                                                 <td>
-                                                                    <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" data-currency="{{$currency_symbol}}" placeholder="Enter quantity" value="{{ $value->quantity }}">
+                                                                    <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" data-currency="{{$currency_symbol}}" placeholder="Enter quantity" value="{{ $edit->items->where('type', 'product')->where('product_id', $value->product_id)->sum('quantity') }}">
                                                                 </td>
                                                                 <td style="text-align:right" class="">
                                                                     <span class="price text-primary">{{ $currency_symbol.' '.number_format_value(@$value->price) }}</span>
@@ -457,12 +457,14 @@
             if (validator.form() != false) {
                 // $('[type="submit"]').prop('disabled', true);
                 // $('[name="address_id"]').removeAttr('disabled');
-                show_loader();
                 $.ajax({
                     url: "{{route('draft-order.store')}}",
                     type: "POST",
                     data: new FormData($("#myForm")[0]),
-                    async: false,
+                    beforeSend: function() {
+                        show_loader();
+                    },
+                    // async: false,
                     processData: false,
                     contentType: false,
                     success: function (data) {
@@ -471,19 +473,19 @@
                             setTimeout(function(){
                                 window.location.href = '{{ route('draft-order.index') }}';
                             },1500)
-                            hide_loader();
                         } else {
                             toast_error(data.message);
                             // $('[type="submit"]').prop('disabled', false);
-                            hide_loader();
                         }
                     },
                     error: function () {
                         toast_error("Something went to wrong !");
                         // $('[type="submit"]').prop('disabled', false);
                     },
+                    complete: function() {
+                        hide_loader();
+                    },
                 });
-                hide_loader();
             }
         });
 
@@ -491,7 +493,6 @@
             e.preventDefault();
             var validator = validate_form();
 
-            show_loader();
             if (validator.form() != false) {
                 $('[type="submit"]').prop('disabled', true);
                 $('[name="address_id"]').removeAttr('disabled');
@@ -499,7 +500,10 @@
                     url: "{{route('draft-order.placeOrder')}}",
                     type: "POST",
                     data: new FormData($("#myForm")[0]),
-                    async: false,
+                    beforeSend: function() {
+                        show_loader();
+                    },
+                    // async: false,
                     processData: false,
                     contentType: false,
                     success: function (data) {
@@ -508,19 +512,19 @@
                             setTimeout(function(){
                                 window.location.href = '{{ route('draft-order.index') }}';
                             },1500);
-                            hide_loader();
                         } else {
                             toast_error(data.message);
                             $('[type="submit"]').prop('disabled', false);
-                            hide_loader();
                         }
                     },
                     error: function () {
                         toast_error("Something went to wrong !");
                         $('[type="submit"]').prop('disabled', false);
                     },
+                    complete: function() {
+                        hide_loader();
+                    },
                 });
-                hide_loader();
             }
         });
 

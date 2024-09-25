@@ -120,9 +120,12 @@ class DraftOrderController extends Controller
                 $total = 0;
                 if( isset($input['products']) && !empty($input['products']) ){
                     $products = $input['products'];
-                    LocalOrderItem::where('local_order_id', $order->id)->delete();
+                    // LocalOrderItem::where('local_order_id', $order->id)->delete();
                     foreach($products as $value){
-                        $item = new LocalOrderItem();
+                        $item = LocalOrderItem::where('local_order_id', $order->id)->where('product_id', $value['product_id'])->first();
+                        if(!$item){
+                            $item = new LocalOrderItem();
+                        }
                         $item->local_order_id = $order->id;
                         $item->product_id = $value['product_id'];
                         $item->quantity = $value['quantity'];

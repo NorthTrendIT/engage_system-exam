@@ -48,7 +48,6 @@ class LocalOrderController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-
         // if(@$request->total_amount < 1){
         //     // unset($input['total_amount']);
         //     return $response = ['status'=>false,'message'=>"Oops! The amount is not valid."];
@@ -56,6 +55,10 @@ class LocalOrderController extends Controller
 
         $customer = Customer::find($input['customer_id']);
         $address = CustomerBpAddress::find($input['address_id']);
+
+        if (!array_key_exists('products', $input)) {
+            return $response = ['status'=>false,'message'=>"Oops! There's no product found."];
+        }
 
         if(!$customer->sap_connection_id){
             return $response = ['status'=>false,'message'=>"Oops! Customer not found in our database."];
@@ -74,7 +77,7 @@ class LocalOrderController extends Controller
                 'customer_id' => 'required',
                 'address_id' => 'required|string|max:185',
                 'due_date' => 'required',
-                'products.*.product_id' => 'exists:products,id,sap_connection_id,'.$sap_connection_id,
+                'products.*.product_id' =>'required|exists:products,id,sap_connection_id,'.$sap_connection_id,
                 'products.*.quantity' => 'required|min:1',
                 'promos.*.product_id' => 'nullable|exists:products,id,sap_connection_id,'.$sap_connection_id,
                 'promos.*.quantity' => 'required_with:promos.*.product_id',
@@ -82,6 +85,7 @@ class LocalOrderController extends Controller
             );
 
         $messages = array(
+                'products.*.product_id.required' => "Oops! Product items cannot be duplicated.",
                 'products.*.product_id.exists' => "Oops! Customer or Items can not be located in the DataBase.",
                 // 'products.*.product_id.distinct' => "Oops! Product items cannot be duplicated.",
                 'promos.*.product_id.exists' => "Oops! Customer or Items can not be located in the DataBase.",

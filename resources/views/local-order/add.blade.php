@@ -10,6 +10,24 @@
         padding: 20px 23px;
         border-radius: 10px;
     }
+
+    /* Set the max-width for the select2 container */
+    .select2-container {
+        max-width: 300px !important; /* Adjust the value as needed */
+    }
+
+    /* Optionally, you can also set the width for the dropdown itself */
+    .select2-dropdown {
+        max-width: 300px !important; /* Adjust the value as needed */
+    }
+
+    .stickyHeader{
+        height: 515px; overflow-x: scroll;
+    }
+
+    .stickyContent{
+        position: sticky;top: 0px; z-index: 97;
+    }
 </style>
     <div class="toolbar" id="kt_toolbar">
         <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
@@ -25,22 +43,22 @@
     <div class="post d-flex flex-column-fluid" id="kt_post">
 
         <div id="kt_content_container" class="container-xxl">
-            <div class="row gy-5 g-xl-8">
+            <div class="row gy-5 g-xl-8 stickyHeader">
                 <form method="post" id="myForm">
                     @csrf
 
                     @if(isset($edit))
                         <input type="hidden" value="{{$edit->id}}" name="id">
                     @endif
-                    <div class="col-md-12">
-                        <div class="card card-xl-stretch mb-5 mb-xl-8">
+                    <div class="col-md-12 stickyContent">
+                        <div class="card card-xl-stretch mb-5 mb-xl-8" style="border-radius: 0;">
                             <div class="card-body py-3">
                                 <div class="top-items-wrapper mb-5">
                                     <div class="row">
                                         <div class="col-xl-4 col-lg-4 col-md-4 col-12">
                                             <div class="form-group">
                                                 <label class="col-form-label text-right">Select Customers<span class="asterisk">*</span></label>
-                                                <select class="form-select form-select-solid" id='selectCustomers' data-control="select2" data-hide-search="false" name="customer_id" @if(isset($edit)) disabled="disabled" @endif>
+                                                <select class="form-select " id='selectCustomers' data-control="select2" data-hide-search="false" name="customer_id" @if(isset($edit)) disabled="disabled" @endif>
                                                     @if(isset($edit))
                                                     <option value="{{ $edit->customer_id }}" selected>{{ $edit->customer->card_name }}</option>
                                                     @else
@@ -52,7 +70,7 @@
                                         <div class="col-xl-4 col-lg-4 col-md-4 col-12">
                                             <div class="form-group">
                                                 <label class="col-form-label text-right">Select Address<span class="asterisk">*</span></label>
-                                                <select class="form-select form-select-solid selectAddress" id='selectAddress' data-control="select2" data-hide-search="false" name="address_id" @if(!isset($edit)) disabled="disabled" @endif>
+                                                <select class="form-select selectAddress" id='selectAddress' data-control="select2" data-hide-search="false" name="address_id" @if(!isset($edit)) disabled="disabled" @endif>
                                                         <option value="">Select Address</option>
                                                     @if(isset($edit))
                                                         @php
@@ -91,35 +109,23 @@
                     <div class="col-md-12">
                         <div class="row g-xl-8">
                             <div class="col-xl-12">
-                                <div class="card card-xl-stretch mb-5 mb-xl-8">
+                                <div class="card card-xl-stretch mb-5 mb-xl-8" id="productFormTbl">
 
-                                    <div class="card-header border-0 pt-5">
-                                        <h3 class="card-title align-items-start flex-column">
-                                            <span class="card-label fw-bolder fs-3 mb-1">Products</span>
+                                    <div class="card-header border-0 pt-2 pb-2 bg-dark d-flex justify-content-between align-items-center">
+                                        <h3 class="card-title align-items-start flex-column mb-0">
+                                            <span class="card-label fw-bolder fs-3 text-white">Products</span>
                                         </h3>
+                                        <input type="button" class="btn btn-sm btn-primary mr-2 therepeat2" data-repeater-create value="Add Product">
                                     </div>
 
                                     <div class="card-body py-3">
 
-                                        <div class="table-responsive" id="productFormTbl">
-                                            <div class="row">
-                                                <div class="col-md-6">
-
-                                                </div>
-                                                <div class="col-md-6 d-flex justify-content-end">
-                                                    <div class="p-1">
-                                                        <input type="button" class="btn btn-sm btn-primary therepeat2" data-repeater-create value="Add Product">
-                                                    </div>
-                                                    <div class="p-1 prmoSlotBtn">
-                                                        
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="table-responsive">
                                             <!--begin::Table-->
                                             <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
                                                 <!--begin::Table head-->
                                                 <thead>
-                                                    <tr class="fw-bolder text-muted">
+                                                    <tr class="fw-bolder">
                                                     <th class="min-w-20px">No.</th>
                                                     <th class="min-w-200px">Product</th>
                                                     <th class="min-w-80px">Quantity</th>
@@ -145,7 +151,7 @@
                                                         <tr data-repeater-item name="items">
                                                             <td>{{$pCounter}}</td>
                                                             <td>
-                                                                <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
+                                                                <select class="form-select selectProducts" data-control="select2" data-hide-search="false" name="product_id">
                                                                     <option value="{{ $value->product->id }}" selected>{{ $value->product->item_name }} ({{ @$value->product->item_code }})</option>
                                                                 </select>
                                                             </td>
@@ -175,7 +181,7 @@
                                                         <td>1</td>
                                                         <td>
                                                             <div class="form-group">
-                                                                <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
+                                                                <select class="form-select  selectProducts" data-control="select2" data-hide-search="false" name="product_id">
                                                                     <option value="">Select Product</option>
                                                                 </select>
                                                             </div>
@@ -213,120 +219,120 @@
                         </div>
 
                     {{-- custom table repeater start --}}
-                    <div class="row g-xl-8">
-                        <div class="col-xl-12">
-                            <div class="card card-xl-stretch mb-5 mb-xl-8">
+                        <div class="row g-xl-8">
+                            <div class="col-xl-12">
+                                <div class="card card-xl-stretch mb-5 mb-xl-8" id="promoFormTbl">
 
-                                <div class="card-header border-0 pt-5">
-                                    <h3 class="card-title align-items-start flex-column">
-                                        <span class="card-label fw-bolder fs-3 mb-1">Promo / Marketing Items</span>
-                                    </h3>
-                                </div>
+                                    <div class="card-header border-0 pt-2 pb-2 bg-dark d-flex justify-content-between align-items-center">
+                                        <h3 class="card-title align-items-start flex-column mb-0">
+                                            <span class="card-label fw-bolder fs-3 text-white">Promo / Marketing Items</span>
+                                        </h3>
+                                        <input type="button" class="btn btn-sm btn-primary mr-2 therepeat" data-repeater-create value="Add Promo / Marketing Items">
+                                    </div>
 
-                                <div class="card-body py-3">
-                                    <div class="table-responsive" id="promoFormTbl">
-                                        <input type="button" class="btn btn-sm btn-primary therepeat" data-repeater-create value="Add Promo / Marketing Items">
-                                        <!--begin::Table-->
-                                        <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
-                                            <!--begin::Table head-->
-                                            <thead>
-                                                <tr class="fw-bolder text-muted">
-                                                <th class="min-w-20px">No.</th>
-                                                <th class="min-w-200px">Product</th>
-                                                <th class="min-w-80px">Quantity</th>
-                                                <th class="min-w-80px d-none" style="text-align:right">Price</th>
-                                                <th class="min-w-100px">Item Group</th>
-                                                <th class="min-w-80px">DB</th>
-                                                <th class="min-w-80px d-none" style="text-align:right">Amount</th>
-                                                <th class="min-w-200px">Remarks</th>
-                                                <th class="min-w-80px"></th>
-                                                </tr>
-                                            </thead>
-                                            <!--end::Table head-->
-                                            <!--begin::Table body-->
-                                            <tbody data-repeater-list="promos">
-                                                @php $currency_symbol = '';  @endphp
-                                                @if(isset($edit) && $edit->items->where('type', 'promo')->count() > 0)
-                                                    @php $pCounter = 1; @endphp
-                                                    @foreach($edit->items->where('type', 'promo') as $value)
-                                                    @php
-                                                        if($value->product->sap_connection_id === $edit->customer->real_sap_connection_id){
-                                                            $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $edit->customer->price_list_num);
-                                                        }
-                                                    @endphp
+                                    <div class="card-body py-3">
+                                        <div class="table-responsive">
+                                            <!--begin::Table-->
+                                            <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+                                                <!--begin::Table head-->
+                                                <thead>
+                                                    <tr class="fw-bolder">
+                                                    <th class="min-w-20px">No.</th>
+                                                    <th class="min-w-200px">Product</th>
+                                                    <th class="min-w-80px">Quantity</th>
+                                                    <th class="min-w-80px d-none" style="text-align:right">Price</th>
+                                                    <th class="min-w-100px">Item Group</th>
+                                                    <th class="min-w-80px">DB</th>
+                                                    <th class="min-w-80px d-none" style="text-align:right">Amount</th>
+                                                    <th class="min-w-200px">Remarks</th>
+                                                    <th class="min-w-80px"></th>
+                                                    </tr>
+                                                </thead>
+                                                <!--end::Table head-->
+                                                <!--begin::Table body-->
+                                                <tbody data-repeater-list="promos">
+                                                    @php $currency_symbol = '';  @endphp
+                                                    @if(isset($edit) && $edit->items->where('type', 'promo')->count() > 0)
+                                                        @php $pCounter = 1; @endphp
+                                                        @foreach($edit->items->where('type', 'promo') as $value)
+                                                        @php
+                                                            if($value->product->sap_connection_id === $edit->customer->real_sap_connection_id){
+                                                                $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $edit->customer->price_list_num);
+                                                            }
+                                                        @endphp
+                                                        <tr data-repeater-item name="items">
+                                                            <td>{{$pCounter}}</td>
+                                                            <td>
+                                                                <select class="form-select selectProducts" data-control="select2" data-hide-search="false" name="product_id">
+                                                                    <option value="{{ $value->product->id }}" selected>{{ $value->product->item_name }} ({{ @$value->product->item_code }})</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" data-currency="{{$currency_symbol}}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                            </td>
+                                                            <td style="text-align:right" class="d-none">
+                                                                <div class="d-flex">
+                                                                    <span class="price text-primary mb-0">{{ $currency_symbol.' '.number_format_value(@$value->price) }}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td>{{ $value->product->group->group_name}} </td>
+                                                            <td>{{ $value->product->sap_connection->company_name}}</td>
+                                                            <td style="text-align:right" class="d-none">
+                                                                <div class="d-flex">
+                                                                    <span class="amount text-primary" style="font-weight: bold">{{number_format_value(@$value->total)}}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <textarea name="promo_remarks" class="form-control" id="" cols="30" rows="2">{{ $value->line_remarks }}</textarea>
+                                                            </td>
+                                                            <td>
+                                                                <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
+                                                            </td>
+                                                        </tr>
+                                                        @php $pCounter++;  @endphp
+                                                        @endforeach
+                                                    @else
                                                     <tr data-repeater-item name="items">
-                                                        <td>{{$pCounter}}</td>
+                                                        <td>1</td>
                                                         <td>
-                                                            <select class="form-select form-select-solid selectProducts" data-control="select2" data-hide-search="false" name="product_id">
-                                                                <option value="{{ $value->product->id }}" selected>{{ $value->product->item_name }} ({{ @$value->product->item_code }})</option>
-                                                            </select>
-                                                        </td>
-                                                        <td>
-                                                            <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" data-currency="{{$currency_symbol}}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
-                                                        </td>
-                                                        <td style="text-align:right" class="d-none">
-                                                            <div class="d-flex">
-                                                                <span class="price text-primary mb-0">{{ $currency_symbol.' '.number_format_value(@$value->price) }}</span>
-                                                            </div>
-                                                        </td>
-                                                        <td>{{ $value->product->group->group_name}} </td>
-                                                        <td>{{ $value->product->sap_connection->company_name}}</td>
-                                                        <td style="text-align:right" class="d-none">
-                                                            <div class="d-flex">
-                                                                <span class="amount text-primary" style="font-weight: bold">{{number_format_value(@$value->total)}}</span>
+                                                            <div class="form-group">
+                                                                <select class="form-select  selectProducts" data-control="select2" data-hide-search="false" name="product_id">
+                                                                    <option value="">Select Product</option>
+                                                                </select>
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <textarea name="promo_remarks" class="form-control" id="" cols="30" rows="2">{{ $value->line_remarks }}</textarea>
+                                                            <input type="number" class="form-control quantity" name="quantity" data-price="0" placeholder="Enter quantity" value="" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                        </td>
+                                                        <td style="text-align:right" class="d-none">
+                                                            <div class="d-flex">
+                                                                <span class="price text-primary mb-0 d-flex">₱ 0</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>-</td>
+                                                        <td>-</td>
+                                                        <td style="text-align:right" class="d-none">
+                                                            <div class="d-flex">
+                                                                <span class="amount price text-primary mb-0 d-flex" style="font-weight: bold">₱ 0</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <textarea name="promo_remarks" class="form-control" id="" cols="30" rows="2"></textarea>
                                                         </td>
                                                         <td>
                                                             <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
                                                         </td>
                                                     </tr>
-                                                    @php $pCounter++;  @endphp
-                                                    @endforeach
-                                                @else
-                                                <tr data-repeater-item name="items">
-                                                    <td>1</td>
-                                                    <td>
-                                                        <div class="form-group">
-                                                            <select class="form-select  selectProducts" data-control="select2" data-hide-search="false" name="product_id">
-                                                                <option value="">Select Product</option>
-                                                            </select>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <input type="number" class="form-control quantity" name="quantity" data-price="0" placeholder="Enter quantity" value="" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
-                                                    </td>
-                                                    <td style="text-align:right" class="d-none">
-                                                        <div class="d-flex">
-                                                            <span class="price text-primary mb-0 d-flex">₱ 0</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td style="text-align:right" class="d-none">
-                                                        <div class="d-flex">
-                                                            <span class="amount price text-primary mb-0 d-flex" style="font-weight: bold">₱ 0</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <textarea name="promo_remarks" class="form-control" id="" cols="30" rows="2"></textarea>
-                                                    </td>
-                                                    <td>
-                                                        <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
-                                                    </td>
-                                                </tr>
-                                                @endif
-                                            </tbody>
-                                            <!--end::Table body-->
-                                        </table>
-                                        <!--end::Table-->
+                                                    @endif
+                                                </tbody>
+                                                <!--end::Table body-->
+                                            </table>
+                                            <!--end::Table-->
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     {{-- custom table repeater end --}}
 
                     </div>
@@ -444,7 +450,7 @@
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {
-                    var tableId = $(this).closest('.table-responsive').attr('id');
+                    var tableId = $(this).closest('.card-xl-stretch').attr('id');
                     var incMktg = tableId == 'productFormTbl' ? 'no' : 'yes';
                     var product_ids = [];
                     $('.selectProducts').each(function(){
@@ -500,7 +506,7 @@
                         dataType: 'json',
                         delay: 250,
                         data: function (params) {
-                            var tableId = $(this).closest('.table-responsive').attr('id');
+                            var tableId = $(this).closest('.card-xl-stretch').attr('id');
                             var incMktg = tableId == 'productFormTbl' ? 'no' : 'yes';
                             return {
                                 _token: "{{ csrf_token() }}",
@@ -541,7 +547,7 @@
                     confirmButtonText: 'Yes, do it!'
                 }).then((result) => {
                     if(result.isConfirmed) {
-                        var tableId = $(this).closest('.table-responsive').attr('id');
+                        var tableId = $(this).closest('.card-xl-stretch').attr('id');
                         $(this).slideUp(deleteElement);
                         
                         setTimeout(function() {
@@ -554,8 +560,6 @@
             },
             //isFirstItemUndeletable: true
         });
-
-        $('#promoFormTbl input[type="button"].therepeat').appendTo('.prmoSlotBtn');
 
         $('.selectProducts').on('select2:select', function (e) {
             var data = e.params.data;
@@ -835,9 +839,14 @@
                         min: "Quentity must be grater than Zero."
                     }
                 },
+                success: function(label, element) {
+                    const $element = $(element);
+                    $element.next().find('.select2-selection--single').removeClass('is-invalid');
+                },
                 errorPlacement: function (error, element) {
-                    if (element.hasClass('.select2').length) {
-                        error.insertAfter(element.parent());
+
+                    if ($(element[0]).hasClass('select2-hidden-accessible')) {
+                        $(error).insertAfter(element.next().find('.select2-selection--single').addClass('is-invalid'));
                     } else {
                         error.insertAfter(element);
                     }
