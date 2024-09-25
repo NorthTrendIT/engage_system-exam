@@ -128,10 +128,10 @@
                                                     <tr class="fw-bolder">
                                                     <th class="min-w-20px">No.</th>
                                                     <th class="min-w-200px">Product</th>
-                                                    <th class="min-w-80px">Quantity</th>
+                                                    <th class="min-w-80px text-center">Quantity</th>
                                                     <th class="min-w-80px" style="text-align:right">Price</th>
-                                                    <th class="min-w-100px">Item Group</th>
-                                                    <th class="min-w-80px">DB</th>
+                                                    <th class="min-w-100px text-center">Item Group</th>
+                                                    <th class="min-w-80px text-center">DB</th>
                                                     <th class="min-w-80px" style="text-align:right">Amount</th>
                                                     <th class="min-w-80px"></th>
                                                     </tr>
@@ -156,17 +156,17 @@
                                                                 </select>
                                                             </td>
                                                             <td>
-                                                                <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" data-currency="{{$currency_symbol}}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                                <input type="number" class="form-control text-center quantity" name="quantity" data-price="{{ @$value->price }}" data-currency="{{$currency_symbol}}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                                             </td>
                                                             <td style="text-align:right" class="">
-                                                                <div class="d-flex">
+                                                                <div class="d-flex justify-content-end">
                                                                     <span class="price text-primary mb-0">{{ $currency_symbol.''.number_format_value(@$value->price) }}</span>
                                                                 </div>
                                                             </td>
-                                                            <td>{{ $value->product->group->group_name}}</td>
-                                                            <td>{{ $value->product->sap_connection->company_name}}</td>
+                                                            <td class="text-center">{{ $value->product->group->group_name}}</td>
+                                                            <td class="text-center">{{ $value->product->sap_connection->company_name}}</td>
                                                             <td style="text-align:right" class="">
-                                                                <div class="d-flex">
+                                                                <div class="d-flex justify-content-end">
                                                                     <span class="amount text-primary" style="font-weight: bold">{{number_format_value(@$value->total) }}</span>
                                                                 </div>
                                                             </td>
@@ -187,17 +187,17 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="number" class="form-control quantity" name="quantity" data-price="0" placeholder="Enter quantity" value="" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                            <input type="number" class="form-control text-center quantity" name="quantity" data-price="0" placeholder="Enter quantity" value="" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                                         </td>
                                                         <td style="text-align:right" class="">
-                                                            <div class="d-flex">
+                                                            <div class="d-flex justify-content-end">
                                                                 <span class="price text-primary mb-0 d-flex">₱ 0</span>
                                                             </div>
                                                         </td>
-                                                        <td>-</td>
-                                                        <td>-</td>
+                                                        <td class="text-center">-</td>
+                                                        <td class="text-center">-</td>
                                                         <td style="text-align:right" class="">
-                                                            <div class="d-flex">
+                                                            <div class="d-flex justify-content-end">
                                                                 <span class="amount price text-primary mb-0 d-flex" style="font-weight: bold">₱ 0</span>
                                                             </div>
                                                         </td>
@@ -239,10 +239,10 @@
                                                     <tr class="fw-bolder">
                                                     <th class="min-w-20px">No.</th>
                                                     <th class="min-w-200px">Product</th>
-                                                    <th class="min-w-80px">Quantity</th>
+                                                    <th class="min-w-80px text-center">Quantity</th>
                                                     <th class="min-w-80px d-none" style="text-align:right">Price</th>
-                                                    <th class="min-w-100px">Item Group</th>
-                                                    <th class="min-w-80px">DB</th>
+                                                    <th class="min-w-100px text-center">Item Group</th>
+                                                    <th class="min-w-80px text-center">DB</th>
                                                     <th class="min-w-80px d-none" style="text-align:right">Amount</th>
                                                     <th class="min-w-200px">Remarks</th>
                                                     <th class="min-w-80px"></th>
@@ -268,17 +268,17 @@
                                                                 </select>
                                                             </td>
                                                             <td>
-                                                                <input type="number" class="form-control quantity" name="quantity" data-price="{{ @$value->price }}" data-currency="{{$currency_symbol}}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                                <input type="number" class="form-control text-center quantity" name="quantity" data-price="{{ @$value->price }}" data-currency="{{$currency_symbol}}" placeholder="Enter quantity" value="{{ $value->quantity }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                                             </td>
                                                             <td style="text-align:right" class="d-none">
-                                                                <div class="d-flex">
+                                                                <div class="d-flex justify-content-end">
                                                                     <span class="price text-primary mb-0">{{ $currency_symbol.' '.number_format_value(@$value->price) }}</span>
                                                                 </div>
                                                             </td>
-                                                            <td>{{ $value->product->group->group_name}} </td>
-                                                            <td>{{ $value->product->sap_connection->company_name}}</td>
+                                                            <td class="text-center">{{ $value->product->group->group_name}} </td>
+                                                            <td class="text-center">{{ $value->product->sap_connection->company_name}}</td>
                                                             <td style="text-align:right" class="d-none">
-                                                                <div class="d-flex">
+                                                                <div class="d-flex justify-content-end">
                                                                     <span class="amount text-primary" style="font-weight: bold">{{number_format_value(@$value->total)}}</span>
                                                                 </div>
                                                             </td>
@@ -302,17 +302,17 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="number" class="form-control quantity" name="quantity" data-price="0" placeholder="Enter quantity" value="" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                            <input type="number" class="form-control text-center quantity" name="quantity" data-price="0" placeholder="Enter quantity" value="" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                                         </td>
                                                         <td style="text-align:right" class="d-none">
-                                                            <div class="d-flex">
+                                                            <div class="d-flex justify-content-end">
                                                                 <span class="price text-primary mb-0 d-flex">₱ 0</span>
                                                             </div>
                                                         </td>
-                                                        <td>-</td>
-                                                        <td>-</td>
+                                                        <td class="text-center">-</td>
+                                                        <td class="text-center">-</td>
                                                         <td style="text-align:right" class="d-none">
-                                                            <div class="d-flex">
+                                                            <div class="d-flex justify-content-end">
                                                                 <span class="amount price text-primary mb-0 d-flex" style="font-weight: bold">₱ 0</span>
                                                             </div>
                                                         </td>
