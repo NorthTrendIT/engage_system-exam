@@ -244,7 +244,7 @@
                                                     <th class="min-w-100px text-center">Item Group</th>
                                                     <th class="min-w-80px text-center">DB</th>
                                                     <th class="min-w-80px d-none" style="text-align:right">Amount</th>
-                                                    <th class="min-w-200px">Remarks</th>
+                                                    <th class="min-w-200px text-center">Remarks</th>
                                                     <th class="min-w-80px"></th>
                                                     </tr>
                                                 </thead>
