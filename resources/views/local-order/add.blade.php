@@ -21,8 +21,29 @@
         max-width: 300px !important; /* Adjust the value as needed */
     }
 
-    .stickyHeader{
-        height: 515px; overflow-x: scroll;
+    .stickyHeader {
+        height: 515px;
+        overflow-x: scroll; /* Horizontal scrolling */
+        scrollbar-width: auto; /* Options: auto, thin, none */
+        scrollbar-color: #888 #f1f1f1 !important; /* Handle color and track color */
+    }
+
+    /* Customize the scrollbar for WebKit browsers */
+    .stickyHeader::-webkit-scrollbar {
+        height: 12px; /* Set the height of the horizontal scrollbar */
+    }
+
+    .stickyHeader::-webkit-scrollbar-track {
+        background: #161616; /* Background color of the track */
+    }
+
+    .stickyHeader::-webkit-scrollbar-thumb {
+        background: #888; /* Color of the handle */
+        border-radius: 6px; /* Rounded corners */
+    }
+
+    .stickyHeader::-webkit-scrollbar-thumb:hover {
+        background: #555; /* Color of the handle on hover */
     }
 
     .stickyContent{
@@ -35,7 +56,9 @@
                 <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">@if(isset($edit)) Update @else Create @endif Order for Customer</h1>
             </div>
             <div class="d-flex align-items-center py-1">
-                <a href="{{ route('sales-specialist-orders.index') }}" class="btn btn-sm btn-primary">Back</a>
+                <input type="button" class="btn btn-sm btn-primary submitForm mx-2" value="Place Order for Approval">
+                <input type="button" class="btn btn-sm btn-primary placeOrder" value="Place Order">
+                {{-- <a href="{{ route('sales-specialist-orders.index') }}" class="btn btn-sm btn-primary">Back</a> --}}
             </div>
         </div>
     </div>
@@ -283,7 +306,7 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <textarea name="promo_remarks" class="form-control" id="" cols="30" rows="2">{{ $value->line_remarks }}</textarea>
+                                                                <textarea name="promo_remarks" class="form-control promo_remarks" id="" cols="30" rows="2">{{ $value->line_remarks }}</textarea>
                                                             </td>
                                                             <td>
                                                                 <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
@@ -317,7 +340,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <textarea name="promo_remarks" class="form-control" id="" cols="30" rows="2"></textarea>
+                                                            <textarea name="promo_remarks" class="form-control promo_remarks" id="" cols="30" rows="2"></textarea>
                                                         </td>
                                                         <td>
                                                             <input type="button" class="btn btn-sm btn-danger" data-repeater-delete value="Delete">
@@ -399,12 +422,11 @@
                     </div>
 
                     <div class="row gy-5 g-xl-8">
-                        <div class="col-xl-12">
+                        {{-- <div class="col-xl-12">
                             <div class="d-flex flex-wrap pt-2 text-center justify-content-center">
-                                <input type="button" class="btn btn-lg btn-primary submitForm mx-5" value="Place Order for Approval">
-                                <input type="button" class="btn btn-lg btn-primary placeOrder" value="Place Order">
+                                
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="col-xl-12">
                             <div class="d-flex flex-wrap pt-2 text-center justify-content-center">
                                 <span><b>Note:
@@ -865,6 +887,21 @@
                     min: 1,
                 });
             });
+
+            $('#promoFormTbl .promo_remarks').each(function() {
+                const promo_prod = $(this).parent().parent().find('.selectProducts').val();
+                if(promo_prod){
+                    $(this).parent().parent().find('.quantity').rules('add', {
+                        required: true,
+                        min: 1,
+                    });
+
+                    $(this).rules('add', {
+                        required: true,
+                    });
+                }
+            });
+
             return validator;
         }
 
