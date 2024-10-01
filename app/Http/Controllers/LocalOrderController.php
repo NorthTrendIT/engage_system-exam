@@ -81,6 +81,7 @@ class LocalOrderController extends Controller
                 'products.*.quantity' => 'required|min:1',
                 'promos.*.product_id' => 'nullable|exists:products,id,sap_connection_id,'.$sap_connection_id,
                 'promos.*.quantity' => 'required_with:promos.*.product_id',
+                'promos.*.promo_remarks' => 'required_with:promos.*.product_id',
                 'remark' => 'nullable|max:254'
             );
 
@@ -91,6 +92,7 @@ class LocalOrderController extends Controller
                 'promos.*.product_id.exists' => "Oops! Customer or Items can not be located in the DataBase.",
                 // 'promos.*.product_id.distinct' => "Oops! Promo items cannot be duplicated.",
                 'promos.*.quantity.required_with' => "Promo item quantity is required.",
+                'promos.*.promo_remarks.required_with' => "Promo remarks is required.",
                 'customer_id.exists' => "Oops! Customer not found.",
             );
 
