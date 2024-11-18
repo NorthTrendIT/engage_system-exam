@@ -201,7 +201,7 @@ class StoreInvoices implements ShouldQueue
                     if(@$obj->cancelled === "No" && @$obj->order->cancelled === "No"){ //invoice is not cancelled
                         $check = $obj->order->items ?? '-';
                         if($check !== '-'){
-                            if($obj->order->quotation->count() > 0){
+                            if($obj && $obj->order && $obj->order->quotation && $obj->order->quotation->count() > 0){
                                 $q_o = Quotation::where('doc_entry', $obj->order->quotation->doc_entry)
                                                 ->where('real_sap_connection_id', $obj->real_sap_connection_id)->first();
                                 $q_items = $obj->order->items->sum('quantity');
