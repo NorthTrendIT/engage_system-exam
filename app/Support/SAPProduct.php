@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Jobs\StoreProducts;
 use App\Jobs\SyncNextProducts;
 use App\Models\SapConnection;
+use Log;
 
 class SAPProduct
 {
@@ -94,7 +95,7 @@ class SAPProduct
                 $todaysDate = $currentDate->toDateString();
                 $previousDate = $currentDate->subDay()->toDateString(); // -1 day  //$date->subDays(3);
 
-                $url = '/b1s/v1/Items?$filter=UpdateDate ge \''.$previousDate.'\' or CreateDate ge \''.$previousDate.'\'';
+                $url = '/b1s/v1/Items?$count=true&$filter=(UpdateDate ge \''.$previousDate.'\' and UpdateDate le \''.$todaysDate.'\') or (CreateDate ge \''.$previousDate.'\' and CreateDate le \''.$todaysDate.'\')';
                 $response = $this->getProductData($url);
             } else {
                 $response = $this->getProductData();

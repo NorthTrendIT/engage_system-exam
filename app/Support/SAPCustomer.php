@@ -113,7 +113,8 @@ class SAPCustomer
                     $previousDate = $currentDate->subDay()->toDateString(); // -1 day  //$date->subDays(3);
 
                     // $url = '/b1s/v1/BusinessPartners?$filter=GroupCode eq 103 and VatGroup ne null and Valid eq \''.'tYES'.'\'';
-                    $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$previousDate.'\' or CreateDate ge \''.$previousDate.'\'';
+                    // $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$previousDate.'\' or CreateDate ge \''.$previousDate.'\'';
+                    $url = '/b1s/v1/BusinessPartners?$count=true&$filter=(UpdateDate ge \''.$previousDate.'\' and UpdateDate le \''.$todaysDate.'\') or (CreateDate ge \''.$previousDate.'\' and CreateDate le \''.$todaysDate.'\')';
                 }
                 $response = $this->getCustomerData($url);
                 // Log::info(print_r($response,true));
