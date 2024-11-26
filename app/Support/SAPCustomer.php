@@ -108,8 +108,12 @@ class SAPCustomer
                     $search = str_replace("'","''",$this->search);  //for single quote (') search
                     $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$search.'\')';
                 }else{
+                    $currentDate = Carbon::now(); 
+                    $todaysDate = $currentDate->toDateString();
+                    $previousDate = $currentDate->subDay()->toDateString(); // -1 day  //$date->subDays(3);
+
                     // $url = '/b1s/v1/BusinessPartners?$filter=GroupCode eq 103 and VatGroup ne null and Valid eq \''.'tYES'.'\'';
-                    $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$latestData->updated_date.'\' or CreateDate ge \''.$latestData->updated_date.'\'';
+                    $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$previousDate.'\' or CreateDate ge \''.$previousDate.'\'';
                 }
                 $response = $this->getCustomerData($url);
                 // Log::info(print_r($response,true));

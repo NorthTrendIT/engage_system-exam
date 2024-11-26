@@ -100,7 +100,7 @@ class SAPInvoices
             $latestData = Invoice::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
                 $time = Carbon::now()->subMinutes(60);
-                $url = '/b1s/v1/Invoices?$filter=UpdateDate ge \''.$latestData->updated_date.'\' and UpdateTime ge \''.$time->toTimeString().'\' and Cancelled eq \'tNO\' and CancelStatus eq \'csNo\'';
+                $url = '/b1s/v1/Invoices?$filter=UpdateDate ge \''.$time->toDateString().'\' and UpdateTime ge \''.$time->toTimeString().'\' and Cancelled eq \'tNO\' and CancelStatus eq \'csNo\'';
                 $response = $this->getInvoiceData($url);
             } else {
                 $response = $this->getInvoiceData();

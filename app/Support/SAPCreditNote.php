@@ -92,7 +92,7 @@ class SAPCreditNote
             $latestData = CreditNote::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
                 $time = Carbon::now()->subMinutes(60);
-                $url = '/b1s/v1/CreditNotes?$filter=UpdateDate ge \''.$latestData->updated_date.'\' and UpdateTime ge \''.$time->toTimeString().'\'';
+                $url = '/b1s/v1/CreditNotes?$filter=UpdateDate ge \''.$time->toDateString().'\' and UpdateTime ge \''.$time->toTimeString().'\'';
                 // $url = '/b1s/v1/CreditNotes?$filter=DocEntry eq 17855';
                 
                 $response = $this->getCreditNoteData($url);

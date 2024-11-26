@@ -44,7 +44,7 @@ class SyncAllModuleDataInHalfHour extends Command
      */
     public function handle()
     {
-        $sap_connections = SapConnection::all();
+        $sap_connections = SapConnection::where('id', '!=', 5)->get();
 
         foreach($sap_connections as $value){
             SyncQuotations::dispatch($value->db_name, $value->user_name, $value->password);

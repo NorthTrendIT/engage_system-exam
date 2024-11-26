@@ -96,8 +96,7 @@ class SAPQuotations
             if(!empty($latestData)){
                 //$latestData->updated_date = '2020-03-20';
                 $time = Carbon::now()->subMinutes(60);
-                $url = '/b1s/v1/Quotations?$filter=UpdateDate ge \''.$latestData->updated_date.'\' and UpdateTime ge \''.$time->toTimeString().'\'';
-                
+                $url = '/b1s/v1/Quotations?$filter=UpdateDate ge \''.$time->toDateString().'\' and UpdateTime ge \''.$time->toTimeString().'\'';
                 $response = $this->getQuotationData($url);
             } else {
                 $response = $this->getQuotationData();
