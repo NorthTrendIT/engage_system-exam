@@ -723,6 +723,7 @@
                             setTimeout(function() {
                                 addTblIndex('#' + tableId);
                                 calculateTotalAmount();
+                                hidePlaceOrderAppr();
                             }, 500); // 2000 milliseconds = 2 seconds
 
                         }
@@ -730,6 +731,14 @@
                 },
                 //isFirstItemUndeletable: true
             });
+
+            function hidePlaceOrderAppr() {
+                if (check_product_selection('product')) {
+                    $('.submitForm').addClass('d-none');
+                } else {
+                    $('.submitForm').removeClass('d-none');
+                }
+            }
 
             $('.selectProducts').on('select2:select', function(e) {
                 var data = e.params.data;
@@ -895,84 +904,104 @@
                 @endif
                 $('[name="address_id"]').removeAttr('disabled');
                 if (validator.form() != false) {
-                    $('[type="submit"]').prop('disabled', true);
-                    $('[name="address_id"]').removeAttr('disabled');
-                    $('[name="customer_id"]').removeAttr('disabled');
-                    $.ajax({
-                        url: "{{ route('sales-specialist-orders.store') }}",
-                        type: "POST",
-                        data: new FormData($("#myForm")[0]),
-                        async: false,
-                        processData: false,
-                        contentType: false,
-                        success: function(data) {
-                            if (data.status) {
-                                toast_success(data.message)
-                                setTimeout(function() {
-                                    window.location.href =
-                                        '{{ route('sales-specialist-orders.index') }}';
-                                }, 1500)
-                            } else {
-                                toast_error(data.message);
-                                $('[type="submit"]').prop('disabled', false);
-                                $('[name="customer_id"]').prop('disabled', false);
-                            }
-                        },
-                        error: function() {
-                            toast_error("Something went to wrong !");
-                            $('[type="submit"]').prop('disabled', false);
-                            $('[name="customer_id"]').prop('disabled', false);
-                        },
-                    });
+                    if (check_product_selection('product')) {
+                        showAllPromoConfirmation('poa');
+                    } else {
+                        pOrderApprRequest();
+                    }
+                } else {
+                    toast_error("Please fill in the required field.");
                 }
                 @if (isset($edit))
                     $('[name="address_id"]').prop('disabled', false);
                 @endif
             });
 
+            function pOrderApprRequest() {
+                $('[type="submit"]').prop('disabled', true);
+                $('[name="address_id"]').removeAttr('disabled');
+                $('[name="customer_id"]').removeAttr('disabled');
+                $.ajax({
+                    url: "{{ route('sales-specialist-orders.store') }}",
+                    type: "POST",
+                    data: new FormData($("#myForm")[0]),
+                    async: false,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        if (data.status) {
+                            toast_success(data.message)
+                            setTimeout(function() {
+                                window.location.href =
+                                    '{{ route('sales-specialist-orders.index') }}';
+                            }, 1500)
+                        } else {
+                            toast_error(data.message);
+                            $('[type="submit"]').prop('disabled', false);
+                            $('[name="customer_id"]').prop('disabled', false);
+                        }
+                    },
+                    error: function() {
+                        toast_error("Something went to wrong !");
+                        $('[type="submit"]').prop('disabled', false);
+                        $('[name="customer_id"]').prop('disabled', false);
+                    },
+                });
+            }
+
             $('body').on("click", ".placeOrder", function(e) {
                 e.preventDefault();
                 var validator = validate_form();
 
                 if (validator.form() != false) {
-                    $('[type="submit"]').prop('disabled', true);
-                    $('[name="address_id"]').removeAttr('disabled');
-                    $('[name="customer_id"]').removeAttr('disabled');
-                    $.ajax({
-                        url: "{{ route('sales-specialist-orders.placeOrder') }}",
-                        type: "POST",
-                        data: new FormData($("#myForm")[0]),
-                        beforeSend: function() {
-                            show_loader();
-                        },
-                        processData: false,
-                        contentType: false,
-                        success: function(data) {
-                            if (data.status) {
-                                toast_success(data.message)
-                                setTimeout(function() {
-                                    window.location.href =
-                                        '{{ route('sales-specialist-orders.index') }}';
-                                }, 1500)
-                            } else {
-                                toast_error(data.message);
-                                $('[type="submit"]').prop('disabled', false);
-                                $('[name="address_id"]').removeAttr('disabled', false);
-                                $('[name="customer_id"]').removeAttr('disabled', false);
-                            }
-                        },
-                        error: function() {
-                            toast_error("Something went to wrong !");
+                    if (check_product_selection('product')) {
+                        showAllPromoConfirmation('po');
+                    } else {
+                        pOrderRequest();
+                    }
+                } else {
+                    toast_error("Please fill in the required field.");
+                }
+            });
+
+            function pOrderRequest() {
+                $('[type="submit"]').prop('disabled', true);
+                $('[name="address_id"]').removeAttr('disabled');
+                $('[name="customer_id"]').removeAttr('disabled');
+                $.ajax({
+                    url: "{{ route('sales-specialist-orders.placeOrder') }}",
+                    type: "POST",
+                    data: new FormData($("#myForm")[0]),
+                    beforeSend: function() {
+                        show_loader();
+                    },
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        if (data.status) {
+                            toast_success(data.message)
+                            setTimeout(function() {
+                                window.location.href =
+                                    '{{ route('sales-specialist-orders.index') }}';
+                            }, 1500)
+                        } else {
+                            toast_error(data.message);
                             $('[type="submit"]').prop('disabled', false);
                             $('[name="address_id"]').removeAttr('disabled', false);
                             $('[name="customer_id"]').removeAttr('disabled', false);
-                        },
-                        complete: function() {
-                            hide_loader();
-                        },
-                    });
-                }
-            });
+                        }
+                    },
+                    error: function() {
+                        toast_error("Something went to wrong !");
+                        $('[type="submit"]').prop('disabled', false);
+                        $('[name="address_id"]').removeAttr('disabled', false);
+                        $('[name="customer_id"]').removeAttr('disabled', false);
+                    },
+                    complete: function() {
+                        hide_loader();
+                    },
+                });
+            }
 
             function validate_form() {
                 var validator = $("#myForm").validate({
@@ -1016,7 +1045,11 @@
                     },
                     success: function(label, element) {
                         const $element = $(element);
-                        $element.next().find('.select2-selection--single').removeClass('is-invalid');
+                        console.log($element);
+                        $element.next().parent().parent().find('.select2-selection--single')
+                            .removeClass(
+                                'is-invalid');
+                        // $element.find('.is-valid').removeClass('is-valid');
                     },
                     errorPlacement: function(error, element) {
 
@@ -1025,22 +1058,50 @@
                                 .addClass('is-invalid'));
                         } else {
                             error.insertAfter(element);
+                            element.next().find('.select2-selection--single')
+                                .addClass('is-invalid');
                         }
                     }
                 });
 
-                $("#productFormTbl .selectProducts").each(function() {
-                    $(this).rules('add', {
-                        required: true,
-                    });
-                });
+                if (check_product_selection('promo')) {
+                    $("#productFormTbl .selectProducts").each(function() {
+                        const prod = $(this).val();
+                        $(this).rules('add', {
+                            required: true,
+                        });
 
-                $("#productFormTbl .quantity").each(function() {
-                    $(this).rules('add', {
-                        required: true,
-                        min: 1,
+                        // if (prod) {
+                        $(this).parent().parent().parent().find('.quantity').rules('add', {
+                            required: true,
+                            min: 1,
+                        });
+                        // }
                     });
-                });
+                } else {
+
+                    $("#productFormTbl .selectProducts").each(function() {
+                        const prod = $(this).val();
+                        $(this).rules('add', {
+                            required: false,
+                        });
+
+                        // if (prod) {
+                        $(this).parent().parent().parent().find('.quantity').rules('add', {
+                            required: false,
+                            min: 1,
+                        });
+                        // }
+                    });
+
+                }
+
+                // $("#productFormTbl .quantity").each(function() {
+                //     $(this).rules('add', {
+                //         required: true,
+                //         min: 1,
+                //     });
+                // });
 
                 $('#promoFormTbl .promo_remarks').each(function() {
                     const promo_prod = $(this).parent().parent().find('.selectProducts').val();
@@ -1053,13 +1114,50 @@
                         $(this).rules('add', {
                             required: true,
                         });
+                    } else {
+                        $(this).parent().parent().find('.quantity').rules('add', {
+                            required: false,
+                            min: 1,
+                        });
+
+                        $(this).rules('add', {
+                            required: false,
+                        });
                     }
                 });
 
                 return validator;
             }
 
+            function check_product_selection(tbl) {
+                return $('#' + tbl + 'FormTbl .selectProducts').filter(function() {
+                    return $(this).val() !== '';
+                }).length == 0;
+            }
+
+            function showAllPromoConfirmation(form) {
+                Swal.fire({
+                    title: 'The system detected that all product to be push was promo items',
+                    // text: "Syncing process will run in background and it may take some time to sync all products Data.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Confirm'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (form === 'poa') {
+                            pOrderApprRequest();
+                        } else {
+                            pOrderRequest();
+                        }
+
+                    }
+                })
+            }
+
             $(document).on('change', '.selectProducts', function(event) {
+                recallSelect2Select();
                 $self = $(this);
                 var data = $self.select2('data')[0];
                 $self.closest('tr').find('td').eq(4).text(data.group);
@@ -1103,6 +1201,14 @@
                 }
                 // $(this).trigger('keyup');
             });
+
+            recallSelect2Select();
+
+            function recallSelect2Select() {
+                $('.selectProducts').on('select2:select', function(e) {
+                    hidePlaceOrderAppr();
+                });
+            }
 
             $(document).on('change', "input[type=number]", function(event) {
                 $price = parseFloat($(this).attr('data-price'));
