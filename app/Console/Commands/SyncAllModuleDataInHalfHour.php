@@ -10,6 +10,10 @@ use App\Jobs\SyncOrders;
 use App\Jobs\SyncQuotations;
 use App\Jobs\SyncInvoices;
 use App\Jobs\SyncCreditNote;
+use App\Support\SAPCustomer;
+use App\Support\SAPProduct;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SyncAllModuleDataInHalfHour extends Command
 {
@@ -44,6 +48,21 @@ class SyncAllModuleDataInHalfHour extends Command
      */
     public function handle()
     {
+        $logFilePath = storage_path('logs/dataSync-failed.log');
+        if (file_exists($logFilePath)) {
+            
+            $lines = file($logFilePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); // Read the log file
+            $latestDate = end($lines); // Get the last non-empty line
+            if ($latestDate) { 
+                $this->reSyncRecords($latestDate);
+                unlink($logFilePath); //  Delete the log file 
+            } else { 
+                echo 'No log dates found or log file does not exist.'; 
+            }
+
+         }
+
+
         $sap_connections = SapConnection::where('id', '!=', 5)->get();
 
         foreach($sap_connections as $value){
@@ -55,5 +74,23 @@ class SyncAllModuleDataInHalfHour extends Command
 
         echo "Sync all module data to take from SAP successfully";
         return 0;
+    }
+
+    private function reSyncRecords($previousDate){
+        $currentDate = Carbon::now(); 
+        $todaysDate = $currentDate->toDateString();
+        
+        $sap_connections = SapConnection::where('id', '!=', 5)->get();
+        foreach($sap_connections as $value){
+
+            $sap_customer = new SAPCustomer ($value->db_name, $value->user_name, $value->password, false, '');
+            $cust_url = '/b1s/v1/BusinessPartners?$count=true&$filter=(UpdateDate ge \''.$previousDate.'\' and UpdateDate le \''.$todaysDate.'\') or (CreateDate ge \''.$previousDate.'\' and CreateDate le \''.$todaysDate.'\')';
+            $sap_customer->addCustomerDataInDatabase($cust_url);
+
+            
+            $sap_product = new SAPProduct ($value->db_name, $value->user_name, $value->password);
+            $prod_url = '/b1s/v1/Items?$count=true&$filter=(UpdateDate ge \''.$previousDate.'\' and UpdateDate le \''.$todaysDate.'\') or (CreateDate ge \''.$previousDate.'\' and CreateDate le \''.$todaysDate.'\')';
+            $sap_product->addProductDataInDatabase($prod_url);
+        }
     }
 }

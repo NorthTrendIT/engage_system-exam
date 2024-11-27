@@ -5,6 +5,9 @@ namespace App\Support;
 use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use GuzzleHttp\Exception\RequestException;
+use App\Mail\DataSyncFailed; 
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class SAPTestAPI
 {
@@ -50,6 +53,18 @@ class SAPTestAPI
                     return ['status' => false, 'message' => "API Not Working"];
                 }
             } catch (\Exception $e) {
+                // Handle the exception and send an email 
+                $details = $e->getMessage(); 
+                Mail::to('itsupport@northtrend.com')->send(new DataSyncFailed($details));
+
+                // add condition for mid night time only.
+                $now = Carbon::now();
+                if ($now->hour == 0){
+                    $date = $now->toDateString();
+                    $logFile = storage_path('logs/dataSync-failed.log'); 
+                    file_put_contents($logFile, $date . PHP_EOL, FILE_APPEND);
+                }
+                
                 $code = $e->getCode();
                 if($code){
                     $message = "";

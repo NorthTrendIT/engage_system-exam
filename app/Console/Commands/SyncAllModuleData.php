@@ -14,6 +14,7 @@ use App\Jobs\SyncQuotations;
 use App\Jobs\SyncInvoices;
 use App\Jobs\SyncSalesPersons;
 use App\Jobs\SyncTerritories;
+use App\Support\SAPTestAPI;
 use Illuminate\Support\Facades\Log;
 
 
@@ -50,6 +51,11 @@ class SyncAllModuleData extends Command
      */
     public function handle()
     {
+        $data = SapConnection::where('id', '!=', 5)->firstOrFail();
+
+        $testAPI = new SAPTestAPI($data->db_name, $data->user_name, $data->password);
+        $testAPI->checkLogin();
+
         $sap_connections = SapConnection::where('id', '!=', 5)->get();
 
         foreach($sap_connections as $value){
