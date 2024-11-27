@@ -354,8 +354,13 @@ class SAPOrderPost
 
         $url = '/b1s/v1/EmployeesInfo?$filter= contains(LastName, \'Engage\')&$select=EmployeeID';
         $response = $this->requestSapApi($url, "GET");
-        $documentOwner = $response['data']['value'][0]['EmployeeID'];
         
+        if (is_array($response['data']['value'])) {
+            $documentOwner = $response['data']['value'][0]['EmployeeID'];
+        } else {
+            $documentOwner = null;
+        }
+
         $response = [];
         $order = LocalOrder::where('id', $id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
