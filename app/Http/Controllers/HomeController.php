@@ -89,8 +89,8 @@ class HomeController extends Controller
             $latest_quotation = $default_customer_top_products->quotation->last();
             $result_quot_date = $latest_quotation->doc_date; 
 
-            $quotation_brand     = $latest_quotation->items->first()->product1->group;
-            $quotation_category  = $latest_quotation->items->first()->product1->product_tires_category;
+            $quotation_brand     = ($latest_quotation->items->first()->product1 !== null) ? $latest_quotation->items->first()->product1->group : null;
+            $quotation_category  = ($latest_quotation->items->first()->product1 !== null) ? $latest_quotation->items->first()->product1->product_tires_category : null;
 
         }else{
             $result_quot_date =  date('Y-m-d');

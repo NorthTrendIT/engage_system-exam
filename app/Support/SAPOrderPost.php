@@ -355,7 +355,7 @@ class SAPOrderPost
         $url = '/b1s/v1/EmployeesInfo?$filter= contains(LastName, \'Engage\')&$select=EmployeeID';
         $response = $this->requestSapApi($url, "GET");
         
-        if (is_array($response['data']['value'])) {
+        if (is_array($response['data']['value']) && !empty($response['data']['value'])) {
             $documentOwner = $response['data']['value'][0]['EmployeeID'];
         } else {
             $documentOwner = null;
