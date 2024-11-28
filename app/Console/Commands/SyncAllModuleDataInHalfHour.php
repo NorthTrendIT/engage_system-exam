@@ -54,8 +54,7 @@ class SyncAllModuleDataInHalfHour extends Command
             $lines = file($logFilePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); // Read the log file
             $latestDate = end($lines); // Get the last non-empty line
             if ($latestDate) { 
-                $this->reSyncRecords($latestDate);
-                unlink($logFilePath); //  Delete the log file 
+                $this->reSyncRecords($latestDate, $logFilePath);
             } else { 
                 echo 'No log dates found or log file does not exist.'; 
             }
@@ -76,7 +75,7 @@ class SyncAllModuleDataInHalfHour extends Command
         return 0;
     }
 
-    private function reSyncRecords($previousDate){
+    private function reSyncRecords($previousDate, $logFilePath){
         $currentDate = Carbon::now(); 
         $todaysDate = $currentDate->toDateString();
         
@@ -85,7 +84,7 @@ class SyncAllModuleDataInHalfHour extends Command
 
             $sap_customer = new SAPCustomer ($value->db_name, $value->user_name, $value->password, false, '');
             $cust_url = '/b1s/v1/BusinessPartners?$count=true&$filter=(UpdateDate ge \''.$previousDate.'\' and UpdateDate le \''.$todaysDate.'\') or (CreateDate ge \''.$previousDate.'\' and CreateDate le \''.$todaysDate.'\')';
-            $sap_customer->addCustomerDataInDatabase($cust_url);
+            $sap_customer->addCustomerDataInDatabase($cust_url, $logFilePath); // intend to delete log file if it was successful from fetching api
 
             
             $sap_product = new SAPProduct ($value->db_name, $value->user_name, $value->password);

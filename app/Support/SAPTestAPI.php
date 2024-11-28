@@ -57,10 +57,9 @@ class SAPTestAPI
                 $details = $e->getMessage(); 
                 Mail::to('itsupport@northtrend.com')->send(new DataSyncFailed($details));
 
-                // add condition for mid night time only.
                 $now = Carbon::now();
                 if ($now->hour == 0){
-                    $date = $now->toDateString();
+                    $date = $now->subDay()->toDateString();;
                     $logFile = storage_path('logs/dataSync-failed.log'); 
                     file_put_contents($logFile, $date . PHP_EOL, FILE_APPEND);
                 }

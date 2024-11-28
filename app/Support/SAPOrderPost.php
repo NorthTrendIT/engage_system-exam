@@ -76,6 +76,7 @@ class SAPOrderPost
         } catch (\Exception $e) {
             // dd($e);
             $code = $e->getCode();
+            $message = "";
             if($code){
                 $message = "API Error:";
                 $statusCode = !empty($e->getResponse()->getStatusCode()) ? $e->getResponse()->getStatusCode() : NULL;
@@ -355,10 +356,11 @@ class SAPOrderPost
         $url = '/b1s/v1/EmployeesInfo?$filter= contains(LastName, \'Engage\')&$select=EmployeeID';
         $response = $this->requestSapApi($url, "GET");
         
-        if (is_array($response['data']['value']) && !empty($response['data']['value'])) {
+        if ($response['status'] === true && is_array($response['data']['value']) && !empty($response['data']['value'])) {
             $documentOwner = $response['data']['value'][0]['EmployeeID'];
         } else {
             $documentOwner = null;
+            Log::info(print_r([$response['data']],true));
         }
 
         $response = [];

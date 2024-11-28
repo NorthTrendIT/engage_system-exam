@@ -47,7 +47,7 @@ class SAPCustomer
     }
 
     // Get customer data
-    public function getCustomerData($url = '/b1s/v1/BusinessPartners')
+    public function getCustomerData($url = '/b1s/v1/BusinessPartners', $logFilePath = false)
     {
     	try {
             $response = $this->httpClient->request(
@@ -64,6 +64,8 @@ class SAPCustomer
 
             if(in_array($response->getStatusCode(), [200,201])){
                 $response = json_decode($response->getBody(),true);
+
+                unlink($logFilePath);
 
                 return array(
                                 'status' => true,
@@ -88,7 +90,7 @@ class SAPCustomer
     }
 
     // Store All Customer Records In DB
-    public function addCustomerDataInDatabase($url = false)
+    public function addCustomerDataInDatabase($url = false, $logFilePath = false)
     {
         ini_set('memory_limit', '512M'); //set limit
 
@@ -100,7 +102,7 @@ class SAPCustomer
         $sap_connection = SapConnection::where($where)->first();
 
         if($url){
-            $response = $this->getCustomerData($url);
+            $response = $this->getCustomerData($url, $logFilePath);
         }else{
             $latestData = Customer::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
             if(!empty($latestData)){
