@@ -77,8 +77,8 @@ class LocalOrderController extends Controller
                 'customer_id' => 'required',
                 'address_id' => 'required|string|max:185',
                 'due_date' => 'required',
-                'products.*.product_id' =>'required|exists:products,id,sap_connection_id,'.$sap_connection_id,
-                'products.*.quantity' => 'required|min:1',
+                'products.*.product_id' =>'required_without:promos.*.product_id|exists:products,id,sap_connection_id,'.$sap_connection_id.' |nullable',
+                'products.*.quantity' => 'required_with:products.*.product_id|min:1|nullable',
                 'promos.*.product_id' => 'nullable|exists:products,id,sap_connection_id,'.$sap_connection_id,
                 'promos.*.quantity' => 'required_with:promos.*.product_id',
                 'promos.*.promo_remarks' => 'required_with:promos.*.product_id',
@@ -87,9 +87,10 @@ class LocalOrderController extends Controller
 
         $messages = array(
                 'products.*.product_id.required' => "Oops! Product items cannot be duplicated.",
-                'products.*.product_id.exists' => "Oops! Customer or Items can not be located in the DataBase.",
+                'products.*.product_id.exists' => "Product cannot be located in the DataBase.",
                 // 'products.*.product_id.distinct' => "Oops! Product items cannot be duplicated.",
-                'promos.*.product_id.exists' => "Oops! Customer or Items can not be located in the DataBase.",
+                'products.*.product_id.required_without' => "Product is required.",
+                'promos.*.product_id.exists' => "Product cannot be located in the DataBase.",
                 // 'promos.*.product_id.distinct' => "Oops! Promo items cannot be duplicated.",
                 'promos.*.quantity.required_with' => "Promo item quantity is required.",
                 'promos.*.promo_remarks.required_with' => "Promo remarks is required.",
@@ -102,11 +103,12 @@ class LocalOrderController extends Controller
             $response = ['status'=>false,'message'=>$validator->errors()->first()];
         }else{
 
-            if( isset($input['products']) && !empty($input['products']) ){
+            if( isset($input['products']) && !empty($input['products']) && $input['products'][0]['product_id'] !== null){
                 foreach($input['products'] as $value){
+                    if($value['product_id'] !== null){
                     $product = Product::find(@$value['product_id']);
                     
-                    $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
+                    // $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
                     // if($avl_qty == 0){
                     //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity is not available at the moment please remove from order.'];
                     // }else if($avl_qty < @$value['quantity']){
@@ -118,25 +120,26 @@ class LocalOrderController extends Controller
                         return $response = ['status'=>false,'message'=>'The product "'.@$product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
                     }
                 }
-            }
-
-            if( isset($input['promos']) && !empty($input['promos']) && $input['promos'][0]['product_id'] !== null ){
-                foreach($input['promos'] as $value){
-                    $product = Product::find(@$value['product_id']);
-                    
-                    $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
-                    // if($avl_qty == 0){
-                    //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity is not available at the moment please remove from order.'];
-                    // }else if($avl_qty < @$value['quantity']){
-                    //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity value must be less then '.$avl_qty.'.'];
-                    // }
-
-                    $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num, false, false, $customer);
-                    if($price <= 0 && $product->items_group_code != 107){ //exept for mktg. items.
-                        return $response = ['status'=>false,'message'=>'The product "'.@$product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
-                    }
                 }
             }
+
+            // if( isset($input['promos']) && !empty($input['promos']) && $input['promos'][0]['product_id'] !== null ){
+            //     foreach($input['promos'] as $value){
+            //         $product = Product::find(@$value['product_id']);
+                    
+            //         $avl_qty = $product->quantity_on_stock - $product->quantity_ordered_by_customers;
+            //         // if($avl_qty == 0){
+            //         //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity is not available at the moment please remove from order.'];
+            //         // }else if($avl_qty < @$value['quantity']){
+            //         //     return $response = ['status'=>false, 'message'=> 'The product "'.$product->item_name.'" quantity value must be less then '.$avl_qty.'.'];
+            //         // }
+
+            //         $price = get_product_customer_price(@$product->item_prices, @$customer->price_list_num, false, false, $customer);
+            //         if($price <= 0 && $product->items_group_code != 107){ //exept for mktg. items.
+            //             return $response = ['status'=>false,'message'=>'The product "'.@$product->item_name.'" price is not a valid so please remove that product from cart for further process. '];
+            //         }
+            //     }
+            // }
 
             if(isset($input['id'])){
                 $order = LocalOrder::find($input['id']);
@@ -166,6 +169,7 @@ class LocalOrderController extends Controller
                     $products = $input['products'];
                     LocalOrderItem::where('local_order_id', $order->id)->delete();
                     foreach($products as $value){
+                        if($value['product_id'] !== null){
                         $item = new LocalOrderItem();
                         $item->local_order_id = $order->id;
                         $item->product_id = @$value['product_id'];
@@ -177,12 +181,14 @@ class LocalOrderController extends Controller
                         $item->type =  'product';
                         $item->save();
                         $total += $item->total;
+                        }
                     }
 
                     if( isset($input['promos']) && !empty($input['promos']) && $input['promos'][0]['product_id'] !== null ){
                         $products = $input['promos'];
                         // LocalOrderItem::where('local_order_id', $order->id)->delete();
                         foreach($products as $value){
+                            if($value['product_id'] !== null){
                             $item = new LocalOrderItem();
                             $item->local_order_id = $order->id;
                             $item->product_id = @$value['product_id'];
@@ -195,6 +201,7 @@ class LocalOrderController extends Controller
                             $item->line_remarks = @$value['promo_remarks'];
                             $item->save();
                             $total += $item->total;
+                            }
                         }
                     }
                 }
