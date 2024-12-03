@@ -65,7 +65,9 @@ class SAPCustomer
             if(in_array($response->getStatusCode(), [200,201])){
                 $response = json_decode($response->getBody(),true);
 
-                unlink($logFilePath);
+                if($logFilePath){
+                    unlink($logFilePath);
+                }
 
                 return array(
                                 'status' => true,
