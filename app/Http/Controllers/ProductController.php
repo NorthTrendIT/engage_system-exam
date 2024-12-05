@@ -205,7 +205,7 @@ class ProductController extends Controller
                                   'status' => "in progress",
                                   'sap_connection_id' => $sap_connections->id,
                               ]);
-        SyncProducts::dispatch($sap_connections->db_name, $sap_connections->user_name , $sap_connections->password, $log_id);
+        SyncProducts::dispatch($sap_connections->db_name, $sap_connections->user_name , $sap_connections->password, $log_id, $request->filter_search);
 
       }else{
         $sap_connections = SapConnection::where('id', '!=', 5)->get();
@@ -222,7 +222,7 @@ class ProductController extends Controller
                               ]);
 
           // Save Data of Product in database
-          SyncProducts::dispatch($value->db_name, $value->user_name , $value->password, $log_id);
+          SyncProducts::dispatch($value->db_name, $value->user_name , $value->password, $log_id, $request->filter_search);
         }
       }
 

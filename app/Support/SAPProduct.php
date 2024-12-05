@@ -18,18 +18,22 @@ class SAPProduct
 
 	/** @var string */
 	protected $headers;
+    protected $cookie;
+    protected $authentication;
 
 	protected $database;
 	protected $username;
 	protected $password;
     protected $log_id;
+    protected $search;
 
-    public function __construct($database, $username, $password, $log_id = false)
+    public function __construct($database, $username, $password, $log_id = false, $search)
     {
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
         $this->log_id = $log_id;
+        $this->search = $search;
 
         $this->headers = $this->cookie = array();
         $this->authentication = new SAPAuthentication($database, $username, $password);
@@ -89,17 +93,22 @@ class SAPProduct
         if($url){
             $response = $this->getProductData($url);
         }else{
-            $latestData = Product::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
-            if(!empty($latestData)){
-                $currentDate = Carbon::now(); 
-                $todaysDate = $currentDate->toDateString();
-                $previousDate = $currentDate->subDay()->toDateString(); // -1 day  //$date->subDays(3);
+            if($this->search){
+                $search = str_replace("'","''",$this->search);  //for single quote (') search
+                $url = '/b1s/v1/Items?$filter=contains(ItemCode, \''.$search.'\')&$top=10';
+            }else{
+                // $latestData = Product::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
+                // if(!empty($latestData)){
+                    $currentDate = Carbon::now(); 
+                    $todaysDate = $currentDate->toDateString();
+                    $previousDate = $currentDate->subDay()->toDateString(); // -1 day  //$date->subDays(3);
 
-                $url = '/b1s/v1/Items?$count=true&$filter=(UpdateDate ge \''.$previousDate.'\' and UpdateDate le \''.$todaysDate.'\') or (CreateDate ge \''.$previousDate.'\' and CreateDate le \''.$todaysDate.'\')';
-                $response = $this->getProductData($url);
-            } else {
-                $response = $this->getProductData();
+                    $url = '/b1s/v1/Items?$count=true&$filter=(UpdateDate ge \''.$previousDate.'\' and UpdateDate le \''.$todaysDate.'\') or (CreateDate ge \''.$previousDate.'\' and CreateDate le \''.$todaysDate.'\')';
+                // } else {
+                //     $url = '/b1s/v1/Items';
+                // }
             }
+            $response = $this->getProductData($url);
         }
 
         if($response['status']){

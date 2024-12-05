@@ -106,12 +106,12 @@ class SAPCustomer
         if($url){
             $response = $this->getCustomerData($url, $logFilePath);
         }else{
-            $latestData = Customer::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
-            if(!empty($latestData)){
-                if($this->search){
-                    $search = str_replace("'","''",$this->search);  //for single quote (') search
-                    $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$search.'\')';
-                }else{
+            if($this->search){
+                $search = str_replace("'","''",$this->search);  //for single quote (') search
+                $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$search.'\')&$top=10';
+            }else{
+                // $latestData = Customer::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
+                // if(!empty($latestData)){
                     $currentDate = Carbon::now(); 
                     $todaysDate = $currentDate->toDateString();
                     $previousDate = $currentDate->subDay()->toDateString(); // -1 day  //$date->subDays(3);
@@ -119,12 +119,13 @@ class SAPCustomer
                     // $url = '/b1s/v1/BusinessPartners?$filter=GroupCode eq 103 and VatGroup ne null and Valid eq \''.'tYES'.'\'';
                     // $url = '/b1s/v1/BusinessPartners?$filter=UpdateDate ge \''.$previousDate.'\' or CreateDate ge \''.$previousDate.'\'';
                     $url = '/b1s/v1/BusinessPartners?$count=true&$filter=(UpdateDate ge \''.$previousDate.'\' and UpdateDate le \''.$todaysDate.'\') or (CreateDate ge \''.$previousDate.'\' and CreateDate le \''.$todaysDate.'\')';
-                }
-                $response = $this->getCustomerData($url);
-                // Log::info(print_r($response,true));
-            } else {
-                $response = $this->getCustomerData();
+                
+                    // Log::info(print_r($response,true));
+                // } else {
+                //     $url = '/b1s/v1/BusinessPartners';
+                // }
             }
+            $response = $this->getCustomerData($url);
         }
 
         if($response['status']){

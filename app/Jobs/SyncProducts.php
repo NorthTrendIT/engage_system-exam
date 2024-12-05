@@ -27,13 +27,15 @@ class SyncProducts implements ShouldQueue
     protected $username;
     protected $password;
     protected $log_id;
+    protected $search;
 
-    public function __construct($database, $username, $password, $log_id = false)
+    public function __construct($database, $username, $password, $log_id = false, $search = '')
     {
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
         $this->log_id = $log_id;
+        $this->search = $search;
     }
 
     /**
@@ -43,7 +45,7 @@ class SyncProducts implements ShouldQueue
      */
     public function handle()
     {
-        $sap_product = new SAPProduct($this->database, $this->username, $this->password, $this->log_id);
+        $sap_product = new SAPProduct($this->database, $this->username, $this->password, $this->log_id, $this->search);
         
         // Save Data of product in database
         $sap_product->addProductDataInDatabase();

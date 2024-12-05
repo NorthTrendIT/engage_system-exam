@@ -415,6 +415,7 @@
             data: {
                     _token:'{{ csrf_token() }}',
                     filter_company : $('[name="filter_company"]').find('option:selected').val(),
+                    filter_search  : $('[name="filter_search"]').val()
                   }
           })
           .done(function(result) {
