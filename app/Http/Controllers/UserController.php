@@ -17,6 +17,7 @@ use Mail;
 
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportUser;
+use Illuminate\Support\Carbon;
 
 class UserController extends Controller
 {
@@ -370,6 +371,8 @@ class UserController extends Controller
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('action', function($row) {
+                                $currentDateTime = Carbon::now()->addHours(24); 
+                                $advDateTime = $currentDateTime->format('Y/m/d H:i:s'); 
                                 $btn = "";
 
                                 if( (is_null($row->created_by) && userrole() == 1) || (!is_null($row->created_by) && $row->created_by == Auth::id()) ){
@@ -388,7 +391,7 @@ class UserController extends Controller
 
 
                                 if( (is_null($row->created_by) && userrole() == 1) || (!is_null($row->created_by) && $row->created_by == Auth::id()) ){
-                                    $btn .= '<a href="javascript:" data-href="' . route('login-by-link', encryptValue($row->id."-".time())). '" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm copy_login_link" title="Copy Login Link">
+                                    $btn .= '<a href="javascript:" data-href="' . route('login-by-link', encryptValue($row->id."-".$advDateTime)). '" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm copy_login_link" title="Copy Login Link">
                                         <i class="fa fa-link"></i>
                                       </a>';
                                 }

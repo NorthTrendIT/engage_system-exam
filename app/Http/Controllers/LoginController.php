@@ -80,30 +80,29 @@ class LoginController extends Controller
     		
     		$hash = explode("-", $hash);
     		$id = @$hash[0];
-    		$time = @$hash[1];
+    		$datetime = @$hash[1];
 
-    		if($id && $time){
-    			$expiry = strtotime('+24 hours', $time);
+			$date = Carbon::createFromFormat('Y/m/d H:i:s', $datetime);
+			$currentDateTime = Carbon::now();
+
+    		if($id && $datetime){
     			
-    			if($time <= $expiry){
-		    		//$user = User::where('is_active',true)->where('id', $id)->first();
-                    $user = User::where('id',$id)->first();
+    			if($date->greaterThan($currentDateTime)){
+		    		$user = User::where('is_active',true)->where('id', $id)->first();
+
 		    		if($user){
                         $customer = Customer::where('email',@$user->email)->first();
-                        $today = Carbon::today()->toDateString();
-                        // if(($user->is_active) || (@$customer->frozen && ($today < @$customer->frozen_from) && ($today > @$customer->frozen_to))){                
+                        $today = Carbon::today()->toDateString();               
 
-    		                if(!is_null($user->role)){
-    			                Auth::loginUsingId($id);
+						if(!is_null($user->role)){
+							Auth::loginUsingId($id);
 
-    			                //save log
-                				add_log(45, $user->toArray());
+							//save log
+							add_log(45, $user->toArray());
 
-    			                \Session::flash('login_success_message', "Login successfully !");
-    			                return redirect()->route('home');
-    		                }
-
-                       // } 
+							\Session::flash('login_success_message', "Login successfully !");
+							return redirect()->route('home');
+						}
 		    			
 		    		}
     			}
