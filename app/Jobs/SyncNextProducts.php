@@ -46,7 +46,7 @@ class SyncNextProducts implements ShouldQueue
      */
     public function handle()
     {
-        $sap_product = new SAPProduct($this->database, $this->username, $this->password, $this->log_id);
+        $sap_product = new SAPProduct($this->database, $this->username, $this->password, $this->log_id, '');
         
         // Save Data of product in database
         $sap_product->addProductDataInDatabase($this->next_url);

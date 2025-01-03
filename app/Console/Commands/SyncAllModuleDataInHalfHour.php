@@ -87,7 +87,7 @@ class SyncAllModuleDataInHalfHour extends Command
             $sap_customer->addCustomerDataInDatabase($cust_url, $logFilePath); // intend to delete log file if it was successful from fetching api
 
             
-            $sap_product = new SAPProduct ($value->db_name, $value->user_name, $value->password);
+            $sap_product = new SAPProduct ($value->db_name, $value->user_name, $value->password, false, '');
             $prod_url = '/b1s/v1/Items?$count=true&$filter=(UpdateDate ge \''.$previousDate.'\' and UpdateDate le \''.$todaysDate.'\') or (CreateDate ge \''.$previousDate.'\' and CreateDate le \''.$todaysDate.'\')';
             $sap_product->addProductDataInDatabase($prod_url);
         }
