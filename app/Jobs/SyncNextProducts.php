@@ -30,7 +30,7 @@ class SyncNextProducts implements ShouldQueue
     protected $password;
     protected $log_id;
 
-    public function __construct($database, $username, $password, $next_url, $log_id = false)
+    public function __construct($database, $username, $password, $next_url, $log_id = false, $search = '')
     {
         $this->database = $database;
         $this->username = $username;
