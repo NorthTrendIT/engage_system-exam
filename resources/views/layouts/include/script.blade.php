@@ -135,7 +135,7 @@
       if(localStorage.getItem('page_refresh_count') == 1){
         show_loader();
         $.ajax({
-          url: "{{route('sap-connection.test',$api_conn->id)}}",
+          url: "{{route('sap-connection.check',$api_conn->id)}}",
           method: "GET",
         })
         .done(function(result) {

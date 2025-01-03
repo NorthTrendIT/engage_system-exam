@@ -134,11 +134,24 @@ class SapConnectionController extends Controller
     public function testAPI($id)
     {
         $data = SapConnection::where('id', '!=', 5)->where('id', $id)->firstOrFail();
+        $result = $this->authAPI($data, true);
+
+        return $result;
+    }
+
+    public function  checkAPI($id){
+        $data = SapConnection::where('id', '!=', 5)->where('id', $id)->firstOrFail();
+        $result = $this->authAPI($data, false);
+
+        return $result;
+    }
+
+    private function authAPI($data, $sendMail){
         try {
 
             $testAPI = new SAPTestAPI($data->db_name, $data->user_name, $data->password);
 
-            $result = $testAPI->checkLogin();
+            $result = $testAPI->checkLogin($sendMail);
 
             $response = ['status' => $result['status'], 'message' => $result['message']];
         } catch (\Exception $e) {

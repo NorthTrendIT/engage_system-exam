@@ -54,7 +54,7 @@ class SyncAllModuleData extends Command
         $data = SapConnection::where('id', '!=', 5)->firstOrFail();
 
         $testAPI = new SAPTestAPI($data->db_name, $data->user_name, $data->password);
-        $testAPI->checkLogin();
+        $testAPI->checkLogin(true);
 
         $sap_connections = SapConnection::where('id', '!=', 5)->get();
 

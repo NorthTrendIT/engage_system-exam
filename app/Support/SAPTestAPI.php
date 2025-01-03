@@ -30,7 +30,7 @@ class SAPTestAPI
             $this->httpClient = new Client();
         }
 
-        public function checkLogin()
+        public function checkLogin($sendMail)
         {
             try {
                 $response = $this->httpClient->request(
@@ -54,8 +54,11 @@ class SAPTestAPI
                 }
             } catch (\Exception $e) {
                 // Handle the exception and send an email 
-                $details = $e->getMessage(); 
-                Mail::to('itsupport@northtrend.com')->send(new DataSyncFailed($details));
+                $details = $e->getMessage();
+
+                if($sendMail){ //only send email for admin
+                    Mail::to('itsupport@northtrend.com')->send(new DataSyncFailed($details));
+                }
 
                 $now = Carbon::now();
                 if ($now->hour == 0){
