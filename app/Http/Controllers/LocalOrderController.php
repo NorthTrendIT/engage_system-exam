@@ -36,7 +36,8 @@ class LocalOrderController extends Controller
      */
     public function create()
     {
-        return view('local-order.add');
+        $api_conn = SapConnection::where('id', '!=', 5)->whereNull('deleted_at')->firstOrFail();
+        return view('local-order.add', compact('api_conn'));
     }
 
     /**

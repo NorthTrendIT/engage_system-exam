@@ -136,7 +136,9 @@ class CartController extends Controller
 
         $selected_address = CustomerBpAddress::where('id', @$cart_address->address)->first();
 
-        return view('cart.index', compact(['data', 'address', 'total','sales_agent','customer','c_product_groups','c_product_category','c_product_line','weight','volume','selected_address','cart_address']));
+        $api_conn = SapConnection::where('id', '!=', 5)->whereNull('deleted_at')->firstOrFail();
+
+        return view('cart.index', compact(['data', 'address', 'total','sales_agent','customer','c_product_groups','c_product_category','c_product_line','weight','volume','selected_address','cart_address','api_conn']));
     }
 
     /**

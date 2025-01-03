@@ -33,10 +33,11 @@
   @endif
 
 	function show_loader() {
-		$.LoadingOverlay("show",{
-		    // image       : "{{ asset('assets/logo_icon.png') }}",
-		    // imageAnimation : "1500ms rotate_right"
-		});
+		$.LoadingOverlay("show", {
+    // image       : "{{ asset('assets/logo_icon.png') }}",
+    // imageAnimation : "1500ms rotate_right",
+});
+
 	}
 	function hide_loader() {
 		$.LoadingOverlay("hide",true);
@@ -117,6 +118,68 @@
       children.find('.password_icon').addClass('fa-eye');
     }
   });
+
+  $(document).ready(function() {
+    @if (request()->is('sales-specialist-orders/create') || request()->is('cart'))
+      if (localStorage.getItem('page_refresh_count')) { 
+          // Get the current count, increment it, and update localStorage 
+          var count = parseInt(localStorage.getItem('page_refresh_count'));
+          count++;
+          localStorage.setItem('page_refresh_count', count); 
+      } else { 
+          // Initialize the count to 1 if it doesn't exist 
+          var count = 1; 
+          localStorage.setItem('page_refresh_count', count); 
+      }
+
+      if(localStorage.getItem('page_refresh_count') == 1){
+        show_loader();
+        $.ajax({
+          url: "{{route('sap-connection.test',$api_conn->id)}}",
+          method: "GET",
+        })
+        .done(function(result) {
+            hide_loader();
+            if(result.status){
+              localStorage.setItem('api_error', 0);
+            }else{
+              localStorage.setItem('api_error', 1);
+              show_check_api_error();
+            }
+        })
+        .fail(function() {
+          hide_loader();
+          toast_error("error");
+        });
+
+      } else { // refreshed multiple times
+
+        if (localStorage.getItem('api_error') == 1) {
+          show_check_api_error();
+        }
+
+      }
+    @else
+          localStorage.setItem('page_refresh_count', 0); 
+    @endif
+    // Display the current count 
+    // $('#refreshCount').text(localStorage.getItem('page_refresh_count'));
+
+    function show_check_api_error(){
+      Swal.fire({
+          title: 'SAP Server Maintenance.',
+          text: 'You cannot place order at the moment, Please try again later.',
+          icon: 'warning',
+          showCancelButton: false,
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: '<a href="{{ route('home') }}" style="color:white;">Go to Dashboard</a>',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+          showCloseButton: false
+      });
+    }
+});
 
 </script>
 

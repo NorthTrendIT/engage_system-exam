@@ -464,7 +464,6 @@ Route::middleware(['auth'])->group(function () {
             ]
         ]);
         Route::post('sap-connection/get-all', 'App\Http\Controllers\SapConnectionController@getAll')->name('sap-connection.get-all');
-        Route::get('sap-connection/test/{id}', 'App\Http\Controllers\SapConnectionController@testAPI')->name('sap-connection.test');
         Route::post('sap-connection/update-api-url', 'App\Http\Controllers\SapConnectionController@updateApiUrl')->name('sap-connection.update-api-url');
 
         // Sap Connection Field
@@ -475,6 +474,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('maintenance/user', 'App\Http\Controllers\MaintenanceController@user')->name('user-maintenance');
         Route::get('maintenance/user/get-all', 'App\Http\Controllers\MaintenanceController@userGetAll')->name('user-maintenance-get-all');
     });
+
+    Route::get('sap-connection/test/{id}', 'App\Http\Controllers\SapConnectionController@testAPI')->name('sap-connection.test');
 
 
     // Report
