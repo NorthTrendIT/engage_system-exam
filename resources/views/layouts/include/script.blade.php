@@ -32,13 +32,37 @@
   toast_success("{{Session::get('login_success_message')}}")
   @endif
 
+  function fetchErrorMsg(msg, x){
+        if(x.responseJSON.errors){
+            var err_fields = Object.keys(x.responseJSON.errors);
+            var err_msg_count = err_fields.length;
+
+            for(let i = 0; i < err_msg_count; i++ ){
+                toastNotifMsg('Error', x.responseJSON.errors[err_fields[i]]);
+            }
+        }else{
+            toastNotifMsg('Error', msg);
+        } 
+    }
+
+    function toastNotifMsg(type, txt){
+        $.toast({
+            heading: type,
+            text: txt,
+            position: 'bottom-right',
+            showHideTransition: 'slide',
+            icon: type.toLowerCase(),
+            // hideAfter: 8000
+        });
+    }
+
 	function show_loader() {
 		$.LoadingOverlay("show", {
     // image       : "{{ asset('assets/logo_icon.png') }}",
     // imageAnimation : "1500ms rotate_right",
-});
-
+    });
 	}
+
 	function hide_loader() {
 		$.LoadingOverlay("hide",true);
 	}

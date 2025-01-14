@@ -46,6 +46,7 @@ Route::middleware(['auth'])->group(function () {
         // Add Logout log
         add_log(Auth::id(), 2, null, null);
         Auth::logout();
+        Session::flush();
         return redirect()->route('login');
     })->name('logout');
 
@@ -466,6 +467,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('sap-connection/get-all', 'App\Http\Controllers\SapConnectionController@getAll')->name('sap-connection.get-all');
         Route::get('sap-connection/test/{id}', 'App\Http\Controllers\SapConnectionController@testAPI')->name('sap-connection.test');
         Route::post('sap-connection/update-api-url', 'App\Http\Controllers\SapConnectionController@updateApiUrl')->name('sap-connection.update-api-url');
+        Route::post('sap-connection/get-all-hosts', 'App\Http\Controllers\SapConnectionController@fetchHostsUrl')->name('sap-connection.get-all-hosts');
+        Route::post('sap-connection/add-hosts-url', 'App\Http\Controllers\SapConnectionController@addHostUrl')->name('sap-connection.addHostUrl');
+        Route::post('sap-connection/update-hosts-url/{id}', 'App\Http\Controllers\SapConnectionController@updateHostUrl')->name('sap-connection.updateHostUrl');
+        Route::delete('sap-connection/delete-hosts-url/{id}', 'App\Http\Controllers\SapConnectionController@deleteHostUrl')->name('sap-connection.deleteHostUrl');
 
         // Sap Connection Field
         Route::resource('sap-connection-api-field', 'App\Http\Controllers\SapConnectionApiFieldController');

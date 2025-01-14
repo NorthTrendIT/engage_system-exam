@@ -29,17 +29,34 @@
           <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-body">
               <div class="row mt-5" style="display: flex;justify-content: right;">
-                
+
+                <div class="col-md-2">
+                  {{-- <a href="javascript:" class="btn btn-primary px-6 font-weight-bold update">Update</a> --}}
+                </div>
+
                 <div class="col-md-2 mt-3" style="text-align:right;">
                   <h3>API URL: </h3>
                 </div>
 
-                <div class="col-md-5">
-                  <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Enter API URL" name = "url" value="{{ get_sap_api_url() }}">
-                </div>
-
-                <div class="col-md-2">
-                  <a href="javascript:" class="btn btn-primary px-6 font-weight-bold update">Update</a>
+                <div class="col-md-4">
+                  <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Enter API URL" name = "url" value="{{ get_sap_api_url() }}" disabled>
+                  {{-- <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                      {{ get_sap_api_url() }}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      @foreach ($api_urls as $u)
+                       @php
+                        $icon = ($u->active) ? 'fas fa-check' : 'fas fa-times' ; 
+                       @endphp
+                        <li><hr class="dropdown-divider"></li>
+                        <li data-value="{{ $u->url }}"><a class="dropdown-item" href="#"><i class="{{$icon}}"></i> {{$u->url}}</a></li>
+                      @endforeach
+                    </ul>
+                </div>             
+                <input type="hidden" name="url" id="selectedOption"> --}}
+                
+                
                 </div>
 
               </div>
@@ -159,6 +176,7 @@
         method: "GET",
       })
       .done(function(result) {
+          $('input[name="url"]').val("{{ get_sap_api_url() }}");
           if(result.status){
               Swal.fire({
                   title: 'API working!',
@@ -228,6 +246,22 @@
 
     });
 
-  })
+  });
+  $('input[name="url"]').val("{{ get_sap_api_url() }}");
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     let dropdownItems = document.querySelectorAll('.dropdown-menu li');
+    //     let dropdownButton = document.getElementById('dropdownMenuButton');
+    //     let hiddenInput = document.getElementById('selectedOption');
+
+    //     dropdownItems.forEach(item => {
+    //         item.addEventListener('click', function() {
+    //             let selectedText = this.textContent.trim();
+    //             let selectedValue = this.getAttribute('data-value');
+    //             dropdownButton.textContent = selectedText;
+    //             hiddenInput.value = selectedValue;
+    //         });
+    //     });
+    // });
+
 </script>
 @endpush

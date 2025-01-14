@@ -518,7 +518,7 @@ function common_error_msg($key = ""){
 }
 
 function get_sap_api_url(){
-    $obj = SapApiUrl::first();
+    $obj = SapApiUrl::where('active', true)->first();
 
     return @$obj->url ?? env('SAP_API_URL') ?? "";
 }

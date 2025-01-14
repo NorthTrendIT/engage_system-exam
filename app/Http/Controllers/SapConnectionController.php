@@ -19,7 +19,8 @@ class SapConnectionController extends Controller
      */
     public function index()
     {
-        return view('sap-connection.index');
+        $api_urls = SapApiUrl::get();
+        return view('sap-connection.index', compact('api_urls'));
     }
 
     /**
@@ -245,4 +246,67 @@ class SapConnectionController extends Controller
         }
         return $response;
     }
+
+
+    public function fetchHostsUrl(Request $request){
+
+        $data = SapApiUrl::query();
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('url', function($row) {
+                                return $row->url;
+                            })
+                            ->addColumn('status', function($row) {
+                                return ($row->active === 1) ? '<span class="badge rounded-pill bg-success">Active</span>' : '<span class="badge rounded-pill bg-danger">Inactive</span>';
+                            })
+                            ->addColumn('action', function($row) {
+                                $btn = '
+                                        <a href="#" class="btn btn-icon btn-bg-dark btn-active-color-warning btn-sm mr-5 edit_host-url" data-url="' . route('sap-connection.edit',$row->id). '">
+                                            <i class="fas fa-pencil"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-icon btn-bg-dark btn-active-color-danger btn-sm mr-5 delete_host-url" data-url="' . route('sap-connection.edit',$row->id). '">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                        ';
+                                return $btn;
+                            })
+                            ->rawColumns(['status', 'action'])
+                            ->make(true);
+    }
+
+    public function addHostUrl(Request $request){
+        $request->validate([
+            'url'    => 'required|url|unique:sap_api_urls,url',
+            // 'status' => 'required|in:0,1', 
+            ]);
+
+            SapApiUrl::insert(['url' => $request->url, 'active' => 0]);
+
+        return ['status'=> true, 'message'=> 'Host url added successfully!'];;
+    }
+
+    public function updateHostUrl(Request $request, $id){
+        $request->validate([
+            'url'    => 'required|url|unique:sap_api_urls,url,'. $id,
+            'status' => 'required|in:0,1', 
+            ]);
+
+        $host = SapApiUrl::findOrFail($id);
+        if($request->status == 1){
+            SapApiUrl::where('id', '!=', $host->id)->update(['active' => false]);
+        }
+        $host->update(['url' => $request->url, 'active' => $request->status]);
+
+        return ['status'=> true,'message'=>'Host url updated successfully!'];
+    }
+
+    public function deleteHostUrl($id){
+        $host = SapApiUrl::findOrFail($id);
+        $host->delete();
+
+        return ['status' => true, 'message' => 'Host url deleted successfully!', 'data' => [] ];
+    }
+
+
 }

@@ -11,5 +11,6 @@ class SapApiUrl extends Model
 
     protected $fillable = [
         'url',
+        'active'
     ];
 }

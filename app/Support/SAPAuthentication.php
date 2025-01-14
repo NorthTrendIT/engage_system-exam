@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Models\SapCompanySession;
 
-class SAPAuthentication
+class SAPAuthentication extends SAPTestAPI
 {
 	/** @var Client */
 	protected $httpClient;
@@ -52,6 +52,12 @@ class SAPAuthentication
 	        }
 
     	} catch (\Exception $e) {
+
+            $code = $e->getCode();
+            if(!$code){
+                $this->checkHostUrlSession();
+            }
+
             return $e;
             abort(500);
     		dd($e);
