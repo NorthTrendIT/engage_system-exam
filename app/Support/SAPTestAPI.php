@@ -77,10 +77,6 @@ class SAPTestAPI
                 // Handle the exception and send an email 
                 $details = $e->getMessage();
 
-                if($sendMail){ //only send email for admin
-                    Mail::to('itsupport@northtrend.com')->send(new DataSyncFailed($details));
-                }
-
                 $now = Carbon::now();
                 if ($now->hour == 0){
                     $date = $now->subDay()->toDateString();;
@@ -105,6 +101,9 @@ class SAPTestAPI
                 if($message === "API is Down."){
                     $jobCount = DB::table('jobs')->where('payload', 'LIKE', '%' . $this->searchString . '%')->count();
                     if ($jobCount === 0) {
+                        if($sendMail){ //only send email for admin
+                            Mail::to('itsupport@northtrend.com')->send(new DataSyncFailed($details));
+                        }
                         $this->checkHostUrlSession();
                     }
                 }
