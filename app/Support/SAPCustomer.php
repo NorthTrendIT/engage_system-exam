@@ -108,7 +108,7 @@ class SAPCustomer
         }else{
             if($this->search){
                 $search = str_replace("'","''",$this->search);  //for single quote (') search
-                $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$search.'\')&$top=10';
+                $url = '/b1s/v1/BusinessPartners?$filter=contains(CardName, \''.$search.'\')&$top=20';
             }else{
                 // $latestData = Customer::orderBy('updated_date','DESC')->where('sap_connection_id', $sap_connection->id)->first();
                 // if(!empty($latestData)){
