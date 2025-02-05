@@ -337,7 +337,7 @@ class LocalOrderController extends Controller
                 });
 
             }else{
-                $data->whereHas('quotation',function($dq){
+                $data->whereHas('quotation',function($dq) use ($status){
                     $dq->whereHas('order.invoice',function($q) use ($status){
                         $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', $status);
                     });
@@ -420,11 +420,25 @@ class LocalOrderController extends Controller
                             $query->orderBy('confirmation_status', $order);
                         })
                         ->addColumn('action', function($row) {
+                            $status = '';
+                            if(!empty(@$row->quotation) && $row->quotation->cancelled == 'Yes'){
+                                $status = getOrderStatusArray('CL');
+                            }elseif(!empty(@$row->quotation->order)){
+                                if($row->quotation->order->u_omsno != ""){
+                                    $status = getOrderStatusArray("OP");
+                                }
+                            }else{
+                                $status = getOrderStatusArray("PN");
+                            }
                             $btn = '<a href="' . route('sales-specialist-orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                     <i class="fa fa-eye"></i>
                                 </a>';
 
-                            if($row->confirmation_status == 'P' && empty($row->doc_entry)){
+                            if( ($row->confirmation_status == 'P') ){
+                                $btn .= '<a href="' . route('sales-specialist-orders.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                    <i class="fa fa-pencil"></i>
+                                    </a>';
+                            }else if($status === "Pending"){
                                 $btn .= '<a href="' . route('sales-specialist-orders.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                     <i class="fa fa-pencil"></i>
                                     </a>';

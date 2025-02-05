@@ -141,6 +141,7 @@ class SAPOrderPost
 
             if(!empty($data['DocumentLines'])){
 
+                $item_codes = [];
                 $quo_items = $data['DocumentLines'];
 
                 foreach($quo_items as $item){
@@ -183,7 +184,10 @@ class SAPOrderPost
                                 ],
                                 $fields
                             );
+                    array_push($item_codes, @$item['ItemCode']);
                 }
+
+                QuotationItem::where('quotation_id', $obj->id)->whereNotIn('item_code', $item_codes)->delete();
             }
         }
     }
@@ -192,21 +196,36 @@ class SAPOrderPost
     public function pushOrder($id){
         
         $body = $this->madeSapData($id);
+        // dd($body);
         $response = array();
         if(!empty($body)){
-            $response = $this->requestSapApi('/b1s/v1/Quotations', "POST", $body);
+            $order = LocalOrder::where('id', $id)->first();
+            if($order->doc_entry){
+                $response = $this->requestSapApi('/b1s/v1/Quotations('.$order->doc_entry.')', "PATCH", $body);
+            }else{
+                $response = $this->requestSapApi('/b1s/v1/Quotations', "POST", $body);
+            }
             $status = $response['status'];
             $data = $response['data'];
-            $order = LocalOrder::where('id', $id)->first();
-            
-            if($status){
+            Log::info(print_r([$data, $status],true));
+            if($status || $data == '204'){
+                
+                $dataToPush = [];
+                if(!$order->doc_entry){
+                    $dataToPush = $data;
+                }else{
+                    $dataToPush = $this->requestSapApi('/b1s/v1/Quotations('.$order->doc_entry.')', "GET");
+                    $dataToPush = $dataToPush['data'];
+                    $data = $dataToPush;
+                }
+
                 $order->confirmation_status = 'C';
                 $order->doc_entry = $data['DocEntry'];
                 $order->doc_num = $data['DocNum'];
                 $order->message = null;
                 $order->save();
 
-                $this->pushOrderDetailsInDatabase($data);
+                $this->pushOrderDetailsInDatabase($dataToPush);
                 $this->updateNumAtCardInOrder($data['DocEntry']);
 
                 // Sales Specialist Email
@@ -412,7 +431,8 @@ class SAPOrderPost
         $cust_price_list =  @$order->customer->price_list_num; //$item_prices json decode starts with index zero
        
         $currency = 'PHP';
-        foreach($order->items as $item){
+        $x = 0;
+        foreach($order->items as $item){ //
             $item_prices = json_decode(@$item->product->item_prices);
             foreach($item_prices as $price){
                 if($cust_price_list == $price->PriceList){
@@ -431,7 +451,13 @@ class SAPOrderPost
                 'WarehouseCode' => '01',
                 'FreeText' => @$item->line_remarks
             );
+
+            if($order->doc_entry){
+                $temp['LineNum'] = $x;
+            }
+
             array_push($response['DocumentLines'], $temp);
+            $x++;
         }
 
         return $response;

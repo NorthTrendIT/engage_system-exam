@@ -786,6 +786,14 @@
                 multiple: false,
                 // data: $initialOptions
             });
+            
+            $('[name="due_date"]').datepicker({
+                                    format: 'mm/dd/yyyy',
+                                    todayHighlight: true,
+                                    orientation: "bottom left",
+                                    startDate: "+0d",
+                                    autoclose: true,
+                                });
 
             $('body').on('change', '#selectCustomers', function() {
                 $customer = $('[name="customer_id"]').val();
