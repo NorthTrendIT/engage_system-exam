@@ -76,10 +76,6 @@
       <!--begin::Actions-->
       <div class="d-flex align-items-center py-1">
 
-        @if($status != "Cancelled")
-        <a href="javascript:" class="btn btn-sm btn-primary sync-details mr-10">Sync Details</a>
-        @endif
-
         <a href="{{ route('orders.index') }}" class="btn btn-sm btn-primary">Back</a>
         <!--end::Button-->
       </div>
@@ -148,15 +144,24 @@
                               </div>
                               <div class="row mt-5">
                                 <div class="fw-bold fs-7 text-gray-600 mb-1">Order #:</div>
-                                <div class="fw-bolder fs-6 text-gray-800">{{ '#'.@$data->doc_entry ?? "-"  }}</div>
+                                <div class="fw-bolder fs-6 text-gray-800">-</div>
                               </div>
 
                               <div class="row mt-5">
                                 <div class="fw-bold fs-7 text-gray-600 mb-1">Order Approval</div>
-                                <div class="col-md-4">
-                                  <span class="badge bg-success fs-6">Approved</span>
+                                <div class="fw-bolder fs-7 text-gray-800 col-md-4">
+                                  {!! view('orders.order_status',compact('data')) !!}
                                 </div>
                               </div>
+
+                              @if($data->approval === "Rejected")
+                              <div class="row mt-5">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Reason of Rejection</div>
+                                <div class="fw-bolder fs-7 text-gray-800 col-md-4">
+                                  {{ $data->disapproval_remarks}}
+                                </div>
+                              </div>
+                              @endif
 
                             </div>
                             <!--end::Col-->
@@ -165,41 +170,17 @@
                             <!--end::Col-->
                             <div class="col-sm-6">
                               <div class="row">
-                                <div class="fw-bold fs-7 text-gray-600 mb-1">Status:</div>
-                                <div class="fw-bolder fs-6 text-gray-800">
-
-                                  {{-- @php
-                                    $order_stat_final = ($status === 'Cancelled') ? $status : $line_status;
-                                  @endphp --}}
-
-                                  <span class="mr-10">{!! getOrderStatusBtnHtml($data->status) !!}</span>
-
-                                  @if($status == "Pending" && !$data->customer_promotion_id)
-                                    <a href="javascript:" class="btn btn-danger btn-sm cancel-order" title="Cancel Order">Cancel Order</a>
-                                  @else
-                                    @if($status != "Cancelled")
-                                      <button type="button" class="btn btn-danger btn-sm" title="Cancel Order" disabled>Cancel Order</button>
-                                      <a href="javascript:" class="mx-2 text-dark" title="Promotion Orders can not be Cancelled! "><i class="fa fa-info-circle fs-6"></i></a>
-                                    @endif
-                                  @endif
-                                  {{-- @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->user->id,1]))
-                                    <a href="javascript:" class="btn btn-info btn-sm mark-as-completed-order" title="Mark as Completed">Mark as Completed</a>
-                                  @endif --}}
-                                </div>
-                                <!--end::Text-->
-                              </div>
-                              <div class="row mt-5">
                                 <div class="fw-bold fs-7 text-gray-600 mb-1">Delivery Address:</div>
-                                <div class="fw-bolder fs-6 text-gray-800">{{ $data->address ?? '-' }}</div>
+                                <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->address ?? '-' }}</div>
                               </div>
                               <div class="row mt-5">
                                 <div class="col-sm-6">
                                   <div class="fw-bold fs-7 text-gray-600 mb-1">Order Date:</div>
-                                  <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime($data->doc_date)) }} {{ $data->doc_time ? date('H:i A',strtotime($data->doc_time)) : "" }}</div>
+                                  <div class="fw-bolder fs-6 text-gray-800">{{ date('F d, Y',strtotime($data->created_at)) }} {{ $data->doc_time ? date('H:i A',strtotime($data->doc_time)) : "" }}</div>
                                 </div>
                                 <div class="col-sm-6">
                                   <div class="fw-bold fs-7 text-gray-600 mb-1">Expected Delivery Date:</div>
-                                  <div class="fw-bolder fs-6 text-gray-800">{{ $data->doc_due_date ? date('F d, Y',strtotime($data->doc_due_date)) : "" }} </div>
+                                  <div class="fw-bolder fs-6 text-gray-800">{{ $data->due_date ? date('F d, Y',strtotime($data->due_date)) : "" }} </div>
                                 </div>
                               </div>
                               <div class="row mt-5">
@@ -626,123 +607,89 @@
       })
     });
 
-
-    $(document).on('click', '.sync-details', function(event) {
+    let previousOrderApprovalValue = $('#orderApproval').val();
+    $(document).on('change', '#orderApproval', async function(event) {
       event.preventDefault();
+      const selectedValue = $(this).val();
 
-      Swal.fire({
-        title: 'Are you sure want to sync details?',
-        text: "It may take some time to sync details.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
-      }).then((result) => {
+      if (selectedValue !== 'Pending') {
+        const result = await Swal.fire({
+          title: 'Confirmation',
+          text: 'Are you sure you want to ' + selectedValue + ' this order?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, do it!',
+          allowOutsideClick: false,
+        });
+
         if (result.isConfirmed) {
-          $.ajax({
-            url: '{{ route('orders.sync-specific-orders') }}',
-            method: "POST",
-            data: {
-                    _token:'{{ csrf_token() }}',
-                    id:'{{ $data->id }}'
-                  }
-          })
-          .done(function(result) {
-            if(result.status == false){
-              toast_error(result.message);
+          if (selectedValue == 'Reject') {
+            const { value: reason } = await Swal.fire({
+              title: 'Enter your reason',
+              input: 'textarea',
+              inputValue: '',
+              inputPlaceholder: "Type your reason here...",
+              inputAttributes: {
+                "aria-label": "Type your message here"
+              },
+              showCancelButton: true,
+              allowOutsideClick: false,
+              inputValidator: (value) => {
+                if (!value) {
+                  return 'You need to write something!';
+                }
+              },
+            });
+
+            if (reason) {
+              confirmationProcess('Reject', reason);
             }else{
-              toast_success(result.message);
-              setTimeout(function(){
-                window.location.reload();
-              },500)
+              $('#orderApproval').val(previousOrderApprovalValue);
+            }
+          } else { // approved
+            confirmationProcess(selectedValue);
+          }
+        }else{
+          $('#orderApproval').val(previousOrderApprovalValue);
+        }
+      }else{
+        $('#orderApproval').val(previousOrderApprovalValue);
+      }
+
+      function confirmationProcess(approval, reason = null) {
+        $.ajax({
+          url: '{{ route('orders.approval') }}',
+          method: 'POST',
+          data: {
+            _token: '{{ csrf_token() }}',
+            id: '{{ $data->id }}',
+            approval: approval,
+            reason: reason,
+          },
+        })
+          .done(function(result) {
+            if (result.status == false) {
+              toastNotifMsg('Error', result.message);
+            } else {
+              toastNotifMsg('Success', result.message);
+              setTimeout(function() {
+                window.location.href = '{{ route('orders.index') }}';
+              }, 600);
             }
           })
           .fail(function() {
-            toast_error("error");
+            toast_error('error');
           });
-        }
-      })
+      }
     });
 
-    @if($status == "Pending" && !$data->customer_promotion_id)
-      $(document).on('click', '.cancel-order', function(event) {
-        event.preventDefault();
 
-        Swal.fire({
-          title: 'Are you sure want to cancel order ?',
-          text: "Once canceled, you will not be able to recover this record!",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, do it!'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            $.ajax({
-              url: '{{ route('orders.cancel-order') }}',
-              method: "POST",
-              data: {
-                      _token:'{{ csrf_token() }}',
-                      id:'{{ $data->id }}'
-                    }
-            })
-            .done(function(result) {
-              if(result.status == false){
-                toast_error(result.message);
-              }else{
-                toast_success(result.message);
-                setTimeout(function(){
-                  window.location.reload();
-                },500)
-              }
-            })
-            .fail(function() {
-              toast_error("error");
-            });
-          }
-        })
-      });
-    @endif
+    
 
     @if($status == "Completed" && !$date_array['Completed'] && in_array(userid(),[@$data->customer->user->id,1]) && @$data->order->invoice->id && empty(@$data->order->invoice->completed_date))
-      /*$(document).on('click', '.mark-as-completed-order', function(event) {
-        event.preventDefault();
-
-        Swal.fire({
-          title: 'Are you sure want to complete order ?',
-          text: "Once completed, you will not be able to recover this record!",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, do it!'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            $.ajax({
-              url: '{{--{{ route('orders.complete-order') }} --}}',
-              method: "POST",
-              data: {
-                      _token:'{{--{{ csrf_token() }} --}}',
-                      id:'{{--{{ $data->id }} --}}'
-                    }
-            })
-            .done(function(result) {
-              if(result.status == false){
-                toast_error(result.message);
-              }else{
-                toast_success(result.message);
-                setTimeout(function(){
-                  window.location.reload();
-                },500)
-              }
-            })
-            .fail(function() {
-              toast_error("error");
-            });
-          }
-        })
-      });*/
+  
 
       $('body').on("submit", "#myForm", function (e) {
         e.preventDefault();

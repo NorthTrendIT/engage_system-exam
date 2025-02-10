@@ -329,7 +329,7 @@ class CustomerDeliveryScheduleController extends Controller
     }
 
     public function getSsCustomerList(Request $request){
-        if(userrole() == 2){
+        if(userrole() == 14){
             $customers = Customer::has('user.customer_delivery_schedules')->whereHas('sales_specialist', function($q) {
                         return $q->where('ss_id', userid());
                     });

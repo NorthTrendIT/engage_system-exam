@@ -207,7 +207,7 @@ class SAPOrderPost
             }
             $status = $response['status'];
             $data = $response['data'];
-            Log::info(print_r([$data, $status],true));
+            // Log::info(print_r([$data, $status],true));
             if($status || $data == '204'){
                 
                 $dataToPush = [];

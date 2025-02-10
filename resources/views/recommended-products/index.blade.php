@@ -10,7 +10,7 @@
         <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">Recommended Products</h1>
       </div>
 
-        @if(userrole() == 2)
+        @if(userrole() == 14)
         <div class="d-flex align-items-center py-1">
             <a href="javascript:" class="btn btn-sm btn-primary goToCart" style="display:none">Go to cart</a>
         </div>
@@ -34,7 +34,7 @@
             </div>
             <div class="card-body pt-0">
                 <div class="row">
-                    @if(userrole() == 2)
+                    @if(userrole() == 14)
                     <div class="col-xl-4 col-lg-4 col-md-4 col-12">
                         <div class="form-group">
                             <label class="col-form-label text-right">Select Customers<span class="asterisk">*</span></label>
@@ -83,7 +83,7 @@
                           </tbody>
                        </table>
                     </div>
-                    @if(userrole() == 2)
+                    @if(userrole() == 14)
                     <div class="text-center selectCustomerDiv">
                         <h2>Please select Customer.</h2>
                     </div>
@@ -247,7 +247,7 @@
 <script src="{{ asset('assets') }}/assets/plugins/custom/sweetalert2/sweetalert2.all.min.js"></script>
 <script>
 $(document).ready(function() {
-    @if(userrole() == 2)
+    @if(userrole() == 14)
     $('body').on('change' ,'#selectCustomers', function(){
             $customer_id = $('[name="customer_id"]').val();
             $cart_url = "{{ route('recommended-products.goToCart', '#') }}";
@@ -412,7 +412,7 @@ $(document).ready(function() {
     });
 @endif
 
-@if(userrole() == 2)
+@if(userrole() == 14)
     $("#selectCustomers").select2({
         ajax: {
             url: "{{route('sales-specialist-orders.getCustomers')}}",

@@ -8,7 +8,7 @@
     <div class="toolbar" id="kt_toolbar">
         <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
             <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title me-3 mb-5 mb-lg-0">
-                <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">@if(isset($edit)) Update @else Create @endif Order for Customer</h1>
+                <h1 class="text-dark fw-bolder fs-3 my-1 mt-5">@if(isset($edit)) Update @else Create @endif Order</h1>
             </div>
             <div class="d-flex align-items-center py-1">
                 <a href="{{ route('draft-order.index') }}" class="btn btn-sm btn-primary">Back</a>
@@ -101,9 +101,9 @@
                                             <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
                                                 <!--begin::Table head-->
                                                 <thead>
-                                                    <tr class="fw-bolder text-muted">
+                                                    <tr class="fw-bolder text-muted bg-dark text-center">
 
-                                                    <th class="min-w-150px">Product</th>
+                                                    <th class="min-w-150px text-center">Product</th>
                                                     <th class="min-w-80px">Quantity</th>
                                                     <th class="min-w-80px " style="text-align:right">Price</th>
                                                     <th class="min-w-80px " style="text-align:right">Amount</th>
@@ -174,8 +174,8 @@
 
                                         <div class="add-btn-wrap mb-5">
                                             <div class="row">
-                                                <div class="col-md-12 text-center">
-                                                    <input type="button" class="btn btn-sm btn-primary" data-repeater-create value="Add Product">
+                                                <div class="col-md-12 d-flex justify-content-start">
+                                                    <input type="button" class="btn btn-sm btn-dark" data-repeater-create value="Add Product">
                                                 </div>
                                             </div>
                                         </div>
@@ -232,12 +232,12 @@
                         <div class="col-xl-12">
                             <div class="d-flex flex-wrap pt-2 text-center justify-content-center">
                                 <input type="button" class="btn btn-lg btn-primary submitForm" value="Update">
-                                @if(isset($edit))
+                                {{-- @if(isset($edit))
                                     <input type="button" class="btn btn-lg btn-primary placeOrder mx-5" value="Confirm">
                                     <input type="button" class="btn btn-lg btn-primary placeOrder" value="Update & Confirm">
                                 @else
                                     <input type="button" class="btn btn-lg btn-primary placeOrder mx-5" value="Update & Place Order">
-                                @endif
+                                @endif --}}
                             </div>
                         </div>
                     </div>
@@ -489,44 +489,44 @@
             }
         });
 
-        $('body').on("click", ".placeOrder", function (e) {
-            e.preventDefault();
-            var validator = validate_form();
+        // $('body').on("click", ".placeOrder", function (e) {
+        //     e.preventDefault();
+        //     var validator = validate_form();
 
-            if (validator.form() != false) {
-                $('[type="submit"]').prop('disabled', true);
-                $('[name="address_id"]').removeAttr('disabled');
-                $.ajax({
-                    url: "{{route('draft-order.placeOrder')}}",
-                    type: "POST",
-                    data: new FormData($("#myForm")[0]),
-                    beforeSend: function() {
-                        show_loader();
-                    },
-                    // async: false,
-                    processData: false,
-                    contentType: false,
-                    success: function (data) {
-                        if (data.status) {
-                            toast_success(data.message)
-                            setTimeout(function(){
-                                window.location.href = '{{ route('draft-order.index') }}';
-                            },1500);
-                        } else {
-                            toast_error(data.message);
-                            $('[type="submit"]').prop('disabled', false);
-                        }
-                    },
-                    error: function () {
-                        toast_error("Something went to wrong !");
-                        $('[type="submit"]').prop('disabled', false);
-                    },
-                    complete: function() {
-                        hide_loader();
-                    },
-                });
-            }
-        });
+        //     if (validator.form() != false) {
+        //         $('[type="submit"]').prop('disabled', true);
+        //         $('[name="address_id"]').removeAttr('disabled');
+        //         $.ajax({
+        //             url: "{{route('draft-order.placeOrder')}}",
+        //             type: "POST",
+        //             data: new FormData($("#myForm")[0]),
+        //             beforeSend: function() {
+        //                 show_loader();
+        //             },
+        //             // async: false,
+        //             processData: false,
+        //             contentType: false,
+        //             success: function (data) {
+        //                 if (data.status) {
+        //                     toast_success(data.message)
+        //                     setTimeout(function(){
+        //                         window.location.href = '{{ route('draft-order.index') }}';
+        //                     },1500);
+        //                 } else {
+        //                     toast_error(data.message);
+        //                     $('[type="submit"]').prop('disabled', false);
+        //                 }
+        //             },
+        //             error: function () {
+        //                 toast_error("Something went to wrong !");
+        //                 $('[type="submit"]').prop('disabled', false);
+        //             },
+        //             complete: function() {
+        //                 hide_loader();
+        //             },
+        //         });
+        //     }
+        // });
 
         function validate_form(){
             var validator = $("#myForm").validate({

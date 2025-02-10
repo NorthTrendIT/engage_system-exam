@@ -145,7 +145,7 @@ class RecommendedProductController extends Controller
                 $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
             }
 
-        }elseif(userrole() == 2){
+        }elseif(userrole() == 14){
             $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
             $sap_connection_id = array( @Auth::user()->sap_connection_id );
         }
@@ -224,7 +224,7 @@ class RecommendedProductController extends Controller
                           })
                           ->addColumn('action', function($row) use ($sap_customer_arr) {
                             $btn = "";
-                            if(userrole() == 2){
+                            if(userrole() == 14){
                                 // if(is_in_cart(@$row->product->id, @$sap_customer_arr[@$row->product->sap_connection_id]) == 1){
                                 //     $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2" href="'.route('recommended-products.goToCart', @$sap_customer_arr[@$row->product->sap_connection_id]).'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 // }else{
@@ -296,7 +296,7 @@ class RecommendedProductController extends Controller
                 $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
             }
 
-        }elseif(userrole() == 2){
+        }elseif(userrole() == 14){
             $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
             $sap_connection_id = array( @Auth::user()->sap_connection_id );
         }
@@ -376,7 +376,7 @@ class RecommendedProductController extends Controller
                           })
                           ->addColumn('action', function($row) use ($sap_customer_arr) {
                             $btn = "";
-                            if(userrole() == 2){
+                            if(userrole() == 14){
                                 // if(is_in_cart(@$row->product->id, @$sap_customer_arr[@$row->product->sap_connection_id]) == 1){
                                 //     $btn = '<a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-2" href="'.route('recommended-products.goToCart', @$sap_customer_arr[@$row->product->sap_connection_id]).'" title="Go to cart"><i class="fa fa-shopping-cart"></i></a>';
                                 // }else{

@@ -146,6 +146,8 @@ Route::middleware(['auth'])->group(function () {
             // Orders
             Route::get('orders/export', 'App\Http\Controllers\OrdersController@export')->name('orders.export');
             Route::resource('orders', 'App\Http\Controllers\OrdersController');
+            Route::get('orders/approval/{id}', 'App\Http\Controllers\OrdersController@showApproval')->name('orders.approval.show');
+            Route::post('orders/approval', 'App\Http\Controllers\OrdersController@confirmationOrder')->name('orders.approval');
             Route::post('orders/get-all', 'App\Http\Controllers\OrdersController@getAll')->name('orders.get-all');
             Route::post('orders/sync-orders', 'App\Http\Controllers\OrdersController@syncOrders')->name('orders.sync-orders');
             Route::post('orders/sync-specific-orders', 'App\Http\Controllers\OrdersController@syncSpecificOrder')->name('orders.sync-specific-orders');

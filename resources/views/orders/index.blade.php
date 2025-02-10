@@ -33,7 +33,7 @@
             </div> --}}
             <div class="card-body">
               <div class="row">
-                @if(in_array(userrole(),[1,10]))
+                @if(in_array(userrole(),[1,10,11]))
                   <div class="col-md-3 mt-5">
                     <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                       <option value=""></option>
@@ -44,7 +44,7 @@
                   </div>
 
                   <!-- group -->
-                  <div class="col-md-3 mt-5 other_filter_div">
+                  <div class="col-md-3 mt-5 other_filter_div d-none">
                     <select class="form-control form-control-lg form-control-solid" name="filter_group" data-control="select2" data-hide-search="false" data-placeholder="Select Branch" data-allow-clear="true">
                       <option value=""></option>
                     </select>
@@ -140,20 +140,20 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 mt-5">
-                  <div class="input-icon engage_transaction">
-                    <input type="checkbox" class="" name = "engage_transaction" id="engage_transaction" value="1" checked>
-                    <span>
-                      Engage Transactions Only
-                    </span>
+                <div class="col-md-3 mt-5 d-flex align-items-center">
+                  <div class="input-icon engage_transaction d-flex align-items-center">
+                      <input type="checkbox" class="" name="engage_transaction" id="engage_transaction" value="1">
+                      <span class="">
+                          <label class="form-check-label">Engage Transactions Only</label>
+                      </span>
                   </div>
-                </div>
+              </div>              
 
                 <div class="col-md-6 mt-5">
                   <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
                   <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
 
-                  @if(in_array(userrole(),[1,10]))
+                  @if(in_array(userrole(),[1,10,11]))
                   <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
                   @endif
 
@@ -176,11 +176,13 @@
                               <th>Customer Name</th>
                               @endif
                               <th>Order Type</th>
-                              @if(in_array(userrole(),[1,10]))
+                              @if(in_array(userrole(),[1,10,11]))
                               <th>Business Unit</th>
                               @endif
                               <th>Created Date</th>
                               <th>Status</th>
+                              <th>Approval</th>
+                              <th>Approval Duration</th>
                               <th>DocTotal</th>
                               <th>Created By</th>
                               <th>Action</th>
@@ -212,6 +214,14 @@
 @endsection
 
 @push('css')
+<style>
+  .ellipsis {
+    white-space: nowrap;       /* Prevent text from wrapping */
+    overflow: hidden;         /* Hide overflowed text */
+    text-overflow: ellipsis;  /* Display ellipsis for overflowed text */
+    max-width: 200px;         /* Set a maximum width for the column */
+}
+</style>
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
 @endpush
@@ -227,11 +237,11 @@
 
     $('#engage_transaction').change(function() {
       if(this.checked) {
-        $("#kt_daterangepicker_1").css("display","block");
+        $("#kt_daterangepicker_1").closest('div.col-md-3').css("display","block");
       }else{
-        $("#kt_daterangepicker_1").css("display","none");
+        $("#kt_daterangepicker_1").closest('div.col-md-3').css("display","none");
       }
-    });
+    }).change();
 
     $('.js-example-basic-multiple').select2();
 
@@ -241,10 +251,10 @@
 
       if ($('[name="engage_transaction"]').is(':checked')) {
           var engage_transaction = 1;
-          $("#kt_daterangepicker_1").css("display","block");
+          $("#kt_daterangepicker_1").closest('div.col-md-3').css("display","block");
       } else {
           var engage_transaction = 0;
-          $("#kt_daterangepicker_1").css("display","none");
+          $("#kt_daterangepicker_1").closest('div.col-md-3').css("display","none");
       }
 
       $filter_search = $('[name="filter_search"]').val();
@@ -261,18 +271,18 @@
       $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
       $engage_transaction = engage_transaction;
 
-      var hide_targets = [];
+      var hide_targets = [3];
       // @if(userrole() === 4)
       //   hide_targets.push(4)
       // @endif
 
-      // @if(userrole() != 4 && !in_array(userrole(),[1,10]))
+      // @if(userrole() != 4 && !in_array(userrole(),[1,10,11]))
       //   hide_targets.push(5)
       // @endif
 
-      // @if(in_array(userrole(),[1,10]))
-      //   hide_targets.push(6)
-      // @endif
+      @if(in_array(userrole(),[1,10,11]))
+        hide_targets.push(4)
+      @endif
 
       table.DataTable({
           processing: true,
@@ -313,21 +323,30 @@
               }
           },
           columns: [
-              {data: 'DT_RowIndex'},
-              {data: 'doc_entry', name: 'doc_entry'},
+              {data: 'DT_RowIndex', orderable:false},
+              {data: 'doc_entry', name: 'doc_entry', orderable:false},
               @if(userrole() != 4)
-              {data: 'name', name: 'name'},
+              {data: 'name', name: 'name', orderable:false},
               @endif
               {data: 'order_type', name: 'order_type', orderable:false},
-              @if(in_array(userrole(),[1,10]))
-              {data: 'company', name: 'company'},
+              @if(in_array(userrole(),[1,10,11]))
+              {data: 'company', name: 'company', orderable:false},
               @endif
-              {data: 'date', name: 'date'},
-              {data: 'status', name: 'status'},
-              {data: 'total', name: 'total'},
-              {data: 'created_by', name: 'created_by'},
-              {data: 'action', name: 'action'},
+              {data: 'date', name: 'date', orderable:false},
+              {data: 'status', name: 'status', orderable:false},
+              {data: 'order_approval', name: 'order_approval', orderable:false},
+              {data: 'approval_duration', name: 'approval_duration', orderable:false},
+              {data: 'total', name: 'total', orderable:false},
+              {data: 'created_by', name: 'created_by', orderable:false},
+              {data: 'action', name: 'action', orderable:false},
           ],
+          columnDefs: [
+            {
+                targets: 2, // Target the second column (index 1)
+                className: "ellipsis" // Apply the ellipsis class
+            },
+            { "targets": hide_targets, "visible": false }
+        ],
           drawCallback:function(){
               $(function () {
                 $('[data-toggle="tooltip"]').tooltip()
@@ -336,7 +355,11 @@
           },
           initComplete: function () {
           },
-          aoColumnDefs: [{ "bVisible": false, "aTargets": hide_targets }]
+          // aoColumnDefs: [{ "bVisible": false, "aTargets": hide_targets }]
+        });
+
+        table.on('draw.dt', function() {
+            $('.dataTables_scrollBody').scrollLeft($('.dataTables_scrollBody')[0].scrollWidth);
         });
     }
 
@@ -461,7 +484,7 @@
     });
     @endif
 
-    @if(in_array(userrole(),[1,10]))
+    @if(in_array(userrole(),[1,10,11]))
         $(document).on("click", ".download_excel", function(e) {
             var url = "{{route('orders.export')}}";
 
@@ -476,11 +499,11 @@
             data.filter_date_range = $('[name="filter_date_range"]').val();
             data.filter_status = $('[name="filter_status[]"]').select2('val');
             data.filter_order_type = $('[name="filter_order_type"]').find('option:selected').val();
-            data.filter_customer = $('[name="filter_customer"]').find('option:selected').val();
+            data.filter_customer = $('[name="filter_customer"]').find('option:selected').val() ?? null;
             data.filter_company = $('[name="filter_company"]').find('option:selected').val();
             data.filter_group = $('[name="filter_group"]').val();
             data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
-            data.filter_class = $('[name="filter_class"]').find('option:selected').val();
+            data.filter_class = $('[name="filter_class"]').find('option:selected').val() ?? null;
             data.filter_territory = $('[name="filter_territory"]').find('option:selected').val();
             data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
             data.filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();

@@ -167,8 +167,10 @@ class DraftOrderController extends Controller
                 $customers = Auth::user()->get_multi_customer_details();
                 $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
                 $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-            }elseif(userrole() == 2){
-                $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+            }elseif(userrole() == 14){
+                $data->whereHas('local_order',function($q){
+                    $q->where('sales_specialist_id', @Auth::user()->id);
+                });
             }elseif(!is_null(Auth::user()->created_by)){
                 $customers = Auth::user()->created_by_user->get_multi_customer_details();
                 $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));

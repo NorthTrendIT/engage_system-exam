@@ -401,7 +401,7 @@ class ConversationController extends Controller
 
             $user_ids = array_merge($self_user_ids, $ss_ids);
 
-        }elseif(userrole() == 2){
+        }elseif(userrole() == 14){
             //Is SS
             if(in_array(@$request->category,['', 'customers'])){
                 $customer_ids = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
