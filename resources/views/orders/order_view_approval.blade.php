@@ -44,7 +44,7 @@
 
   /* Just common table stuff. Really. */
   table  { border-collapse: collapse; width: 100%; }
-  th, td { padding: 8px 16px; }
+  th, td { padding: 8px 16px;  vertical-align: middle;  }
   th     { background:#eee; }
 
   .note_order{
@@ -250,26 +250,26 @@
                             <div class="">
                               <div class="table-responsive border-bottom mb-9 tableFixHead">
                                 
-                                <table class="table table-striped mb-3 order_class align-middle">
+                                <table class="table table-striped table-bordered mb-3 order_class align-middle">
                                   <thead>
-                                    <tr class="border-bottom fs-6 fw-bolder text-muted">
-                                      <th style="min">Action</th>
-                                      <th>#</th>
-                                      <th class="min-w-175px pb-2 product_details">Product</th>
-                                      <th>Unit</th>
-                                      <th class="min-w-70px text-end pb-2">Invoice</th> 
-                                      <th class="min-w-175px pb-2">Ordered Quantity</th>
-                                      <th class="min-w-175px pb-2">Served Quantity</th>
-                                      <th class="min-w-175px pb-2 ordered_served_class" style="display:none;">Ordered Ltr/Kgs</th>
-                                      <th class="min-w-175px pb-2 ordered_served_class" style="display:none;">Served Ltr/Kgs</th>
+                                    <tr class="border-bottom fs-6 fw-bolder text-white">
+                                      <th style="min" class="bg-dark">Action</th>
+                                      <th class="bg-dark">#</th>
+                                      <th class="min-w-175px pb-2 product_details bg-dark">Product</th>
+                                      <th class="bg-dark">Unit</th>
+                                      <th class="min-w-70px text-end pb-2 bg-dark">Invoice</th> 
+                                      <th class="min-w-175px pb-2 bg-dark">Ordered Quantity</th>
+                                      <th class="min-w-175px pb-2 bg-dark">Served Quantity</th>
+                                      <th class="min-w-175px pb-2 ordered_served_class bg-dark" style="display:none;">Ordered Ltr/Kgs</th>
+                                      <th class="min-w-175px pb-2 ordered_served_class bg-dark" style="display:none;">Served Ltr/Kgs</th>
                                       @if($data->order_type == 'Promotion')
-                                      <th class="min-w-80px text-end pb-2">Promo Delivery Date</th>
+                                      <th class="min-w-80px text-end pb-2 bg-dark">Promo Delivery Date</th>
                                       @endif
-                                      <th class="min-w-80px text-end pb-2">Price</th>
+                                      <th class="text-end pb-2 bg-dark" style="text-align: end !important;">Price</th>
                                       {{-- <th class="min-w-80px text-end pb-2">Price After VAT</th> --}}
-                                      <th class="min-w-100px text-end pb-2">Amount</th>
-                                      <th class="min-w-100px text-end pb-2">Line Status</th>
-                                      <th class="min-w-100px text-end pb-2">Line Remarks</th>
+                                      <th class="text-end pb-2 bg-dark" style="text-align: end !important;">Amount</th>
+                                      <th class="min-w-100px text-end pb-2 bg-dark">Line Status</th>
+                                      <th class="min-w-100px text-end pb-2 bg-dark">Line Remarks</th>
                                       
                                     </tr>
                                   </thead>
@@ -305,8 +305,8 @@
                                       @if($data->order_type == 'Promotion')
                                           <td>{{$val['promotion']}}</td>
                                       @endif 
-                                      {{-- <td class="text-end">{{$val['price']}}</td> --}}
-                                      <td class="text-end">{{$val['price_after_vat']}}</td>
+                                      <td class="text-end">{{$val['price']}}</td>
+                                      {{-- <td class="text-end">{{$val['price_after_vat']}}</td> --}}
                                       <td class="text-end">{{$val['amount']}}</td>
                                       <td class="text-center">@if(!in_array($status, ['Pending', 'On Process', 'Cancelled'])) {{$val['line_status']}} @endif</td>
                                       <td class="text-center">{{$val['line_remarks']}}</td>
@@ -625,8 +625,13 @@
         });
 
         if (result.isConfirmed) {
+          let reasonIsRequired = false;
+
           if (selectedValue == 'Reject') {
-            const { value: reason } = await Swal.fire({
+            reasonIsRequired = true;
+          }
+            
+            const { value: reason, isConfirmed, isDismissed } = await Swal.fire({
               title: 'Enter your reason',
               input: 'textarea',
               inputValue: '',
@@ -637,20 +642,18 @@
               showCancelButton: true,
               allowOutsideClick: false,
               inputValidator: (value) => {
-                if (!value) {
+                if (reasonIsRequired && !value) {
                   return 'You need to write something!';
                 }
               },
             });
 
-            if (reason) {
-              confirmationProcess('Reject', reason);
-            }else{
+            if (isDismissed) {
               $('#orderApproval').val(previousOrderApprovalValue);
-            }
-          } else { // approved
-            confirmationProcess(selectedValue);
-          }
+            } else if (isConfirmed) {
+              confirmationProcess(selectedValue, reason);
+            }       
+        
         }else{
           $('#orderApproval').val(previousOrderApprovalValue);
         }

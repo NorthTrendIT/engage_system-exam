@@ -104,7 +104,7 @@
                                                             <div class="table-responsive border-bottom mb-9">
                                                                 <table class="table mb-3">
                                                                     <thead>
-                                                                        <tr class="border-bottom fs-6 fw-bolder text-muted">
+                                                                        <tr class="border-bottom fs-6 fw-bolder text-muted bg-dark">
                                                                             <th class="pb-2">No</th>
                                                                             <th class="min-w-175px pb-2">Product</th>
                                                                             <th class="min-w-70px text-end pb-2">Quantity

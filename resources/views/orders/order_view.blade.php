@@ -44,7 +44,7 @@
 
   /* Just common table stuff. Really. */
   table  { border-collapse: collapse; width: 100%; }
-  th, td { padding: 8px 16px; }
+  th, td { padding: 8px 16px;  vertical-align: middle;  }
   th     { background:#eee; }
 
   .note_order{
@@ -158,6 +158,12 @@
                                 </div>
                               </div>
 
+                              <div class="row mt-5">
+                                <div class="fw-bold fs-7 text-gray-600 mb-1">Reason of Approval</div>
+                                <div class="fw-bolder fs-7 text-gray-800 col-md-4">
+                                  {{ $data->disapproval_remarks ?? '-'}}
+                                </div>
+                              </div>
                             </div>
                             <!--end::Col-->
 
@@ -271,24 +277,24 @@
                                 
                                 <table class="table table-striped mb-3 order_class align-middle">
                                   <thead>
-                                    <tr class="border-bottom fs-6 fw-bolder text-muted">
-                                      <th style="min">Action</th>
-                                      <th>#</th>
-                                      <th class="min-w-175px pb-2 product_details">Product</th>
-                                      <th>Unit</th>
-                                      <th class="min-w-70px text-end pb-2">Invoice</th> 
-                                      <th class="min-w-175px pb-2">Ordered Quantity</th>
-                                      <th class="min-w-175px pb-2">Served Quantity</th>
-                                      <th class="min-w-175px pb-2 ordered_served_class" style="display:none;">Ordered Ltr/Kgs</th>
-                                      <th class="min-w-175px pb-2 ordered_served_class" style="display:none;">Served Ltr/Kgs</th>
+                                    <tr class="border-bottom fs-6 fw-bolder text-white">
+                                      <th style="min" class="bg-dark">Action</th>
+                                      <th class="bg-dark">#</th>
+                                      <th class="min-w-175px pb-2 product_details bg-dark">Product</th>
+                                      <th class="bg-dark">Unit</th>
+                                      <th class="min-w-70px text-end pb-2 bg-dark">Invoice</th> 
+                                      <th class="min-w-175px pb-2 bg-dark">Ordered Quantity</th>
+                                      <th class="min-w-175px pb-2 bg-dark">Served Quantity</th>
+                                      <th class="min-w-175px pb-2 ordered_served_class bg-dark" style="display:none;">Ordered Ltr/Kgs</th>
+                                      <th class="min-w-175px pb-2 ordered_served_class bg-dark" style="display:none;">Served Ltr/Kgs</th>
                                       @if($data->order_type == 'Promotion')
-                                      <th class="min-w-80px text-end pb-2">Promo Delivery Date</th>
+                                      <th class="min-w-80px text-end pb-2 bg-dark">Promo Delivery Date</th>
                                       @endif
-                                      <th class="min-w-80px text-end pb-2">Price</th>
+                                      <th class="min-w-80px text-end pb-2 bg-dark" style="text-align: end !important;">Price</th>
                                       {{-- <th class="min-w-80px text-end pb-2">Price After VAT</th> --}}
-                                      <th class="min-w-100px text-end pb-2">Amount</th>
-                                      <th class="min-w-100px text-end pb-2">Line Status</th>
-                                      <th class="min-w-100px text-end pb-2">Line Remarks</th>
+                                      <th class="min-w-100px text-end pb-2 bg-dark" style="text-align: end !important;">Amount</th>
+                                      <th class="min-w-100px text-end pb-2 bg-dark">Line Status</th>
+                                      <th class="min-w-100px text-end pb-2 bg-dark">Line Remarks</th>
                                       
                                     </tr>
                                   </thead>

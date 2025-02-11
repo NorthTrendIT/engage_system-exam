@@ -318,10 +318,10 @@ class OrdersController extends Controller
             $response = $this->approvedOrderPushToSap($order->id);
         }elseif($request->approval === "Reject"){
             $order->approval = "Rejected";
-            $order->disapproval_remarks = $request->reason;
             $response = ['status' => true, 'message' => 'Order was rejected!'];
         }
-
+        
+        $order->disapproval_remarks = $request->reason;
         $order->approved_at = Carbon::now();
         $order->approved_by = Auth::id();
         $order->save();
@@ -591,43 +591,30 @@ class OrdersController extends Controller
 
         
         $status = @$request->filter_status;
-        if(!empty($status)){
-            $data->whereHas('quotation', function($query) use ($status){                
+        if(!empty($status) && $status[0] !== null){
+            $data->whereHas('quotation', function($query) use ($status){
+                $selected_status = [];
+
                 if(in_array("PN",$status)){
-                    $query->orWhere(function($q){
-                        // $q->has('order', '<', 1)->where('cancelled','No');
-                        $q->where('status', 'Pending');
-                    });
+                    array_push($selected_status, 'Pending');
                 }
                 if(in_array("OP",$status)){
-                    $query->orWhere(function($q){
-                        // $q->WhereHas('order',function($q1){
-                        //     $q1->where('document_status', 'bost_Open')->doesntHave('invoice')->where('cancelled','No');
-                        // })->where('cancelled','No');
-                        $q->where('status', 'On Process');
-                    });
+                    array_push($selected_status, 'On Process');
                 }
                 if(in_array("CL", $status)){
-                    $query->orWhere(function($q){
-                        // $q->where(function($q2){
-                        //     $q2->orwhere(function($q1){
-                        //         $q1->where('cancelled', 'Yes');
-                        //     });
-                        //     $q2->orwhere(function($q3){
-                        //         $q3->whereHas('order',function($p){
-                        //             $p->where('cancelled', 'Yes');
-                        //         });
-                        //     });
-                        //     $q2->orwhere(function($q4){
-                        //         $q4->whereHas('order.invoice1',function($p1){
-                        //             $p1->where('cancelled', 'Yes');
-                        //         });
-                        //     });
-                        // });
-
-                        $q->where('status', 'Cancelled');
-                    });
+                    array_push($selected_status, 'Cancelled');
                 }
+
+                if(in_array("CM", $status)){
+                    array_push($selected_status, 'Completed');
+                }
+
+                if(in_array("PS", $status)){
+                    array_push($selected_status, 'Partially Served');
+                }
+
+                $query->whereIn('status', $selected_status);
+
                 if(in_array("DL", $status)){
                     $query->orWhere(function($q){
                         $q->whereHas('order.invoice',function($q1){
@@ -639,28 +626,7 @@ class OrdersController extends Controller
                         });
                     });
                 }
-                if(in_array("CM", $status)){
-                    $query->orWhere(function($q){
-                        // $q->whereHas('order.invoice',function($q1){
-                        //     $q1->where('cancelled', 'No')->where('u_sostat', 'CM');
-                        // })->where('cancelled','No');
 
-                        // $q->whereHas('order',function($q1){
-                        //     $q1->where('cancelled','No');
-                        // });
-
-                        $q->where('status', 'Completed');
-
-                    });
-
-                    // $query->orWhere(function($q){
-                    //     $q->whereHas('order.invoice',function($q1){
-                    //         $q1->where('cancelled', 'No')->where('document_status', 'bost_Close')->whereHas('order.invoice.items',function($item){
-                    //             $item->havingRaw('sum(remaining_open_quantity) = 0');
-                    //         });
-                    //     })->where('cancelled','No');
-                    // });
-                }
                 if(in_array("IN", $status)){
                     $query->orWhere(function($q){
                         $q->whereHas('order.invoice',function($q1){
@@ -694,17 +660,7 @@ class OrdersController extends Controller
                         });
                     });
                 }
-                if(in_array("PS", $status)){
-                    $query->orWhere(function($q){
-                        // $q->whereHas('order.invoice',function($q1){
-                        //     $q1->where('cancelled', 'No')->whereHas('order.invoice.items',function($item){
-                        //         $item->havingRaw('sum(remaining_open_quantity) > 0');
-                        //     });
-                        // })->where('cancelled','No');
-
-                        $q->where('status', 'Partially Served');
-                    });
-                }
+                
             });
         }
         
@@ -737,7 +693,7 @@ class OrdersController extends Controller
             //     $query->orderBy('doc_time', 'desc');
             // });
         });
-        // dd($data->toSql());
+
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('name', function($row) {
@@ -1454,43 +1410,30 @@ class OrdersController extends Controller
 
         
         $status = @$request->filter_status;
-        if(!empty($status)){
-            $data->whereHas('quotation', function($query) use ($status){                
+        if(!empty($status) && $status[0] !== null){
+            $data->whereHas('quotation', function($query) use ($status){
+                $selected_status = [];
+
                 if(in_array("PN",$status)){
-                    $query->orWhere(function($q){
-                        // $q->has('order', '<', 1)->where('cancelled','No');
-                        $q->where('status', 'Pending');
-                    });
+                    array_push($selected_status, 'Pending');
                 }
                 if(in_array("OP",$status)){
-                    $query->orWhere(function($q){
-                        // $q->WhereHas('order',function($q1){
-                        //     $q1->where('document_status', 'bost_Open')->doesntHave('invoice')->where('cancelled','No');
-                        // })->where('cancelled','No');
-                        $q->where('status', 'On Process');
-                    });
+                    array_push($selected_status, 'On Process');
                 }
                 if(in_array("CL", $status)){
-                    $query->orWhere(function($q){
-                        // $q->where(function($q2){
-                        //     $q2->orwhere(function($q1){
-                        //         $q1->where('cancelled', 'Yes');
-                        //     });
-                        //     $q2->orwhere(function($q3){
-                        //         $q3->whereHas('order',function($p){
-                        //             $p->where('cancelled', 'Yes');
-                        //         });
-                        //     });
-                        //     $q2->orwhere(function($q4){
-                        //         $q4->whereHas('order.invoice1',function($p1){
-                        //             $p1->where('cancelled', 'Yes');
-                        //         });
-                        //     });
-                        // });
-
-                        $q->where('status', 'Cancelled');
-                    });
+                    array_push($selected_status, 'Cancelled');
                 }
+
+                if(in_array("CM", $status)){
+                    array_push($selected_status, 'Completed');
+                }
+
+                if(in_array("PS", $status)){
+                    array_push($selected_status, 'Partially Served');
+                }
+
+                $query->whereIn('status', $selected_status);
+
                 if(in_array("DL", $status)){
                     $query->orWhere(function($q){
                         $q->whereHas('order.invoice',function($q1){
@@ -1502,28 +1445,7 @@ class OrdersController extends Controller
                         });
                     });
                 }
-                if(in_array("CM", $status)){
-                    $query->orWhere(function($q){
-                        // $q->whereHas('order.invoice',function($q1){
-                        //     $q1->where('cancelled', 'No')->where('u_sostat', 'CM');
-                        // })->where('cancelled','No');
 
-                        // $q->whereHas('order',function($q1){
-                        //     $q1->where('cancelled','No');
-                        // });
-
-                        $q->where('status', 'Completed');
-
-                    });
-
-                    // $query->orWhere(function($q){
-                    //     $q->whereHas('order.invoice',function($q1){
-                    //         $q1->where('cancelled', 'No')->where('document_status', 'bost_Close')->whereHas('order.invoice.items',function($item){
-                    //             $item->havingRaw('sum(remaining_open_quantity) = 0');
-                    //         });
-                    //     })->where('cancelled','No');
-                    // });
-                }
                 if(in_array("IN", $status)){
                     $query->orWhere(function($q){
                         $q->whereHas('order.invoice',function($q1){
@@ -1557,17 +1479,7 @@ class OrdersController extends Controller
                         });
                     });
                 }
-                if(in_array("PS", $status)){
-                    $query->orWhere(function($q){
-                        // $q->whereHas('order.invoice',function($q1){
-                        //     $q1->where('cancelled', 'No')->whereHas('order.invoice.items',function($item){
-                        //         $item->havingRaw('sum(remaining_open_quantity) > 0');
-                        //     });
-                        // })->where('cancelled','No');
-
-                        $q->where('status', 'Partially Served');
-                    });
-                }
+                
             });
         }
         

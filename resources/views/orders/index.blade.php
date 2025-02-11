@@ -166,26 +166,26 @@
                     <!--begin::Table container-->
                     <div class="table-responsive column-left-right-fix-scroll-hidden">
                        <!--begin::Table-->
-                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
+                       <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered table-hover display nowrap" id="myTable">
                           <!--begin::Table head-->
                           <thead>
-                            <tr>
-                              <th>No</th>
-                              <th>Order #</th>
+                            <tr class="text-white">
+                              <th class="bg-dark">No</th>
+                              <th class="bg-dark">Order #</th>
                               @if(userrole() != 4)
-                              <th>Customer Name</th>
+                              <th class="bg-dark">Customer Name</th>
                               @endif
-                              <th>Order Type</th>
+                              <th class="bg-dark">Order Type</th>
                               @if(in_array(userrole(),[1,10,11]))
-                              <th>Business Unit</th>
+                              <th class="bg-dark">Business Unit</th>
                               @endif
-                              <th>Created Date</th>
-                              <th>Status</th>
-                              <th>Approval</th>
-                              <th>Approval Duration</th>
-                              <th>DocTotal</th>
-                              <th>Created By</th>
-                              <th>Action</th>
+                              <th class="bg-dark">Created Date</th>
+                              <th class="bg-dark">Status</th>
+                              <th class="bg-dark">Approval</th>
+                              <th class="bg-dark">Approval Duration</th>
+                              <th class="bg-dark">Total</th>
+                              <th class="bg-dark">Created By</th>
+                              <th class="bg-dark">Action</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->
@@ -216,11 +216,14 @@
 @push('css')
 <style>
   .ellipsis {
-    white-space: nowrap;       /* Prevent text from wrapping */
-    overflow: hidden;         /* Hide overflowed text */
-    text-overflow: ellipsis;  /* Display ellipsis for overflowed text */
-    max-width: 200px;         /* Set a maximum width for the column */
-}
+      white-space: nowrap;       /* Prevent text from wrapping */
+      overflow: hidden;         /* Hide overflowed text */
+      text-overflow: ellipsis;  /* Display ellipsis for overflowed text */
+      max-width: 100px;         /* Set a maximum width for the column */
+  }
+  #myTable tbody tr {
+      cursor: pointer;
+  }
 </style>
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
@@ -271,17 +274,21 @@
       $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
       $engage_transaction = engage_transaction;
 
-      var hide_targets = [3];
-      // @if(userrole() === 4)
-      //   hide_targets.push(4)
-      // @endif
+      var hide_targets = [];
+      @if(userrole() === 4)
+        hide_targets.push(2);
+        // hide_targets.push(9);
+      @else
+        hide_targets.push(3)
+      @endif
 
-      // @if(userrole() != 4 && !in_array(userrole(),[1,10,11]))
-      //   hide_targets.push(5)
-      // @endif
+      @if(userrole() != 4 && !in_array(userrole(),[1,10,11]))
+        hide_targets.push(10)
+      @endif
 
       @if(in_array(userrole(),[1,10,11]))
-        hide_targets.push(4)
+        hide_targets.push(4);
+        hide_targets.push(11);
       @endif
 
       table.DataTable({
@@ -347,14 +354,25 @@
             },
             { "targets": hide_targets, "visible": false }
         ],
-          drawCallback:function(){
-              $(function () {
-                $('[data-toggle="tooltip"]').tooltip()
-                $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
-              })
-          },
-          initComplete: function () {
-          },
+        createdRow: function (row, data, dataIndex) {
+                    console.log(data);
+                    $(row).on('click', function () {
+                      var str = data.doc_entry;
+                      var $tempDiv = $('<div>').html(str); // Create a temporary div and set the HTML content
+                      var href = $tempDiv.find('a').attr('href'); // Get the href attribute
+
+// Redirect the browser to the extracted URL
+window.location.href = href;
+                    });
+                },
+        drawCallback:function(){
+            $(function () {
+              $('[data-toggle="tooltip"]').tooltip()
+              $('table tbody tr td:last-child').attr('nowrap', 'nowrap');
+            })
+        },
+        initComplete: function () {
+        },
           // aoColumnDefs: [{ "bVisible": false, "aTargets": hide_targets }]
         });
 
