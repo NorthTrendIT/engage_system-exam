@@ -330,13 +330,15 @@ $(document).ready(function() {
 
     @if(isset($edit) && !empty($edit->assignment))
         @foreach ($edit->assignment as $data)
-        var initialOption = {
-            id: {{ $data->customer->id }},
-            text: "{{ $data->customer->card_name}}"+`{!! ' (Code: '.$data->customer->card_code. (@$data->customer->user->email ? ', Email: '.@$data->customer->user->email : ""). ')' !!}`,
-            sap_connection_id: '{!! $data->customer->sap_connection_id !!}',
-            selected: true
-        }
-        $initialCustomer.push(initialOption);
+        @if($data->customer)
+          var initialOption = {
+              id: {{ $data->customer->id }},
+              text: "{{ $data->customer->card_name}}"+`{!! ' (Code: '.$data->customer->card_code. (@$data->customer->user->email ? ', Email: '.@$data->customer->user->email : ""). ')' !!}`,
+              sap_connection_id: '{!! $data->customer->sap_connection_id !!}',
+              selected: true
+          }
+          $initialCustomer.push(initialOption);
+        @endif
         @endforeach
     @endif
 
