@@ -408,8 +408,8 @@ class CustomersSalesSpecialistsController extends Controller
                                 $count = 0;
                                 foreach($row->assignment as $value){
                                     $comma = ($count > 0) ? ', ' : '';
-                                    if(strpos($customer, $value->customer->card_name) === false){
-                                        $customer .= $comma.$value->customer->card_name;
+                                    if(strpos($customer, @$value->customer->card_name) === false){
+                                        $customer .= $comma.@$value->customer->card_name;
                                     }
                                     $count ++;
                                 }
