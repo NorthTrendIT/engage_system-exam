@@ -65,8 +65,8 @@
 
                   <!-- Territory -->
                   <div class="col-md-3 mt-5 territory" >
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectTerritory" data-hide-search="false" data-allow-clear="true" name="filter_territory">
-                      <option value=""></option>
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectTerritory" data-hide-search="false" data-allow-clear="false" name="filter_territory[]">
+                      {{-- <option value=""></option> --}}
                     </select>
                   </div>
 
@@ -108,8 +108,8 @@
                 @endif
 
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid js-example-basic-multiple" name="filter_status[]" data-control="select2" data-hide-search="false" data-placeholder="Select status" data-allow-clear="true" multiple="multiple">
-                    <option value=""></option>
+                  <select class="form-control form-control-lg form-control-solid js-example-basic-multiple" name="filter_status[]" data-control="select2" data-hide-search="false" data-placeholder="Select status" data-allow-clear="false" multiple="multiple">
+                    {{-- <option value=""></option> --}}
 
                     @foreach(getOrderStatusArray1() as $key => $value)
                       <option value="{{ $key }}">{{ $value }}</option>
@@ -117,7 +117,7 @@
                   </select>
                 </div>
                 
-                <div class="col-md-3 mt-5">
+                <div class="col-md-3 mt-5 d-none">
                   <select class="form-control form-control-lg form-control-solid" name="filter_order_type" data-control="select2" data-hide-search="false" data-placeholder="Select order type" data-allow-clear="true">
                     <option value=""></option>
                     <option value="Standard">Standard</option>
@@ -173,7 +173,7 @@
                               <th class="bg-dark">No</th>
                               <th class="bg-dark">Order #</th>
                               @if(userrole() != 4)
-                              <th class="bg-dark">Customer Name</th>
+                              <th class="bg-dark">Customer</th>
                               @endif
                               <th class="bg-dark">Order Type</th>
                               @if(in_array(userrole(),[1,10,11]))
@@ -181,10 +181,10 @@
                               @endif
                               <th class="bg-dark">Created Date</th>
                               <th class="bg-dark">Status</th>
-                              <th class="bg-dark">Approval</th>
-                              <th class="bg-dark">Approval Duration</th>
                               <th class="bg-dark">Total</th>
                               <th class="bg-dark">Created By</th>
+                              <th class="bg-dark">Approval</th>
+                              <th class="bg-dark">Approval Duration</th>
                               <th class="bg-dark">Action</th>
                             </tr>
                           </thead>
@@ -269,7 +269,7 @@
       $filter_group = $('[name="filter_group"]').val();
       $filter_brand = $('[name="filter_brand"]').find('option:selected').val();
       $filter_class = $('[name="filter_class"]').find('option:selected').val();
-      $filter_territory = $('[name="filter_territory"]').find('option:selected').val();
+      $filter_territory = $('[name="filter_territory[]"]').select2('val');
       $filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
       $filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
       $engage_transaction = engage_transaction;
@@ -340,11 +340,11 @@
               {data: 'company', name: 'company', orderable:false},
               @endif
               {data: 'date', name: 'date', orderable:false},
-              {data: 'status', name: 'status', orderable:false},
-              {data: 'order_approval', name: 'order_approval', orderable:false},
-              {data: 'approval_duration', name: 'approval_duration', orderable:false},
-              {data: 'total', name: 'total', orderable:false},
-              {data: 'created_by', name: 'created_by', orderable:false},
+              {data: 'status', name: 'status', orderable:false, className: 'text-center'},
+              {data: 'total', name: 'total', orderable:false, className: 'text-center'},
+              {data: 'created_by', name: 'created_by', orderable:false, className: 'text-center'},
+              {data: 'order_approval', name: 'order_approval', orderable:false, className: 'text-center'},
+              {data: 'approval_duration', name: 'approval_duration', orderable:false, className: 'text-center'},
               {data: 'action', name: 'action', orderable:false},
           ],
           columnDefs: [
@@ -522,7 +522,7 @@ window.location.href = href;
             data.filter_group = $('[name="filter_group"]').val();
             data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
             data.filter_class = $('[name="filter_class"]').find('option:selected').val() ?? null;
-            data.filter_territory = $('[name="filter_territory"]').find('option:selected').val();
+            data.filter_territory = $('[name="filter_territory[]"]').select2('val');
             data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
             data.filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
             data.engage_transaction = engage_transaction;
@@ -539,7 +539,7 @@ window.location.href = href;
             $('.customer').hide();
             $('.customer_class').hide();
             $('.sales_specialist').hide();
-            $('.territory').hide();
+            // $('.territory').hide();
             $('.market_sector').hide();
             // Dissable all.
             $('#selectrBrand').prop('disabled', true);
@@ -701,7 +701,8 @@ window.location.href = href;
             },
             placeholder: 'Select territory',
             // minimumInputLength: 2,
-            multiple: false,
+            allowClear: false,
+            multiple: true,
         });
 
         // getMarketSector

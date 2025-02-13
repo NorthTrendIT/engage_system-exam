@@ -563,11 +563,12 @@ class OrdersController extends Controller
                 $q->where('code',$request->filter_group);
             });
         }
-
-        if($request->filter_territory != ""){
+        
+        $territory = @$request->filter_territory;
+        if(!empty($territory) && $territory[0] !== null){
             $data->where(function($query) use ($request) {
                 $query->whereHas('customer.territories', function($q) use ($request) {
-                    $q->where('id', $request->filter_territory);
+                    $q->whereIn('id', $request->filter_territory);
                 });
             });
         }
@@ -1383,10 +1384,11 @@ class OrdersController extends Controller
             });
         }
 
-        if($request->filter_territory != ""){
+        $territory = @$request->filter_territory;
+        if(!empty($territory) && $territory[0] !== null){
             $data->where(function($query) use ($request) {
                 $query->whereHas('customer.territories', function($q) use ($request) {
-                    $q->where('id', $request->filter_territory);
+                    $q->whereIn('id', $request->filter_territory);
                 });
             });
         }
@@ -1545,7 +1547,7 @@ class OrdersController extends Controller
                             'type' => $type,
                             'card_code' => @$value->customer->card_code ?? @$value->card_code ?? "-",
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
-                            'doc_total' => number_format_value($value->doc_total),
+                            'doc_total' => number_format_value(@$value->quotation->doc_total),
                             'placed_by' => $placed_by,
                             'created_at' => $date.' '.$time,
                             'status' => $status,
