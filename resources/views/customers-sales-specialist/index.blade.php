@@ -188,11 +188,11 @@
 
     $(document).on('click', '.search', function(event) {
       render_table();
-      $('#myTable').DataTable().search($('[name="filter_search"]').val()).draw();
+      //$('#myTable').DataTable().search($('[name="filter_search"]').val()).draw();
     });
 
     $(document).on('click', '.clear-search', function(event) {
-      $('#myTable').dataTable().fnFilter('');
+      // $('#myTable').dataTable().fnFilter('');
       $('[name="filter_company"]').val('').trigger('change');
       $('[name="filter_group"]').val('').trigger('change');
       $('[name="filter_search"]').val('');
