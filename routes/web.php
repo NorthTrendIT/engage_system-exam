@@ -234,6 +234,7 @@ Route::middleware(['auth'])->group(function () {
 
             Route::post('customers-sales-specialist/get-customers/', 'App\Http\Controllers\CustomersSalesSpecialistsController@getCustomers')->name('customers-sales-specialist.getCustomers');
             Route::post('customers-sales-specialist/get-customer-groups/', 'App\Http\Controllers\CustomersSalesSpecialistsController@getCustomerGroups')->name('customers-sales-specialist.getCustomerGroups');
+            Route::post('customers-sales-specialist/get-customer-territories/', 'App\Http\Controllers\CustomersSalesSpecialistsController@getCustomerTerritories')->name('customers-sales-specialist.getCustomerTerritories');
 
             Route::post('customers-sales-specialist/get-salse-specialist/', 'App\Http\Controllers\CustomersSalesSpecialistsController@getSalseSpecialist')->name('customers-sales-specialist.getSalseSpecialist');
             Route::post('customers-sales-specialist/get-product-brand/', 'App\Http\Controllers\CustomersSalesSpecialistsController@getProductBrand')->name('customers-sales-specialist.get-product-brand');

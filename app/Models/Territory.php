@@ -19,4 +19,9 @@ class Territory extends Model
         'last_sync_at',
     ];
 
+    public function customer()
+    {
+        return $this->hasOne(Customer::class, 'territory', 'territory_id');
+    }
+
 }

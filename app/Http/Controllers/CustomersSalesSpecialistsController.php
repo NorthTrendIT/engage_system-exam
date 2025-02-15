@@ -7,6 +7,7 @@ use App\Models\CustomersSalesSpecialist;
 use App\Models\User;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
+use App\Models\Territory;
 use App\Models\ProductItemLine;
 use App\Models\ProductGroup;
 use App\Models\ProductTiresCategory;
@@ -70,6 +71,7 @@ class CustomersSalesSpecialistsController extends Controller
                     
                     'customer_selection' => 'required',
 
+                    'customer_territory_ids' => 'required',
                     // 'customer_group_ids' => 'required',
                     // 'customer_group_ids.*' => 'required|exists:customer_groups,id,sap_connection_id,'.$input['company_id'],
 
@@ -125,37 +127,49 @@ class CustomersSalesSpecialistsController extends Controller
                 //$customer_ids = array( $input['id'] );
                 //save log
                 add_log(42, $input);
-            }else{                
+            }
+            //============= override previous code =======================
+            // else{                
                 
-                $message = "Record created successfully.";
+            //     $message = "Record created successfully.";
 
-                //save log
-                add_log(41, $input);
+            //     //save log
+            //     add_log(41, $input);
 
-                $assignment = new salesAssignment();
-                $assignment->assignment_name = $request->assignment_name;
-                $assignment->save();
+            //     $assignment = new salesAssignment();
+            //     $assignment->assignment_name = $request->assignment_name;
+            //     $assignment->save();
                 
-                if(@$request->customer_selection == "specific"){
-                    $customer_ids = $input['customer_ids'];
-                    $extra_ids = $customer_ids;
-                }else{
-                    $customer_ids = Customer::doesnthave('sales_specialist')
+            //     if(@$request->customer_selection == "specific"){
+            //         $customer_ids = $input['customer_ids'];
+            //         $extra_ids = $customer_ids;
+            //     }else{
+            //         $customer_ids = Customer::doesnthave('sales_specialist')
+            //                                 ->orderby('card_name','asc')
+            //                                 ->where('real_sap_connection_id',$input['company_id'])
+            //                                 //->where('is_active',1)
+            //                                 ->whereHas('group', function($q) use ($input){
+            //                                     $q->whereIn('id', $input['customer_group_ids']);
+            //                                 })->pluck('id')->toArray();
+
+            //         if(isset($input['customer_ids'])){
+            //             $extra_ids = $input['customer_ids'];
+            //         }else{
+            //             $extra_ids = $customer_ids;
+            //         }
+
+            //     }
+            // }
+
+            $customer_ids = Customer::doesnthave('sales_specialist')
                                             ->orderby('card_name','asc')
                                             ->where('real_sap_connection_id',$input['company_id'])
                                             //->where('is_active',1)
-                                            ->whereHas('group', function($q) use ($input){
-                                                $q->whereIn('id', $input['customer_group_ids']);
+                                            ->whereHas('territories', function($q) use ($input){
+                                                $q->whereIn('id', $input['customer_territory_ids']);
                                             })->pluck('id')->toArray();
+            // dd($customer_ids);
 
-                    if(isset($input['customer_ids'])){
-                        $extra_ids = $input['customer_ids'];
-                    }else{
-                        $extra_ids = $customer_ids;
-                    }
-
-                }
-            }
             CustomersSalesSpecialist::where('assignment_id', $assignment->id)->delete();
             CustomerProductGroup::where('assignment_id', $assignment->id)->delete();
             CustomerProductItemLine::where('assignment_id', $assignment->id)->delete();
@@ -259,6 +273,7 @@ class CustomersSalesSpecialistsController extends Controller
         }])->findOrFail($id);
 
         $groups = [];
+        $territories = [];
         foreach($edit->assignment as $key => $val){
 
             $res = array_search(@$val->customer->group->id, array_column($groups, 'id'));
@@ -270,10 +285,21 @@ class CustomersSalesSpecialistsController extends Controller
                 if(!in_array(@$val->customer->group->name, array_column($groups,'name'))){
                     array_push($groups,$ar); 
                 }
-            }   
+            }
+            
+            $res = array_search(@$val->customer->territories->id, array_column($territories, 'id'));
+            if($res == ''){
+                $ar = array(
+                    'id'=>@$val->customer->territories->id,
+                    'description'=>@$val->customer->territories->description,
+                );
+                if(!in_array(@$val->customer->territories->description, array_column($territories,'name'))){
+                    array_push($territories,$ar); 
+                }
+            } 
         }   
-        // dd($company);           
-        return view('customers-sales-specialist.add',compact('edit', 'company','ss_ids','brand','item','category','groups'));
+        // dd($edit->assignment);           
+        return view('customers-sales-specialist.add',compact('edit', 'company','ss_ids','brand','item','category','groups', 'territories'));
     }
 
     /**
@@ -585,11 +611,11 @@ class CustomersSalesSpecialistsController extends Controller
         $response = array();
         if($request->sap_connection_id){
             $data = CustomerGroup::orderby('name','asc')->where('real_sap_connection_id',$request->sap_connection_id)
-            // ->whereHas('customer',function ($query){
-            //     $query->doesnthave('sales_specialist')
-            //             //->where('is_active',1)
-            //     ->limit(50);
-            // })
+            ->whereHas('customer',function ($query){
+                // $query->doesnthave('sales_specialist')
+                        //->where('is_active',1)
+                // ->limit(50);
+            })
             ->limit(50);
             
 
@@ -603,6 +629,32 @@ class CustomersSalesSpecialistsController extends Controller
                 $response[] = array(
                     "id" => $value->id,
                     "text" => $value->name,
+                );
+            }
+        }
+
+        return response()->json($response);
+    }
+
+    public function getCustomerTerritories(Request $request){
+        $search = $request->search;
+
+        $response = array();
+        if($request->sap_connection_id){
+            $data = Territory::orderby('description','asc')
+                                ->whereHas('customer',function ($query) use($request) {
+                                    $query->where('real_sap_connection_id',$request->sap_connection_id);
+                                })->limit(50);
+
+            if($search != ''){
+                $data->where('description', 'like', '%' .$search . '%');
+            }
+
+            $data = $data->get();
+            foreach($data as $value){
+                $response[] = array(
+                    "id" => $value->id,
+                    "text" => $value->description,
                 );
             }
         }
