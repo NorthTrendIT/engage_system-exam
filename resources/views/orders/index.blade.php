@@ -546,7 +546,7 @@ window.location.href = href;
             $('#selectCustomer').prop('disabled', true);
             $('#selectCustomerClass').prop('disabled', true);
             $('#selectSalesSpecialist').prop('disabled', true);
-            $('#selectTerritory').prop('disabled', true);
+            // $('#selectTerritory').prop('disabled', true);
             $('#selectMarketSector').prop('disabled', true);
             // Set null value to all.
             $('#selectBrand').val(null).trigger("change");

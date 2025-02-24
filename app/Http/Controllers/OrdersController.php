@@ -577,6 +577,9 @@ class OrdersController extends Controller
             $data->where(function($q) use ($request) {
                 $q->orwhere('doc_num','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");
+                $q->orWhereHas('customer', function($c) use ($request){
+                    $c->where('card_name','LIKE',"%".$request->filter_search."%");
+                });
             });
         }
 
@@ -1397,6 +1400,9 @@ class OrdersController extends Controller
             $data->where(function($q) use ($request) {
                 $q->orwhere('doc_num','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");
+                $q->orWhereHas('customer', function($c) use ($request){
+                    $c->where('card_name','LIKE',"%".$request->filter_search."%");
+                });
             });
         }
 

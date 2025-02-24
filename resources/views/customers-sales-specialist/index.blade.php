@@ -89,7 +89,7 @@
                             <tr>
                               <th>No.</th>
                               <th>Business Unit</th>
-                              <th>Branch</th>
+                              <th>Territory</th>
                               <th>Assignment Name</th>
                               <th>Customer</th>
                               <th>Sales Personnel</th>
@@ -166,7 +166,7 @@
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
               {data: 'company', name: 'company'},
-              {data: 'branch', name: 'branch'},
+              {data: 'territory', name: 'territory'},
               {data:'assignment_name', name:'assignment_name'},
               {data: 'customer', name: 'customer'},
               {data: 'sales_personnel', name: 'sales_personnel'},

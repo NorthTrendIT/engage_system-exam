@@ -86,7 +86,7 @@
                 </div>
 
                 @if(!isset($edit))
-                <div class="col-md-6 mb-5 customer_selection_div">
+                <div class="col-md-6 mb-5 customer_selection_div d-none">
                   <div class="form-group">
                     <label>Customer Selection<span class="asterisk">*</span></label>
                     <select class="form-select form-select-solid" data-control="select2" id="selectCustomerSelection" data-hide-search="false" name="customer_selection" data-placeholder="Select Customer Option">
@@ -516,7 +516,8 @@ $(document).ready(function() {
             return {
               _token: "{{ csrf_token() }}",
               search: params.term,
-              sap_connection_id: $('[name="company_id"]').val()
+              sap_connection_id: $('[name="company_id"]').val(),
+              territories: $('[name="customer_territory_ids[]"]').select2('val')
             };
           },
           processResults: function (response) {
