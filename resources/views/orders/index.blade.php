@@ -44,7 +44,7 @@
                   </div>
 
                   <!-- group -->
-                  <div class="col-md-3 mt-5 other_filter_div d-none">
+                  <div class="col-md-3 mt-5 other_filter_div">
                     <select class="form-control form-control-lg form-control-solid" name="filter_group" data-control="select2" data-hide-search="false" data-placeholder="Select Branch" data-allow-clear="true">
                       <option value=""></option>
                     </select>
@@ -686,6 +686,7 @@ window.location.href = href;
                         _token: "{{ csrf_token() }}",
                         search: params.term,
                         sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+                        branch: $('[name="filter_group"]').val()
                     };
                 },
                 processResults: function (response) {

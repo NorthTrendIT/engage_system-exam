@@ -368,6 +368,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('common/get-province', 'App\Http\Controllers\CommonController@getProvince')->name('common.getProvince');
         Route::post('common/get-city', 'App\Http\Controllers\CommonController@getCity')->name('common.getCity');
         Route::post('common/get-branch', 'App\Http\Controllers\CommonController@getBranch')->name('common.getBranch');
+        Route::post('common/get-branch-customer', 'App\Http\Controllers\CommonController@getCustomerBranch')->name('common.getcustomerBranch');
         Route::post('common/get-sales-specialist', 'App\Http\Controllers\CommonController@getSalesSpecialist')->name('common.getSalesSpecialist');
         Route::post('common/get-customer-class', 'App\Http\Controllers\CommonController@getCustomerClass')->name('common.getCustomerClass');
         Route::post('common/get-brands', 'App\Http\Controllers\CommonController@getBrands')->name('common.getBrands');

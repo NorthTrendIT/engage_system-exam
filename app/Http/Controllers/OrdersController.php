@@ -90,6 +90,15 @@ class OrdersController extends Controller
     {
         $total = 0;
         $data = Quotation::where('id', $id);
+
+        $branchIds = Auth::user()->branch;
+        if(isset($branchIds) && !empty($branchIds)){
+            $branch_ids = Auth::user()->customerBranch->pluck('id');
+            $data->whereHas('customer.group', function($q) use ($branch_ids) {
+                $q->whereIn('id', $branch_ids);
+            });
+        }
+
         if(userrole() == 4){
             $customers = Auth::user()->get_multi_customer_details();
             $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
@@ -198,6 +207,14 @@ class OrdersController extends Controller
 
     public function showApproval($id){
         $data = LocalOrder::where('id', $id);
+
+        $branchIds = Auth::user()->branch;
+        if(isset($branchIds) && !empty($branchIds)){
+            $branch_ids = Auth::user()->customerBranch->pluck('id');
+            $data->whereHas('customer.group', function($q) use ($branch_ids) {
+                $q->whereIn('id', $branch_ids);
+            });
+        }
 
         if(userrole() == 4){
             $data->whereHas('customer', function($q){
@@ -485,6 +502,14 @@ class OrdersController extends Controller
 
     public function getAll(Request $request){
         $data = LocalOrder::query();
+        
+        $branchIds = Auth::user()->branch;
+        if(isset($branchIds) && !empty($branchIds)){
+            $branch_ids = Auth::user()->customerBranch->pluck('id');
+            $data->whereHas('customer.group', function($q) use ($branch_ids) {
+                $q->whereIn('id', $branch_ids);
+            });
+        }
 
         if($request->engage_transaction != 0){
             $data->whereHas('quotation', function($q){
@@ -1308,6 +1333,14 @@ class OrdersController extends Controller
 
 
         $data = LocalOrder::query();
+
+        $branchIds = Auth::user()->branch;
+        if(isset($branchIds) && !empty($branchIds)){
+            $branch_ids = Auth::user()->customerBranch->pluck('id');
+            $data->whereHas('customer.group', function($q) use ($branch_ids) {
+                $q->whereIn('id', $branch_ids);
+            });
+        }
 
         if($request->engage_transaction != 0){
             $data->whereHas('quotation', function($q){

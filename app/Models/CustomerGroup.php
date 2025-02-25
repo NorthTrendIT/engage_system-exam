@@ -29,4 +29,9 @@ class CustomerGroup extends Model
     {
         return $this->hasOne(Customer::class, ['group_code', 'sap_connection_id'], ['code', 'sap_connection_id']);
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'branch_user', 'customer_group_id', 'user_id');
+    }
 }

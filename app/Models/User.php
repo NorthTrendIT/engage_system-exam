@@ -31,6 +31,7 @@ class User extends Authenticatable
         'profile',
         'city_id',
         'province_id',
+        'branch',
         'department_id',
         'parent_id',
         'sales_specialist_name',
@@ -70,6 +71,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'branch' => 'array',
     ];
 
     public function role()
@@ -107,10 +109,21 @@ class User extends Authenticatable
         return $this->belongsToMany(CustomersSalesSpecialist::class, 'id', 'ss_id');
     }
 
+    // public function territories()
+    // {
+    //     return $this->hasMany(TerritorySalesSpecialist::class,'user_id','id');
+    // }
+
     public function territories()
     {
-        return $this->hasMany(TerritorySalesSpecialist::class,'user_id','id');
+        return $this->belongsToMany(Territory::class, 'territory_user', 'user_id', 'territory_id');
     }
+
+    public function customerBranch()
+    {
+        return $this->belongsToMany(CustomerGroup::class, 'branch_user', 'user_id', 'customer_group_id');
+    }
+
 
     public function customer()
     {

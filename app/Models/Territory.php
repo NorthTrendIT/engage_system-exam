@@ -24,4 +24,9 @@ class Territory extends Model
         return $this->hasOne(Customer::class, 'territory', 'territory_id');
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
 }
