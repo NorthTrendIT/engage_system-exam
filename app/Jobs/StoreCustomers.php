@@ -12,6 +12,7 @@ use App\Models\Customer;
 use App\Models\Classes;
 use App\Models\CustomerBpAddress;
 use App\Models\User;
+use App\Models\CustomersSalesSpecialist;
 use Hash;
 use Log;
 
@@ -254,6 +255,21 @@ class StoreCustomers implements ShouldQueue
                         $check_user->multi_real_sap_connection_id = implode(",", $multi_real_sap_connection_id);
                         $check_user->save();
                     }
+
+                    $customer_ss = CustomersSalesSpecialist::whereHas('customer', function($q) use($obj){
+                                    $q->where('territory', $obj->territory);
+                                   })->get();
+
+                    $newCustomerSsTagging = [];
+                    foreach($customer_ss as $cust){
+                        $newCustomerSsTagging[] = [
+                            'assignment_id' => $cust->assignment_id,
+                            'customer_id' => $obj->id, 
+                            'ss_id' => $cust->ss_id
+                        ];
+                    }
+                    CustomersSalesSpecialist::insert($newCustomerSsTagging);
+
                 }
             }
 

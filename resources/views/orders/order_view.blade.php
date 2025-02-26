@@ -158,7 +158,7 @@
                                 </div>
                               </div>
 
-                              <div class="row mt-5">
+                              <div class="row mt-5 {{userrole() == 4 ? 'd-none' : ''}}">
                                 <div class="fw-bold fs-7 text-gray-600 mb-1">Reason of Approval</div>
                                 <div class="fw-bolder fs-7 text-gray-800 col-md-4">
                                   {{ @$data->local_order->disapproval_remarks ?? '-'}}

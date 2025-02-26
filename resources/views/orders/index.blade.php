@@ -339,7 +339,7 @@
               @if(in_array(userrole(),[1,10,11]))
               {data: 'company', name: 'company', orderable:false},
               @endif
-              {data: 'date', name: 'date', orderable:false},
+              {data: 'date', name: 'date', orderable:true},
               {data: 'status', name: 'status', orderable:false, className: 'text-center'},
               {data: 'total', name: 'total', orderable:false, className: 'text-center'},
               {data: 'created_by', name: 'created_by', orderable:false, className: 'text-center'},

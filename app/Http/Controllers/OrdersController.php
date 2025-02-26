@@ -775,7 +775,7 @@ class OrdersController extends Controller
                                 }
                             })
                             ->addColumn('date', function($row) {
-                                $created_date = ($row->quotation) ? @$row->quotation->doc_date : @$row->created_at;
+                                $created_date =  @$row->created_at;
                                 $date = date('M d, Y',strtotime($created_date));
                                 $time = $row->doc_time ? date('H:i A',strtotime($created_date)) : "";
                                 
@@ -822,9 +822,9 @@ class OrdersController extends Controller
                             // ->orderColumn('total', function ($query, $order) {
                             //     $query->orderBy('doc_total', $order);
                             // })
-                            // ->orderColumn('date', function ($query, $order) {
-                            //     $query->orderBy('doc_date', $order);
-                            // })
+                            ->orderColumn('date', function ($query, $order) {
+                                $query->orderBy('created_at', $order);
+                            })
                             // ->orderColumn('due_date', function ($query, $order) {
                             //     $query->orderBy('doc_due_date', $order);
                             // })
@@ -1573,7 +1573,7 @@ class OrdersController extends Controller
             
             $doc_entry = ($value->quotation) ? $value->quotation->doc_entry : $value->id;
 
-            $created_date = ($value->quotation) ? @$value->quotation->doc_date : @$value->created_at;
+            $created_date =  @$value->created_at;
             $date = date('M d, Y',strtotime($created_date));
             $time = $value->doc_time ? date('H:i A',strtotime($created_date)) : "";
 

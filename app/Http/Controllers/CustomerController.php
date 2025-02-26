@@ -194,7 +194,9 @@ class CustomerController extends Controller
         }
 
         if($request->filter_territory != ""){
-            $data->where('territory',$request->filter_territory);
+            $data->whereHas('territories', function($q) use ($request){
+                $q->where('id', $request->filter_territory);
+            });
         }
 
         if($request->filter_company != ""){
@@ -522,8 +524,10 @@ class CustomerController extends Controller
             $data->where('is_active',$filter->filter_status);
         }
 
-        if(@$filter->filter_territory != ""){
-            $data->where('territory',$filter->filter_territory);
+        if($request->filter_territory != ""){
+            $data->whereHas('territories', function($q) use ($request){
+                $q->where('id', $request->filter_territory);
+            });
         }
 
         if(@$filter->filter_company != ""){

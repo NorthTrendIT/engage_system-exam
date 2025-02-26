@@ -123,7 +123,7 @@ class CustomersSalesSpecialistsController extends Controller
 
                 $customer_ids = Customer::orderby('card_name','asc')
                                             ->where('real_sap_connection_id',$input['company_id'])
-                                            //->where('is_active',1)
+                                            ->where('is_active',1)
                                             ->whereHas('territories', function($q) use ($input){
                                                 $q->whereIn('id', $input['customer_territory_ids']);
                                             })->pluck('id')->toArray();
@@ -168,10 +168,9 @@ class CustomersSalesSpecialistsController extends Controller
 
                 // }
 
-                $customer_ids = Customer::doesnthave('sales_specialist')
-                                            ->orderby('card_name','asc')
+                $customer_ids = Customer::orderby('card_name','asc')
                                             ->where('real_sap_connection_id',$input['company_id'])
-                                            //->where('is_active',1)
+                                            ->where('is_active',1)
                                             ->whereHas('territories', function($q) use ($input){
                                                 $q->whereIn('id', $input['customer_territory_ids']);
                                             })->pluck('id')->toArray();
@@ -438,9 +437,9 @@ class CustomersSalesSpecialistsController extends Controller
         if($request->filter_search != ""){
             $data->where('assignment_name','LIKE',"%".$request->filter_search."%");
 
-            $data->orWhereHas('assignment.customer', function($q) use ($request){
-                $q->where('card_name','LIKE',"%".$request->filter_search."%");
-            });
+            // $data->orWhereHas('assignment.customer', function($q) use ($request){
+            //     $q->where('card_name','LIKE',"%".$request->filter_search."%");
+            // });
 
             $data->orWhereHas('assignment.sales_person', function($q) use ($request){
                 $q->where('first_name','LIKE',"%".$request->filter_search."%");

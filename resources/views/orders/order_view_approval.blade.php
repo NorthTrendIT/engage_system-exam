@@ -154,7 +154,7 @@
                                 </div>
                               </div>
 
-                              @if($data->approval === "Rejected")
+                              @if($data->approval === "Rejected" && userrole() != 4 )
                               <div class="row mt-5">
                                 <div class="fw-bold fs-7 text-gray-600 mb-1">Reason of Rejection</div>
                                 <div class="fw-bolder fs-7 text-gray-800 col-md-4">
