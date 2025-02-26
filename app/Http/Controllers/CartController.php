@@ -72,7 +72,7 @@ class CartController extends Controller
         if(userrole() == 4){
             $customer_id = explode(',', Auth::user()->multi_customer_id);
             $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
-        }elseif(userrole() == 2){
+        }elseif(userrole() == 14){
             $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
             $sap_connection_id = array( @Auth::user()->sap_connection_id );
         }elseif (!is_null(@Auth::user()->created_by)) {
@@ -554,32 +554,37 @@ class CartController extends Controller
                         // if($is_need_delete_order && count($products) == 1){
                         //     $order->delete();
                         // }else{
-                            try{
-                                $sap_connection = SapConnection::find($real_sap_connection_id);
 
-                                if(!is_null($sap_connection)){
-                                    $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
+                            //========================= start of working code =======================
+                            // try{
+                            //     $sap_connection = SapConnection::find($real_sap_connection_id);
 
-                                    if($order->id){
-                                        $sap->pushOrder($order->id);
-                                    }
+                            //     if(!is_null($sap_connection)){
+                            //         $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
 
-                                    // $localOrders = LocalOrder::find($order->id);
-                                    // $quotation = Quotation::with('customer')->where('doc_entry',@$localOrders->doc_entry)->first();
+                            //         if($order->id){
+                            //             $sap->pushOrder($order->id);
+                            //         }
 
-                                    //$user = @$quotation->customer->user;
+                            //         // $localOrders = LocalOrder::find($order->id);
+                            //         // $quotation = Quotation::with('customer')->where('doc_entry',@$localOrders->doc_entry)->first();
 
-                                    // $link = route('orders.show', @$quotation->id);
-                                    // // Send Mail.
-                                    // Mail::send('emails.order_placed', array('link'=>$link, 'order_no'=>@$quotation->doc_entry, 'status'=>getOrderStatusByQuotation($quotation)), function($message) use($user) {
-                                    //     $message->to('mansiparikh95@gmail.com', $user->name)
-                                    //             ->subject('Order Placed');
-                                    // });
+                            //         //$user = @$quotation->customer->user;
 
-                                }
-                            } catch (\Exception $e) {
+                            //         // $link = route('orders.show', @$quotation->id);
+                            //         // // Send Mail.
+                            //         // Mail::send('emails.order_placed', array('link'=>$link, 'order_no'=>@$quotation->doc_entry, 'status'=>getOrderStatusByQuotation($quotation)), function($message) use($user) {
+                            //         //     $message->to('mansiparikh95@gmail.com', $user->name)
+                            //         //             ->subject('Order Placed');
+                            //         // });
 
-                            }
+                            //     }
+                            // } catch (\Exception $e) {
+
+                            // }
+                            //========================= end of working code =======================
+
+
                         //}
                     }
 
@@ -642,7 +647,7 @@ class CartController extends Controller
                 $sap_connection_id = explode(',', @$customer->multi_real_sap_connection_id);
                 $customer_price_list_no = get_customer_price_list_no_arr($customer_id);
             }
-        }elseif(userrole() == 2){
+        }elseif(userrole() == 14){
             $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
             $sap_connection_id = array( @Auth::user()->sap_connection_id );
         }

@@ -62,8 +62,20 @@
                   </div>
 
                 </div>
-                
+
+
                 <div class="row mb-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label>Customer Territory<span class="asterisk">*</span></label>
+                      <select class="form-select form-select-solid" id='selectCustomerTerritory' data-control="select2" data-hide-search="false" name="customer_territory_ids[]">
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                
+                
+                <div class="row mb-5 d-none">
                   <div class="col-md-12">
                     <div class="form-group">
                       <label>Customer Group<span class="asterisk">*</span></label>
@@ -74,7 +86,7 @@
                 </div>
 
                 @if(!isset($edit))
-                <div class="col-md-6 mb-5 customer_selection_div">
+                <div class="col-md-6 mb-5 customer_selection_div d-none">
                   <div class="form-group">
                     <label>Customer Selection<span class="asterisk">*</span></label>
                     <select class="form-select form-select-solid" data-control="select2" id="selectCustomerSelection" data-hide-search="false" name="customer_selection" data-placeholder="Select Customer Option">
@@ -86,7 +98,7 @@
                 </div>
                 @endif
 
-                <div class="row  mb-5 customer_div" @if(!isset($edit)) style="display:none" @endif>
+                <div class="row  mb-5 customer_div d-none" @if(!isset($edit)) style="display:none" @endif>
                   <div class="col-md-12">
                     <div class="form-group">
                       <label>Customer<span class="asterisk">*</span></label>
@@ -268,14 +280,16 @@ $(document).ready(function() {
             company_id:{
               required: true
             },
-            "customer_group_ids[]":{
+            "customer_territory_ids[]":{
               required: true
+            },
+            "customer_group_ids[]":{
+              required: false
             },
             customer_selection:{
               required: true
             },
             "customer_ids[]":{
-              // required: true
               required: function () {
                       if( $('#selectCustomerSelection').find('option:selected').val() == "specific"){
                         return true;
@@ -291,6 +305,9 @@ $(document).ready(function() {
           messages: {
             company_id:{
               required: "Please select business unit.",
+            },
+            "customer_territory_ids[]":{
+              required: "Please select customer territories.",
             },
             "customer_group_ids[]":{
               required: "Please select customer groups.",
@@ -316,6 +333,18 @@ $(document).ready(function() {
     $initialProductLine = [];
     $initialProductCategory = [];
     $initialProductGroups = [];
+    $initialProductTerritories = [];
+
+    @if(isset($territories))      
+      @foreach ($territories as $data)
+        var initialOption = {
+            id: {{ $data['id'] }},
+            text: "{!! $data['description'] !!}",
+            selected: true
+        }
+        $initialProductTerritories.push(initialOption);
+      @endforeach      
+    @endif
 
     @if(isset($groups))      
       @foreach ($groups as $data1)
@@ -392,6 +421,32 @@ $(document).ready(function() {
       @endforeach
     @endif
 
+    $("#selectCustomerTerritory").select2({
+      ajax: {
+          url: "{{route('customers-sales-specialist.getCustomerTerritories')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                  _token: "{{ csrf_token() }}",
+                  search: params.term,
+                  sap_connection_id: $('[name="company_id"]').val()
+              };
+          },
+          processResults: function (response) {
+              return {
+                  results: response
+              };
+          },
+          cache: true
+      },
+      placeholder: 'Select Customer Territory',
+      multiple: true,
+      data: $initialProductTerritories,
+    });
+
+
     $("#selectCustomerGroup").select2({
       ajax: {
           url: "{{route('customers-sales-specialist.getCustomerGroups')}}",
@@ -463,7 +518,8 @@ $(document).ready(function() {
             return {
               _token: "{{ csrf_token() }}",
               search: params.term,
-              sap_connection_id: $('[name="company_id"]').val()
+              sap_connection_id: $('[name="company_id"]').val(),
+              territories: $('[name="customer_territory_ids[]"]').select2('val')
             };
           },
           processResults: function (response) {

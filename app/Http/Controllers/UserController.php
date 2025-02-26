@@ -138,6 +138,10 @@ class UserController extends Controller
 
             $input['sales_specialist_name'] = $input['first_name']." ".$input['last_name'];
 
+            $user->customerBranch()->detach();
+            $user->customerBranch()->attach($request->filter_branch);
+            $input['branch'] = $request->filter_branch;
+
             $user->fill($input)->save();
 
             if(!isset($input['id'])){

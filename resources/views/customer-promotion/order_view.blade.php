@@ -120,7 +120,7 @@
                               <!--end::Col-->
                             @endif
 
-                            @if(userrole() == 2)
+                            @if(userrole() == 14)
                               <!--end::Col-->
                               <div class="col-sm-2">
                                 <div class="fw-bold fs-7 text-gray-600 mb-1">Customer Approval:</div>

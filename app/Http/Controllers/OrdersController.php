@@ -38,6 +38,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderExport;
 use App\Models\Product;
 use App\Models\CustomersSalesSpecialist;
+use Illuminate\Support\Carbon;
 
 class OrdersController extends Controller
 {
@@ -52,7 +53,7 @@ class OrdersController extends Controller
     public function index()
     {
         $company = collect();
-        if(userrole() == 1 || userrole() == 10){
+        if(in_array(userrole(), [1, 10, 11])){
             $company = SapConnection::all();
         }
         return view('orders.index', compact('company'));
@@ -89,12 +90,24 @@ class OrdersController extends Controller
     {
         $total = 0;
         $data = Quotation::where('id', $id);
+
+        $branchIds = Auth::user()->branch;
+        if(isset($branchIds) && !empty($branchIds)){
+            $branch_ids = Auth::user()->customerBranch->pluck('id');
+            $data->whereHas('customer.group', function($q) use ($branch_ids) {
+                $q->whereIn('id', $branch_ids);
+            });
+        }
+
         if(userrole() == 4){
             $customers = Auth::user()->get_multi_customer_details();
             $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
             $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        }elseif(userrole() == 2){
-            $data->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(userrole() == 14){
+            $data->whereHas('customer', function($q){
+                $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+                $q->whereIn('id', $cus);
+            });
         }elseif(!is_null(Auth::user()->created_by)){
             $customers = Auth::user()->created_by_user->get_multi_customer_details();
             $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
@@ -190,6 +203,172 @@ class OrdersController extends Controller
         // $line_status = getOrderStatusV2($line_stat);
 
         return view('orders.order_view', compact('data','orderRemarks','invoiceDetails','Weight','Volume'));
+    }
+
+    public function showApproval($id){
+        $data = LocalOrder::where('id', $id);
+
+        $branchIds = Auth::user()->branch;
+        if(isset($branchIds) && !empty($branchIds)){
+            $branch_ids = Auth::user()->customerBranch->pluck('id');
+            $data->whereHas('customer.group', function($q) use ($branch_ids) {
+                $q->whereIn('id', $branch_ids);
+            });
+        }
+
+        if(userrole() == 4){
+            $data->whereHas('customer', function($q){
+                $customers = Auth::user()->get_multi_customer_details();
+                $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+            });
+        }elseif(userrole() == 14){
+            $data->whereHas('customer', function($q){
+                $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+                $q->whereIn('id', $cus);
+            });
+        }elseif(!is_null(Auth::user()->created_by)){
+            $data->whereHas('customer', function($q){
+                $customers = Auth::user()->created_by_user->get_multi_customer_details();
+                $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+            });
+        }
+        // }elseif(userrole() != 1){
+        //     return abort(404);
+        // }
+
+        $data = $data->firstOrFail();  
+         
+        $invoiceDetails = [];
+        $line_stat = [];
+        $Weight = 0;
+        $Volume = 0;
+        $currency_symbol = '';
+        foreach($data->items as $key=>$value){
+            if($value->product->sap_connection_id === @$data->customer->real_sap_connection_id){
+                $currency_symbol = get_product_customer_currency(@$value->product->item_prices, $data->customer->price_list_num);
+            }
+            $invoiceDetails[$key]['key'] = $key + 1;
+            $invoiceDetails[$key]['product'] = @$value->product->item_name."(Code:".@$value->product->item_code.")";
+            $invoiceDetails[$key]['key'] = @$data->order->id;
+            $invoiceDetails[$key]['unit'] = @$value->product->sales_unit;
+            $invoiceDetails[$key]['order_quantity'] = number_format(@$value->quantity);
+            $invoiceDetails[$key]['item_code'] = @$value->item_code;
+
+            $invoice = @$data->order->invoice1;
+            $invoiceIds = [];
+            if(!empty($invoice)){
+                foreach($invoice as $val){
+                    $invoiceIds[] = @$val->id;
+                }
+            }
+
+            $quantityDetails[] = InvoiceItem::whereIn('invoice_id',$invoiceIds)->where('item_code',$value->item_code)->sum('quantity');
+            
+            $invoiceDetails[$key]['serverd_quantity'] = $quantityDetails[$key];
+            $invoiceDetails[$key]['price'] = number_format_value(@$value->price);
+            $invoiceDetails[$key]['price_after_vat'] = $currency_symbol.number_format_value($value->price_after_vat);
+            $invoiceDetails[$key]['amount'] = '₱'. number_format_value(round($value->gross_total,1));
+
+            $Weight = $Weight + (@$value->quantity * @$value->product->sales_unit_weight);
+            $Volume = $Volume + (@$value->quantity * @$value->product->sales_unit_volume);
+
+            $invoiceDetails[$key]['orderd_weight'] = number_format_value(@$value->quantity * @$value->product->sales_unit_weight);
+
+            $invoiceDetails[$key]['served_weight'] = number_format_value(@$quantityDetails[$key] * @$value->product->sales_unit_weight);
+            
+            if(@$quantityDetails[$key] == 0){
+                $status1 = 'Unserved';
+            }else if(@$quantityDetails[$key] > 0 && @$value->quantity > $quantityDetails[$key]){
+                $status1 = 'Partial Served';
+            }else if(@$quantityDetails[$key] == @$value->quantity){
+                $status1 = 'Fully Served';
+            }else if(@$quantityDetails[$key] > @$value->quantity){
+                $status1 = 'Over Served';
+            }
+
+            $inv_item = @$value->item_code;
+            if(@$data->order[$key]->line_status == 'bost_Close'){
+                $remarks = 'Served';
+            }else if($value->line_status == 'bost_Open'){
+                if(@$data->order[$key]->line_status != 'NA'){
+                  $value = SapConnectionApiFieldValue::where('key',@$data->order[$key]->line_status)->first();
+                  $remarks = @$data->order[$key]->line_status;
+                }else{
+                  $remarks = '-';
+                }
+            }else{
+                $remarks = '-';
+            }
+
+            $num = InvoiceItem::with('invoice')->whereIn('invoice_id',$invoiceIds)->where('item_code', $inv_item)->pluck('invoice_id');
+            
+            $num1 = [];
+            $invoice_num = Invoice::whereIn('id',$num)->pluck('doc_num')->implode(',');
+           
+            $invoiceDetails[$key]['line_status'] = @$status1;
+            $invoiceDetails[$key]['id'] = @$num[0];
+            $invoiceDetails[$key]['line_remarks'] = @$remarks;
+            $invoiceDetails[$key]['invoice_num'] = @$invoice_num;
+
+            if($data->order_type == 'Promotion'){
+                $invoiceDetails[$key]['promotion'] = '-';
+
+            }            
+
+        }
+        $orderRemarks = LocalOrder::where('doc_entry',@$data->doc_entry)->first();
+
+        return view('orders.order_view_approval', compact('data','orderRemarks','invoiceDetails','Weight','Volume'));
+    }
+
+    public function confirmationOrder(Request $request){
+        $order = LocalOrder::where('id', $request->id)
+                             ->whereIn('approval', ['Pending', 'Rejected'])
+                             ->doesntHave('quotation')
+                             ->firstOrFail();
+
+        $response = ['status' => false, 'message' => 'Something went wrong!'];
+        if($request->approval === "Approve"){
+            $order->approval = "Approved";
+            $response = $this->approvedOrderPushToSap($order->id);
+        }elseif($request->approval === "Reject"){
+            $order->approval = "Rejected";
+            $response = ['status' => true, 'message' => 'Order was rejected!'];
+        }
+        
+        $order->disapproval_remarks = $request->reason;
+        $order->approved_at = Carbon::now();
+        $order->approved_by = Auth::id();
+        $order->save();
+
+        return $response;
+    }
+
+    public function approvedOrderPushToSap($id){
+
+        $order = LocalOrder::where('id', $id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
+        $response = [];
+
+        try{
+            $sap_connection = SapConnection::find(@$order->customer->sap_connection_id);                
+            if(!is_null($sap_connection)){                   
+                $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
+                if($id){                        
+                    $sap_response = $sap->pushOrder($order->id);
+                    if($sap_response['status']){
+                        $response = ['status' => true, 'message' => 'Order placed successfully!'];
+                    }
+                    $response = ['status' => true, 'message' => 'Order placed successfully!'];
+                }
+            }
+        } catch (\Exception $e) {
+            report($e);
+            $response = ['status' => false, 'message' => 'Something went wrong !'];
+        }
+
+        return $response;
     }
 
     /**
@@ -322,10 +501,20 @@ class OrdersController extends Controller
     }
 
     public function getAll(Request $request){
-        $data = Quotation::query();
+        $data = LocalOrder::query();
+        
+        $branchIds = Auth::user()->branch;
+        if(isset($branchIds) && !empty($branchIds)){
+            $branch_ids = Auth::user()->customerBranch->pluck('id');
+            $data->whereHas('customer.group', function($q) use ($branch_ids) {
+                $q->whereIn('id', $branch_ids);
+            });
+        }
 
         if($request->engage_transaction != 0){
-            $data->whereNotNull('u_omsno');
+            $data->whereHas('quotation', function($q){
+                $q->whereNotNull('u_omsno');
+            });
         }
 
         if(userrole() == 4){
@@ -340,10 +529,12 @@ class OrdersController extends Controller
                 $q->whereIn('id', $cus);
             });
             // dd($data->get());
-        }elseif(userrole() != 1 && userrole()!= 10){
+        }elseif(!in_array(userrole(), [1,10,11] )){
             if (!is_null(@Auth::user()->created_by)) {
                 $customers = @Auth::user()->created_by_user->get_multi_customer_details();
-                $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                $data->whereHas('customer', function($q) use ($customers){
+                    $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                });
                 $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
             
                 // $data->where('card_code', @Auth::user()->created_by_user->customer->card_code);
@@ -397,11 +588,12 @@ class OrdersController extends Controller
                 $q->where('code',$request->filter_group);
             });
         }
-
-        if($request->filter_territory != ""){
+        
+        $territory = @$request->filter_territory;
+        if(!empty($territory) && $territory[0] !== null){
             $data->where(function($query) use ($request) {
-                $query->whereHas('customer', function($q) use ($request) {
-                    $q->where('territory', $request->filter_territory);
+                $query->whereHas('customer.territories', function($q) use ($request) {
+                    $q->whereIn('id', $request->filter_territory);
                 });
             });
         }
@@ -410,11 +602,16 @@ class OrdersController extends Controller
             $data->where(function($q) use ($request) {
                 $q->orwhere('doc_num','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");
+                $q->orWhereHas('customer', function($c) use ($request){
+                    $c->where('card_name','LIKE',"%".$request->filter_search."%");
+                });
             });
         }
 
         if($request->filter_customer != ""){
-            $data->where('card_code',$request->filter_customer);
+            $data->whereHas('customer', function($q) use ($request) {
+                $q->where('card_code',$request->filter_customer);
+            });
         }
 
         if($request->filter_company != ""){
@@ -423,43 +620,30 @@ class OrdersController extends Controller
 
         
         $status = @$request->filter_status;
-        if(!empty($status)){
-            $data->where(function($query) use ($status){                
+        if(!empty($status) && $status[0] !== null){
+            $data->whereHas('quotation', function($query) use ($status){
+                $selected_status = [];
+
                 if(in_array("PN",$status)){
-                    $query->orWhere(function($q){
-                        // $q->has('order', '<', 1)->where('cancelled','No');
-                        $q->where('status', 'Pending');
-                    });
+                    array_push($selected_status, 'Pending');
                 }
                 if(in_array("OP",$status)){
-                    $query->orWhere(function($q){
-                        // $q->WhereHas('order',function($q1){
-                        //     $q1->where('document_status', 'bost_Open')->doesntHave('invoice')->where('cancelled','No');
-                        // })->where('cancelled','No');
-                        $q->where('status', 'On Process');
-                    });
+                    array_push($selected_status, 'On Process');
                 }
                 if(in_array("CL", $status)){
-                    $query->orWhere(function($q){
-                        // $q->where(function($q2){
-                        //     $q2->orwhere(function($q1){
-                        //         $q1->where('cancelled', 'Yes');
-                        //     });
-                        //     $q2->orwhere(function($q3){
-                        //         $q3->whereHas('order',function($p){
-                        //             $p->where('cancelled', 'Yes');
-                        //         });
-                        //     });
-                        //     $q2->orwhere(function($q4){
-                        //         $q4->whereHas('order.invoice1',function($p1){
-                        //             $p1->where('cancelled', 'Yes');
-                        //         });
-                        //     });
-                        // });
-
-                        $q->where('status', 'Cancelled');
-                    });
+                    array_push($selected_status, 'Cancelled');
                 }
+
+                if(in_array("CM", $status)){
+                    array_push($selected_status, 'Completed');
+                }
+
+                if(in_array("PS", $status)){
+                    array_push($selected_status, 'Partially Served');
+                }
+
+                $query->whereIn('status', $selected_status);
+
                 if(in_array("DL", $status)){
                     $query->orWhere(function($q){
                         $q->whereHas('order.invoice',function($q1){
@@ -471,28 +655,7 @@ class OrdersController extends Controller
                         });
                     });
                 }
-                if(in_array("CM", $status)){
-                    $query->orWhere(function($q){
-                        // $q->whereHas('order.invoice',function($q1){
-                        //     $q1->where('cancelled', 'No')->where('u_sostat', 'CM');
-                        // })->where('cancelled','No');
 
-                        // $q->whereHas('order',function($q1){
-                        //     $q1->where('cancelled','No');
-                        // });
-
-                        $q->where('status', 'Completed');
-
-                    });
-
-                    // $query->orWhere(function($q){
-                    //     $q->whereHas('order.invoice',function($q1){
-                    //         $q1->where('cancelled', 'No')->where('document_status', 'bost_Close')->whereHas('order.invoice.items',function($item){
-                    //             $item->havingRaw('sum(remaining_open_quantity) = 0');
-                    //         });
-                    //     })->where('cancelled','No');
-                    // });
-                }
                 if(in_array("IN", $status)){
                     $query->orWhere(function($q){
                         $q->whereHas('order.invoice',function($q1){
@@ -526,42 +689,40 @@ class OrdersController extends Controller
                         });
                     });
                 }
-                if(in_array("PS", $status)){
-                    $query->orWhere(function($q){
-                        // $q->whereHas('order.invoice',function($q1){
-                        //     $q1->where('cancelled', 'No')->whereHas('order.invoice.items',function($item){
-                        //         $item->havingRaw('sum(remaining_open_quantity) > 0');
-                        //     });
-                        // })->where('cancelled','No');
-
-                        $q->where('status', 'Partially Served');
-                    });
-                }
+                
             });
         }
         
         if($request->filter_order_type != ""){
-            if($request->filter_order_type == "Standard"){
-                $data->whereNull('customer_promotion_id');
-            }elseif($request->filter_order_type == "Promotion"){
-                $data->whereNotNull('customer_promotion_id');
-            }
+            $data->whereHas('quotation', function($query) use ($request){   
+                if($request->filter_order_type == "Standard"){
+                    $query->whereNull('customer_promotion_id');
+                }elseif($request->filter_order_type == "Promotion"){
+                    $query->whereNotNull('customer_promotion_id');
+                }
+            });
         }
 
         if($request->filter_date_range != ""){
-            $date = explode(" - ", $request->filter_date_range);
-            $start = date("Y-m-d", strtotime($date[0]));
-            $end = date("Y-m-d", strtotime($date[1]));
+            $data->whereHas('quotation', function($q) use ($request) {
+                $date = explode(" - ", $request->filter_date_range);
+                $start = date("Y-m-d", strtotime($date[0]));
+                $end = date("Y-m-d", strtotime($date[1]));
 
-            $data->whereDate('doc_date', '>=' , $start);
-            $data->whereDate('doc_date', '<=' , $end);
+                $q->whereDate('doc_date', '>=' , $start);
+                $q->whereDate('doc_date', '<=' , $end);
+            });
         }
 
         $data->when(!isset($request->order), function ($q) {
-            $q->orderBy('doc_date', 'desc');
-            $q->orderBy('doc_time', 'desc');
+
+            $q->orderBy('created_at', 'desc');
+            // $q->whereHas('quotation', function($query){
+            //     $query->orderBy('doc_date', 'desc');
+            //     $query->orderBy('doc_time', 'desc');
+            // });
         });
-        // dd($data->toSql());
+
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('name', function($row) {
@@ -569,7 +730,7 @@ class OrdersController extends Controller
                             })
                             ->addColumn('status', function($row) use ($status) {
                                
-                                return getOrderStatusBtnHtml($row->status);
+                                return getOrderStatusBtnHtml(@$row->quotation->status);
 
                                 // if(@$status[0] == "PS"){
                                 //     return getOrderStatusBtnHtml(getOrderStatusArray('PS'));
@@ -578,27 +739,50 @@ class OrdersController extends Controller
                                 // }
                                 
                             })
+                            ->addColumn('order_approval', function($row) {
+                                return $row->approval;
+                            })
+                            ->addColumn('approval_duration', function($row) {
+                                if($row->approved_at){
+                                    $approvedAt = Carbon::parse($row->approved_at);
+                                    $currentDateTime = Carbon::now();
+
+                                    $days = $currentDateTime->diffInDays($approvedAt, false);
+                                    $noun = ($days > 1) ? 'days' : 'day';
+
+                                    // Calculate the duration
+                                    $duration = $currentDateTime->diff($approvedAt);
+
+                                    // Format the duration as "1 day 02:52:01"
+                                    $formattedDuration = $duration->format('%d '.$noun.' %H:%I:%S');
+                                }else{
+                                    $formattedDuration = '-';
+                                }
+                                return $formattedDuration;
+                            })
                             ->addColumn('doc_entry', function($row) {
-                                return '<a href="' . route('orders.show',$row->id). '" title="View details">'.$row->doc_entry.'</a>';
+                                $route = ($row->quotation) ? [route('orders.show',$row->quotation->id), $row->quotation->doc_entry] : [route('orders.approval.show', $row->id), $row->id];
+                                return '<a href="' . $route[0]. '" title="View details">'.$route[1].'</a>';
                             })
                             ->addColumn('total', function($row) {
-                                return '₱ '. number_format_value($row->doc_total);
+                                return '₱ '. number_format_value(@$row->quotation->doc_total);
                             })
                             ->addColumn('created_by', function($row) {
-                                if(!empty($row->local_order->sales_specialist_id)){
-                                    return $row->local_order->sales_specialist->sales_specialist_name ?? '-';
+                                if($row->placed_by == 'S'){
+                                    return ($row->sales_specialist)? $row->sales_specialist->first_name.' '.$row->sales_specialist->last_name : '-';
                                 } else {
                                     return "Customer";
                                 }
                             })
                             ->addColumn('date', function($row) {
-                                $date = date('M d, Y',strtotime($row->doc_date));
-                                $time = $row->doc_time ? date('H:i A',strtotime($row->doc_time)) : "";
+                                $created_date =  @$row->created_at;
+                                $date = date('M d, Y',strtotime($created_date));
+                                $time = $row->doc_time ? date('H:i A',strtotime($created_date)) : "";
                                 
-                                return $date.' '.$time;
+                                return $date;
                             })
                             ->addColumn('due_date', function($row) {
-                                return date('M d, Y',strtotime($row->doc_due_date));
+                                return date('M d, Y',strtotime(@$row->quotation->doc_due_date));
                             })
                             ->addColumn('company', function($row) {
                                 return @$row->sap_connection->company_name ?? "-";
@@ -612,7 +796,8 @@ class OrdersController extends Controller
                                 return $type;
                             })
                             ->addColumn('action', function($row){
-                                $btn = '<a href="' . route('orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm mr-10">
+                                $route = ($row->quotation) ? route('orders.show',$row->quotation->id) : route('orders.approval.show', $row->id);
+                                $btn = '<a href="' .$route. '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm mr-10">
                                             <i class="fa fa-eye"></i>
                                         </a>';
                                 if(userrole() == 1){
@@ -622,30 +807,30 @@ class OrdersController extends Controller
                                 }
                                 return $btn;
                             })
-                            ->orderColumn('name', function ($query, $order) {
-                                //$query->orderBy('card_name', $order);
+                            // ->orderColumn('name', function ($query, $order) {
+                            //     //$query->orderBy('card_name', $order);
 
-                                $query->select('quotations.*')->join('customers', 'quotations.card_code', '=', 'customers.card_code')
-                                    ->orderBy('customers.card_name', $order);
-                            })
-                            ->orderColumn('doc_entry', function ($query, $order) {
-                                $query->orderBy('doc_entry', $order);
-                            })
-                            // ->orderColumn('status', function ($query, $order) {
-                            //     $query->local_order->orderBy('doc_entry', $order);
+                            //     $query->select('quotations.*')->join('customers', 'quotations.card_code', '=', 'customers.card_code')
+                            //         ->orderBy('customers.card_name', $order);
                             // })
-                            ->orderColumn('total', function ($query, $order) {
-                                $query->orderBy('doc_total', $order);
-                            })
+                            // ->orderColumn('doc_entry', function ($query, $order) {
+                            //     $query->orderBy('doc_entry', $order);
+                            // })
+                            // // ->orderColumn('status', function ($query, $order) {
+                            // //     $query->local_order->orderBy('doc_entry', $order);
+                            // // })
+                            // ->orderColumn('total', function ($query, $order) {
+                            //     $query->orderBy('doc_total', $order);
+                            // })
                             ->orderColumn('date', function ($query, $order) {
-                                $query->orderBy('doc_date', $order);
+                                $query->orderBy('created_at', $order);
                             })
-                            ->orderColumn('due_date', function ($query, $order) {
-                                $query->orderBy('doc_due_date', $order);
-                            })
-                            ->orderColumn('company', function ($query, $order) {
-                                $query->join('sap_connections', 'quotations.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
-                            })
+                            // ->orderColumn('due_date', function ($query, $order) {
+                            //     $query->orderBy('doc_due_date', $order);
+                            // })
+                            // ->orderColumn('company', function ($query, $order) {
+                            //     $query->join('sap_connections', 'quotations.sap_connection_id', '=', 'sap_connections.id')->orderBy('sap_connections.company_name', $order);
+                            // })
                             ->rawColumns(['action', 'status', 'order_type','doc_entry'])
                             ->make(true);
     }
@@ -657,7 +842,7 @@ class OrdersController extends Controller
         $quotation = Quotation::where('id', $request->id);
         // if(userrole() == 4){
         //     $quotation->where('card_code', @Auth::user()->customer->card_code);
-        // }elseif(userrole() == 2){
+        // }elseif(userrole() == 14){
         //     $quotation->where('sales_person_code', @Auth::user()->sales_employee_code);
         // }elseif(userrole() != 1){
         //     return abort(404);
@@ -667,7 +852,7 @@ class OrdersController extends Controller
         //     $customers = Auth::user()->get_multi_customer_details();
         //     $quotation->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
         //     $quotation->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        // }elseif(userrole() == 2){
+        // }elseif(userrole() == 14){
         //     $quotation->where('sales_person_code', @Auth::user()->sales_employee_code);
         // }elseif(userrole() != 1){
         //     if (!is_null(@Auth::user()->created_by)) {
@@ -753,8 +938,11 @@ class OrdersController extends Controller
             $customers = Auth::user()->get_multi_customer_details();
             $quotation->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
             $quotation->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        }elseif(userrole() == 2){
-            $quotation->where('sales_person_code', @Auth::user()->sales_employee_code);
+        }elseif(userrole() == 14){
+            $quotation->whereHas('customer', function($q){
+                $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+                $q->whereIn('id', $cus);
+            });
         }elseif(userrole() != 1){
             if (!is_null(@Auth::user()->created_by)) {
                 $customers = @Auth::user()->created_by_user->get_multi_customer_details();
@@ -1140,13 +1328,24 @@ class OrdersController extends Controller
     public function export(Request $request){
         $filter = collect();
         if(@$request->data){
-          $filter = json_decode(base64_decode($request->data));
+          $request = json_decode(base64_decode($request->data));
         }
 
-        $data = Quotation::orderBy('id', 'desc');
 
-        if($filter->engage_transaction != 0){
-            $data->whereNotNull('u_omsno');
+        $data = LocalOrder::query();
+
+        $branchIds = Auth::user()->branch;
+        if(isset($branchIds) && !empty($branchIds)){
+            $branch_ids = Auth::user()->customerBranch->pluck('id');
+            $data->whereHas('customer.group', function($q) use ($branch_ids) {
+                $q->whereIn('id', $branch_ids);
+            });
+        }
+
+        if($request->engage_transaction != 0){
+            $data->whereHas('quotation', function($q){
+                $q->whereNotNull('u_omsno');
+            });
         }
 
         if(userrole() == 4){
@@ -1155,108 +1354,127 @@ class OrdersController extends Controller
                 $q->whereIn('id', $cus);
             });
         }elseif(userrole() == 14){ //sales personnel
+            // $data->where('sales_person_code', @Auth::user()->sales_employee_code); //previous code
             $data->whereHas('customer', function($q){
                 $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
                 $q->whereIn('id', $cus);
             });
-        }elseif(userrole() != 1 && userrole()!= 10){
+            // dd($data->get());
+        }elseif(!in_array(userrole(), [1,10,11] )){
             if (!is_null(@Auth::user()->created_by)) {
-
                 $customers = @Auth::user()->created_by_user->get_multi_customer_details();
-                $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                $data->whereHas('customer', function($q) use ($customers){
+                    $q->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
+                });
                 $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
+            
+                // $data->where('card_code', @Auth::user()->created_by_user->customer->card_code);
+            } else {
+                return DataTables::of(collect())->make(true);
             }
         }
 
-        if(@$filter->filter_brand != ""){
-            $data->where(function($query) use ($filter) {
-                $query->whereHas('customer', function($q) use ($filter) {
-                    $q->where(function($que) use ($filter) {
-                        $que->whereHas('product_groups', function($q2) use ($filter){
-                            $q2->where('product_group_id', $filter->filter_brand);
+        if($request->filter_brand != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where(function($que) use ($request) {
+                        $que->whereHas('product_groups', function($q2) use ($request){
+                            $q2->where('product_group_id', $request->filter_brand);
                         });
                     });
                 });
             });
         }
 
-        if(@$filter->filter_class != ""){
-            $data->where(function($query) use ($filter) {
-                $query->whereHas('customer', function($q) use ($filter) {
-                    $q->where('u_classification', $filter->filter_class);
+        if($request->filter_class != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where('u_classification', $request->filter_class);
                 });
             });
         }
 
-        if(@$filter->filter_sales_specialist != ""){
-            $data->where(function($query) use ($filter) {
-                $query->whereHas('customer', function($q) use ($filter) {
-                    $q->where(function($que) use ($filter) {
-                        $que->whereHas('sales_specialist', function($q2) use ($filter){
-                            $q2->where('id', $filter->filter_sales_specialist);
+        if($request->filter_sales_specialist != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where(function($que) use ($request) {
+                        $que->whereHas('sales_specialist', function($q2) use ($request){
+                            $q2->where('id', $request->filter_sales_specialist);
                         });
                     });
                 });
             });
         }
 
-        if(@$filter->filter_market_sector != ""){
-            $data->where(function($query) use ($filter) {
-                $query->whereHas('customer', function($q) use ($filter) {
-                    $q->where('u_sector', $filter->filter_market_sector);
+        if($request->filter_market_sector != ""){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer', function($q) use ($request) {
+                    $q->where('u_sector', $request->filter_market_sector);
                 });
             });
         }
 
-        if(@$filter->filter_group != ""){
-            $data->whereHas('customer.group', function($q) use ($filter){
-                $q->where('code',$filter->filter_group);
+        if($request->filter_group != ""){
+            $data->whereHas('customer.group', function($q) use ($request){
+                $q->where('code',$request->filter_group);
             });
         }
 
-
-        if(@$filter->filter_territory != ""){
-            $data->where(function($query) use ($filter) {
-                $query->whereHas('customer', function($q) use ($filter) {
-                    $q->where('territory', $filter->filter_territory);
+        $territory = @$request->filter_territory;
+        if(!empty($territory) && $territory[0] !== null){
+            $data->where(function($query) use ($request) {
+                $query->whereHas('customer.territories', function($q) use ($request) {
+                    $q->whereIn('id', $request->filter_territory);
                 });
             });
         }
 
-        if(@$filter->filter_search != ""){
-            $data->where(function($q) use ($filter) {
-                $q->orwhere('doc_type','LIKE',"%".$filter->filter_search."%");
-                $q->orwhere('doc_entry','LIKE',"%".$filter->filter_search."%");
+        if($request->filter_search != ""){
+            $data->where(function($q) use ($request) {
+                $q->orwhere('doc_num','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");
+                $q->orWhereHas('customer', function($c) use ($request){
+                    $c->where('card_name','LIKE',"%".$request->filter_search."%");
+                });
             });
         }
 
-        if(@$filter->filter_customer != ""){
-            $data->where('card_code',$filter->filter_customer);
+        if($request->filter_customer != ""){
+            $data->whereHas('customer', function($q) use ($request) {
+                $q->where('card_code',$request->filter_customer);
+            });
         }
 
-        if(@$filter->filter_company != ""){
-            $data->where('sap_connection_id',$filter->filter_company);
+        if($request->filter_company != ""){
+            $data->where('sap_connection_id',$request->filter_company);
         }
 
-        if(@$filter->filter_status != ""){
-            $status = $filter->filter_status;
-            
-            $data->where(function($query) use ($status){                
+        
+        $status = @$request->filter_status;
+        if(!empty($status) && $status[0] !== null){
+            $data->whereHas('quotation', function($query) use ($status){
+                $selected_status = [];
+
                 if(in_array("PN",$status)){
-                    $query->orWhere(function($q){
-                        $q->where('status', 'Pending');
-                    });
+                    array_push($selected_status, 'Pending');
                 }
                 if(in_array("OP",$status)){
-                    $query->orWhere(function($q){
-                        $q->where('status', 'On Process');
-                    });
+                    array_push($selected_status, 'On Process');
                 }
                 if(in_array("CL", $status)){
-                    $query->orWhere(function($q){
-                        $q->where('status', 'Cancelled');
-                    });
+                    array_push($selected_status, 'Cancelled');
                 }
+
+                if(in_array("CM", $status)){
+                    array_push($selected_status, 'Completed');
+                }
+
+                if(in_array("PS", $status)){
+                    array_push($selected_status, 'Partially Served');
+                }
+
+                $query->whereIn('status', $selected_status);
+
                 if(in_array("DL", $status)){
                     $query->orWhere(function($q){
                         $q->whereHas('order.invoice',function($q1){
@@ -1268,11 +1486,7 @@ class OrdersController extends Controller
                         });
                     });
                 }
-                if(in_array("CM", $status)){
-                    $query->orWhere(function($q){
-                        $q->where('status', 'Completed');
-                    });
-                }
+
                 if(in_array("IN", $status)){
                     $query->orWhere(function($q){
                         $q->whereHas('order.invoice',function($q1){
@@ -1306,31 +1520,39 @@ class OrdersController extends Controller
                         });
                     });
                 }
-                if(in_array("PS", $status)){
-                    $query->orWhere(function($q){
-                        $q->where('status', 'Partially Served');
-                    });
+                
+            });
+        }
+        
+        if($request->filter_order_type != ""){
+            $data->whereHas('quotation', function($query) use ($request){   
+                if($request->filter_order_type == "Standard"){
+                    $query->whereNull('customer_promotion_id');
+                }elseif($request->filter_order_type == "Promotion"){
+                    $query->whereNotNull('customer_promotion_id');
                 }
             });
         }
 
+        if($request->filter_date_range != ""){
+            $data->whereHas('quotation', function($q) use ($request) {
+                $date = explode(" - ", $request->filter_date_range);
+                $start = date("Y-m-d", strtotime($date[0]));
+                $end = date("Y-m-d", strtotime($date[1]));
 
-        if(@$filter->filter_date_range != ""){
-            $date = explode(" - ", $filter->filter_date_range);
-            $start = date("Y-m-d", strtotime($date[0]));
-            $end = date("Y-m-d", strtotime($date[1]));
-
-            $data->whereDate('doc_date', '>=' , $start);
-            $data->whereDate('doc_date', '<=' , $end);
+                $q->whereDate('doc_date', '>=' , $start);
+                $q->whereDate('doc_date', '<=' , $end);
+            });
         }
 
-        if(@$filter->filter_order_type != ""){
-            if(@$filter->filter_order_type == "Standard"){
-                $data->whereNull('customer_promotion_id');
-            }elseif(@$filter->filter_order_type == "Promotion"){
-                $data->whereNotNull('customer_promotion_id');
-            }
-        }
+        $data->when(!isset($request->order), function ($q) {
+
+            $q->orderBy('created_at', 'desc');
+            // $q->whereHas('quotation', function($query){
+            //     $query->orderBy('doc_date', 'desc');
+            //     $query->orderBy('doc_time', 'desc');
+            // });
+        });
         
         $data = $data->get();
 
@@ -1343,22 +1565,31 @@ class OrdersController extends Controller
             }
             
             $placed_by = '';
-            if(!empty($value->local_order->sales_specialist_id)){
-                $placed_by =  $value->local_order->sales_specialist->sales_specialist_name ?? '-';
+            if($value->placed_by == 'S'){
+                $placed_by =($value->sales_specialist)? $value->sales_specialist->first_name.' '.$value->sales_specialist->last_name : '-';;
             } else {
                 $placed_by = "Customer";
-            }                    
+            }    
+            
+            $doc_entry = ($value->quotation) ? $value->quotation->doc_entry : $value->id;
+
+            $created_date =  @$value->created_at;
+            $date = date('M d, Y',strtotime($created_date));
+            $time = $value->doc_time ? date('H:i A',strtotime($created_date)) : "";
+
+            $status = $value->quotation ? $value->quotation->status : 'Pending';
+
             $records[] = array(
                             'no' => $key + 1,
-                            'company' => @$value->sap_connection->company_name ?? "-",
-                            'doc_entry' => $value->doc_entry ?? "-",
+                            'company' => @$value->customer->sap_connection->company_name ?? "-",
+                            'doc_entry' => $doc_entry,
                             'type' => $type,
                             'card_code' => @$value->customer->card_code ?? @$value->card_code ?? "-",
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
-                            'doc_total' => number_format_value($value->doc_total),
+                            'doc_total' => number_format_value(@$value->quotation->doc_total),
                             'placed_by' => $placed_by,
-                            'created_at' => date('M d, Y',strtotime($value->doc_date)).' '.date('H:i A',strtotime($value->doc_time)),
-                            'status' => $value->status,
+                            'created_at' => $date.' '.$time,
+                            'status' => $status,
                           );
         }
         if(count($records)){

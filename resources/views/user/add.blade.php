@@ -203,6 +203,15 @@
                       @endif
                     </div>
                   </div>
+
+                  <div class="col-md-6">
+                      <div class="form-group">
+                        <label>Customer Branch</span></label>
+                        <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectTerritory" data-hide-search="false" data-allow-clear="false" name="filter_branch[]">
+                        </select>
+                      </div>
+                    </div>
+
                   @if(isset($edit))
                     <div class="col-md-6">
                       <div class="form-group">
@@ -643,6 +652,45 @@
         $("#confirm_password-error").insertAfter('.confirm_icon_div');
       }
     });
+
+    $selectedBranch = [];
+
+    @if(isset($edit) && isset($edit->customerBranch))      
+      @foreach ($edit->customerBranch as $data)
+        var initialOption = {
+            id: {{ $data['id'] }},
+            text: "{!! $data['name'] !!} ({!!$data->sap_connection->company_name!!})",
+            selected: true
+        }
+        $selectedBranch.push(initialOption);
+      @endforeach      
+    @endif
+
+    $('[name="filter_branch[]"]').select2({
+      ajax: {
+          url: "{{route('common.getcustomerBranch')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+              return {
+                    _token: "{{ csrf_token() }}",
+                    search: params.term,
+                    // sap_connection_id: $('[name="filter_company"]').find('option:selected').val(),
+              };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+      },
+      placeholder: 'Select Branch',
+      multiple: true,
+      data: $selectedBranch,
+    });
+
   
   });
 </script>

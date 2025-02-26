@@ -63,7 +63,7 @@
                           <a href="javascript:" class="btn btn-dark btn-sm category_btn" data-value="self-users">Self Users</a>
                           <a href="javascript:" class="btn btn-dark btn-sm category_btn" data-value="sales-specialist">Sales Specialist</a>
 
-                        @elseif(userrole() == 2)
+                        @elseif(userrole() == 14)
                           {{-- Is SS --}}
                           <a href="javascript:" class="btn btn-dark btn-sm category_btn" data-value="customers">Customers</a>
                           <a href="javascript:" class="btn btn-dark btn-sm category_btn" data-value="parent-users">Parent Users</a>

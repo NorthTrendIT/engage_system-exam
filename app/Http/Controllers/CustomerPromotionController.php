@@ -56,7 +56,7 @@ class CustomerPromotionController extends Controller
             						->where('promotion_end_date','>=',$now)
             						->limit(12);
 
-            if(userrole() == 2 && Auth::user()->sap_connection_id == 1){
+            if(userrole() == 14 && Auth::user()->sap_connection_id == 1){
                 $promotions->whereIn('sap_connection_id', [1,5]);
             }
 
@@ -83,7 +83,7 @@ class CustomerPromotionController extends Controller
                                 ->where('promotion_end_date','>=',$now)
                                 ->select('id');
 
-            if(userrole() == 2 && Auth::user()->sap_connection_id == 1){
+            if(userrole() == 14 && Auth::user()->sap_connection_id == 1){
                 $last->whereIn('sap_connection_id', [1,5]);
             }
 
@@ -238,7 +238,7 @@ class CustomerPromotionController extends Controller
         // }
 
         $data = Promotions::where($where)->where('id',$id);
-        if(userrole() == 2 && @Auth::user()->sap_connection_id == 1){
+        if(userrole() == 14 && @Auth::user()->sap_connection_id == 1){
             $data->whereIn('sap_connection_id', [5,1]);
         }else if(@Auth::user()->multi_sap_connection_id != ""){
             $sap_connection_id = explode(',', Auth::user()->multi_sap_connection_id);

@@ -435,7 +435,7 @@ function getRecommendedProducts($customer_id = false){
             if(!is_null($customer)){
                 $customer_id = explode(',', @$customer->multi_customer_id);
             }
-        }elseif(userrole() == 2){
+        }elseif(userrole() == 14){
             $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
         }
 

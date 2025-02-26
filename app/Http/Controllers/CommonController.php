@@ -45,6 +45,16 @@ class CommonController extends Controller
 
         $data = Territory::where('territory_id','!=','-2')->where('is_active', true)->orderby('description','asc')->select('id','description');
 
+        if(@$request->sap_connection_id != ''){
+            $data->whereHas('customer', function($q) use($request){
+                $q->where('real_sap_connection_id', $request->sap_connection_id);
+
+                if(@$request->branch != ''){
+                    $q->where('group_code', $request->branch);
+                }
+            });
+        }
+
         if($search != ''){
             $data->where('description', 'like', '%' .$search . '%');
         }
@@ -216,6 +226,12 @@ class CommonController extends Controller
             // $data = Customer::where('is_active', true)->orderby('group_code','asc')->select('group_code')->limit(50)->groupBy('group_code');
             $data = CustomerGroup::orderby('name','asc')->limit(50);
 
+            $branchIds = Auth::user()->branch;
+            if(isset($branchIds) && !empty($branchIds)){
+                $branch_ids = Auth::user()->customerBranch->pluck('id');
+                $data->whereIn('id', $branch_ids);
+            }
+
             if($search != ''){
                 $data->where('name', 'like', '%' .$search . '%');
             }
@@ -233,6 +249,34 @@ class CommonController extends Controller
                 );
             }
         }
+
+        return response()->json($response);
+    }
+
+    public function getCustomerBranch(Request $request){
+        $response = array();
+        $search = $request->search;
+
+        $data = CustomerGroup::has('sap_connection')->orderby('name','asc')->limit(50);
+
+        if($search != ''){
+            $data->where('name', 'like', '%' .$search . '%');
+        }
+
+        if(@$request->sap_connection_id != ''){
+            $data->where('real_sap_connection_id',@$request->sap_connection_id);
+        }
+
+        $data = $data->get();
+
+        foreach($data as $value){
+            // dd($value->sap_connection->company_name);
+            $response[] = array(
+                "id" => $value->id,
+                "text" => $value->name.' ('.@$value->sap_connection->company_name.')',
+            );
+        }
+
 
         return response()->json($response);
     }

@@ -152,19 +152,19 @@
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered display nowrap" id="myTable">
                           <!--begin::Table head-->
                           <thead>
-                            <tr>
-                              <th>No</th>
-                              <th>Invoice #</th>
+                            <tr class="text-white">
+                              <th class="bg-dark">No</th>
+                              <th class="bg-dark">Invoice #</th>
                               @if(in_array(userrole(),[1]))
-                              <th>Business Unit</th>
+                              <th class="bg-dark">Business Unit</th>
                               @endif
                               @if(userrole() != 4)
-                              <th>Customer Name</th>
+                              <th class="bg-dark">Customer Name</th>
                               @endif
-                              <th>Total</th>
-                              <th>Created Date</th>
-                              <th>Status</th>
-                              <th>Action</th>
+                              <th class="bg-dark">Total</th>
+                              <th class="bg-dark">Created Date</th>
+                              <th class="bg-dark">Status</th>
+                              <th class="bg-dark">Action</th>
                             </tr>
                           </thead>
                           <!--end::Table head-->

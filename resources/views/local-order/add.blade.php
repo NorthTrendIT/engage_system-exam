@@ -92,8 +92,9 @@
                     </h1>
                 </div>
                 <div class="d-flex align-items-center py-1">
-                    <input type="button" class="btn btn-sm btn-primary submitForm mx-2" value="Place Order for Approval">
-                    <input type="button" class="btn btn-sm btn-primary placeOrder" value="Place Order">
+                    <input type="button" class="btn btn-sm btn-primary submitForm mx-2" value="Place Order">
+                    {{-- <input type="button" class="btn btn-sm btn-primary submitForm mx-2" value="Place Order for Approval">
+                    <input type="button" class="btn btn-sm btn-primary placeOrder" value="Place Order"> --}}
                     {{-- <a href="{{ route('sales-specialist-orders.index') }}" class="btn btn-sm btn-primary">Back</a> --}}
                 </div>
             </div>
@@ -733,11 +734,11 @@
             });
 
             function hidePlaceOrderAppr() {
-                if (check_product_selection('product')) {
-                    $('.submitForm').addClass('d-none');
-                } else {
-                    $('.submitForm').removeClass('d-none');
-                }
+                // if (check_product_selection('product')) {
+                //     $('.submitForm').addClass('d-none');
+                // } else {
+                //     $('.submitForm').removeClass('d-none');
+                // }
             }
 
             $('.selectProducts').on('select2:select', function(e) {
@@ -786,6 +787,14 @@
                 multiple: false,
                 // data: $initialOptions
             });
+            
+            $('[name="due_date"]').datepicker({
+                                    format: 'mm/dd/yyyy',
+                                    todayHighlight: true,
+                                    orientation: "bottom left",
+                                    startDate: "+0d",
+                                    autoclose: true,
+                                });
 
             $('body').on('change', '#selectCustomers', function() {
                 $customer = $('[name="customer_id"]').val();
@@ -949,20 +958,20 @@
                 });
             }
 
-            $('body').on("click", ".placeOrder", function(e) {
-                e.preventDefault();
-                var validator = validate_form();
+            // $('body').on("click", ".placeOrder", function(e) {
+            //     e.preventDefault();
+            //     var validator = validate_form();
 
-                if (validator.form() != false) {
-                    if (check_product_selection('product')) {
-                        showAllPromoConfirmation('po');
-                    } else {
-                        pOrderRequest();
-                    }
-                } else {
-                    toast_error("Please fill in the required field.");
-                }
-            });
+            //     if (validator.form() != false) {
+            //         if (check_product_selection('product')) {
+            //             showAllPromoConfirmation('po');
+            //         } else {
+            //             pOrderRequest();
+            //         }
+            //     } else {
+            //         toast_error("Please fill in the required field.");
+            //     }
+            // });
 
             function pOrderRequest() {
                 $('[type="submit"]').prop('disabled', true);

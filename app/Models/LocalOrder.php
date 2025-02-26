@@ -24,7 +24,11 @@ class LocalOrder extends Model
         'doc_entry',
         'doc_num',
         'sap_connection_id',
-        'real_sap_connection_id'
+        'real_sap_connection_id',
+        'approval',
+        'approved_at',
+        'approved_by',
+        'disapproval_remarks',
     ];
 
     public function customer(){

@@ -34,6 +34,14 @@
         @endif
       </p>
     </div>
+    @if(@$data->local_order->approval === "Approved")
+    <div class="order-tracking {{ in_array('Pending',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
+      <span class="is-complete"><img src="{{ asset('assets/assets/media/svg/order/approved.svg') }}"></span>
+      <p>{{$data->local_order->approval}}
+          <br><span class="delivery-date">{{ date('F d, Y', strtotime(@$data->local_order->approved_at))}}</span>
+      </p>
+    </div>
+    @endif
     <div class="order-tracking {{ in_array('On Process',getOrderStatusProcessArray($status)) ? "completed" : "" }}">
       <span class="is-complete"><img src="{{ asset('assets/assets/media/svg/order/on-process.svg') }}"></span>
       <p>On Process
