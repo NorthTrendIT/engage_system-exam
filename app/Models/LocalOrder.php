@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class LocalOrder extends Model
 {
@@ -49,6 +50,16 @@ class LocalOrder extends Model
 
     public function quotation(){
         return $this->belongsTo(Quotation::class, ['doc_entry','sap_connection_id'], ['doc_entry', 'sap_connection_id']);
+    }
+
+    public static function getApproval(){
+        $type = DB::select('SHOW COLUMNS FROM local_orders WHERE Field = ?', ['approval'])[0]->Type;
+        preg_match('/^enum\((.*)\)$/', $type, $matches);
+        $values = array();
+        foreach(explode(',', $matches[1]) as $value){
+            $values[] = trim($value, "'");
+        }
+        return $values;
     }
 
 }
