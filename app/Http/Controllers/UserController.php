@@ -138,11 +138,11 @@ class UserController extends Controller
 
             $input['sales_specialist_name'] = $input['first_name']." ".$input['last_name'];
 
+            $input['branch'] = $request->filter_branch;
+            
+            $user->fill($input)->save();
             $user->customerBranch()->detach();
             $user->customerBranch()->attach($request->filter_branch);
-            $input['branch'] = $request->filter_branch;
-
-            $user->fill($input)->save();
 
             if(!isset($input['id'])){
                 $mail_data = array(
