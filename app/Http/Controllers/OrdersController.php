@@ -740,7 +740,7 @@ class OrdersController extends Controller
                                 
                             })
                             ->addColumn('order_approval', function($row) {
-                                return $row->approval;
+                                return (@$row->quotation) ? 'Approved' : $row->approval;
                             })
                             ->addColumn('approval_duration', function($row) {
                                 if($row->approved_at){
