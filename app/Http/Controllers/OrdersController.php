@@ -56,7 +56,8 @@ class OrdersController extends Controller
         if(in_array(userrole(), [1, 10, 11])){
             $company = SapConnection::all();
         }
-        return view('orders.index', compact('company'));
+        $approvalStatus = LocalOrder::getApproval();
+        return view('orders.index', compact('company', 'approvalStatus'));
     }
 
     /**
@@ -618,6 +619,14 @@ class OrdersController extends Controller
             $data->where('sap_connection_id',$request->filter_company);
         }
 
+
+        if($request->filter_approval != ""){
+            $data->where('approval',$request->filter_approval);
+            if($request->filter_approval == 'Pending'){
+                $data->whereDoesntHave('quotation')
+                     ->whereDate('created_at', '>=', '2025-02-26');
+            }
+        }
         
         $status = @$request->filter_status;
         if(!empty($status) && $status[0] !== null){
@@ -1450,6 +1459,13 @@ class OrdersController extends Controller
             $data->where('sap_connection_id',$request->filter_company);
         }
 
+        if($request->filter_approval != ""){
+            $data->where('approval',$request->filter_approval);
+            if($request->filter_approval == 'Pending'){
+                $data->whereDoesntHave('quotation')
+                     ->whereDate('created_at', '>=', '2025-02-26');
+            }
+        }
         
         $status = @$request->filter_status;
         if(!empty($status) && $status[0] !== null){

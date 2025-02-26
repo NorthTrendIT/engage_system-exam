@@ -416,11 +416,12 @@ class CustomersSalesSpecialistsController extends Controller
 
     public function getAll(Request $request){
 
-        $data = salesAssignment::with(['assignment','assignment.customer','assignment.sales_person', 'assignment.customer.group'])
-                                ->has('assignment.customer')
-                                ->has('assignment.customer.group')
+        $data = salesAssignment::
+                                // with(['assignment','assignment.customer','assignment.sales_person', 'assignment.customer.group'])
+                                // ->has('assignment.customer')
+                                has('assignment.customer.group');
                                 // ->has('assignment.sales_person')
-                                ->orderBy('id', 'desc');
+                                // ->orderBy('id', 'desc');
 
         if($request->filter_company != ""){
             $data->whereHas('assignment.customer', function($q) use ($request){
@@ -452,6 +453,8 @@ class CustomersSalesSpecialistsController extends Controller
             // });
 
         }
+
+        $data->orderBy('id', 'desc');
 
         return DataTables::of($data)
                             ->addIndexColumn()

@@ -134,6 +134,15 @@
                   </div>
                 </div>
 
+                <div class="col-md-3 mt-5 d-none">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_approval" data-control="select2" data-hide-search="false" data-placeholder="Select Approval" data-allow-clear="true">
+                    <option value=""></option>
+                    @foreach($approvalStatus as $appr)
+                    <option value="{{$appr}}">{{$appr}}</option>
+                    @endforeach
+                  </select>
+                </div>
+
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
                     <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
@@ -261,6 +270,7 @@
       }
 
       $filter_search = $('[name="filter_search"]').val();
+      $filter_approval = $('[name="filter_approval"]').find('option:selected').val();
       $filter_date_range = $('[name="filter_date_range"]').val();
       $filter_status = $('[name="filter_status[]"]').select2('val');
       $filter_order_type = $('[name="filter_order_type"]').find('option:selected').val();
@@ -315,6 +325,7 @@
               },
               data:{
                 filter_search : $filter_search,
+                filter_approval : $filter_approval,
                 filter_date_range : $filter_date_range,
                 filter_status : $filter_status,
                 filter_order_type : $filter_order_type,
@@ -514,6 +525,7 @@ window.location.href = href;
 
             var data = {};
             data.filter_search = $('[name="filter_search"]').val();
+            data.filter_approval = $('[name="filter_approval"]').find('option:selected').val();
             data.filter_date_range = $('[name="filter_date_range"]').val();
             data.filter_status = $('[name="filter_status[]"]').select2('val');
             data.filter_order_type = $('[name="filter_order_type"]').find('option:selected').val();
