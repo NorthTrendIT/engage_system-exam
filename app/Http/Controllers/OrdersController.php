@@ -765,7 +765,8 @@ class OrdersController extends Controller
                                 return '<a href="' . $route[0]. '" title="View details">'.$route[1].'</a>';
                             })
                             ->addColumn('total', function($row) {
-                                return '₱ '. number_format_value(@$row->quotation->doc_total);
+                                $total = (@$row->quotation) ? $row->quotation->doc_total : $row->items()->sum('total');
+                                return '₱ '. number_format_value(@$total);
                             })
                             ->addColumn('created_by', function($row) {
                                 if($row->placed_by == 'S'){
@@ -1578,6 +1579,7 @@ class OrdersController extends Controller
             $time = $value->doc_time ? date('H:i A',strtotime($created_date)) : "";
 
             $status = $value->quotation ? $value->quotation->status : 'Pending';
+            $final_total = (@$value->quotation) ? $value->quotation->doc_total: $value->items()->sum('total');
 
             $records[] = array(
                             'no' => $key + 1,
@@ -1586,7 +1588,7 @@ class OrdersController extends Controller
                             'type' => $type,
                             'card_code' => @$value->customer->card_code ?? @$value->card_code ?? "-",
                             'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
-                            'doc_total' => number_format_value(@$value->quotation->doc_total),
+                            'doc_total' => number_format_value(@$final_total),
                             'placed_by' => $placed_by,
                             'created_at' => $date.' '.$time,
                             'status' => $status,

@@ -394,7 +394,7 @@
                                           <div class="fw-bold pe-10 text-gray-900 fs-4 ">Total:</div>
                                           <!--end::Code-->
                                           <!--begin::Label-->
-                                          <div class="text-end fw-bolder fs-4 fw-boldest">₱ {{ number_format_value(round(@$data->doc_total,1)) }}</div>
+                                          <div class="text-end fw-bolder fs-4 fw-boldest">₱ {{ number_format_value(round(@$data->items()->sum('price'),1)) }}</div>
                                           <!--end::Label-->
                                         </div>
                                         <!--end::Item-->
