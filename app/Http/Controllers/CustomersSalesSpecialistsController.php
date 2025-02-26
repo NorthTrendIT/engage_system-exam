@@ -419,9 +419,9 @@ class CustomersSalesSpecialistsController extends Controller
         $data = salesAssignment::
                                 // with(['assignment','assignment.customer','assignment.sales_person', 'assignment.customer.group'])
                                 // ->has('assignment.customer')
-                                has('assignment.customer.group');
+                                has('assignment.customer.group')
                                 // ->has('assignment.sales_person')
-                                // ->orderBy('id', 'desc');
+                                ->orderBy('id', 'desc');
 
         if($request->filter_company != ""){
             $data->whereHas('assignment.customer', function($q) use ($request){
@@ -454,14 +454,12 @@ class CustomersSalesSpecialistsController extends Controller
 
         }
 
-        $data->orderBy('id', 'desc');
-
         return DataTables::of($data)
                             ->addIndexColumn()
                             ->addColumn('territory', function($row){
                                 $branch = '';
                                 $count = 0;
-                                foreach($row->assignment as $value){
+                                foreach($row->assignment->take(5) as $value){
                                     $comma = ($count > 0) ? ', ' : '';
                                     if(strpos($branch, @$value->customer->territories->description) === false){
                                         $branch .= $comma.$value->customer->territories->description;
@@ -473,7 +471,7 @@ class CustomersSalesSpecialistsController extends Controller
                             ->addColumn('customer', function($row){
                                 $customer = '';
                                 $count = 0;
-                                foreach($row->assignment as $value){
+                                foreach($row->assignment->take(5) as $value){
                                     $comma = ($count > 0) ? ', ' : '';
                                     if(strpos($customer, @$value->customer->card_name) === false){
                                         $customer .= $comma.@$value->customer->card_name;
@@ -485,7 +483,7 @@ class CustomersSalesSpecialistsController extends Controller
                             ->addColumn('sales_personnel', function($row){
                                 $sales_person = '';
                                 $count = 0;
-                                foreach($row->assignment as $value){
+                                foreach($row->assignment->take(5) as $value){
                                     $comma = ($count > 0) ? ', ' : '';
                                     if(strpos($sales_person, @$value->sales_person->email) === false){
                                         $sales_person .= $comma.@$value->sales_person->email;
