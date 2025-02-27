@@ -30,4 +30,10 @@ class salesAssignment extends Model
     public function category(){
         return $this->hasMany(CustomerProductTiresCategory::class, 'assignment_id', 'id');
     }
+
+    public function assignmentGroup(){
+        return $this->hasMany(CustomersSalesSpecialist::class, 'assignment_id', 'id')
+                    // ->selectRaw('assignment_id, COUNT(*) as count')
+                    ->groupBy('assignment_id');
+    }
 }

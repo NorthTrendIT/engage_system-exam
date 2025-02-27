@@ -85,7 +85,7 @@
                        <!--begin::Table-->
                        <table class="table table-row-gray-300 align-middle gs-0 gy-4 table-bordered" id="myTable">
                           <!--begin::Table head-->
-                          <thead>
+                          <thead class="table-dark">
                             <tr>
                               <th>No.</th>
                               <th>Business Unit</th>
@@ -165,15 +165,16 @@
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
-              {data: 'company', name: 'company'},
-              {data: 'territory', name: 'territory'},
-              {data:'assignment_name', name:'assignment_name'},
-              {data: 'customer', name: 'customer'},
-              {data: 'sales_personnel', name: 'sales_personnel'},
+              {data: 'company', name: 'company',orderable:false,searchable:false},
+              {data: 'territory', name: 'territory',orderable:false,searchable:false},
+              {data:'assignment_name', name:'assignment_name',orderable:false,searchable:false},
+              {data: 'customer', name: 'customer',orderable:false,searchable:false},
+              {data: 'sales_personnel', name: 'sales_personnel',orderable:false,searchable:false},
               {data: 'action', name: 'action',orderable:false,searchable:false},
           ],
           columnDefs: [
-                {targets: [2, 3, 4, 5], className: "custom_width" }
+                {targets: [2, 3, 4, 5], className: "custom_width" },
+                { "targets": [4], "visible": false }
           ],
           drawCallback:function(){
               $(function () {

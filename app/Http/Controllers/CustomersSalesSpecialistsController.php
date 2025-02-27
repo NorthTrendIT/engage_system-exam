@@ -419,7 +419,7 @@ class CustomersSalesSpecialistsController extends Controller
         $data = salesAssignment::
                                 // with(['assignment','assignment.customer','assignment.sales_person', 'assignment.customer.group'])
                                 // ->has('assignment.customer')
-                                has('assignment.customer.group')
+                                has('assignmentGroup')
                                 // ->has('assignment.sales_person')
                                 ->orderBy('id', 'desc');
 
@@ -470,14 +470,14 @@ class CustomersSalesSpecialistsController extends Controller
                             })
                             ->addColumn('customer', function($row){
                                 $customer = '';
-                                $count = 0;
-                                foreach($row->assignment->take(5) as $value){
-                                    $comma = ($count > 0) ? ', ' : '';
-                                    if(strpos($customer, @$value->customer->card_name) === false){
-                                        $customer .= $comma.@$value->customer->card_name;
-                                    }
-                                    $count ++;
-                                }
+                                // $count = 0;
+                                // foreach($row->assignment->take(5) as $value){
+                                //     $comma = ($count > 0) ? ', ' : '';
+                                //     if(strpos($customer, @$value->customer->card_name) === false){
+                                //         $customer .= $comma.@$value->customer->card_name;
+                                //     }
+                                //     $count ++;
+                                // }
                                 return $customer;
                             })
                             ->addColumn('sales_personnel', function($row){
