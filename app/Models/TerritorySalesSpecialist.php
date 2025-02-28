@@ -28,7 +28,7 @@ class TerritorySalesSpecialist extends Model
 
     public function salesAssignment()
     {
-        return $this->belongsTo(SalesAssignment::class, 'assignment_id', 'id');
+        return $this->belongsTo(salesAssignment::class, 'assignment_id', 'id');
     }
 
     public function sap_connection()
