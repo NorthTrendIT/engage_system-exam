@@ -17,6 +17,7 @@ use App\Models\CustomerProductTiresCategory;
 use App\Models\SapConnection;
 use App\Models\CustomerBpAddress;
 use App\Jobs\ImportCustomerSalesSpecialistAssign;
+use App\Models\TerritorySalesSpecialist;
 
 use App\Imports\CustomerSalesSpecialistAssignImport;
 use Excel;
@@ -394,7 +395,7 @@ class CustomersSalesSpecialistsController extends Controller
             //save log
             add_log(43, ['id'=>$id]);
             salesAssignment::where('id',$id)->delete();
-            //
+            TerritorySalesSpecialist::where('assignment_id', $id)->delete();
             CustomersSalesSpecialist::where('assignment_id', $id)->delete();
             CustomerProductGroup::where('assignment_id', $id)->delete();
             CustomerProductItemLine::where('assignment_id', $id)->delete();
