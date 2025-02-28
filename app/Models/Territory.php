@@ -24,9 +24,16 @@ class Territory extends Model
         return $this->hasOne(Customer::class, 'territory', 'territory_id');
     }
 
+    // public function users()
+    // {
+    //     return $this->belongsToMany(User::class);
+    // }
+
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'territory_sales_specialists', 'territory_id', 'user_id')
+                    ->withPivot('assignment_id', 'sap_connection_id') // Access additional data
+                    ->withTimestamps(); 
     }
 
 }

@@ -32,6 +32,6 @@ class CustomerGroup extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'branch_user', 'customer_group_id', 'user_id');
+        return $this->belongsToMany(User::class, 'branch_user', 'customer_group_id', 'user_id')->withTimestamps();
     }
 }

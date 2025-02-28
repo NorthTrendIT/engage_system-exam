@@ -225,6 +225,7 @@ Route::middleware(['auth'])->group(function () {
             // Sales Specialist Assignment
             Route::resource('customers-sales-specialist', 'App\Http\Controllers\CustomersSalesSpecialistsController')->except(['show']);
             Route::post('customers-sales-specialist/get-all', 'App\Http\Controllers\CustomersSalesSpecialistsController@getAll')->name('customers-sales-specialist.get-all');
+            Route::post('territory-specialist/get-all', 'App\Http\Controllers\CustomersSalesSpecialistsController@getTerritorySalesPerson')->name('territory-specialist.get-all');
             Route::post('customers-sales-specialist/status/{id}', 'App\Http\Controllers\CustomersSalesSpecialistsController@updateStatus')->name('customers-sales-specialist.status');
 
             Route::get('customers-sales-specialist/import', 'App\Http\Controllers\CustomersSalesSpecialistsController@importIndex')->name('customers-sales-specialist.import.index');

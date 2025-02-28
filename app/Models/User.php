@@ -114,14 +114,21 @@ class User extends Authenticatable
     //     return $this->hasMany(TerritorySalesSpecialist::class,'user_id','id');
     // }
 
+    // public function territories()
+    // {
+    //     return $this->belongsToMany(Territory::class, 'territory_user', 'user_id', 'territory_id');
+    // }
+
     public function territories()
     {
-        return $this->belongsToMany(Territory::class, 'territory_user', 'user_id', 'territory_id');
+        return $this->belongsToMany(Territory::class, 'territory_sales_specialists', 'user_id', 'territory_id')
+                    ->withPivot('assignment_id', 'sap_connection_id') 
+                    ->withTimestamps(); 
     }
 
     public function customerBranch()
     {
-        return $this->belongsToMany(CustomerGroup::class, 'branch_user', 'user_id', 'customer_group_id');
+        return $this->belongsToMany(CustomerGroup::class, 'branch_user', 'user_id', 'customer_group_id')->withTimestamps();
     }
 
 

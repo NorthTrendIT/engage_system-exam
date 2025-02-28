@@ -152,7 +152,7 @@
           scrollX: true,
           order: [],
           ajax: {
-              'url': "{{ route('customers-sales-specialist.get-all') }}",
+              'url': "{{ route('territory-specialist.get-all') }}",
               'type': 'POST',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'

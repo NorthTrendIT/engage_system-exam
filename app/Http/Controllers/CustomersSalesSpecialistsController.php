@@ -25,6 +25,7 @@ use Validator;
 use DataTables;
 use App\Models\salesAssignment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CustomersSalesSpecialistsController extends Controller
 {
@@ -117,6 +118,9 @@ class CustomersSalesSpecialistsController extends Controller
             if(isset($input['id'])){
                 $assignment = salesAssignment::find($input['id']);
                 $assignment->assignment_name =  $input['assignment_name'];
+                $assignment->brand = $request->product_group_id; 
+                $assignment->line = $request->product_item_line_id;     
+                $assignment->category = $request->product_tires_category_id;
                 $assignment->save();
                 // $extra_ids = CustomersSalesSpecialist::where('assignment_id',$assignment->id)->groupBy('customer_id')->pluck('customer_id')->toArray();
                 // $customer_ids = $input['customer_ids'];
@@ -146,6 +150,9 @@ class CustomersSalesSpecialistsController extends Controller
 
                 $assignment = new salesAssignment();
                 $assignment->assignment_name = $request->assignment_name;
+                $assignment->brand = $request->product_group_id; 
+                $assignment->line = $request->product_item_line_id;     
+                $assignment->category = $request->product_tires_category_id;
                 $assignment->save();
                 
                 // if(@$request->customer_selection == "specific"){
@@ -176,88 +183,108 @@ class CustomersSalesSpecialistsController extends Controller
                                             })->pluck('id')->toArray();
             }
 
-            CustomersSalesSpecialist::where('assignment_id', $assignment->id)->delete();
-            CustomerProductGroup::where('assignment_id', $assignment->id)->delete();
-            CustomerProductItemLine::where('assignment_id', $assignment->id)->delete();
-            CustomerProductTiresCategory::where('assignment_id', $assignment->id)->delete();
-            //print_r($customer_ids);exit();
-
-            $dataToInsertSalesSpecialist = [];
-            $dataToInsertProductGroup = [];
-            $dataToInsertItemLine = [];
-            $dataToInsertTiresCategory = [];
-            foreach($customer_ids as $key => $customer){
-                $inputData = [
-                                'assignment_id' => $assignment->id,
-                                'customer_id' => $customer,
-                             ];
-                $inputDataTiresCategory = $inputDataItemLine = $inputDataProductGroup = $inputDataSalesSpecialist = $inputData;
-
-                if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
-                    foreach($input['ss_ids'] as $value){
-                        // $ss = new CustomersSalesSpecialist();
-                        // $ss->assignment_id = $assignment->id;
-                        // $ss->customer_id = $customer;
-                        // $ss->ss_id = $value;
-                        // $ss->save();
-                        $inputDataSalesSpecialist['ss_id'] = $value;
-                        $dataToInsertSalesSpecialist[] = $inputDataSalesSpecialist;
-                    }
-                }
-
-                if(isset($input['product_group_id']) && !empty($input['product_group_id'])){
-                    foreach($input['product_group_id'] as $value){
-                        // $ss = new CustomerProductGroup();
-                        // $ss->customer_id = $customer;
-                        // $ss->assignment_id = $assignment->id;
-                        // $ss->product_group_id = $value;
-                        // $ss->save();
-                        $inputDataProductGroup['product_group_id'] = $value;
-                        $dataToInsertProductGroup[] = $inputDataProductGroup;
-                    }
-                }
-
-                if(isset($input['product_item_line_id']) && !empty($input['product_item_line_id'])){
-                    foreach($input['product_item_line_id'] as $value){
-                        // $ss = new CustomerProductItemLine();
-                        // $ss->customer_id = $customer;
-                        // $ss->assignment_id = $assignment->id;
-                        // $ss->product_item_line_id = $value;
-                        // $ss->save();
-                        $inputDataItemLine['product_item_line_id'] = $value;
-                        $dataToInsertItemLine[] = $inputDataItemLine;
-                    }
-                }
-
-                if(isset($input['product_tires_category_id']) && !empty($input['product_tires_category_id'])){
-                    foreach($input['product_tires_category_id'] as $value){
-                        // $ss = new CustomerProductTiresCategory();
-                        // $ss->customer_id = $customer;
-                        // $ss->assignment_id = $assignment->id;
-                        // $ss->product_tires_category_id = $value;
-                        // $ss->save();
-                        $inputDataTiresCategory['product_tires_category_id'] = $value;
-                        $dataToInsertTiresCategory[] = $inputDataTiresCategory;
-                    }
-                }
-
-            }
-
             if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
-                CustomersSalesSpecialist::insert($dataToInsertSalesSpecialist);
+                foreach ($input['ss_ids'] as $ss) {
+                    $user = User::find($ss);  // Find the user by ID
+                    $user->territories()->detach();  // Detach all existing territories first
+                
+                    // Prepare pivot data for each territory
+                    $pivotData = [];
+                    foreach ($input['customer_territory_ids'] as $tr) {
+                        // Each territory is attached with the pivot data
+                        $pivotData[$tr] = [
+                            'assignment_id' => $assignment->id,
+                            'sap_connection_id' => $input['company_id'],
+                        ];
+                    }
+             
+                    // Attach the new territories with the pivot data
+                    $user->territories()->attach($pivotData);
+                }
             }
 
-            if(isset($input['product_group_id']) && !empty($input['product_group_id'])){
-                CustomerProductGroup::insert($dataToInsertProductGroup);
-            }
+            // CustomersSalesSpecialist::where('assignment_id', $assignment->id)->delete();
+            // CustomerProductGroup::where('assignment_id', $assignment->id)->delete();
+            // CustomerProductItemLine::where('assignment_id', $assignment->id)->delete();
+            // CustomerProductTiresCategory::where('assignment_id', $assignment->id)->delete();
+            // //print_r($customer_ids);exit();
 
-            if(isset($input['product_item_line_id']) && !empty($input['product_item_line_id'])){
-                CustomerProductItemLine::insert($dataToInsertItemLine);
-            }
+            // $dataToInsertSalesSpecialist = [];
+            // $dataToInsertProductGroup = [];
+            // $dataToInsertItemLine = [];
+            // $dataToInsertTiresCategory = [];
+            // foreach($customer_ids as $key => $customer){
+            //     $inputData = [
+            //                     'assignment_id' => $assignment->id,
+            //                     'customer_id' => $customer,
+            //                  ];
+            //     $inputDataTiresCategory = $inputDataItemLine = $inputDataProductGroup = $inputDataSalesSpecialist = $inputData;
 
-            if(isset($input['product_tires_category_id']) && !empty($input['product_tires_category_id'])){
-                CustomerProductTiresCategory::insert($dataToInsertTiresCategory);
-            }
+            //     if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
+            //         foreach($input['ss_ids'] as $value){
+            //             // $ss = new CustomersSalesSpecialist();
+            //             // $ss->assignment_id = $assignment->id;
+            //             // $ss->customer_id = $customer;
+            //             // $ss->ss_id = $value;
+            //             // $ss->save();
+            //             $inputDataSalesSpecialist['ss_id'] = $value;
+            //             $dataToInsertSalesSpecialist[] = $inputDataSalesSpecialist;
+            //         }
+            //     }
+
+            //     if(isset($input['product_group_id']) && !empty($input['product_group_id'])){
+            //         foreach($input['product_group_id'] as $value){
+            //             // $ss = new CustomerProductGroup();
+            //             // $ss->customer_id = $customer;
+            //             // $ss->assignment_id = $assignment->id;
+            //             // $ss->product_group_id = $value;
+            //             // $ss->save();
+            //             $inputDataProductGroup['product_group_id'] = $value;
+            //             $dataToInsertProductGroup[] = $inputDataProductGroup;
+            //         }
+            //     }
+
+            //     if(isset($input['product_item_line_id']) && !empty($input['product_item_line_id'])){
+            //         foreach($input['product_item_line_id'] as $value){
+            //             // $ss = new CustomerProductItemLine();
+            //             // $ss->customer_id = $customer;
+            //             // $ss->assignment_id = $assignment->id;
+            //             // $ss->product_item_line_id = $value;
+            //             // $ss->save();
+            //             $inputDataItemLine['product_item_line_id'] = $value;
+            //             $dataToInsertItemLine[] = $inputDataItemLine;
+            //         }
+            //     }
+
+            //     if(isset($input['product_tires_category_id']) && !empty($input['product_tires_category_id'])){
+            //         foreach($input['product_tires_category_id'] as $value){
+            //             // $ss = new CustomerProductTiresCategory();
+            //             // $ss->customer_id = $customer;
+            //             // $ss->assignment_id = $assignment->id;
+            //             // $ss->product_tires_category_id = $value;
+            //             // $ss->save();
+            //             $inputDataTiresCategory['product_tires_category_id'] = $value;
+            //             $dataToInsertTiresCategory[] = $inputDataTiresCategory;
+            //         }
+            //     }
+
+            // }
+
+            // if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
+            //     CustomersSalesSpecialist::insert($dataToInsertSalesSpecialist);
+            // }
+
+            // if(isset($input['product_group_id']) && !empty($input['product_group_id'])){
+            //     CustomerProductGroup::insert($dataToInsertProductGroup);
+            // }
+
+            // if(isset($input['product_item_line_id']) && !empty($input['product_item_line_id'])){
+            //     CustomerProductItemLine::insert($dataToInsertItemLine);
+            // }
+
+            // if(isset($input['product_tires_category_id']) && !empty($input['product_tires_category_id'])){
+            //     CustomerProductTiresCategory::insert($dataToInsertTiresCategory);
+            // }
 
             $response = ['status'=>true,'message'=>$message];
         }
@@ -419,7 +446,7 @@ class CustomersSalesSpecialistsController extends Controller
         $data = salesAssignment::
                                 // with(['assignment','assignment.customer','assignment.sales_person', 'assignment.customer.group'])
                                 // ->has('assignment.customer')
-                                has('assignmentGroup')
+                                has('assignment')
                                 // ->has('assignment.sales_person')
                                 ->orderBy('id', 'desc');
 
@@ -459,7 +486,7 @@ class CustomersSalesSpecialistsController extends Controller
                             ->addColumn('territory', function($row){
                                 $branch = '';
                                 $count = 0;
-                                foreach($row->assignment->take(5) as $value){
+                                foreach($row->assignment->take(2) as $value){
                                     $comma = ($count > 0) ? ', ' : '';
                                     if(strpos($branch, @$value->customer->territories->description) === false){
                                         $branch .= $comma.$value->customer->territories->description;
@@ -483,7 +510,7 @@ class CustomersSalesSpecialistsController extends Controller
                             ->addColumn('sales_personnel', function($row){
                                 $sales_person = '';
                                 $count = 0;
-                                foreach($row->assignment->take(5) as $value){
+                                foreach($row->assignment->take(2) as $value){
                                     $comma = ($count > 0) ? ', ' : '';
                                     if(strpos($sales_person, @$value->sales_person->email) === false){
                                         $sales_person .= $comma.@$value->sales_person->email;
@@ -497,6 +524,87 @@ class CustomersSalesSpecialistsController extends Controller
                             })
                             ->addColumn('company', function($row) {
                                 return @$row->assignment->first()->customer->sap_connection->company_name;
+                            })
+                            ->addColumn('action', function($row) {
+                                $btn = '<a href="' . route('customers-sales-specialist.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                    <i class="fa fa-pencil"></i>
+                                  </a>';
+                                $btn .= '<a href="javascript:void(0)" data-url="' . route('customers-sales-specialist.destroy',$row->id) . '" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm delete mx-2">
+                                    <i class="fa fa-trash"></i>
+                                  </a>';
+                                $btn .= '<a href="' . route('customers-sales-specialist.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm">
+                                    <i class="fa fa-eye"></i>
+                                  </a>';
+
+
+
+                                return $btn;
+                            })
+                            ->rawColumns(['action'])
+                            ->make(true);
+    }
+
+    public function getTerritorySalesPerson(Request $request){
+        $data = SalesAssignment::orderBy('id', 'desc');
+
+        if($request->filter_company != ""){
+            $data->whereHas('assignmentTerritory', function($q) use ($request){
+                $q->where('sap_connection_id',$request->filter_company);
+            });
+        }
+
+        if($request->filter_group != ""){
+            $data->whereHas('assignmentTerritory.territory', function($q) use ($request){
+                $q->where('territory_id',$request->filter_group);
+            });
+        }
+
+        if($request->filter_search != ""){
+            $data->where('assignment_name','LIKE',"%".$request->filter_search."%");
+
+            $data->orWhereHas('assignmentTerritory.user', function($q) use ($request){
+                $q->where('first_name','LIKE',"%".$request->filter_search."%");
+                $q->orWhere('last_name','LIKE',"%".$request->filter_search."%");
+                $q->orWhere('email','LIKE',"%".$request->filter_search."%");
+            });
+        }
+
+        return DataTables::of($data)
+                            ->addIndexColumn()
+                            ->addColumn('territory', function($row){
+                                $branch = '';
+                                $count = 0;
+                                foreach($row->assignmentTerritory->take(2) as $value){
+                                    $comma = ($count > 0) ? ', ' : '';
+                                    if(strpos($branch, @$value->territory->description) === false){
+                                        $branch .= $comma.@$value->territory->description;
+                                    }
+                                    $count ++;
+                                }
+                                return $branch;
+                            })
+                            ->addColumn('customer', function($row){
+                                $customer = '';
+                                
+                                return $customer;
+                            })
+                            ->addColumn('sales_personnel', function($row){
+                                $sales_person = '';
+                                $count = 0;
+                                foreach($row->assignmentTerritory->take(2) as $value){
+                                    $comma = ($count > 0) ? ', ' : '';
+                                    if(strpos($sales_person, @$value->user->email) === false){
+                                        $sales_person .= $comma.@$value->user->email;
+                                    }
+                                    $count ++;
+                                }
+                                return $sales_person;
+                            })
+                            ->addColumn('assignment_name', function($row) {
+                                return $row->assignment_name;
+                            })
+                            ->addColumn('company', function($row) {
+                                return @$row->assignmentTerritory->first()->sap_connection->company_name;
                             })
                             ->addColumn('action', function($row) {
                                 $btn = '<a href="' . route('customers-sales-specialist.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
