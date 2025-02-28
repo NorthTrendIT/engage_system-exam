@@ -16,6 +16,7 @@ use App\Models\Quotation;
 use Validator;
 use Illuminate\Support\Facades\Auth;
 use DataTables;
+use App\Models\TerritorySalesSpecialist;
 
 class LocalOrderController extends Controller
 {
@@ -453,14 +454,16 @@ class LocalOrderController extends Controller
 
     function getCustomers(Request $request){
         $search = $request->search;
-        // return @Auth::user()->id;
+        
+        $territoryIds = TerritorySalesSpecialist::where('user_id', userid())->pluck('territory_id');
         $data = Customer::select('id', 'card_code', 'card_name', 'sap_connection_id')
                         ->where('is_active', true)
-                        ->whereHas('sales_specialist', function($q){
-                            $q->where('ss_id', @Auth::user()->id);
+                        ->whereHas('territories', function($q) use($territoryIds){
+                            $q->whereIn('id', $territoryIds);
                         });
-
-        // dd($data);
+                        // ->whereHas('sales_specialist', function($q){
+                        //     $q->where('ss_id', @Auth::user()->id);
+                        // });
 
         if($search != ''){
             $data = $data->where('card_name', 'like', '%' .$search . '%');
