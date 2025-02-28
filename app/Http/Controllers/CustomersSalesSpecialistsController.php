@@ -118,9 +118,9 @@ class CustomersSalesSpecialistsController extends Controller
             if(isset($input['id'])){
                 $assignment = salesAssignment::find($input['id']);
                 $assignment->assignment_name =  $input['assignment_name'];
-                $assignment->brand = $request->product_group_id; 
-                $assignment->line = $request->product_item_line_id;     
-                $assignment->category = $request->product_tires_category_id;
+                $assignment->brand_ids = $request->product_group_id; 
+                $assignment->line_ids = $request->product_item_line_id;     
+                $assignment->category_ids = $request->product_tires_category_id;
                 $assignment->save();
                 // $extra_ids = CustomersSalesSpecialist::where('assignment_id',$assignment->id)->groupBy('customer_id')->pluck('customer_id')->toArray();
                 // $customer_ids = $input['customer_ids'];
@@ -150,9 +150,9 @@ class CustomersSalesSpecialistsController extends Controller
 
                 $assignment = new salesAssignment();
                 $assignment->assignment_name = $request->assignment_name;
-                $assignment->brand = $request->product_group_id; 
-                $assignment->line = $request->product_item_line_id;     
-                $assignment->category = $request->product_tires_category_id;
+                $assignment->brand_ids = $request->product_group_id; 
+                $assignment->line_ids = $request->product_item_line_id;     
+                $assignment->category_ids = $request->product_tires_category_id;
                 $assignment->save();
                 
                 // if(@$request->customer_selection == "specific"){
@@ -203,88 +203,88 @@ class CustomersSalesSpecialistsController extends Controller
                 }
             }
 
-            // CustomersSalesSpecialist::where('assignment_id', $assignment->id)->delete();
-            // CustomerProductGroup::where('assignment_id', $assignment->id)->delete();
-            // CustomerProductItemLine::where('assignment_id', $assignment->id)->delete();
-            // CustomerProductTiresCategory::where('assignment_id', $assignment->id)->delete();
-            // //print_r($customer_ids);exit();
+            CustomersSalesSpecialist::where('assignment_id', $assignment->id)->delete();
+            CustomerProductGroup::where('assignment_id', $assignment->id)->delete();
+            CustomerProductItemLine::where('assignment_id', $assignment->id)->delete();
+            CustomerProductTiresCategory::where('assignment_id', $assignment->id)->delete();
+            //print_r($customer_ids);exit();
 
-            // $dataToInsertSalesSpecialist = [];
-            // $dataToInsertProductGroup = [];
-            // $dataToInsertItemLine = [];
-            // $dataToInsertTiresCategory = [];
-            // foreach($customer_ids as $key => $customer){
-            //     $inputData = [
-            //                     'assignment_id' => $assignment->id,
-            //                     'customer_id' => $customer,
-            //                  ];
-            //     $inputDataTiresCategory = $inputDataItemLine = $inputDataProductGroup = $inputDataSalesSpecialist = $inputData;
+            $dataToInsertSalesSpecialist = [];
+            $dataToInsertProductGroup = [];
+            $dataToInsertItemLine = [];
+            $dataToInsertTiresCategory = [];
+            foreach($customer_ids as $key => $customer){
+                $inputData = [
+                                'assignment_id' => $assignment->id,
+                                'customer_id' => $customer,
+                             ];
+                $inputDataTiresCategory = $inputDataItemLine = $inputDataProductGroup = $inputDataSalesSpecialist = $inputData;
 
-            //     if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
-            //         foreach($input['ss_ids'] as $value){
-            //             // $ss = new CustomersSalesSpecialist();
-            //             // $ss->assignment_id = $assignment->id;
-            //             // $ss->customer_id = $customer;
-            //             // $ss->ss_id = $value;
-            //             // $ss->save();
-            //             $inputDataSalesSpecialist['ss_id'] = $value;
-            //             $dataToInsertSalesSpecialist[] = $inputDataSalesSpecialist;
-            //         }
-            //     }
+                if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
+                    foreach($input['ss_ids'] as $value){
+                        // $ss = new CustomersSalesSpecialist();
+                        // $ss->assignment_id = $assignment->id;
+                        // $ss->customer_id = $customer;
+                        // $ss->ss_id = $value;
+                        // $ss->save();
+                        $inputDataSalesSpecialist['ss_id'] = $value;
+                        $dataToInsertSalesSpecialist[] = $inputDataSalesSpecialist;
+                    }
+                }
 
-            //     if(isset($input['product_group_id']) && !empty($input['product_group_id'])){
-            //         foreach($input['product_group_id'] as $value){
-            //             // $ss = new CustomerProductGroup();
-            //             // $ss->customer_id = $customer;
-            //             // $ss->assignment_id = $assignment->id;
-            //             // $ss->product_group_id = $value;
-            //             // $ss->save();
-            //             $inputDataProductGroup['product_group_id'] = $value;
-            //             $dataToInsertProductGroup[] = $inputDataProductGroup;
-            //         }
-            //     }
+                if(isset($input['product_group_id']) && !empty($input['product_group_id'])){
+                    foreach($input['product_group_id'] as $value){
+                        // $ss = new CustomerProductGroup();
+                        // $ss->customer_id = $customer;
+                        // $ss->assignment_id = $assignment->id;
+                        // $ss->product_group_id = $value;
+                        // $ss->save();
+                        $inputDataProductGroup['product_group_id'] = $value;
+                        $dataToInsertProductGroup[] = $inputDataProductGroup;
+                    }
+                }
 
-            //     if(isset($input['product_item_line_id']) && !empty($input['product_item_line_id'])){
-            //         foreach($input['product_item_line_id'] as $value){
-            //             // $ss = new CustomerProductItemLine();
-            //             // $ss->customer_id = $customer;
-            //             // $ss->assignment_id = $assignment->id;
-            //             // $ss->product_item_line_id = $value;
-            //             // $ss->save();
-            //             $inputDataItemLine['product_item_line_id'] = $value;
-            //             $dataToInsertItemLine[] = $inputDataItemLine;
-            //         }
-            //     }
+                if(isset($input['product_item_line_id']) && !empty($input['product_item_line_id'])){
+                    foreach($input['product_item_line_id'] as $value){
+                        // $ss = new CustomerProductItemLine();
+                        // $ss->customer_id = $customer;
+                        // $ss->assignment_id = $assignment->id;
+                        // $ss->product_item_line_id = $value;
+                        // $ss->save();
+                        $inputDataItemLine['product_item_line_id'] = $value;
+                        $dataToInsertItemLine[] = $inputDataItemLine;
+                    }
+                }
 
-            //     if(isset($input['product_tires_category_id']) && !empty($input['product_tires_category_id'])){
-            //         foreach($input['product_tires_category_id'] as $value){
-            //             // $ss = new CustomerProductTiresCategory();
-            //             // $ss->customer_id = $customer;
-            //             // $ss->assignment_id = $assignment->id;
-            //             // $ss->product_tires_category_id = $value;
-            //             // $ss->save();
-            //             $inputDataTiresCategory['product_tires_category_id'] = $value;
-            //             $dataToInsertTiresCategory[] = $inputDataTiresCategory;
-            //         }
-            //     }
+                if(isset($input['product_tires_category_id']) && !empty($input['product_tires_category_id'])){
+                    foreach($input['product_tires_category_id'] as $value){
+                        // $ss = new CustomerProductTiresCategory();
+                        // $ss->customer_id = $customer;
+                        // $ss->assignment_id = $assignment->id;
+                        // $ss->product_tires_category_id = $value;
+                        // $ss->save();
+                        $inputDataTiresCategory['product_tires_category_id'] = $value;
+                        $dataToInsertTiresCategory[] = $inputDataTiresCategory;
+                    }
+                }
 
-            // }
+            }
 
-            // if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
-            //     CustomersSalesSpecialist::insert($dataToInsertSalesSpecialist);
-            // }
+            if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
+                CustomersSalesSpecialist::insert($dataToInsertSalesSpecialist);
+            }
 
-            // if(isset($input['product_group_id']) && !empty($input['product_group_id'])){
-            //     CustomerProductGroup::insert($dataToInsertProductGroup);
-            // }
+            if(isset($input['product_group_id']) && !empty($input['product_group_id'])){
+                CustomerProductGroup::insert($dataToInsertProductGroup);
+            }
 
-            // if(isset($input['product_item_line_id']) && !empty($input['product_item_line_id'])){
-            //     CustomerProductItemLine::insert($dataToInsertItemLine);
-            // }
+            if(isset($input['product_item_line_id']) && !empty($input['product_item_line_id'])){
+                CustomerProductItemLine::insert($dataToInsertItemLine);
+            }
 
-            // if(isset($input['product_tires_category_id']) && !empty($input['product_tires_category_id'])){
-            //     CustomerProductTiresCategory::insert($dataToInsertTiresCategory);
-            // }
+            if(isset($input['product_tires_category_id']) && !empty($input['product_tires_category_id'])){
+                CustomerProductTiresCategory::insert($dataToInsertTiresCategory);
+            }
 
             $response = ['status'=>true,'message'=>$message];
         }

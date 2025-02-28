@@ -13,9 +13,15 @@ class SalesAssignment extends Model
 
     protected $fillable = [
         'assignment_name',
-        'brand',
-        'line',
-        'category',
+        'brand_ids',
+        'line_ids',
+        'category_ids',
+    ];
+
+    protected $casts = [
+        'brand_ids' => 'array',
+        'line_ids' => 'array',
+        'category_ids' => 'array',
     ];
 
     public function assignment()
@@ -49,5 +55,4 @@ class SalesAssignment extends Model
     {
         return $this->hasMany(TerritorySalesSpecialist::class, 'assignment_id', 'id');
     }
-
 }

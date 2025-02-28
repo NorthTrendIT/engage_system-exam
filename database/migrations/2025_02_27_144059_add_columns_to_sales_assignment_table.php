@@ -14,9 +14,9 @@ class AddColumnsToSalesAssignmentTable extends Migration
     public function up()
     {
         Schema::table('sales_assignment', function (Blueprint $table) {
-            $table->json('brand')->nullable()->after('assignment_name'); 
-            $table->json('line')->nullable()->after('brand');  
-            $table->json('category')->nullable()->after('line'); 
+            $table->json('brand_ids')->nullable()->after('assignment_name'); 
+            $table->json('line_ids')->nullable()->after('brand_ids');  
+            $table->json('category_ids')->nullable()->after('line_ids'); 
         });
     }
 
