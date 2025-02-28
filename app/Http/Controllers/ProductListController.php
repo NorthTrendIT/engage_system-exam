@@ -15,6 +15,7 @@ use Auth;
 use DataTables;
 use App\Models\ProductGroup;
 use DB;
+use App\Models\TerritorySalesSpecialist;
 
 class ProductListController extends Controller
 {
@@ -615,13 +616,19 @@ class ProductListController extends Controller
            if(strtolower($user_role->role->name) == "sales personnel"){
                 $custom_group = ProductGroup::where('number', 107)->where('sap_connection_id', $sap_connection_id)->pluck('id')->toArray();
 
-                $result = CustomersSalesSpecialist::with(['product_group.product_group'])->where(['ss_id' => userid(), 'customer_id' => $customer_id[0]])->has('product_group')->get()->toArray();
+                // $result = CustomersSalesSpecialist::with(['product_group.product_group'])->where(['ss_id' => userid(), 'customer_id' => $customer_id[0]])->has('product_group')->get()->toArray();
                 $c_product_group = [];
-                foreach($result as $data){
-                    foreach($data['product_group'] as $x => $gr){
-                        $c_product_group[$x] = $gr['product_group']['id']; 
-                    }
+                // foreach($result as $data){
+                //     foreach($data['product_group'] as $x => $gr){
+                //         $c_product_group[$x] = $gr['product_group']['id']; 
+                //     }
+                // }
+                if(@$customer->territories){
+                    $result = TerritorySalesSpecialist::where('sap_connection_id', $sap_connection_id)->where('user_id', userid())->where('territory_id', $customer->territories->id)->first();
+                    $brandGroupIds = $result->salesAssignment->brand_ids;
+                    $c_product_group = ($brandGroupIds) ? $brandGroupIds : [];
                 }
+                        
                 $c_product_group = array_unique($c_product_group);
                 if(isset($request->inc_mktg) && $request->inc_mktg == 'yes' || !isset($request->inc_mktg)){
                     array_push($c_product_group, $custom_group[0]);

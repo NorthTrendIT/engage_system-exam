@@ -394,6 +394,7 @@ class CustomersSalesSpecialistsController extends Controller
             //save log
             add_log(43, ['id'=>$id]);
             salesAssignment::where('id',$id)->delete();
+            //
             CustomersSalesSpecialist::where('assignment_id', $id)->delete();
             CustomerProductGroup::where('assignment_id', $id)->delete();
             CustomerProductItemLine::where('assignment_id', $id)->delete();
