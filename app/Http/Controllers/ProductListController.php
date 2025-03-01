@@ -623,11 +623,11 @@ class ProductListController extends Controller
                         $c_product_group[$x] = $gr['product_group']['id']; 
                     }
                 }
-                // if(@$customer->territories){
-                //     $result = TerritorySalesSpecialist::where('sap_connection_id', $sap_connection_id)->where('user_id', userid())->where('territory_id', $customer->territories->id)->first();
-                //     $brandGroupIds =  ($result->salesAssignment)? $result->salesAssignment->brand_ids : [];
-                //     $c_product_group = ($brandGroupIds) ? $brandGroupIds : [];
-                // }
+                if(@$customer->territories){
+                    $result = TerritorySalesSpecialist::where('sap_connection_id', $sap_connection_id)->where('user_id', userid())->where('territory_id', $customer->territories->id)->first();
+                    $brandGroupIds =  ($result->salesAssignment)? $result->salesAssignment->brand_ids : [-3];
+                    $c_product_group = ($brandGroupIds) ? $brandGroupIds : [];
+                }
                         
                 $c_product_group = array_unique($c_product_group);
                 if(isset($request->inc_mktg) && $request->inc_mktg == 'yes' || !isset($request->inc_mktg)){
