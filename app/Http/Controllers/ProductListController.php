@@ -625,7 +625,7 @@ class ProductListController extends Controller
                 // }
                 if(@$customer->territories){
                     $result = TerritorySalesSpecialist::where('sap_connection_id', $sap_connection_id)->where('user_id', userid())->where('territory_id', $customer->territories->id)->first();
-                    $brandGroupIds =  ($result->salesAssignment)? $result->salesAssignment->brand_ids : [-3];
+                    $brandGroupIds =  (@$result->salesAssignment)? $result->salesAssignment->brand_ids : [-3];
                     $c_product_group = ($brandGroupIds) ? $brandGroupIds : [];
                 }
                         
