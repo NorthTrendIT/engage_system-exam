@@ -715,20 +715,25 @@ class CustomersSalesSpecialistsController extends Controller
             foreach($data as $value){
                 $disabled = false;
                 if(@$request->territories){
-                    $res = CustomersSalesSpecialist::where('ss_id', $value->id)->whereHas('customer', function($q) use($request, $sap_connection_id){
-                                $q->where('sap_connection_id', $sap_connection_id);
-                                $q->whereHas('territories', function($y) use($request){
-                                    $y->whereIn('id', $request->territories);
-                                });
-                            })->count();
-                    $disabled = ($res === 0) ? false : true;
-                }
+                    // $res = CustomersSalesSpecialist::where('ss_id', $value->id)->whereHas('customer', function($q) use($request, $sap_connection_id){
+                    //             $q->where('sap_connection_id', $sap_connection_id);
+                    //             $q->whereHas('territories', function($y) use($request){
+                    //                 $y->whereIn('id', $request->territories);
+                    //             });
+                    //         })->count();
 
-                $response[] = array(
-                    "id"=>$value->id,
-                    "text"=>$value->sales_specialist_name."(Email: ".$value->email.")",
-                    "disabled" => $disabled
-                );
+                    
+                    $res = $value->territories()
+                                 ->wherePivot('sap_connection_id', $sap_connection_id) 
+                                 ->count(); 
+                    $disabled = ($res === 0) ? false : true;
+                    
+                    $response[] = array(
+                        "id"=>$value->id,
+                        "text"=>$value->sales_specialist_name."(Email: ".$value->email.")",
+                        "disabled" => $disabled
+                    );
+                }
             }
         }
 
