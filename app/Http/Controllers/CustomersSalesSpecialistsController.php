@@ -207,10 +207,10 @@ class CustomersSalesSpecialistsController extends Controller
                 }
             }
 
-            CustomersSalesSpecialist::where('assignment_id', $assignment->id)->delete();
-            CustomerProductGroup::where('assignment_id', $assignment->id)->delete();
-            CustomerProductItemLine::where('assignment_id', $assignment->id)->delete();
-            CustomerProductTiresCategory::where('assignment_id', $assignment->id)->delete();
+            // CustomersSalesSpecialist::where('assignment_id', $assignment->id)->delete();
+            // CustomerProductGroup::where('assignment_id', $assignment->id)->delete();
+            // CustomerProductItemLine::where('assignment_id', $assignment->id)->delete();
+            // CustomerProductTiresCategory::where('assignment_id', $assignment->id)->delete();
             //print_r($customer_ids);exit();
 
             // $dataToInsertSalesSpecialist = [];
