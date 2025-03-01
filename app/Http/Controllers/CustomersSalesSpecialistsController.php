@@ -186,8 +186,11 @@ class CustomersSalesSpecialistsController extends Controller
 
             if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
                 foreach ($input['ss_ids'] as $ss) {
-                    $user = User::find($ss);  // Find the user by ID
-                    $user->territories()->detach();  // Detach all existing territories first
+                    $user = User::find($ss);
+                    $user->territories()
+                        //  ->wherePivot('assignment_id', $assignment->id) 
+                         ->wherePivot('sap_connection_id', $input['company_id']) 
+                         ->detach();  
                 
                     // Prepare pivot data for each territory
                     $pivotData = [];

@@ -626,6 +626,7 @@ $(document).ready(function() {
     $(document).on('change', '[name="company_id"]', function(event) {
       event.preventDefault();
       $('#selectCustomer').val('').trigger('change');
+      $('#selectCustomerTerritory').val('').trigger('change');
       $('#selectCustomerGroup').val('').trigger('change');
       $('#selectCustomerSelection').val('').trigger('change');
       $('#selectSalseSpecialist').val('').trigger('change');
