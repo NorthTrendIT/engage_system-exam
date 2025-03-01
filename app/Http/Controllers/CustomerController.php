@@ -368,13 +368,17 @@ class CustomerController extends Controller
                             ->addColumn('assignment', function($row) {
                                 $aName = '';
                                 $count = 0;
-                                foreach(@$row->sales_specialist as $ss){
-                                    $comma = ($count > 0) ? ', ' : '';
-                                    if(strpos($aName, $ss->assignment->assignment_name) === false){
-                                        $aName .=  $comma.$ss->assignment->assignment_name;
-                                    }
-                                    $count ++;
-                                }
+                                // foreach(@$row->sales_specialist as $ss){
+                                //     $comma = ($count > 0) ? ', ' : '';
+                                //     if(strpos($aName, $ss->assignment->assignment_name) === false){
+                                //         $aName .=  $comma.$ss->assignment->assignment_name;
+                                //     }
+                                //     $count ++;
+                                // }
+                                
+                                $assgn = @$row->territory_sales_specialist->first();
+                                $aName = ($assgn) ? $assgn->salesAssignment->assignment_name : '-';
+
                                 return $aName;
                             })
                             ->addColumn('territory', function($row) {
@@ -626,14 +630,16 @@ class CustomerController extends Controller
                                 );
             }else{
                 $aName = '';
-                $count = 0;
-                foreach($value->sales_specialist as $ss){
-                    $comma = ($count > 0) ? ', ' : '';
-                    if(strpos($aName, $ss->assignment->assignment_name) === false){
-                        $aName .=  $comma.$ss->assignment->assignment_name;
-                    }
-                    $count ++;
-                }
+                // foreach(@$row->sales_specialist as $ss){
+                //     $comma = ($count > 0) ? ', ' : '';
+                //     if(strpos($aName, $ss->assignment->assignment_name) === false){
+                //         $aName .=  $comma.$ss->assignment->assignment_name;
+                //     }
+                //     $count ++;
+                // }
+                $assgn = @$value->territory_sales_specialist->first();
+                $aName = ($assgn) ? $assgn->salesAssignment->assignment_name : '-';
+                
                 $records[] = array(
                                     'no' => $key + 1,
                                     'company' => @$value->sap_connection->company_name ?? "-",

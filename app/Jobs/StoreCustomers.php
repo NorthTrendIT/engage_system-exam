@@ -256,19 +256,19 @@ class StoreCustomers implements ShouldQueue
                         $check_user->save();
                     }
 
-                    $customer_ss = CustomersSalesSpecialist::whereHas('customer', function($q) use($obj){
-                                    $q->where('territory', $obj->territory);
-                                   })->get();
+                    // $customer_ss = CustomersSalesSpecialist::whereHas('customer', function($q) use($obj){
+                    //                 $q->where('territory', $obj->territory);
+                    //                })->get();
 
-                    $newCustomerSsTagging = [];
-                    foreach($customer_ss as $cust){
-                        $newCustomerSsTagging[] = [
-                            'assignment_id' => $cust->assignment_id,
-                            'customer_id' => $obj->id, 
-                            'ss_id' => $cust->ss_id
-                        ];
-                    }
-                    CustomersSalesSpecialist::insert($newCustomerSsTagging);
+                    // $newCustomerSsTagging = [];
+                    // foreach($customer_ss as $cust){
+                    //     $newCustomerSsTagging[] = [
+                    //         'assignment_id' => $cust->assignment_id,
+                    //         'customer_id' => $obj->id, 
+                    //         'ss_id' => $cust->ss_id
+                    //     ];
+                    // }
+                    // CustomersSalesSpecialist::insert($newCustomerSsTagging);
 
                 }
             }

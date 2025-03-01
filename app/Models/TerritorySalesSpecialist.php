@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class TerritorySalesSpecialist extends Model
 {
     use HasFactory;
+    use \Awobaz\Compoships\Compoships;
 
     protected $fillable = [
     	'assignment_id',

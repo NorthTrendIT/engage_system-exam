@@ -179,4 +179,8 @@ class Customer extends Model
     public function quotation(){
         return $this->hasMany(Quotation::class, ['card_code', 'real_sap_connection_id'], ['card_code', 'real_sap_connection_id']);
     }
+
+    public function territory_sales_specialist(){
+        return $this->hasMany(TerritorySalesSpecialist::class, ['territory_id', 'sap_connection_id'], ['territory', 'real_sap_connection_id']);
+    }
 }
