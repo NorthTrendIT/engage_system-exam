@@ -140,8 +140,17 @@ class TerritoriesController extends Controller
 
         return DataTables::of($data)
                             ->addIndexColumn()
+                            ->addColumn('database', function($row) {
+                                return @$row->sap_connection->db_name;
+                            })
                             ->addColumn('name', function($row) {
                                 return @$row->description;
+                            })
+                            ->addColumn('territory_id', function($row) {
+                                return @$row->territory_id;
+                            })
+                            ->orderColumn('territory_id', function ($query, $order) {
+                                $query->orderBy('territory_id', $order);
                             })
                             ->orderColumn('name', function ($query, $order) {
                                 $query->orderBy('description', $order);

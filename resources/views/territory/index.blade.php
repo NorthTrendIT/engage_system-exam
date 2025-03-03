@@ -66,7 +66,9 @@
                           <thead>
                             <tr>
                               <th>No.</th>
+                              <th>Database</th>
                               <th>Name</th>
+                              <th>TerritoryID</th>
                               <th>Status</th>
                             </tr>
                           </thead>
@@ -133,7 +135,9 @@
           },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:false,searchable:false},
+              {data: 'database', name: 'database'},
               {data: 'name', name: 'name'},
+              {data: 'territory_id', name: 'territory_id'},
               {data: 'status', name: 'status'},
           ],
           drawCallback:function(){

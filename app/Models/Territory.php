@@ -38,4 +38,10 @@ class Territory extends Model
                     ->withTimestamps(); 
     }
 
+    public function sap_connection()
+    {
+        return $this->belongsTo(SapConnection::class,'sap_connection_id');
+    }
+
+
 }
