@@ -454,13 +454,13 @@ class LocalOrderController extends Controller
         $territoryIds = TerritorySalesSpecialist::where('user_id', userid())->pluck('territory_id');
         $data = Customer::select('id', 'card_code', 'card_name', 'sap_connection_id')
                         ->where('is_active', true)
-                        // ->whereHas('territories', function($q) use($territoryIds){
-                        //     $territoryIds = (@$territoryIds)? $territoryIds : [-3];
-                        //     $q->whereIn('id', $territoryIds);
-                        // });
-                        ->whereHas('sales_specialist', function($q){
-                            $q->where('ss_id', @Auth::user()->id);
+                        ->whereHas('territories', function($q) use($territoryIds){
+                            $territoryIds = (@$territoryIds)? $territoryIds : [-3];
+                            $q->whereIn('id', $territoryIds);
                         });
+                        // ->whereHas('sales_specialist', function($q){
+                        //     $q->where('ss_id', @Auth::user()->id);
+                        // });
 
         if($search != ''){
             $data = $data->where('card_name', 'like', '%' .$search . '%');
@@ -474,7 +474,7 @@ class LocalOrderController extends Controller
         foreach($data as $value){
             $response[] = array(
                 "id"=>$value->id,
-                "text"=>$value->card_name. ' -'.$value->card_code.' ('.$value->sap_connection->company_name.')'
+                "text"=>$value->card_name. ' -'.$value->card_code.' ('.@$value->sap_connection->company_name.')'
             );
         }
 
