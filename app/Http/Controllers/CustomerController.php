@@ -625,7 +625,7 @@ class CustomerController extends Controller
                                     'market_sub_sector' => @$value->u_subsector_sap_value->value ?? @$value->u_subsector ?? "-",
                                     'region' => @$value->u_rgn ?? "-",
                                     'province' => @$value->u_province_sap_value->value ?? @$value->u_province ?? "-",
-                                    'territory' => @$value->territories->description ?? "-",
+                                    'territory' => @$value->territoriesv2->description ?? "-",
                                     'city' => @$value->city ?? "-",
                                 );
             }else{

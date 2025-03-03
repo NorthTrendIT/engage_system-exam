@@ -724,6 +724,7 @@ class CustomersSalesSpecialistsController extends Controller
 
                     
                     $res = $value->territories()
+                                 ->wherePivotIn('territory_id', $request->territories) 
                                  ->wherePivot('sap_connection_id', $sap_connection_id) 
                                  ->count(); 
                     $disabled = ($res === 0) ? false : true;
