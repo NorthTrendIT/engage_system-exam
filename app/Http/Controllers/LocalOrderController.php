@@ -289,9 +289,10 @@ class LocalOrderController extends Controller
     public function getAll(Request $request){
         $ss_id = @Auth::user()->id;
         $data = LocalOrder::where('sales_specialist_id', $ss_id);
+        $territoryIds = TerritorySalesSpecialist::where('user_id', userid())->pluck('territory_id');
 
-        $data->whereHas('sales_specialist.territories', function($q) use($ss_id){
-            $q->where('user_id', $ss_id);
+        $data->whereHas('customer.territories', function($q) use($territoryIds){
+            $q->whereIn('territory', $territoryIds);
         });
 
 
