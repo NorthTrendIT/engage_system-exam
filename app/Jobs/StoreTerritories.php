@@ -53,6 +53,7 @@ class StoreTerritories implements ShouldQueue
                 Territory::updateOrCreate(
                                 [
                                     'territory_id' => @$value['TerritoryID'],
+                                    'sap_connection_id' => $this->sap_connection_id,
                                 ],
                                 $insert
                             );
