@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Territory extends Model
 {
     use HasFactory;
+    use \Awobaz\Compoships\Compoships;
 
     protected $fillable = [
         'territory_id',

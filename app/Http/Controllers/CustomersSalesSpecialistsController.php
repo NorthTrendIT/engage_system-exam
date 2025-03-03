@@ -817,10 +817,10 @@ class CustomersSalesSpecialistsController extends Controller
 
         $response = array();
         if($request->sap_connection_id){
-            $data = Territory::orderby('description','asc')
+            $data = Territory::where('sap_connection_id', $request->sap_connection_id)
                                 ->whereHas('customer',function ($query) use($request) {
                                     $query->where('real_sap_connection_id',$request->sap_connection_id);
-                                })->limit(50);
+                                })->limit(50)->orderby('description','asc');
 
             if($search != ''){
                 $data->where('description', 'like', '%' .$search . '%');

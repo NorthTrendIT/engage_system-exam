@@ -78,7 +78,7 @@ class Customer extends Model
 
     public function territories()
     {
-        return $this->belongsTo(Territory::class,'territory','territory_id');
+        return $this->belongsTo(Territory::class, ['territory', 'real_sap_connection_id'], ['territory_id', 'sap_connection_id']);
     }
 
     public function territory()
