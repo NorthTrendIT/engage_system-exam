@@ -15,6 +15,7 @@ use Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\InvoiceExport;
 use App\Models\CustomersSalesSpecialist;
+use App\Models\TerritorySalesSpecialist;
 
 class InvoicesController extends Controller
 {
@@ -162,8 +163,9 @@ class InvoicesController extends Controller
         }elseif(userrole() == 14){
             // $data->where('sales_person_code', @Auth::user()->sales_employee_code);
             $data->whereHas('customer', function($q){
-                $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
-                $q->whereIn('id', $cus);
+                // $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+                $territoryIds = TerritorySalesSpecialist::where('user_id', userid())->pluck('territory_id');
+                $q->whereIn('territory', $territoryIds);
             });
         }elseif(userrole() != 1 && userrole()!= 10){
             if (!is_null(@Auth::user()->created_by)) {

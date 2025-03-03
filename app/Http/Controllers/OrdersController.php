@@ -36,7 +36,7 @@ use Auth;
 use OneSignal;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderExport;
-use App\Models\Product;
+use App\Models\TerritorySalesSpecialist;
 use App\Models\CustomersSalesSpecialist;
 use Illuminate\Support\Carbon;
 
@@ -526,8 +526,9 @@ class OrdersController extends Controller
         }elseif(userrole() == 14){ //sales personnel
             // $data->where('sales_person_code', @Auth::user()->sales_employee_code); //previous code
             $data->whereHas('customer', function($q){
-                $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
-                $q->whereIn('id', $cus);
+                // $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+                $territoryIds = TerritorySalesSpecialist::where('user_id', userid())->pluck('territory_id');
+                $q->whereIn('territory', $territoryIds);
             });
             // dd($data->get());
         }elseif(!in_array(userrole(), [1,10,11] )){
