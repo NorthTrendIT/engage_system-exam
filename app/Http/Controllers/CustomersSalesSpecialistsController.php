@@ -185,12 +185,13 @@ class CustomersSalesSpecialistsController extends Controller
             }
 
             if(isset($input['ss_ids']) && !empty($input['ss_ids'])){
+                $assignment->assignmentTerritory()->delete();
                 foreach ($input['ss_ids'] as $ss) {
                     $user = User::find($ss);
-                    $user->territories()
-                        //  ->wherePivot('assignment_id', $assignment->id) 
-                         ->wherePivot('sap_connection_id', $input['company_id']) 
-                         ->detach();  
+                    // $user->territories()
+                    //     //  ->wherePivot('assignment_id', $assignment->id) 
+                    //      ->wherePivot('sap_connection_id', $input['company_id']) 
+                    //      ->detach();  
                 
                     // Prepare pivot data for each territory
                     $pivotData = [];
@@ -321,54 +322,53 @@ class CustomersSalesSpecialistsController extends Controller
      */
     public function edit($id)
     {
-        $edit = salesAssignment::with(['assignment' => function($query){
-            $query->groupBy('customer_id');
-        }])->findOrFail($id);
-        $brand = salesAssignment::with(['brand' => function($query){
-            $query->groupBy('product_group_id');
-        }])->findOrFail($id);
+        $edit = salesAssignment::has('assignmentTerritory')->findOrFail($id);
+        
+        // $brand = salesAssignment::with(['brand' => function($query){
+        //     $query->groupBy('product_group_id');
+        // }])->findOrFail($id);
 
-        $item = salesAssignment::with(['item' => function($query){
-            $query->groupBy('product_item_line_id');
-        }])->findOrFail($id);
+        // $item = salesAssignment::with(['item' => function($query){
+        //     $query->groupBy('product_item_line_id');
+        // }])->findOrFail($id);
 
-        $category = salesAssignment::with(['category' => function($query){
-            $query->groupBy('product_tires_category_id');
-        }])->findOrFail($id);
+        // $category = salesAssignment::with(['category' => function($query){
+        //     $query->groupBy('product_tires_category_id');
+        // }])->findOrFail($id);
         
         $company = SapConnection::all();
-        $ss_ids = salesAssignment::with(['assignment' => function($query){
-            $query->groupBy('ss_id');
+        $ss_ids = salesAssignment::with(['assignmentTerritory' => function($query){
+            $query->groupBy('user_id');
         }])->findOrFail($id);
 
         $groups = [];
         $territories = [];
-        foreach($edit->assignment as $key => $val){
+        // foreach($edit->assignment as $key => $val){
 
-            $res = array_search(@$val->customer->group->id, array_column($groups, 'id'));
-            if($res == ''){
-                $ar = array(
-                    'id'=>@$val->customer->group->id,
-                    'name'=>@$val->customer->group->name,
-                );
-                if(!in_array(@$val->customer->group->name, array_column($groups,'name'))){
-                    array_push($groups,$ar); 
-                }
-            }
+        //     $res = array_search(@$val->customer->group->id, array_column($groups, 'id'));
+        //     if($res == ''){
+        //         $ar = array(
+        //             'id'=>@$val->customer->group->id,
+        //             'name'=>@$val->customer->group->name,
+        //         );
+        //         if(!in_array(@$val->customer->group->name, array_column($groups,'name'))){
+        //             array_push($groups,$ar); 
+        //         }
+        //     }
             
-            $res = array_search(@$val->customer->territories->id, array_column($territories, 'id'));
-            if($res == ''){
-                $ar = array(
-                    'id'=>@$val->customer->territories->id,
-                    'description'=>@$val->customer->territories->description,
-                );
-                if(!in_array(@$val->customer->territories->description, array_column($territories,'name'))){
-                    array_push($territories,$ar); 
-                }
-            } 
-        }   
+        //     $res = array_search(@$val->customer->territories->id, array_column($territories, 'id'));
+        //     if($res == ''){
+        //         $ar = array(
+        //             'id'=>@$val->customer->territories->id,
+        //             'description'=>@$val->customer->territories->description,
+        //         );
+        //         if(!in_array(@$val->customer->territories->description, array_column($territories,'name'))){
+        //             array_push($territories,$ar); 
+        //         }
+        //     } 
+        // }   
         // dd($edit->assignment);           
-        return view('customers-sales-specialist.add',compact('edit', 'company','ss_ids','brand','item','category','groups', 'territories'));
+        return view('customers-sales-specialist.add',compact('edit', 'company','ss_ids','groups', 'territories'));
     }
 
     /**

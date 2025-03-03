@@ -55,7 +55,7 @@
                       <select class="form-select form-select-solid" id='selectCompany' data-control="select2" data-hide-search="false" name="company_id" data-allow-clear="true" data-placeholder="Select business unit">
                         <option value=""></option>
                         @foreach($company as $c)
-                          <option value="{{ $c->id }}" @if(isset($edit) && $c->id == $edit->assignment[0]->customer->real_sap_connection_id ) selected @endif>{{ $c->company_name }}</option>
+                          <option value="{{ $c->id }}" @if(isset($edit) && $c->id == @$edit->assignmentTerritory->first()->sap_connection->id ) selected @endif>{{ $c->company_name }}</option>
                         @endforeach
                       </select>
                     </div>
@@ -335,12 +335,12 @@ $(document).ready(function() {
     $initialProductGroups = [];
     $initialProductTerritories = [];
 
-    @if(isset($territories))      
-      @foreach ($territories as $data)
-      @if($data['id'])
+    @if(isset($edit->assignmentTerritory))      
+      @foreach ($edit->assignmentTerritory as $data)
+      @if($data->territory)
         var initialOption = {
-            id: {{ $data['id'] }},
-            text: "{!! $data['description'] !!}",
+            id: {{ $data->territory->id }},
+            text: "{!! $data->territory->description !!}",
             selected: true
         }
       @endif
@@ -373,13 +373,13 @@ $(document).ready(function() {
     //     @endforeach
     // @endif
 
-    @if(isset($edit) && @$edit->assignment)
+    @if(isset($edit->assignmentTerritory)) 
       
-      @foreach ($ss_ids->assignment as $data1)
-        @if(isset($data1->sales_person->sales_specialist_name))
+      @foreach ($ss_ids->assignmentTerritory as $data1)
+        @if(isset($data1->user))
           var initialOption = {
-              id: {{ $data1->ss_id }},
-              text: "{!! $data1->sales_person->sales_specialist_name !!} (Email: {!! $data1->sales_person->email !!})",
+              id: {{ $data1->user->id }},
+              text: "{!! $data1->user->sales_specialist_name !!} (Email: {!! $data1->user->email !!})",
               selected: true
           }
           $initialSalesPerson.push(initialOption);
@@ -388,12 +388,12 @@ $(document).ready(function() {
       
     @endif
     
-    @if(isset($brand) && @$brand->brand)
+    @if(isset($edit->assignmentTerritory)) 
       
-      @foreach ($brand->brand as $data1)
+      @foreach ($edit->brandAssignment as $data1)
         var initialOption = {
-            id: {{ $data1->product_group_id }},
-            text: '{!! $data1->product_group->group_name !!}',
+            id: {{ $data1->id }},
+            text: '{!! $data1->group_name !!}',
             selected: true
         }
         $initialProductBrand.push(initialOption);
@@ -401,22 +401,22 @@ $(document).ready(function() {
       
     @endif
 
-    @if(isset($item) && @$item->item)
-      @foreach ($item->item as $data)
+    @if(isset($edit->assignmentTerritory)) 
+      @foreach ($edit->lineAssignment as $data)
         var initialOption = {
-            id: {{ $data->product_item_line_id }},
-            text: '{!! @$data->product_item_line->u_item_line_sap_value->value ?? $data->product_item_line->u_item_line !!}',
+            id: {{ $data->id }},
+            text: '{!!  $data->u_item_line !!}',
             selected: true
         }
         $initialProductLine.push(initialOption);
       @endforeach
     @endif
 
-    @if(isset($category) && @$category->category)
-      @foreach ($category->category as $data)
+    @if(isset($edit->assignmentTerritory)) 
+      @foreach ($edit->categoryAssignment as $data)
         var initialOption = {
-            id: {{ $data->product_tires_category_id }},
-            text: '{!! $data->product_tires_category->u_tires !!}',
+            id: {{ $data->id }},
+            text: '{!! $data->u_tires !!}',
             selected: true
         }
         $initialProductCategory.push(initialOption);
