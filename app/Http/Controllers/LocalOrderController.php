@@ -287,16 +287,12 @@ class LocalOrderController extends Controller
     }
 
     public function getAll(Request $request){
+        $ss_id = @Auth::user()->id;
+        $data = LocalOrder::where('sales_specialist_id', $ss_id);
 
-        $data = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items']);
-
-        $data->whereHas(
-            'customer', function($q){
-                $q->whereHas('sales_specialist', function ($query) use ($q){
-                    $query->where('ss_id', @Auth::user()->id);
-                });
-            }
-        );
+        $data->whereHas('sales_specialist.territories', function($q) use($ss_id){
+            $q->where('user_id', $ss_id);
+        });
 
 
         if($request->filter_status != ""){
