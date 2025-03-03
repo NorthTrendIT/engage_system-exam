@@ -8,6 +8,7 @@ use App\Support\SAPAuthentication;
 use App\Models\Territory;
 use App\Jobs\StoreTerritories;
 use App\Jobs\SyncNextTerritories;
+use App\Models\SapConnection;
 
 class SAPTerritory
 {
@@ -77,6 +78,13 @@ class SAPTerritory
     // Store All Territory Records In DB
     public function addTerritoryDataInDatabase($url = false)
     {
+        $where = array(
+            'db_name' => $this->database,
+            'user_name' => $this->username,
+        );
+
+        $sap_connection = SapConnection::where($where)->first();
+
         if($url){
             $response = $this->getTerritoryData($url);
         }else{
@@ -89,7 +97,7 @@ class SAPTerritory
             if($data['value']){
 
                 // Store Data of Territory in database
-                StoreTerritories::dispatch($data['value']);
+                StoreTerritories::dispatch($data['value'], @$sap_connection->id);
 
                 if(isset($data['odata.nextLink'])){
 

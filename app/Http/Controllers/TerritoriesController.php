@@ -95,9 +95,9 @@ class TerritoriesController extends Controller
             // Add Sync Territories data log.
             // add_log(22, null);
 
-            $sap_connection = SapConnection::first();
+            $sap_connections = SapConnection::whereNotIn('id', [4,5,6])->get();
 
-            if(!is_null($sap_connection)){
+            foreach ($sap_connections as $value) {
 
                 $log_id = add_sap_log([
                                     'ip_address' => userip(),
@@ -106,14 +106,11 @@ class TerritoriesController extends Controller
                                     'data' => null,
                                     'type' => "S",
                                     'status' => "in progress",
-                                    'sap_connection_id' => $sap_connection->id,
+                                    'sap_connection_id' => $value->id,
                                 ]);
 
                 // Save Data of Territories in database
-                SyncTerritories::dispatch($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $log_id);
-                // SyncTerritories::dispatch('TEST-NTMC', 'manager', 'test');
-                // SyncTerritories::dispatch('TEST-PHILCREST', 'manager', 'test');
-                // SyncTerritories::dispatch('TEST-PHILSYN', 'manager', 'test');
+                SyncTerritories::dispatch($value->db_name, $value->user_name , $value->password, $log_id);
             }
 
             $response = ['status' => true, 'message' => 'Sync Territories successfully !'];

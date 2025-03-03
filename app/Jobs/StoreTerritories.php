@@ -20,10 +20,12 @@ class StoreTerritories implements ShouldQueue
      * @return void
      */
     protected $data;
+    protected $sap_connection_id;
 
-    public function __construct($data)
+    public function __construct($data, $sap_connection_id)
     {
         $this->data = $data;
+        $this->sap_connection_id = $sap_connection_id;
     }
 
     /**
@@ -45,6 +47,7 @@ class StoreTerritories implements ShouldQueue
                             'is_active' => @$value['Inactive'] == "tYES" ? false : true,
                             'last_sync_at' => current_datetime(),
                             //'response' => json_encode($value),
+                            'sap_connection_id' => $this->sap_connection_id
                         );
 
                 Territory::updateOrCreate(
