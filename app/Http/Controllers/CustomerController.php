@@ -382,7 +382,7 @@ class CustomerController extends Controller
                                 return $aName;
                             })
                             ->addColumn('territory', function($row) {
-                                return @$row->territories->description ?? "-";
+                                return @$row->territoriesv2->description ?? "-";
                             })
                             ->addColumn('city', function($row) {
                                 return @$row->city ?? "-";

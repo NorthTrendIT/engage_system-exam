@@ -524,7 +524,7 @@ class OrdersController extends Controller
                 $q->whereIn('id', $cus);
             });
         }elseif(userrole() == 14){ //sales personnel
-            $data->where('sales_specialist_id', Auth::user()->id);
+            // $data->where('sales_person_code', @Auth::user()->sales_employee_code); //previous code
             $data->whereHas('customer', function($q){
                 // $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
                 $territoryIds = TerritorySalesSpecialist::where('user_id', userid())->pluck('territory_id');
