@@ -258,7 +258,7 @@ class LocalOrderController extends Controller
      */
     public function edit($id)
     {
-        $edit = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->where('id',$id)->firstOrFail();
+        $edit = LocalOrder::with(['sales_specialist', 'customer', 'address', 'items.product'])->doesntHave('quotation')->where('id',$id)->firstOrFail();
 
         return view('local-order.add',compact(['edit']));
     }
@@ -290,8 +290,20 @@ class LocalOrderController extends Controller
         $ss_id = @Auth::user()->id;
         $data = LocalOrder::where('sales_specialist_id', $ss_id);
 
-        $data->whereHas('sales_specialist.territories', function($q) use($ss_id){
-            $q->where('user_id', $ss_id);
+        $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
+        $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
+        
+        $territoryIds= [];
+        foreach($territory as $id){
+            $territoryIds[] = $id->territory->territory_id;
+        }
+
+        $territoryIds = (@$territoryIds)? $territoryIds : [-3];
+        $sapConnections = (@$sapConnections)? $sapConnections : [-3];
+
+        $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
+            $q->whereIn('real_sap_connection_id', $sapConnections);
+            $q->whereIn('territory', $territoryIds);
         });
 
 
@@ -385,7 +397,7 @@ class LocalOrderController extends Controller
                         })
                         ->addColumn('order_status', function($row) {
                             if(!empty($row->doc_entry)){
-                                return getOrderStatusBtnHtml(getOrderStatusByQuotation(@$row->quotation));
+                                return getOrderStatusBtnHtml(@$row->quotation->status);
                             } else {
                                 return "<b>-</b>";
                             }
@@ -418,16 +430,16 @@ class LocalOrderController extends Controller
                             $query->orderBy('confirmation_status', $order);
                         })
                         ->addColumn('action', function($row) {
-                            $status = '';
-                            if(!empty(@$row->quotation) && $row->quotation->cancelled == 'Yes'){
-                                $status = getOrderStatusArray('CL');
-                            }elseif(!empty(@$row->quotation->order)){
-                                if($row->quotation->order->u_omsno != ""){
-                                    $status = getOrderStatusArray("OP");
-                                }
-                            }else{
-                                $status = getOrderStatusArray("PN");
-                            }
+                            // $status = '';
+                            // if(!empty(@$row->quotation) && $row->quotation->cancelled == 'Yes'){
+                            //     $status = getOrderStatusArray('CL');
+                            // }elseif(!empty(@$row->quotation->order)){
+                            //     if($row->quotation->order->u_omsno != ""){
+                            //         $status = getOrderStatusArray("OP");
+                            //     }
+                            // }else{
+                            //     $status = getOrderStatusArray("PN");
+                            // }
                             $btn = '<a href="' . route('sales-specialist-orders.show',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                     <i class="fa fa-eye"></i>
                                 </a>';

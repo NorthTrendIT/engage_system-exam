@@ -525,12 +525,24 @@ class OrdersController extends Controller
             });
         }elseif(userrole() == 14){ //sales personnel
             // $data->where('sales_person_code', @Auth::user()->sales_employee_code); //previous code
-            $data->whereHas('customer', function($q){
+
+            $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
+            $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
+            
+            $territoryIds= [];
+            foreach($territory as $id){
+                $territoryIds[] = $id->territory->territory_id;
+            }
+
+            $territoryIds = (@$territoryIds)? $territoryIds : [-3];
+            $sapConnections = (@$sapConnections)? $sapConnections : [-3];
+            
+            $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
                 // $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
-                $territoryIds = TerritorySalesSpecialist::where('user_id', userid())->pluck('territory_id');
+                $q->whereIn('real_sap_connection_id', $sapConnections);
                 $q->whereIn('territory', $territoryIds);
             });
-            // dd($data->get());
+
         }elseif(!in_array(userrole(), [1,10,11] )){
             if (!is_null(@Auth::user()->created_by)) {
                 $customers = @Auth::user()->created_by_user->get_multi_customer_details();
@@ -1365,12 +1377,22 @@ class OrdersController extends Controller
                 $q->whereIn('id', $cus);
             });
         }elseif(userrole() == 14){ //sales personnel
-            // $data->where('sales_person_code', @Auth::user()->sales_employee_code); //previous code
-            $data->whereHas('customer', function($q){
-                $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
-                $q->whereIn('id', $cus);
+            $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
+            $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
+            
+            $territoryIds= [];
+            foreach($territory as $id){
+                $territoryIds[] = $id->territory->territory_id;
+            }
+
+            $territoryIds = (@$territoryIds)? $territoryIds : [-3];
+            $sapConnections = (@$sapConnections)? $sapConnections : [-3];
+            
+            $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
+                // $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+                $q->whereIn('real_sap_connection_id', $sapConnections);
+                $q->whereIn('territory', $territoryIds);
             });
-            // dd($data->get());
         }elseif(!in_array(userrole(), [1,10,11] )){
             if (!is_null(@Auth::user()->created_by)) {
                 $customers = @Auth::user()->created_by_user->get_multi_customer_details();
