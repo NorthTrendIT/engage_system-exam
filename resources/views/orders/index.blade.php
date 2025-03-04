@@ -134,7 +134,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 mt-5 d-none">
+                <div class="col-md-3 mt-5">
                   <select class="form-control form-control-lg form-control-solid" name="filter_approval" data-control="select2" data-hide-search="false" data-placeholder="Select Approval" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($approvalStatus as $appr)
