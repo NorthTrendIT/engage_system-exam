@@ -307,54 +307,79 @@ class LocalOrderController extends Controller
         });
 
 
-        if($request->filter_status != ""){
-            $status = $request->filter_status;
+        $status = @$request->filter_status;
+        if(!empty($status) && $status[0] !== null){
+            $data->whereHas('quotation', function($query) use ($status){
+                $selected_status = [];
 
-            if($status == "CL"){ //Cancel
-                $data->whereHas('quotation',function($dq){
-                    $dq->where(function($query){
-                        $query->orwhere(function($q){
-                            $q->where('cancelled', 'Yes');
-                        });
+                if($status === "PN"){
+                    array_push($selected_status, 'Pending');
+                }
+                if($status === "OP"){
+                    array_push($selected_status, 'On Process');
+                }
+                if($status === "CL"){
+                    array_push($selected_status, 'Cancelled');
+                }
 
-                        $query->orwhere(function($q){
-                            $q->whereHas('order',function($p){
-                                $p->where('cancelled', 'Yes');
-                            });
-                        });
+                if($status === "CM"){
+                    array_push($selected_status, 'Completed');
+                }
 
-                        $query->orwhere(function($q1){
-                            $q1->whereHas('order.invoice',function($p1){
-                                $p1->where('cancelled', 'Yes');
-                            });
+                if($status === "PS"){
+                    array_push($selected_status, 'Partially Served');
+                }
+
+                $query->whereIn('status', $selected_status);
+
+                if($status === "DL"){
+                    $query->orWhere(function($q){
+                        $q->whereHas('order.invoice',function($q1){
+                            $q1->where('cancelled', 'No')->where('u_sostat', 'DL');
+                        })->where('cancelled','No');
+
+                        $q->whereHas('order',function($q1){
+                            $q1->where('cancelled','No');
                         });
                     });
-                });
+                }
 
+                if($status === "IN"){
+                    $query->orWhere(function($q){
+                        $q->whereHas('order.invoice',function($q1){
+                            $q1->where('cancelled', 'No')->where('u_sostat', 'IN');
+                        })->where('cancelled','No');
 
-            }elseif($status == "PN"){ //Pending
-
-                $data->whereHas('quotation',function($dq){
-                    $dq->has('order', '<', 1);
-                });
-
-
-            }elseif($status == "OP"){ //On Process
-                $data->whereHas('quotation',function($dq){
-                    $dq->whereHas('order',function($q){
-                        $q->where('document_status', 'bost_Open')->doesntHave('invoice');
+                        $q->whereHas('order',function($q1){
+                            $q1->where('cancelled','No');
+                        });
                     });
-                });
+                }
+                if($status === "CF"){
+                    $query->orWhere(function($q){
+                        $q->whereHas('order.invoice',function($q1){
+                            $q1->where('cancelled', 'No')->where('u_sostat', 'CF');
+                        })->where('cancelled','No');
 
-            }else{
-                $data->whereHas('quotation',function($dq) use ($status){
-                    $dq->whereHas('order.invoice',function($q) use ($status){
-                        $q->where('cancelled', 'No')->where('document_status', 'bost_Open')->where('u_sostat', $status);
+                        $q->whereHas('order',function($q1){
+                            $q1->where('cancelled','No');
+                        });
                     });
-                });
-            }
+                }
+                if($status === "FD"){
+                    $query->orWhere(function($q){
+                        $q->whereHas('order.invoice',function($q1){
+                            $q1->where('cancelled', 'No')->where('u_sostat', '!=','CM')->where('u_sostat', '!=','DL');
+                        })->where('cancelled','No');
+
+                        $q->whereHas('order',function($q1){
+                            $q1->where('cancelled','No');
+                        });
+                    });
+                }
+                
+            });
         }
-
 
         if($request->filter_search != ""){
             $data->whereHas('customer', function($q) use ($request) {
