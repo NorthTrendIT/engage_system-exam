@@ -290,21 +290,21 @@ class LocalOrderController extends Controller
         $ss_id = @Auth::user()->id;
         $data = LocalOrder::where('sales_specialist_id', $ss_id);
 
-        $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
-        $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
+        // $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
+        // $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
         
-        $territoryIds= [];
-        foreach($territory as $id){
-            $territoryIds[] = $id->territory->territory_id;
-        }
+        // $territoryIds= [];
+        // foreach($territory as $id){
+        //     $territoryIds[] = $id->territory->territory_id;
+        // }
 
-        $territoryIds = (@$territoryIds)? $territoryIds : [-3];
-        $sapConnections = (@$sapConnections)? $sapConnections : [-3];
+        // $territoryIds = (@$territoryIds)? $territoryIds : [-3];
+        // $sapConnections = (@$sapConnections)? $sapConnections : [-3];
 
-        $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
-            $q->whereIn('real_sap_connection_id', $sapConnections);
-            $q->whereIn('territory', $territoryIds);
-        });
+        // $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
+        //     $q->whereIn('real_sap_connection_id', $sapConnections);
+        //     $q->whereIn('territory', $territoryIds);
+        // });
 
 
         $status = @$request->filter_status;

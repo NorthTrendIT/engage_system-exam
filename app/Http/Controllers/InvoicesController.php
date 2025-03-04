@@ -161,22 +161,25 @@ class InvoicesController extends Controller
             $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
             $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }elseif(userrole() == 14){
-            $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
-            $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
+            // $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
+            // $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
             
-            $territoryIds= [];
-            foreach($territory as $id){
-                $territoryIds[] = $id->territory->territory_id;
-            }
+            // $territoryIds= [];
+            // foreach($territory as $id){
+            //     $territoryIds[] = $id->territory->territory_id;
+            // }
 
-            $territoryIds = (@$territoryIds)? $territoryIds : [-3];
-            $sapConnections = (@$sapConnections)? $sapConnections : [-3];
+            // $territoryIds = (@$territoryIds)? $territoryIds : [-3];
+            // $sapConnections = (@$sapConnections)? $sapConnections : [-3];
             
-            $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
-                // $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
-                $q->whereIn('real_sap_connection_id', $sapConnections);
-                $q->whereIn('territory', $territoryIds);
+            $data->whereHas('order.quotation.local_order', function($q){
+                $q->where('sales_specialist_id', userid());
             });
+            // $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
+            //     // $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+            //     $q->whereIn('real_sap_connection_id', $sapConnections);
+            //     $q->whereIn('territory', $territoryIds);
+            // });
         }elseif(userrole() != 1 && userrole()!= 10){
             if (!is_null(@Auth::user()->created_by)) {
                 $customers = @Auth::user()->created_by_user->get_multi_customer_details();
@@ -191,7 +194,7 @@ class InvoicesController extends Controller
 
         if($request->filter_search != ""){
             $data->where(function($q) use ($request) {
-                // $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
+                $q->orwhere('card_name','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_type','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_num','LIKE',"%".$request->filter_search."%");
                 $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");

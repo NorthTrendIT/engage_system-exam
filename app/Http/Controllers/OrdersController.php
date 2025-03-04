@@ -526,22 +526,23 @@ class OrdersController extends Controller
         }elseif(userrole() == 14){ //sales personnel
             // $data->where('sales_person_code', @Auth::user()->sales_employee_code); //previous code
 
-            $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
-            $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
+            // $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
+            // $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
             
-            $territoryIds= [];
-            foreach($territory as $id){
-                $territoryIds[] = $id->territory->territory_id;
-            }
+            // $territoryIds= [];
+            // foreach($territory as $id){
+            //     $territoryIds[] = $id->territory->territory_id;
+            // }
 
-            $territoryIds = (@$territoryIds)? $territoryIds : [-3];
-            $sapConnections = (@$sapConnections)? $sapConnections : [-3];
-            
-            $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
-                // $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
-                $q->whereIn('real_sap_connection_id', $sapConnections);
-                $q->whereIn('territory', $territoryIds);
-            });
+            // $territoryIds = (@$territoryIds)? $territoryIds : [-3];
+            // $sapConnections = (@$sapConnections)? $sapConnections : [-3];
+
+            $data->where('sales_specialist_id', userid());
+            // $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
+            //     // $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+            //     $q->whereIn('real_sap_connection_id', $sapConnections);
+            //     $q->whereIn('territory', $territoryIds);
+            // });
 
         }elseif(!in_array(userrole(), [1,10,11] )){
             if (!is_null(@Auth::user()->created_by)) {
@@ -618,6 +619,9 @@ class OrdersController extends Controller
                 $q->orwhere('doc_entry','LIKE',"%".$request->filter_search."%");
                 $q->orWhereHas('customer', function($c) use ($request){
                     $c->where('card_name','LIKE',"%".$request->filter_search."%");
+                });
+                $q->orWhereHas('sales_specialist', function($c) use ($request){
+                    $c->where('sales_specialist_name','LIKE',"%".$request->filter_search."%");
                 });
             });
         }
@@ -1377,22 +1381,26 @@ class OrdersController extends Controller
                 $q->whereIn('id', $cus);
             });
         }elseif(userrole() == 14){ //sales personnel
-            $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
-            $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
-            
-            $territoryIds= [];
-            foreach($territory as $id){
-                $territoryIds[] = $id->territory->territory_id;
-            }
+            // $data->where('sales_person_code', @Auth::user()->sales_employee_code); //previous code
 
-            $territoryIds = (@$territoryIds)? $territoryIds : [-3];
-            $sapConnections = (@$sapConnections)? $sapConnections : [-3];
+            // $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
+            // $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
             
-            $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
-                // $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
-                $q->whereIn('real_sap_connection_id', $sapConnections);
-                $q->whereIn('territory', $territoryIds);
-            });
+            // $territoryIds= [];
+            // foreach($territory as $id){
+            //     $territoryIds[] = $id->territory->territory_id;
+            // }
+
+            // $territoryIds = (@$territoryIds)? $territoryIds : [-3];
+            // $sapConnections = (@$sapConnections)? $sapConnections : [-3];
+
+            $data->where('sales_specialist_id', userid());
+            // $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
+            //     // $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
+            //     $q->whereIn('real_sap_connection_id', $sapConnections);
+            //     $q->whereIn('territory', $territoryIds);
+            // });
+
         }elseif(!in_array(userrole(), [1,10,11] )){
             if (!is_null(@Auth::user()->created_by)) {
                 $customers = @Auth::user()->created_by_user->get_multi_customer_details();
@@ -1452,7 +1460,7 @@ class OrdersController extends Controller
                 $q->where('code',$request->filter_group);
             });
         }
-
+        
         $territory = @$request->filter_territory;
         if(!empty($territory) && $territory[0] !== null){
             $data->where(function($query) use ($request) {
@@ -1469,6 +1477,9 @@ class OrdersController extends Controller
                 $q->orWhereHas('customer', function($c) use ($request){
                     $c->where('card_name','LIKE',"%".$request->filter_search."%");
                 });
+                $q->orWhereHas('sales_specialist', function($c) use ($request){
+                    $c->where('sales_specialist_name','LIKE',"%".$request->filter_search."%");
+                });
             });
         }
 
@@ -1481,6 +1492,7 @@ class OrdersController extends Controller
         if($request->filter_company != ""){
             $data->where('sap_connection_id',$request->filter_company);
         }
+
 
         if($request->filter_approval != ""){
             $data->where('approval',$request->filter_approval);
