@@ -105,9 +105,8 @@ class OrdersController extends Controller
             $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
             $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }elseif(userrole() == 14){
-            $data->whereHas('customer', function($q){
-                $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
-                $q->whereIn('id', $cus);
+            $data->whereHas('local_order', function($q){
+                $q->where('sales_specialist_id', userid());
             });
         }elseif(!is_null(Auth::user()->created_by)){
             $customers = Auth::user()->created_by_user->get_multi_customer_details();
@@ -224,10 +223,7 @@ class OrdersController extends Controller
                 $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
             });
         }elseif(userrole() == 14){
-            $data->whereHas('customer', function($q){
-                $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
-                $q->whereIn('id', $cus);
-            });
+            $data->where('sales_specialist_id', userid());
         }elseif(!is_null(Auth::user()->created_by)){
             $data->whereHas('customer', function($q){
                 $customers = Auth::user()->created_by_user->get_multi_customer_details();
@@ -771,7 +767,7 @@ class OrdersController extends Controller
                             ->addColumn('approval_duration', function($row) {
                                 if($row->approved_at){
                                     $approvedAt = Carbon::parse($row->approved_at);
-                                    $currentDateTime = Carbon::now();
+                                    $currentDateTime = Carbon::parse($row->created_at);
 
                                     $days = $currentDateTime->diffInDays($approvedAt, false);
                                     $noun = ($days > 1) ? 'days' : 'day';

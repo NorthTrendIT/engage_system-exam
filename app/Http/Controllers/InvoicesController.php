@@ -72,9 +72,8 @@ class InvoicesController extends Controller
             $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
             $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }elseif(userrole() == 14){
-            $data->whereHas('customer', function($q){
-                $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
-                $q->whereIn('id', $cus);
+            $data->whereHas('order.quotation.local_order', function($q){
+                $q->where('sales_specialist_id', userid());
             });
         }elseif(!is_null(Auth::user()->created_by)){
             $customers = Auth::user()->created_by_user->get_multi_customer_details();
@@ -83,9 +82,9 @@ class InvoicesController extends Controller
         }
 
         $data = $data->firstOrFail();
-        if( userrole() === 14 && !in_array( Auth::user()->id, array_column($data->customer->sales_specialist->toArray(), 'ss_id') ) ){
-            return abort(404);
-        }
+        // if( userrole() === 14 && !in_array( Auth::user()->id, array_column($data->customer->sales_specialist->toArray(), 'ss_id') ) ){
+        //     return abort(404);
+        // }
 
         return view('invoices.view', compact('data'));
     }
