@@ -451,15 +451,17 @@ class LocalOrderController extends Controller
     function getCustomers(Request $request){
         $search = $request->search;
         $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
-
+        $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
         $territoryIds= [];
         foreach($territory as $id){
             $territoryIds[] = $id->territory->territory_id;
         }
 
         $territoryIds = (@$territoryIds)? $territoryIds : [-3];
+        $sapConnections = (@$sapConnections)? $sapConnections : [-3];
         $data = Customer::select('id', 'card_code', 'card_name', 'sap_connection_id')
                         ->where('is_active', true)
+                        ->whereIn('real_sap_connection_id', $sapConnections)
                         ->whereIn('territory', $territoryIds);
 
                         // ->whereHas('sales_specialist', function($q){
