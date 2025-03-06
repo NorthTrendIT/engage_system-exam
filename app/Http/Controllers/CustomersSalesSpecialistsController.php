@@ -367,7 +367,7 @@ class CustomersSalesSpecialistsController extends Controller
         //         }
         //     } 
         // }   
-        // dd($edit->assignment);           
+            
         return view('customers-sales-specialist.add',compact('edit', 'company','ss_ids','groups', 'territories'));
     }
 

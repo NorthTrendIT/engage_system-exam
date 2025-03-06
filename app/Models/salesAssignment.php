@@ -36,6 +36,9 @@ class salesAssignment extends Model
 
     public function getBrandAssignmentAttribute()
     {
+        if (empty($this->brand_ids)) {
+            return collect();  
+        }
         return ProductGroup::whereIn('id', $this->brand_ids)->get();
     }
 
