@@ -276,28 +276,27 @@ class ProductListController extends Controller
 
         // Is Customer
         if(!empty($customer_id)){
+
+            foreach($customer_vat as $cus){ //re-use $customer_vat var as customer basis
+                $result = TerritorySalesSpecialist::where('sap_connection_id', $cus->real_sap_connection_id)->where('territory_id', $cus->territoriesv2->id)->first();
+                if(empty($result->salesAssignment)){ //if no value
+                    $result = TerritorySalesSpecialist::where('sap_connection_id', $cus->real_sap_connection_id)->where('territory_id', $cus->territories->id)->first();
+                }
+                $brandGroupIds =  (@$result->salesAssignment)? $result->salesAssignment->brand_ids : [-3];
+                $c_product_group = $brandGroupIds;
+            }
+
             // Product Group
             $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
             $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
-            // $c_product_group = array_map( function ( $ar ) {
-            //     return $ar['number'];
-            // }, array_column( $c_product_group->toArray(), 'product_group' ) );
-
 
             // Product Item Line
             $c_product_item_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
             $c_product_item_line = array_column( $c_product_item_line->toArray(), 'product_item_line_id' );
-            // $c_product_item_line = array_map( function ( $ar ) {
-            //     return $ar['u_item_line'];
-            // }, array_column( $c_product_item_line->toArray(), 'product_item_line' ) );
-
 
             // Product Tires Category
             $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
             $c_product_tires_category = array_column( $c_product_tires_category->toArray(), 'product_tires_category_id' );
-            // $c_product_tires_category = array_map( function ( $ar ) {
-            //     return $ar['u_tires'];
-            // }, array_column( $c_product_tires_category->toArray(), 'product_tires_category' ) );
         }
 
         if(empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){
@@ -326,18 +325,6 @@ class ProductListController extends Controller
         }
 
         $products->where(function($q) use ($request, $c_product_tires_category, $c_product_item_line, $c_product_group) {
-
-            /*if(!empty($c_product_group)){
-                $q->orWhereIn('items_group_code', $c_product_group);
-            }
-
-            if(!empty($c_product_tires_category)){
-                $q->orWhereIn('u_tires', $c_product_tires_category);
-            }
-
-            if(!empty($c_product_item_line)){
-                $q->orWhereIn('u_item_line', $c_product_item_line);
-            }*/
 
             if(!empty($c_product_group)){
                 $q->orwhereHas('group', function($q1) use ($c_product_group){
