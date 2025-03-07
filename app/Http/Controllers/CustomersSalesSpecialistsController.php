@@ -558,9 +558,9 @@ class CustomersSalesSpecialistsController extends Controller
             });
         }
 
-        if($request->filter_group != ""){
-            $data->whereHas('assignmentTerritory.territory', function($q) use ($request){
-                $q->where('territory_id',$request->filter_group);
+        if($request->filter_territory != ""){
+            $data->whereHas('assignmentTerritory', function($q) use ($request){
+                $q->where('territory_id',$request->filter_territory);
             });
         }
 

@@ -57,7 +57,7 @@
 
                 <!-- group -->
                 <div class="col-md-3 mt-5 other_filter_div">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_group" data-control="select2" data-hide-search="false" data-placeholder="Select group" data-allow-clear="true">
+                  <select class="form-control form-control-lg form-control-solid" name="filter_territory" data-control="select2" data-hide-search="false" data-placeholder="Select Territory" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
@@ -143,7 +143,7 @@
       table.DataTable().destroy();
 
       $filter_company = $('[name="filter_company"]').val();
-      $filter_group = $('[name="filter_group"]').val();
+      $filter_territory = $('[name="filter_territory"]').val();
       $filter_search = $('[name="filter_search"]').val();
 
       table.DataTable({
@@ -159,7 +159,7 @@
               },
               data:{
                 filter_company : $filter_company,
-                filter_group : $filter_group,
+                filter_territory : $filter_territory,
                 filter_search : $filter_search
               }
           },
@@ -196,7 +196,7 @@
     $(document).on('click', '.clear-search', function(event) {
       // $('#myTable').dataTable().fnFilter('');
       $('[name="filter_company"]').val('').trigger('change');
-      $('[name="filter_group"]').val('').trigger('change');
+      $('[name="filter_territory"]').val('').trigger('change');
       $('[name="filter_search"]').val('');
       render_table();
     })
@@ -237,9 +237,9 @@
       })
     });
 
-    $('[name="filter_group"]').select2({
+    $('[name="filter_territory"]').select2({
       ajax: {
-          url: "{{route('common.getBranch')}}",
+          url: "{{route('common.getTerritory')}}",
           type: "post",
           dataType: 'json',
           delay: 250,
@@ -261,7 +261,7 @@
 
     $(document).on('change', '[name="filter_company"]', function(event) {
       event.preventDefault();
-      $('[name="filter_group"]').val('').trigger('change');
+      $('[name="filter_territory"]').val('').trigger('change');
       if($(this).find('option:selected').val() != ""){
         $('.other_filter_div').show();
       }else{

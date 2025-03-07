@@ -46,6 +46,7 @@ class CommonController extends Controller
         $data = Territory::where('territory_id','!=','-2')->where('is_active', true)->orderby('description','asc')->select('id','description');
 
         if(@$request->sap_connection_id != ''){
+            $data->where('sap_connection_id', $request->sap_connection_id);
             $data->whereHas('customer', function($q) use($request){
                 $q->where('real_sap_connection_id', $request->sap_connection_id);
 
