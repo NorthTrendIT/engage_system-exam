@@ -14,7 +14,7 @@ use App\Models\SapConnection;
 use App\Models\Product;
 use Validator;
 use Auth;
-use App\Models\Quotation;
+use App\Models\TerritorySalesSpecialist;
 use App\Models\CustomersSalesSpecialist;
 use App\Models\CustomerProductGroup;
 use App\Models\CustomerProductItemLine;
@@ -85,26 +85,64 @@ class CartController extends Controller
 
         if(!empty($customer_id)){
 
+            $ssIds = LocalOrder::whereIn('customer_id', $customer_id)
+                                ->groupBy('sales_specialist_id')
+                                ->pluck('sales_specialist_id')->toArray();
+            
+            $territoryTagging = TerritorySalesSpecialist::where('sap_connection_id', $sap_connection_id)
+                                                   ->whereIn('user_id', $ssIds)
+                                                   ->groupBy('assignment_id')->get();
+
+            $c_product_group = $c_product_item_line = $c_product_tires_category = $product_groups = $c_product_groups = $c_product_category = array();
+            foreach($territoryTagging  as $result){ 
+                $brandGroupIds    =  ($result->salesAssignment->brand_ids)? $result->salesAssignment->brand_ids : [-3];
+                $lineGroupIds     =  ($result->salesAssignment->line_ids)? $result->salesAssignment->line_ids : [-3];
+                $categoryGroupIds =  ($result->salesAssignment->category_ids)? $result->salesAssignment->category_ids : [-3];
+                
+                $c_product_group = array_merge($c_product_group, $brandGroupIds);
+                $c_product_item_line = array_merge($c_product_item_line, $lineGroupIds);
+                $c_product_tires_category = array_merge($c_product_tires_category, $categoryGroupIds);
+                
+                $brandAssignment = $result->salesAssignment->brandAssignment;
+                $categoryAssignment = $result->salesAssignment->categoryAssignment;
+
+                $brandGroupNames =  $brandAssignment->pluck('group_name')->toArray();
+                $productIds = $brandAssignment->pluck('number')->toArray();
+                $c_product_groups = array_merge($c_product_groups, $brandGroupNames);
+                $product_groups = array_merge($product_groups, $productIds);
+
+                $categoryGroupNames =  $categoryAssignment->pluck('u_tires')->toArray();
+                $c_product_category = array_merge($c_product_category, $categoryGroupNames);
+            }
+
+            $c_product_group = array_unique($c_product_group);
+            $c_product_item_line = array_unique($c_product_item_line);
+            $c_product_tires_category = array_unique($c_product_tires_category);
+
+            $c_product_groups = array_unique($c_product_groups);
+            $product_groups = array_unique($product_groups);
+            $c_product_category = array_unique($c_product_category);
+
             // Product Group
-            $c_product_groups = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get()->unique('product_group_id');
-            $product_groups = array_map( function ( $ar ) {
-                return $ar['number'];
-            }, array_column( $c_product_groups->toArray(), 'product_group' ) );
+            // $c_product_groups = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get()->unique('product_group_id');
+            // $product_groups = array_map( function ( $ar ) {
+            //     return $ar['number'];
+            // }, array_column( $c_product_groups->toArray(), 'product_group' ) );
 
 
             // Product Item Line
-            $c_product_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
-            $c_product_line = array_map( function ( $ar ) {
-                return $ar['u_item_line'];
-            }, array_column( $c_product_line->toArray(), 'product_item_line' ) );
+            // $c_product_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
+            // $c_product_line = array_map( function ( $ar ) {
+            //     return $ar['u_item_line'];
+            // }, array_column( $c_product_line->toArray(), 'product_item_line' ) );
 
 
 
             // Product Tires Category
-            $c_product_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
-            $c_product_category = array_map( function ( $ar ) {
-                return $ar['u_tires'];
-            }, array_column( $c_product_category->toArray(), 'product_tires_category' ) );
+            // $c_product_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
+            // $c_product_category = array_map( function ( $ar ) {
+            //     return $ar['u_tires'];
+            // }, array_column( $c_product_category->toArray(), 'product_tires_category' ) );
 
 
 
@@ -121,14 +159,14 @@ class CartController extends Controller
             $c_product_line = $brand_product->groupBy('u_item_line')->get();
             $brand_product = $brand_product->get()->toArray();
 
-            $c_product_category = array_unique(
-                                        array_filter(
-                                                array_merge($c_product_category,
-                                                    array_column($brand_product, 'u_tires')
-                                                )
-                                            )
-                                    );
-            asort($c_product_category);
+            // $c_product_category = array_unique(
+            //                             array_filter(
+            //                                     array_merge($c_product_category,
+            //                                         array_column($brand_product, 'u_tires')
+            //                                     )
+            //                                 )
+            //                         );
+            // asort($c_product_category);
 
         }
 
@@ -659,17 +697,39 @@ class CartController extends Controller
         // Is Customer
         if(!empty($customer_id)){
 
+            $ssIds = LocalOrder::whereIn('customer_id', $customer_id)
+                                ->groupBy('sales_specialist_id')
+                                ->pluck('sales_specialist_id')->toArray();
+            
+            $territoryTagging = TerritorySalesSpecialist::where('sap_connection_id', $sap_connection_id)
+                                                   ->whereIn('user_id', $ssIds)
+                                                   ->groupBy('assignment_id')->get();
+
+            foreach($territoryTagging  as $result){ 
+                $brandGroupIds =  ($result->salesAssignment->brand_ids)? $result->salesAssignment->brand_ids : [-3];
+                $lineGroupIds =  ($result->salesAssignment->line_ids)? $result->salesAssignment->line_ids : [-3];
+                $categoryGroupIds =  ($result->salesAssignment->category_ids)? $result->salesAssignment->category_ids : [-3];
+                
+                $c_product_group = array_merge($c_product_group, $brandGroupIds);
+                $c_product_item_line = array_merge($c_product_item_line, $lineGroupIds);
+                $c_product_tires_category = array_merge($c_product_tires_category, $categoryGroupIds);
+            }
+
+            $c_product_group = array_unique($c_product_group);
+            $c_product_item_line = array_unique($c_product_item_line);
+            $c_product_tires_category = array_unique($c_product_tires_category);
+
             // Product Group
-            $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
-            $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
+            // $c_product_group = CustomerProductGroup::with('product_group')->whereIn('customer_id', $customer_id)->get();
+            // $c_product_group = array_column( $c_product_group->toArray(), 'product_group_id' );
 
             // Product Item Line
-            $c_product_item_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
-            $c_product_item_line = array_column( $c_product_item_line->toArray(), 'product_item_line_id' );
+            // $c_product_item_line = CustomerProductItemLine::with('product_item_line')->whereIn('customer_id', $customer_id)->get();
+            // $c_product_item_line = array_column( $c_product_item_line->toArray(), 'product_item_line_id' );
 
             // Product Tires Category
-            $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
-            $c_product_tires_category = array_column( $c_product_tires_category->toArray(), 'product_tires_category_id' );
+            // $c_product_tires_category = CustomerProductTiresCategory::with('product_tires_category')->whereIn('customer_id', $customer_id)->get();
+            // $c_product_tires_category = array_column( $c_product_tires_category->toArray(), 'product_tires_category_id' );
         }
 
         if(empty($c_product_group) && empty($c_product_tires_category) && empty($c_product_item_line)){

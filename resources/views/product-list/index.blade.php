@@ -224,7 +224,7 @@
                   <select class="form-control form-control-lg form-control-solid" name="filter_brand" id="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($c_product_groups as $key)
-                      <option value="{{ urlencode($key->product_group->group_name) }}" {{ request()->brand === $key->product_group->group_name ? 'selected' : '' }}>{{ $key->product_group->group_name }}</option>
+                      <option value="{{ urlencode($key) }}" {{ request()->brand === $key ? 'selected' : '' }}>{{ $key }}</option>
                     @endforeach
                   </select>
                 </div>

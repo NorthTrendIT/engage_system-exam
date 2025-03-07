@@ -3,7 +3,7 @@
 @push('css')
 <style>
  #myTable .custom_width{
-     max-width: 100px !important;
+     max-width: 200px !important;
      white-space: nowrap; 
      width: 50px; 
      overflow: hidden;
@@ -173,8 +173,9 @@
               {data: 'action', name: 'action',orderable:false,searchable:false},
           ],
           columnDefs: [
-                {targets: [2, 3, 4, 5], className: "custom_width" },
-                { "targets": [4], "visible": false }
+                {targets: [2, 3, 5], className: "custom_width" },
+                {targets: [4], visible: false },
+                {targets: [0, 2, 3, 5, 6], className: "text-center" },
           ],
           drawCallback:function(){
               $(function () {

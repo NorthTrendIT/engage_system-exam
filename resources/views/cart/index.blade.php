@@ -282,7 +282,7 @@
                                 <select class="form-control form-control-lg form-control-solid" name="filter_brand" id="filter_brand" data-control="select2" data-hide-search="false" data-placeholder="Select brand" data-allow-clear="true">
                                     <option value=""></option>
                                     @foreach($c_product_groups as $key)
-                                    <option value="{{ $key->product_group->group_name }}">{{ $key->product_group->group_name }}</option>
+                                    <option value="{{ $key }}">{{ $key }}</option>
                                     @endforeach
                                 </select>
                             </div>
