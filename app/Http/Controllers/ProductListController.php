@@ -55,7 +55,7 @@ class ProductListController extends Controller
             $trIds = [];
             foreach($customer_vat as $cust){
                 $trIds[] = $cust->territories->id;
-                $trIds[] = $cust->territoriesv2->id;
+                $trIds[] = $cust->territoriesv2->id ?? -3;
             }
             $territoryTagging = TerritorySalesSpecialist::whereIn('sap_connection_id', $sap_connection_id)
                                                 //    ->whereIn('user_id', $ssIds)
@@ -320,7 +320,7 @@ class ProductListController extends Controller
             $trIds = [];
             foreach($customer_vat as $cust){
                 $trIds[] = $cust->territories->id;
-                $trIds[] = $cust->territoriesv2->id;
+                $trIds[] = $cust->territoriesv2->id ?? -3;
             }
             
             $territoryTagging = TerritorySalesSpecialist::whereIn('sap_connection_id', $sap_connection_id)
