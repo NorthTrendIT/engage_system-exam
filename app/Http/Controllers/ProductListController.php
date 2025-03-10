@@ -49,13 +49,18 @@ class ProductListController extends Controller
 
         // Is Customer
         if(!empty($customer_id)){
-            $ssIds = LocalOrder::whereIn('customer_id', $customer_id)
-                                ->groupBy('sales_specialist_id')
-                                ->pluck('sales_specialist_id')->toArray();
-            
-            $territoryTagging = TerritorySalesSpecialist::where('sap_connection_id', $sap_connection_id)
-                                                   ->whereIn('user_id', $ssIds)
-                                                   ->groupBy('assignment_id')->get();
+            // $ssIds = LocalOrder::whereIn('customer_id', $customer_id)
+            //                     ->groupBy('sales_specialist_id')
+            //                     ->pluck('sales_specialist_id')->toArray();
+            $trIds = [];
+            foreach($customer_vat as $cust){
+                $trIds[] = $cust->territories->id;
+                $trIds[] = $cust->territoriesv2->id;
+            }
+            $territoryTagging = TerritorySalesSpecialist::whereIn('sap_connection_id', $sap_connection_id)
+                                                //    ->whereIn('user_id', $ssIds)
+                                                          ->whereIn('territory_id', $trIds)
+                                                          ->groupBy('assignment_id')->get();
 
             foreach($territoryTagging  as $result){ 
                 $brandGroupIds    =  ($result->salesAssignment->brand_ids)? $result->salesAssignment->brand_ids : [-3];
@@ -309,13 +314,19 @@ class ProductListController extends Controller
         // Is Customer
         if(!empty($customer_id)){
 
-            $ssIds = LocalOrder::whereIn('customer_id', $customer_id)
-                                ->groupBy('sales_specialist_id')
-                                ->pluck('sales_specialist_id')->toArray();
+            // $ssIds = LocalOrder::whereIn('customer_id', $customer_id)
+            //                     ->groupBy('sales_specialist_id')
+            //                     ->pluck('sales_specialist_id')->toArray();
+            $trIds = [];
+            foreach($customer_vat as $cust){
+                $trIds[] = $cust->territories->id;
+                $trIds[] = $cust->territoriesv2->id;
+            }
             
-            $territoryTagging = TerritorySalesSpecialist::where('sap_connection_id', $sap_connection_id)
-                                                   ->whereIn('user_id', $ssIds)
-                                                   ->groupBy('assignment_id')->get();
+            $territoryTagging = TerritorySalesSpecialist::whereIn('sap_connection_id', $sap_connection_id)
+                                                //    ->whereIn('user_id', $ssIds)
+                                                          ->whereIn('territory_id', $trIds)
+                                                          ->groupBy('assignment_id')->get();
 
             foreach($territoryTagging  as $result){ 
                 $brandGroupIds =  ($result->salesAssignment->brand_ids)? $result->salesAssignment->brand_ids : [-3];

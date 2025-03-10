@@ -72,6 +72,7 @@ class CartController extends Controller
         if(userrole() == 4){
             $customer_id = explode(',', Auth::user()->multi_customer_id);
             $sap_connection_id = explode(',', Auth::user()->multi_real_sap_connection_id);
+            $customer_vat  = Customer::whereIn('id', $customer_id)->get();
         }elseif(userrole() == 14){
             $customer_id = CustomersSalesSpecialist::where('ss_id', userid())->pluck('customer_id')->toArray();
             $sap_connection_id = array( @Auth::user()->sap_connection_id );
@@ -85,13 +86,20 @@ class CartController extends Controller
 
         if(!empty($customer_id)){
 
-            $ssIds = LocalOrder::whereIn('customer_id', $customer_id)
-                                ->groupBy('sales_specialist_id')
-                                ->pluck('sales_specialist_id')->toArray();
+            // $ssIds = LocalOrder::whereIn('customer_id', $customer_id)
+            //                     ->groupBy('sales_specialist_id')
+            //                     ->pluck('sales_specialist_id')->toArray();
+
+            $trIds = [];
+            foreach($customer_vat as $cust){
+                $trIds[] = $cust->territories->id;
+                $trIds[] = $cust->territoriesv2->id;
+            }
             
-            $territoryTagging = TerritorySalesSpecialist::where('sap_connection_id', $sap_connection_id)
-                                                   ->whereIn('user_id', $ssIds)
-                                                   ->groupBy('assignment_id')->get();
+            $territoryTagging = TerritorySalesSpecialist::whereIn('sap_connection_id', $sap_connection_id)
+                                                //    ->whereIn('user_id', $ssIds)
+                                                         ->whereIn('territory_id', $trIds)
+                                                         ->groupBy('assignment_id')->get();
 
             $c_product_group = $c_product_item_line = $c_product_tires_category = $product_groups = $c_product_groups = $c_product_category = array();
             foreach($territoryTagging  as $result){ 
@@ -697,13 +705,19 @@ class CartController extends Controller
         // Is Customer
         if(!empty($customer_id)){
 
-            $ssIds = LocalOrder::whereIn('customer_id', $customer_id)
-                                ->groupBy('sales_specialist_id')
-                                ->pluck('sales_specialist_id')->toArray();
+            // $ssIds = LocalOrder::whereIn('customer_id', $customer_id)
+            //                     ->groupBy('sales_specialist_id')
+            //                     ->pluck('sales_specialist_id')->toArray();
+            $trIds = [];
+            foreach($customer_vat as $cust){
+                $trIds[] = $cust->territories->id;
+                $trIds[] = $cust->territoriesv2->id;
+            }
             
-            $territoryTagging = TerritorySalesSpecialist::where('sap_connection_id', $sap_connection_id)
-                                                   ->whereIn('user_id', $ssIds)
-                                                   ->groupBy('assignment_id')->get();
+            $territoryTagging = TerritorySalesSpecialist::whereIn('sap_connection_id', $sap_connection_id)
+                                                //    ->whereIn('user_id', $ssIds)
+                                                          ->whereIn('territory_id', $trIds)
+                                                          ->groupBy('assignment_id')->get();
 
             foreach($territoryTagging  as $result){ 
                 $brandGroupIds =  ($result->salesAssignment->brand_ids)? $result->salesAssignment->brand_ids : [-3];
