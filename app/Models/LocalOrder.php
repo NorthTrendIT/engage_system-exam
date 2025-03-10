@@ -62,4 +62,8 @@ class LocalOrder extends Model
         return $values;
     }
 
+    public function approver(){
+        return $this->hasOne(User::class, 'id', 'approved_by');
+    }
+
 }
