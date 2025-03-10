@@ -25,17 +25,33 @@ class OrderExport implements FromCollection,WithHeadings,WithTitle,ShouldAutoSiz
 
     public function headings(): array
     {
+        // return [
+        //     'No.',
+        //     'Business Unit',
+        //     'Order #',
+        //     'Order Type',
+        //     'Customer Code',
+        //     'Customer Name',
+        //     'Total',
+        //     'Placed By',
+        //     'Created Date',
+        //     'Status',
+        // ];
+
         return [
             'No.',
             'Business Unit',
-            'Order #',
-            'Order Type',
+            'Branch',
             'Customer Code',
             'Customer Name',
-            'Total',
-            'Placed By',
-            'Created Date',
-            'Status',
+            'Order Amount',
+            'Delivery Address',
+            'Approval Status',
+            'Approved By',
+            'Approval Date',
+            'Approval Time',
+            'Approval Duration',
+            'Reason',
         ];
     }
 

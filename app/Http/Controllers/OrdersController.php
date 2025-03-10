@@ -1602,48 +1602,38 @@ class OrdersController extends Controller
             // });
         });
         
-        $data = $data->get();
+        // $data = $data->get();
 
         $records = array();
-        foreach($data as $key => $value){
 
-            $type = "Standard";
-            if(!is_null($value->customer_promotion_id)){
-                $type = "Promotion";
+        $data->chunk(500, function($rows) use (&$records) {
+            foreach ($rows as $key => $value) {
+                $created_date = $value->created_at;
+                $date = date('M d, Y', strtotime($created_date));
+                $time = $value->doc_time ? date('H:i A', strtotime($created_date)) : "";
+        
+                $records[] = [
+                    'no' => $key + 1,
+                    'business_unit' => $value->customer->sap_connection->company_name ?? "-",
+                    'branch' => $value->customer->group->name,
+                    'customer_code' => $value->customer->card_code ?? "-",
+                    'customer_name' => $value->customer->card_name ?? "-",
+                    'order_amount' => number_format_value($value->quotation->doc_total ?? $value->items->sum('total')),
+                    'delivery_address' => $value->address->street ?? "-",
+                    'approval_status' => $value->quotation ? 'Approved' : $value->approval,
+                    'approved_by' => $value->approver->sales_specialist_name ?? '-',
+                    'approval_date' => $date,
+                    'approval_time' => $time,
+                    'reason' => $value->disapproval_remarks,
+                ];
             }
-            
-            $placed_by = '';
-            if($value->placed_by == 'S'){
-                $placed_by =($value->sales_specialist)? $value->sales_specialist->first_name.' '.$value->sales_specialist->last_name : '-';;
-            } else {
-                $placed_by = "Customer";
-            }    
-            
-            $doc_entry = ($value->quotation) ? $value->quotation->doc_entry : $value->id;
-
-            $created_date =  @$value->created_at;
-            $date = date('M d, Y',strtotime($created_date));
-            $time = $value->doc_time ? date('H:i A',strtotime($created_date)) : "";
-
-            $status = $value->quotation ? $value->quotation->status : 'Pending';
-            $final_total = (@$value->quotation) ? $value->quotation->doc_total: $value->items()->sum('total');
-
-            $records[] = array(
-                            'no' => $key + 1,
-                            'company' => @$value->customer->sap_connection->company_name ?? "-",
-                            'doc_entry' => $doc_entry,
-                            'type' => $type,
-                            'card_code' => @$value->customer->card_code ?? @$value->card_code ?? "-",
-                            'customer' => @$value->customer->card_name ?? @$value->card_name ?? "-",
-                            'doc_total' => number_format_value(@$final_total),
-                            'placed_by' => $placed_by,
-                            'created_at' => $date.' '.$time,
-                            'status' => $status,
-                          );
-        }
+        });
+        
         if(count($records)){
             $title = 'Order Report '.date('dmY').'.xlsx';
-            return Excel::download(new OrderExport($records), $title);
+            return Excel::download(new OrderExport($records), $title)->setOptions([
+                'memory_limit' => '-1'
+            ]);
         }
 
         \Session::flash('error_message', common_error_msg('excel_download'));
