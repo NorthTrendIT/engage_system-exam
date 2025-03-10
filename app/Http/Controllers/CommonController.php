@@ -43,7 +43,7 @@ class CommonController extends Controller
         $response = array();
         $search = $request->search;
 
-        $data = Territory::where('territory_id','!=','-2')->where('is_active', true)->orderby('description','asc')->select('id','description');
+        $data = Territory::where('territory_id','!=','-2')->where('is_active', true)->orderby('description','asc')->select('id','description', 'territory_id');
 
         if(@$request->sap_connection_id != ''){
             $data->where('sap_connection_id', $request->sap_connection_id);
@@ -65,7 +65,8 @@ class CommonController extends Controller
         foreach($data as $value){
             $response[] = array(
                 "id" => $value->id,
-                "text" => $value->description
+                "text" => $value->description,
+                "territory_id" => $value->territory_id
             );
         }
 

@@ -560,7 +560,9 @@ class CustomersSalesSpecialistsController extends Controller
 
         if($request->filter_territory != ""){
             $data->whereHas('assignmentTerritory', function($q) use ($request){
-                $q->where('territory_id',$request->filter_territory);
+                // $q->where('territory_id',$request->filter_territory);
+                $terIds = Territory::where('territory_id', $request->territory_id)->pluck('id');
+                $q->whereIn('territory_id',$terIds);
             });
         }
 

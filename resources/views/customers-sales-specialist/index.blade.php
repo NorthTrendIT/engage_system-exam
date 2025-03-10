@@ -144,6 +144,7 @@
 
       $filter_company = $('[name="filter_company"]').val();
       $filter_territory = $('[name="filter_territory"]').val();
+      $territory_id = $('[name="filter_territory"]').select2('data')[0]['territory_id'];
       $filter_search = $('[name="filter_search"]').val();
 
       table.DataTable({
@@ -160,6 +161,7 @@
               data:{
                 filter_company : $filter_company,
                 filter_territory : $filter_territory,
+                territory_id : $territory_id,
                 filter_search : $filter_search
               }
           },
