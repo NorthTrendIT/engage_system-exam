@@ -152,7 +152,7 @@
                                 <div class="fw-bolder fs-7 text-gray-800 col-md-4">
                                   {!! view('orders.order_status',compact('data')) !!}
                                 </div>
-                                <label for="" class="h5 mt-1">{{$data->approver->sales_specialist_name ?? '-'}}</label>
+                                <label for="" class="h5 mt-1">{{$data->approver->sales_specialist_name ?? ''}}</label>
                               </div>
 
                               @if($data->approval === "Rejected" && userrole() != 4 )
