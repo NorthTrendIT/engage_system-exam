@@ -39,6 +39,7 @@ use App\Exports\OrderExport;
 use App\Models\TerritorySalesSpecialist;
 use App\Models\CustomersSalesSpecialist;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class OrdersController extends Controller
 {
@@ -508,11 +509,11 @@ class OrdersController extends Controller
             });
         }
 
-        if($request->engage_transaction != 0){
-            $data->whereHas('quotation', function($q){
-                $q->whereNotNull('u_omsno');
-            });
-        }
+        // if($request->engage_transaction != 0){
+        //     $data->whereHas('quotation', function($q){
+        //         $q->whereNotNull('u_omsno');
+        //     });
+        // }
 
         if(userrole() == 4){
             $data->whereHas('customer', function($q){
@@ -726,14 +727,12 @@ class OrdersController extends Controller
         }
 
         if($request->filter_date_range != ""){
-            $data->whereHas('quotation', function($q) use ($request) {
-                $date = explode(" - ", $request->filter_date_range);
-                $start = date("Y-m-d", strtotime($date[0]));
-                $end = date("Y-m-d", strtotime($date[1]));
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
 
-                $q->whereDate('doc_date', '>=' , $start);
-                $q->whereDate('doc_date', '<=' , $end);
-            });
+            $data->whereDate('created_at', '>=' , $start);
+            $data->whereDate('created_at', '<=' , $end);
         }
 
         $data->when(!isset($request->order), function ($q) {
@@ -1349,6 +1348,11 @@ class OrdersController extends Controller
 
 
     public function export(Request $request){
+        ini_set('memory_limit', '2048M');
+        ini_set('max_execution_time', 36000);
+
+        $startTime = microtime(true); // Start timing
+
         $filter = collect();
         if(@$request->data){
           $request = json_decode(base64_decode($request->data));
@@ -1365,11 +1369,11 @@ class OrdersController extends Controller
             });
         }
 
-        if($request->engage_transaction != 0){
-            $data->whereHas('quotation', function($q){
-                $q->whereNotNull('u_omsno');
-            });
-        }
+        // if($request->engage_transaction != 0){
+        //     $data->whereHas('quotation', function($q){
+        //         $q->whereNotNull('u_omsno');
+        //     });
+        // }
 
         if(userrole() == 4){
             $data->whereHas('customer', function($q){
@@ -1423,7 +1427,7 @@ class OrdersController extends Controller
             });
         }
 
-        if($request->filter_class != ""){
+        if(@$request->filter_class != ""){
             $data->where(function($query) use ($request) {
                 $query->whereHas('customer', function($q) use ($request) {
                     $q->where('u_classification', $request->filter_class);
@@ -1479,7 +1483,7 @@ class OrdersController extends Controller
             });
         }
 
-        if($request->filter_customer != ""){
+        if(@$request->filter_customer != ""){
             $data->whereHas('customer', function($q) use ($request) {
                 $q->where('card_code',$request->filter_customer);
             });
@@ -1583,14 +1587,12 @@ class OrdersController extends Controller
         }
 
         if($request->filter_date_range != ""){
-            $data->whereHas('quotation', function($q) use ($request) {
-                $date = explode(" - ", $request->filter_date_range);
-                $start = date("Y-m-d", strtotime($date[0]));
-                $end = date("Y-m-d", strtotime($date[1]));
+            $date = explode(" - ", $request->filter_date_range);
+            $start = date("Y-m-d", strtotime($date[0]));
+            $end = date("Y-m-d", strtotime($date[1]));
 
-                $q->whereDate('doc_date', '>=' , $start);
-                $q->whereDate('doc_date', '<=' , $end);
-            });
+            $data->whereDate('created_at', '>=' , $start);
+            $data->whereDate('created_at', '<=' , $end);
         }
 
         $data->when(!isset($request->order), function ($q) {
@@ -1602,20 +1604,41 @@ class OrdersController extends Controller
             // });
         });
         
-        // $data = $data->get();
+        $data = $data->with([
+                            'customer.sap_connection',
+                            'customer.group',
+                            'customer',
+                            'quotation',
+                            'items',
+                            'address',
+                            'approver'
+        ]);
+                        
+        $records = [];
+        $key_counter = 1;
+        $data->chunk(1000, function ($orders) use (&$records, &$key_counter) {
 
-        $records = array();
+            $key_counter =+ $key_counter;
+            foreach ($orders as $key => $value) {
+                
+                $formattedDuration  = $date = $time = '-';
+                if($value->approved_at){
+                    $approvedAt = Carbon::parse($value->approved_at);
+                    $currentDateTime = Carbon::parse($value->created_at);
+                    $days = $currentDateTime->diffInDays($approvedAt, false);
+                    $noun = ($days > 1) ? 'days' : 'day';
+                    $duration = $currentDateTime->diff($approvedAt);
 
-        $data->chunk(500, function($rows) use (&$records) {
-            foreach ($rows as $key => $value) {
-                $created_date = $value->created_at;
-                $date = date('M d, Y', strtotime($created_date));
-                $time = $value->doc_time ? date('H:i A', strtotime($created_date)) : "";
+                    $formattedDuration = $duration->format('%d '.$noun.' %H:%I:%S');
+
+                    $date = $approvedAt->format('M d, Y');
+                    $time = $approvedAt->format('H:i A');
+                }
         
                 $records[] = [
-                    'no' => $key + 1,
+                    'no' => $key_counter,
                     'business_unit' => $value->customer->sap_connection->company_name ?? "-",
-                    'branch' => $value->customer->group->name,
+                    'branch' => $value->customer->group->name ?? "-",
                     'customer_code' => $value->customer->card_code ?? "-",
                     'customer_name' => $value->customer->card_name ?? "-",
                     'order_amount' => number_format_value($value->quotation->doc_total ?? $value->items->sum('total')),
@@ -1624,19 +1647,29 @@ class OrdersController extends Controller
                     'approved_by' => $value->approver->sales_specialist_name ?? '-',
                     'approval_date' => $date,
                     'approval_time' => $time,
-                    'reason' => $value->disapproval_remarks,
+                    'approval_duration' => $formattedDuration,
+                    'reason' => $value->disapproval_remarks ?? "-",
                 ];
+
+                $key_counter++;
             }
         });
         
+        
         if(count($records)){
             $title = 'Order Report '.date('dmY').'.xlsx';
-            return Excel::download(new OrderExport($records), $title)->setOptions([
-                'memory_limit' => '-1'
-            ]);
+            
+            $endTime = microtime(true); // End timing
+            // Log::info('Export query execution time: ' . round($endTime - $startTime, 2) . ' seconds');
+
+            return Excel::download(new OrderExport($records), $title);
         }
 
         \Session::flash('error_message', common_error_msg('excel_download'));
+
+        $endTime = microtime(true); // End timing in case of failure
+        // Log::info('Export query execution time (no data): ' . round($endTime - $startTime, 2) . ' seconds');
+        
         return redirect()->back();
     }
 

@@ -71,7 +71,7 @@
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
-	@if(!in_array(Route::currentRouteName(), ['home', 'conversation.index','cart.index','sales-specialist-orders.create']))
+	@if(!in_array(Route::currentRouteName(), ['home', 'conversation.index','cart.index','sales-specialist-orders.create', 'orders.index']))
     
 		$(document).ajaxStart(function() {
 		  show_loader();

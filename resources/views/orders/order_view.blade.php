@@ -156,7 +156,7 @@
                                 <div class="col-md-4">
                                   <span class="badge bg-success fs-6">Approved</span>
                                 </div>
-                                <label for="" class="h3 mt-1">{{$data->local_order->approver->sales_specialist_name}}</label>
+                                <label for="" class="h5 mt-1">{{$data->local_order->approver->sales_specialist_name}}</label>
                               </div>
 
                               <div class="row mt-5 {{userrole() == 4 ? 'd-none' : ''}}">

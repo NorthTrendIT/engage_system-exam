@@ -151,7 +151,7 @@
 
                 <div class="col-md-3 mt-5 d-flex align-items-center">
                   <div class="input-icon engage_transaction d-flex align-items-center">
-                      <input type="checkbox" class="" name="engage_transaction" id="engage_transaction" value="1">
+                      <input type="checkbox" class="" name="engage_transaction" id="engage_transaction" value="1" checked>
                       <span class="">
                           <label class="form-check-label">Engage Transactions Only</label>
                       </span>
@@ -233,6 +233,13 @@
   #myTable tbody tr {
       cursor: pointer;
   }
+
+  /* @keyframes fadeInOut {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  } */
+
 </style>
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.1/css/fixedColumns.dataTables.min.css">
@@ -514,35 +521,154 @@ window.location.href = href;
     @endif
 
     @if(in_array(userrole(),[1,10,11]))
-        $(document).on("click", ".download_excel", function(e) {
-            var url = "{{route('orders.export')}}";
+        // $(document).on("click", ".download_excel", function(e) {
+        //     var url = "{{route('orders.export')}}";
 
-            if ($('[name="engage_transaction"]').is(':checked')) {
-                var engage_transaction = 1;
-            } else {
-                var engage_transaction = 0;
-            }
+        //     if ($('[name="engage_transaction"]').is(':checked')) {
+        //         var engage_transaction = 1;
+        //     } else {
+        //         var engage_transaction = 0;
+        //     }
 
-            var data = {};
-            data.filter_search = $('[name="filter_search"]').val();
-            data.filter_approval = $('[name="filter_approval"]').find('option:selected').val();
-            data.filter_date_range = $('[name="filter_date_range"]').val();
-            data.filter_status = $('[name="filter_status[]"]').select2('val');
-            data.filter_order_type = $('[name="filter_order_type"]').find('option:selected').val();
-            data.filter_customer = $('[name="filter_customer"]').find('option:selected').val() ?? null;
-            data.filter_company = $('[name="filter_company"]').find('option:selected').val();
-            data.filter_group = $('[name="filter_group"]').val();
-            data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
-            data.filter_class = $('[name="filter_class"]').find('option:selected').val() ?? null;
-            data.filter_territory = $('[name="filter_territory[]"]').select2('val');
-            data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
-            data.filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
-            data.engage_transaction = engage_transaction;
+        //     var data = {};
+        //     data.filter_search = $('[name="filter_search"]').val();
+        //     data.filter_approval = $('[name="filter_approval"]').find('option:selected').val();
+        //     data.filter_date_range = $('[name="filter_date_range"]').val();
+        //     data.filter_status = $('[name="filter_status[]"]').select2('val');
+        //     data.filter_order_type = $('[name="filter_order_type"]').find('option:selected').val();
+        //     data.filter_customer = $('[name="filter_customer"]').find('option:selected').val() ?? null;
+        //     data.filter_company = $('[name="filter_company"]').find('option:selected').val();
+        //     data.filter_group = $('[name="filter_group"]').val();
+        //     data.filter_brand = $('[name="filter_brand"]').find('option:selected').val();
+        //     data.filter_class = $('[name="filter_class"]').find('option:selected').val() ?? null;
+        //     data.filter_territory = $('[name="filter_territory[]"]').select2('val');
+        //     data.filter_sales_specialist = $('[name="filter_sales_specialist"]').find('option:selected').val();
+        //     data.filter_market_sector = $('[name="filter_market_sector"]').find('option:selected').val();
+        //     data.engage_transaction = engage_transaction;
 
-            url = url + '?data=' + btoa(JSON.stringify(data));
+        //     url = url + '?data=' + btoa(JSON.stringify(data));
 
-            window.location.href = url;
-        });
+        //     window.location.href = url;
+        // });
+
+        function showLoader() {
+          if ($('#custom_loader').length === 0) {
+            $('body').append(`
+              <div id="custom_loader" style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(255, 255, 255, 0.1);
+                z-index: 9999;
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
+              ">
+                <div style="text-align: center;">
+                  <svg width="100" height="100" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" stroke="#4F46E5">
+                    <g fill="none" fill-rule="evenodd" stroke-width="3">
+                      <circle cx="22" cy="22" r="20" stroke-opacity="0.2" />
+                      <path d="M42 22c0-11.046-8.954-20-20-20">
+                        <animateTransform attributeName="transform" type="rotate" from="0 22 22" to="360 22 22" dur="1s" repeatCount="indefinite" />
+                      </path>
+                    </g>
+                  </svg>
+                  <p style="margin-top: 10px; font-size: 1.2em; font-weight: bold; color: #4F46E5;">Loading...</p>
+                </div>
+              </div>
+            `);
+          }
+        }
+
+        // Hide loader (and remove from DOM)
+        function hideLoader() {
+          $('#custom_loader').fadeOut(300, function() {
+            $(this).remove();
+          });
+        }
+
+        
+
+        $(document).on("click", ".download_excel", function (e) {
+          e.preventDefault();
+
+          var url = "{{ route('orders.export') }}";
+          var engage_transaction = $('[name="engage_transaction"]').is(':checked') ? 1 : 0;
+
+          // Collect filter data
+          var data = {
+              filter_search: $('[name="filter_search"]').val(),
+              filter_approval: $('[name="filter_approval"]').val(),
+              filter_date_range: $('[name="filter_date_range"]').val(),
+              filter_status: $('[name="filter_status[]"]').select2('val'),
+              filter_order_type: $('[name="filter_order_type"]').val(),
+              filter_customer: $('[name="filter_customer"]').val(),
+              filter_company: $('[name="filter_company"]').val(),
+              filter_group: $('[name="filter_group"]').val(),
+              filter_brand: $('[name="filter_brand"]').val(),
+              filter_class: $('[name="filter_class"]').val(),
+              filter_territory: $('[name="filter_territory[]"]').select2('val'),
+              filter_sales_specialist: $('[name="filter_sales_specialist"]').val(),
+              filter_market_sector: $('[name="filter_market_sector"]').val(),
+              engage_transaction: engage_transaction
+          };
+
+          // AJAX request
+          $.ajax({
+              url: url,
+              type: "GET",
+              data: { data: btoa(JSON.stringify(data)) },
+              xhrFields: {
+                  responseType: 'blob' // Expect binary response for file download
+              },
+              beforeSend: function() {
+                  // Show loader and disable interactions before request is sent
+                  $('#custom_loader').fadeIn();
+                  showLoader();
+                  $('body').css('pointer-events', 'none');
+              },
+              success: function (response, status, xhr) {
+                  // Hide loader and re-enable interactions
+                  $('#custom_loader').fadeOut();
+                  hideLoader();
+                  $('body').css('pointer-events', 'auto');
+
+                  // Get filename from content-disposition header
+                  let fileName = 'Exported_Report.xlsx';
+                  const disposition = xhr.getResponseHeader('Content-Disposition');
+                  if (disposition && disposition.includes('attachment')) {
+                      const matches = /filename="(.+)"/.exec(disposition);
+                      if (matches && matches[1]) fileName = matches[1];
+                  }
+
+                  // Create a blob URL and trigger the download
+                  const blob = new Blob([response], { type: xhr.getResponseHeader('Content-Type') });
+                  const downloadLink = document.createElement('a');
+                  downloadLink.href = window.URL.createObjectURL(blob);
+                  downloadLink.download = fileName;
+                  document.body.appendChild(downloadLink);
+                  downloadLink.click();
+                  document.body.removeChild(downloadLink);
+              },
+              error: function (xhr) {
+                  // Hide loader and re-enable interactions
+                  $('#custom_loader').fadeOut();
+                  $('body').css('pointer-events', 'auto');
+
+                  let errorMessage = "An error occurred while exporting the file.";
+                  if (xhr.responseJSON && xhr.responseJSON.message) {
+                      errorMessage = xhr.responseJSON.message;
+                  }
+                  toastNotifMsg('Error', errorMessage);
+                  hideLoader();
+              }
+          });
+});
+
+
+
 
         $('body').on('change' ,'#selectModule', function(){
             $module = $('[name="module"]').val();
