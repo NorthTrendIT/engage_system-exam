@@ -12,6 +12,7 @@ use App\Models\Quotation;
 use App\Models\QuotationItem;
 use App\Models\SapConnection;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Auth;
 use Log;
 
 class SAPQuotations
@@ -296,6 +297,8 @@ class SAPQuotations
                         $quotation->document_status = "Cancelled";
                         $quotation->status = "Cancelled";
                         $quotation->cancelled = "Yes";
+                        $quotation->cancelled_by = Auth::id();
+                        $quotation->cancel_date = date('Y-m-d');
                         $quotation->save();
                     }
 
