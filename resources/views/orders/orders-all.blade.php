@@ -315,6 +315,9 @@ window.location.href = href;
         },
         initComplete: function () {
         },
+        language: {
+            emptyTable: "No data available in table (Please select customer)."
+        }
           // aoColumnDefs: [{ "bVisible": false, "aTargets": hide_targets }]
         });
 
