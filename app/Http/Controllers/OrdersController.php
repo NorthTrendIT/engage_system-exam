@@ -330,7 +330,7 @@ class OrdersController extends Controller
         $response = ['status' => false, 'message' => 'Something went wrong!'];
         if($request->approval === "Approve"){
             $order->approval = "Approved";
-            $response = $this->approvedOrderPushToSap($order->id);
+            $response = $this->approvedOrderPushToSap($order->id, $request->reason);
         }elseif($request->approval === "Reject"){
             $order->approval = "Rejected";
             $response = ['status' => true, 'message' => 'Order was rejected!'];
@@ -344,7 +344,7 @@ class OrdersController extends Controller
         return $response;
     }
 
-    public function approvedOrderPushToSap($id){
+    public function approvedOrderPushToSap($id, $remarks){
 
         $order = LocalOrder::where('id', $id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
         $response = [];
@@ -354,7 +354,7 @@ class OrdersController extends Controller
             if(!is_null($sap_connection)){                   
                 $sap = new SAPOrderPost($sap_connection->db_name, $sap_connection->user_name , $sap_connection->password, $sap_connection->id);
                 if($id){                        
-                    $sap_response = $sap->pushOrder($order->id);
+                    $sap_response = $sap->pushOrder($order->id, $remarks);
                     if($sap_response['status']){
                         $response = ['status' => true, 'message' => 'Order placed successfully!'];
                     }

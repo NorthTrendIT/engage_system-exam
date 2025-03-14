@@ -17,18 +17,18 @@ use App\Models\SapConnection;
 
 class SAPOrderPost
 {
-	/** @var Client */
-	protected $httpClient;
+    /** @var Client */
+    protected $httpClient;
 
-	/** @var string */
-	protected $headers;
+    /** @var string */
+    protected $headers;
 
     protected $sap_connection_id;
     protected $real_sap_connection_id;
 
-	protected $database;
-	protected $username;
-	protected $password;
+    protected $database;
+    protected $username;
+    protected $password;
 
     public function __construct($database, $username, $password, $sap_connection_id)
     {
@@ -41,18 +41,19 @@ class SAPOrderPost
         $this->httpClient = new Client();
 
         $this->sap_connection_id = $sap_connection_id;
-        if($sap_connection_id == 5){
+        if ($sap_connection_id == 5) {
             $this->real_sap_connection_id = 1;
         } else {
             $this->real_sap_connection_id = $sap_connection_id;
         }
     }
 
-    public function requestSapApi($url = '/b1s/v1/Quotations', $method = "POST", $body = ""){
-    	try {
+    public function requestSapApi($url = '/b1s/v1/Quotations', $method = "POST", $body = "")
+    {
+        try {
             $response = $this->httpClient->request(
                 $method,
-                get_sap_api_url().$url,
+                get_sap_api_url() . $url,
                 [
                     'headers' => $this->headers,
                     'verify' => false,
@@ -60,91 +61,92 @@ class SAPOrderPost
                 ]
             );
 
-            if(in_array($response->getStatusCode(), [200,201])){
-                $response = json_decode($response->getBody(),true);
+            if (in_array($response->getStatusCode(), [200, 201])) {
+                $response = json_decode($response->getBody(), true);
                 return array(
-                            'status' => true,
-                            'data' => $response
-                        );
+                    'status' => true,
+                    'data' => $response
+                );
             } else {
                 return array(
                     'status' => false,
                     'data' => $response->getStatusCode(),
                 );
             }
-
         } catch (\Exception $e) {
             // dd($e);
             $code = $e->getCode();
             $message = "";
-            if($code){
+            if ($code) {
                 $message = "API Error:";
                 $statusCode = !empty($e->getResponse()->getStatusCode()) ? $e->getResponse()->getStatusCode() : NULL;
                 $responsePhrase = !empty($e->getResponse()->getReasonPhrase()) ? $e->getResponse()->getReasonPhrase() : NULL;
-                if($statusCode == 401){
-                    $message = $message.' Username and password do not match.';
+                if ($statusCode == 401) {
+                    $message = $message . ' Username and password do not match.';
                 } else {
-                    $message = $message.' '.$statusCode.' '.$responsePhrase;
+                    $message = $message . ' ' . $statusCode . ' ' . $responsePhrase;
                 }
             } else {
-                $message = $message." API is Down.";
+                $message = $message . " API is Down.";
             }
 
             return array(
-                        'status' => false,
-                        'data' => $message
-                    );
+                'status' => false,
+                'data' => $message
+            );
         }
     }
 
-    public function pushOrderDetailsInDatabase($data){       
-        if($data){
+    public function pushOrderDetailsInDatabase($data)
+    {
+        if ($data) {
             $insert = array(
-                        'doc_entry' => $data['DocEntry'],
-                        'doc_num' => $data['DocNum'],
-                        'num_at_card' => $data['NumAtCard'],
-                        'doc_type' => $data['DocType'],
-                        'document_status' => $data['DocumentStatus'],
-                        'doc_date' => $data['DocDate'],
-                        'doc_time' => $data['DocTime'],
-                        'doc_due_date' => $data['DocDueDate'],
-                        'card_code' => $data['CardCode'],
-                        'card_name' => $data['CardName'],
-                        'address' => $data['Address'],
-                        'doc_total' => $data['DocTotal'],
-                        'doc_currency' => $data['DocCurrency'],
-                        'journal_memo' => $data['JournalMemo'],
-                        'payment_group_code' => $data['PaymentGroupCode'],
-                        'sales_person_code' => (int)$data['SalesPersonCode'],
-                        'u_brand' => $data['U_BRAND'],
-                        'u_branch' => $data['U_BRANCH'],
-                        'u_commitment' => @$data['U_COMMITMENT'],
-                        'u_time' => $data['U_TIME'],
-                        'u_posono' => $data['U_POSONO'],
-                        'u_posodate' => $data['U_POSODATE'],
-                        'u_posotime' => $data['U_POSOTIME'],
-                        'created_at' => $data['CreationDate'],
-                        'updated_at' => $data['UpdateDate'],
-                        'last_sync_at' => current_datetime(),
+                'doc_entry' => $data['DocEntry'],
+                'doc_num' => $data['DocNum'],
+                'num_at_card' => $data['NumAtCard'],
+                'doc_type' => $data['DocType'],
+                'document_status' => $data['DocumentStatus'],
+                'doc_date' => $data['DocDate'],
+                'doc_time' => $data['DocTime'],
+                'doc_due_date' => $data['DocDueDate'],
+                'card_code' => $data['CardCode'],
+                'card_name' => $data['CardName'],
+                'address' => $data['Address'],
+                'doc_total' => $data['DocTotal'],
+                'doc_currency' => $data['DocCurrency'],
+                'journal_memo' => $data['JournalMemo'],
+                'payment_group_code' => $data['PaymentGroupCode'],
+                'sales_person_code' => (int)$data['SalesPersonCode'],
+                'u_brand' => $data['U_BRAND'],
+                'u_branch' => $data['U_BRANCH'],
+                'u_commitment' => @$data['U_COMMITMENT'],
+                'u_time' => $data['U_TIME'],
+                'u_posono' => $data['U_POSONO'],
+                'u_posodate' => $data['U_POSODATE'],
+                'u_posotime' => $data['U_POSOTIME'],
+                'created_at' => $data['CreationDate'],
+                'updated_at' => $data['UpdateDate'],
+                'last_sync_at' => current_datetime(),
 
-                        'sap_connection_id' => $this->sap_connection_id,
-                        'real_sap_connection_id' => $this->real_sap_connection_id,
-                        'comments' => $data['Comments'],
-                    );
-            $obj = Quotation::updateOrCreate([
-                                    'doc_entry' => $data['DocEntry'],
-                                    'sap_connection_id' => $this->sap_connection_id,
-                                    'comments' => $data['Comments'],
-                                ],
-                                $insert
-                            );
+                'sap_connection_id' => $this->sap_connection_id,
+                'real_sap_connection_id' => $this->real_sap_connection_id,
+                'comments' => $data['Comments'],
+            );
+            $obj = Quotation::updateOrCreate(
+                [
+                    'doc_entry' => $data['DocEntry'],
+                    'sap_connection_id' => $this->sap_connection_id,
+                    'comments' => $data['Comments'],
+                ],
+                $insert
+            );
 
-            if(!empty($data['DocumentLines'])){
+            if (!empty($data['DocumentLines'])) {
 
                 $item_codes = [];
                 $quo_items = $data['DocumentLines'];
 
-                foreach($quo_items as $item){
+                foreach ($quo_items as $item) {
                     $fields = array(
                         'quotation_id' => $obj->id,
                         'line_num' => @$item['LineNum'],
@@ -177,13 +179,14 @@ class SAPOrderPost
                         'real_sap_connection_id' => $this->real_sap_connection_id,
                     );
 
-                    $item_obj = QuotationItem::updateOrCreate([
-                                    'quotation_id' => $fields['quotation_id'],
-                                    'item_code' => $item['ItemCode'],
-                                    'line_num' => $fields['line_num']
-                                ],
-                                $fields
-                            );
+                    $item_obj = QuotationItem::updateOrCreate(
+                        [
+                            'quotation_id' => $fields['quotation_id'],
+                            'item_code' => $item['ItemCode'],
+                            'line_num' => $fields['line_num']
+                        ],
+                        $fields
+                    );
                     array_push($item_codes, @$item['ItemCode']);
                 }
 
@@ -193,28 +196,29 @@ class SAPOrderPost
     }
 
 
-    public function pushOrder($id){
-        
-        $body = $this->madeSapData($id);
+    public function pushOrder($id, $remarks = '')
+    {
+
+        $body = $this->madeSapData($id, $remarks);
         // dd($body);
         $response = array();
-        if(!empty($body)){
+        if (!empty($body)) {
             $order = LocalOrder::where('id', $id)->first();
-            if($order->doc_entry){
-                $response = $this->requestSapApi('/b1s/v1/Quotations('.$order->doc_entry.')', "PATCH", $body);
-            }else{
+            if ($order->doc_entry) {
+                $response = $this->requestSapApi('/b1s/v1/Quotations(' . $order->doc_entry . ')', "PATCH", $body);
+            } else {
                 $response = $this->requestSapApi('/b1s/v1/Quotations', "POST", $body);
             }
             $status = $response['status'];
             $data = $response['data'];
-            // Log::info(print_r([$data, $status],true));
-            if($status || $data == '204'){
-                
+            Log::info(print_r([$response], true));
+            if ($status || $data == '204') {
+
                 $dataToPush = [];
-                if(!$order->doc_entry){
+                if (!$order->doc_entry) {
                     $dataToPush = $data;
-                }else{
-                    $dataToPush = $this->requestSapApi('/b1s/v1/Quotations('.$order->doc_entry.')', "GET");
+                } else {
+                    $dataToPush = $this->requestSapApi('/b1s/v1/Quotations(' . $order->doc_entry . ')', "GET");
                     $dataToPush = $dataToPush['data'];
                     $data = $dataToPush;
                 }
@@ -229,56 +233,56 @@ class SAPOrderPost
                 $this->updateNumAtCardInOrder($data['DocEntry']);
 
                 // Sales Specialist Email
-                if($order->sales_specialist_id != ""){
+                if ($order->sales_specialist_id != "") {
                     $sales_person_email = $order->sales_specialist->email;
                     $sales_name = $order->sales_specialist->sales_specialist_name;
                     $customer_name = $order->customer;
                     $sales_link = route('orders.show', @$order->quotation->id);
                     //Log::info(print_r($sales_link,true));
-                    Mail::send('emails.order_placed', array('link'=>$sales_link, 'customer'=>@$customer_name->first_name." ".$customer_name->last_name), function($message) use($sales_person_email,$sales_name) {
+                    Mail::send('emails.order_placed', array('link' => $sales_link, 'customer' => @$customer_name->first_name . " " . $customer_name->last_name), function ($message) use ($sales_person_email, $sales_name) {
                         $message->from('orders@northtrend.com', $sales_name);
                         $message->to($sales_person_email, $sales_person_email)
-                                //->cc('itsupport@northtrend.com')
-                                ->subject('Order Confirmation');
+                            //->cc('itsupport@northtrend.com')
+                            ->subject('Order Confirmation');
                     });
                 }
 
                 $emails = [];
                 $customer_mails = [];
-                $quotation = Quotation::where('doc_entry',$data['DocEntry'])->first();
-                $user = Customer::where('card_code',$data['CardCode'])->where('sap_connection_id',$quotation->sap_connection_id)->get();
+                $quotation = Quotation::where('doc_entry', $data['DocEntry'])->first();
+                $user = Customer::where('card_code', $data['CardCode'])->where('sap_connection_id', $quotation->sap_connection_id)->get();
 
                 foreach ($user as $key => $value) {
-                    $group = CustomerGroup::where('code',@$value->group_code)->where('sap_connection_id',@$value->sap_connection_id)->first();
+                    $group = CustomerGroup::where('code', @$value->group_code)->where('sap_connection_id', @$value->sap_connection_id)->first();
 
                     $link = route('orders.show', @$quotation->id);
 
-                    if($value->sap_connection_id == 1){
+                    if ($value->sap_connection_id == 1) {
                         $from_name = 'AP BLUE WHALE CORP';
-                    }else if($value->sap_connection_id == 2){
+                    } else if ($value->sap_connection_id == 2) {
                         $from_name = 'NORTH TREND MARKETING CORP';
-                    }else if($value->sap_connection_id == 3){
+                    } else if ($value->sap_connection_id == 3) {
                         $from_name = 'PHILCREST MARKETING CORP';
-                    }else if($value->sap_connection_id == 5){
+                    } else if ($value->sap_connection_id == 5) {
                         $from_name = 'SOLID TREND TRADE SALES INC.';
-                    }else{
+                    } else {
                         $from_name = 'TEST';
                     }
 
-                    $user_mail = User::where('u_card_code',$value->u_card_code)->first();
+                    $user_mail = User::where('u_card_code', $value->u_card_code)->first();
                     //Log::info(print_r($user_mail->email,true));
 
-                    if(@$user_mail->email != ""){
+                    if (@$user_mail->email != "") {
                         $mail_array = explode("; ", @$user_mail->email);
-                        foreach($mail_array as $email){
-                            if($email != 'COD ACCT'){
+                        foreach ($mail_array as $email) {
+                            if ($email != 'COD ACCT') {
                                 // Log::info("customer mail");
                                 //Log::info(print_r($this->sap_connection_id));
-                                Mail::send('emails.order_placed', array('link'=>$link, 'customer'=>@$user_mail->first_name." ".$user_mail->last_name), function($message) use($email,$from_name) {
+                                Mail::send('emails.order_placed', array('link' => $link, 'customer' => @$user_mail->first_name . " " . $user_mail->last_name), function ($message) use ($email, $from_name) {
                                     $message->from('orders@northtrend.com', $from_name);
                                     $message->to($email, $email)
-                                            //->cc('itsupport@northtrend.com')
-                                            ->subject('Order Confirmation');
+                                        //->cc('itsupport@northtrend.com')
+                                        ->subject('Order Confirmation');
                                 });
                             }
                         }
@@ -298,21 +302,21 @@ class SAPOrderPost
                     //         }
                     //     }
                     // }
-                    
-                    if(@$group->emails == null || @$group->emails == ""){
+
+                    if (@$group->emails == null || @$group->emails == "") {
                         // Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>$value->card_name), function($message) use($user,$from_name) {
                         //     $message->from('orders@northtrend.com', $from_name);
                         //     $message->to('mt@mailinator.com', 'orders@northtrend.com')
                         //             ->subject('Order Confirmation');
                         // });
-                    }else{
-                       $emails = explode("; ", @$group->emails);                    
-                        foreach($emails as $email){
-                            if($email != 'COD ACCT'){
-                                Mail::send('emails.user_order_placed', array('link'=>$link, 'customer'=>@$value->card_name), function($message) use($email,$from_name) {
+                    } else {
+                        $emails = explode("; ", @$group->emails);
+                        foreach ($emails as $email) {
+                            if ($email != 'COD ACCT') {
+                                Mail::send('emails.user_order_placed', array('link' => $link, 'customer' => @$value->card_name), function ($message) use ($email, $from_name) {
                                     $message->from('orders@northtrend.com', $from_name);
                                     $message->to($email, $email)
-                                            ->subject('Order Confirmation');
+                                        ->subject('Order Confirmation');
                                 });
                             }
                         }
@@ -357,35 +361,34 @@ class SAPOrderPost
                                     ->subject('Order Confirmation');
                         });
                     }
-                } */   
-
+                } */
             } else {
                 $order->confirmation_status = 'ERR';
                 $order->message = $data;
                 $order->save();
             }
-            
         }
 
         return $response;
     }
 
-    public function madeSapData($id){
+    public function madeSapData($id, $approval_remarks)
+    {
 
         $url = '/b1s/v1/EmployeesInfo?$filter= contains(LastName, \'Engage\')&$select=EmployeeID';
         $response = $this->requestSapApi($url, "GET");
-        
+
         if ($response['status'] === true && is_array($response['data']['value']) && !empty($response['data']['value'])) {
             $documentOwner = $response['data']['value'][0]['EmployeeID'];
         } else {
             $documentOwner = null;
-            Log::info(print_r([$response['data']],true));
+            Log::info(print_r([$response['data']], true));
         }
 
         $response = [];
         $order = LocalOrder::where('id', $id)->with(['sales_specialist', 'customer', 'address', 'items.product'])->first();
 
-        if(@$order->customer->currency == '##'){
+        if (@$order->customer->currency == '##') {
             $order->customer->currency = 'PHP';
         }
 
@@ -395,29 +398,29 @@ class SAPOrderPost
         $response['DocCurrency'] = @$order->customer->currency; //previous [PHP] 
         $response['Comments'] = @$order->remarks;
 
-        if(strtolower(@$order->address->street) == strtolower(@$order->customer->card_name)){
+        if (strtolower(@$order->address->street) == strtolower(@$order->customer->card_name)) {
             $response['Address'] = @$order->address->street;
-        }else{
+        } else {
             $response['Address'] = '';
-            if(!empty(@$order->address->street)){
+            if (!empty(@$order->address->street)) {
                 $response['Address'] .= @$order->address->street;
             }
         }
-                
-        if(!empty(@$order->address->city)){
-            $response['Address'] .= ", ".@$order->address->city;
+
+        if (!empty(@$order->address->city)) {
+            $response['Address'] .= ", " . @$order->address->city;
         }
-        if(!empty(@$order->address->state)){
-            $response['Address'] .= ", ".@$order->address->state;
+        if (!empty(@$order->address->state)) {
+            $response['Address'] .= ", " . @$order->address->state;
         }
-        if(!empty(@$order->address->zip_code)){
-            $response['Address'] .= ", ".@$order->address->zip_code;
+        if (!empty(@$order->address->zip_code)) {
+            $response['Address'] .= ", " . @$order->address->zip_code;
         }
-        if(!empty(@$order->address->country)){
-            $response['Address'] .= ", ".@$order->address->country;
+        if (!empty(@$order->address->country)) {
+            $response['Address'] .= ", " . @$order->address->country;
         }
 
-        if(@$order->sales_specialist->sales_employee_code && @$order->sales_specialist->is_active){
+        if (@$order->sales_specialist->sales_employee_code && @$order->sales_specialist->is_active) {
             $response['SalesPersonCode'] = @$order->sales_specialist->sales_employee_code;
         }
 
@@ -426,16 +429,16 @@ class SAPOrderPost
         $response['DocumentsOwner'] = $documentOwner;
 
         $response['DocumentLines'] = [];
-        
+
         $item_currency = [];
         $cust_price_list =  @$order->customer->price_list_num; //$item_prices json decode starts with index zero
-       
+
         $currency = 'PHP';
         $x = 0;
-        foreach($order->items as $item){ //
+        foreach ($order->items as $item) { //
             $item_prices = json_decode(@$item->product->item_prices);
-            foreach($item_prices as $price){
-                if($cust_price_list == $price->PriceList){
+            foreach ($item_prices as $price) {
+                if ($cust_price_list == $price->PriceList) {
                     $currency = $price->Currency;
                 }
             }
@@ -452,7 +455,7 @@ class SAPOrderPost
                 'FreeText' => @$item->line_remarks
             );
 
-            if($order->doc_entry){
+            if ($order->doc_entry) {
                 $temp['LineNum'] = $x;
             }
 
@@ -460,29 +463,40 @@ class SAPOrderPost
             $x++;
         }
 
+        $response['U_SELLINGTRANSTYPE'] = 1;
+        $response['U_POSODATE'] = date('Y-m-d'); //date of approval
+        $response['U_POSOTIME'] = date("h:iA"); //time of approval
+        $response['U_COMMITMENT'] = $order->due_date;
+        $response['U_TIME'] = "WITHIN THE DAY";
+        // $response['U_BRANCH'] = $order->customer->group->name;
+        $response['U_MODEOFORDER'] = "COM";
+        $response['U_SOSTAT'] = "FD";
+        $response['U_ApprovedReason'] = $approval_remarks;
+
         return $response;
     }
 
-    public function updateNumAtCardInOrder($doc_entry){
+    public function updateNumAtCardInOrder($doc_entry)
+    {
         // \Log::debug('The updateNumAtCardInOrder called -->'. $doc_entry);
         // \Log::debug('The updateNumAtCardInOrder called -->'. @$this->sap_connection_id);
 
         $quotation = Quotation::where('doc_entry', $doc_entry)->where('sap_connection_id', @$this->sap_connection_id)->first();
         $response = array();
 
-        if(!empty($quotation)){
-            $num_at_card = "OMS# ".$doc_entry;
+        if (!empty($quotation)) {
+            $num_at_card = "OMS# " . $doc_entry;
 
             $body = array(
-                            //'NumAtCard' => $num_at_card,
-                            'U_OMSNo' => $doc_entry,
-                        );
+                //'NumAtCard' => $num_at_card,
+                'U_OMSNo' => $doc_entry,
+            );
 
-            $response = $this->requestSapApi('/b1s/v1/Quotations('.$doc_entry.')', "PATCH", $body);
+            $response = $this->requestSapApi('/b1s/v1/Quotations(' . $doc_entry . ')', "PATCH", $body);
 
             $status = $response['status'];
             $data = $response['data'];
-            if($data == '204'){
+            if ($data == '204') {
                 //$quotation->num_at_card = $num_at_card;
                 $quotation->u_omsno = $doc_entry;
                 //$quotation->comments = @$data['Comments'];
