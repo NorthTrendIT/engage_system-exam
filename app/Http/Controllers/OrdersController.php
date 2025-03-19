@@ -893,7 +893,7 @@ class OrdersController extends Controller
     public function cancelOrder(Request $request){
 
         $response = ['status' => false, 'message' => 'Record not found!'];
-        if(in_array(userrole(), [1, 4, 14])){
+        if(in_array(userrole(), [1, 4, 10, 14])){
             $quotation = Quotation::where('id', $request->id);
 
             if(userrole() == 4){
