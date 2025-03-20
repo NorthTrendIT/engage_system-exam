@@ -696,9 +696,9 @@
             })
             .done(function(result) {
               if(result.status == false){
-                toast_error(result.message);
+                toastNotifMsg('Error', result.message);
               }else{
-                toast_success(result.message);
+                toastNotifMsg('Success', result.message);
                 setTimeout(function(){
                   window.location.reload();
                 },500)

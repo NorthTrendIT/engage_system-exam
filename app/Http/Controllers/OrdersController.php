@@ -32,7 +32,7 @@ use App\Models\InvoiceItem;
 use App\Models\SapConnectionApiFieldValue;
 use Mail;
 use DataTables;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use OneSignal;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderExport;
@@ -106,9 +106,25 @@ class OrdersController extends Controller
             $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
             $data->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
         }elseif(userrole() == 14){
-            $data->whereHas('local_order', function($q){
-                $q->where('sales_specialist_id', userid());
+
+            $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
+            $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
+            $territoryIds= [];
+            foreach($territory as $id){
+                $territoryIds[] = $id->territory->territory_id;
+            }
+
+            $territoryIds = (@$territoryIds)? $territoryIds : [-3];
+            $sapConnections = (@$sapConnections)? $sapConnections : [-3];
+
+            $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
+                $q->whereIn('real_sap_connection_id', $sapConnections);
+                $q->whereIn('territory', $territoryIds);
             });
+            
+            // $data->whereHas('local_order', function($q){
+            //     $q->where('sales_specialist_id', userid());
+            // });
         }elseif(!is_null(Auth::user()->created_by)){
             $customers = Auth::user()->created_by_user->get_multi_customer_details();
             $data->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
@@ -224,7 +240,23 @@ class OrdersController extends Controller
                 $q->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
             });
         }elseif(userrole() == 14){
-            $data->where('sales_specialist_id', userid());
+
+            $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
+            $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
+            $territoryIds= [];
+            foreach($territory as $id){
+                $territoryIds[] = $id->territory->territory_id;
+            }
+
+            $territoryIds = (@$territoryIds)? $territoryIds : [-3];
+            $sapConnections = (@$sapConnections)? $sapConnections : [-3];
+
+            $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
+                $q->whereIn('real_sap_connection_id', $sapConnections);
+                $q->whereIn('territory', $territoryIds);
+            });
+
+            // $data->where('sales_specialist_id', userid());
         }elseif(!is_null(Auth::user()->created_by)){
             $data->whereHas('customer', function($q){
                 $customers = Auth::user()->created_by_user->get_multi_customer_details();
@@ -521,20 +553,21 @@ class OrdersController extends Controller
                 $q->whereIn('id', $cus);
             });
         }elseif(userrole() == 14){ //sales personnel
-            // $data->where('sales_person_code', @Auth::user()->sales_employee_code); //previous code
+            if($request->orderAll === "true"){
+                if($request->filter_customer != "")
+                {
+                    $data->whereHas('customer', function($q) use ($request) {
+                        $q->where('id',$request->filter_customer);
+                    });
 
-            // $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
-            // $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
-            
-            // $territoryIds= [];
-            // foreach($territory as $id){
-            //     $territoryIds[] = $id->territory->territory_id;
-            // }
+                    $request->filter_customer = '';
+                }else{
+                    $data->where('sales_specialist_id', 'dummy');
+                }
+            }else{
+                $data->where('sales_specialist_id', userid());
+            }
 
-            // $territoryIds = (@$territoryIds)? $territoryIds : [-3];
-            // $sapConnections = (@$sapConnections)? $sapConnections : [-3];
-
-            $data->where('sales_specialist_id', userid());
             // $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
             //     // $cus = CustomersSalesSpecialist::where(['ss_id' => Auth::user()->id])->pluck('customer_id')->toArray();
             //     $q->whereIn('real_sap_connection_id', $sapConnections);
@@ -860,88 +893,78 @@ class OrdersController extends Controller
     public function cancelOrder(Request $request){
 
         $response = ['status' => false, 'message' => 'Record not found!'];
+        if(in_array(userrole(), [1, 4, 10, 14])){
+            $quotation = Quotation::where('id', $request->id);
 
-        $quotation = Quotation::where('id', $request->id);
-        // if(userrole() == 4){
-        //     $quotation->where('card_code', @Auth::user()->customer->card_code);
-        // }elseif(userrole() == 14){
-        //     $quotation->where('sales_person_code', @Auth::user()->sales_employee_code);
-        // }elseif(userrole() != 1){
-        //     return abort(404);
-        // }
-
-        // if(userrole() == 4){
-        //     $customers = Auth::user()->get_multi_customer_details();
-        //     $quotation->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-        //     $quotation->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        // }elseif(userrole() == 14){
-        //     $quotation->where('sales_person_code', @Auth::user()->sales_employee_code);
-        // }elseif(userrole() != 1){
-        //     if (!is_null(@Auth::user()->created_by)) {
-        //         $customers = @Auth::user()->created_by_user->get_multi_customer_details();
-        //         $quotation->whereIn('card_code', array_column($customers->toArray(), 'card_code'));
-        //         $quotation->whereIn('sap_connection_id', array_column($customers->toArray(), 'sap_connection_id'));
-        //     } else {
-        //         return abort(404);
-        //     }
-        // }
-
-        $quotation = $quotation->first();
-        if(!empty($quotation)){
-            
-            $sap_connection = @$quotation->sap_connection;
-
-            $sap_quotations = new SAPQuotations(@$sap_connection->db_name, @$sap_connection->user_name, @$sap_connection->password);
-            $response = $sap_quotations->cancelSpecificQuotation($quotation->id, $quotation->doc_entry);
-
-            $emails = [];
-            $customer_mails = [];
-            $link = route('orders.show', @$quotation->id);
-            $user = Customer::where('card_code',@$quotation->card_code)->first();
-            $group = CustomerGroup::where('code',@$user->group_code)->where('sap_connection_id',@$user->sap_connection_id)->first();
-            $emails = explode("; ", @$group->emails);
-            $customer_mails = explode("; ", @$user->email);
-
-            if($user->sap_connection_id == 1){
-                $from_name = 'AP BLUE WHALE CORP';
-            }else if($user->sap_connection_id == 2){
-                $from_name = 'NORTH TREND MARKETING CORP';
-            }else if($user->sap_connection_id == 3){
-                $from_name = 'PHILCREST MARKETING CORP';
-            }else if($user->sap_connection_id == 5){
-                $from_name = 'SOLID TREND TRADE SALES INC.';
+            if(userrole() == 4){
+                $quotation->whereHas('local_order', function($q){
+                    $q->where('customer_id', Auth::id());
+                });
+            }elseif(userrole() == 14){
+                $quotation->whereHas('local_order', function($q){
+                    $q->where('sales_specialist_id', Auth::id());
+                });
             }
 
-            // foreach($customer_mails as $email){
-            //     Mail::send('emails.cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email,$from_name,$quotation) {
-            //         $message->from('orders@northtrend.com', $from_name);
-            //         $message->to($email, $email)
-            //                 ->subject('Order #'.$quotation->u_omsno.' -Cancel Order');
-            //     });
-            // }
+            $quotation = $quotation->first();
+            if(!empty($quotation)){
+                
+                $sap_connection = @$quotation->sap_connection;
 
-            // if(@$group->emails == null || @$group->emails == ""){
-            //     Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($quotation,$from_name) {
-            //         $message->from('orders@northtrend.com', $from_name);
-            //         $message->to('orders@northtrend.com', 'orders@northtrend.com')
-            //                 ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
-            //     });
-            // }else{
-            //     foreach($emails as $email){
+                $sap_quotations = new SAPQuotations(@$sap_connection->db_name, @$sap_connection->user_name, @$sap_connection->password);
+                $response = $sap_quotations->cancelSpecificQuotation($quotation->id, $quotation->doc_entry);
 
-            //         Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email,$from_name,$quotation) {
-            //             $message->from('orders@northtrend.com', $from_name);
-            //             $message->to($email, $email)
-            //                     ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
-            //         });
-            //     }
-            // }
-            
+                $emails = [];
+                $customer_mails = [];
+                $link = route('orders.show', @$quotation->id);
+                $user = Customer::where('card_code',@$quotation->card_code)->first();
+                $group = CustomerGroup::where('code',@$user->group_code)->where('sap_connection_id',@$user->sap_connection_id)->first();
+                $emails = explode("; ", @$group->emails);
+                $customer_mails = explode("; ", @$user->email);
 
-            if(@$response['status']){
-                $response = ['status' => true, 'message' => 'Order canceled successfully!'];
+                if($user->sap_connection_id == 1){
+                    $from_name = 'AP BLUE WHALE CORP';
+                }else if($user->sap_connection_id == 2){
+                    $from_name = 'NORTH TREND MARKETING CORP';
+                }else if($user->sap_connection_id == 3){
+                    $from_name = 'PHILCREST MARKETING CORP';
+                }else if($user->sap_connection_id == 5){
+                    $from_name = 'SOLID TREND TRADE SALES INC.';
+                }
+
+                // foreach($customer_mails as $email){
+                //     Mail::send('emails.cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email,$from_name,$quotation) {
+                //         $message->from('orders@northtrend.com', $from_name);
+                //         $message->to($email, $email)
+                //                 ->subject('Order #'.$quotation->u_omsno.' -Cancel Order');
+                //     });
+                // }
+
+                // if(@$group->emails == null || @$group->emails == ""){
+                //     Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($quotation,$from_name) {
+                //         $message->from('orders@northtrend.com', $from_name);
+                //         $message->to('orders@northtrend.com', 'orders@northtrend.com')
+                //                 ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
+                //     });
+                // }else{
+                //     foreach($emails as $email){
+
+                //         Mail::send('emails.user_cancel_order', array('link'=>$link, 'customer'=>$user->card_name,'order_no'=>@$quotation->u_omsno), function($message) use($email,$from_name,$quotation) {
+                //             $message->from('orders@northtrend.com', $from_name);
+                //             $message->to($email, $email)
+                //                     ->subject('Order #'.@$quotation->u_omsno.' -Cancel Order');
+                //         });
+                //     }
+                // }
+                
+
+                if(@$response['status']){
+                    $response = ['status' => true, 'message' => 'Order canceled successfully!'];
+                }else{
+                    $response = ['status' => false, 'message' => 'Something went wrong !'];
+                }
             }else{
-                $response = ['status' => false, 'message' => 'Something went wrong !'];
+                $response = ['status' => false, 'message' => 'You are not authorize to cancel this order!'];
             }
         }
         return $response;
@@ -1743,6 +1766,17 @@ class OrdersController extends Controller
                 }
             }
         }
+    }
+
+
+    public function allOrders()
+    {
+        $company = collect();
+        if(in_array(userrole(), [1, 10, 11])){
+            $company = SapConnection::all();
+        }
+        $approvalStatus = LocalOrder::getApproval();
+        return view('orders.orders-all', compact('company', 'approvalStatus'));
     }
 
 

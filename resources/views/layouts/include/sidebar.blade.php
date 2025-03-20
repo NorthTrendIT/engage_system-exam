@@ -212,6 +212,41 @@
 
             {{-- Orders --}}
             @if(Auth::user()->role_id == 1 || (isset($access['view-order']) && $access['view-order'] == 1))
+            @if(userrole() == 14)
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array(request()->route()->getName(), ['orders.index','orders.show', 'ssOrders.getAll'])) ? 'hover show' : '' }}">
+               <span class="menu-link">
+                  <span class="menu-icon">
+                     <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
+                     <span class="svg-icon svg-icon-2">
+                     <i class="fas fa-shopping-bag"></i>
+                     </span>
+                     <!--end::Svg Icon-->
+                  </span>
+                  <span class="menu-title">Sales Order</span>
+                  <span class="menu-arrow"></span>
+               </span>
+               <div class="menu-sub menu-sub-accordion">
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['orders.index','orders.show'])) ? 'active' : '' }}" href="{{ route('orders.index') }}">
+                        <span class="menu-bullet">
+                           <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">My Orders</span>
+                     </a>
+                  </div>
+                  <div class="menu-item">
+                     <a class="menu-link {{ (in_array(request()->route()->getName(), ['ssOrders.getAll'])) ? 'active' : '' }}" href="{{ route('ssOrders.getAll') }}">
+                        <span class="menu-bullet">
+                           <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">All Orders</span>
+                     </a>
+                  </div>
+               </div>
+            </div>
+
+            @else
+
             <div class="menu-item">
                <a class="menu-link {{ (in_array(request()->route()->getName(), ['orders.index','orders.show'])) ? 'active' : '' }}" href="{{ route('orders.index') }}">
                   <span class="menu-icon">
@@ -224,6 +259,7 @@
                   <span class="menu-title">Sales Order</span>
                </a>
             </div>
+            @endif
             @endif
 
             {{-- Invoices --}}

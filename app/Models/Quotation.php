@@ -45,6 +45,7 @@ class Quotation extends Model
         'updated_date',
         'num_at_card',
         'cancelled',
+        'cancelled_by',
         'cancel_date',
         'last_sync_at',
         'u_omsno',
