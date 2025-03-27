@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChangelogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -592,3 +593,4 @@ Route::get('clear-cache', function () {
 
 Route::get('/upload-ss', 'App\Http\Controllers\Userupload@index');
 Route::post('/uploadfile', 'App\Http\Controllers\Userupload@showUploadFile');
+Route::get('/changelog', [ChangelogController::class, 'index']);
