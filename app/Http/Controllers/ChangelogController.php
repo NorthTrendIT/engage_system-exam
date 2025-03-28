@@ -71,29 +71,17 @@ class ChangelogController extends Controller
 
     private function searchContent($htmlContent, $query)
     {
-        // Highlight or filter content based on the query
-        $pattern = "/($query)/i";
-        $replacement = '<span class="highlight">$1</span>';
-        return preg_replace($pattern, $replacement, $htmlContent);
+        $query = preg_quote($query, '/');
+
+        $pattern = "/(?<=\>)([^<]*?)($query)([^<]*?)(?=\<)/i";
+
+        $replacement = function ($matches) {
+            return $matches[1] . '<span class="highlight">' . $matches[2] . '</span>' . $matches[3];
+        };
+
+        // Perform the replacement
+        return preg_replace_callback($pattern, $replacement, $htmlContent);
     }
-
-    // private function searchContent($htmlContent, $query)
-    // {
-    //     // Escape the query to avoid errors in regex
-    //     $escapedQuery = preg_quote($query, '/');
-
-    //     // Match the text inside the HTML content, avoiding HTML tags
-    //     $htmlContent = preg_replace_callback('/>([^<]+)</', function ($matches) use ($escapedQuery) {
-    //         $content = $matches[1];
-    //         // Only highlight the query if it's found inside the content
-    //         if (stripos($content, $escapedQuery) !== false) {
-    //             $content = preg_replace('/(' . $escapedQuery . ')/i', '<span class="highlight">$1</span>', $content);
-    //         }
-    //         return '>' . $content . '<';
-    //     }, $htmlContent);
-
-    //     return $htmlContent;
-    // }
 
     private function filterToc($toc, $query)
     {
