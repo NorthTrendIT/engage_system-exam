@@ -176,7 +176,45 @@ $(document).ready(function() {
       $('[name="filter_status"]').val('').trigger('change');
       $('[name="filter_confirmation_status"]').val('').trigger('change');
       render_table();
-    })
+    });
+
+    $(document).on('click', '.deleteOrder', async function(event) {
+      event.preventDefault();
+      const selectedValue = 'delete';
+
+      const result = await Swal.fire({
+        title: 'Confirmation',
+        text: 'Are you sure you want to ' + selectedValue + ' this order?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!',
+        allowOutsideClick: false,
+      });
+
+      if (result.isConfirmed) {
+        $.ajax({
+          url: $(this).attr('load-url'),
+          method: 'DELETE',
+          data: {
+            _token: '{{ csrf_token() }}',
+          },
+        })
+        .done(function(result) {
+          if (result.status == false) {
+            toastNotifMsg('Error', result.message);
+          } else {
+            toastNotifMsg('Success', result.message);
+            render_table();
+          }
+        })
+        .fail(function() {
+          toastNotifMsg('Error', 'Something went wrong.');
+        });
+              
+      }
+    });
 
 });
 </script>

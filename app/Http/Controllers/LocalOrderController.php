@@ -283,29 +283,21 @@ class LocalOrderController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $ss_id = @Auth::user()->id;
+        $data = LocalOrder::where('id', $id)->where('sales_specialist_id', $ss_id)->firstOrFail();
+        $response = ['status' => false, 'message' => 'You are not authorize to delete this order!'];
+        if($data->confirmation_status == 'ERR' && !$data->quotation && $data->sales_specialist_id === $ss_id){
+            $data->items()->delete();
+            $data->delete();
+            $response = ['status' => true, 'message' => 'Order has been successfully deleted.'];
+        }
+
+        return $response;
     }
 
     public function getAll(Request $request){
         $ss_id = @Auth::user()->id;
         $data = LocalOrder::where('sales_specialist_id', $ss_id);
-
-        // $territory = TerritorySalesSpecialist::where('user_id', userid())->with('territory:id,territory_id')->get();
-        // $sapConnections = TerritorySalesSpecialist::where('user_id', userid())->groupBy('sap_connection_id')->pluck('sap_connection_id')->toArray();
-        
-        // $territoryIds= [];
-        // foreach($territory as $id){
-        //     $territoryIds[] = $id->territory->territory_id;
-        // }
-
-        // $territoryIds = (@$territoryIds)? $territoryIds : [-3];
-        // $sapConnections = (@$sapConnections)? $sapConnections : [-3];
-
-        // $data->whereHas('customer', function($q) use($territoryIds, $sapConnections){
-        //     $q->whereIn('real_sap_connection_id', $sapConnections);
-        //     $q->whereIn('territory', $territoryIds);
-        // });
-
 
         $status = @$request->filter_status;
         if(!empty($status) && $status[0] !== null){
@@ -470,15 +462,15 @@ class LocalOrderController extends Controller
                                 </a>';
 
                             if( (!$row->quotation && $row->sales_specialist_id === Auth::user()->id) ){
-                                $btn .= '<a href="' . route('sales-specialist-orders.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                $btn .= '<a href="' . route('sales-specialist-orders.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10">
                                     <i class="fa fa-pencil"></i>
                                     </a>';
                             }
-                            // else if($status === "Pending"){
-                            //     $btn .= '<a href="' . route('sales-specialist-orders.edit',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
-                            //         <i class="fa fa-pencil"></i>
-                            //         </a>';
-                            // }
+                            if($row->confirmation_status == 'ERR' && !$row->quotation && $row->sales_specialist_id === Auth::user()->id){
+                                $btn .= '<a href="#" load-url="' . route('sales-specialist-orders.delete',$row->id). '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-10 deleteOrder">
+                                    <i class="fa fa-trash"></i>
+                                    </a>';
+                            }
                             return $btn;
                         })
                         ->rawColumns(['action', 'confirmation_status', 'total', 'order_status','total_ltr'])

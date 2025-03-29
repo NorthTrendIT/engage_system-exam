@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\LocalOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -343,22 +345,24 @@ Route::middleware(['auth'])->group(function () {
 
 
         // Local Orders
-        Route::resource('sales-specialist-orders', 'App\Http\Controllers\LocalOrderController', [
+        Route::resource('sales-specialist-orders', LocalOrderController::class, [
             'names' => [
                 'index' => 'sales-specialist-orders.index',
                 'create' => 'sales-specialist-orders.create',
                 'store' => 'sales-specialist-orders.store',
                 'edit' => 'sales-specialist-orders.edit',
                 'show' => 'sales-specialist-orders.show',
+                'destroy' => 'sales-specialist-orders.delete',
             ]
         ]);
-        Route::post('sales-specialist-orders/get-all', 'App\Http\Controllers\LocalOrderController@getAll')->name('sales-specialist-orders.get-all');
-        Route::post('sales-specialist-orders/get-customers/', 'App\Http\Controllers\LocalOrderController@getCustomers')->name('sales-specialist-orders.getCustomers');
-        Route::post('sales-specialist-orders/get-products/', 'App\Http\Controllers\LocalOrderController@getProducts')->name('sales-specialist-orders.getProducts');
-        Route::post('sales-specialist-orders/get-address/', 'App\Http\Controllers\LocalOrderController@getAddress')->name('sales-specialist-orders.getAddress');
-        Route::post('sales-specialist-orders/place-order/', 'App\Http\Controllers\LocalOrderController@placeOrder')->name('sales-specialist-orders.placeOrder');
-        Route::post('sales-specialist-orders/get-price/', 'App\Http\Controllers\LocalOrderController@getPrice')->name('sales-specialist-orders.get-price');
-        Route::post('sales-specialist-orders/get-customer-schedule/', 'App\Http\Controllers\LocalOrderController@getCustomerSchedule')->name('sales-specialist-orders.get-customer-schedule');
+
+        Route::post('sales-specialist-orders/get-all', [LocalOrderController::class, 'getAll'])->name('sales-specialist-orders.get-all');
+        Route::post('sales-specialist-orders/get-customers/', [LocalOrderController::class, 'getCustomers'])->name('sales-specialist-orders.getCustomers');
+        Route::post('sales-specialist-orders/get-products/', [LocalOrderController::class, 'getProducts'])->name('sales-specialist-orders.getProducts');
+        Route::post('sales-specialist-orders/get-address/', [LocalOrderController::class, 'getAddress'])->name('sales-specialist-orders.getAddress');
+        Route::post('sales-specialist-orders/place-order/', [LocalOrderController::class, 'placeOrder'])->name('sales-specialist-orders.placeOrder');
+        Route::post('sales-specialist-orders/get-price/', [LocalOrderController::class, 'getPrice'])->name('sales-specialist-orders.get-price');
+        Route::post('sales-specialist-orders/get-customer-schedule/', [LocalOrderController::class, 'getCustomerSchedule'])->name('sales-specialist-orders.get-customer-schedule');
 
 
         // Common Routes
