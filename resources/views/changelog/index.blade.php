@@ -5,31 +5,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Changelog</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* General Styles */
+        /* Custom Styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f4f6f9;
         }
 
         .toc {
             position: fixed;
             top: 10px;
             left: 20px;
-            width: 200px;
-            background-color: #f9f9f9;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 240px;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             z-index: 1000;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .toc h2 {
-            font-size: 18px;
-            margin: 0;
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #000000;
+            border-bottom: 2px solid #000000;
             padding-bottom: 10px;
-            border-bottom: 2px solid #ddd;
         }
 
         .toc ul {
@@ -38,21 +44,30 @@
         }
 
         .toc ul li {
-            margin: 10px 0;
+            margin: 8px 0;
         }
 
         .toc a {
             text-decoration: none;
             color: #007bff;
+            font-size: 16px;
+        }
+
+        .toc a:hover {
+            color: #0056b3;
         }
 
         .changelog {
-            margin-left: 250px;
-            padding: 20px;
+            margin-left: 270px;
+            padding: 30px;
         }
 
         details {
             margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
         }
 
         details summary {
@@ -64,6 +79,11 @@
             margin: 5px 0;
         }
 
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+
         #scrollToTopBtn {
             position: fixed;
             bottom: 20px;
@@ -71,26 +91,26 @@
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 12px;
+            /* border-radius: 50%; */
             cursor: pointer;
             display: none;
+            font-size: 18px;
         }
 
         #scrollToTopBtn:hover {
             background-color: #0056b3;
         }
 
-        /* Search Bar Styling */
         .search-container {
             margin-top: 20px;
             padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        #searchQuery {
+        .search-container input {
             width: 100%;
             padding: 8px;
             font-size: 16px;
@@ -98,19 +118,13 @@
             border-radius: 4px;
         }
 
-        #clearSearch {
+        .search-container button {
             background: none;
             border: none;
-            font-size: 18px;
+            font-size: 20px;
             color: #007bff;
             cursor: pointer;
             padding: 0;
-            margin-left: -30px;
-        }
-
-        .highlight {
-            background-color: yellow;
-            font-weight: bold;
         }
 
         .no-results {
@@ -127,8 +141,9 @@
         <h2>Table of Contents</h2>
         <!-- Search Bar Below Table of Contents -->
         <div class="search-container">
-            <input type="text" id="searchQuery" placeholder="Search changelog..." onkeyup="debouncedSearch()">
-            <button id="clearSearch" onclick="clearSearch()" style="display: none;">&times;</button>
+            <input type="search" id="searchQuery" class="form-control" placeholder="Search changelog..."
+                onkeyup="debouncedSearch()">
+            {{-- <button id="clearSearch" onclick="clearSearch()" style="display: none;">&times;</button> --}}
         </div>
         <ul id="tocList">
             @foreach ($toc as $section)
@@ -145,7 +160,7 @@
     </div>
 
     <!-- Scroll to Top Button -->
-    <button id="scrollToTopBtn" onclick="scrollToTop()">↑</button>
+    <button id="scrollToTopBtn" class="btn btn-sm" onclick="scrollToTop()">↑</button>
 
     <script>
         let debounceTimeout;
@@ -166,14 +181,9 @@
         // Search Functionality
         function searchChangelog(query) {
             // Show or hide the 'X' button based on input
-            var clearButton = document.getElementById('clearSearch');
             if (query === '') {
-                clearButton.style.display = 'none';
-                // If query is empty, restore original content
                 restoreOriginalContent();
                 return;
-            } else {
-                clearButton.style.display = 'inline-block';
             }
 
             fetch('{{ url()->current() }}?query=' + query, {
@@ -209,9 +219,14 @@
                 });
         }
 
+        document.getElementById('searchQuery').addEventListener('input', function(e) {
+            if (e.currentTarget.value === '') {
+                clearSearch(); 
+            }
+        });
+
         // Clear search input
         function clearSearch() {
-            document.getElementById('searchQuery').value = '';
             debouncedSearch();
         }
 
