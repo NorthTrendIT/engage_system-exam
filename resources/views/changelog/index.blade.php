@@ -7,6 +7,10 @@
     <title>Changelog</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <style>
         /* Custom Styles */
         body {
@@ -155,12 +159,12 @@
     </div>
 
     <!-- Changelog Content -->
-    <div class="changelog" id="changelogContent">
+    <div class="card changelog" id="changelogContent">
         {!! $htmlContent !!}
     </div>
 
     <!-- Scroll to Top Button -->
-    <button id="scrollToTopBtn" class="btn btn-sm" onclick="scrollToTop()">↑</button>
+    <button id="scrollToTopBtn" class="btn btn-sm" onclick="scrollToTop()"><i class="fa-solid fa-arrow-up"></i></button>
 
     <script>
         let debounceTimeout;
@@ -221,7 +225,7 @@
 
         document.getElementById('searchQuery').addEventListener('input', function(e) {
             if (e.currentTarget.value === '') {
-                clearSearch(); 
+                clearSearch();
             }
         });
 
