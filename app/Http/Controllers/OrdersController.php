@@ -1643,11 +1643,18 @@ class OrdersController extends Controller
 
             $key_counter =+ $key_counter;
             foreach ($orders as $key => $value) {
+
+                $currentDateTime = Carbon::parse($value->created_at);
+                $created_by = "";
+                if($value->placed_by == 'S'){
+                    $created_by = ($value->sales_specialist)? $value->sales_specialist->first_name.' '.$value->sales_specialist->last_name : '-';
+                } else {
+                    $created_by = "Customer";
+                }
                 
                 $formattedDuration  = $date = $time = '-';
                 if($value->approved_at){
                     $approvedAt = Carbon::parse($value->approved_at);
-                    $currentDateTime = Carbon::parse($value->created_at);
                     $days = $currentDateTime->diffInDays($approvedAt, false);
                     $noun = ($days > 1) ? 'days' : 'day';
                     $duration = $currentDateTime->diff($approvedAt);
@@ -1660,6 +1667,10 @@ class OrdersController extends Controller
         
                 $records[] = [
                     'no' => $key_counter,
+                    'so_no' => ($value->quotation && $value->quotation->order) ? $value->quotation->order->doc_num : '-',
+                    'order_date' => $currentDateTime->format('M d, Y'),
+                    'order_time' => $currentDateTime->format('H:i A'),
+                    'creator_name' => $created_by,
                     'business_unit' => $value->customer->sap_connection->company_name ?? "-",
                     'branch' => $value->customer->group->name ?? "-",
                     'customer_code' => $value->customer->card_code ?? "-",
