@@ -20,17 +20,17 @@ class ChangelogController extends Controller
             $htmlContent = $parsedown->text($changelogContent);
 
             // Extract headings to generate Table of Contents (TOC)
-            preg_match_all('/<h2.*?>(.*?)<\/h2>/', $htmlContent, $matches);
+            preg_match_all('/<h3.*?>(.*?)<\/h3>/', $htmlContent, $matches);
             $toc = $matches[1]; // Get the section titles
 
             // Add IDs to the headings to make them linkable
-            $htmlContent = preg_replace_callback('/<h2>(.*?)<\/h2>/', function ($matches) {
+            $htmlContent = preg_replace_callback('/<h3>(.*?)<\/h3>/', function ($matches) {
                 $slug = strtolower(trim(preg_replace('/[^a-z0-9]+/i', '-', $matches[1])));
-                return '<h2 id="' . $slug . '">' . $matches[1] . '</h2>';
+                return '<h3 id="' . $slug . '">' . $matches[1] . '</h3>';
             }, $htmlContent);
 
             // Add collapsible "details" for long sections
-            $htmlContent = preg_replace_callback('/(<h2.*?>.*?<\/h2>)(.*?)(?=<h2|$)/s', function ($matches) {
+            $htmlContent = preg_replace_callback('/(<h3.*?>.*?<\/h3>)(.*?)(?=<h3|$)/s', function ($matches) {
                 $sectionTitle = $matches[1];
                 $sectionContent = $matches[2];
 
