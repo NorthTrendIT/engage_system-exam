@@ -40,6 +40,10 @@ class OrderExport implements FromCollection,WithHeadings,WithTitle,ShouldAutoSiz
 
         return [
             'No.',
+            'SO No.',
+            'Order Date',
+            'Order Time',
+            'Creator Name',
             'Business Unit',
             'Branch',
             'Customer Code',
