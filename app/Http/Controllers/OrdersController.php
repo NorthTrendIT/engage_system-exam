@@ -1627,34 +1627,34 @@ class OrdersController extends Controller
             // });
         });
 
-        // $data->with([
-        //     'quotation' => function ($query) {
-        //         $query->select('id', 'doc_entry', 'sap_connection_id', 'u_omsno', 'doc_total');
-        //     },
-        //     'quotation.order' => function ($query) {
-        //         $query->select('u_omsno', 'sap_connection_id', 'doc_num');
-        //     },
-        //     'items' => function ($query) {
-        //         $query->select('id', 'local_order_id', 'total'); // Ensure local_order_id is included
-        //     },
-        // ]);
+        $data->with([
+            'quotation' => function ($query) {
+                $query->select('id', 'doc_entry', 'sap_connection_id', 'u_omsno', 'doc_total');
+            },
+            'quotation.order' => function ($query) {
+                $query->select('u_omsno', 'sap_connection_id', 'doc_num');
+            },
+            'items' => function ($query) {
+                $query->select('id', 'local_order_id', 'total'); // Ensure local_order_id is included
+            },
+        ]);
         
                         
         $records = [];
         $key_counter = 1;
         $data->chunk(1000, function ($orders) use (&$records, &$key_counter) {
 
-            $orders->load([
-                'quotation' => function ($query) {
-                    $query->select('id', 'doc_entry', 'sap_connection_id', 'u_omsno', 'doc_total');
-                },
-                'quotation.order' => function ($query) {
-                    $query->select('u_omsno', 'sap_connection_id', 'doc_num');
-                },
-                'items' => function ($query) {
-                    $query->select('id', 'local_order_id', 'total'); 
-                },
-            ]);
+            // $orders->load([
+            //     'quotation' => function ($query) {
+            //         $query->select('id', 'doc_entry', 'sap_connection_id', 'u_omsno', 'doc_total');
+            //     },
+            //     'quotation.order' => function ($query) {
+            //         $query->select('u_omsno', 'sap_connection_id', 'doc_num');
+            //     },
+            //     'items' => function ($query) {
+            //         $query->select('id', 'local_order_id', 'total'); 
+            //     },
+            // ]);
 
             $key_counter =+ $key_counter;
             foreach ($orders as $key => $value) {
