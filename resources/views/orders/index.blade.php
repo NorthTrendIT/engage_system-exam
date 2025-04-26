@@ -65,7 +65,7 @@
 
                   <!-- Territory -->
                   <div class="col-md-3 mt-5 territory" >
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectTerritory" data-hide-search="false" data-allow-clear="false" name="filter_territory[]">
+                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectTerritory" data-hide-search="false" data-allow-clear="false" name="filter_territory[]" multiple="multiple">
                       {{-- <option value=""></option> --}}
                     </select>
                   </div>
@@ -252,6 +252,145 @@
 <script>
   $(document).ready(function() {
 
+    const filtersToClear = [
+      'filter_customer',
+      'filter_territory',
+      'filter_group',
+      'filter_date_range',
+      'filter_status',
+      'filter_company',
+      'filter_order_type',
+      'filter_approval',
+      'filter_class',
+      'filter_brand',
+      'filter_sales_specialist',
+      'filter_market_sector',
+      'engage_transaction',
+      'filter_search'
+    ];
+
+
+
+    function applyFilters() {
+        // Save all filter values to localStorage
+        localStorage.setItem('engage_transaction', $('[name="engage_transaction"]').is(':checked'));
+        localStorage.setItem('filter_search', $('[name="filter_search"]').val());
+        localStorage.setItem('filter_approval', $('[name="filter_approval"]').find('option:selected').val());
+        localStorage.setItem('filter_date_range', $('[name="filter_date_range"]').val());
+        localStorage.setItem('filter_status', JSON.stringify($('[name="filter_status[]"]').select2('val')));
+        localStorage.setItem('filter_order_type', $('[name="filter_order_type"]').find('option:selected').val());
+        // localStorage.setItem('filter_customer', $('[name="filter_customer"]').find('option:selected').val());
+        localStorage.setItem('filter_company', $('[name="filter_company"]').find('option:selected').val());
+        // localStorage.setItem('filter_group', $('[name="filter_group"]').val());
+        localStorage.setItem('filter_brand', $('[name="filter_brand"]').find('option:selected').val());
+        localStorage.setItem('filter_class', $('[name="filter_class"]').find('option:selected').val());
+        // localStorage.setItem('filter_territory', JSON.stringify($('[name="filter_territory[]"]').select2('val')));
+        localStorage.setItem('filter_sales_specialist', $('[name="filter_sales_specialist"]').find('option:selected').val());
+        localStorage.setItem('filter_market_sector', $('[name="filter_market_sector"]').find('option:selected').val());
+      }
+
+      function restoreFilters() {
+      // Set all values first (without triggering 'change' yet)
+      if (localStorage.getItem('engage_transaction') !== null) {
+        $('[name="engage_transaction"]').prop('checked', JSON.parse(localStorage.getItem('engage_transaction')));
+      }
+
+      if (localStorage.getItem('filter_search') !== null) {
+        $('[name="filter_search"]').val(localStorage.getItem('filter_search'));
+      }
+
+      if (localStorage.getItem('filter_approval') !== null) {
+        $('[name="filter_approval"]').val(localStorage.getItem('filter_approval'));
+      }
+
+      if (localStorage.getItem('filter_date_range') !== null) {
+        $('[name="filter_date_range"]').val(localStorage.getItem('filter_date_range'));
+      }
+
+      if (localStorage.getItem('filter_status')) {
+        $('[name="filter_status[]"]').val(JSON.parse(localStorage.getItem('filter_status')));
+      }
+
+      if (localStorage.getItem('filter_order_type') !== null) {
+        $('[name="filter_order_type"]').val(localStorage.getItem('filter_order_type'));
+      }
+
+      if (localStorage.getItem('filter_company') !== null) {
+        $('[name="filter_company"]').val(localStorage.getItem('filter_company'));
+      }
+
+      const storedGroup = localStorage.getItem('filter_group');
+      if ( storedGroup != null) {
+        const groupData = JSON.parse(storedGroup); 
+        const newOption = new Option(groupData.text, groupData.id, true, true);
+        $('[name="filter_group"]').append(newOption).trigger('change');
+      }
+
+      const storedCustomer = localStorage.getItem('filter_customer');
+      if (storedCustomer != null) {
+        const customerData = JSON.parse(storedCustomer); 
+        const newCustomer = new Option(customerData.text, customerData.id, true, true);
+        $('[name="filter_customer"]').append(newCustomer).trigger('change');
+      }
+
+      if (localStorage.getItem('filter_brand') !== null) {
+        $('[name="filter_brand"]').val(localStorage.getItem('filter_brand'));
+      }
+
+      if (localStorage.getItem('filter_class') !== null) {
+        $('[name="filter_class"]').val(localStorage.getItem('filter_class'));
+      }
+
+      const storedTerritory = localStorage.getItem('filter_territory');
+      if (storedTerritory) {
+        const territories = JSON.parse(storedTerritory);
+        const values = [];
+        territories.forEach(item => {
+          const option = new Option(item.text, item.id, true, true);
+          $('[name="filter_territory[]"]').append(option);
+          values.push(item.id); // collect all IDs
+        });
+
+        // Set all selected values at once
+        $('[name="filter_territory[]"]').val(values).trigger('change');
+      }
+
+      if (localStorage.getItem('filter_sales_specialist') !== null) {
+        $('[name="filter_sales_specialist"]').val(localStorage.getItem('filter_sales_specialist'));
+      }
+
+      if (localStorage.getItem('filter_market_sector') !== null) {
+        $('[name="filter_market_sector"]').val(localStorage.getItem('filter_market_sector'));
+      }
+
+      // Now trigger 'change' for Select2 fields and other elements to refresh their state
+      setTimeout(function() {
+        // Trigger 'change' after setting the values
+        // $('[name="filter_company"]').trigger('change');
+        $('[name="filter_company"]').trigger('change.select2');
+        $('[name="filter_approval"]').trigger('change');
+        $('[name="filter_status[]"]').trigger('change');
+
+      }, 0); // Small delay to allow all changes to propagate correctly
+    }
+
+      // Trigger applyFilters() when the user changes a filter
+      $('.row input, .row select').on('change', function() {
+        applyFilters();
+      });
+
+      $('[name="filter_date_range"]').on('apply.daterangepicker', function(ev, picker) {
+        applyFilters();
+      });
+
+      $('[name="filter_date_range"]').on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val(''); // Clear the input
+        applyFilters();   // Your function to update filters
+      });
+
+      // Restore filters when the page is loaded or refreshed
+      restoreFilters();
+
     render_table();
 
     $('#engage_transaction').change(function() {
@@ -373,7 +512,7 @@
             { "targets": hide_targets, "visible": false }
         ],
         createdRow: function (row, data, dataIndex) {
-                    console.log(data);
+                    // console.log(data);
                     $(row).on('click', function () {
                       var str = data.doc_entry;
                       var $tempDiv = $('<div>').html(str); // Create a temporary div and set the HTML content
@@ -412,6 +551,7 @@ window.location.href = href;
       $('input').val('');
       $('select').val('').trigger('change');
       $('[name="module"]').val(null).trigger('change');
+      filtersToClear.forEach(key => localStorage.removeItem(key));
       render_table();
     })
 
@@ -479,6 +619,11 @@ window.location.href = href;
             },
             cache: true
         },
+      });
+
+      $('[name="filter_customer"]').on('select2:select', function (e) {
+        var data = e.params.data; 
+        localStorage.setItem('filter_customer', JSON.stringify(data)); // Save full object
       });
     @endif
 
@@ -844,6 +989,11 @@ window.location.href = href;
             multiple: true,
         });
 
+        $('[name="filter_territory[]"]').on('change', function () {
+          const data = $(this).select2('data'); // all selected items
+          localStorage.setItem('filter_territory', JSON.stringify(data));
+        });
+
         // getMarketSector
         $("#selectMarketSector").select2({
             ajax: {
@@ -876,7 +1026,10 @@ window.location.href = href;
 
         $(document).on('change', '[name="filter_company"]', function(event) {
           event.preventDefault();
-          $('[name="filter_group"]').val('').trigger('change');
+          $('[name="filter_group"]').val(null).trigger('change');
+          $('[name="filter_territory[]"]').val(null).trigger('change');
+          $('[name="filter_customer"]').val(null).trigger('change');
+
           if($(this).find('option:selected').val() != ""){
             $('.other_filter_div').show();
           }else{
@@ -905,6 +1058,12 @@ window.location.href = href;
               },
               cache: true
           },
+        });
+
+
+        $('[name="filter_group"]').on('select2:select', function (e) {
+          var data = e.params.data; // data = {id: 100, text: "BACOLOD", selected: true}
+          localStorage.setItem('filter_group', JSON.stringify(data)); // Save full object
         });
 
     @endif
