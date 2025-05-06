@@ -35,7 +35,7 @@
               <div class="row">
                 @if(in_array(userrole(),[1,10,11]))
                   <div class="col-md-3 mt-5">
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
+                    <select class="form-control  form-control-solid" data-control="select2" data-hide-search="false" name="filter_company" data-allow-clear="true" data-placeholder="Select business unit">
                       <option value=""></option>
                       @foreach($company as $c)
                         <option value="{{ $c->id }}">{{ $c->company_name }}</option>
@@ -44,15 +44,15 @@
                   </div>
 
                   <!-- group -->
-                  <div class="col-md-3 mt-5 other_filter_div">
-                    <select class="form-control form-control-lg form-control-solid" name="filter_group" data-control="select2" data-hide-search="false" data-placeholder="Select Branch" data-allow-clear="true">
+                  <div class="col-md-3 mt-5 other_filter_div" style="display: none;">
+                    <select class="form-control  form-control-solid" name="filter_group" data-control="select2" data-hide-search="false" data-placeholder="Select Branch" data-allow-clear="true">
                       <option value=""></option>
                     </select>
                   </div>
 
                   <!-- Select Customer By -->
                   <div class="col-md-3 mt-5 d-none">
-                      <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectModule" data-hide-search="false" data-allow-clear="true" name="module">
+                      <select class="form-control  form-control-solid" data-control="select2" id="selectModule" data-hide-search="false" data-allow-clear="true" name="module">
                           <option value=""></option>
                           <option value="all">All</option>
                           <option value="brand">By brand</option>
@@ -65,35 +65,35 @@
 
                   <!-- Territory -->
                   <div class="col-md-3 mt-5 territory" >
-                    <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectTerritory" data-hide-search="false" data-allow-clear="false" name="filter_territory[]" multiple="multiple">
+                    <select class="form-control  form-control-solid" data-control="select2" id="selectTerritory" data-hide-search="false" data-allow-clear="false" name="filter_territory[]" multiple="multiple">
                       {{-- <option value=""></option> --}}
                     </select>
                   </div>
 
                   <!-- Brand -->
                   <div class="col-md-3 mt-5 brand" style="display:none">
-                      <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectBrand" data-hide-search="false" data-allow-clear="true" name="filter_brand" data-placeholder="Select brand">
+                      <select class="form-control  form-control-solid" data-control="select2" id="selectBrand" data-hide-search="false" data-allow-clear="true" name="filter_brand" data-placeholder="Select brand">
                           <option value=""></option>
                       </select>
                   </div>
 
                   <!-- Customer Class -->
                   <div class="col-md-3 mt-5 customer_class" style="display:none">
-                      <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectCustomerClass" data-hide-search="false" data-allow-clear="true" name="filter_customer_class">
+                      <select class="form-control  form-control-solid" data-control="select2" id="selectCustomerClass" data-hide-search="false" data-allow-clear="true" name="filter_customer_class">
                         <option value=""></option>
                       </select>
                   </div>
 
                   <!-- Sales Specilalist -->
                   <div class="col-md-3 mt-5 sales_specialist" style="display:none">
-                      <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectSalesSpecialist" data-hide-search="false" data-allow-clear="true" name="filter_sales_specialist">
+                      <select class="form-control  form-control-solid" data-control="select2" id="selectSalesSpecialist" data-hide-search="false" data-allow-clear="true" name="filter_sales_specialist">
                         <option value=""></option>
                       </select>
                   </div>
 
                   <!-- Market Sector -->
                   <div class="col-md-3 mt-5 market_sector" style="display:none">
-                      <select class="form-control form-control-lg form-control-solid" data-control="select2" id="selectMarketSector" data-hide-search="false" data-allow-clear="true" name="filter_market_sector">
+                      <select class="form-control  form-control-solid" data-control="select2" id="selectMarketSector" data-hide-search="false" data-allow-clear="true" name="filter_market_sector">
                         <option value=""></option>
                       </select>
                   </div>
@@ -101,14 +101,14 @@
 
                 @if(in_array(userrole(),[1,2,10]))
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select customer" data-allow-clear="true">
+                  <select class="form-control  form-control-solid" name="filter_customer" data-control="select2" data-hide-search="false" data-allow-clear="true" data-placeholder="Select customer" data-allow-clear="true">
                     <option value=""></option>
                   </select>
                 </div>
                 @endif
 
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid js-example-basic-multiple" name="filter_status[]" data-control="select2" data-hide-search="false" data-placeholder="Select status" data-allow-clear="false" multiple="multiple">
+                  <select class="form-control  form-control-solid js-example-basic-multiple" name="filter_status[]" data-control="select2" data-hide-search="false" data-placeholder="Select status" data-allow-clear="false" multiple="multiple">
                     {{-- <option value=""></option> --}}
 
                     @foreach(getOrderStatusArray1() as $key => $value)
@@ -118,7 +118,7 @@
                 </div>
                 
                 <div class="col-md-3 mt-5 d-none">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_order_type" data-control="select2" data-hide-search="false" data-placeholder="Select order type" data-allow-clear="true">
+                  <select class="form-control  form-control-solid" name="filter_order_type" data-control="select2" data-hide-search="false" data-placeholder="Select order type" data-allow-clear="true">
                     <option value=""></option>
                     <option value="Standard">Standard</option>
                     <option value="Promotion">Promotion</option>
@@ -128,14 +128,14 @@
 
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
+                    <input type="text" class="form-control  form-control-solid" placeholder="Select date range" name = "filter_date_range" id="kt_daterangepicker_1" readonly>
                     <span>
                     </span>
                   </div>
                 </div>
 
                 <div class="col-md-3 mt-5">
-                  <select class="form-control form-control-lg form-control-solid" name="filter_approval" data-control="select2" data-hide-search="false" data-placeholder="Select Approval" data-allow-clear="true">
+                  <select class="form-control  form-control-solid" name="filter_approval" data-control="select2" data-hide-search="false" data-placeholder="Select Approval" data-allow-clear="true">
                     <option value=""></option>
                     @foreach($approvalStatus as $appr)
                     <option value="{{$appr}}">{{$appr}}</option>
@@ -145,7 +145,7 @@
 
                 <div class="col-md-3 mt-5">
                   <div class="input-icon">
-                    <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
+                    <input type="text" class="form-control  form-control-solid" placeholder="Search here..." name="filter_search" autocomplete="off">
                   </div>
                 </div>
 
@@ -153,17 +153,17 @@
                   <div class="input-icon engage_transaction d-flex align-items-center">
                       <input type="checkbox" class="" name="engage_transaction" id="engage_transaction" value="1" checked>
                       <span class="">
-                          <label class="form-check-label">Engage Transactions Only</label>
+                          <label class="form-check-label">&nbsp;Engage Transactions Only</label>
                       </span>
                   </div>
               </div>              
 
                 <div class="col-md-6 mt-5">
-                  <a href="javascript:" class="btn btn-primary px-6 font-weight-bold search">Search</a>
-                  <a href="javascript:" class="btn btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
+                  <a href="javascript:" class="btn  btn-primary px-6 font-weight-bold search">Search</a>
+                  <a href="javascript:" class="btn  btn-light-dark font-weight-bold clear-search mx-2">Clear</a>
 
                   @if(in_array(userrole(),[1,10,11]))
-                  <a href="javascript:" class="btn btn-success font-weight-bold download_excel ">Export Excel</a>
+                  <a href="javascript:" class="btn  btn-success font-weight-bold download_excel ">Export Excel</a>
                   @endif
 
                 </div>
@@ -239,6 +239,24 @@
     50% { opacity: 0.5; }
     100% { opacity: 1; }
   } */
+
+  /* Target the placeholder text in multi-select */
+.select2-search__field::placeholder {
+    font-size: 1.1rem;   /* Set the desired font size */
+    font-weight: 550;  /* Set the desired font weight (e.g., bold) */
+}
+
+/* Target the placeholder text in single-select */
+.select2-selection__placeholder {
+    font-size: 1.1rem;   /* Set the same font size as multi-select */
+    font-weight: 550;  /* Set the same font weight as multi-select */
+}
+
+/* Optional: Adjust the styling of the select box and input to maintain consistency */
+.select2-selection {
+    font-size: 1.1rem;
+    font-weight: 550;
+}
 
 </style>
 <link href="{{ asset('assets')}}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
@@ -1024,18 +1042,23 @@ window.location.href = href;
             multiple: false,
         });
 
+        detect_other_filter_visibility();
         $(document).on('change', '[name="filter_company"]', function(event) {
           event.preventDefault();
           $('[name="filter_group"]').val(null).trigger('change');
           $('[name="filter_territory[]"]').val(null).trigger('change');
           $('[name="filter_customer"]').val(null).trigger('change');
 
-          if($(this).find('option:selected').val() != ""){
+          detect_other_filter_visibility();
+        });
+
+        function detect_other_filter_visibility(){
+          if($('[name="filter_company"]').find('option:selected').val() != ""){
             $('.other_filter_div').show();
           }else{
             $('.other_filter_div').hide();
           }
-        });
+        }
 
 
         $('[name="filter_group"]').select2({
