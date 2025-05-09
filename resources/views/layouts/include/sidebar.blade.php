@@ -706,6 +706,19 @@
          <!--end::Menu-->
       </div>
       <!--end::Aside Menu-->
+
+
+      {{-- <!--begin::Footer Menu (Fixed)-->
+      <div class="aside-footer-menu" style="margin-top: auto;">
+         <div class="menu-item">
+             <a class="menu-link text-muted" href="http://10.10.1.100:8000/settings">
+                 <span class="menu-title">ChangeLog</span>
+             </a>
+         </div>
+     </div>
+     <!--end::Footer Menu--> --}}
+
+
    </div>
    <!--end::Aside menu-->
 </div>

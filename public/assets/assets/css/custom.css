@@ -1256,3 +1256,26 @@ input[type="button"].remove-from-cart {
   background: #c1c1c1c1; 
   border-radius: 0px;
 }
+
+
+/* Make the sidebar stretch to full height and keep the footer fixed at the bottom
+.aside-menu {
+  display: flex;
+  flex-direction: column !important;
+  height: 80%;
+}
+
+.aside-footer-menu {
+  margin-top: auto !important; 
+  bottom: 0;  
+  left: 0;
+  right: 0;
+  width: 100%; 
+  text-align: center;  
+  background-color: #1a1a27;  
+}
+
+
+.aside-footer-menu .menu-item {
+  display: inline-block; 
+} */

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\LocalOrderController;
+use App\Http\Controllers\ChangelogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -596,3 +597,4 @@ Route::get('clear-cache', function () {
 
 Route::get('/upload-ss', 'App\Http\Controllers\Userupload@index');
 Route::post('/uploadfile', 'App\Http\Controllers\Userupload@showUploadFile');
+Route::get('/changelog', [ChangelogController::class, 'index'])->name('changelog');

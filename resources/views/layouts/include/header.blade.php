@@ -193,6 +193,12 @@
 
                      <!--begin::Menu item-->
                      <div class="menu-item px-5">
+                        <a href="{{ route('changelog') }}" target="_blank" class="menu-link px-5"><i class="fa fa-clock fa-history text-dark mr-10"></i> Change Log</a>
+                     </div>
+                     <!--end::Menu item-->
+
+                     <!--begin::Menu item-->
+                     <div class="menu-item px-5">
                         <a href="{{ route('logout') }}" class="menu-link px-5"><i class="fa fa-sign-out-alt text-danger mr-10"></i> Sign Out</a>
                      </div>
                      <!--end::Menu item-->
