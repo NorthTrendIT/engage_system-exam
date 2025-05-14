@@ -172,7 +172,7 @@
                             <div class="col-sm-6">
                               <div class="row">
                                 <div class="fw-bold fs-7 text-gray-600 mb-1">Delivery Address:</div>
-                                <div class="fw-bolder fs-6 text-gray-800">{{ $data->customer->address ?? '-' }}</div>
+                                <div class="fw-bolder fs-6 text-gray-800">{{ $data->address->street ?? '-' }}</div>
                               </div>
                               <div class="row mt-5">
                                 <div class="col-sm-6">
