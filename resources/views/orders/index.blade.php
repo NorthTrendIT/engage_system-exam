@@ -189,6 +189,7 @@
                               <th class="bg-dark">Business Unit</th>
                               @endif
                               <th class="bg-dark">Created Date</th>
+                              <th class="bg-dark">Created Time</th>
                               <th class="bg-dark">Status</th>
                               <th class="bg-dark">Total</th>
                               <th class="bg-dark">Created By</th>
@@ -457,12 +458,12 @@
       @endif
 
       @if(userrole() != 4 && !in_array(userrole(),[1,10,11]))
-        hide_targets.push(10)
+        hide_targets.push(11)
       @endif
 
       @if(in_array(userrole(),[1,10,11]))
         hide_targets.push(4);
-        hide_targets.push(11);
+        hide_targets.push(12);
       @endif
 
       table.DataTable({
@@ -515,6 +516,7 @@
               {data: 'company', name: 'company', orderable:false},
               @endif
               {data: 'date', name: 'date', orderable:true},
+              {data: 'time', name: 'time', orderable:false},
               {data: 'status', name: 'status', orderable:false, className: 'text-center'},
               {data: 'total', name: 'total', orderable:false, className: 'text-center'},
               {data: 'created_by', name: 'created_by', orderable:false, className: 'text-center'},

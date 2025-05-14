@@ -836,6 +836,10 @@ class OrdersController extends Controller
                                 
                                 return $date;
                             })
+                            ->addColumn('time', function($row) {
+                                $currentDateTime = Carbon::parse($row->created_at);
+                                return $currentDateTime->format('H:i A');
+                            })
                             ->addColumn('due_date', function($row) {
                                 return date('M d, Y',strtotime(@$row->quotation->doc_due_date));
                             })
@@ -1627,6 +1631,9 @@ class OrdersController extends Controller
             // });
         });
 
+        $records = [];
+        $key_counter = 1;
+
         $data->with([
             'quotation' => function ($query) {
                 $query->select('id', 'doc_entry', 'sap_connection_id', 'u_omsno', 'doc_total');
@@ -1637,67 +1644,50 @@ class OrdersController extends Controller
             'items' => function ($query) {
                 $query->select('id', 'local_order_id', 'total'); // Ensure local_order_id is included
             },
-        ]);
-        
-                        
-        $records = [];
-        $key_counter = 1;
-        $data->chunk(1000, function ($orders) use (&$records, &$key_counter) {
+        ])->chunk(1000, function ($orders) use (&$records, &$key_counter) {
+            foreach ($orders as $order) {
+                $currentDateTime = \Carbon\Carbon::parse($order->created_at);
 
-            // $orders->load([
-            //     'quotation' => function ($query) {
-            //         $query->select('id', 'doc_entry', 'sap_connection_id', 'u_omsno', 'doc_total');
-            //     },
-            //     'quotation.order' => function ($query) {
-            //         $query->select('u_omsno', 'sap_connection_id', 'doc_num');
-            //     },
-            //     'items' => function ($query) {
-            //         $query->select('id', 'local_order_id', 'total'); 
-            //     },
-            // ]);
+                // Determine creator
+                $created_by = $order->placed_by === 'S'
+                    ? ($order->sales_specialist
+                        ? "{$order->sales_specialist->first_name} {$order->sales_specialist->last_name}"
+                        : '-')
+                    : 'Customer';
 
-            $key_counter =+ $key_counter;
-            foreach ($orders as $key => $value) {
-
-                $currentDateTime = Carbon::parse($value->created_at);
-                $created_by = "";
-                if($value->placed_by == 'S'){
-                    $created_by = ($value->sales_specialist)? $value->sales_specialist->first_name.' '.$value->sales_specialist->last_name : '-';
-                } else {
-                    $created_by = "Customer";
-                }
-                
-                $formattedDuration  = $date = $time = '-';
-                if($value->approved_at){
-                    $approvedAt = Carbon::parse($value->approved_at);
+                // Calculate approval time and duration
+                $formattedDuration = $date = $time = '-';
+                if ($order->approved_at) {
+                    $approvedAt = \Carbon\Carbon::parse($order->approved_at);
                     $days = $currentDateTime->diffInDays($approvedAt, false);
-                    $noun = ($days > 1) ? 'days' : 'day';
+                    $noun = abs($days) === 1 ? 'day' : 'days';
                     $duration = $currentDateTime->diff($approvedAt);
 
-                    $formattedDuration = $duration->format('%d '.$noun.' %H:%I:%S');
-
+                    $formattedDuration = $duration->format("%d $noun %H:%I:%S");
                     $date = $approvedAt->format('M d, Y');
                     $time = $approvedAt->format('H:i A');
                 }
-        
+
                 $records[] = [
                     'no' => $key_counter,
-                    'so_no' => ($value->quotation && $value->quotation->order) ? $value->quotation->order->doc_num : '-',
+                    'so_no' => $order->quotation->order->doc_num ?? '-',
                     'order_date' => $currentDateTime->format('M d, Y'),
                     'order_time' => $currentDateTime->format('H:i A'),
                     'creator_name' => $created_by,
-                    'business_unit' => $value->customer->sap_connection->company_name ?? "-",
-                    'branch' => $value->customer->group->name ?? "-",
-                    'customer_code' => $value->customer->card_code ?? "-",
-                    'customer_name' => $value->customer->card_name ?? "-",
-                    'order_amount' => number_format_value($value->quotation->doc_total ?? $value->items->sum('total')),
-                    'delivery_address' => $value->address->street ?? "-",
-                    'approval_status' => $value->quotation ? 'Approved' : $value->approval,
-                    'approved_by' => $value->approver->sales_specialist_name ?? '-',
+                    'business_unit' => $order->customer->sap_connection->company_name ?? '-',
+                    'branch' => $order->customer->group->name ?? '-',
+                    'customer_code' => $order->customer->card_code ?? '-',
+                    'customer_name' => $order->customer->card_name ?? '-',
+                    'order_amount' => number_format_value(
+                        $order->quotation->doc_total ?? $order->items->sum('total')
+                    ),
+                    'delivery_address' => $order->address->street ?? '-',
+                    'approval_status' => $order->quotation ? 'Approved' : $order->approval,
+                    'approved_by' => $order->approver->sales_specialist_name ?? '-',
                     'approval_date' => $date,
                     'approval_time' => $time,
                     'approval_duration' => $formattedDuration,
-                    'reason' => $value->disapproval_remarks ?? "-",
+                    'reason' => $order->disapproval_remarks ?? '-',
                 ];
 
                 $key_counter++;
