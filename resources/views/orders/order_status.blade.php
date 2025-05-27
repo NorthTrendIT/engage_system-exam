@@ -1,4 +1,4 @@
-@if(in_array(userrole(),[1,10,11]))
+@if(in_array(userrole(),[1,11]))
   <select name="order_approval" class="form-select" id="orderApproval">
     <option value="Pending">Pending</option>
     <option value="Approve">Approve</option>

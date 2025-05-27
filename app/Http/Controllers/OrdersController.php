@@ -360,18 +360,23 @@ class OrdersController extends Controller
                              ->firstOrFail();
 
         $response = ['status' => false, 'message' => 'Something went wrong!'];
-        if($request->approval === "Approve"){
-            $order->approval = "Approved";
-            $response = $this->approvedOrderPushToSap($order->id, $request->reason);
-        }elseif($request->approval === "Reject"){
-            $order->approval = "Rejected";
-            $response = ['status' => true, 'message' => 'Order was rejected!'];
+        if(!in_array(userrole(), [1,11])){
+            $response = ['status' => false, 'message' => 'You are not authorize to do this action'];
+        }else{
+            if($request->approval === "Approve"){
+                $order->approval = "Approved";
+                $response = $this->approvedOrderPushToSap($order->id, $request->reason);
+            }elseif($request->approval === "Reject"){
+                $order->approval = "Rejected";
+                $response = ['status' => true, 'message' => 'Order was rejected!'];
+            }
+
+            $order->disapproval_remarks = $request->reason;
+            $order->approved_at = Carbon::now();
+            $order->approved_by = Auth::id();
+            $order->save();
         }
         
-        $order->disapproval_remarks = $request->reason;
-        $order->approved_at = Carbon::now();
-        $order->approved_by = Auth::id();
-        $order->save();
 
         return $response;
     }
