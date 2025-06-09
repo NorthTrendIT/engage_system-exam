@@ -137,23 +137,27 @@ class StoreCustomers implements ShouldQueue
                 );
 
                 $checkCustomer = Customer::where([
-                    'card_code' => @$value['CardCode'],
+                    'card_code' => @$insert['card_code'],
                     'u_card_code' => $insert['u_card_code'],
                     'sap_connection_id' => $this->sap_connection_id,
                 ])->first();
 
                 // Check if customer exists and created_at is less than 5 minutes ago
                 if ($checkCustomer && $checkCustomer->created_at->gt(Carbon::now()->subMinutes(5))) {
-                    return;
+                    continue;
                 }
-                
+
                 $obj = Customer::updateOrCreate(
                     [
-                        'card_code' => @$value['CardCode'],
+                        'card_code' => @$insert['card_code'],
+                        'u_card_code' => $insert['u_card_code'],
                         'sap_connection_id' => $this->sap_connection_id,
                     ],
                     $insert
                 );
+
+                $insert = [];
+                
                 // Store BPAddresses details
                 if (@$obj->id) {
 
