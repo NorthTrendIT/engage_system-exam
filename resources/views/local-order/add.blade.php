@@ -678,13 +678,18 @@
                                 var tableId = $(this).closest('.card-xl-stretch').attr(
                                     'id');
                                 var incMktg = tableId == 'productFormTbl' ? 'no' : 'yes';
-                                return {
+                                var data = {
                                     _token: "{{ csrf_token() }}",
                                     filter_search: params.term,
                                     customer_id: $('[name="customer_id"]').val(),
-                                    // product_ids: product_ids,
                                     inc_mktg: incMktg
                                 };
+
+                                if (incMktg === 'no') {
+                                    data.product_ids = product_ids;
+                                }
+
+                                return data;
                             },
                             processResults: function(response) {
                                 return {
@@ -787,14 +792,14 @@
                 multiple: false,
                 // data: $initialOptions
             });
-            
+
             $('[name="due_date"]').datepicker({
-                                    format: 'mm/dd/yyyy',
-                                    todayHighlight: true,
-                                    orientation: "bottom left",
-                                    startDate: "+0d",
-                                    autoclose: true,
-                                });
+                format: 'mm/dd/yyyy',
+                todayHighlight: true,
+                orientation: "bottom left",
+                startDate: "+0d",
+                autoclose: true,
+            });
 
             $('body').on('change', '#selectCustomers', function() {
                 $customer = $('[name="customer_id"]').val();
