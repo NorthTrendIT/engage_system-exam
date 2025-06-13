@@ -13,3 +13,11 @@
 -   Remove CRA as approver of orders, though they can still view the order details.
 
 ---
+
+### [1.0.3] - 2025-06-13
+
+#### Fixed
+
+-   Resolved an issue where duplicate products were appearing in the promo section.
+
+---
